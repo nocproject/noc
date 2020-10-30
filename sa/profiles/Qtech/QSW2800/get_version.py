@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -108,6 +108,11 @@ class Script(BaseScript):
         if platform is None:
             self.logger.info("Unknown platform OID: %s" % oid)
             raise NotImplementedError("Unknown platform OID: %s" % oid)
+        elif oid == "1.3.6.1.4.1.27514.1.1.1.310":
+            # Both QSW-3580-28T-AC and QSW-3470-28T-AC has same OID
+            temp = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1])
+            if temp is not None and temp != "QSW-3580-28T-AC":
+                platform = "QSW-3470-28T-AC"
         return platform
 
     def fix_hw_serial(self):
@@ -122,7 +127,7 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         r = {"vendor": "Qtech", "attributes": {}}
-        sys_descr = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        sys_descr = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         sys_descr = sys_descr.replace("\x16", "")  # On QSW-3400-28T-AC 7.0.3.5(B0221.0055)
         for ree in [self.rx_ver, self.rx_ver2, self.rx_ver3]:
             match = ree.match(sys_descr)
@@ -133,7 +138,7 @@ class Script(BaseScript):
                 r["version"] = match["version"]
                 break
         if not match or "platform" not in match or match["platform"] == "Switch":
-            oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"])
+            oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
             r["platform"] = self.fix_platform(oid)
         if "version" not in r and sys_descr:
             r["version"] = self.rx_version.search(sys_descr).group("version")
