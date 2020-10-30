@@ -54,7 +54,7 @@ LONG_ARCHIVE_QUERY = """SELECT
   dictGetString('administrativedomain', 'name', administrative_domain) as adm_domain,
   dictGetString('managedobject', 'name', managed_object) as mo_name,
   IPv4NumToString(ip) as ip,
-  escalation_tt,  duration,  severity %s FROM alarms
+  escalation_tt,  duration,  severity,  reboots  %s FROM alarms
   WHERE date >= '%s' AND date < '%s' AND alarm_class = %d AND root == ''"""
 
 
