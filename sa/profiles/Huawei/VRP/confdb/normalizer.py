@@ -202,7 +202,7 @@ class VRPNormalizer(BaseNormalizer):
     @match("enable", "stp")
     def normalize_enable_stp(self, tokens):
         self.set_context("stp_disabled", False)
-        yield self.make_global_stp_status(status=True)
+        yield self.make_global_spanning_tree_status(status=True)
 
     @match("interface", ANY, "stp", "disable")
     def normalize_interface_stp_status(self, tokens):
