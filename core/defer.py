@@ -19,7 +19,13 @@ DEFAULT_JOB_CLASS = "noc.core.scheduler.calljob.CallJob"
 
 
 def call_later(
-    name, delay=None, scheduler="scheduler", pool=None, job_class=None, max_runs=None, **kwargs
+    name,
+    delay=None,
+    scheduler="scheduler",
+    pool=None,
+    job_class=DEFAULT_JOB_CLASS,
+    max_runs=None,
+    **kwargs,
 ):
     """
     Run callable *name* in scheduler process
@@ -45,14 +51,13 @@ def call_later(
     if max_runs:
         iset_op[Job.ATTR_MAX_RUNS] = max_runs
     if data:
-        set_op[Job.ATTR_DATA] = data
+        set_op[Job.ATTR_DATA] = {k: v for k, v in data.items() if not k.startswith("_")}
 
-    q = {Job.ATTR_CLASS: job_class or DEFAULT_JOB_CLASS, Job.ATTR_KEY: name}
+    q = {Job.ATTR_CLASS: job_class, Job.ATTR_KEY: name}
     for k in list(data):
         if k.startswith("_"):
             # Hidden attribute JobClass, remove it from data
             q[k] = data[k]
-            del set_op[Job.ATTR_DATA][k]
             continue
         q["%s.%s" % (Job.ATTR_DATA, k)] = data[k]
     op = {"$set": set_op, "$setOnInsert": iset_op}
