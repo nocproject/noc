@@ -122,7 +122,7 @@ class Script(BaseScript):
         for iface, vlan in self.rx_port_port_vlan.findall(v):
             if not vlan.strip("- "):
                 continue
-            yield iface, ranges_to_list(vlan, " ")
+            yield iface, ranges_to_list(vlan, None)
 
     def get_switchport_cli(self) -> DefaultDict[str, Dict[str, Union[int, list, None]]]:
         result = defaultdict(lambda: {"untagged": None, "tagged": []})
