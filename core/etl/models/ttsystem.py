@@ -12,7 +12,7 @@ from typing import Optional
 from .base import BaseModel
 
 
-class TTSystemModel(BaseModel):
+class TTSystem(BaseModel):
     id: str
     name: str
     handler: Optional[str]

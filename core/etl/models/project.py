@@ -12,7 +12,7 @@ from typing import Optional
 from .base import BaseModel
 
 
-class ProjectModel(BaseModel):
+class Project(BaseModel):
     id: str
     name: str
     code: str

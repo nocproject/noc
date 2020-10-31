@@ -9,7 +9,7 @@
 from .base import BaseModel
 
 
-class NetworkSegmentProfileModel(BaseModel):
+class NetworkSegmentProfile(BaseModel):
     id: str
     name: str
 

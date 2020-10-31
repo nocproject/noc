@@ -7,8 +7,8 @@
 
 # NOC modules
 from .base import BaseLoader
-from ..models.subscriber import SubscriberModel
-from noc.crm.models.subscriber import Subscriber
+from ..models.subscriber import Subscriber
+from noc.crm.models.subscriber import Subscriber as SubscriberModel
 
 
 class SubscriberLoader(BaseLoader):
@@ -17,21 +17,8 @@ class SubscriberLoader(BaseLoader):
     """
 
     name = "subscriber"
-    model = Subscriber
-    data_model = SubscriberModel
-    fields = [
-        "id",
-        "name",
-        "description",
-        "profile",
-        "address",
-        "tech_contact_person",
-        "tech_contact_phone",
-    ]
-
-    mapped_fields = {
-        "profile": "subscriberprofile",
-    }
+    model = SubscriberModel
+    data_model = Subscriber
 
     discard_deferred = True
 
@@ -46,7 +33,7 @@ class SubscriberLoader(BaseLoader):
             return None
         if not hasattr(self, "_subscriber_remote_ids"):
             self.logger.info("Filling service collection")
-            coll = Subscriber._get_collection()
+            coll = SubscriberModel._get_collection()
             self._subscriber_remote_ids = {
                 c["remote_id"]: c["_id"]
                 for c in coll.find(
@@ -55,5 +42,5 @@ class SubscriberLoader(BaseLoader):
                 )
             }
         if v["remote_id"] in self._subscriber_remote_ids:
-            return Subscriber.objects.get(id=self._subscriber_remote_ids[v["remote_id"]])
+            return SubscriberModel.objects.get(id=self._subscriber_remote_ids[v["remote_id"]])
         return None

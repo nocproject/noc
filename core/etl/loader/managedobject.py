@@ -6,12 +6,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.main.models.pool import Pool
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.profile import Profile
 from .base import BaseLoader
-from ..models.managedobject import ManagedObjectModel
-from noc.core.validators import is_ipv4
+from ..models.managedobject import ManagedObject
+from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
+from noc.sa.models.profile import Profile
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -20,74 +19,13 @@ class ManagedObjectLoader(BaseLoader):
     """
 
     name = "managedobject"
-    model = ManagedObject
-    data_model = ManagedObjectModel
-    fields = [
-        "id",
-        "name",
-        "is_managed",
-        "container",
-        "administrative_domain",
-        "pool",
-        "fm_pool",
-        "segment",
-        "profile",
-        "object_profile",
-        "static_client_groups",
-        "static_service_groups",
-        "scheme",
-        "address",
-        "port",
-        "user",
-        "password",
-        "super_password",
-        "snmp_ro",
-        "description",
-        "auth_profile",
-        "tags",
-        "tt_system",
-        "tt_queue",
-        "tt_system_id",
-        "project",
-    ]
-
-    mapped_fields = {
-        "administrative_domain": "administrativedomain",
-        "object_profile": "managedobjectprofile",
-        "segment": "networksegment",
-        "container": "container",
-        "auth_profile": "authprofile",
-        "tt_system": "ttsystem",
-        "static_client_groups": "resourcegroup",
-        "static_service_groups": "resourcegroup",
-        "project": "project",
-    }
+    model = ManagedObjectModel
+    data_model = ManagedObject
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.pools = {p.name: p for p in Pool.objects.all()}
-
-    def clean(self, row):
-        """
-        Fix pool
-        """
-        v = super().clean(row)
-        v["pool"] = self.pools[v["pool"]]
-        v["fm_pool"] = self.pools[v["fm_pool"]] if v["fm_pool"] else v["pool"]
-        if "tags" in v:
-            v["tags"] = (
-                [x.strip().strip('"') for x in v["tags"].split(",") if x.strip()]
-                if v["tags"]
-                else []
-            )
-        assert is_ipv4(v["address"])
-        v["address"] = v["address"].strip()
-        v["profile"] = Profile.get_by_name(v["profile"])
-        v["static_client_groups"] = [v["static_client_groups"]] if v["static_client_groups"] else []
-        v["static_service_groups"] = (
-            [v["static_service_groups"]] if v["static_service_groups"] else []
-        )
-        return v
+        self.clean_map["pool"] = Pool.get_by_name
+        self.clean_map["profile"] = Profile.get_by_name
 
     def purge(self):
         """

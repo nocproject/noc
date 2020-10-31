@@ -7,8 +7,8 @@
 
 # NOC modules
 from .base import BaseLoader
-from ..models.resourcegroup import ResourceGroupModel
-from noc.inv.models.resourcegroup import ResourceGroup
+from ..models.resourcegroup import ResourceGroup
+from noc.inv.models.resourcegroup import ResourceGroup as ResourceGroupModel
 from noc.inv.models.technology import Technology
 
 
@@ -18,16 +18,9 @@ class ResourceGroupLoader(BaseLoader):
     """
 
     name = "resourcegroup"
-    model = ResourceGroup
-    data_model = ResourceGroupModel
-    fields = ["id", "name", "technology", "parent", "description"]
+    model = ResourceGroupModel
+    data_model = ResourceGroup
 
-    mapped_fields = {"parent": "resourcegroup"}
-
-    def clean(self, row):
-        """
-        Fix Technology
-        """
-        v = super().clean(row)
-        v["technology"] = Technology.get_by_name(v["technology"])
-        return v
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.clean_map["technology"] = Technology.get_by_name

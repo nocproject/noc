@@ -7,14 +7,16 @@
 
 # NOC modules
 from .base import BaseModel
+from .typing import Reference
+from .managedobject import ManagedObject
 
 
-class LinkModel(BaseModel):
+class Link(BaseModel):
     id: str
     source: str
-    src_mo: str
+    src_mo: Reference["ManagedObject"]
     src_interface: str
-    dst_mo: str
+    dst_mo: Reference["ManagedObject"]
     dst_interface: str
 
     _csv_fields = ["id", "source", "src_mo", "src_interface", "dst_mo", "dst_interface"]
