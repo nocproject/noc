@@ -7,8 +7,8 @@
 
 # NOC modules
 from .base import BaseLoader
-from ..models.serviceprofile import ServiceProfileModel
-from noc.sa.models.serviceprofile import ServiceProfile
+from ..models.serviceprofile import ServiceProfile
+from noc.sa.models.serviceprofile import ServiceProfile as ServiceProfileModel
 
 
 class ServiceProfileLoader(BaseLoader):
@@ -17,6 +17,5 @@ class ServiceProfileLoader(BaseLoader):
     """
 
     name = "serviceprofile"
-    model = ServiceProfile
-    data_model = ServiceProfileModel
-    fields = ["id", "name", "description", "card_title_template"]
+    model = ServiceProfileModel
+    data_model = ServiceProfile

@@ -7,7 +7,7 @@
 
 # NOC modules
 from .base import BaseLoader
-from ..models.link import LinkModel
+from ..models.link import Link
 from noc.inv.models.extnrilink import ExtNRILink
 
 
@@ -18,10 +18,7 @@ class LinkLoader(BaseLoader):
 
     name = "link"
     model = ExtNRILink
-    data_model = LinkModel
-    fields = ["id", "source", "src_mo", "src_interface", "dst_mo", "dst_interface"]
-
-    mapped_fields = {"src_mo": "managedobject", "dst_mo": "managedobject"}
+    data_model = Link
 
     discard_deferred = True
 

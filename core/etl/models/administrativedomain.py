@@ -10,12 +10,13 @@ from typing import Optional
 
 # NOC modules
 from .base import BaseModel
+from .typing import Reference
 
 
-class AdministrativeDomainModel(BaseModel):
+class AdministrativeDomain(BaseModel):
     id: str
     name: str
-    parent: Optional[str]
+    parent: Optional[Reference["AdministrativeDomain"]]
     default_pool: Optional[str]
 
     _csv_fields = ["id", "name", "parent", "default_pool"]

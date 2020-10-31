@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.etl.models.administrativedomain import AdministrativeDomainModel
+from noc.core.etl.models.administrativedomain import AdministrativeDomain
 
 
 @pytest.mark.parametrize(
@@ -37,8 +37,8 @@ from noc.core.etl.models.administrativedomain import AdministrativeDomainModel
 def test_from_iter(input, expected):
     if expected is ValueError:
         with pytest.raises(ValueError):
-            AdministrativeDomainModel.from_iter(input)
+            AdministrativeDomain.from_iter(input)
     else:
-        item = AdministrativeDomainModel.from_iter(input)
+        item = AdministrativeDomain.from_iter(input)
         for k, v in expected.items():
             assert getattr(item, k) == v

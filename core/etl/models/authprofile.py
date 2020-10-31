@@ -12,7 +12,7 @@ from typing import Optional
 from .base import BaseModel
 
 
-class AuthProfileModel(BaseModel):
+class AuthProfile(BaseModel):
     id: str
     name: str
     description: Optional[str]

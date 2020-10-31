@@ -61,8 +61,6 @@ class BaseLoader(object):
     model = None
     # Data model
     data_model: BaseModel
-    # Mapped fields
-    mapped_fields = {}
 
     # List of tags to add to the created records
     tags = []
@@ -94,12 +92,12 @@ class BaseLoader(object):
         self.c_add = 0
         self.c_change = 0
         self.c_delete = 0
+        # Mapped fields
+        self.mapped_fields = self.data_model.get_mapped_fields()
         # Build clean map
-        self.clean_map = {
-            n: self.clean_str for n in self.data_model.__fields__
-        }  # field name -> clean function
+        self.clean_map = {}  # field name -> clean function
         self.pending_deletes: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
-        self.reffered_errors: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
+        self.referred_errors: List[Tuple[str, BaseModel]] = []  # (id, BaseModel)
         if self.is_document:
             import mongoengine.errors
 
@@ -449,7 +447,7 @@ class BaseLoader(object):
                 obj.delete()
             except ValueError as e:  # Referred Error
                 self.logger.error("%s", str(e))
-                self.reffered_errors += [(r_id, msg)]
+                self.referred_errors += [(r_id, msg)]
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []
@@ -464,7 +462,7 @@ class BaseLoader(object):
             "Summary: %d new, %d changed, %d removed", self.c_add, self.c_change, self.c_delete
         )
         self.logger.info(
-            "Error delete by referred: %s", "\n".join(b.json() for _, b in self.reffered_errors)
+            "Error delete by referred: %s", "\n".join(b.json() for _, b in self.referred_errors)
         )
         t = time.localtime()
         archive_path = os.path.join(
@@ -489,11 +487,14 @@ class BaseLoader(object):
         """
         Cleanup row and return a dict of field name -> value
         """
-        r = {k: self.clean_map.get(k, self.clean_str)(v) for k, v in item.dict().items()}
+        r = {k: self.clean_map.get(k, self.clean_any)(v) for k, v in item.dict().items()}
         # Fill integration fields
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(item.id)
         return r
+
+    def clean_any(self, value: Any) -> Any:
+        return value
 
     def clean_str(self, value) -> Optional[str]:
         if value:
@@ -564,8 +565,9 @@ class BaseLoader(object):
         from mongoengine.fields import BooleanField, ReferenceField
         from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
+        self.logger.debug("Update Document clean map")
         for fn, ft in self.model._fields.items():
-            if fn not in self.clean_map:
+            if fn not in self.data_model.__fields__:
                 continue
             if isinstance(ft, BooleanField):
                 self.clean_map[fn] = self.clean_bool
@@ -592,8 +594,9 @@ class BaseLoader(object):
         from django.db.models import BooleanField, ForeignKey
         from noc.core.model.fields import DocumentReferenceField
 
+        self.logger.debug("Update Model clean map")
         for f in self.model._meta.fields:
-            if f.name not in self.clean_map:
+            if f.name not in self.data_model.__fields__:
                 continue
             if isinstance(f, BooleanField):
                 self.clean_map[f.name] = self.clean_bool

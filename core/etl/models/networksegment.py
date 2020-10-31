@@ -10,13 +10,15 @@ from typing import Optional
 
 # NOC modules
 from .base import BaseModel
+from .typing import Reference
+from .networksegmentprofile import NetworkSegmentProfile
 
 
-class NetworkSegmentModel(BaseModel):
+class NetworkSegment(BaseModel):
     id: str
-    parent: Optional[str]
+    parent: Optional[Reference["NetworkSegment"]]
     name: str
-    sibling: Optional[str]
-    profile: str
+    sibling: Optional[Reference["NetworkSegment"]]
+    profile: Reference["NetworkSegmentProfile"]
 
     _csv_fields = ["id", "parent", "name", "sibling", "profile"]

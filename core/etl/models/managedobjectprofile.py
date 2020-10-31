@@ -12,7 +12,7 @@ from typing import Optional
 from .base import BaseModel
 
 
-class ManagedObjectProfileModel(BaseModel):
+class ManagedObjectProfile(BaseModel):
     id: str
     name: str
     level: Optional[str]

@@ -7,9 +7,9 @@
 
 # NOC modules
 from .base import BaseLoader
-from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.networksegment import NetworkSegment as NetworkSegmentModel
 from noc.sa.models.managedobject import ManagedObject
-from ..models.networksegment import NetworkSegmentModel
+from ..models.networksegment import NetworkSegment
 
 
 class NetworkSegmentLoader(BaseLoader):
@@ -18,15 +18,8 @@ class NetworkSegmentLoader(BaseLoader):
     """
 
     name = "networksegment"
-    model = NetworkSegment
-    data_model = NetworkSegmentModel
-    fields = ["id", "parent", "name", "sibling", "profile"]
-
-    mapped_fields = {
-        "parent": "networksegment",
-        "sibling": "networksegment",
-        "profile": "networksegmentprofile",
-    }
+    model = NetworkSegmentModel
+    data_model = NetworkSegment
 
     def purge(self):
         """
@@ -37,7 +30,7 @@ class NetworkSegmentLoader(BaseLoader):
             self.c_delete += 1
             try:
                 for obj in ManagedObject.objects.filter(segment=self.mappings[r_id]):
-                    obj.segment = NetworkSegment.objects.get(name="ALL")
+                    obj.segment = NetworkSegmentModel.objects.get(name="ALL")
                     obj.save()
             except self.model.DoesNotExist:
                 pass  # Already deleted

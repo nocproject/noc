@@ -10,11 +10,12 @@ from typing import Optional
 
 # NOC modules
 from .base import BaseModel
+from .typing import Reference
 
 
-class AdmDivModel(BaseModel):
+class AdmDiv(BaseModel):
     id: str
-    parent: Optional[str]
+    parent: Optional[Reference["AdmDiv"]]
     name: str
     short_name: Optional[str]
 

@@ -12,7 +12,7 @@ from typing import Optional
 from .base import BaseModel
 
 
-class ContainerModel(BaseModel):
+class Container(BaseModel):
     id: str
     name: str
     model: str

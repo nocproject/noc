@@ -7,12 +7,11 @@
 
 # NOC modules
 from .base import BaseLoader
-from ..models.project import ProjectModel
-from noc.project.models.project import Project
+from ..models.project import Project
+from noc.project.models.project import Project as ProjectModel
 
 
 class ProjectLoader(BaseLoader):
     name = "project"
-    model = Project
-    data_model = ProjectModel
-    fields = ["id", "name", "code", "description"]
+    model = ProjectModel
+    data_model = Project
