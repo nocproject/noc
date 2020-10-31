@@ -217,7 +217,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         },
                         items: [
                             {
-                                name: "ifdesc_pattterns",
+                                name: "ifdesc_patterns",
                                 xtype: "inv.ifdescpatterns.LookupField",
                                 fieldLabel: __("Patterns"),
                                 allowBlank: true
