@@ -19,9 +19,9 @@ class Script(GetMetricsScript):
         ["Subscribers | Summary"],
         has_capability="BRAS | PPTP",
         volatile=False,
-        access=None,  # CLI version
+        access="C",  # CLI version
     )
-    def get_subscribers_metrics(self, metrics):
+    def get_subscribers_metrics_slot_cli(self, metrics):
         """
         Returns collected subscribers metric in form
         slot id -> {
@@ -38,6 +38,50 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Subscribers | Summary", None),
                     path=("0", str(slot), ""),
+                    value=int(rtt),
+                    multi=True,
+                )
+
+    @metrics(
+        ["Subscribers | Summary"],
+        has_capability="BRAS | PPPoE",
+        volatile=False,
+        access="S",
+    )
+    def get_subscribers_metrics_port_snmp(self, metrics):
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.4874.2.2.20.1.8.8.1.2", bulk=False):
+            oid2 = oid.split("1.3.6.1.4.1.4874.2.2.20.1.8.8.1.2.")
+            port = oid2[1][2:].replace(".", "/")
+            self.set_metric(
+                id=("Subscribers | Summary", None),
+                path=("0", str(port), ""),
+                value=int(v),
+                multi=True,
+            )
+        metric = self.snmp.get("1.3.6.1.4.1.4874.2.2.20.1.8.3.0")
+        self.set_metric(
+            id=("Subscribers | Summary", None),
+            path=("0", "Total Subscribers", ""),
+            value=int(metric),
+            multi=True,
+        )
+
+    @metrics(
+        ["Subscribers | Summary"],
+        has_capability="BRAS | PPPoE",
+        volatile=False,
+        access="C",
+    )
+    def get_subscribers_metrics_port_cli(self, metrics):
+        v = self.cli("show subscribers summary port")
+        v = v.splitlines()[:-2]
+        v = "\n".join(v)
+        r_v = parse_table(v)
+        if len(r_v) >= 1:
+            for port, rtt in r_v.items():
+                self.set_metric(
+                    id=("Subscribers | Summary", None),
+                    path=("0", str(port), ""),
                     value=int(rtt),
                     multi=True,
                 )
