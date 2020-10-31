@@ -143,7 +143,9 @@ class VRPNormalizer(BaseNormalizer):
         elif "." in if_name:
             if_name, _ = if_name.split(".", 1)
         yield self.make_unit_description(
-            interface=if_name, unit=unit_name, description=" ".join(tokens[3:]),
+            interface=if_name,
+            unit=unit_name,
+            description=" ".join(tokens[3:]),
         )
 
     @match("interface", ANY, "port-security", "max-mac-num", ANY)
@@ -202,7 +204,7 @@ class VRPNormalizer(BaseNormalizer):
     @match("enable", "stp")
     def normalize_enable_stp(self, tokens):
         self.set_context("stp_disabled", False)
-        yield self.make_global_stp_status(status=True)
+        yield self.make_global_spanning_tree_status(status=True)
 
     @match("interface", ANY, "stp", "disable")
     def normalize_interface_stp_status(self, tokens):
