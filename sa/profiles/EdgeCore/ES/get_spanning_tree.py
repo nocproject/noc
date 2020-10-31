@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_spanning_tree import Script as BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 
 
@@ -53,9 +53,9 @@ class Script(BaseScript):
     def iter_blocks(self, s):
         def parse_section(ss):
             sv = {}
-            for l in ss.strip().splitlines():
-                if ":" in l:
-                    k, v = l.split(":", 1)
+            for line in ss.strip().splitlines():
+                if ":" in line:
+                    k, v = line.split(":", 1)
                     # Normalize names to known tokens
                     k = k.strip().lower()
                     k = self.TOKENS.get(k, k)
@@ -73,7 +73,7 @@ class Script(BaseScript):
             sv = parse_section(sections.pop(0).strip())
             yield ifname, sv
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = self.cli("show spanning-tree")
         g = self.iter_blocks(r)
         _, cfg = next(g)
@@ -100,9 +100,13 @@ class Script(BaseScript):
             else:
                 desg_priority, desg_id = None, None
                 continue
+            port_id = "%s.%s" % (sv.get("PRIORITY"), sn.rsplit("/")[-1])
+            if sn.startswith("Trunk"):
+                # Trunk interface
+                port_id = sv.get("DESG_PORT")
             iface = {
                 "interface": sn,
-                "port_id": "%s.%s" % (sv.get("PRIORITY"), sn.rsplit("/")[-1]),
+                "port_id": port_id,
                 "role": self.ROLE_MAP[sv.get("ROLE", "disabled")],
                 "state": self.STATE_MAP[sv.get("STATE", "forwarding")],
                 "priority": sv.get("PRIORITY", 128),
