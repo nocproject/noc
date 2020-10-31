@@ -41,8 +41,8 @@ http-parser==0.9.0
 manhole==1.6.0
 markerlib==0.6.0
 mongoengine==0.20.0
-networkx==2.4
-numpy==1.18.3
+networkx==2.5
+numpy==1.19.3
 orjson==3.4.1
 progressbar2==3.53.1
 protobuf==3.13.0
