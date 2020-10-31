@@ -12,6 +12,7 @@ import re
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.core.confdb.syntax.defs import DEF
 from noc.core.confdb.syntax.patterns import IF_NAME, BOOL
+from noc.core.validators import is_ipv4
 
 rx_vlan_if = re.compile(r"Vlan(?:if|If|)(\d+)")
 
@@ -308,9 +309,10 @@ class VRPNormalizer(BaseNormalizer):
 
     @match("ip", "route-static", ANY, ANY, ANY)
     def normalize_default_gateway(self, tokens):
-        yield self.make_inet_static_route_next_hop(
-            route=self.to_prefix(tokens[2], tokens[3]), next_hop=tokens[4]
-        )
+        if is_ipv4(tokens[4]):
+            yield self.make_inet_static_route_next_hop(
+                route=self.to_prefix(tokens[2], tokens[3]), next_hop=tokens[4]
+            )
 
     @match("ip", "vpn-instance", ANY)
     def normalize_vpn_instance(self, tokens):
@@ -371,6 +373,7 @@ class VRPNormalizer(BaseNormalizer):
             ),
         )
 
+    @match("interface", ANY, "mpls", "l2vc", ANY, ANY, "raw")
     @match("interface", ANY, "mpls", "l2vc", ANY, ANY, "mtu", ANY)
     @match("interface", ANY, "mpls", "l2vc", ANY, ANY)
     def normalize_interface_l2vc(self, tokens):
