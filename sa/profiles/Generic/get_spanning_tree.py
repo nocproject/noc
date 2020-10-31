@@ -102,10 +102,17 @@ class Script(BaseScript):
                 role = "root"
             elif d_cost:
                 role = "designated"
+            if stp_port in bridge_ifindex_mappings:
+                interface = interface_mappings[bridge_ifindex_mappings[stp_port]]
+            elif stp_port in interface_mappings:
+                interface = interface_mappings[stp_port]
+            else:
+                self.logger.warning("Unknown interface with stp_port: %s", stp_port)
+                continue
             ifaces += [
                 {
                     # Interface name
-                    "interface": interface_mappings[bridge_ifindex_mappings[stp_port]],
+                    "interface": interface,
                     # Local port id
                     "port_id": "%d.%s" % (priority, stp_port),
                     # Interface state
