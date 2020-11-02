@@ -1,0 +1,10 @@
+{
+    "name": "Telephony | SIP | Sessions | Active",
+    "$collection": "pm.metrictypes",
+    "uuid": "bf466570-b315-44fc-b907-9096034d7d3f",
+    "scope__name": "Object",
+    "field_name": "sip_sessions_active",
+    "field_type": "UInt64",
+    "description": "The total number of active SIP sessions.",
+    "measure": "C"
+}
