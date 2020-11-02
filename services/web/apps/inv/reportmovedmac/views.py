@@ -23,6 +23,7 @@ from django.http import HttpResponse
 
 # NOC modules
 from noc.core.clickhouse.connect import connection
+from noc.core.mac import MAC
 from noc.main.models.pool import Pool
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter
@@ -36,6 +37,11 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
+
+MULTICAST_MACS = [
+    ("01:00:5E:00:00:00", "01:00:5E:FF:FF:FF"),
+    ("01:80:C2:00:00:00", "01:80:C2:FF:FF:FF"),
+]
 
 
 def get_column_width(name):
@@ -68,8 +74,10 @@ MAC_MOVED_QUERY = """SELECT
    groupUniqArray(interface) as migrate_ifaces,
    uniqExact(interface)
    FROM mac
-   WHERE %s and date >= '%s' and date < '%s' group by  mac, managed_object, vlan having uniqExact(interface) > 1
-    """
+   WHERE %%s and %s and date >= '%%s' and date < '%%s' group by  mac, managed_object, vlan having uniqExact(interface) > 1
+    """ % " AND ".join(
+    "(mac < %s or mac > %s)" % (int(MAC(x[0])), int(MAC(x[1]))) for x in MULTICAST_MACS
+)
 
 
 def get_interface(ifaces: str):
@@ -88,8 +96,8 @@ rx_port_num = re.compile(r"\d+$")
 
 
 class ReportMovedMacApplication(ExtApplication):
-    menu = _("Reports") + "|" + _("Moved Mac")
-    title = _("Moved Mac")
+    menu = _("Reports") + "|" + _("Moved MACs")
+    title = _("Moved MACs")
 
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
