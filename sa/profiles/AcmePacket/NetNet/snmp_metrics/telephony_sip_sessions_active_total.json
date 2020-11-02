@@ -1,0 +1,5 @@
+{
+  "$metric": "Telephony | SIP | Sessions | Active",
+  "$type": "oid",
+  "oid": "1.3.6.1.4.1.9148.3.2.1.1.5.0"
+}
