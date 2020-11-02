@@ -62,11 +62,14 @@ class MRTRequestHandler(AuthRequestHandler):
                 metrics["mrt_failed"] += 1
                 span.set_error_from_exc(e)
                 return {"id": str(oid), "error": str(e)}
-            if r["errors"]:
-                span.set_error(ERR_UNKNOWN, r["output"])
-                return {"id": str(oid), "error": r["output"]}
-            span.out_label = r["output"]
-            return {"id": str(oid), "result": r["output"]}
+            if script == "command":
+                if r["errors"]:
+                    span.set_error(ERR_UNKNOWN, r["output"])
+                    return {"id": str(oid), "error": r["output"]}
+                span.out_label = r["output"]
+                return {"id": str(oid), "result": r["output"]}
+            else:
+                return {"id": str(oid), "result": r}
 
     async def post(self, *args, **kwargs):
         """
