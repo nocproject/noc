@@ -9,7 +9,6 @@
 from .base import BaseLoader
 from ..models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile as ManagedObjectProfileModel
-from noc.sa.models.capsprofile import CapsProfile
 
 
 class ManagedObjectProfileLoader(BaseLoader):

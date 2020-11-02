@@ -11,6 +11,7 @@ from ..models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 from noc.sa.models.profile import Profile
+from noc.inv.models.resourcegroup import ResourceGroup
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -26,6 +27,12 @@ class ManagedObjectLoader(BaseLoader):
         super().__init__(*args, **kwargs)
         self.clean_map["pool"] = Pool.get_by_name
         self.clean_map["profile"] = Profile.get_by_name
+        self.clean_map["static_service_groups"] = lambda x: [
+            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
+        ]
+        self.clean_map["static_client_groups"] = lambda x: [
+            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
+        ]
 
     def purge(self):
         """
