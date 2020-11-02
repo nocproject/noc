@@ -61,7 +61,7 @@ class MRTRequestHandler(AuthRequestHandler):
                 metrics["mrt_failed"] += 1
                 span.set_error_from_exc(e)
                 return {"id": str(oid), "error": str(e)}
-            if script == "command":
+            if script == "commands":
                 if r["errors"]:
                     span.set_error(ERR_UNKNOWN, r["output"])
                     return {"id": str(oid), "error": r["output"]}
