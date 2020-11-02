@@ -1,0 +1,10 @@
+{
+    "name": "Telephony | SIP | Register | Contacts | Active",
+    "$collection": "pm.metrictypes",
+    "uuid": "7f9fcf5c-c7f6-4aa7-85a0-b3c5d2075de2",
+    "scope__name": "Object",
+    "field_name": "sip_register_contacts_active",
+    "field_type": "UInt64",
+    "description": "The number of SIP Contacts register on local device (not on all cluster, if available).",
+    "measure": "C"
+}
