@@ -458,11 +458,26 @@ class LiftBridgeClient(object):
                 else:
                     raise ErrorNotFound(str(e)) from e  # Reraise
 
-    async def publish_async(self, iter_req: Iterator[PublishRequest]) -> AsyncIterable[Ack]:
+    async def publish_async(
+        self, iter_req: Iterator[PublishRequest], wait: bool = True
+    ) -> AsyncIterable[Ack]:
+        async def drain_wait():
+            nonlocal balance, done
+            for req in iter_req:
+                balance += 1
+                yield req
+            done = asyncio.Event()
+            await asyncio.wait_for(done.wait(), config.liftbridge.publish_async_ack_timeout)
+
+        balance: int = 0
+        done: Optional[asyncio.Event] = None
         with rpc_error():
             channel = await self.get_channel()
-            async for req in channel.PublishAsync(iter_req):
-                yield req
+            async for ack in channel.PublishAsync(drain_wait() if wait else iter_req):
+                balance -= 1
+                if done is not None and not balance:
+                    done.set()
+                yield ack
 
     async def publish(
         self,

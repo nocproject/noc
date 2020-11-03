@@ -331,6 +331,7 @@ class Config(BaseConfig):
     class liftbridge(ConfigSection):
         addresses = ServiceParameter(service="liftbridge", wait=True, near=True, full_result=False)
         max_message_size = IntParameter(default=-1, help="Max message size for GRPC client")
+        publish_async_ack_timeout = IntParameter(default=10)
 
     listen = StringParameter(default="auto:0")
 
