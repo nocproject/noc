@@ -3,7 +3,7 @@
 # OS:     VRP
 # Compatible: 3.1
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ class Profile(BaseProfile):
     matchers = {
         "is_old_version": {"version": {"$regex": r"3.02.*"}},
         "is_310_version": {"version": {"$regex": r"3.10.*"}},
+        "is_52_version": {"version": {"$regex": r"5.2\S+"}},
         "is_53_version": {"version": {"$regex": r"5.3\S+"}},
         "is_S3600_platform": {"platform": {"$regex": r".*S3600.*"}},
     }

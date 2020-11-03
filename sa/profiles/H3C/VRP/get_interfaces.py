@@ -53,6 +53,11 @@ class Script(BaseScript):
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
         "NULL": "null",
+        "Bridge-Aggregation": "aggregated",
+        "Ten-GigabitEthernet": "physical",
+        "Analogmodem": "physical",
+        "Cellular": "physical",
+        "Atm": "physical",
     }
 
     def get_ospfint(self):
@@ -89,13 +94,13 @@ class Script(BaseScript):
         c_iface = None
         try:
             v = self.cli("display ip interface")
-            for l in v.splitlines():
-                match = self.rx_dis_ip_int.search(l)
+            for line in v.splitlines():
+                match = self.rx_dis_ip_int.search(line)
                 if match:
                     c_iface = self.profile.convert_interface_name(match.group("interface"))
                     continue
                 # Primary ip
-                match = self.rx_ip.search(l)
+                match = self.rx_ip.search(line)
                 if not match:
                     continue
                 ip = match.group("ip")
@@ -148,28 +153,28 @@ class Script(BaseScript):
             a_stat, data = data.split("\n", 1)
             a_stat = a_stat.lower().endswith("up")
             o_stat = None
-            for l in data.splitlines():
+            for line in data.splitlines():
                 # Oper. status
                 if o_stat is None:
-                    match = self.rx_line_proto.search(l)
+                    match = self.rx_line_proto.search(line)
                     if match:
                         o_stat = match.group("o_state").lower().endswith("up")
                         continue
                 # Process description
-                if l.startswith("Description:"):
-                    d = l[12:].strip()
+                if line.startswith("Description:"):
+                    d = line[12:].strip()
                     if d != "---":
                         sub["description"] = d
                     continue
                 # MAC
                 if not sub.get("mac"):
-                    match = self.rx_mac.search(l)
+                    match = self.rx_mac.search(line)
                     if match:
                         sub["mac"] = match.group("mac")
                         continue
                 # Static vlans
-                if l.startswith("Encapsulation "):
-                    enc = l[14:]
+                if line.startswith("Encapsulation "):
+                    enc = line[14:]
                     if enc.startswith("802.1Q"):
                         sub["vlan_ids"] = [enc.split(",")[2].split()[2]]
                     continue

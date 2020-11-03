@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,7 +39,10 @@ class Script(BaseScript):
                 r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$",
                 re.MULTILINE,
             )
-            v = self.cli("display brief interface")
+            try:
+                v = self.cli("display brief interface")
+            except self.CLISyntaxError:
+                v = self.cli("display interface brief")
 
         for match in rx_descr.finditer(v):
             interface = self.profile.convert_interface_name(match.group("interface"))
@@ -63,7 +66,7 @@ class Script(BaseScript):
         r = []
         if self.is_53_version:
             v = self.cli("display port allow-vlan")
-        elif self.is_310_version:
+        elif self.is_310_version or self.is_52_version:
             rx_line = re.compile(
                 r"""
                (?P<interface>\S+)\scurrent\sstate
@@ -89,7 +92,6 @@ class Script(BaseScript):
                 or interface.startswith("Cpos-Trunk")
             ):
                 continue
-            port = {}
             tagged = []
             trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
