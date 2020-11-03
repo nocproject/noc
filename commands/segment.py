@@ -22,13 +22,17 @@ from noc.core.datastream.change import bulk_datastream_changes
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         #
         split_floating_parser = subparsers.add_parser("split-floating")
         split_floating_parser.add_argument("--profile", help="Floating segment profile id")
         split_floating_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Segment ids")
         #
         reactivate_floating_parser = subparsers.add_parser("reactivate-floating")
+        reactivate_floating_parser.add_argument("--profile", help="Floating segment profile id")
+        reactivate_floating_parser.add_argument(
+            "--allow_persistent", action="store_true", help="Allow trial persistent segment"
+        )
         reactivate_floating_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Segment ids")
         #
         subparsers.add_parser("show-trials")
@@ -155,9 +159,23 @@ class Command(BaseCommand):
             n_seg += 1
         self.print("### %d objects are floating in %d segments" % (n_mo, n_seg))
 
-    def handle_reactivate_floating(self, ids, *args, **options):
+    def handle_reactivate_floating(
+        self, ids, profile=None, allow_persistent=False, *args, **options
+    ):
         connect()
-        for seg_id in ids:
+        nsp = NetworkSegmentProfile.objects.fillter(is_persistent=False)
+        if profile:
+            nsp.filter(name=profile)
+        if ids:
+            ns = NetworkSegment.objects.filter(id__in=ids)
+        elif nsp.count() > 0:
+            ns = NetworkSegment.objects.filter(profile__in=nsp)
+        else:
+            self.die("Setting segment filter condition")
+        if profile:
+            p = NetworkSegmentProfile.objects.get(name=profile)
+            ns = ns.filter(profile=p)
+        for seg_id in ns.scalar("id"):
             seg = NetworkSegment.get_by_id(seg_id)
             if not seg:
                 self.print("@@@ %s - not found. Skipping" % seg_id)
@@ -170,11 +188,18 @@ class Command(BaseCommand):
                     for ro in link.managed_objects:
                         if ro == mo:
                             continue
-                        print(
+                        self.print(
                             "  '%s' challenging '%s' over %s -- %s"
                             % (mo.segment.name, ro.segment.name, mo.name, ro.name)
                         )
-                        BioSegTrial.schedule_trial(mo.segment, ro.segment, mo, ro, reason="link")
+                        BioSegTrial.schedule_trial(
+                            mo.segment,
+                            ro.segment,
+                            mo,
+                            ro,
+                            reason="link",
+                            trial_persistent=allow_persistent,
+                        )
 
 
 if __name__ == "__main__":

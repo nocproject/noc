@@ -63,8 +63,9 @@ class BioSegTrial(Document):
         attacker_object: Optional[ManagedObject] = None,
         target_object: Optional[ManagedObject] = None,
         reason="manual",
+        trial_persistent=False,
     ) -> Optional["BioSegTrial"]:
-        if attacker.profile.is_persistent or target.id == attacker.id:
+        if (not trial_persistent and attacker.profile.is_persistent) or target.id == attacker.id:
             return None
         trial = BioSegTrial(
             reason=reason, attacker_id=attacker.id, target_id=target.id, processed=False
