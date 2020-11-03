@@ -7,6 +7,8 @@
 
 # Python modules
 import argparse
+import time
+import datetime
 from collections import defaultdict
 
 # NOC modules
@@ -37,13 +39,19 @@ class Command(BaseCommand):
         # remove command
         remove_parser = subparsers.add_parser("remove", help="Remove link")
         remove_parser.add_argument("args", nargs=argparse.REMAINDER, help="Show discovery method")
+        # Clean TTL Link
+        ttl_policy = subparsers.add_parser("ttl-policy", help="Remove links by TTL")
+        ttl_policy.add_argument("--ttl", type=int, help="TTL by days", default=10)
+        ttl_policy.add_argument(
+            "--approve", dest="dry_run", action="store_false", help="Apply changes"
+        )
 
     def handle(self, *args, **options):
         action = options["cmd"]
         if not action:
             action = "show"
         connect()
-        getattr(self, "handle_%s" % action)(*args, **options)
+        getattr(self, "handle_%s" % action.replace("-", "_"))(*args, **options)
 
     def show_link(self, link, show_method=False):
         def format_interface(i):
@@ -72,8 +80,8 @@ class Command(BaseCommand):
                         self.show_link(link, show_method)
         else:
             # Show all links
-            for l in Link.objects.all():
-                self.show_link(l, show_method)
+            for link in Link.objects.all():
+                self.show_link(link, show_method)
 
     def handle_add(self, *args, **options):
         """
@@ -106,6 +114,47 @@ class Command(BaseCommand):
             iface = Interface.get_interface(i)
             if iface:
                 iface.unlink()
+
+    def handle_ttl_policy(self, ttl=10, dry_run=True, *args, **options):
+        from noc.fm.models.activealarm import ActiveAlarm
+
+        today = datetime.datetime.now()
+        deadline = today - datetime.timedelta(days=ttl)
+
+        alarm_mos = [
+            d["managed_object"]
+            for d in ActiveAlarm._get_collection().find(
+                {"managed_object": {"$exists": True}}, {"managed_object": 1}
+            )
+        ]
+        # Filter object with Active alarm, and manual links
+        deadline_links = Link.objects.filter(
+            last_seen__lt=deadline, linked_objects__nin=alarm_mos, discovery_method__ne=""
+        )
+        self.print(
+            "# Links: %d, Deadline links: %d, Manual links: %d, On alarmed objects: %d"
+            % (
+                Link.objects.count(),
+                Link.objects.filter(last_seen__lt=deadline).count(),
+                Link.objects.filter(discovery_method="").count(),
+                Link.objects.filter(linked_objects__in=alarm_mos).count(),
+            )
+        )
+        self.print(
+            "# %d/%d Links over on deadline: %s"
+            % (deadline_links.count(), Link.objects.count(), deadline)
+        )
+
+        if not dry_run:
+            self.print("Claimed data will be Loss..\n")
+            for i in reversed(range(1, 10)):
+                self.print("%d\n" % i)
+                time.sleep(1)
+            for link in list(deadline_links):
+                self.print("Clean %s" % link)
+                iface = link.interfaces[0]
+                iface.unlink()
+            self.print("# Done.")
 
 
 if __name__ == "__main__":
