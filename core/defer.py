@@ -15,14 +15,25 @@ from noc.core.scheduler.scheduler import Scheduler
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_JOB_CLASS = "noc.core.scheduler.calljob.CallJob"
 
-def call_later(name, delay=None, scheduler="scheduler", pool=None, max_runs=None, **kwargs):
+
+def call_later(
+    name,
+    delay=None,
+    scheduler="scheduler",
+    pool=None,
+    job_class=DEFAULT_JOB_CLASS,
+    max_runs=None,
+    **kwargs,
+):
     """
     Run callable *name* in scheduler process
     :param name: Full callable name
     :param delay: delay in seconds
     :param scheduler: Name of scheduler
     :param pool: Pool name
+    :param job_class: Job class
     :param max_runs: Maximum amount of retries
     """
     scheduler = Scheduler(scheduler, pool=pool)
@@ -40,10 +51,14 @@ def call_later(name, delay=None, scheduler="scheduler", pool=None, max_runs=None
     if max_runs:
         iset_op[Job.ATTR_MAX_RUNS] = max_runs
     if data:
-        set_op[Job.ATTR_DATA] = data
+        set_op[Job.ATTR_DATA] = {k: v for k, v in data.items() if not k.startswith("_")}
 
-    q = {Job.ATTR_CLASS: "noc.core.scheduler.calljob.CallJob", Job.ATTR_KEY: name}
-    for k in data:
+    q = {Job.ATTR_CLASS: job_class, Job.ATTR_KEY: name}
+    for k in list(data):
+        if k.startswith("_"):
+            # Hidden attribute JobClass, remove it from data
+            q[k] = data[k]
+            continue
         q["%s.%s" % (Job.ATTR_DATA, k)] = data[k]
     op = {"$set": set_op, "$setOnInsert": iset_op}
     logger.info("Delayed call to %s(%s) in %ss", name, data, delay or "0")
