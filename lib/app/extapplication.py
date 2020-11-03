@@ -55,6 +55,7 @@ class ExtApplication(Application):
         super().__init__(*args, **kwargs)
         self.document_root = os.path.join("services", "web", "apps", self.module, self.app)
         self.row_limit = config.web.api_row_limit
+        self.unlimited_row_limit = config.web.api_unlimited_row_limit
         self.pk = "id"
         # Bulk fields API
         self.bulk_fields = []
@@ -149,7 +150,8 @@ class ExtApplication(Application):
                 q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
         else:
             q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        limit = q.get(self.limit_param)
+        # Apply row limit if necessary
+        limit = q.get(self.limit_param, self.unlimited_row_limit)
         if limit:
             try:
                 limit = max(int(limit), 0)
@@ -222,9 +224,6 @@ class ExtApplication(Application):
         ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
-        # Apply row limit if necessary
-        if self.row_limit:
-            limit = min(limit or self.row_limit, self.row_limit + 1)
         # Apply paging
         if limit:
             data = data[start : start + limit]
