@@ -50,7 +50,7 @@ class ManagedObject(BaseModel):
     tt_system_id: Optional[str]
     project: Optional[Reference["Project"]]
 
-    @validator('address')
+    @validator("address")
     def address_must_ipaddress(cls, v):
         IPvAnyAddress().validate(v)
         return str(v)
