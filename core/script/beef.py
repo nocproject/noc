@@ -15,7 +15,7 @@ from io import StringIO
 
 # Third-party modules
 import orjson
-from typing import Optional
+from typing import Optional, List, NamedTuple, Tuple, Dict
 
 # NOC modules
 from noc.core.comp import smart_text, smart_bytes
@@ -26,20 +26,43 @@ CLI = namedtuple("CLI", ["names", "request", "reply"])
 MIB = namedtuple("MIB", ["oid", "value"])
 
 
+class BoxData(NamedTuple):
+    profile: str
+    vendor: str
+    platform: str
+    version: str
+
+
+class CLIFSMData(NamedTuple):
+    state: str
+    reply: List[bytes]
+
+
+class CLIData(NamedTuple):
+    names: List[str]
+    request: bytes
+    reply: List[bytes]
+
+
+class MIBData(NamedTuple):
+    oid: str
+    value: bytes
+
+
 class Beef(object):
     def __init__(self):
-        self.version = None
+        self.version: Optional[str] = None
         self.uuid = None
         self.spec = None
-        self.box = None
+        self.box: Optional[BoxData] = None
         self.changed = None
-        self.description = None
-        self.cli_fsm = None
-        self.cli = None
-        self.mib = None
-        self.mib_encoding = None
-        self.mib_oid_values = None
-        self.mib_oids = None
+        self.description: Optional[str] = None
+        self.cli_fsm: Optional[List[CLIFSMData]] = None
+        self.cli: Optional[List[CLIData]] = None
+        self.mib: Optional[List[MIBData]] = None
+        self.mib_encoding: Optional[str] = None
+        self.mib_oid_values: Optional[Dict[str, bytes]] = None
+        self.mib_oids: Optional[List[Tuple[int]]] = None
 
     @classmethod
     def from_json(cls, data):
@@ -83,13 +106,13 @@ class Beef(object):
             CLI(
                 names=[n for n in self.get_or_die(d, "names")],
                 request=smart_bytes(self.get_or_die(d, "request")),
-                reply=[n for n in self.get_or_die(d, "reply")],
+                reply=[smart_bytes(n) for n in self.get_or_die(d, "reply")],
             )
             for d in self.get_or_die(data, "cli")
         ]
         self.mib_encoding = self.get_or_die(data, "mib_encoding")
         self.mib = [
-            MIB(oid=self.get_or_die(d, "oid"), value=self.get_or_die(d, "value"))
+            MIB(oid=self.get_or_die(d, "oid"), value=smart_bytes(self.get_or_die(d, "value")))
             for d in self.get_or_die(data, "mib")
         ]
         self._mib_decoder = getattr(self, "mib_decode_%s" % self.mib_encoding)
@@ -113,25 +136,32 @@ class Beef(object):
             "cli_fsm": [
                 {
                     "state": d.state,
-                    "reply": d.reply
-                    if not decode
-                    else [self._cli_decoder(reply) for reply in d.reply],
+                    "reply": [
+                        smart_text(reply if not decode else self._cli_decoder(reply))
+                        for reply in d.reply
+                    ],
                 }
                 for d in self.cli_fsm
             ],
             "cli": [
                 {
                     "names": d.names,
-                    "request": d.request,
-                    "reply": d.reply
-                    if not decode
-                    else [self._cli_decoder(reply) for reply in d.reply],
+                    "request": smart_text(
+                        d.request
+                    ),  # In self.cli is bytes. That need for iter_cli
+                    "reply": [
+                        smart_text(reply if not decode else self._cli_decoder(reply))
+                        for reply in d.reply
+                    ],
                 }
                 for d in self.cli
             ],
             "mib_encoding": self.mib_encoding,
             "mib": [
-                {"oid": d.oid, "value": d.value if not decode else self._mib_decoder(d.value)}
+                {
+                    "oid": d.oid,
+                    "value": smart_text(d.value if not decode else self._mib_decoder(d.value)),
+                }
                 for d in self.mib
             ],
         }
@@ -177,19 +207,19 @@ class Beef(object):
         :param path: Beef path
         :return: Compressed, Uncompressed sizes
         """
-        data = smart_text(orjson.dumps(self.get_data()))
+        data = orjson.dumps(self.get_data())
         usize = len(data)
         dir_path = os.path.dirname(path)
         if path.endswith(".gz"):
-            data = self.compress_gzip(smart_bytes(data))
+            data = self.compress_gzip(data)
         elif path.endswith(".bz2"):
-            data = self.compress_bz2(smart_bytes(data))
+            data = self.compress_bz2(data)
         csize = len(data)
         try:
             with storage.open_fs() as fs:
                 if dir_path and dir_path != "/":
                     fs.makedirs(dir_path, recreate=True)
-                fs.writebytes(path, bytes(data))
+                fs.writebytes(path, data)
         except storage.Error as e:
             raise IOError(str(e))
         return csize, usize
@@ -263,7 +293,7 @@ class Beef(object):
         :param value:
         :return:
         """
-        return codecs.decode(smart_bytes(value), "base64")
+        return codecs.decode(value, "base64")
 
     @staticmethod
     def mib_decode_hex(value):
@@ -281,7 +311,7 @@ class Beef(object):
         :param value:
         :return:
         """
-        return codecs.decode(smart_bytes(value), "quopri")
+        return codecs.decode(value, "quopri")
 
     def get_mib_oid_values(self):
         if self.mib_oid_values is None:
