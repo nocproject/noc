@@ -124,7 +124,6 @@ class BaseCommand(object):
         """
         Execute command
         """
-        pass
 
     def add_default_arguments(self, parser):
         """
@@ -155,7 +154,6 @@ class BaseCommand(object):
         """
         Apply additional parser arguments
         """
-        pass
 
     def die(self, msg):
         raise CommandError(msg)
@@ -182,9 +180,9 @@ class BaseCommand(object):
         fmt = logging.Formatter(self.LOG_FORMAT, None)
         for h in logger.handlers:
             h.setFormatter(fmt)
-        for l in logger.manager.loggerDict.values():
-            if hasattr(l, "setLevel"):
-                l.setLevel(level)
+        for lg in logger.manager.loggerDict.values():
+            if hasattr(lg, "setLevel"):
+                lg.setLevel(level)
         self.is_debug = level <= logging.DEBUG
 
     def progress(self, iter, max_value=None):

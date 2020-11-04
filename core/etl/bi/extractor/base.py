@@ -45,7 +45,6 @@ class BaseExtractor(object):
         :param force: Really remove data
         :return:
         """
-        pass
 
     @classmethod
     def get_start(cls):
@@ -56,6 +55,5 @@ class BaseExtractor(object):
         """
         if cls.is_snapshot:
             return datetime.datetime.now() - datetime.timedelta(seconds=cls.extract_delay + 1)
-        else:
-            # Should be overriden
-            return None
+        # Should be overriden
+        return None

@@ -170,13 +170,3 @@ class Dictionary(object, metaclass=DictionaryBase):
     def dump(cls, out):
         # @todo: !!!
         raise NotImplementedError()
-        for d in cls.get_collection().find({}):
-            out.write(
-                "%s\t%s\n"
-                % (
-                    str(d["id"]),
-                    "\t".join(
-                        str(d.get(f, "")).replace("\n", "").replace("\t", "") for f in cls._fields
-                    ),
-                )
-            )

@@ -48,7 +48,6 @@ class BaseCache(object):
         :param ttl:
         :return:
         """
-        pass
 
     def delete(self, key: str, version: Optional[Any] = None) -> None:
         pass

@@ -17,6 +17,7 @@ class InterfaceDS(DataSource):
     _name = "inv.InterfaceDS"
 
     def __init__(self, managed_object, interface=None, ifindex=None):
+        super().__init__()
         if not interface and not ifindex:
             self._interface = None
             return
@@ -53,14 +54,14 @@ class InterfaceDS(DataSource):
         link = self._interface.link
         if link:
             return str(link.id)
-        else:
-            return None
+        return None
 
 
 class ChassisDS(DataSource):
     _name = "inv.ChassisDS"
 
     def __init__(self, mac=None, ipv4=None):
+        super().__init__()
         self._object = None
         if mac:
             mac = MACAddressParameter.clean(mac)
@@ -75,5 +76,4 @@ class ChassisDS(DataSource):
     def object(self):
         if self._object:
             return self._object
-        else:
-            return None
+        return None

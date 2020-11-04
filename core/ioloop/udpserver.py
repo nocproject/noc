@@ -150,7 +150,6 @@ class UDPServer(object):
         """
         To be overriden
         """
-        pass
 
     def bind_udp_sockets(self, port, address=None, family=socket.AF_UNSPEC, flags=None):
         """Creates listening sockets bound to the given port and address.
