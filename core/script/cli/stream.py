@@ -74,7 +74,6 @@ class BaseStream(object):
         Setup connection after startup
         :return:
         """
-        pass
 
     async def wait_for_read(self):
         """

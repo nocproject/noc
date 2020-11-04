@@ -45,4 +45,3 @@ class BaseMigration(object):
         Actual migration code
         :return:
         """
-        pass

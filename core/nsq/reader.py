@@ -47,7 +47,7 @@ class Reader(BaseReader):
             request_timeout=self.lookupd_request_timeout,
         )
 
-        if not (200 <= code <= 299):
+        if not 200 <= code <= 299:
             metrics["error", ("type", "nsqlookupd_query_error_code %s" % code)] += 1
             logger.warning("[%s] lookupd %s query error: %s %s", self.name, lookupd_url, code, body)
             return

@@ -31,6 +31,7 @@ class InvalidTypedef(Exception):
 
 class OIDCollision(Exception):
     def __init__(self, oid, name1, name2, msg=None):
+        super().__init__()
         self.oid = oid
         self.name1 = name1
         self.name2 = name2
