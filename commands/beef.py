@@ -422,7 +422,7 @@ class Command(BaseCommand):
                 self.print("Writing %s:%s/test-config.yml" % (test_storage, save_path))
                 fs.writebytes(
                     smart_text(os.path.join(save_path, "test-config.yml")),
-                    yaml.dump(config, default_flow_style=False),
+                    smart_bytes(yaml.dump(config, default_flow_style=False)),
                 )
                 # Write beef
                 self.print("Writing %s:%s/beef.json.bz2" % (test_storage, save_path))

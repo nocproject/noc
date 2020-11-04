@@ -167,6 +167,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         else:
             self.profile = profile_loader.get_profile(".".join(name.split(".")[:2]))()
         self.credentials = credentials or {}
+        if self.is_beefed:
+            self.credentials["snmp_ro"] = "public"  # For core.snmp.base check
         self.version = version or {}
         self.capabilities = capabilities or {}
         self.timeout = timeout or self.get_timeout()
@@ -233,7 +235,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 self._snmp = self.root.snmp
             elif self.is_beefed:
                 self._snmp = BeefSNMP(self)
-                self.credentials["snmp_ro"] = "public"  # For core.snmp.base check
             else:
                 snmp_rate_limit = self.credentials.get("snmp_rate_limit", None) or None
                 if snmp_rate_limit is None:

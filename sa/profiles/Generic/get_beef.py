@@ -87,7 +87,7 @@ class Script(BaseScript):
                 r += [
                     {
                         "names": cmd_answers.get(rcmd, ["setup.cli"]),
-                        "request": rcmd,
+                        "request": smart_text(rcmd),
                         "reply": [self.encode_cli(v) for v in packets],
                     }
                 ]
