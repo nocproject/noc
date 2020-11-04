@@ -123,11 +123,10 @@ def set_jwt_cookie(response: Response, user: str) -> None:
     :param user:
     :return:
     """
-    expires = datetime.datetime.utcnow() + datetime.timedelta(seconds=config.login.session_ttl)
     response.set_cookie(
         key=config.login.jwt_cookie_name,
         value=get_jwt_token(user, audience="auth"),
-        expires=expires.strftime("%a, %d %b %Y %H:%M:%S GMT"),
+        expires=config.login.session_ttl,
     )
 
 
@@ -163,7 +162,6 @@ def revoke_token(token: str) -> None:
     :param token:
     :return:
     """
-    pass  # @todo: Write actual implementation
 
 
 def is_revoked(token: str) -> bool:
