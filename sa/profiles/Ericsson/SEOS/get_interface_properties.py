@@ -35,13 +35,13 @@ class Script(BaseScript):
         ):
             ifindex = int(oid.split(".")[-1])
             if ifname in ifaces:
-                name = "%s-%s" % (name, d[ifindex])
-            ifaces.add(name)
+                ifname = "%s-%s" % (ifname, d[ifindex])
+            ifaces.add(ifname)
             try:
-                v = self.profile.convert_interface_name(name.strip())
+                v = self.profile.convert_interface_name(ifname.strip())
             except InterfaceTypeError as e:
-                self.logger.debug("Ignoring unknown interface %s: %s", name, e)
-                unknown_interfaces += [name]
+                self.logger.debug("Ignoring unknown interface %s: %s", ifname, e)
+                unknown_interfaces += [ifname]
                 continue
             if name and name != v:
                 continue

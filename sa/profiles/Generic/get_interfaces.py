@@ -189,7 +189,8 @@ class Script(BaseScript):
 
         # Getting initial iface info, filter result if needed
         for iface in self.scripts.get_interface_properties(
-            enable_ifindex=True, enable_oper_status=True,
+            enable_ifindex=True,
+            enable_oper_status=True,
         ):
             if not self.filter_interface(
                 iface["ifindex"], iface["interface"], iface.get("oper_status")
@@ -199,7 +200,7 @@ class Script(BaseScript):
                 subifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
-                    "oper_status": iface["oper_status"],
+                    "oper_status": iface.get("oper_status", True),
                 }
                 # if "mac" in iface:
                 #     subifaces[iface["ifindex"]]["mac"] = iface["mac"]
@@ -207,7 +208,7 @@ class Script(BaseScript):
                 ifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
-                    "oper_status": iface["oper_status"],
+                    "oper_status": iface.get("oper_status", True),
                     "enabled_protocols": [],
                     "subinterfaces": [],
                 }
@@ -364,7 +365,11 @@ class Script(BaseScript):
         return mtu
 
     def iter_iftable(
-        self, key: str, oid: str, ifindexes: Optional[Iterator[int]] = None, clean: Callable = None,
+        self,
+        key: str,
+        oid: str,
+        ifindexes: Optional[Iterator[int]] = None,
+        clean: Callable = None,
     ) -> Iterable[Tuple[str, Union[str, int]]]:
         """
         Collect part of IF-MIB table.
