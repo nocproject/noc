@@ -233,7 +233,6 @@ class Command(BaseCommand):
                     out += [client.get_publish_request(payload, stream=name)]
                     if len(out) == batch:
                         async for ack in client.publish_async(out):
-                            print(ack)
                             n_acks += 1
                         out = []
                 if out:
