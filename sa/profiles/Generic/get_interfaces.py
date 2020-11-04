@@ -199,7 +199,7 @@ class Script(BaseScript):
                 subifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
-                    "oper_status": iface["oper_status"],
+                    "oper_status": iface.get("oper_status", True),
                 }
                 # if "mac" in iface:
                 #     subifaces[iface["ifindex"]]["mac"] = iface["mac"]
@@ -207,7 +207,7 @@ class Script(BaseScript):
                 ifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
-                    "oper_status": iface["oper_status"],
+                    "oper_status": iface.get("oper_status", True),
                     "enabled_protocols": [],
                     "subinterfaces": [],
                 }
