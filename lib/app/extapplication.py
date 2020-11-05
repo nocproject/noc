@@ -196,9 +196,9 @@ class ExtApplication(Application):
             if p:
                 xa["params"] = p
             if xaa:
-                data = self.queryset(request, query).filter(**q).extra(**xaa)
-            else:
-                data = self.queryset(request, query).filter(**q).extra(**xa)
+                # data = self.queryset(request, query).filter(**q).extra(**xaa)
+                xa.update(xaa)
+            data = self.queryset(request, query).filter(**q).extra(**xa)
         elif xaa:
             # ExtraQuery
             data = self.queryset(request, query).filter(**q).extra(**xaa)
