@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import Optional
+from datetime import datetime
 
 # NOC modules
 from .base import BaseModel
@@ -21,14 +22,14 @@ class Service(BaseModel):
     parent: Optional[Reference["Service"]]
     subscriber: Reference["Subscriber"]
     profile: Reference["ServiceProfile"]
-    ts: str
+    ts: Optional[datetime]
     logical_status: str
-    logical_status_start: str
+    logical_status_start: datetime
     agreement_id: Optional[str]
     order_id: Optional[str]
     stage_id: Optional[str]
     stage_name: Optional[str]
-    stage_start: Optional[str]
+    stage_start: Optional[datetime]
     account_id: Optional[str]
     address: Optional[str]
     managed_object: Optional[Reference["ManagedObject"]]
@@ -37,7 +38,7 @@ class Service(BaseModel):
     cpe_mac: Optional[str]
     cpe_model: Optional[str]
     cpe_group: Optional[str]
-    description: Optional[str]
+    description: Optional[str] = None
 
     _csv_fields = [
         "id",
