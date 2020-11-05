@@ -13,12 +13,13 @@ from .base import BaseModel
 from .typing import Reference
 from .serviceprofile import ServiceProfile
 from .managedobject import ManagedObject
+from .subscriber import Subscriber
 
 
 class Service(BaseModel):
     id: str
     parent: Optional[Reference["Service"]]
-    subscriber: str
+    subscriber: Reference["Subscriber"]
     profile: Reference["ServiceProfile"]
     ts: str
     logical_status: str

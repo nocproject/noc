@@ -360,7 +360,7 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
-        self.logger.debug("Changed object")
+        self.logger.debug("Changed object: %s", v)
         # See: https://code.getnoc.com/noc/noc/merge_requests/49
         try:
             o = self.model.objects.get(pk=object_id)
@@ -423,7 +423,7 @@ class BaseLoader(object):
                 continue
             if ov[fn] != nv[fn]:
                 self.logger.debug("   %s: %s -> %s", fn, ov[fn], nv[fn])
-            changes[fn] = nv[fn]
+                changes[fn] = nv[fn]
         if n.id in self.mappings:
             self.change_object(self.mappings[n.id], changes)
         else:
