@@ -80,7 +80,7 @@ class Script(BaseScript):
             if s:
                 s[name] = f(v)
 
-    def get_data(self, interfaces=None):
+    def get_data(self, interfaces=None, raw_speed_value=False):
         # ifIndex -> ifName mapping
         r = {}  # ifindex -> data
         unknown_interfaces = []
@@ -120,6 +120,9 @@ class Script(BaseScript):
                 # s is None if OID is not exists
                 if self.is_high_speed(ri, s):
                     highspeed.add(ifindex)
+                elif s and raw_speed_value:
+                    r[ifindex]["in_speed"] = s
+                    r[ifindex]["out_speed"] = s
                 elif s:
                     r[ifindex]["in_speed"] = s // 1000
                     r[ifindex]["out_speed"] = s // 1000
