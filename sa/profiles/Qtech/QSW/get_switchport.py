@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,12 +22,12 @@ class Script(BaseScript):
         r"(?:is|current state:)\s+(enabled|disabled),\s+port\s+link\s+is\s+(up|down)"
     )
     rx_mode = re.compile(r"^\s*Port\s+mode\s*:\s*(?P<mode>\S+)$")
-    rx_vlan_t = re.compile(r"^\s*Vlan\s+allowed\s*:\s*(?P<vlans>\S+)$")
+    rx_vlan_t = re.compile(r"^\s*Vlan\s+allowed\s*:\s*(?P<vlans>\S+)$", re.IGNORECASE)
     rx_vlan_at = re.compile(r"^\s*Tagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
     rx_vlan_au = re.compile(r"^\s*Untagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
     rx_description = re.compile(r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         # TODO
         # Get portchannels
         # portchannels = self.scripts.get_portchannel()
@@ -216,7 +216,7 @@ class Script(BaseScript):
                 if match:
                     vlans = match.group("vlans")
                     if vlans == "all":
-                        vlans = "1-4095"
+                        vlans = "1-4094"
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
