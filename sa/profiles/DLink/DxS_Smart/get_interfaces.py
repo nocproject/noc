@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class Script(BaseScript):
 
     rx_mgmt_vlan = re.compile(r"^802.1Q Management VLAN\s+: (?P<vlan>\S+)\s*\n")
 
-    def execute_cli(self, **kwargs):
+    def execute(self, **kwargs):
         interfaces = []
         # Get portchannels
         portchannel_members = {}  # member -> (portchannel, type)
@@ -37,33 +37,22 @@ class Script(BaseScript):
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
         admin_status = {}
-        try:
-            for n, s in self.snmp.join_tables(
-                mib["IF-MIB::ifName"], mib["IF-MIB::ifAdminStatus"]
-            ):  # IF-MIB
-                if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
-                    continue
-                else:
-                    if n[:6] == "Slot0/":
-                        n = n[6:]
-                    admin_status.update({n: int(s) == 1})
-        except self.snmp.TimeOutError:
-            pass
+        for n, s in self.snmp.join_tables(
+            mib["IF-MIB::ifName"], mib["IF-MIB::ifAdminStatus"]
+        ):  # IF-MIB
+            if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
+                continue
+            else:
+                if n[:6] == "Slot0/":
+                    n = n[6:]
+                admin_status.update({n: int(s) == 1})
         mac = {}
-        try:
-            for i, m in self.snmp.join_tables(
-                mib["IF-MIB::ifName"], mib["IF-MIB::ifPhysAddress"]
-            ):  # IF-MIB
-                if i[:6] == "Slot0/":
-                    i = i[6:]
-                mac.update({i: MAC(m)})
-        except self.snmp.TimeOutError:
-            pass
-
-        else:
-            ports = self.profile.get_ports(self)
-            for p in ports:
-                admin_status.update({p["port"]: p["admin_state"]})
+        for i, m in self.snmp.join_tables(
+            mib["IF-MIB::ifName"], mib["IF-MIB::ifPhysAddress"]
+        ):  # IF-MIB
+            if i[:6] == "Slot0/":
+                i = i[6:]
+            mac.update({i: MAC(m)})
 
         # Get switchports
         for swp in self.scripts.get_switchport():

@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -30,16 +31,13 @@ class Script(BaseScript):
 
     def execute(self):
         r = {"vendor": "DLink"}
-        if self.has_snmp():
-            try:
-                v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                match = self.re_search(self.rx_snmp_ver, v)
-                r.update({"platform": match.group("platform")})
-            except self.snmp.TimeOutError:
-                pass
-        else:
+        try:
+            v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
+            match = self.rx_snmp_ver.search(v)
+            r["platform"] = match.group("platform")
+        except self.snmp.TimeOutError:
             raise self.NotSupportedError()
-        if self.is_has_cli:
+        try:
             s = self.cli("show switch", cached=True)
             match = self.rx_ver.search(s)
             r.update(
@@ -53,5 +51,5 @@ class Script(BaseScript):
                 }
             )
             return r
-        else:
+        except Exception:
             raise self.NotSupportedError()
