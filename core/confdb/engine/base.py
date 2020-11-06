@@ -15,6 +15,7 @@ from collections import defaultdict
 # NOC modules
 from noc.core.vlan import has_vlan, optimize_filter
 from noc.core.ip import IP
+from noc.core.text import ranges_to_list
 from .transformer import PredicateTransformer
 from .var import Var
 from ..db.base import ConfDB
@@ -467,6 +468,78 @@ class Engine(object):
             if not vlan:
                 continue
             if has_vlan(vf, vlan):
+                yield ctx
+
+    @visitor("xx")
+    def fn_MatchAnyVLAN(self, _input, vlan_filter, vlans):
+        """
+        Check any `vlans` is within `vlan_filter` expression
+        :param _input:
+        :param vlan_filter:
+        :param vlans:
+        :return:
+        """
+        for ctx in _input:
+            vf = self.resolve_var(ctx, vlan_filter)
+            if not vf:
+                continue
+            vf = set(ranges_to_list(vf))
+            vs = self.resolve_var(ctx, vlans)
+            if not vs:
+                continue
+            try:
+                vs = set(ranges_to_list(vs))
+            except SyntaxError:
+                return
+            if vf.intersection(vs):
+                yield ctx
+
+    @visitor("xx")
+    def fn_MatchAllVLAN(self, _input, vlan_filter, vlans):
+        """
+        Check all `vlans` is within `vlan_filter` expression
+        :param _input:
+        :param vlan_filter:
+        :param vlans:
+        :return:
+        """
+        for ctx in _input:
+            vf = self.resolve_var(ctx, vlan_filter)
+            if not vf:
+                continue
+            vf = set(ranges_to_list(vf))
+            vs = self.resolve_var(ctx, vlans)
+            if not vs:
+                continue
+            try:
+                vs = set(ranges_to_list(vs))
+            except SyntaxError:
+                return
+            if not vs - vf:
+                yield ctx
+
+    @visitor("xx")
+    def fn_MatchExactVLAN(self, _input, vlan_filter, vlans):
+        """
+        Check all `vlans` is within `vlan_filter` expression
+        :param _input:
+        :param vlan_filter:
+        :param vlans:
+        :return:
+        """
+        for ctx in _input:
+            vf = self.resolve_var(ctx, vlan_filter)
+            if not vf:
+                continue
+            vf = set(ranges_to_list(vf))
+            vs = self.resolve_var(ctx, vlans)
+            if not vs:
+                continue
+            try:
+                vs = set(ranges_to_list(vs))
+            except SyntaxError:
+                return
+            if not vf.symmetric_difference(vs):
                 yield ctx
 
     @visitor("xx")
