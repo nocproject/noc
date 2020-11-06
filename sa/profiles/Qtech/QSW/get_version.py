@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,8 +22,8 @@ class Script(BaseScript):
     rx_plat_ver = re.compile(
         r"^software version\s+:\s*(QTECH|)\s+(?P<platform>\S+)\s+(?P<version>\S+)$", re.MULTILINE
     )
-    rx_bootprom = re.compile(r"^bootrom version\s+:\s+V+(?P<bootprom>\S+)$", re.MULTILINE)
-    rx_hardware = re.compile(r"^hardware version\s+:\s+V+(?P<hardware>\S+)$", re.MULTILINE)
+    rx_bootprom = re.compile(r"^bootrom version\s+:\s+V(?P<bootprom>\S*)$", re.MULTILINE)
+    rx_hardware = re.compile(r"^hardware version\s+:\s+V(?P<hardware>\S+)$", re.MULTILINE)
     rx_serial = re.compile(r"^product serial number\s+:\s+(?P<serial>\S+)$", re.MULTILINE)
 
     rx_plat1 = re.compile(r"^\s+(?P<platform>QSW-\S+) Device, Compiled on", re.MULTILINE)
@@ -35,23 +35,39 @@ class Script(BaseScript):
     )
 
     def execute_snmp(self, **kwargs):
-        # Try SNMP first
         platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0", cached=True)
-        if not platform:
-            raise self.snmp.TimeOutError
-        if " " in platform:
-            platform = platform.split(" ")[1]
-        version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0", cached=True)
-        version = version.split(" ")
-        if platform == "Switch" and len(version) == 2:
-            platform, version = version
+        if platform:
+            if " " in platform:
+                platform = platform.split(" ")[1]
+            version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0", cached=True)
+            version = version.split(" ")
+            if platform == "Switch" and len(version) == 2:
+                platform, version = version
+            else:
+                version = version[2]
+            bootprom = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.9.0", cached=True)
+            bootprom = bootprom.split("V")[1]
+            hardware = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.8.0", cached=True)
+            hardware = hardware.split("V")[1]
+            serial = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.19.0", cached=True)
         else:
-            version = version[2]
-        bootprom = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.9.0", cached=True)
-        bootprom = bootprom.split("V")[1]
-        hardware = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.8.0", cached=True)
-        hardware = hardware.split("V")[1]
-        serial = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.19.0", cached=True)
+            platform = self.snmp.get("1.3.6.1.4.1.13464.1.2.1.1.2.15.0", cached=True)
+            if " " in platform:
+                platform = platform.split(" ")[1]
+            version = self.snmp.get("1.3.6.1.4.1.13464.1.2.1.1.2.2.0", cached=True)
+            version = version.split(" ")
+            if platform == "Switch" and len(version) == 2:
+                platform, version = version
+            else:
+                version = version[2]
+            bootprom = self.snmp.get("1.3.6.1.4.1.13464.1.2.1.1.2.9.0", cached=True)
+            if bootprom != "V":
+                bootprom = bootprom.split("V")[1]
+            else:
+                bootprom = ""
+            hardware = self.snmp.get("1.3.6.1.4.1.13464.1.2.1.1.2.8.0", cached=True)
+            hardware = hardware.split("V")[1]
+            serial = self.snmp.get("1.3.6.1.4.1.13464.1.2.1.1.2.19.0", cached=True)
         return {
             "vendor": "Qtech",
             "platform": platform,

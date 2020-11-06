@@ -4,7 +4,7 @@
   "$matchers": {
     "is_QSW291010T": {
       "platform": {
-        "$regex": "QSW-2910-10T-POE"
+        "$regex": "QSW-2910-10T-POE|QSW-2900-24T"
       }
     }
   },

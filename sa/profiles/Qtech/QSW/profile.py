@@ -44,7 +44,11 @@ class Profile(BaseProfile):
     command_exit = "quit"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
-    rogue_chars = [re.compile(rb"\s*\x1b\[74D\s+\x1b\[74D"), b"\r"]
+    rogue_chars = [
+        re.compile(rb"\s*\x1b\[74D\s+\x1b\[74D"),
+        re.compile(rb"\s*\x1b\[74D\x1b\[K"),
+        b"\r",
+    ]
     rx_ifname = re.compile(r"(?P<number>[\d\/]+)$")
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}

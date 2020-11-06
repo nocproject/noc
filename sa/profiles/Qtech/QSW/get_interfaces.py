@@ -47,7 +47,7 @@ class Script(BaseScript):
 
     rx_status = re.compile(
         r"^\s*(?:Fast|Gigabit)?\s*Ethernet\s+(?P<interface>\S+)\s+(?:is|current state:)\s+"
-        r"(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))",
+        r"(?P<admin_status>(enabled|disabled)),\s+port\s+link\s+is\s+(?P<oper_status>(up|down))",
         re.MULTILINE,
     )
 
@@ -69,7 +69,7 @@ class Script(BaseScript):
         bgp = []
         return bgp
 
-    def execute(self):
+    def execute_cli(self):
 
         # TODO
         # Get portchannes
