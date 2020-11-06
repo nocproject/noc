@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,9 +9,10 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -22,7 +23,7 @@ class Script(BaseScript):
 
     types = {"gi": "physical", "te": "physical", "po": "aggregated", "br": "SVI"}
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         stp = []
         c = self.cli("show spanning-tree active", cached=True)
         for ifname, state, prio, cost, status, role, portfast, ptype in parse_table(
@@ -103,3 +104,7 @@ class Script(BaseScript):
                 iface["enabled_protocols"] += ["STP"]
             interfaces += [iface]
         return [{"interfaces": interfaces}]
+
+    def clean_iftype(self, ifname, ifindex):
+        iftype = self.snmp.get(mib["IF-MIB::ifType.%s" % ifindex], cached=True)
+        return self.profile.get_interface_type(iftype)
