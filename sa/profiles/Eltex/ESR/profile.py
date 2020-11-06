@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     ESR
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,3 +26,15 @@ class Profile(BaseProfile):
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
     convert_interface_name = BaseProfile.convert_interface_name_cisco
+
+    INTERFACE_TYPES = {
+        6: "physical",
+        161: "aggregated",
+        54: "aggregated",
+        53: "SVI",
+        24: "loopback",
+    }
+
+    @classmethod
+    def get_interface_type(cls, iftype):
+        return cls.INTERFACE_TYPES.get(iftype)
