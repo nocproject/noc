@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,7 +28,9 @@ class Script(BaseScript):
         r"System serial number:\s+(?P<serial>\S+)\s*\n"
     )
 
-    def execute(self):
+    rx_ver_snmp = re.compile(r"^(?P<version>.*) \(date")
+
+    def execute_cli(self):
         c = self.scripts.get_system()
         match = self.rx_ver.search(c)
         return {
@@ -38,5 +40,21 @@ class Script(BaseScript):
             "attributes": {
                 "HW version": match.group("hardware"),
                 "Serial Number": match.group("serial"),
+            },
+        }
+
+    def execute_snmp(self):
+        hw = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.680000")
+        version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.680000")
+        match = self.rx_ver_snmp.search(version)
+        sn = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.680000")
+        platform = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.13.680000")
+        return {
+            "vendor": "Eltex",
+            "platform": "ERS-%s" % platform,
+            "version": match.group("version"),
+            "attributes": {
+                "HW version": hw,
+                "Serial Number": sn,
             },
         }
