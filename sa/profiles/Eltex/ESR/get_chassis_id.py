@@ -9,8 +9,9 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -18,9 +19,11 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
+    SNMP_GETNEXT_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress"]]}
+
     rx_mac = re.compile(r"^\s*System MAC address:\s+(?P<mac>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         c = self.scripts.get_system()
         match = self.rx_mac.search(c)
         return {"first_chassis_mac": match.group("mac"), "last_chassis_mac": match.group("mac")}
