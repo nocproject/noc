@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,12 +27,13 @@ class Script(BaseScript):
     rx_mtu = re.compile(r"The Maximum Frame Length is (?P<mtu>\d+)")
     rx_port_type = re.compile(r"Port link-type: (?P<port_type>hybrid|access|trunk)")
     rx_port_other = re.compile(
-        r"^\s*Tagged   VLAN ID : (?P<tagged>[^\n]+)\n"
+        r"^\s*Tagged\s+VLAN ID : (?P<tagged>[^\n]+)\n"
         r"^\s*Untagged VLAN ID : (?P<untagged>[^\n]+)\n",
         re.MULTILINE,
     )
     rx_port_trunk = re.compile(
-        r"^\s*VLAN passing  : (?P<passing>[^\n]+)\n" r"^\s*VLAN permitted: (?P<permitted>[^\n]+)\n",
+        r"^\s*VLAN passing\s+: (?P<passing>[^\n]+)\n"
+        r"^\s*VLAN permitted: (?P<permitted>[^\n]+)\n",
         re.MULTILINE,
     )
     rx_ip = re.compile(r"Internet Address is (?P<ip>\S+) Primary")
@@ -52,6 +53,7 @@ class Script(BaseScript):
     )
     rx_name = re.compile(r"^Vlan-interface(?P<vlan>\d+)?")
     rx_isis = re.compile(r"Interface:\s+(?P<iface>\S+)")
+    rx_sub_default_vlan = re.compile(r"\(default vlan\),?")
 
     def execute(self):
         isis = []
@@ -131,7 +133,7 @@ class Script(BaseScript):
                 if port_type == "trunk":
                     match2 = self.rx_port_trunk.search(i)
                     if match2.group("passing") and match2.group("passing") != "none":
-                        passing = match2.group("passing").replace("1(default vlan),", "")
+                        passing = re.sub(self.rx_sub_default_vlan, "", match2.group("passing"))
                         sub["tagged_vlan"] = self.expand_rangelist(passing)
             iface["subinterfaces"] += [sub]
             if ifname in portchannel_members:
@@ -158,7 +160,12 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "subinterfaces": [],
             }
-            sub = {"name": ifname, "admin_status": a_stat, "oper_status": o_stat, "enabled_afi": []}
+            sub = {
+                "name": ifname,
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "enabled_afi": [],
+            }
             if match.group("descr"):
                 iface["description"] = match.group("descr").strip()
                 sub["description"] = match.group("descr").strip()
@@ -198,7 +205,12 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "subinterfaces": [],
             }
-            sub = {"name": ifname, "admin_status": a_stat, "oper_status": o_stat, "enabled_afi": []}
+            sub = {
+                "name": ifname,
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "enabled_afi": [],
+            }
             if match.group("descr"):
                 iface["description"] = match.group("descr").strip()
                 sub["description"] = match.group("descr").strip()
