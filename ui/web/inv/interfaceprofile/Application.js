@@ -208,6 +208,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        name: "allow_vacuum_bulling",
+                        xtype: "checkbox",
+                        boxLabel: __("Allow Vacuum Bulling"),
+                        allowBlank: true
+                    },
+                    {
                         xtype: "fieldset",
                         layout: "hbox",
                         title: __("IfDesc Settings"),

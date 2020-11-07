@@ -115,6 +115,8 @@ class InterfaceProfile(Document):
     allow_autosegmentation = BooleanField(default=False)
     # Allow collecting metrics from subinterfaces
     allow_subinterface_metrics = BooleanField(default=False)
+    #
+    allow_vacuum_bulling = BooleanField(default=False)
     # Validation policy
     interface_validation_policy = PlainReferenceField(InterfaceValidationPolicy)
     #

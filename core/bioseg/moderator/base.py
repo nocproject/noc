@@ -153,7 +153,7 @@ def moderate(
         cp, power_funcs = attacker_c_policy.calcified_profile, attacker_c_policy.power_function
     else:
         cp, power_funcs = target_c_policy.calcified_profile, target_c_policy.power_function
-    logger.info("Effectived settings is: %s:%s", cp, power_funcs)
+    logger.info("Effective settings is: %s:%s", cp, power_funcs)
     # Do trial
     outcome = effective_policy(
         attacker,

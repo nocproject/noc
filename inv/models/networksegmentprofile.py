@@ -127,8 +127,13 @@ class BioCollisionPolicy(EmbeddedDocument):
         attacker_level: Optional[int] = None,
         target_level: Optional[int] = None,
     ):
-        if (self.min_attacker_level and attacker_level < self.min_attacker_level) or (
-            self.max_attacker_level and attacker_level > self.max_attacker_level
+        if (
+            attacker_level is not None
+            and target_level is not None
+            and (
+                (self.min_attacker_level and attacker_level < self.min_attacker_level)
+                or (self.max_attacker_level and attacker_level > self.max_attacker_level)
+            )
         ):
             # Rule is not applicable
             return None
