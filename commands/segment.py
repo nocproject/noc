@@ -7,6 +7,9 @@
 
 # Python modules
 import argparse
+import datetime
+from typing import Optional, List, Set, Dict, DefaultDict
+from collections import defaultdict
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -15,12 +18,28 @@ from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.biosegtrial import BioSegTrial
+from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.bioseg.moderator.base import moderate_trial
 from noc.core.datastream.change import bulk_datastream_changes
+from noc.core.text import alnum_key
+from noc.core.clickhouse.connect import connection
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.core.mac import MAC
 
 
 class Command(BaseCommand):
+    MAC_WINDOW = 2 * 86400
+    GET_MACS_SQL = """
+    SELECT argMax(ts, ts), argMax(interface, ts), mac
+    FROM mac
+    WHERE managed_object = %s
+      AND interface IN (%s)
+      AND date >= toDate('%s')
+      AND ts >= toDateTime('%s')
+    GROUP BY mac
+    """
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
         #
@@ -34,6 +53,11 @@ class Command(BaseCommand):
             "--allow_persistent", action="store_true", help="Allow trial persistent segment"
         )
         reactivate_floating_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Segment ids")
+        #
+        vacuum_bulling_parser = subparsers.add_parser("vacuum-bulling")
+        vacuum_bulling_parser.add_argument(
+            "ids", nargs=argparse.REMAINDER, help="Managed Object ids"
+        )
         #
         subparsers.add_parser("show-trials")
         #
@@ -74,17 +98,79 @@ class Command(BaseCommand):
                 mo.segment = new_segment
                 mo.save()
             # Establish trials
-            print("@@@ Scheduling trials")
+            self.print("@@@ Scheduling trials")
             for mo in objects:
                 for link in Link.object_links(mo):
                     for ro in link.managed_objects:
                         if ro == mo:
                             continue
-                        print(
+                        self.print(
                             "  '%s' challenging '%s' over %s -- %s"
                             % (mo.segment.name, ro.segment.name, mo.name, ro.name)
                         )
                         BioSegTrial.schedule_trial(mo.segment, ro.segment, mo, ro, reason="link")
+
+    def handle_vacuum_bulling(self, ids, *args, **kwargs):
+        connect()
+        for mo_id in ids:
+            mo = ManagedObject.get_by_id(mo_id)
+            if not mo:
+                self.print("@@@ %s is not found, skipping", mo_id)
+                continue
+            self.print("@@@ %s (%s, %s)", mo.name, mo.address, mo.id)
+            # Get interfaces suitable for bulling
+            bulling_ifaces: Set[Interface] = {
+                iface
+                for iface in Interface.objects.filter(managed_object=mo.id)
+                if not iface.profile.allow_vacuum_bulling
+            }
+            if not bulling_ifaces:
+                self.print("No interfaces suitable for vacuum bulling")
+                continue
+            # Get MAC addresses for bulling
+            t0 = datetime.datetime.now() - datetime.timedelta(seconds=self.MAC_WINDOW)
+            t0 = t0.replace(microsecond=0)
+            sql = self.GET_MACS_SQL % (
+                mo.bi_id,
+                ", ".join("'%s'" % iface.name.replace("'", "''") for iface in bulling_ifaces),
+                t0.date().isoformat(),
+                t0.isoformat(sep=" "),
+            )
+            ch = connection()
+            last_ts: Optional[str] = None
+            all_macs: List[str] = []
+            mac_iface: Dict[str, str] = {}
+            for ts, iface, mac in ch.execute(post=sql):
+                if last_ts is None:
+                    last_ts = ts
+                elif last_ts > ts:
+                    continue
+                m = str(MAC(int(mac)))
+                all_macs += [m]
+                mac_iface[m] = iface
+            # Resolve MACs to known chassis-id
+            mac_map = DiscoveryID.find_objects(all_macs)
+            # Filter suitable rivals
+            seg_ifaces: DefaultDict[NetworkSegment, Set[str]] = defaultdict(set)
+            iface_segs: DefaultDict[str, Set[NetworkSegment]] = defaultdict(set)
+            for mac, r_mo in mac_map.items():
+                iface = mac_iface.get(mac)
+                if not iface:
+                    continue
+                seg_ifaces[r_mo.segment].add(iface)
+                iface_segs[iface].add(r_mo.segment)
+            rej_ifaces: Set[str] = set()
+            for seg in seg_ifaces:
+                if len(seg_ifaces[seg]) > 1 or seg.profile.is_persistent or seg == mo.segment:
+                    # Seen on multiple interfaces or persistent segment or same segment
+                    rej_ifaces |= set(seg_ifaces[seg])
+                    continue
+            for iface in sorted(iface_segs, key=alnum_key):
+                if iface in rej_ifaces:
+                    continue
+                for seg in iface_segs[iface]:
+                    self.print("  '%s' challenging '%s' on %s" % (mo.segment.name, seg.name, iface))
+                    BioSegTrial.schedule_trial(seg, mo.segment)
 
     def handle_show_trials(self):
         def q_seg(id):
@@ -198,7 +284,6 @@ class Command(BaseCommand):
                             mo,
                             ro,
                             reason="link",
-                            trial_persistent=allow_persistent,
                         )
 
 

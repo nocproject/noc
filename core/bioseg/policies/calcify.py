@@ -74,4 +74,6 @@ class CalcifyBioSegPolicy(BaseBioSegPolicy):
         return {
             "interfaces": list(sorted(local_interfaces, key=lambda x: alnum_key(x.name))),
             "parent_interfaces": list(sorted(remote_interfaces, key=lambda x: alnum_key(x.name))),
+            "attacker": self.attacker,
+            "target": self.target,
         }
