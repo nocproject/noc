@@ -42,13 +42,13 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_port = re.compile(
-        r"^\s*\d+\s+(?P<port>\d+/\s*\d+/\s*\d+)\s+" r"(?P<port_id1>\d+)\s+(?P<port_id2>\d+)",
+        r"^\s*\d+\s+(?P<port>\d+/\s*\d+/\s*\d+)\s+(?P<port_id1>\d+)\s+(?P<port_id2>\d+)",
         re.MULTILINE,
     )
     rx_port_id_state = re.compile(r"\-+\[Port(?P<port_id>\d+)\((?P<state>\S+)\)\]\-+")
     rx_port_rstp_state = re.compile(r" of bridge is (?P<state>\S+)")
     rx_port_role_pri = re.compile(
-        r"^\s*Port Role\s+:(?P<role>.+)\n" r"^\s*Port Priority\s+:(?P<priority>\d+)\n", re.MULTILINE
+        r"^\s*Port Role\s+:(?P<role>.+)\n^\s*Port Priority\s+:(?P<priority>\d+)\n", re.MULTILINE
     )
     rx_port_rstp_role_pri = re.compile(
         r"^\s*The port is a\(n\) (?P<role>\S+)\n"
@@ -138,7 +138,10 @@ class Script(BaseScript):
                 instance["vlans"] = vlans
                 for p in self.rx_port.finditer(inst):
                     ifname = p.group("port").replace(" ", "")
-                    p1 = self.cli("display stp instance %d port %s" % (instance["id"], ifname))
+                    p1 = self.cli(
+                        "display stp instance %d port %s" % (instance["id"], ifname),
+                        allow_empty_response=False,
+                    )
                     if "spanning tree protocol is disabled" in p1:
                         continue
                     iface = {"interface": ifname}
