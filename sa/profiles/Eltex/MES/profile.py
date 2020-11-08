@@ -13,6 +13,7 @@ import re
 from noc.core.profile.base import BaseProfile
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.validators import is_int
+from noc.core.snmp.render import render_mac
 
 
 class Profile(BaseProfile):
@@ -61,6 +62,8 @@ class Profile(BaseProfile):
         "is_has_chgroup": {"version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9])"}},
         "is_3124": {"platform": {"$regex": "3[13](24|48)"}},
     }
+
+    snmp_display_hints = {"1.3.6.1.4.1.89.53.4.1.7.1": render_mac}
 
     PLATFORMS = {
         "24": "MES-3124",
