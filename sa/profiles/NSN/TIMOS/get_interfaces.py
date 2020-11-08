@@ -307,6 +307,8 @@ class Script(BaseScript):
                 match_obj = self.re_int_desc_vprn.search(iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
+                    if not my_dict.get("mac"):
+                        del my_dict["mac"]
                     if "subinterfaces" in my_dict:
                         if my_dict["subinterfaces"].startswith("sdp"):
                             my_dict["type"] = "tunnel"
