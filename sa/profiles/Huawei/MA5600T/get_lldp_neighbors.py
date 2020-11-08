@@ -18,7 +18,9 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
     always_prefer = "S"
-    rx_iface_sep = re.compile(r"[a-z]+(?P<iface>\d/\d/\d)\s+\S+", re.MULTILINE)
+
+    # ethernet0/2/0     -              1/0/26                        120
+    rx_iface_sep = re.compile(r"^\s*[a-z]+(?P<iface>\d/\d/\d)\s+", re.MULTILINE)
 
     CHASSIS_TYPES = {
         "chassiscomponent": 1,
@@ -67,18 +69,14 @@ class Script(BaseScript):
     }
 
     def execute_cli(self, **kwargs):
-        """
-        VRP5 style
-        :return:
-        """
         r = []
         try:
             v = self.cli("display lldp neighbor brief")
         except self.CLISyntaxError:
-            raise self.NotSupportedError
+            raise NotImplementedError
         il = self.rx_iface_sep.findall(v)
         if not il:
-            raise self.NotSupportedError
+            return r
         for local_iface in il:
             neighbors = []
             ne = self.cli("display lldp neighbor port %s" % local_iface)
