@@ -35,6 +35,8 @@ class Script(BaseScript):
             for port in pc["members"]:
                 c = self.cli("display lacp link-aggregation port %s" % port)
                 match = self.rx_bundle.search(c)
+                if not match:
+                    continue
                 lacp["system_id"] = match.group("system_id")
                 lacp["bundle"] += [
                     {
