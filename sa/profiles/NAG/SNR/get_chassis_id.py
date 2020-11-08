@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^\s+\S+\s+mac\s+(\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
 
-    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 1]}
+    SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
     def execute_cli(self):
         macs = sorted(self.rx_mac.findall(self.cli("show version", cached=True)))
