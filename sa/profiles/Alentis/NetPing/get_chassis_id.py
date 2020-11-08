@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     always_prefer = "S"
 
-    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 1]}
+    SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
     def execute_cli(self, **kwargs):
 

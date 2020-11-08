@@ -16,4 +16,4 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    SNMP_GET_OIDS = {"SNMP": mib["IF-MIB::ifPhysAddress", 3718]}
+    SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 3718]]}
