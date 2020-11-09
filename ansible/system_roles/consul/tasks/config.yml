@@ -104,4 +104,4 @@
   when:
     - "'Linux' in ansible_system"
     - "'prod' in noc_env_type"
-    - " ansible_kernel.split('-') is version('4.1.0', '<')"
+    - "ansible_kernel is version('4.1.0', '<')"

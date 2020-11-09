@@ -9,6 +9,7 @@ include:
   - project: 'noc/common-jobs'
     ref: stable
     file: '/templates/upload.yml'
+  - local: '/ansible/.ansible-ci.yml'
 
 check labels:
   stage: Lint

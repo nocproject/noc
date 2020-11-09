@@ -1,0 +1,123 @@
+---
+
+variables:
+  ANSIBLE_FORCE_COLOR: 'true'
+
+lint:
+  stage: Lint
+  image: registry.getnoc.com/infrastructure/ansible_linter:master
+  script:
+    - export ANSIBLE_ROLES_PATH=./ansible/additional_roles:./ansible/system_roles:./ansible/noc_roles
+    - export ANSIBLE_LIBRARY=./ansible/library:./ansible/system_roles/mongod/library
+    - yamllint --version
+    - yamllint -s ansible/*
+    - ansible-playbook --version
+    - for inv in ansible/molecule/*/inv.yml; do ansible-playbook ansible/*/*/service.yml --syntax-check -i $inv; done
+    - ansible-lint --version
+    #- ansible-lint */*/service.yml -v
+    - ansible-review --version
+    - git ls-files ansible | grep -v molecule/ | xargs -P 32 -n 4 ansible-review -c .ansible-review -q
+  rules:
+    - changes:
+        - ansible/**/*
+        - ansible/*
+    - when: manual
+  tags:
+    - docker
+
+.base_builder:
+  stage: Build
+  image: registry.getnoc.com/infrastructure/molecule-docker:master
+  before_script:
+    - echo ${ssh_identity_text} | tr -d ' ' | base64 -d > /tmp/temporary_ssh_key
+    - chmod 0400 /tmp/temporary_ssh_key
+    - echo ${ssh_identity_text_pub} | tr -d ' ' | base64 -d > /tmp/temporary_ssh_key_pub
+    - chmod 0644 /tmp/temporary_ssh_key_pub
+  script:
+    - molecule --version
+    - ansible-playbook --version
+    - rm -rf noc
+    - cd ansible/ && molecule test -s $SCENARIO_NAME
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - /tmp/dist
+  variables:
+    PIP_CACHE: /root/.cache/pip
+    PKG_CACHE: /var/cache/apt/archives
+  rules:
+    - changes:
+        - ansible/**/*
+        - ansible/*
+    - when: manual
+
+build_centos7:
+   extends: .base_builder
+   variables:
+     PKG_CACHE: /var/cache/yum
+     SCENARIO_NAME: default
+   tags:
+     - cloud
+     - docker
+
+# build_centos8:
+#   extends: .base_builder
+#   variables:
+#     PKG_CACHE: /var/cache/yum
+#     SCENARIO_NAME: centos8
+#   tags:
+#     - cloud
+#     - docker
+
+build_debian9:
+   extends: .base_builder
+   variables:
+     SCENARIO_NAME: debian9
+   tags:
+     - cloud
+     - docker
+
+build_debian10:
+  extends: .base_builder
+  variables:
+    SCENARIO_NAME: debian10
+  tags:
+    - cloud
+    - docker
+
+build_ubuntu16:
+   extends: .base_builder
+   variables:
+     SCENARIO_NAME: ubuntu16
+   tags:
+     - cloud
+     - docker
+
+build_ubuntu18:
+   extends: .base_builder
+   variables:
+     SCENARIO_NAME: ubuntu18
+   tags:
+     - cloud
+     - docker
+
+build_freebsd:
+   extends: .base_builder
+   variables:
+     PKG_CACHE: /var/cache/pkg
+     SCENARIO_NAME: freebsd
+     USE_CACHE: "False"  # freebsd minio-client "broken"
+   tags:
+     - satel
+     - docker
+   allow_failure: true  # too hard to maintain without maintainer. often incompatible changes
+
+build_oel7:
+   extends: .base_builder
+   variables:
+     PKG_CACHE: /var/cache/yum
+     SCENARIO_NAME: oel7
+   tags:
+     - satel
+     - docker
+   allow_failure: true  # no active users for platform
