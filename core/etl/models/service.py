@@ -23,8 +23,8 @@ class Service(BaseModel):
     subscriber: Reference["Subscriber"]
     profile: Reference["ServiceProfile"]
     ts: Optional[datetime]
-    logical_status: str
-    logical_status_start: datetime
+    logical_status: Optional[str]
+    logical_status_start: Optional[datetime]
     agreement_id: Optional[str]
     order_id: Optional[str]
     stage_id: Optional[str]
