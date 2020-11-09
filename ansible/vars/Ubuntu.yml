@@ -1,5 +1,6 @@
 # Ubuntu settings
 ---
+ansible_python_interpreter: /usr/bin/python3
 activator_command: "/bin/sh -c 'exec taskset -c $((%(process_num)d %% $(nproc))) ./services/activator/service.py'"
 apt_cache_valid_time: 86400
 

@@ -14,8 +14,6 @@ driver:
   network_id: ${yc_network_id}
   subnet_id: ${yc_subnet_id}
   image_id: ${yc_ub18_disk}
-lint:
-  name: yamllint
 platforms:
   - name: noc-node-ubuntu18
     distr: ubuntu18
@@ -56,7 +54,3 @@ scenario:
     - verify
     - side_effect
     - destroy
-verifier:
-  name: goss
-  lint:
-    name: yamllint

@@ -1,19 +1,4 @@
 ---
-- name: Install packages for web
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: "requirements/web.txt"
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
-  environment:
-    https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ http_proxy }}"
-    CFLAGS: "{{ pip_cflags | default('') }}"
-    LDFLAGS: "{{ pip_ldflags | default('') }}"
-  when:
-    - not single_req.stat.exists
-  tags:
-    - requirements
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"

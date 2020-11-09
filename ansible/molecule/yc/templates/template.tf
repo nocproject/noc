@@ -25,7 +25,7 @@ resource "yandex_compute_instance" "vm-1" {
   platform_id = "standard-v2"
 
   scheduling_policy {
-    preemptible = true
+    preemptible = false
   }
 
   boot_disk {

@@ -3,6 +3,7 @@
 
 # Python modules
 import os
+import base64
 
 # Ansible modules
 from ansible.plugins.lookup import LookupBase
@@ -30,7 +31,7 @@ class LookupModule(LookupBase):
                 if not os.path.exists(d):
                     os.makedirs(d, mode=0o700)
                 # Generate key file
-                key = os.urandom(16).encode("base64").strip()
+                key = str(base64.b64encode(os.urandom(16)).decode())
                 with open(path, "w") as f:
                     os.chmod(path, 0o600)
                     f.write(key)
