@@ -378,7 +378,7 @@ class ConsulDCS(DCSBase):
                 _, cv = await self.consul.kv.get(key=manifest_path, index=0)
                 if not cv:
                     return 0
-                return orjson.loads(cv["Value"]).get("Limit", 0)
+                return int(orjson.loads(cv["Value"]).get("Limit", 0))
             except ConsulRepeatableErrors:
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
