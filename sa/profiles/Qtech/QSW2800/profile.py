@@ -19,6 +19,8 @@ class Profile(BaseProfile):
         (r"^Confirm to overwrite current startup-config configuration " r"[Y/N]:", "\nY\n"),
         (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
+        (r"^Process with reboot\?\s*\[Y\/N\]\s*", "N\n"),
+        (r"^Delete file, Are you sure\?\s*\(Y\/N\)\?\[\S\]", "N\n"),
     ]
     pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = (
