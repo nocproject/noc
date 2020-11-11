@@ -395,8 +395,8 @@ class NetworkSegment(Document):
                 self.parent.update_access()
 
     def update_uplinks(self):
-        if self.profile.is_persistent:
-            call_later("noc.core.topology.segment.update_uplinks", 60, segment_id=self.id)
+        # if self.profile.is_persistent:
+        call_later("noc.core.topology.segment.update_uplinks", 60, segment_id=self.id)
 
     def get_horizontal_transit_policy(self):
         if self.horizontal_transit_policy in ("E", "C"):
