@@ -37,7 +37,13 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
         data = []
         # Find object with equal ID
         find = DiscoveryID._get_collection().aggregate(
-            [{"$group": {"_id": "$macs", "count": {"$sum": 1}}}, {"$match": {"count": {"$gt": 1}}}]
+            [
+                {"$unwind": "$macs"},
+                {"$group": {"_id": "$macs", "count": {"$sum": 1}, "mo": {"$push": "$object"}}},
+                {"$match": {"count": {"$gt": 1}}},
+                {"$group": {"_id": "$mo", "macs": {"$push": "$_id"}}},
+            ],
+            allowDiskUse=True,
         )
 
         for f in find:
@@ -48,29 +54,24 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             data_c = []
             pool_c = set()
             reason = "Other"
-
-            for r in DiscoveryID._get_collection().find(
-                {"macs": f["_id"][0]}, {"_id": 0, "object": 1}
-            ):
-                # ManagedObject.get_by_id(o)
-                mo = ManagedObject.get_by_id(r["object"])
-                if len(data_c) > 0:
-                    if mo.address == data_c[-1][1]:
-                        reason = _("Duplicate MO")
-                    elif not mo.is_managed == data_c[-1][4]:
-                        reason = _("MO is move")
+            for mo in ManagedObject.objects.filter(id__in=f["_id"]):
                 pool_c.add(mo.pool.name)
                 data_c.append((mo.name, mo.address, mo.profile.name, mo.pool.name, mo.is_managed))
+            if len(data_c) > 0:
+                if data_c[0][1] == data_c[1][1]:
+                    reason = _("Duplicate MO")
+                elif not data_c[0][4] == data_c[1][4]:
+                    reason = _("MO is move")
             if pool and pool not in pool_c:
                 continue
-            if reason == "Other" and MACBlacklist.is_banned_mac(f["_id"][0], is_duplicated=True):
+            if reason == "Other" and MACBlacklist.is_banned_mac(f["macs"][0], is_duplicated=True):
                 if filter_dup_macs:
                     continue
                 data += [
-                    SectionRow(name="%s %s (%s)" % (MAC(f["_id"][0]), reason, "On duplicated"))
+                    SectionRow(name="%s %s (%s)" % (MAC(f["macs"][0]), reason, "On duplicated"))
                 ]
             else:
-                data += [SectionRow(name="%s %s" % (MAC(f["_id"][0]), reason))]
+                data += [SectionRow(name="%s %s" % (MAC(f["macs"][0]), reason))]
             data += data_c
 
         return self.from_dataset(
