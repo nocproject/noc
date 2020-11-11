@@ -194,8 +194,14 @@ class TagsContainsLookup(models.Lookup):
     lookup_name = "contains"
 
     def as_sql(self, compiler, connection):
-        tags = ",".join(str(adapt(str(x).strip())) for x in self.rhs if str(x).strip())
-        return "(ARRAY[%s] <@ %s)" % (tags, self.lhs.as_sql(compiler, connection)[0]), []
+        tags = []
+        for t in self.rhs:
+            if not t.strip():
+                continue
+            t = adapt(t.strip())
+            t.encoding = "utf8"
+            tags += [smart_text(t).strip()]
+        return "(ARRAY[%s] <@ %s)" % (",".join(tags), self.lhs.as_sql(compiler, connection)[0]), []
 
 
 class DocumentReferenceDescriptor(object):
