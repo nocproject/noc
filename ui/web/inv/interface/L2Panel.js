@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interface L2 Panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interface.L2Panel");
@@ -13,7 +13,6 @@ Ext.define("NOC.inv.interface.L2Panel", {
     ],
     title: __("Switchports"),
     closable: false,
-    layout: "fit",
 
     initComponent: function() {
         var me = this;
@@ -64,44 +63,40 @@ Ext.define("NOC.inv.interface.L2Panel", {
                             dataIndex: "description",
                             flex: 1
                         }
-                     ]
+                    ]
                 }
             ]
         });
         me.callParent();
     },
     //
-    showMAC: function(grid, rowIndex, colIndex) {
-        var me = this,
-            r = me.store.getAt(rowIndex);
+    showMAC: function(grid, rowIndex, colIndex, item, event, record) {
+        var me = this;
 
-        me.currentMAC = r;
+        me.currentMAC = record;
         NOC.mrt({
-            url: "/inv/interface/mrt/get_mac/",
-            selector: me.app.currentObject,
-            mapParams: {
-                interface: r.get("name")
-            },
-            loadMask: me,
             scope: me,
-            success: me.showMACForm,
-            failure: function() {
-                NOC.error(__("Failed to get MACs"));
-            }
+            params: [
+                {
+                    id: me.app.currentObject,
+                    script: "get_mac_address_table",
+                    args: {
+                        interface: record.get("name")
+                    }
+                }
+            ],
+            errorMsg: __("Failed to get MACs"),
+            cb: me.showMACForm
         });
     },
     //
-    showMACForm: function(result) {
-        var me = this,
-            r = result[0];
-        if(r.status) {
-            Ext.create("NOC.inv.interface.MACForm", {
-                data: r.result,
-                title: Ext.String.format("MACs on {0}",
-                    me.currentMAC.get("name"))
-            });
-        } else {
-            NOC.error(__("Failed to get MACs"));
-        }
+    showMACForm: function(data, scope) {
+        Ext.create("NOC.inv.interface.MACForm", {
+            objectId: scope.app.currentObject,
+            data: data,
+            name: scope.currentMAC.get("name"),
+            title: Ext.String.format("MACs on {0}",
+                scope.currentMAC.get("name"))
+        });
     }
 });

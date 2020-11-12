@@ -249,8 +249,7 @@ Ext.apply(NOC.render, {
                     }
                     r.push("</tr>");
                 }
-            }
-            else {
+            } else {
                 r.push("<tr><td></td></tr>");
             }
             r.push("</table>");
@@ -371,21 +370,46 @@ Ext.apply(NOC.msg, {
     }
 });
 
-//
-// Run new Map/Reduce task
-// Usage:
-// NOC.mrt({
-//      url: ...,
-//      selector: ...,
-//      scope: ...,
-//      success: ...,
-//      failure: ...,
-//      mapParams: ...,
-// });
-//
 NOC.mrt = function(options) {
-    var m = Ext.create("NOC.core.MRT", options);
-    m.run();
+    var offset = 0,
+        rxChunk = /^(\d+)\|/,
+        scope = options.scope,
+        xhr = new XMLHttpRequest();
+
+    scope.mask();
+    // Start streaming request
+    xhr.open(
+        'POST',
+        '/api/mrt/',
+        true
+    );
+    xhr.setRequestHeader('Content-Type', 'text/json');
+    xhr.onprogress = function() {
+        // Parse incoming chunks
+        var ft = xhr.responseText.substr(offset),
+            match, l, lh, chunk;
+
+        while(ft) {
+            match = ft.match(rxChunk);
+            if(!match) {
+                break;
+            }
+            lh = match[0].length;
+            l = parseInt(match[1]);
+            chunk = JSON.parse(ft.substr(lh, l));
+            offset += lh + l;
+            ft = ft.substr(lh + l);
+        }
+        if(!chunk.running) {
+            scope.unmask();
+            options.cb(chunk.result, options.scope);
+        }
+    };
+    xhr.send(JSON.stringify(options.params));
+    xhr.onerror = function() {
+        scope.unmask();
+        NOC.error(__(options.errorMsg));
+    };
 };
 //
 NOC.error = function(msg) {
@@ -587,8 +611,7 @@ Ext.define("NOC.form.field.VTypes", {
         try {
             Ext.decode(val);
             return true
-        }
-        catch(err) {
+        } catch(err) {
             return false;
         }
     },
