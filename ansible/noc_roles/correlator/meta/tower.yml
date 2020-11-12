@@ -45,3 +45,4 @@ services:
       stdout_logfile_backups: 3
     depends:
       - noc
+      - liftbridge

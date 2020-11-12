@@ -10,6 +10,8 @@
     cas: 0
   vars:
     ansible_python_interpreter: "{{ consul_control_python }}"
+  environment:
+    ANSIBLE_JINJA2_NATIVE: true
   register: consul_key_response
   changed_when: "False"
   check_mode: "False"
@@ -26,6 +28,8 @@
       Holders: []
       Limit: "{{ consul_service_value | int }}"
     ansible_python_interpreter: "{{ consul_control_python }}"
+  environment:
+    ANSIBLE_JINJA2_NATIVE: true
   when:
     - consul_key_response.data is defined
     - not consul_key_response.data or not consul_key_response.data.Value
@@ -43,6 +47,8 @@
     #token: "{{ consul_service_token }}"
   vars:
     ansible_python_interpreter: "{{ consul_control_python }}"
+  environment:
+    ANSIBLE_JINJA2_NATIVE: true
   when:
     - consul_key_response.data is defined
     - consul_key_response.data.Value is defined

@@ -44,7 +44,7 @@ provisioner:
     side_effect: cache.yml
   options:
     i: inv.yml
-    extra-vars: tower_dist_dir=/tmp noc_version=${NOC_BRANCH}
+    extra-vars: tower_dist_dir=/tmp noc_version=${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-"master"}
   lint:
     name: ansible-lint
 scenario:

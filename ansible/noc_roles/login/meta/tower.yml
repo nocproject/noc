@@ -50,7 +50,7 @@ forms:
       type: str
     session_ttl:
       default: 7d
-      label: "Session TTL (days)"
+      label: "Session TTL, seconds"
       type: str
 
 services:

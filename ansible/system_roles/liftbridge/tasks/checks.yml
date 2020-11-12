@@ -1,0 +1,9 @@
+---
+- name: fail if nats is not selected
+  fail:
+    msg: "Liftbridge service works only with Nats service. Please install at least one"
+  when:
+    - has_svc_correlator is defined
+    - "'svc-nats' not in group_names"
+  tags:
+    - checks
