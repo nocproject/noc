@@ -23,3 +23,5 @@ services:
     level: system
     category: external
     port: 9292
+    depends:
+      - nats
