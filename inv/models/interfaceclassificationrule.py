@@ -15,7 +15,7 @@ from mongoengine.fields import StringField, IntField, ListField, EmbeddedDocumen
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.ip import IP
-from noc.main.models.prefixtable import PrefixTable
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter
 from noc.core.comp import smart_text
@@ -52,6 +52,63 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         else:
             v = self.value
         return "%s %s %s" % (self.field, self.op, v)
+
+    @property
+    def get_confdb_query(self):
+        query = ['Match("interfaces", ifname)']
+        if self.field == "name" and self.op == "eq":
+            query += ['Filter(ifanme == "%s")' % self.value]
+        elif self.field == "name" and self.op == "regexp":
+            query += ['Re("%s", ifname, ignore_case=True)' % self.value]
+        if self.field == "description":
+            query += ['Match("interfaces", ifname, "description", ifdescr)']
+            if self.op == "eq":
+                query += ['Filter(ifdescr == "%s")' % self.value]
+            elif self.op == "regexp":
+                query += ['Re("%s", ifdescr, ignore_case=True)' % self.value]
+        if self.field == "hints" and self.op == "eq":
+            query += ['Match("interfaces", ifname, "hints", "%s")' % self.value]
+        if self.field == "ip" and self.op == "eq":
+            query += [
+                'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
+                ' ifname, "unit", ifname, "inet", "address", "%s")' % self.value
+            ]
+        elif self.field == "ip" and self.op == "in" and self.prefix_table:
+            prefix_match = "( %s )" % " or ".join(
+                " MatchPrefix('%s', address)" % ptp.prefix
+                for ptp in PrefixTablePrefix.objects.filter(table=self.prefix_table)
+            )
+            query += [
+                'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
+                ' ifname, "unit", ifname, "inet", "address", address)'
+                " and %s and Del(vr, fi, address)" % prefix_match
+            ]
+        if self.field == "untagged" and self.op == "eq":
+            query += [
+                'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
+                ' ifname, "unit", ifname, "bridge", "switchport", "untagged", untagged)'
+                ' and HasVLAN("%s", untagged) and Del(vr, fi, untagged)' % self.vc_filter.expression
+            ]
+        elif self.field == "untagged" and self.op == "in" and self.vc_filter:
+            query += [
+                'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
+                ' ifname, "unit", ifname, "bridge", "switchport", "untagged", untagged)'
+                ' and HasVLAN("%s", untagged) and Del(vr, fi, untagged)' % self.vc_filter.expression
+            ]
+        if self.field == "tagged" and self.op == "eq":
+            query += [
+                'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
+                ' ifname, "unit", ifname, "bridge", "switchport", "tagged", tagged)'
+                ' and MatchExactVLAN("%s", tagged) and Del(vr, fi, tagged)' % self.value
+            ]
+        elif self.field == "tagged" and self.op == "in" and self.vc_filter:
+            query += [
+                'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
+                ' ifname, "unit", ifname, "bridge", "switchport", "tagged", tagged)'
+                ' and MatchAnyVLAN("%s", tagged) and Del(vr, fi, tagged)'
+                % self.vc_filter.expression
+            ]
+        return " and ".join(query)
 
     def compile(self, f_name):
         a = getattr(self, "compile_%s_%s" % (self.field, self.op), None)
@@ -215,6 +272,15 @@ class InterfaceClassificationRule(Document):
             return smart_text(self.match[0])
         else:
             return " AND ".join("(%s)" % smart_text(m) for m in self.match)
+
+    @property
+    def get_confdb_query(self):
+        if not len(self.match):
+            return 'Match("interfaces", ifname, "type", "physical")'
+        elif len(self.match) == 1:
+            return self.match[0].get_confdb_query
+        else:
+            return " and ".join("(%s)" % m.get_confdb_query for m in self.match)
 
     @classmethod
     def get_classificator_code(cls):

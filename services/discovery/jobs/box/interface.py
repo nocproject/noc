@@ -9,7 +9,7 @@
 from collections import defaultdict
 
 # Third-party modules
-from typing import Dict
+from typing import Dict, List, Tuple
 
 # NOC modules
 from noc.core.text import ranges_to_list
@@ -68,6 +68,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.get_interface_profile = InterfaceClassificationRule.get_classificator()
+        self.confd_interface_profile_map = List[Tuple[str, InterfaceProfile]]
         self.interface_macs = set()
         self.seen_interfaces = []
         self.vrf_artefact = {}  # name -> {name:, type:, rd:}
@@ -166,11 +167,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     forwarding_instance, iface, [si["name"] for si in i["subinterfaces"]]
                 )
                 # Perform interface classification
-                self.interface_classification(iface)
+                # self.interface_classification(iface)
                 # Store for future collation
                 if_map[iface.name] = iface
             # Delete hanging interfaces
             self.seen_interfaces += [i["name"] for i in fi["interfaces"]]
+        # Classify interface
+        self.interface_classification_confdb(if_map)
         # Delete hanging interfaces
         self.cleanup_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
@@ -407,6 +410,40 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             ).first()
             if dsi:
                 dsi.delete()
+
+    def interface_classification_confdb(self, ifmap: Dict[str, Interface]):
+        """
+        Perform interface classification by ConfDB
+        :param ifmap: Interface classification list
+        :return:
+        """
+        self.logger.debug("Start interface classification")
+        proccessed = set()
+        selectors_skipping = set()  # if selectors has not match
+        cdb = self.object.get_confdb()
+        # selector -> [(order, match, profile)]
+        for icr in InterfaceClassificationRule.objects.filter(is_active=True).order_by("order"):
+            if icr.selector.id in selectors_skipping:
+                continue
+            r = next(cdb.query(icr.selector.get_confdb_query), None)
+            if r is None:
+                # Selectors already fail check
+                selectors_skipping.add(icr.selector.id)
+                continue
+            for match in cdb.query(icr.get_confdb_query):
+                if match["ifname"] in proccessed or match["ifname"] not in ifmap:
+                    continue
+                self.logger.debug("[%s] Match %s", icr, match["ifname"])
+                iface = ifmap[match["ifname"]]
+                proccessed.add(match["ifname"])
+                if iface.profile_locked:
+                    continue
+                if icr.profile.id != iface.profile.id:
+                    self.logger.info(
+                        "Interface %s has been classified as '%s'", iface.name, icr.profile.name
+                    )
+                    iface.profile = icr.profile
+                    iface.save()
 
     def interface_classification(self, iface):
         """
