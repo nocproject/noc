@@ -78,7 +78,7 @@ Babel==2.3.4; extra == "dev"
 ipython==7.18.1; extra == "dev"
 pojson==0.6; extra == "dev"
 # Login LDAP
-ldap3==2.6.1; extra == "login-ldap"
+ldap3==2.8.1; extra == "login-ldap"
 # Login PAM
 python-pam==1.8.4; extra == "login-pam"
 # Login RADIUS

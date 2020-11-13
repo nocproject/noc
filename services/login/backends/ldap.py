@@ -16,6 +16,13 @@ from .base import BaseAuthBackend
 
 
 class LdapBackend(BaseAuthBackend):
+
+    POOLING_STRATEGIES = {
+        "f": ldap3.FIRST,
+        "rr": ldap3.ROUND_ROBIN,
+        "r": ldap3.RANDOM,
+    }
+
     def authenticate(self, user: str = None, password: str = None, **kwargs) -> str:
         # Validate username
         if not self.check_user(user):
@@ -149,7 +156,12 @@ class LdapBackend(BaseAuthBackend):
         if not servers:
             self.logger.error("No active servers configured for domain '%s'", ldap_domain.name)
             return None
-        pool = ldap3.ServerPool(servers, ldap3.ROUND_ROBIN, active=2)
+        pool = ldap3.ServerPool(
+            servers,
+            self.POOLING_STRATEGIES.get(ldap_domain.ha_policy),
+            active=ldap_domain.get_pool_active(),
+            exhaust=ldap_domain.get_pool_exhaust(),
+        )
         return pool
 
     def get_connection_kwargs(self, ldap_domain, user, password):
