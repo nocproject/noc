@@ -21,7 +21,7 @@ lint:
     - changes:
         - ansible/**/*
         - ansible/*
-    - when: manual
+    - if: '$CI_PIPELINE_SOURCE == "web"'
   tags:
     - docker
 
@@ -49,7 +49,7 @@ lint:
     - changes:
         - ansible/**/*
         - ansible/*
-    - when: manual
+    - if: '$CI_PIPELINE_SOURCE == "web"'
 
 build_centos7:
    extends: .base_builder
