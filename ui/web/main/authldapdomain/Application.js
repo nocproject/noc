@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.authldapdomain application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.authldapdomain.Application");
@@ -174,6 +174,40 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     ]
                 },
                 {
+                    name: "ha_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Pool Strategy"),
+                    store: [
+                        ["f", __("First")],
+                        ["rr", __("Round Robin")],
+                        ["r", __("Random")]
+                    ],
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
+                    name: "pool_active",
+                    xtype: "numberfield",
+                    fieldLabel: __("Pool Active"),
+                    uiStyle: "small",
+                    allowBlank: true,
+                    tooltip: __('If empty active=True'),
+                    listeners: {
+                        render: me.addTooltip
+                    }
+                },
+                {
+                    name: "pool_exhaust",
+                    xtype: "numberfield",
+                    fieldLabel: __("Pool Exhaust"),
+                    uiStyle: "small",
+                    allowBlank: true,
+                    tooltip: __('If empty exhaus=True'),
+                    listeners: {
+                        render: me.addTooltip
+                    }
+                },
+                {
                     name: "convert_username",
                     xtype: "combobox",
                     fieldLabel: __("Convert Username"),
@@ -230,5 +264,12 @@ Ext.define("NOC.main.authldapdomain.Application", {
             ]
         });
         me.callParent();
+    },
+    //
+    addTooltip: function(element) {
+    Ext.create('Ext.tip.ToolTip', {
+        target: element.getEl(),
+        html: element.tooltip
+    });
     }
 });

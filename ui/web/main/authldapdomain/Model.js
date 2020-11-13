@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.authldapdomain Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.authldapdomain.Model");
@@ -58,6 +58,18 @@ Ext.define("NOC.main.authldapdomain.Model", {
         {
             name: "servers",
             type: "auto"
+        },
+        {
+            name: "ha_policy",
+            type: "string"
+        },
+        {
+            name: "pool_active",
+            type: "string"
+        },
+        {
+            name: "pool_exhaust",
+            type: "string"
         },
         {
             name: "require_group",

@@ -82,6 +82,23 @@ class AuthLDAPDomain(Document):
     convert_username = StringField(
         choices=[("0", "As-is"), ("l", "Lowercase"), ("u", "Uppercase")], default="l"
     )
+    # The pool can have different HA strategies:
+    # FIRST: gets the first server in the pool, if ‘active’ is set to True gets the first available server
+    # ROUND_ROBIN: each time the connection is open the subsequent server in the pool is used.
+    # If active is set to True unavailable servers will be discarded
+    # RANDOM: each time the connection is open a random server
+    # is chosen in the pool. If active is set to True unavailable servers will be discarded
+    ha_policy = StringField(
+        choices=[("f", "First"), ("rr", "Round Robin"), ("r", "Random")], default="rr"
+    )
+    # if you set active=True while defining the ServerPool the strategy will check for server availability,
+    # you can also set this attribute to the maximum number of cycles to try before
+    # giving up with an LDAPServerPoolExhaustedError exception.
+    pool_active = IntField()
+    # With exhaust=True if a server is not active it will be removed by the pool,
+    # if you set it to a number this will be the number of seconds an unreachable server is considered offline.
+    # When this timout expires the server is reinserted in the pool and checked again for availability. The
+    pool_exhaust = IntField()
     # Synchronize first_name/last_name with LDAP
     sync_name = BooleanField(default=False)
     # Synchronize email with LDAP
@@ -188,3 +205,13 @@ class AuthLDAPDomain(Document):
                     mappings[gm.group] = {gm.group_dn.lower()}
             self._group_dn = mappings
         return self._group_dn
+
+    def get_pool_active(self):
+        if self.pool_active:
+            return self.pool_active
+        return True
+
+    def get_pool_exhaust(self):
+        if self.pool_exhaust:
+            return self.pool_exhaust
+        return True
