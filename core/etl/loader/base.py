@@ -448,6 +448,9 @@ class BaseLoader(object):
             except ValueError as e:  # Referred Error
                 self.logger.error("%s", str(e))
                 self.referred_errors += [(r_id, msg)]
+            except KeyError as e:
+                # Undefined mappings
+                self.logger.error("%s", str(e))
             except self.model.DoesNotExist:
                 pass  # Already deleted
         self.pending_deletes = []
