@@ -1,0 +1,8 @@
+{
+    "name": "OpenWRT Team",
+    "uuid": "a59d72fa-6a06-449e-8b16-7a2e655b82e5",
+    "full_name": "OpenWRT Team",
+    "code": ["OPENWRT"],
+    "site": "https://openwrt.org/",
+    "$collection": "inv.vendors"
+}
