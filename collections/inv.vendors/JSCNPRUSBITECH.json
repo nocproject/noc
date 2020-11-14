@@ -1,0 +1,8 @@
+{
+    "name": "RusBITech",
+    "uuid": "5e95c2e7-4d39-4186-9819-d0d66c2ae3bb",
+    "full_name": "RPA RusBITech JSC",
+    "code": ["RUSBITECH"],
+    "site": "https://rusbitech.ru/en/",
+    "$collection": "inv.vendors"
+}
