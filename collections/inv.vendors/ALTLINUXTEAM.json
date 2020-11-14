@@ -1,0 +1,8 @@
+{
+    "name": "ALT Linux",
+    "uuid": "4cb3392f-a58b-46fe-8fd7-f0a91dcfd138",
+    "full_name": "ALT Linux Team",
+    "code": ["ALTLINUX"],
+    "site": "https://www.basealt.ru",
+    "$collection": "inv.vendors"
+}
