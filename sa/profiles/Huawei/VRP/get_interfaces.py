@@ -331,6 +331,12 @@ class Script(BaseScript):
         return vrfs, imap
 
     def get_vrrpint(self):
+        if not (
+            self.has_capability("Network | HSRP")
+            or self.has_capability("Network | VRRP | v2")
+            or self.has_capability("Network | VRRP | v3")
+        ):
+            return {}
         try:
             v = self.cli("display vrrp brief", cached=True)
             rx_vrrp = self.rx_vrrp
