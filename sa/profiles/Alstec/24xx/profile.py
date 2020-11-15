@@ -51,6 +51,23 @@ class Profile(BaseProfile):
 
     matchers = {"is_builtin_controller": {"platform": {"$in": ["ALS24110P"]}}}
 
+    rx_physical_port = re.compile(r"^d\+\/\d+")
+
+    @classmethod
+    def get_interface_type(cls, name):
+        if name.startswith("CPU"):
+            return "SVI"
+        if cls.rx_physical_port.match(name):
+            return "physical"
+        return "other"
+
+    rx_ip_interface = re.compile(r"\s*CPU\s+Interface\s*:\s*(\d+\/\d+)")
+
+    def convert_interface_name(self, s):
+        if self.rx_ip_interface.match(s):
+            return self.rx_ip_interface.match(s).group(1)
+        return s
+
     @staticmethod
     def parse_kv_out(out):
         r = {}
