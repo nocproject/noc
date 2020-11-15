@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -25,6 +24,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_bootrom = re.compile(r"(?:[Bb]ootrom\s[Vv]ersion\s:)\s\s(?P<bootrom>\S+)")
+    rx_sern = re.compile(r"^Serial Number\s+:\s(?P<ser_n>\d+)", re.MULTILINE)
 
     def execute_cli(self, **kwargs):
         v = self.cli("show version", cached=True)
@@ -32,11 +32,14 @@ class Script(BaseScript):
         match1 = self.re_search(self.rx_bootrom, v)
         platform = match.group("platform")
         bootrom = match1.group("bootrom")
-        s = (
-            self.snmp.get(mib["1.3.6.1.4.1.14885.1001.6004.1.3.1.11.0.0.1"])
-            if self.has_snmp()
-            else None
-        )
+        s = ""
+        try:
+            match2 = self.rx_sern.search(self.cli("show serial number"))
+            if match2:
+                s = match2.group("ser_n")
+        except self.CLISyntaxError:
+            if self.has_snmp():
+                s = self.snmp.get("1.3.6.1.4.1.14885.1001.6004.1.3.1.11.0.0.1")
         r = {
             "vendor": "Polygon",
             "platform": platform,
