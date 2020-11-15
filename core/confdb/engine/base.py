@@ -488,7 +488,7 @@ class Engine(object):
             if not vs:
                 continue
             try:
-                vs = set(ranges_to_list(vs))
+                vs = set(ranges_to_list(str(vs)))
             except SyntaxError:
                 return
             if vf.intersection(vs):
@@ -512,7 +512,7 @@ class Engine(object):
             if not vs:
                 continue
             try:
-                vs = set(ranges_to_list(vs))
+                vs = set(ranges_to_list(str(vs)))
             except SyntaxError:
                 return
             if not vs - vf:
@@ -536,7 +536,7 @@ class Engine(object):
             if not vs:
                 continue
             try:
-                vs = set(ranges_to_list(vs))
+                vs = set(ranges_to_list(str(vs)))
             except SyntaxError:
                 return
             if not vf.symmetric_difference(vs):
