@@ -64,8 +64,12 @@ class MESNormalizer(BaseNormalizer):
     @match("interface", ANY, "description", REST)
     @match("interface", "vlan", ANY, "name", REST)
     def normalize_interface_description(self, tokens):
+        if tokens[2] == "description":
+            description = tokens[3:]
+        else:
+            description = tokens[4:]
         yield self.make_interface_description(
-            interface=self.normalize_interface_name(tokens), description=" ".join(tokens[-2:])
+            interface=self.normalize_interface_name(tokens), description=" ".join(description)
         )
 
     @match("interface", ANY, "port", "security", "max", ANY)
