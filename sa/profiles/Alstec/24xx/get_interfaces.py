@@ -9,9 +9,10 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.text import parse_kv, alnum_key
 
 
 class Script(BaseScript):
@@ -56,17 +57,38 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
+    description_map = {
+        "description": "description",
+        "mac address": "mac",
+    }
+
+    def fix_last_port_description(self, interfaces):
+        """
+        For last N interfaces fill description and MAC
+        :param interfaces:
+        :return:
+        """
+        for ifname in list(sorted(interfaces, reverse=True, key=alnum_key))[:3]:
+            v = self.cli("show port description %s" % ifname)
+            if not v:
+                continue
+            r = parse_kv(self.description_map, v, sep=".")
+            if "description" in r:
+                interfaces[ifname]["description"] = r["description"].strip(". ")
+            if "mac" in r:
+                interfaces[ifname]["mac"] = r["mac"].strip(". ")
+
     def execute_cli(self):
         sw = {
             sp["interface"]: {"tagged": sp["tagged"], "untagged": sp.get("untagged")}
             for sp in self.scripts.get_switchport()
         }
         d = self.cli("show port description all", ignore_errors=True)
-        interfaces = []
+        interfaces = {}
         snmp_ifindex = 1  # Dirty hack. I can not found another way
         for match in self.rx_port.finditer(self.cli("show port all")):
             ifname = match.group("port")
-            iface = {
+            interfaces[ifname] = {
                 "name": ifname,
                 "type": "physical",
                 "admin_status": match.group("admin_status") == "Enable",
@@ -84,21 +106,21 @@ class Script(BaseScript):
             }
             for matchd in self.rx_desc.finditer(d):
                 if matchd.group("port") == ifname:
-                    iface["description"] = matchd.group("desc")
-                    iface["subinterfaces"][0]["description"] = matchd.group("desc")
+                    interfaces[ifname]["description"] = matchd.group("desc")
+                    interfaces[ifname]["subinterfaces"][0]["description"] = matchd.group("desc")
             if ifname in sw:
                 if sw[ifname]["tagged"]:
-                    iface["subinterfaces"][0]["tagged_vlans"] = sw[ifname]["tagged"]
+                    interfaces[ifname]["subinterfaces"][0]["tagged_vlans"] = sw[ifname]["tagged"]
                 if sw[ifname]["untagged"]:
-                    iface["subinterfaces"][0]["untagged_vlan"] = sw[ifname]["untagged"]
-            interfaces += [iface]
+                    interfaces[ifname]["subinterfaces"][0]["untagged_vlan"] = sw[ifname]["untagged"]
             snmp_ifindex += 1
+        self.fix_last_port_description(interfaces)
         v = self.cli("show network", cached=True)
         match = self.rx_ip.search(v)
         ip_address = match.group("ip_address")
         ip_subnet = match.group("ip_subnet")
         ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-        iface = {
+        interfaces["0/0"] = {
             "name": "0/0",
             "type": "SVI",
             "admin_status": True,
@@ -118,7 +140,6 @@ class Script(BaseScript):
             ],
         }
         if match.group("ipv6_address"):
-            iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
-            iface["subinterfaces"][0]["ipv6_addresses"] = [match.group("ipv6_address")]
-        interfaces += [iface]
-        return [{"interfaces": interfaces}]
+            interfaces["0/0"]["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
+            interfaces["0/0"]["subinterfaces"][0]["ipv6_addresses"] = [match.group("ipv6_address")]
+        return [{"interfaces": list(interfaces.values())}]
