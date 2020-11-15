@@ -34,8 +34,7 @@ Ext.define("NOC.inv.interface.Application", {
         // Create tabs
         me.l1Panel = Ext.create("NOC.inv.interface.L1Panel", {
             app: me,
-            store: me.l1Store,
-            disabled: true
+            store: me.l1Store
         });
         me.lagPanel = Ext.create("NOC.inv.interface.LAGPanel", {
             app: me,
@@ -131,7 +130,6 @@ Ext.define("NOC.inv.interface.Application", {
                 panel.setDisabled(!d);
             }
         // Set panel visibility
-        adjust(me.l1Panel, data.l1);
         adjust(me.lagPanel, data.lag);
         adjust(me.l2Panel, data.l2);
         adjust(me.l3Panel, data.l3);
