@@ -1,0 +1,26 @@
+config: |
+  interface gigabitethernet1/0/23
+   description Description 1
+  exit
+  !
+  interface gigabitethernet1/0/24
+   description Description-2
+  exit
+  !
+  interface vlan 10
+   name Mgmt1
+  exit
+  !
+  interface vlan 12
+   name Mgmt2
+  exit
+  !
+result:
+  - ['interfaces', 'Gi 1/0/23']
+  - ['interfaces', 'Gi 1/0/23', 'description', 'Description 1', {'replace': true}]
+  - ['interfaces', 'Gi 1/0/24']
+  - ['interfaces', 'Gi 1/0/24', 'description', 'Description-2', {'replace': true}]
+  - ['interfaces', 'Vl 10']
+  - ['interfaces', 'Vl 10', 'description', 'Mgmt1', {'replace': true}]
+  - ['interfaces', 'Vl 12']
+  - ['interfaces', 'Vl 12', 'description', 'Mgmt2', {'replace': true}]
