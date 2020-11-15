@@ -104,6 +104,15 @@ class Script(BaseScript):
         r"(?P<iface>\S+)\s+(?:trunking|hybrid|trunk|access)\s+(?:\d+)\s+(?P<vlans>.+)"
     )
 
+    rx_vrrp = re.compile(
+        r"(?P<vrid>\d+)\s+(?P<state>\w+)\s+(?P<ifname>\S+)\s+(?P<type>\w+)\s+(?P<virtual_ip>[0-9.]+)",
+        re.MULTILINE,
+    )
+    rx_vrrp_ver_8_80 = re.compile(
+        r"(?P<ifname>\S+)\s\|.+\nState\s+:\s(?P<status>\w+)\nVirtual IP\s+:\s(?P<virtual_ip>[0-9.]+)\s",
+        re.MULTILINE,
+    )
+
     def parse_displ_port_allow_vlan(self):
         # Used on CX200 series
         try:
@@ -251,7 +260,7 @@ class Script(BaseScript):
         return ospfs
 
     def get_ndpint(self):
-        if not (self.has_capability("Huawei | NDP")):
+        if not self.has_capability("Huawei | NDP"):
             return []
         try:
             v = self.cli("display ndp", cached=True)
@@ -321,6 +330,25 @@ class Script(BaseScript):
                 imap[i] = v["name"]
         return vrfs, imap
 
+    def get_vrrpint(self):
+        try:
+            v = self.cli("display vrrp brief", cached=True)
+            rx_vrrp = self.rx_vrrp
+        except self.CLISyntaxError:
+            try:
+                v = self.cli("display vrrp verbose", cached=True)
+                rx_vrrp = self.rx_vrrp_ver_8_80
+            except self.CLISyntaxError:
+                return {}
+        vrrps = {}
+        for match in rx_vrrp.finditer(v):
+            ifname = self.profile.convert_interface_name(match.group("ifname"))
+            if ifname in vrrps:
+                vrrps[ifname] += [match.group("virtual_ip") + "/32"]
+            else:
+                vrrps[ifname] = [match.group("virtual_ip") + "/32"]
+        return vrrps
+
     def execute_cli(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = self.get_switchport_cli()
@@ -357,6 +385,8 @@ class Script(BaseScript):
         stps = self.get_stpint()
         # Get LLDP interfaces
         lldps = self.get_lldpint()
+        # Get VRRP interfaces
+        vrrps = self.get_vrrpint()
 
         v = self.cli("display interface", cached=True)
         il = self.rx_iface_sep.split(v)[1:]
@@ -483,6 +513,10 @@ class Script(BaseScript):
                 if ifname in lldps:
                     # LLDP
                     iface["enabled_protocols"] += ["LLDP"]
+                if ifname in vrrps.keys():
+                    # VRRP
+                    sub["enabled_protocols"] += ["VRRP"]
+                    sub["ipv4_addresses"] += vrrps[ifname]
                 # Portchannel member
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
