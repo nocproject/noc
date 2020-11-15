@@ -91,7 +91,7 @@ class Script(BaseScript):
         r"Patch Package Version\s*:(?P<patch_version>\S+)"
     )
     rx_hw_extended_platform = re.compile(r"(?P<platform>\S+)[-,](CX|LS)\S+[-,].+")
-    BAD_PLATFORM = ["", "Quidway S5600-HI"]
+    BAD_PLATFORM = ["", "Quidway S5600-HI", "S5600-HI"]
     hw_series = {"S2300", "S5300", "S3328"}
 
     def find_re(self, iter, s):
