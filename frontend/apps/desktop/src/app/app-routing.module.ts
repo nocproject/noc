@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-// import { WelcomeComponent } from './welcome.component';
+import { HomePageComponent } from './containers';
 
 const routes: Routes = [
-  // {
-  //   path: 'welcome',
-  //   component: WelcomeComponent
-  // },
+  {
+    path: 'home',
+    component: HomePageComponent
+  },
   // {
   //   path: 'admin',
   //   loadChildren: () =>
@@ -18,11 +18,11 @@ const routes: Routes = [
   //   loadChildren: () =>
   //     import('@noc-nx/monitor').then(module => module.MonitorModule),
   // },
-  // {
-  //   path: '',
-  //   redirectTo: '/welcome',
-  //   pathMatch: 'full'
-  // }
+  {
+    path: '',
+    redirectTo: '/home',
+    pathMatch: 'full'
+  }
 ];
 
 @NgModule({

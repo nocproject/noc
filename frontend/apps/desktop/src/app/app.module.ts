@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -10,6 +11,7 @@ import { LoggingModule, LogLevel } from '@noc/log';
 import { environment } from '@env/environment';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HomePageComponent } from './containers';
 
 export function configureAuth(authConfigService: AuthConfigService) {
   return () =>
@@ -26,7 +28,10 @@ export function configureAuth(authConfigService: AuthConfigService) {
 }
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    HomePageComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -54,7 +59,8 @@ export function configureAuth(authConfigService: AuthConfigService) {
       }) :
       // In a production build you would want to disable the Store Devtools
       // logOnly: environment.production,
-      []
+      [],
+    FormsModule
   ],
   providers: [
     AuthConfigService,

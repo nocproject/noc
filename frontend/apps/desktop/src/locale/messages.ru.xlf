@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="ng2.template" target-language="ru">
+        <body>
+            <trans-unit id="status.pending" datatype="html">
+                <source>PENDING</source>
+                <target state="new">ОЖИДАНИЕ</target>
+
+
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../apps/desktop/src/app/containers/home-page/home-page.component.ts
+                    </context>
+                    <context context-type="linenumber">28</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="2002272803511843863" datatype="html">
+                <source state="new">{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {
+                    <x id="INTERPOLATION"/>
+                    minutes ago}}
+                </source>
+                <target>{VAR_PLURAL, plural, =0 {прямо сейчас id} =1 {одну минуту назад id} other {
+                    <x id="INTERPOLATION"/>
+                    минут назад id}}
+                </target>
+
+
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../apps/desktop/src/app/containers/home-page/home-page.component.ts
+                    </context>
+                    <context context-type="linenumber">16</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="page.home.text.plural" datatype="html">
+                <source>Updated
+                    <x id="ICU" equiv-text="{minutes, plural, =0 {just now} =1 {one minute ago} other {{{minutes}} minutes ago}}"/>
+                </source>
+                <target state="new">Updated
+                    <x id="ICU" equiv-text="{minutes, plural, =0 {прямо сейчас} =1 {одну минуту назад} other {{{minutes}} минут назад}}"/>
+                </target>
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../apps/desktop/src/app/containers/home-page/home-page.component.ts
+                    </context>
+                    <context context-type="linenumber">16</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="page.home.text" datatype="html">
+                <source>Create</source>
+                <target state="translated">Создать</target>
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../apps/desktop/src/app/containers/home-page/home-page.component.ts
+                    </context>
+                    <context context-type="linenumber">17</context>
+                </context-group>
+            </trans-unit>
+
+            <trans-unit id="form.login.field.username.placeholder" datatype="html">
+                <source>Username</source>
+                <target>Пользователь</target>
+
+
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../libs/auth/src/lib/components/login-form/login-form.component.ts
+                    </context>
+                    <context context-type="linenumber">14</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="form.login.field.password.placeholder" datatype="html">
+                <source>Password</source>
+                <target>Пароль</target>
+
+
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../libs/auth/src/lib/components/login-form/login-form.component.ts
+                    </context>
+                    <context context-type="linenumber">23</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="form.login.button.login" datatype="html">
+                <source>Login</source>
+                <target state="new">Войти</target>
+
+
+                <context-group purpose="location">
+                    <context context-type="sourcefile">
+                        ../../libs/auth/src/lib/components/login-form/login-form.component.ts
+                    </context>
+                    <context context-type="linenumber">33</context>
+                </context-group>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

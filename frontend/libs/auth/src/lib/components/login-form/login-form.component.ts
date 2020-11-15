@@ -10,6 +10,7 @@ import { Credentials } from '../../models';
       <p>
         <input
           type="text"
+          i18n-placeholder="@@form.login.field.username.placeholder"
           placeholder="Username"
           formControlName="username"
         />
@@ -18,6 +19,7 @@ import { Credentials } from '../../models';
       <p>
         <input
           type="password"
+          i18n-placeholder="@@form.login.field.password.placeholder"
           placeholder="Password"
           formControlName="password"
         />
@@ -27,8 +29,8 @@ import { Credentials } from '../../models';
         {{ errorMessage }}
       </p>
 
-      <p class="loginButtons">
-        <button type="submit">Login</button>
+      <p>
+        <button type="submit" i18n="@@form.login.button.login">Login</button>
       </p>
     </form>
   `

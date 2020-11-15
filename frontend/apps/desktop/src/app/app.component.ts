@@ -11,31 +11,39 @@ import { LoggingService } from '@noc/log';
   template: `
     <div>Application Component</div>
     <button *ngIf="isAuthenticated$ | async" (click)="logout()">Logout</button>
+    <ng-template ngFor let-lang [ngForOf]="languages">
+      <div *ngIf="!localeInPath(lang.code)"><a [href]="replaceLocale(lang.code)">{{lang.label}}</a></div>
+      <div *ngIf="localeInPath(lang.code)">{{lang.label}}</div>
+    </ng-template>
     <router-outlet></router-outlet>
   `
 })
 export class AppComponent implements OnInit, OnDestroy {
   private authSubscription: Subscription;
   private refreshSubscription: Subscription;
+  base = this.window['_app_base'] || '/';
   isAuthenticated$ = this.authFacade.isAuthenticated$;
+  languages = [
+    { code: 'en', label: 'English' },
+    { code: 'ru', label: 'Русский' }
+  ];
 
   constructor(
-    @Inject(LOCALE_ID) protected locale: string,
+    @Inject(LOCALE_ID) public localeId: string,
     @Inject(WINDOW) private window: any,
     private loggerService: LoggingService,
     private storageService: StorageService,
     private authFacade: AuthFacade,
     private router: Router
   ) {
-    this.loggerService.logDebug(`LOCALE_ID is ${locale}`);
+    this.loggerService.logDebug(`LOCALE_ID is ${localeId}`);
   }
 
   ngOnInit(): void {
     this.authSubscription = this.authFacade
       .checkAuth()
       .subscribe(isAuthenticated => {
-        const base = this.window['_app_base'] || '/';
-        const pathname = '/' + this.window.location.pathname.replace(base, '');
+        const pathname = '/' + this.window.location.pathname.replace(this.base, '');
         this.loggerService.logDebug(`is authenticated ${isAuthenticated}`);
         if (!isAuthenticated) {
           if ('/login' !== pathname) {
@@ -62,6 +70,14 @@ export class AppComponent implements OnInit, OnDestroy {
   logout() {
     this.authFacade.logout();
     this.refreshSubscription.unsubscribe();
+  }
+
+  localeInPath(localeId: string): boolean {
+    return this.base.includes(`/${localeId}/`);
+  }
+
+  replaceLocale(localeId: string): string {
+    return this.base.replace(`/${this.localeId}/`, `/${localeId}/`);
   }
 
   private navigateHandler(path: string) {
