@@ -32,6 +32,13 @@ from noc.core.confdb.engine.base import Engine
                 {"vf": "5", "vlan": "5"},
             ],
         ),
+        (
+            {"vf": ["5", "5,10-20"], "vlan": [3, 5, "10-20", 25]},
+            "MatchExactVLAN(vf, vlan)",
+            [
+                {"vf": "5", "vlan": 5},
+            ],
+        ),
     ],
 )
 def test_match_exact_vlan(input, query, output):

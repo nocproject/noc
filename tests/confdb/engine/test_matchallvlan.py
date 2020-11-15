@@ -36,6 +36,17 @@ from noc.core.confdb.engine.base import Engine
                 {"vf": "5,10-20", "vlan": "20"},
             ],
         ),
+        (
+            {"vf": ["5", "5,10-20"], "vlan": [3, 5, 10, 15, 20, 25]},
+            "MatchAllVLAN(vf, vlan)",
+            [
+                {"vf": "5", "vlan": 5},
+                {"vf": "5,10-20", "vlan": 5},
+                {"vf": "5,10-20", "vlan": 10},
+                {"vf": "5,10-20", "vlan": 15},
+                {"vf": "5,10-20", "vlan": 20},
+            ],
+        ),
     ],
 )
 def test_match_all_vlan(input, query, output):
