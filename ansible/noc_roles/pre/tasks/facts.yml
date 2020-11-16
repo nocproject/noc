@@ -1,4 +1,9 @@
 ---
+- name: Collect facts returned by facter
+  setup:
+    gather_subset:
+      - facter
+
 - name: Set tower_ip
   set_fact:
     tower_ip: "{{ hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0] | default('127.0.0.1') }}"
