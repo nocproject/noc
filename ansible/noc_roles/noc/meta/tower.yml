@@ -72,3 +72,4 @@ services:
       - nsqd
       - nginx
       - clickhouse
+      - liftbridge

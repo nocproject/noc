@@ -1,7 +1,7 @@
-{% if inventory_hostname in groups["svc-activator-exec"] %}
+{% if 'svc-activator-exec' in groups and inventory_hostname in groups["svc-activator-exec"] %}
 activator
 {% endif %}
-{% if inventory_hostname in groups["svc-classifier-exec"] %}
+{% if 'svc-classifier-exec' in groups and inventory_hostname in groups["svc-classifier-exec"] %}
 classifier
 {% endif %}
 {% if login_methods is defined and 'ldap' in login_methods %}

@@ -14,11 +14,14 @@ config:
     level: "{{ liftbridge_loglevel }}"
     raft: true
   streams:
-    compact.enabled: true
+    compact.enabled: false
     retention.max:
       age: 24h
   clustering: "{{ cluster_config }}"
   nats.servers: "{{ nats_servers }}"
+  cursors:
+    stream.auto.pause.time: 0
+    stream.partitions: 1
 
 liftbridge_isr_count: 1
 
