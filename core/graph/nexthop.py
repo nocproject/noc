@@ -6,7 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import networkx as nx
+from networkx import shortest_path, NetworkXNoPath
+from networkx.classes.graphviews import subgraph_view
+from networkx.classes.filters import hide_nodes
 
 
 def iter_next_hops(G, source, target):
@@ -21,7 +23,7 @@ def iter_next_hops(G, source, target):
     :return: Yields (neighbor, path length)
     """
     # Exclude source node from path calculations
-    Gv = nx.classes.graphviews.subgraph_view(G, filter_node=nx.classes.filters.hide_nodes([source]))
+    Gv = subgraph_view(G, filter_node=hide_nodes([source]))
     # Calculate shortest path from each neighbors to target
     # Do not allow passing from source
     for hop in G[source]:
@@ -29,7 +31,7 @@ def iter_next_hops(G, source, target):
             yield hop, 2  # Direct next hop
             continue
         try:
-            p = nx.shortest_path(Gv, source=hop, target=target)
-        except nx.NetworkXNoPath:
+            p = shortest_path(Gv, source=hop, target=target)
+        except NetworkXNoPath:
             continue
         yield hop, len(p) + 1
