@@ -43,7 +43,8 @@
       "intervalFactor": 1,
       "query": "SELECT $timeSeries as t, avg(sys_uptime) as `Uptime` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
-      "resultFormat": "time_series"
+      "resultFormat": "time_series",
+      "interval": "$discovery_interval"
     }
   ],
   "timeFrom": null,
