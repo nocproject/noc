@@ -6,7 +6,7 @@
   "bars": false,
   "internal_comment":"graph_interface_load_lag.j2",
   "datasource": null,
-  "fill": 1,
+  "fill": 4,
   "grid": {
     "threshold1": null,
     "threshold1Color": "rgba(216, 200, 27, 0.27)",
@@ -23,10 +23,11 @@
     "show": true,
     "sortDesc": true,
     "total": false,
-    "values": true
+    "values": true,
+    "rightSide": true
   },
   "lines": true,
-  "linewidth": 2,
+  "linewidth": 1,
   "links": [],
   "minSpan": 6,
   "nullPointMode": "connected",
@@ -39,16 +40,21 @@
     {
       "alias": "/Input.+/",
       "transform": "negative-Y"
+    },
+    {
+      "alias": "/Agg.+/",
+      "fill": 5,
+      "linewidth": 5
     }
   ],
   "span": 12,
   "stack": false,
   "steppedLine": false,
+
   "targets": [
-      {
+    {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, sum(load_in) as `Input {{ interface.name }}`,  sum(load_out) as `Output {{ interface.name }}` FROM $table WHERE managed_object = $bi_id and path[4] in ({%for port in interface.ports %}{{ comma() }}'{{port}}'{%endfor%}) and $timeFilter GROUP BY t ORDER BY t",
-      "refId": "A",
+      "query": "SELECT $timeSeries as t, sum(load_in) as `Agg_Input {{ interface.name }}`,  sum(load_out) as `Agg_Output {{ interface.name }}` FROM $table WHERE managed_object = $bi_id and path[4] in ({%for port in interface.ports %}{{ comma() }}'{{port}}'{%endfor%}) and $timeFilter GROUP BY t ORDER BY t",
       "resultFormat": "time_series",
       "database": "noc",
       "tableLoading": false,
@@ -56,8 +62,26 @@
       "dateLoading": false,
       "datetimeLoading": false,
       "dateColDataType": "date",
-      "dateTimeColDataType": "ts"
+      "dateTimeColDataType": "ts",
+      "interval": "$discovery_interval"
     }
+    {% for port in interface.ports -%}
+        {{ comma() }}
+          {
+          "intervalFactor": 1,
+          "query": "SELECT $timeSeries as t, argMax(load_in, t) as `Input {{ port }}`,  argMax(load_out, t) as `Output {{ port }}` FROM $table WHERE managed_object = $bi_id and path[4] = toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
+          "resultFormat": "time_series",
+          "database": "noc",
+          "tableLoading": false,
+          "table": "interface",
+          "dateLoading": false,
+          "datetimeLoading": false,
+          "dateColDataType": "date",
+          "dateTimeColDataType": "ts",
+          "interval": "$discovery_interval"
+        }
+    {% endfor %}
+
   ],
   "timeFrom": null,
   "timeShift": null,
