@@ -26,6 +26,7 @@ class ManagedObjectLoader(BaseLoader):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.clean_map["pool"] = Pool.get_by_name
+        self.clean_map["fm_pool"] = lambda x: Pool.get_by_name(x) if x else None
         self.clean_map["profile"] = Profile.get_by_name
         self.clean_map["static_service_groups"] = lambda x: [
             str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
