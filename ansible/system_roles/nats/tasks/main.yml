@@ -9,7 +9,7 @@
     group: "{{ nats_group }}"
     system: "True"
     home: "{{ nats_home }}"
-    shell: "/bin/sh"
+    shell: "/bin/false"
   tags:
     - config
 
