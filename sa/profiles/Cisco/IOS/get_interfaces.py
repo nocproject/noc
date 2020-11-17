@@ -59,7 +59,8 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_ipv6 = re.compile(
-        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)", re.MULTILINE | re.IGNORECASE
+        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)",
+        re.MULTILINE | re.IGNORECASE,
     )
     rx_vlan_line = re.compile(
         r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+"
@@ -88,6 +89,19 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_oam = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
+
+    rx_show_standby_brief = re.compile(
+        r"(?P<iface>\S+)\s+(?P<group>\d+)\s+(?P<prior>\d+)\s+([P ])?\s+"
+        r"(?P<status>\w+)\s+(?P<active_ip>[0-9.]+|local|standby|Active)\s+"
+        r"(?P<standby_ip>[0-9.]+|local|standby)\s+(?P<virtual_ip>[0-9.]+)",
+        re.MULTILINE,
+    )
+    rx_show_vrrp_brief = re.compile(
+        r"(?P<iface>\S+)\s+(?P<group>\d+)\s+(?P<prior>\d+)\s+(?P<time>\d+)\s+(?P<own>\S+)?\s+(?P<pre>\w+)\s+"
+        r"(?P<state>\w+)\s+(?P<master_addr>[0-9.]+|local|standby|Active|Master|Slave|Standby)\s+"
+        r"(?P<virtual_ip>[0-9.]+)",
+        re.MULTILINE,
+    )
 
     def filter_interface(self, ifindex, name, oper_status):
         if name[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co", "Em"]:
@@ -245,7 +259,13 @@ class Script(BaseScript):
 
     def get_mpls_vpn(self):
         imap = {}  # interface -> VRF
-        vrfs = {"default": {"forwarding_instance": "default", "type": "ip", "interfaces": []}}
+        vrfs = {
+            "default": {
+                "forwarding_instance": "default",
+                "type": "ip",
+                "interfaces": [],
+            }
+        }
         try:
             r = self.scripts.get_mpls_vpn()
         except self.CLISyntaxError:
@@ -328,6 +348,28 @@ class Script(BaseScript):
             )
         time.sleep(2)
         return result
+
+    def get_vrrp_interfaces(self):
+        if not (
+            self.has_capability("Network | VRRP | v2")
+            or self.has_capability("Network | VRRP | v3")
+            or self.has_capability("Network | HSRP")
+        ):
+            return {}
+        vrrps = {}
+        for cmd in ("show standby brief", "show vrrp brief"):
+            try:
+                v = self.cli(cmd)
+            except self.CLISyntaxError:
+                continue
+            rx_vrrp = eval(f"self.rx_{cmd.replace(' ', '_')}")
+            for match in rx_vrrp.finditer(v):
+                ifname = self.profile.convert_interface_name(match.group("iface"))
+                if ifname in vrrps:
+                    vrrps[ifname] += [match.group("virtual_ip") + "/32"]
+                else:
+                    vrrps[ifname] = [match.group("virtual_ip") + "/32"]
+        return vrrps
 
     def execute_cli(self):
         # Get port-to-vlan mappings
@@ -416,6 +458,8 @@ class Script(BaseScript):
         igmps = self.get_igmpint()
         # Get interfaces SNMP ifIndex
         ifindex = self.get_ifindex()
+        # Get VRRP interfaces
+        vrrps = self.get_vrrp_interfaces()
 
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
@@ -496,6 +540,9 @@ class Script(BaseScript):
                 sub["enabled_protocols"] += ["PIM"]
             if ifname in igmps:
                 sub["enabled_protocols"] += ["IGMP"]
+            if ifname in vrrps.keys():
+                sub["enabled_protocols"] += ["VRRP"]
+                sub["ipv4_addresses"] += vrrps[ifname]
 
             if full_ifname in ifindex:
                 sub["snmp_ifindex"] = ifindex[full_ifname]
