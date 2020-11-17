@@ -12,6 +12,10 @@ from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.object import Object
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.inv.models.firmware import Firmware
+from noc.lib.app.reportdatasources.report_objectattributes import ReportObjectAttributes
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.translation import ugettext as _
 
@@ -49,47 +53,59 @@ class ReportFilterApplication(SimpleReport):
             _("Serial"),
         ]
         data = []
-
-        for mo in mos_list:
-            q = Object._get_collection().count_documents(
-                {"data": {"$elemMatch": {"attr": "managed_object", "value": {"$in": [mo.id]}}}}
-            )
-            if q == 0:
-                data += [
-                    [
-                        mo.name,
-                        mo.address,
-                        mo.vendor or None,
-                        mo.platform.full_name if mo.platform else None,
-                        mo.get_attr("HW version") or None,
-                        mo.version.version if mo.version else None,
-                        mo.get_attr("Serial Number") or None,
-                        None,
-                    ]
-                ]
-            else:
-                for x in Object._get_collection().find(
-                    {
+        mos = {
+            x["id"]: x
+            for x in mos_list.values("id", "name", "address", "vendor", "platform", "version")
+        }
+        ra = ReportObjectAttributes(sorted(mos))
+        ra = ra.get_dictionary()
+        objects_serials = {}
+        for o in Object._get_collection().aggregate(
+            [
+                {
+                    "$match": {
                         "data": {
-                            "$elemMatch": {
-                                "interface": "management",
-                                "attr": "managed_object",
-                                "value": {"$in": [mo.id]},
+                            "$elemMatch": {"attr": "managed_object", "value": {"$in": list(mos)}}
+                        }
+                    }
+                },
+                {
+                    "$project": {
+                        "data": {
+                            "$filter": {
+                                "input": "$data",
+                                "cond": {"$in": ["$$this.attr", ["serial", "managed_object"]]},
                             }
                         }
-                    },
-                    {"data": {"$elemMatch": {"interface": "asset", "attr": "serial"}}, "name": 1},
-                ):
-                    data += [
-                        [
-                            x["name"],
-                            mo.address,
-                            mo.vendor or None,
-                            mo.platform.full_name if mo.platform else None,
-                            mo.get_attr("HW version") or None,
-                            mo.version.version if mo.version else None,
-                            x["data"][0]["value"] if x["data"] else "",
-                        ]
-                    ]
+                    }
+                },
+            ]
+        ):
+            if len(o["data"]) < 2:
+                continue
+            if o["data"][0]["attr"] == "serial":
+                objects_serials[int(o["data"][1]["value"])] = o["data"][0]["value"]
+            else:
+                objects_serials[int(o["data"][0]["value"])] = o["data"][1]["value"]
+
+        for mo in mos.values():
+            platform = Platform.get_by_id(mo["platform"]) if mo.get("platform") else None
+            vendor = Vendor.get_by_id(mo["vendor"]) if mo.get("vendor") else None
+            version = Firmware.get_by_id(mo["version"]) if mo.get("version") else None
+            sn, hw = ra[mo["id"]][:2]
+            if mo["id"] in objects_serials:
+                sn = objects_serials[mo["id"]]
+            data += [
+                [
+                    mo["name"],
+                    mo["address"],
+                    vendor or None,
+                    platform.full_name,
+                    hw,
+                    version,
+                    sn,
+                    None,
+                ]
+            ]
 
         return self.from_dataset(title=self.title, columns=columns, data=data, enumerate=True)
