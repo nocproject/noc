@@ -60,8 +60,8 @@ class LdapBackend(BaseAuthBackend):
             if not connect.bind():
                 raise self.LoginError("Failed to bind to LDAP: %s" % connect.result)
         except (LDAPCommunicationError, LDAPServerPoolExhaustedError) as e:
-            self.logger.error("Failed to bind to LDAP: connect failed by %s" % e.message)
-            raise self.LoginError("Failed to bind to LDAP: connect failed by %s" % e.message)
+            self.logger.error("Failed to bind to LDAP: connect failed by %s" % e)
+            raise self.LoginError("Failed to bind to LDAP: connect failed by %s" % e)
         # Rebind as privileged user
         if ldap_domain.bind_user:
             # Rebind as privileged user
