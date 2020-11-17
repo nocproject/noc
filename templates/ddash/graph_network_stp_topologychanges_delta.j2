@@ -19,7 +19,8 @@
       "intervalFactor": 1,
       "query": "SELECT $timeSeries as t, avg(stp_topology_changes_delta) as `Network | STP | Topology Changes Delta` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
-      "resultFormat": "time_series"
+      "resultFormat": "time_series",
+      "interval": "$discovery_interval"
     }
   ],
   "fill": 1,

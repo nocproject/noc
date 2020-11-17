@@ -47,7 +47,8 @@
       "policy": "default",
       "query": "SELECT \n    t, \n    groupArray((slot, MemoryUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'/') as slot, \n        avg(usage) as `MemoryUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY arrayStringConcat(path,'/'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
-      "resultFormat": "time_series"
+      "resultFormat": "time_series",
+      "interval": "$discovery_interval"
     }
   ],
   "timeFrom": null,
