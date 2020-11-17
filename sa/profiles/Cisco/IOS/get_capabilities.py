@@ -156,6 +156,30 @@ class Script(BaseScript):
         self.cli("show mpls ldp parameters")
         return True
 
+    @false_on_cli_error
+    def has_hsrp_cli(self):
+        """
+        Check box has HSRP enabled
+        """
+        v = self.cli("show standby").strip()
+        return bool(v)
+
+    @false_on_cli_error
+    def has_vrrp_v2_cli(self):
+        """
+        Check box has VRRPv2 enabled
+        """
+        v = self.cli("show vrrp brief", cached=True).splitlines()
+        return True if len(v) > 1 else False
+
+    @false_on_cli_error
+    def has_vrrp_v3_cli(self):
+        """
+        Check box has VRRPv3 enabled
+        """
+        v = self.cli("show vrrp detail")
+        return bool(v)
+
     def execute_platform_cli(self, caps):
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
