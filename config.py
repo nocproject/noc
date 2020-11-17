@@ -79,7 +79,7 @@ class Config(BaseConfig):
         reboot_interval = SecondsParameter(default="1M")
         extract_delay_reboots = SecondsParameter(default="1h")
         clean_delay_reboots = SecondsParameter(default="1d")
-        chunk_size = IntParameter(default=3000)
+        chunk_size = IntParameter(default=500)
         extract_window = SecondsParameter(default="1d")
         enable_alarms = BooleanParameter(default=False)
         enable_reboots = BooleanParameter(default=False)
