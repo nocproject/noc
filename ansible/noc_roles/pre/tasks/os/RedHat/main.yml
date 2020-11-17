@@ -18,9 +18,10 @@
     state: disabled
 
 - name: register rhel instances
-  become: "True"
   include_role:
     name: rhel-register
+    apply:
+      become: "True"
   when:
     - has_svc_rhel_register is defined
     - has_svc_rhel_register
