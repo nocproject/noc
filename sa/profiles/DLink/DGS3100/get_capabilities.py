@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,10 +32,5 @@ class Script(BaseScript):
         """
         Check box has STP enabled
         """
-
         # DGS3100 do not show any information about neighbors
         return False
-
-        # Spanning Tree Enabled/Disabled : Enabled
-        cmd = self.cli("show stp")
-        return bool(self.rx_stp.search(cmd))

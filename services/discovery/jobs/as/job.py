@@ -35,4 +35,3 @@ class ASDiscoveryJob(MODiscoveryJob):
         Disable umbrella alarms creation
         :return:
         """
-        pass

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # 3Com.4500.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -188,16 +188,7 @@ class Script(BaseScript):
                             iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
                                 tagged
                             )
-                        # except:
                         continue
-                        # This block is never executed. Need testing.
-                        """
-                        i += 1
-                        match = self.rx_untag.search(ifaces[i])
-                        untagged = match.group("untagged")
-                        if untagged is not 'none':
-                            iface["subinterfaces"][0]["untagged_vlan"] = int(untagged)
-                        """
                 interfaces += [iface]
 
         return [{"interfaces": interfaces}]

@@ -260,7 +260,7 @@ class Script(BaseScript):
         return ospfs
 
     def get_ndpint(self):
-        if not (self.has_capability("Huawei | NDP")):
+        if not self.has_capability("Huawei | NDP"):
             return []
         try:
             v = self.cli("display ndp", cached=True)

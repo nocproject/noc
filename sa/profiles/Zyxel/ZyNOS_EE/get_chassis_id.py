@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS_EE.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,7 +28,6 @@ class Script(BaseScript):
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.17.1.1.0", cached=True)
                 return {"first_chassis_mac": mac, "last_chassis_mac": mac}
-                return mac
             except self.snmp.TimeOutError:
                 pass
 

@@ -22,8 +22,8 @@ class StubTTSystem(BaseTTSystem):
     promote_group_tt = True
 
     def __init__(self, name, connection):
+        super().__init__(name, connection)
         self.logger = logging.getLogger("StubTTSystem.%s" % name)
-        pass
 
     def create_tt(
         self, queue, obj, reason=None, subject=None, body=None, login=None, timestamp=None

@@ -26,7 +26,6 @@ class BaseAppDecorator(object):
         Override for specific behavior
         :return:
         """
-        pass
 
     def set_app(self, app):
         self.app = app

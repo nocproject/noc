@@ -10,8 +10,6 @@
 # NOC modules
 from noc.lib.registry import Registry
 
-# Third-party modules
-
 
 class DownloaderRegistry(Registry):
     """Downloader registry"""
@@ -28,8 +26,8 @@ downloader_registry = DownloaderRegistry()
 class DownloaderBase(type):
     """Metaclass for refbook downloaders"""
 
-    def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls, name, bases, attrs)
+    def __new__(mcs, name, bases, attrs):
+        m = type.__new__(mcs, name, bases, attrs)
         m.scripts = {}
         downloader_registry.register(m.name, m)
         return m

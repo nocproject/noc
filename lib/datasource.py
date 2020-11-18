@@ -15,8 +15,8 @@ datasource_registry = {}
 
 
 class DataSourceBase(type):
-    def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls, name, bases, attrs)
+    def __new__(mcs, name, bases, attrs):
+        m = type.__new__(mcs, name, bases, attrs)
         if m._name:
             datasource_registry[m._name] = m
         return m

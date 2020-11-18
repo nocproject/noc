@@ -138,8 +138,6 @@ class ReportSection(ReportNode):
     Abstract class for report sections
     """
 
-    pass
-
 
 class TextSection(ReportSection):
     """
@@ -202,8 +200,6 @@ class SafeString(str):
     """
     Do not perform HTML quoting
     """
-
-    pass
 
 
 class TableColumn(ReportNode):

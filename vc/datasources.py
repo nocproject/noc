@@ -14,6 +14,7 @@ class VCDS(DataSource):
     _name = "vc.VCDS"
 
     def __init__(self, managed_object, l1, l2=0):
+        super().__init__()
         self._vc = None
         self._vc_domain = self.find_vc_domain(managed_object)
         if self._vc_domain:

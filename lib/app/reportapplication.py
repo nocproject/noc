@@ -45,7 +45,6 @@ class ReportApplication(Application):
         :param kwargs:
         :return:
         """
-        pass
 
     def report_html(self, request, result, query):
         """
@@ -55,7 +54,6 @@ class ReportApplication(Application):
         :param query:
         :return:
         """
-        pass
 
     def get_menu(self):
         return [_("Reports"), smart_text(self.title)]
@@ -98,5 +96,4 @@ class ReportApplication(Application):
         # Render result
         if format == "html":
             return self.render(request, "report.html", data=rdata, app=self, is_report=True)
-        else:
-            return self.render_response(rdata, content_type=self.content_types[format])
+        return self.render_response(rdata, content_type=self.content_types[format])

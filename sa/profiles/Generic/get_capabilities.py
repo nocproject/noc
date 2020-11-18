@@ -307,21 +307,18 @@ class Script(BaseScript):
         Method to be overriden in subclasses. Execute if C preffered
         :param caps: Dict of capabilities, can be modified
         """
-        pass
 
     def execute_platform_snmp(self, caps):
         """
         Method to be overriden in subclasses. Execute if S prefferd
         :param caps: Dict of capabilities, can be modified
         """
-        pass
 
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
         :param caps: Dict of capabilities, can be modified
         """
-        pass
 
     def is_requested(self, section):
         """

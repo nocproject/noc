@@ -34,4 +34,3 @@ class SegmentDiscoveryJob(MODiscoveryJob):
         Disable umbrella alarms creation
         :return:
         """
-        pass

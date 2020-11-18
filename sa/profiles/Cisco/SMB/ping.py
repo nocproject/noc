@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.ping
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,7 +34,6 @@ class Script(BaseScript):
         if df:
             # no such option in CLI:
             raise self.NotSupportedError()
-            cmd += " df-bit"
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
         return {

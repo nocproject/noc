@@ -107,7 +107,7 @@ def test_module_empty_docstrings(module):
             pytest.fail(str(e))
 
 
-@pytest.mark.parametrize("path", [f for f in get_files() if f.endswith("__init__.py")])
+@pytest.mark.parametrize("path", [fn for fn in get_files() if fn.endswith("__init__.py")])
 def test_init(path):
     with open(path) as f:
         data = f.read()

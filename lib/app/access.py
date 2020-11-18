@@ -13,8 +13,6 @@ class PermissionDenied(Exception):
     Basic Permission Denied exception
     """
 
-    pass
-
 
 class Permission(object):
     """
