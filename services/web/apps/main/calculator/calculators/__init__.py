@@ -20,8 +20,8 @@ calculator_registry = CalculatorRegistry()
 
 
 class CalculatorBase(type):
-    def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls, name, bases, attrs)
+    def __new__(mcs, name, bases, attrs):
+        m = type.__new__(mcs, name, bases, attrs)
         calculator_registry.register(m.name, m)
         return m
 

@@ -19,7 +19,7 @@ ignore_errors = true
 
     [tool.pylint.'MESSAGES CONTROL']
     disable=['all']
-    enable=['old-ne-operator,old-octal-literal,apply-builtin,basestring-builtin,buffer-builtin,cmp-builtin,unichr-builtin,C0203,C0204,C0303,C0304,C0321,C0325,C1001,E0001,E0101,E0104,E0105,E0108,E0213,E0601,E0602,E0701,E0710,E0711,E0712,E1001-E1004,E1111,E1121,E1122,E1200,E1201,E1205,E1206,E1300-E1306,W0101,W0104,W0107,W0109,W0231,W0401']
+    enable=['old-ne-operator,old-octal-literal,apply-builtin,basestring-builtin,buffer-builtin,cmp-builtin,unichr-builtin,C0203,C0204,C0303,C0304,C0321,C0325,C1001,E0001,E0101,E0104,E0105,E0108,E0213,E0601,E0602,E0701,E0710,E0711,E0712,E1001-E1004,E1121,E1122,E1200,E1201,E1205,E1206,E1300-E1306,W0101,W0104,W0107,W0109,W0231,W0401']
 
     [tool.pylint.'REPORTS']
     evaluation=['10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)']

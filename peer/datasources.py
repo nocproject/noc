@@ -14,6 +14,7 @@ class PeerDS(DataSource):
     _name = "peer.Peer"
 
     def __init__(self, peer):
+        super().__init__()
         self._data = Peer.get_peer(peer)
 
     @property

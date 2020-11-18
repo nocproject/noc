@@ -13,9 +13,20 @@ import pytest
 from io import BytesIO
 
 # NOC modules
+from noc.core.script.base import BaseScript
 from noc.core.script.cli.base import BaseCLI
 from noc.core.script.cli.telnet import TelnetStream
 from noc.core.ioloop.util import IOLoopContext
+
+
+class ScriptStub(BaseScript):
+    name = "Generic.Host"
+
+    def __init__(self):
+        super().__init__(None, {})
+
+    def interface(self):
+        return
 
 
 class ProfileStub(object):
@@ -28,6 +39,7 @@ class ProfileStub(object):
 
 class CLIStub(BaseCLI):
     def __init__(self):
+        super().__init__(ScriptStub())
         self.tos = 0
         self.logger = logging.getLogger("CLIStub")
         self.profile = ProfileStub()

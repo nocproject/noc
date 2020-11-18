@@ -38,7 +38,6 @@ class Script(BaseScript):
             if interface is not None:
                 if interface == p["port"]:
                     return [{"interface": interface, "status": p["status"]}]
-                    break
             else:
                 r += [{"interface": p["port"], "status": p["status"]}]
         return r

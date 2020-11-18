@@ -115,7 +115,7 @@ def test_ipv4_hash(p1, p2):
     ss = {p1: 1}
     assert ss[p1] == 1
     with pytest.raises(KeyError):
-        ss[p2]
+        ss[p2]  # pylint: disable=pointless-statement
 
 
 @pytest.mark.parametrize(
@@ -660,7 +660,7 @@ def test_ipv6_hash():
     ss = {p0: 1}
     assert ss[p0] == 1
     with pytest.raises(KeyError):
-        ss[p1]
+        ss[p1]  # pylint: disable=pointless-statement
 
 
 @pytest.mark.parametrize(

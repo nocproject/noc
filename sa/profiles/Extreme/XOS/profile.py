@@ -128,7 +128,6 @@ class Profile(BaseProfile):
             if table_end in line and is_body:
                 is_body = False
                 continue
-
             if not is_body:
                 # Check start table body (end table header)
                 if table_start in line:
@@ -150,8 +149,6 @@ class Profile(BaseProfile):
                     self.update_dict(r[-1], field)
                 else:
                     r += [field]
-                pass
-
             if not is_header and not is_body:
                 # Check start header lines
                 if header_start in line:
@@ -159,5 +156,4 @@ class Profile(BaseProfile):
                     is_body = False
             if is_header:
                 header += [line]
-
         return r

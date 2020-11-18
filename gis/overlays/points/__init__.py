@@ -22,6 +22,7 @@ class PointsOverlay(OverlayHandler):
     """
 
     def __init__(self, collection, position, text):
+        super().__init__()
         self.collection = collection
         self.position = position
         self.text = text

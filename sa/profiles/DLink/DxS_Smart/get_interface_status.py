@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,7 +38,6 @@ class Script(BaseScript):
             if interface is not None:
                 if interface == p["port"]:
                     return [{"interface": interface, "status": p["status"]}]
-                    break
             else:
                 r += [{"interface": p["port"], "status": p["status"]}]
         return r

@@ -51,7 +51,7 @@ class ManagedObject(BaseModel):
     project: Optional[Reference["Project"]]
 
     @validator("address")
-    def address_must_ipaddress(cls, v):
+    def address_must_ipaddress(cls, v):  # pylint: disable=no-self-argument
         IPvAnyAddress().validate(v)
         return str(v)
 

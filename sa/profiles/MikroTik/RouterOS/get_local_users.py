@@ -16,6 +16,6 @@ class Script(BaseScript):
 
     def execute(self):
         return [
-            {"username": r["name"], "class": r["group"], "is_active": not ("X" in f)}
+            {"username": r["name"], "class": r["group"], "is_active": "X" not in f}
             for n, f, r in self.cli_detail("/user print detail without-paging")
         ]

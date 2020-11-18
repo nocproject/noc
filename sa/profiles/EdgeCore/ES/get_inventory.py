@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -116,8 +116,6 @@ class Script(BaseScript):
                                 "builtin": False,
                             }
                         ]
-                    pass
-
         return objects
 
     def get_transceiver_pid(self, type):

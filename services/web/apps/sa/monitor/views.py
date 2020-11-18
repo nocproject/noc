@@ -22,8 +22,6 @@ from noc.main.models.pool import Pool
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_bytes
 
-# from noc.core.dateutils import humanize_distance
-
 
 class MonitorApplication(ObjectListApplication):
     """
@@ -135,7 +133,6 @@ class JobF(object):
                 }
             }
         ]
-        pass
 
     def count(self):
         scheduler = Scheduler(self.scheduler, pool=self.pool).get_collection()
