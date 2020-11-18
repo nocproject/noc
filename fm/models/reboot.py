@@ -8,10 +8,14 @@
 # Python modules
 import datetime
 import logging
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField
+
+# NOC modules
+from noc.sa.models.managedobject import ManagedObject
 
 logger = logging.getLogger(__name__)
 
@@ -32,19 +36,25 @@ class Reboot(Document):
         return "%d" % self.object
 
     @classmethod
-    def register(cls, managed_object, ts=None, last=None):
+    def register(
+        cls,
+        managed_object: ManagedObject,
+        ts: Optional[datetime.datetime] = None,
+        last: Optional[datetime.datetime] = None,
+    ):
         """
         Register reboot.
         Populated via Uptime.register(...)
         :param managed_object: Managed object reference
         :param ts: Recover time
-        :params last: Last seen time
+        :param last: Last seen time
         """
         oid = managed_object.id
-        if not ts:
-            ts = datetime.datetime.now()
-        if not last:
-            last = ts
+        ts = ts or datetime.datetime.now()
+        last = last or ts
         logger.debug("[%s] Register reboot at %s", managed_object.name, ts)
         cls._get_collection().insert({"object": oid, "ts": ts, "last": last})
-        managed_object.run_discovery(delta=300)
+        if managed_object.object_profile.box_discovery_on_system_start:
+            managed_object.run_discovery(
+                delta=managed_object.object_profile.box_discovery_system_start_delay
+            )

@@ -380,6 +380,7 @@ class Config(BaseConfig):
     class message(ConfigSection):
         enable_alarm = BooleanParameter(default=False)
         enable_managedobject = BooleanParameter(default=False)
+        enable_reboot = BooleanParameter(default=False)
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)

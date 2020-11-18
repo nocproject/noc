@@ -28,7 +28,7 @@ MX_CHANGE_ID = "Change-Id"
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 # Available message types
-MESSAGE_TYPES = {"alarm", "managedobject"}
+MESSAGE_TYPES = {"alarm", "managedobject", "reboot"}
 MESSAGE_HEADERS = {MX_SHARDING_KEY, MX_TO, MX_CHANGE_ID, MX_ADMINISTRATIVE_DOMAIN_ID, MX_PROFILE_ID}
 
 _mx_partitions: Optional[int] = None
