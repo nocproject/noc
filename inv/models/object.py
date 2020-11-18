@@ -335,7 +335,7 @@ class Object(Document):
         v = [ModelInterface.get_interface_attr(interface, k).is_const for k in kset]
         if any(v):
             raise ModelDataError("Cannot reset read-only value")
-        self.data += [
+        self.data = [
             item
             for item in self.data
             if item.interface != interface
