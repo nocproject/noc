@@ -400,7 +400,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     # Cisco-like translation
     rx_cisco_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
-        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
+        r"(?P<number>\d+(/\d+(/\d+(/\d+)?)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE,
     )
 
@@ -470,7 +470,9 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
             return None
 
     # Cisco-like translation
-    rx_num1 = re.compile(r"^[a-z]{2}[\- ](?P<number>\d+)/\d+/\d+([\:\.]\S+)?$", re.IGNORECASE)
+    rx_num1 = re.compile(
+        r"^[a-z]{2}[\- ](?P<number>\d+)(/\d+)?/\d+/\d+([\:\.]\S+)?$", re.IGNORECASE
+    )
     # D-Link-like translation
     rx_num2 = re.compile(r"^(?P<number>\d+)[\:\/]\d+$")
 
