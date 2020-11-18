@@ -72,7 +72,7 @@ class Script(BaseScript):
     rx_pim = re.compile(r"^\S+\s+(?P<name>\S+)\s+v\d+/\S+\s+\d+")
     rx_igmp = re.compile(r"^(?P<name>\S+) is ")
     rx_cisco_interface_name = re.compile(
-        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+(/\d+)?)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE,
     )
     rx_cisco_interface_sonet = re.compile(r"^(?P<type>Se)\s+(?P<number>\d+\S+)$")
