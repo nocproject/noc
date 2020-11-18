@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { LayoutModule } from '@angular/cdk/layout';
 
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -33,6 +35,7 @@ export function configureAuth(authConfigService: AuthConfigService) {
     HomePageComponent
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     AppRoutingModule,
     AuthModule.forRoot(),
@@ -60,7 +63,8 @@ export function configureAuth(authConfigService: AuthConfigService) {
       // In a production build you would want to disable the Store Devtools
       // logOnly: environment.production,
       [],
-    FormsModule
+    FormsModule,
+    LayoutModule
   ],
   providers: [
     AuthConfigService,
