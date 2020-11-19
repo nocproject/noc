@@ -19,7 +19,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_version_HP = re.compile(r"^Comware Software, Version (?P<version>.+)$", re.MULTILINE)
+    rx_version_HP = re.compile(
+        r"^(HPE|)\s*Comware Software, Version (?P<version>.+)$", re.MULTILINE
+    )
     rx_platform_HP = re.compile(
         r"^HP.*?\s(?P<platform>[A-Z,0-9a-z\-]+).*?.*?(Switch|uptime)", re.MULTILINE
     )
@@ -34,7 +36,7 @@ class Script(BaseScript):
 
         v = self.cli("display version")
         match = self.rx_version_HP.search(v)
-        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.37"]) if self.has_snmp() else None
+        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 37]) if self.has_snmp() else None
         if match:
             version = match.group("version")
         match = self.rx_platform_HP.search(v)
@@ -42,7 +44,7 @@ class Script(BaseScript):
             platform = match.group("platform")
         if platform == "Comware":
             try:
-                v = self.cli("display device manuinfo")
+                v = self.cli("display device manuinfo", cached=True)
                 match = self.rx_devinfo.search(v)
                 if match:
                     platform = match.group("platform")
@@ -51,9 +53,9 @@ class Script(BaseScript):
                 pass
         r = {"vendor": "HP", "platform": platform, "version": version, "attributes": {}}
         if not s and self.has_snmp():
-            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1"])
+            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
             if not s:
-                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.2"])
+                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 2])
         if s:
             r["attributes"]["Serial Number"] = s
         return r
