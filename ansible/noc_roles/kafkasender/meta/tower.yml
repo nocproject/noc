@@ -1,0 +1,67 @@
+---
+forms:
+  kafkasender:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Kafka sender<br/>
+      <strong>Long description</strong>: Sends messages to external Kafka server.<br/>
+      <strong>Scale Recommendations</strong>: No special recommendations. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/kafkasender/ target=_blank>kafkasender</a><br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 10
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    bootstrap_servers:
+      type: text
+      default: ""
+      label: "Servers IPs:port"
+      common: environment
+      description: "in CIDR notation, separated with comma"
+    username:
+      label: Username
+      type: str
+      default: ""
+    password:
+      label: Password
+      type: str
+      default: ""
+    sasl_mechanism:
+      label: Sasl_mechanism
+      default: "PLAIN"
+      type: str
+      description: "PLAIN, GSSAPI, SCRAM-SHA-256, SCRAM-SHA-512"
+    security_protocol:
+      label: security_protocol
+      default: "PLAINTEXT"
+      type: str
+      description: "PLAINTEXT, SASL_PLAINTEXT, SSL, SASL_SSL"
+
+services:
+  kafkasender:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/kafkasender/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 300
+      priority: 600
+      startretries: 999
+      stopwaitsecs: 2
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 5
+    depends:
+      - noc
