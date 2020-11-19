@@ -29,7 +29,6 @@ def model(request):
     yield helper.get_object(request.param)
 
 
-@pytest.mark.xfail
 def test_uuid_unique(model):
     assert helper.get_uuid_count(model.uuid) == 1, "UUID %s is not unique" % model.uuid
 
