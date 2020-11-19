@@ -322,5 +322,8 @@ Ext.define("NOC.core.combotree.ComboTree", {
             mv[me.displayField] = rv
         }
         return me.store.getModel().create(mv)
+    },
+    getLookupData: function() {
+        return this.getDisplayValue();
     }
 });
