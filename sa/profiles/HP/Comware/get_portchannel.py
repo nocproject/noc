@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_portchannel import Script as BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_po_members = re.compile(
-        r"^(?P<interface>\S+):\s*\n" r"^Aggregation Interface: (?P<agg_interface>\S+)", re.MULTILINE
+        r"^(?P<interface>\S+):\s*\n^Aggregation Interface: (?P<agg_interface>\S+)", re.MULTILINE
     )
 
     def execute(self):
