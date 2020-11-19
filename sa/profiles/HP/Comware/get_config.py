@@ -15,7 +15,8 @@ class Script(BaseScript):
     name = "HP.Comware.get_config"
     interface = IGetConfig
 
-    def execute_cli(self, **kwargs):
+    def execute_cli(self, policy="r"):
+        assert policy in ("r", "s")
         self.cli("undo terminal monitor")
         config = self.cli("display current-configuration")
         config = self.profile.clean_spaces(config)

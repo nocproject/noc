@@ -10,78 +10,122 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_NAMES,
+    lldp_caps_to_bits,
+)
+from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
     name = "HP.Comware.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_item = re.compile(
-        r"^LLDP neighbor-information of port \d+\[(?P<interface>\S+)\]\:\n"
-        r"^  Neighbor index   : \d+\n"
-        r"^  Update time      : .+?\n"
-        r"^  Chassis type     : (?P<chassis_type>.+?)\n"
-        r"^  Chassis ID       : (?P<chassis_id>\S+)\n"
-        r"^  Port ID type     : (?P<port_id_type>.+?)\n"
-        r"^  Port ID          : (?P<port_id>.+?)\n"
-        r"^  Port description : (?P<port_descr>.+?)\n"
-        r"^  System name        : (?P<system_name>.+?)\n"
-        r"(^  System description : (?P<system_descr>.+?)\n)?"
-        r"(^  System capabilities supported : (?P<system_caps_s>.+?)\n)?",
-        re.MULTILINE,
-    )
+    lldp_kv_map = {
+        "neighbor index": "neighbor_index",
+        "lldp neighbor index": "neighbor_index",
+        "update time": "update_time",
+        "chassis type": "remote_chassis_id_subtype",
+        "chassis id": "remote_chassis_id",
+        "port id type": "remote_port_subtype",
+        "port id": "remote_port",
+        "port description": "remote_port_description",
+        "system name": "remote_system_name",
+        "system description": "remote_system_description",
+        "system capabilities supported": "remote_capabilities",
+        "capabilities": "remote_capabilities",
+        "chassisid/subtype": "remote_chassis_id_type",
+        "portid/subtype": "remote_port_type",
+    }
 
-    def execute(self):
-        r = []
+    rx_lldp_neighbor_split = re.compile(r"LLDP neighbor-information of port")
+
+    rx_local_port = re.compile(r"^\s*\d+\[(?P<interface>\S+)\]\:")
+
+    chassis_type_map = {
+        "chassis component": LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+        "interface alias": LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+        "port component": LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+        "mac address": LLDP_CHASSIS_SUBTYPE_MAC,
+        "network address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+        "interface name": LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+        "local": LLDP_CHASSIS_SUBTYPE_LOCAL,
+    }
+
+    port_type_map = {
+        "interface alias": LLDP_PORT_SUBTYPE_ALIAS,
+        "port component": LLDP_PORT_SUBTYPE_COMPONENT,
+        "mac address": LLDP_PORT_SUBTYPE_MAC,
+        "network address": LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+        "interface name": LLDP_PORT_SUBTYPE_NAME,
+        "agent circuit id": LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
+        "locally assigned": LLDP_PORT_SUBTYPE_LOCAL,
+    }
+
+    def execute_cli(self, **kwargs):
+        result = []
         try:
             v = self.cli("display lldp neighbor-information")
         except self.CLISyntaxError:
             return []
-        for match in self.rx_item.finditer(v):
-            i = {"local_interface": match.group("interface"), "neighbors": []}
+        for nei in self.rx_lldp_neighbor_split.split(v):
+            if not nei.strip():
+                continue
+            match = self.rx_local_port.search(nei)
+            if not match:
+                self.logger.info("Not find local port")
+                continue
             n = {}
-            n["remote_chassis_id_subtype"] = {
-                "Chassis Component": 1,
-                "Interface Alias": 2,
-                "Port Component": 3,
-                "MAC Address": 4,
-                "Network Address": 5,
-                "Interface Name": 6,
-                "local": 7,
-            }.get(match.group("chassis_type"))
-            n["remote_chassis_id"] = match.group("chassis_id").strip()
-            n["remote_port_subtype"] = {
-                "Interface Alias": 1,
-                "Port Component": 2,
-                "MAC Address": 3,
-                "Network Address": 4,
-                "Interface Name": 5,
-                "Agent Circuit ID": 6,
-                "Locally assigned": 7,
-            }.get(match.group("port_id_type"))
-            n["remote_port"] = match.group("port_id").strip()
-            n["remote_port_description"] = match.group("port_descr").strip()
-            n["remote_system_name"] = match.group("system_name").strip()
-            if match.group("system_descr"):
-                n["remote_system_description"] = match.group("system_descr").strip()
-            if match.group("system_caps_s"):
-                cap = 0
-                for c in match.group("system_caps_s").split(","):
-                    c = c.strip()
-                    if c:
-                        cap |= {
-                            "Other": 1,
-                            "Repeater": 2,
-                            "Bridge": 4,
-                            "WLAN Access Point": 8,
-                            "Router": 16,
-                            "TTelephone": 32,
-                            "DOCSIS Cable Device": 64,
-                            "Station Only": 128,
-                        }[c]
-                n["remote_capabilities"] = cap
-            i["neighbors"] += [n]
-            r += [i]
-        return r
+            r = parse_kv(self.lldp_kv_map, nei)
+            if "remote_chassis_id_subtype" in r:
+                n["remote_chassis_id_subtype"] = r["remote_chassis_id_subtype"]
+            if "remote_chassis_id_type" in r:
+                n["remote_chassis_id"], n["remote_chassis_id_subtype"] = r[
+                    "remote_chassis_id_type"
+                ].rsplit("/", 1)
+            if "remote_chassis_id" in r:
+                n["remote_chassis_id"] = r["remote_chassis_id"]
+            if "remote_chassis_id" not in n:
+                self.logger.warning(
+                    "[%s] Not found remote chassis id on output", match.group("interface")
+                )
+                continue
+            n["remote_chassis_id_subtype"] = self.chassis_type_map[
+                n["remote_chassis_id_subtype"].lower()
+            ]
+            # Port fields
+            if "remote_port_subtype" in r:
+                n["remote_port_subtype"] = r["remote_port_subtype"]
+            if "remote_port_type" in r:
+                n["remote_port"], n["remote_port_subtype"] = r["remote_port_type"].rsplit("/", 1)
+            if "remote_port" in r:
+                n["remote_port"] = r["remote_port"]
+            if "remote_port" not in n:
+                self.logger.warning("[%s] Not found port id on output", match.group("interface"))
+                continue
+            n["remote_port_subtype"] = self.port_type_map[n["remote_port_subtype"].lower()]
+            if "remote_system_description" in r:
+                n["remote_system_description"] = r["remote_system_description"].strip()
+            if "remote_capabilities" in r:
+                n["remote_capabilities"] = lldp_caps_to_bits(
+                    [x.strip() for x in r["remote_capabilities"].split(",")],
+                    {LLDP_CAP_NAMES[x1]: x1 for x1 in LLDP_CAP_NAMES},
+                )
+            result += [{"local_interface": match.group("interface"), "neighbors": [n]}]
+        return result

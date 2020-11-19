@@ -11,19 +11,13 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
     name = "HP.Comware.get_interfaces"
     interface = IGetInterfaces
 
-    rx_sh_int = re.compile(
-        r"^\s*(?P<interface>\S+) current state\s*:\s*(?P<oper_status>UP|DOWN|DOWN \( Administratively \))\s*\n"
-        r"(^\s*Line protocol current state\s*:\s*(?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\s*\n)?"
-        r"(^\s*IP (?:Packet Frame Type:|Sending Frames\' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)\s*\n)?"
-        r"^\s*Description\s*:(?P<descr>[^\n]*)\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL,
-    )
     rx_mtu = re.compile(r"The Maximum Frame Length is (?P<mtu>\d+)")
     rx_port_type = re.compile(r"Port link-type: (?P<port_type>hybrid|access|trunk)")
     rx_port_other = re.compile(
@@ -39,194 +33,158 @@ class Script(BaseScript):
     rx_ip = re.compile(r"Internet Address is (?P<ip>\S+) Primary")
     rx_ips = re.compile(r"Internet Address is (?P<ip>\S+) Sub")
     rx_mac = re.compile(
-        r"IP (?:Packet Frame Type:|Sending Frames' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)"
+        r"IP (?:Packet Frame Type:|Sending Frames' Format is)\s*PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)"
     )
-    rx_sh_vlan = re.compile(
-        r"^(?P<interface>\S+) current state\s*:\s*(?P<oper_status>UP|DOWN|DOWN \( Administratively \))\s*\n"
-        r"^Line protocol current state\s*:\s*(?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\s*\n"
-        r"(^IP (?:Packet Frame Type:|Sending Frames\' Format is) PKTFMT_ETHNT_2, Hardware address(?: is|:) (?P<mac>\S+)\s*\n)?"
-        r"(^Internet Address is (?P<ip>\S+) Primary\s*\n)?"
-        r"(^Internet protocol processing\s*:\s*\S+\s*\n)?"
-        r"^Description\s*:(?P<descr>.*?)\n"
-        r"^The Maximum Transmit Unit is (?P<mtu>\d+)",
-        re.MULTILINE,
-    )
-    rx_name = re.compile(r"^Vlan-interface(?P<vlan>\d+)?")
+
+    rx_vlan_name = re.compile(r"^Vlan-interface(?P<vlan>\d+)?")
     rx_isis = re.compile(r"Interface:\s+(?P<iface>\S+)")
     rx_sub_default_vlan = re.compile(r"\(default vlan\),?")
+    rx_parse_interface_vlan = re.compile(r"(\d+)(?:\(.+\))?")
 
-    def execute(self):
-        isis = []
+    rx_iface_block_splitter = re.compile(r"^\s*\S+\d+(?:/\d+)+", re.MULTILINE)
+
+    def get_isis_interfaces(self):
+        r = []
         try:
             v = self.cli("display isis interface")
             for match in self.rx_isis.finditer(v):
-                isis += [match.group("iface")]
+                r += [match.group("iface")]
         except self.CLISyntaxError:
             pass
+        return r
+
+    interface_map = {
+        "current state": "oper_status",
+        "line protocol state": "line_status",
+        "description": "description",
+        "maximum transmit unit": "mtu",
+        "port link-type": "port_type",
+        "pvid": "pvid",
+        "untagged vlan id": "untagged_vlan",
+        "untagged vlan": "untagged_vlan",
+        "tagged vlan id": "tagged_vlans",
+        "vlan passing": "vlan_passing",
+        "vlan permitted": "vlan_permitted",
+    }
+
+    def parse_interface_block(self, block):
+        r = parse_kv(self.interface_map, block)
+        if "mtu" not in r and self.rx_mtu.search(block):
+            r["mtu"] = self.rx_mtu.search(block).group(1)
+        if self.rx_mac.search(block):
+            r["mac"] = self.rx_mac.search(block).group(1)
+        ip_match = self.rx_ip.search(block)
+        if ip_match:
+            r["ip"] = ip_match.group(1)
+        if "tagged_vlans" in r and self.rx_sub_default_vlan.search(r["tagged_vlans"]):
+            r["tagged_vlans"] = r["tagged_vlans"].replace("(default vlan)", "")
+        if "vlan_passing" in r and self.rx_sub_default_vlan.search(r["vlan_passing"]):
+            r["vlan_passing"] = r["vlan_passing"].replace("(default vlan)", "")
+        if "vlan_permitted" in r and self.rx_sub_default_vlan.search(r["vlan_permitted"]):
+            r["vlan_permitted"] = r["vlan_permitted"].replace("(default vlan)", "")
+        if "untagged_vlan" not in r and "pvid" in r:
+            r["untagged_vlan"] = r["pvid"]
+        if "untagged_vlan" in r:
+            r["untagged_vlan"] = self.rx_parse_interface_vlan.match(r["untagged_vlan"]).group(1)
+        return r
+
+    def iter_block(self, v):
+        for b in v.split("\n\n"):
+            start = 0
+            for match in self.rx_iface_block_splitter.finditer(b):
+                """
+                Fixed
+                     0 aborts, 0 deferred, 0 collisions, 0 late collisions
+                     - lost carrier, - no carrier
+                                  GigabitEthernet1/3
+                Current state: UP
+                """
+                if match.start() > 0:
+                    start = match.start()
+                    yield b[:start]
+                    yield b[start:]
+            if start:
+                continue
+            else:
+                yield b
+
+    def execute_cli(self, **kwargs):
+        isis = self.get_isis_interfaces()
+
+        # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
-        interfaces = []
-        v = self.cli("display interface").split("\n\n")
-        for i in v:
-            match = self.rx_sh_int.search(i)
-            if not match:
+        interfaces = {}
+        v = self.cli("display interface")
+        # "display interface Vlan-interface"
+        # "display interface NULL"
+        for block in self.iter_block(v):
+            if not block:
                 continue
-            ifname = match.group("interface")
-            if ifname.startswith("Bridge-Aggregation") or ifname.startswith("Route-Aggregation"):
-                iftype = "aggregated"
-            elif ifname.startswith("LoopBack"):
-                iftype = "loopback"
-            elif ifname.startswith("Vlan-interface"):
+            ifname, block = block.split(None, 1)
+            # print(ifname, "\n\n", block, "\n\n")
+            if ifname in interfaces:
                 continue
-            elif ifname.startswith("NULL"):
+            r = self.parse_interface_block(block)
+            if not r:
                 continue
+            iftype = self.profile.get_interface_type(ifname)
+            self.logger.info("Process interface: %s", ifname)
+            o_status = r.get("oper_status", "").lower() == "up"
+            a_status = False if "Administratively" in r.get("oper_status", "") else True
+            name = ifname
+            vlan_ids = 0
+            if "." in ifname:
+                ifname, vlan_ids = ifname.split(".", 1)
             else:
-                iftype = "physical"
-            o_stat = match.group("oper_status").lower() == "up"
-            if match.group("oper_status") == r"DOWN ( Administratively\)":
-                a_stat = False
-            else:
-                a_stat = True
-            iface = {
-                "name": ifname,
-                "type": iftype,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_protocols": [],
-                "subinterfaces": [],
-            }
+                interfaces[ifname] = {
+                    "name": ifname,
+                    "type": iftype,
+                    "admin_status": a_status,
+                    "oper_status": o_status,
+                    "enabled_protocols": [],
+                    "subinterfaces": [],
+                }
+                if "description" in r:
+                    interfaces[ifname]["description"] = r["description"]
+                if "mac" in r:
+                    interfaces[ifname]["mac"] = r["mac"]
+                if ifname in portchannel_members:
+                    ai, is_lacp = portchannel_members[ifname]
+                    interfaces[ifname]["aggregated_interface"] = ai
+                    interfaces[ifname]["enabled_protocols"] += ["LACP"]
+                if self.rx_vlan_name.match(ifname):
+                    vlan_ids = self.rx_vlan_name.match(name).group(1)
+
             sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": ["BRIDGE"],
+                "name": name,
+                "admin_status": a_status,
+                "oper_status": o_status,
                 "enabled_protocols": [],
+                "enabled_afi": [],
             }
             if ifname in isis:
                 sub["enabled_protocols"] += ["ISIS"]
-            if match.group("mac"):
-                iface["mac"] = match.group("mac")
-                sub["mac"] = match.group("mac")
-            if match.group("descr"):
-                iface["description"] = match.group("descr").strip()
-                sub["description"] = match.group("descr").strip()
-            match1 = self.rx_mtu.search(i)
-            if match1:
-                sub["mtu"] = int(match1.group("mtu"))
-            match1 = self.rx_ip.search(i)
-            if match1:
+            if "mac" in r:
+                sub["mac"] = r["mac"]
+            if "ip" in r:
                 sub["enabled_afi"] += ["IPv4"]
-                sub["ipv4_addresses"] = [match1.group("ip")]
-            match1 = self.rx_port_type.search(i)
-            if match1:
-                port_type = match1.group("port_type")
-                if port_type in ["access", "hybrid"]:
-                    match2 = self.rx_port_other.search(i)
-                    if match2.group("untagged") and match2.group("untagged") != "none":
-                        sub["untagged_vlan"] = int(match2.group("untagged"))
-                    if match2.group("tagged") and match2.group("tagged") != "none":
-                        sub["tagged_vlan"] = self.expand_rangelist(match2.group("tagged"))
-                if port_type == "trunk":
-                    match2 = self.rx_port_trunk.search(i)
-                    if match2.group("passing") and match2.group("passing") != "none":
-                        passing = re.sub(self.rx_sub_default_vlan, "", match2.group("passing"))
-                        sub["tagged_vlan"] = self.expand_rangelist(passing)
-            iface["subinterfaces"] += [sub]
-            if ifname in portchannel_members:
-                ai, is_lacp = portchannel_members[ifname]
-                iface["aggregated_interface"] = ai
-                iface["enabled_protocols"] += ["LACP"]
-            interfaces += [iface]
-        v = self.cli("display interface Vlan-interface").split("\n\n")
-        for i in v:
-            match = self.rx_sh_vlan.search(i)
-            if not match:
-                continue
-            ifname = match.group("interface")
-            o_stat = match.group("oper_status").lower() == "up"
-            if match.group("oper_status") == r"DOWN ( Administratively\)":
-                a_stat = False
-            else:
-                a_stat = True
-            iface = {
-                "name": ifname,
-                "type": "SVI",
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_protocols": [],
-                "subinterfaces": [],
-            }
-            sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": [],
-            }
-            if match.group("descr"):
-                iface["description"] = match.group("descr").strip()
-                sub["description"] = match.group("descr").strip()
-            if match.group("mtu"):
-                sub["mtu"] = int(match.group("mtu"))
-            match1 = self.rx_mac.search(i)
-            if match1:
-                iface["mac"] = match1.group("mac")
-                sub["mac"] = match1.group("mac")
-            match1 = self.rx_ip.search(i)
-            if match1:
-                sub["enabled_afi"] += ["IPv4"]
-                sub["ipv4_addresses"] = [match1.group("ip")]
-            match1 = self.rx_ips.search(i)
-            if match1:
-                sub["ipv4_addresses"] += [match1.group("ip")]
-            vlan = self.rx_name.search(ifname).group("vlan")
-            sub["vlan_ids"] = [vlan]
-            iface["subinterfaces"] += [sub]
-            interfaces += [iface]
-        v = self.cli("display interface NULL").split("\n\n")
-        for i in v:
-            match = self.rx_sh_vlan.search(i)
-            if not match:
-                continue
-            ifname = match.group("interface")
-            o_stat = match.group("oper_status").lower() == "up (spoofing)"
-            if match.group("oper_status") == r"DOWN ( Administratively\)":
-                a_stat = False
-            else:
-                a_stat = True
-            iface = {
-                "name": ifname,
-                "type": "null",
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_protocols": [],
-                "subinterfaces": [],
-            }
-            sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": [],
-            }
-            if match.group("descr"):
-                iface["description"] = match.group("descr").strip()
-                sub["description"] = match.group("descr").strip()
-            if match.group("mtu"):
-                sub["mtu"] = int(match.group("mtu"))
-            match1 = self.rx_mac.search(i)
-            if match1:
-                iface["mac"] = match1.group("mac")
-                sub["mac"] = match1.group("mac")
-            match1 = self.rx_ip.search(i)
-            if match1:
-                sub["enabled_afi"] += ["IPv4"]
-                sub["ipv4_addresses"] = [match1.group("ip")]
-            match1 = self.rx_ips.search(i)
-            if match1:
-                sub["ipv4_addresses"] += [match1.group("ip")]
-            iface["subinterfaces"] += [sub]
-            interfaces += [iface]
-        return [{"interfaces": interfaces}]
+                sub["ipv4_addresses"] = [r["ip"]]
+            if vlan_ids:
+                sub["vlan_ids"] = [int(vlan_ids)]
+            if "port_type" in r:
+                sub["enabled_afi"] += ["BRIDGE"]
+                # Bridge interface
+                if r["port_type"] in ["access", "hybrid"] and "untagged_vlan" in r:
+                    sub["untagged_vlan"] = int(r["untagged_vlan"])
+                if r["port_type"] in ["access", "hybrid"] and "tagged_vlans" in r:
+                    sub["tagged_vlans"] = self.expand_rangelist((r["tagged_vlans"]))
+                if r["port_type"] == "trunk" and "vlan_permitted" in r:
+                    sub["tagged_vlans"] = self.expand_rangelist(r["vlan_permitted"])
+            interfaces[ifname]["subinterfaces"] += [sub]
+
+        return [{"interfaces": list(interfaces.values())}]

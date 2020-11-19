@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetchassisid import IGetChassisID
+# Python modules
 import re
+
+# NOC modules
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
@@ -18,7 +20,7 @@ class Script(BaseScript):
 
     rx_id = re.compile(r"^\s*MAC_ADDRESS\s+:\s+(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         match = self.re_search(self.rx_id, self.cli("display device manuinfo", cached=True))
         mac = match.group("id")
         return {"first_chassis_mac": mac, "last_chassis_mac": mac}
