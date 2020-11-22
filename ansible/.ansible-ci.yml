@@ -3,7 +3,7 @@
 variables:
   ANSIBLE_FORCE_COLOR: 'true'
 
-lint:
+lint_ansible:
   stage: Lint
   image: registry.getnoc.com/infrastructure/ansible_linter:master
   script:
