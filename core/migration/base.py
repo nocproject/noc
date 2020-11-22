@@ -15,7 +15,8 @@ class BaseMigration(object):
     db = db
 
     def __init__(self):
-        self.dependencies = set("%s.%s" % (x[0], x[1]) for x in self.depends_on)
+        # @todo: set_comprehensions
+        self.dependencies = {f"{x[0]}.{x[1]}" for x in self.depends_on}
 
     def __str__(self):
         return self.get_name()
