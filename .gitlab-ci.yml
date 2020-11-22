@@ -195,11 +195,12 @@ py:test:
       -f .docker/docker-compose.yml
       -p "${DOCKER_COMPOSE_PROJECT}"
       down -v
-  only:
-    refs:
-      - merge_requests
-      - master
-      - /^release-\d+\.\d+/
+  rules:
+    - changes:
+        - "*.py"
+        - "**/*.py"
+        - requirements.txt
+        - "**/*.json"
   tags:
     - shell
   allow_failure: false
