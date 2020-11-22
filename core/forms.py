@@ -6,21 +6,24 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django import forms
+from django.forms import Form
+from django.forms.boundfield import BoundField
+from django.forms.widgets import CheckboxInput
 from django.utils.html import escape
+
 
 # NOC modules
 from noc.core.comp import smart_text
 
 
-class NOCBoundField(forms.forms.BoundField):
+class NOCBoundField(BoundField):
     """
     Bound field with django-admin like label-tag
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.is_checkbox = isinstance(self.field.widget, forms.CheckboxInput)
+        self.is_checkbox = isinstance(self.field.widget, CheckboxInput)
 
     def label_tag(self, contents=None, attrs=None):
         if not contents:
@@ -38,7 +41,7 @@ class NOCBoundField(forms.forms.BoundField):
         return super().label_tag(contents=contents, attrs=attrs)
 
 
-class NOCForm(forms.Form):
+class NOCForm(Form):
     """
     Form wrapper returning NOCBoundField items
     """

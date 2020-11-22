@@ -151,23 +151,25 @@ class DB(object):
         pk_field_kwargs = pk_field_kwargs or {}
 
         class MockOptions(object):
-            def __init__(self):
+            def __init__(self, model):
                 self.db_table = db_table
                 self.db_tablespace = ""
                 self.object_name = model_name
                 self.model_name = model_name
                 self.module_name = model_name.lower()
-
+                self.auto_field = None
+                self.model = model
+                self.concrete_model = model
                 if pk_field_type == AutoField:
                     pk_field_kwargs["primary_key"] = True
-
                 self.pk = pk_field_type(*pk_field_args, **pk_field_kwargs)
                 self.pk.set_attributes_from_name(pk_field_name)
+                self.pk.model = model
                 self.abstract = False
 
             def get_field_by_name(self, field_name):
                 # we only care about the pk field
-                return (self.pk, self.model, True, False)
+                return self.pk, self.model, True, False
 
             def get_field(self, name):
                 # we only care about the pk field
@@ -177,8 +179,7 @@ class DB(object):
             _meta = None
 
         # We need to return an actual class object here, not an instance
-        MockModel._meta = MockOptions()
-        MockModel._meta.model = MockModel
+        MockModel._meta = MockOptions(MockModel)
         return MockModel
 
     def column_sql(self, table_name, field_name, field, with_name=True, field_prepared=False):
