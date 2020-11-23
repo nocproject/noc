@@ -25,7 +25,8 @@ class Command(BaseCommand):
     ]
     POOLED_STREAMS = [
         # slot name, stream name
-        ("classifier-%s", "events.%s")
+        ("classifier-%s", "events.%s"),
+        ("correlator-%s", "dispose.%s"),
     ]
 
     def handle(self, *args, **options):

@@ -9,7 +9,6 @@
 
     ],
     "handlers": [
-        "noc.fm.handlers.alarm.status.check_down",
         "noc.fm.handlers.alarm.segment.set_segment_redundancy"
     ],
     "clear_handlers": [

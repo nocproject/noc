@@ -11,9 +11,11 @@ import sys
 import datetime
 import re
 from collections import defaultdict
-from threading import Lock
 from typing import Optional, Dict
 import operator
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -38,13 +40,14 @@ from noc.core.debug import format_frames, get_traceback_frames, error_report
 from services.correlator import utils
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
+from noc.core.liftbridge.message import Message
+from noc.services.correlator.rcalock import RCALock
 
 
 class CorrelatorService(TornadoService):
     name = "correlator"
     pooled = True
     use_mongo = True
-    leader_lock_name = "correlator-%(pool)s"
     process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
@@ -55,11 +58,27 @@ class CorrelatorService(TornadoService):
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
-        self.scheduler = None
-        self.rca_lock = Lock()
-        self.topology_rca_lock = Lock()
+        #
+        self.slot_number = 0
+        self.total_slots = 0
+        self.is_distributed = False
+        # Scheduler
+        self.scheduler: Optional[Scheduler] = None
+        # Locks
+        self.topo_rca_lock: Optional[RCALock] = None
 
     async def on_activate(self):
+        self.slot_number, self.total_slots = await self.acquire_slot()
+        self.is_distributed = self.total_slots > 1
+        # Prepare scheduler
+        if self.is_distributed:
+            self.logger.info(
+                "Enabling distributed mode: Slot %d/%d", self.slot_number, self.total_slots
+            )
+            ifilter = {"shard": {"$mod": [self.total_slots, self.slot_number]}}
+        else:
+            self.logger.info("Enabling standalone mode")
+            ifilter = None
         self.scheduler = Scheduler(
             self.name,
             pool=config.pool,
@@ -68,15 +87,16 @@ class CorrelatorService(TornadoService):
             # @fixme have to be configured ?
             submit_threshold=100,
             max_chunk=100,
+            filter=ifilter,
         )
         self.scheduler.correlator = self
-        await self.subscribe(
-            "correlator.dispose.%s" % config.pool,
-            "dispose",
-            self.on_dispose_event,
-            max_in_flight=config.correlator.max_threads,
-        )
         self.scheduler.run()
+        # Subscribe stream, move to separate task to let the on_activate to terminate
+        self.loop.create_task(
+            self.subscribe_stream(
+                "dispose.%s" % config.pool, self.slot_number, self.on_dispose_event
+            )
+        )
 
     def on_start(self):
         """
@@ -215,7 +235,7 @@ class CorrelatorService(TornadoService):
                     found = True
         return found
 
-    def raise_alarm(self, r, e):
+    async def raise_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info("Empty managed object, ignoring")
@@ -329,7 +349,7 @@ class CorrelatorService(TornadoService):
             a.vars,
         )
         metrics["alarm_raise"] += 1
-        self.correlate(r, a)
+        await self.correlate(r, a)
         # Notify about new alarm
         if not a.root:
             a.managed_object.event(
@@ -350,19 +370,17 @@ class CorrelatorService(TornadoService):
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
 
-    def correlate(self, r, a):
+    async def correlate(self, r, a):
         # Topology RCA
         if a.alarm_class.topology_rca:
-            with self.topology_rca_lock:
-                self.topology_rca(a)
+            await self.topology_rca(a)
         # Rule-based RCA
-        with self.rca_lock:
-            if a.alarm_class.id in self.rca_forward:
-                # Check alarm is a consequence of existing one
-                self.set_root_cause(a)
-            if a.alarm_class.id in self.rca_reverse:
-                # Check alarm is the root cause for existing ones
-                self.set_reverse_root_cause(a)
+        if a.alarm_class.id in self.rca_forward:
+            # Check alarm is a consequence of existing one
+            self.set_root_cause(a)
+        if a.alarm_class.id in self.rca_reverse:
+            # Check alarm is the root cause for existing ones
+            self.set_reverse_root_cause(a)
         # Call handlers
         for h in a.alarm_class.get_handlers():
             try:
@@ -377,7 +395,7 @@ class CorrelatorService(TornadoService):
                         a.root,
                         h,
                     )
-            except:  # noqa. Can probable happens anything from handler
+            except Exception:  # noqa. Can probable happens anything from handler
                 error_report()
                 metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
@@ -478,57 +496,29 @@ class CorrelatorService(TornadoService):
         env.update(kwargs)
         return eval(expression, {}, env)
 
-    def on_dispose_event(self, message, event_id, event=None, *args, **kwargs):
+    async def on_dispose_event(self, msg: Message) -> None:
         """
         Called on new dispose message
         """
+        data = orjson.loads(msg.value)
+        event_id = data["event_id"]
+        hint = data["event"]
         self.logger.info("[%s] Receiving message", event_id)
-        message.enable_async()
-        self.run_in_executor("max", self.dispose_worker, message, event_id, event)
-
-    def dispose_worker(self, message, event_id, event_hint=None):
         metrics["alarm_dispose"] += 1
         try:
-            if event_hint:
-                event = self.get_event_from_hint(event_hint)
-            else:
-                event = self.lookup_event(event_id)
-            if event:
-                self.dispose_event(event)
+            event = ActiveEvent.from_json(hint)
+            event.timestamp = event.timestamp.replace(tzinfo=None)
+            await self.dispose_event(event)
         except Exception:
             metrics["alarm_dispose_error"] += 1
             error_report()
-        self.loop.call_soon(message.finish)
+        finally:
+            if self.topo_rca_lock:
+                # Release pending RCA Lock
+                await self.topo_rca_lock.release()
+                self.topo_rca_lock = None
 
-    def lookup_event(self, event_id):
-        """
-        Lookup event by id.
-        Uses cache heating effect from classifier
-        :param event_id:
-        :return: ActiveEvent instance or None
-        """
-        self.logger.info("[%s] Lookup event", event_id)
-        e = ActiveEvent.get_by_id(event_id)
-        if not e:
-            self.logger.info("[%s] Event not found, skipping", event_id)
-            metrics["event_lookup_failed"] += 1
-        metrics["event_lookups"] += 1
-        return e
-
-    def get_event_from_hint(self, hint):
-        """
-        Get ActiveEvent from json hint
-        :param hint:
-        :return:
-        """
-        metrics["event_hints"] += 1
-        e = ActiveEvent.from_json(hint)
-        # Prevent TypeError: can't compare offset-naive and offset-aware datetimes
-        # when calculating alarm timestamp
-        e.timestamp = e.timestamp.replace(tzinfo=None)
-        return e
-
-    def dispose_event(self, e):
+    async def dispose_event(self, e):
         """
         Dispose event according to disposition rule
         """
@@ -552,7 +542,7 @@ class CorrelatorService(TornadoService):
                     self.logger.info("[%s] Ignored by action", event_id)
                     return
                 elif r.action == "raise" and r.combo_condition == "none":
-                    self.raise_alarm(r, e)
+                    await self.raise_alarm(r, e)
                 elif r.action == "clear" and r.combo_condition == "none":
                     self.clear_alarm(r, e)
                 if r.action in ("raise", "clear"):
@@ -567,14 +557,14 @@ class CorrelatorService(TornadoService):
                             de = self.get_delayed_event(br, e)
                             if de:
                                 if br.action == "raise":
-                                    self.raise_alarm(br, de)
+                                    await self.raise_alarm(br, de)
                                 elif br.action == "clear":
                                     self.clear_alarm(br, de)
                 if r.stop_disposition:
                     break
         self.logger.info("[%s] Disposition complete", event_id)
 
-    def topology_rca(self, alarm):
+    async def topology_rca(self, alarm):
         """
         Topology-based RCA
         :param alarm:
@@ -692,6 +682,12 @@ class CorrelatorService(TornadoService):
             return True
 
         self.logger.debug("[%s] Topology RCA", alarm.id)
+        # Acquire lock
+        if self.is_distributed:
+            # Set lock until the end of dispose
+            mo = alarm.managed_object
+            self.topo_rca_lock = RCALock(mo.data.rca_neighbors + [mo.id])
+            await self.topo_rca_lock.acquire()
         # Get neighboring alarms
         neighbor_alarms = get_neighboring_alarms(alarm)
         # Correlate current alarm

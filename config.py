@@ -189,9 +189,13 @@ class Config(BaseConfig):
     class correlator(ConfigSection):
         max_threads = IntParameter(default=20)
         topology_rca_window = IntParameter(default=0)
-        oo_close_delay = SecondsParameter(default="20s")
         discovery_delay = SecondsParameter(default="10M")
         auto_escalation = BooleanParameter(default=True)
+        rca_lock_initial_timeout = FloatParameter(default=0.1)
+        rca_lock_max_timeout = FloatParameter(default=3.0)
+        rca_lock_rate = FloatParameter(default=1.61)
+        rca_lock_dev = FloatParameter(default=0.1)
+        rca_lock_expiry = SecondsParameter(default="10s")
 
     class customization(ConfigSection):
         favicon_url = StringParameter(default="/ui/web/img/logo_24x24_deep_azure.png")
