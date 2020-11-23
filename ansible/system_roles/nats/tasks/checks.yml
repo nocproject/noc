@@ -12,7 +12,7 @@
     - name: Ensure nats setup max server count
       fail:
         msg: |
-          Nats servers have to be set up on 1, 3 or 5 nodes. Less is better. Current count is {{ consul_servers_count }}
+          Nats servers have to be set up on 1, 3 or 5 nodes. Less is better. Current count is {{ nats_servers_count }}
       when: nats_servers_count | int not in [1,3,5]
 
   when:
