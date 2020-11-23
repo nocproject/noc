@@ -111,6 +111,12 @@ class Profile(BaseProfile):
             r += ["1/%s" % name, "1:%s" % name]
         return r
 
+    @classmethod
+    def get_interface_type(cls, name):
+        if name.isdigit() or name.startswith("1/") or name.startswith("1:"):
+            return "physical"
+        return "other"
+
     def root_interface(self, name):
         return name
 
