@@ -87,6 +87,8 @@ E_SRC_METRICS = {
     E_SRC_OTHER: "events_other",
 }
 
+NS = 1000000000.0
+
 
 class ClassifierService(TornadoService):
     """
@@ -708,7 +710,7 @@ class ClassifierService(TornadoService):
         # Generate or reuse existing object id
         event_id = ObjectId(event.get("id"))
         # Calculate message processing delay
-        lag = (time.time() - msg.timestamp) * 1000
+        lag = (time.time() - float(msg.timestamp) / NS) * 1000
         metrics["lag_us"] = int(lag * 1000)
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)", event_id, data, lag)
         metrics[CR_PROCESSED] += 1
