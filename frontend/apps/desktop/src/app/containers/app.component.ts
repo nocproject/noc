@@ -65,7 +65,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   langSwitch(code: string): void {
     this.loggerService.logDebug(code);
-    console.log(this.replaceLocale(code));
     this.window.location.assign(this.replaceLocale(code));
   }
 
@@ -74,12 +73,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.refreshSubscription.unsubscribe();
   }
 
-  localeInPath(localeId: string): boolean {
-    return this.base.includes(`/${localeId}/`);
-  }
-
   replaceLocale(localeId: string): string {
-    return this.base.replace(`/${this.localeId}/`, `/${localeId}/`);
+    return this.window.location.pathname.replace(`/${this.localeId}/`, `/${localeId}/`)
+      + this.window.location.search;
   }
 
   private navigateHandler(path: string) {
