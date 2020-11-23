@@ -13,6 +13,6 @@
     msg: "Correlator works only with liftbridge service. Please install at least one"
   when:
     - has_svc_correlator is defined
-    - "'svc-liftbridge' not in group_names"
+    - "'svc-liftbridge' not in groups"
   tags:
     - checks
