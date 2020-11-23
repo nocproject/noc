@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, of, interval } from 'rxjs';
+import { interval, Observable, of, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 
@@ -14,6 +15,8 @@ import * as fromAuth from './reducers';
 
 @Injectable()
 export class AuthFacade {
+  private refreshSubscription: Subscription;
+
   isAuthenticated$ = this.store.select(authSelectors.selectIsAuthenticated);
 
   constructor(
@@ -24,23 +27,6 @@ export class AuthFacade {
   ) {
   }
 
-  startRefreshTimer(): Observable<number> {
-    const config = this.configurationProvider.oauth2Configuration;
-    this.loggerService.logDebug(config.renewTimeBeforeTokenExpiresInSeconds);
-    this.loggerService.logDebug(config.silentRenew);
-    if (config.silentRenew) {
-      return interval(300_000); // every 5 min 60 * 5 * 1000
-    }
-    return of(0);
-  }
-
-  startRefresh(): void {
-    if (this.hasAccessTokenExpiredIfExpiryExists()) {
-      this.loggerService.logDebug(`Refresh Access Token`);
-      this.store.dispatch(authApiAction.refresh({ refreshToken: this.storageService.getRefreshToken() }));
-    }
-  }
-
   checkAuth(): Observable<boolean> {
     if (!this.configurationProvider.hasValidConfig()) {
       this.loggerService.logError('Please provide a configuration before setting up the module');
@@ -48,15 +34,46 @@ export class AuthFacade {
       return;
     }
     this.areStoredTokensValid();
-    return this.isAuthenticated$;
+    return this.isAuthenticated$.pipe(
+      tap((isAuth) => {
+        if (!isAuth && this.refreshSubscription) {
+          this.destroyRefreshTimer();
+        }
+      })
+    );
   }
 
   logout(): void {
     const token = this.storageService.getAccessToken();
+    this.refreshSubscription.unsubscribe();
     this.store.dispatch(authAction.logout({ token }));
   }
 
+  destroyRefreshTimer() {
+    this.refreshSubscription.unsubscribe();
+  }
+
+  private startRefreshTimer(): Observable<number> {
+    const config = this.configurationProvider.oauth2Configuration;
+    this.loggerService.logDebug(`renewTimeBeforeTokenExpiresInSeconds : ${config.renewTimeBeforeTokenExpiresInSeconds}`);
+    this.loggerService.logDebug(`silentRenew: ${config.silentRenew}`);
+    if (config.silentRenew) {
+      return interval(300_000); // every 5 min 60 * 5 * 1000
+    }
+    return of(0);
+  }
+
+  private startRefresh(): void {
+    if (this.hasAccessTokenExpiredIfExpiryExists()) {
+      this.loggerService.logDebug(`Refresh Access Token`);
+      this.store.dispatch(authApiAction.refresh({ refreshToken: this.storageService.getRefreshToken() }));
+    }
+  }
+
   private authenticatedSuccess(): void {
+    this.refreshSubscription = this.startRefreshTimer().subscribe(() => {
+      this.startRefresh();
+    });
     this.store.dispatch(authAction.authenticatedSuccess());
     this.store.dispatch(authAction.loadTokens({ tokens: this.storageService.getTokens() }));
   }

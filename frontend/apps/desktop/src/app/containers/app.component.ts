@@ -21,7 +21,6 @@ export class AppComponent implements OnInit, OnDestroy {
   base = this.window['_app_base'] || '/';
 
   private authSubscription: Subscription;
-  private refreshSubscription: Subscription;
   isAuthenticated$ = this.authFacade.isAuthenticated$;
 
   constructor(
@@ -50,9 +49,6 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         if (isAuthenticated) {
           this.loggerService.logDebug('Starting refresh timer');
-          this.refreshSubscription = this.authFacade.startRefreshTimer().subscribe(() => {
-            this.authFacade.startRefresh();
-          });
           this.navigateToStoredUrl();
         }
       });
@@ -60,7 +56,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
-    this.refreshSubscription.unsubscribe();
+    // it's probably not necessary
+    this.authFacade.destroyRefreshTimer();
   }
 
   langSwitch(code: string): void {
@@ -70,7 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authFacade.logout();
-    this.refreshSubscription.unsubscribe();
   }
 
   replaceLocale(localeId: string): string {
