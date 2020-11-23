@@ -10,10 +10,14 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AuthConfigService, AuthModule } from '@noc/auth';
 import { LoggingModule, LogLevel } from '@noc/log';
-import { environment } from '@env/environment';
-import { AppComponent } from './app.component';
+
 import { AppRoutingModule } from './app-routing.module';
-import { HomePageComponent } from './containers';
+import { MaterialModule } from './material.module';
+
+import { HeaderComponent, LanguagePicker, LayoutComponent } from './components';
+import { AppComponent, HomePageComponent } from './containers';
+
+import { environment } from '@env/environment';
 
 export function configureAuth(authConfigService: AuthConfigService) {
   return () =>
@@ -29,15 +33,21 @@ export function configureAuth(authConfigService: AuthConfigService) {
     );
 }
 
+const DECLARED_COMPONENTS = [
+  AppComponent,
+  HeaderComponent,
+  HomePageComponent,
+  LayoutComponent,
+  LanguagePicker,
+];
+
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomePageComponent
-  ],
+  declarations: DECLARED_COMPONENTS,
   imports: [
+    AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
-    AppRoutingModule,
+    MaterialModule,
     AuthModule.forRoot(),
     LoggingModule.forRoot({
       level: environment.production ? LogLevel.None : LogLevel.Debug

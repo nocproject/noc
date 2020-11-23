@@ -1,0 +1,12 @@
+.noc-app-name {
+    margin-left: 8px;
+}
+
+.noc-spacer {
+    flex: 1 1 auto;
+}
+
+.noc-toolbar {
+    /*position: fixed;*/
+    /*z-index: 2;*/
+}

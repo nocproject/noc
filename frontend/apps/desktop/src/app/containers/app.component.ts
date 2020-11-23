@@ -9,24 +9,20 @@ import { LoggingService } from '@noc/log';
 @Component({
   selector: 'noc-root',
   template: `
-    <div>Application Component</div>
-    <button *ngIf="isAuthenticated$ | async" (click)="logout()">Logout</button>
-    <ng-template ngFor let-lang [ngForOf]="languages">
-      <div *ngIf="!localeInPath(lang.code)"><a [href]="replaceLocale(lang.code)">{{lang.label}}</a></div>
-      <div *ngIf="localeInPath(lang.code)">{{lang.label}}</div>
-    </ng-template>
-    <router-outlet></router-outlet>
+    <noc-layout [isAuth]="isAuthenticated$ | async"
+                [lang]="localeId"
+                (langSwitchEvent)="langSwitch($event)"
+                (logoutEvent)="logout()">
+      <router-outlet></router-outlet>
+    </noc-layout>
   `
 })
 export class AppComponent implements OnInit, OnDestroy {
+  base = this.window['_app_base'] || '/';
+
   private authSubscription: Subscription;
   private refreshSubscription: Subscription;
-  base = this.window['_app_base'] || '/';
   isAuthenticated$ = this.authFacade.isAuthenticated$;
-  languages = [
-    { code: 'en', label: 'English' },
-    { code: 'ru', label: 'Русский' }
-  ];
 
   constructor(
     @Inject(LOCALE_ID) public localeId: string,
@@ -67,7 +63,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.refreshSubscription.unsubscribe();
   }
 
-  logout() {
+  langSwitch(code: string): void {
+    this.loggerService.logDebug(code);
+    console.log(this.replaceLocale(code));
+    this.window.location.assign(this.replaceLocale(code));
+  }
+
+  logout(): void {
     this.authFacade.logout();
     this.refreshSubscription.unsubscribe();
   }

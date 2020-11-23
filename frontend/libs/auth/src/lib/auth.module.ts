@@ -4,6 +4,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
+
+import { LayoutModule } from '@angular/cdk/layout';
+
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
@@ -27,11 +34,23 @@ export * from './models/public';
 export * from './services/public';
 export { WINDOW } from './utils';
 
+const DECLARED_COMPONENTS = [
+  LoginPageComponent,
+  LoginFormComponent,
+  ForbiddenPageComponent,
+  UnauthorizedPageComponent
+];
+
 @NgModule({
   imports: [
     CommonModule,
     ReactiveFormsModule,
     HttpClientModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    LayoutModule,
     StoreModule.forFeature(fromAuth.AUTH_FEATURE_KEY, fromAuth.reducers),
     EffectsModule.forFeature([AuthEffects]),
     RouterModule.forChild([
@@ -40,12 +59,7 @@ export { WINDOW } from './utils';
       { path: 'forbidden', component: ForbiddenPageComponent }
     ])
   ],
-  declarations: [
-    LoginPageComponent,
-    LoginFormComponent,
-    ForbiddenPageComponent,
-    UnauthorizedPageComponent
-  ]
+  declarations: DECLARED_COMPONENTS
 })
 export class AuthModule {
   constructor(@Optional() @SkipSelf() parentModule?: AuthModule) {

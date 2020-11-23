@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { Credentials } from '../../models';
@@ -6,37 +6,52 @@ import { Credentials } from '../../models';
 @Component({
   selector: 'auth-login-form',
   template: `
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <p>
-        <input
-          type="text"
-          i18n-placeholder="@@form.login.field.username.placeholder"
-          placeholder="Username"
-          formControlName="username"
-        />
-      </p>
-
-      <p>
-        <input
-          type="password"
-          i18n-placeholder="@@form.login.field.password.placeholder"
-          placeholder="Password"
-          formControlName="password"
-        />
-      </p>
-
-      <p *ngIf="errorMessage">
-        {{ errorMessage }}
-      </p>
-
-      <p>
-        <button type="submit" i18n="@@form.login.button.login">Login</button>
-      </p>
-    </form>
-  `
+    <mat-card class="login-form">
+      <mat-card-content>
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <h2 i18n="@@form.login.title">Log In</h2>
+          <mat-error *ngIf="errorMessage">
+            {{ errorMessage }}
+          </mat-error>
+          <mat-form-field class="login-form-field" appearance="standard">
+            <mat-label i18n="@@form.login.field.username.label">Username</mat-label>
+            <input
+              type="text"
+              matInput
+              formControlName="username"
+            />
+          </mat-form-field>
+          <br />
+          <mat-form-field class="login-form-field" appearance="standard">
+            <mat-label i18n="@@form.login.field.password.label">Password</mat-label>
+            <input
+              type="password"
+              matInput
+              formControlName="password"
+            />
+          </mat-form-field>
+          <br />
+          <button type="submit" i18n="@@form.login.button.login" mat-button color="primary">Login</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  `,
+  styles: [
+      `
+          .login-form {
+              text-align: center;
+              margin: 2em auto;
+              max-width: 600px;
+          }`,
+      `
+          .login-form-field {
+              width: 400px;
+          }`
+  ]
 })
 export class LoginFormComponent implements OnInit {
   @Input() errorMessage!: string | null;
+
   @Input()
   set pending(isPending: boolean | null) {
     if (isPending) {
@@ -45,6 +60,7 @@ export class LoginFormComponent implements OnInit {
       this.form.enable();
     }
   }
+
   @Output() submitted = new EventEmitter<Credentials>();
 
   form: FormGroup = new FormGroup({

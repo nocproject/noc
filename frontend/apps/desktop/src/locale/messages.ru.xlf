@@ -2,6 +2,22 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
     <file source-language="en" datatype="plaintext" original="ng2.template" target-language="ru">
         <body>
+            <trans-unit id="widget.language-picker.aria-label" datatype="html">
+                <source>Select a language</source>
+                <target>Выбор языка</target>
+                <context-group purpose="location">
+                    <context context-type="sourcefile">apps/desktop/src/app/components/header/language-picker.component.ts</context>
+                    <context context-type="linenumber">13</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="widget.language-picker.tooltip" datatype="html">
+                <source>Select a language of the NOC-ui</source>
+                <target>Выбор языка для интерфейса NOC</target>
+                <context-group purpose="location">
+                    <context context-type="sourcefile">apps/desktop/src/app/components/header/language-picker.component.ts</context>
+                    <context context-type="linenumber">15</context>
+                </context-group>
+            </trans-unit>
             <trans-unit id="status.pending" datatype="html">
                 <source>PENDING</source>
                 <target state="new">ОЖИДАНИЕ</target>
@@ -34,10 +50,12 @@
             </trans-unit>
             <trans-unit id="page.home.text.plural" datatype="html">
                 <source>Updated
-                    <x id="ICU" equiv-text="{minutes, plural, =0 {just now} =1 {one minute ago} other {{{minutes}} minutes ago}}"/>
+                    <x id="ICU"
+                       equiv-text="{minutes, plural, =0 {just now} =1 {one minute ago} other {{{minutes}} minutes ago}}"/>
                 </source>
                 <target state="new">Updated
-                    <x id="ICU" equiv-text="{minutes, plural, =0 {прямо сейчас} =1 {одну минуту назад} other {{{minutes}} минут назад}}"/>
+                    <x id="ICU"
+                       equiv-text="{minutes, plural, =0 {прямо сейчас} =1 {одну минуту назад} other {{{minutes}} минут назад}}"/>
                 </target>
                 <context-group purpose="location">
                     <context context-type="sourcefile">
@@ -56,29 +74,30 @@
                     <context context-type="linenumber">17</context>
                 </context-group>
             </trans-unit>
-
-            <trans-unit id="form.login.field.username.placeholder" datatype="html">
-                <source>Username</source>
-                <target>Пользователь</target>
-
-
+            <trans-unit id="form.login.title" datatype="html">
+                <source>Log In</source>
+                <target>Вход</target>
                 <context-group purpose="location">
-                    <context context-type="sourcefile">
-                        ../../libs/auth/src/lib/components/login-form/login-form.component.ts
-                    </context>
-                    <context context-type="linenumber">14</context>
+                    <context context-type="sourcefile">libs/auth/src/lib/components/login-form/login-form.component.ts</context>
+                    <context context-type="linenumber">12</context>
                 </context-group>
             </trans-unit>
-            <trans-unit id="form.login.field.password.placeholder" datatype="html">
+            <trans-unit id="form.login.field.username.label" datatype="html">
+                <source>Username</source>
+                <target>Пользователь</target>
+                <context-group purpose="location">
+                    <context context-type="sourcefile">libs/auth/src/lib/components/login-form/login-form.component.ts
+                    </context>
+                    <context context-type="linenumber">12</context>
+                </context-group>
+            </trans-unit>
+            <trans-unit id="form.login.field.password.label" datatype="html">
                 <source>Password</source>
                 <target>Пароль</target>
-
-
                 <context-group purpose="location">
-                    <context context-type="sourcefile">
-                        ../../libs/auth/src/lib/components/login-form/login-form.component.ts
+                    <context context-type="sourcefile">libs/auth/src/lib/components/login-form/login-form.component.ts
                     </context>
-                    <context context-type="linenumber">23</context>
+                    <context context-type="linenumber">22</context>
                 </context-group>
             </trans-unit>
             <trans-unit id="form.login.button.login" datatype="html">

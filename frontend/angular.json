@@ -42,7 +42,11 @@
                   "with": "apps/desktop/src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": false,
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
@@ -106,7 +110,8 @@
             "tsConfig": [
               "apps/desktop/tsconfig.app.json",
               "apps/desktop/tsconfig.spec.json",
-              "apps/desktop/tsconfig.editor.json"
+              "apps/desktop/tsconfig.editor.json",
+              "apps/desktop/.storybook/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**",
@@ -132,6 +137,36 @@
               "languages": [
                 "ru"
               ]
+            }
+          }
+        },
+        "storybook": {
+          "builder": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/angular",
+            "port": 4400,
+            "config": {
+              "configFolder": "apps/desktop/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        },
+        "build-storybook": {
+          "builder": "@nrwl/storybook:build",
+          "options": {
+            "uiFramework": "@storybook/angular",
+            "outputPath": "dist/storybook/desktop",
+            "config": {
+              "configFolder": "apps/desktop/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
             }
           }
         }
@@ -233,7 +268,8 @@
           "options": {
             "tsConfig": [
               "libs/auth/tsconfig.lib.json",
-              "libs/auth/tsconfig.spec.json"
+              "libs/auth/tsconfig.spec.json",
+              "libs/auth/.storybook/tsconfig.json"
             ],
             "exclude": [
               "**/node_modules/**",
@@ -246,6 +282,36 @@
           "options": {
             "jestConfig": "libs/auth/jest.config.js",
             "passWithNoTests": true
+          }
+        },
+        "storybook": {
+          "builder": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/angular",
+            "port": 4401,
+            "config": {
+              "configFolder": "libs/auth/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        },
+        "build-storybook": {
+          "builder": "@nrwl/storybook:build",
+          "options": {
+            "uiFramework": "@storybook/angular",
+            "outputPath": "dist/storybook/auth",
+            "config": {
+              "configFolder": "libs/auth/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
           }
         }
       },
