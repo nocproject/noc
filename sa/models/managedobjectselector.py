@@ -427,12 +427,14 @@ class ManagedObjectSelector(NOCModel):
         query = []
         if self.sources.count():
             for s in self.sources.all():
+                if not s.is_enabled:
+                    continue
                 query += ["(%s)" % s.get_confdb_query]
             if self.source_combine_method == "A":
-                return " and ".join(query)
+                return " and ".join(query) if query else "True()"
             else:
-                return " or ".join(query)
-
+                return " or ".join(query) if query else "False()"
+        query += ["True()"]  # Fix empty selector
         if self.filter_id:
             query += ["Match%r" % (("meta", "id", str(self.filter_id)),)]
         if self.filter_name:
