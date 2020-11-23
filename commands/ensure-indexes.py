@@ -47,6 +47,8 @@ class Command(BaseCommand):
         self.index_cache()
         # Index datasource cache
         self.index_datasource_cache()
+        # Index RCA lock
+        self.index_rca_lock()
         # @todo: Detect changes
         self.print("OK")
 
@@ -118,6 +120,12 @@ class Command(BaseCommand):
 
         self.print("[DataSource] Indexing cache")
         DataSourceCache.ensure_indexes()
+
+    def index_rca_lock(self):
+        from noc.services.correlator.rcalock import RCALock
+
+        self.print("[RCA Lock] Indexing")
+        RCALock.create_indexes()
 
 
 if __name__ == "__main__":

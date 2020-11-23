@@ -132,6 +132,7 @@ class AlarmDiagnosticConfig(Document):
                 scheduler="correlator",
                 pool=alarm.managed_object.get_effective_fm_pool().name,
                 delay=delay,
+                shard=alarm.managed_object.id,
                 alarm=alarm.id,
                 cfg=r_cfg[delay],
             )
@@ -143,6 +144,7 @@ class AlarmDiagnosticConfig(Document):
                 max_runs=PERIODIC_JOB_MAX_RUNS,
                 pool=alarm.managed_object.get_effective_fm_pool().name,
                 delay=delay,
+                shard=alarm.managed_object.id,
                 alarm=alarm.id,
                 cfg={"cfg": p_cfg[delay], "delay": delay},
             )
@@ -182,6 +184,7 @@ class AlarmDiagnosticConfig(Document):
                 scheduler="correlator",
                 pool=alarm.managed_object.get_effective_fm_pool().name,
                 delay=delay,
+                shard=alarm.managed_object.id,
                 alarm=alarm.id,
                 cfg=cfg[delay],
             )

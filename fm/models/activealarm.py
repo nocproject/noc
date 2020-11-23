@@ -300,7 +300,9 @@ class ActiveAlarm(Document):
         elif ct:
             pass
         # Set checks on all consequences
-        for d in self._get_collection().find({"root": self.id}, {"_id": 1, "alarm_class": 1}):
+        for d in self._get_collection().find(
+            {"root": self.id}, {"_id": 1, "alarm_class": 1, "managed_object": 1}
+        ):
             ac = AlarmClass.get_by_id(d["alarm_class"])
             if not ac:
                 continue
@@ -312,6 +314,7 @@ class ActiveAlarm(Document):
                 scheduler="correlator",
                 pool=self.managed_object.get_effective_fm_pool().name,
                 delay=t,
+                shard=d.get("managed_object"),
                 alarm_id=d["_id"],
             )
         # Clear alarm
