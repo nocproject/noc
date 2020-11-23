@@ -11,6 +11,11 @@ include:
     file: '/templates/upload.yml'
   - local: '/ansible/.ansible-ci.yml'
 
+workflow:
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
 check labels:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-py-lint:master
