@@ -58,6 +58,7 @@ class Job(object):
     ATTR_FAULTS = "f"  # Amount of sequental faults
     ATTR_OFFSET = "o"  # Random offset [0 .. 1]
     ATTR_SAMPLE = "sample"  # Span sample
+    ATTR_SHARD = "shard"  # Sharding key
 
     # Job states
     S_WAIT = "W"  # Waiting to run

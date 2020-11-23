@@ -8,10 +8,12 @@
 # Python modules
 import datetime
 import logging
+from typing import Optional
 
 # NOC modules
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.hash import dict_hash_int_args
 
 logger = logging.getLogger(__name__)
 
@@ -19,21 +21,23 @@ DEFAULT_JOB_CLASS = "noc.core.scheduler.calljob.CallJob"
 
 
 def call_later(
-    name,
-    delay=None,
-    scheduler="scheduler",
-    pool=None,
-    job_class=DEFAULT_JOB_CLASS,
-    max_runs=None,
+    name: str,
+    delay: Optional[float] = None,
+    scheduler: str = "scheduler",
+    pool: Optional[str] = None,
+    job_class: str = DEFAULT_JOB_CLASS,
+    shard: Optional[int] = None,
+    max_runs: Optional[int] = None,
     **kwargs,
 ):
     """
-    Run callable *name* in scheduler process
+    Schedule to run callable *name* in scheduler process
     :param name: Full callable name
     :param delay: delay in seconds
     :param scheduler: Name of scheduler
     :param pool: Pool name
     :param job_class: Job class
+    :param shard: Sharding key
     :param max_runs: Maximum amount of retries
     """
     scheduler = Scheduler(scheduler, pool=pool)
@@ -41,12 +45,18 @@ def call_later(
     ts = datetime.datetime.now()
     if delay:
         ts += datetime.timedelta(seconds=delay)
+    # Process sharding
+    if shard is None:
+        shard = dict_hash_int_args(job_class=job_class, name=name, pool=pool, **kwargs)
+    shard = (shard if shard >= 0 else -shard) % 0x7FFFFFFF
+    #
     set_op = {Job.ATTR_TS: ts}
     iset_op = {
         Job.ATTR_STATUS: Job.S_WAIT,
         Job.ATTR_RUNS: 0,
         Job.ATTR_FAULTS: 0,
         Job.ATTR_OFFSET: 0,
+        Job.ATTR_SHARD: shard,
     }
     if max_runs:
         iset_op[Job.ATTR_MAX_RUNS] = max_runs
