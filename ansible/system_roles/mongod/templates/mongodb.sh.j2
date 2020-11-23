@@ -1,8 +1,16 @@
 #!/bin/sh
 ISMASTER=$({{ mongo_path }} --quiet --eval 'db.isMaster().ismaster')
+ISSECONDARY=$({{ mongo_path }} --quiet --eval 'db.isMaster().secondary')
 if [ "$ISMASTER" = "true" ]
 then
+    printf 'master'
     exit 0
 else
+    if [ "$ISSECONDARY" = "true" ]
+        then
+            printf 'secondary'
+            exit 0
+        else
     exit 2
+    fi
 fi
