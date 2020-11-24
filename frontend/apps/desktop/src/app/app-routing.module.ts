@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HomePageComponent } from './containers';
+import { HomePageComponent, TestPageComponent } from './containers';
 
 const routes: Routes = [
   {
     path: 'home',
     component: HomePageComponent
+  },
+  {
+    path: 'test/:id',
+    component: TestPageComponent
   },
   // {
   //   path: 'admin',

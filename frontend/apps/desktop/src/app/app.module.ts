@@ -15,7 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material.module';
 
 import { HeaderComponent, LanguagePicker, LayoutComponent } from './components';
-import { AppComponent, HomePageComponent } from './containers';
+import { AppComponent, HomePageComponent, TestPageComponent } from './containers';
 
 import { environment } from '@env/environment';
 
@@ -39,6 +39,7 @@ const DECLARED_COMPONENTS = [
   HomePageComponent,
   LayoutComponent,
   LanguagePicker,
+  TestPageComponent
 ];
 
 @NgModule({
@@ -50,7 +51,7 @@ const DECLARED_COMPONENTS = [
     MaterialModule,
     AuthModule.forRoot(),
     LoggingModule.forRoot({
-      level: environment.production ? LogLevel.None : LogLevel.Debug
+      level: environment.production ? LogLevel.Debug : LogLevel.Debug
     }),
     StoreModule.forRoot(
       {},

@@ -38,7 +38,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.authSubscription = this.authFacade
       .checkAuth()
       .subscribe(isAuthenticated => {
-        const pathname = '/' + this.window.location.pathname.replace(this.base, '');
+        const pathname = '/' + this.window.location.pathname.replace(this.base, '')
+          + this.window.location.search;
         this.loggerService.logDebug(`is authenticated ${isAuthenticated}`);
         if (!isAuthenticated) {
           if ('/login' !== pathname) {
@@ -48,7 +49,6 @@ export class AppComponent implements OnInit, OnDestroy {
           }
         }
         if (isAuthenticated) {
-          this.loggerService.logDebug('Starting refresh timer');
           this.navigateToStoredUrl();
         }
       });
@@ -96,7 +96,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (path.toString().includes('/unauthorized')) {
       this.router.navigate(['/']).then(this.navigateHandler('home'));
     } else {
-      this.router.navigate([path]).then(result => {
+      this.router.navigateByUrl(path).then(result => {
         if (result) {
           this.storageService.set('redirect', 'none');
         }

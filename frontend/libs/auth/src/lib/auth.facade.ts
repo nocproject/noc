@@ -36,7 +36,7 @@ export class AuthFacade {
     this.areStoredTokensValid();
     return this.isAuthenticated$.pipe(
       tap((isAuth) => {
-        if (!isAuth && this.refreshSubscription) {
+        if (!isAuth) {
           this.destroyRefreshTimer();
         }
       })
@@ -45,12 +45,14 @@ export class AuthFacade {
 
   logout(): void {
     const token = this.storageService.getAccessToken();
-    this.refreshSubscription.unsubscribe();
+    this.destroyRefreshTimer();
     this.store.dispatch(authAction.logout({ token }));
   }
 
   destroyRefreshTimer() {
-    this.refreshSubscription.unsubscribe();
+    if(this.refreshSubscription) {
+      this.refreshSubscription.unsubscribe();
+    }
   }
 
   private startRefreshTimer(): Observable<number> {
@@ -72,6 +74,7 @@ export class AuthFacade {
 
   private authenticatedSuccess(): void {
     this.refreshSubscription = this.startRefreshTimer().subscribe(() => {
+      this.loggerService.logDebug('Starting refresh timer');
       this.startRefresh();
     });
     this.store.dispatch(authAction.authenticatedSuccess());
