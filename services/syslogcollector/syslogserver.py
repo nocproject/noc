@@ -13,7 +13,7 @@ import time
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.ioloop.udpserver import UDPServer
-from noc.core.comp import smart_bytes, smart_text
+from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +35,11 @@ class SyslogServer(UDPServer):
         if not cfg:
             return  # Invalid event source
         # Convert data to valid UTF8
-        data = smart_bytes(smart_text(data, errors="ignore"))
+        data = smart_text(data, errors="ignore")
         # Parse priority
         priority = 0
-        if data.startswith(b"<"):
-            idx = data.find(b">")
+        if data.startswith("<"):
+            idx = data.find(">")
             if idx == -1:
                 return
             try:
