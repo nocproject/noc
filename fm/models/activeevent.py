@@ -79,7 +79,8 @@ class ActiveEvent(Document):
         Move to new queue for reclassification
         @todo: Rename method to *reclassify*
         """
-        from noc.core.nsq.pub import nsq_pub
+        import orjson
+        from noc.core.service.pub import publish
 
         # if message is None:
         #    message = "Reclassification requested"
@@ -94,7 +95,12 @@ class ActiveEvent(Document):
             "object": self.managed_object.id,
             "data": data,
         }
-        nsq_pub("events.%s" % self.managed_object.get_effective_fm_pool().name, msg)
+        stream, partition = self.managed_object.events_stream_and_partition
+        publish(
+            orjson.dumps(msg),
+            stream=stream,
+            partition=partition,
+        )
         self.delete()
 
     def mark_as_failed(self, version, traceback):

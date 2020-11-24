@@ -847,7 +847,6 @@ class MetricsCheck(DiscoveryCheck):
         data = {"$event": {"class": event_class, "vars": raw_vars}}
         msg = {"ts": time.time(), "object": self.object.id, "data": data}
         self.logger.info("Pub Event: %s", msg)
-        self.service.pub("events.%s" % self.object.pool.name, msg)
         stream, partition = self.object.events_stream_and_partition
         self.service.publish(
             orjson.dumps(msg),
