@@ -8,12 +8,14 @@
 # Python modules
 import datetime
 import logging
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
 
 # NOC modules
+from noc.sa.models.managedobject import ManagedObject
 from .reboot import Reboot
 
 logger = logging.getLogger(__name__)
@@ -42,28 +44,15 @@ class Uptime(Document):
         return "%d" % self.object
 
     @classmethod
-    def is_reboot(cls, old_uptime, new_uptime):
-        """
-        Returns true if reboot detected
-        :param old_uptime:
-        :param new_uptime:
-        :return:
-        """
-        if old_uptime > new_uptime:
-            # Check for counter wrap
-            return True
-        return False
-
-    @classmethod
-    def register(cls, managed_object, uptime):
+    def register(cls, managed_object: ManagedObject, uptime: int) -> Optional[datetime.datetime]:
         """
         Register uptime
         :param managed_object: Managed object reference
         :param uptime: Registered uptime in seconds
-        :returns: False, if object has been rebooted, True otherwise
+        :returns: Reboot timestamp if detected, None otherwise
         """
         if not uptime:
-            return True
+            return None
         oid = managed_object.id
         now = datetime.datetime.now()
         delta = datetime.timedelta(seconds=uptime)
@@ -72,6 +61,7 @@ class Uptime(Document):
         c = cls._get_collection()
         d = c.find_one({"object": oid, "stop": None})
         is_rebooted = False
+        ts: Optional[datetime.datetime] = None
         if d:
             # Check for reboot
             if d["last_value"] > uptime:
@@ -123,4 +113,4 @@ class Uptime(Document):
                     "last_value": uptime,
                 }
             )
-        return not is_rebooted
+        return ts
