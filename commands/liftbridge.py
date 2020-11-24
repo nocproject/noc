@@ -96,9 +96,6 @@ class Command(BaseCommand):
             self.print("%-20s | %s:%s" % (broker.id, broker.host, broker.port))
         self.print("# Streams")
         for stream in meta.metadata:
-            if stream.name.startswith("__"):
-                # Internal use stream like __cursor, __activity
-                continue
             print("  ## Name: %s Subject: %s" % (stream.name, stream.subject))
             for p in sorted(stream.partitions):
                 print("    ### Partition: %d" % p)
