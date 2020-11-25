@@ -2,7 +2,7 @@
     "name": "Discovery | Job | Periodic",
     "$collection": "fm.alarmclasses",
     "uuid": "6aed4ced-a4ca-4ed7-9ad0-37c051895572",
-    "desciption": "Base Alarm Class for Periodic discovery alarms.",
+    "description": "Base Alarm Class for Periodic discovery alarms.",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

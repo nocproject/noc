@@ -2,7 +2,7 @@
     "name": "Discovery | Error | Unhandled Exception",
     "$collection": "fm.alarmclasses",
     "uuid": "27382a68-c43d-4460-ac83-e44c83640e14",
-    "desciption": "Unhandled Exception in CLI session processed on device",
+    "description": "Unhandled Exception in CLI session processed on device",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

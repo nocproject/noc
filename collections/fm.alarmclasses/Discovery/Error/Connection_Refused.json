@@ -2,7 +2,7 @@
     "name": "Discovery | Error | Connection Refused",
     "$collection": "fm.alarmclasses",
     "uuid": "9e07201b-b14b-4628-b244-d39b7a88de2a",
-    "desciption": "Device refused CLI connection",
+    "description": "Device refused CLI connection",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

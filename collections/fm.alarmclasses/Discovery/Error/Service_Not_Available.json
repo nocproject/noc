@@ -2,7 +2,7 @@
     "name": "Discovery | Error | Service Not Available",
     "$collection": "fm.alarmclasses",
     "uuid": "bd2231a2-a322-4f7d-8bec-9bebc6669e59",
-    "desciption": "No activator service available",
+    "description": "No activator service available",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

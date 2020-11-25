@@ -2,7 +2,7 @@
     "name": "Discovery | Error | Low Privileges",
     "$collection": "fm.alarmclasses",
     "uuid": "1783626e-130f-4a5c-80ff-fbf7165f1fd3",
-    "desciption": "Low privilege for executing command on managed object",
+    "description": "Low privilege for executing command on managed object",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
