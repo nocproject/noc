@@ -8,6 +8,7 @@
 # Python modules
 import logging
 import time
+from typing import Tuple
 
 # NOC modules
 from noc.config import config
@@ -29,7 +30,7 @@ class SyslogServer(UDPServer):
     def enable_freebind(self):
         return config.syslogcollector.enable_freebind
 
-    def on_read(self, data, address):
+    def on_read(self, data: bytes, address: Tuple[str, int]):
         metrics["syslog_msg_in"] += 1
         cfg = self.service.lookup_config(address[0])
         if not cfg:
