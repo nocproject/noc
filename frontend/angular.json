@@ -44,7 +44,7 @@
               ],
               "optimization": {
                 "scripts": true,
-                "styles": false,
+                "styles": true,
                 "fonts": true
               },
               "outputHashing": "all",
