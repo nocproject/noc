@@ -16,14 +16,14 @@ import sys
 from tornado.ioloop import IOLoop
 from tornado.platform.auto import set_close_exec
 from tornado import process
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Optional, Any
 
 
 class UDPServer(object):
     def __init__(self):
         self._sockets = {}  # fd -> socket object
         self._pending_sockets = []
-        self._started = False
+        self._started: bool = False
 
     def iter_listen(self, cfg: str) -> Iterable[Tuple[str, int]]:
         """
@@ -97,7 +97,7 @@ class UDPServer(object):
         else:
             self._pending_sockets.extend(sockets)
 
-    def start(self, num_processes=1):
+    def start(self, num_processes: int = 1):
         """Starts this server in the `.IOLoop`.
 
         By default, we run the server in this process and do not fork any
@@ -146,12 +146,14 @@ class UDPServer(object):
                 raise
             self.on_read(data, address)
 
-    def on_read(self, data, address):
+    def on_read(self, data: bytes, address: Tuple[str, int]):
         """
         To be overriden
         """
 
-    def bind_udp_sockets(self, port, address=None, family=socket.AF_UNSPEC, flags=None):
+    def bind_udp_sockets(
+        self, port, address: str = None, family: int = socket.AF_UNSPEC, flags: Any = None
+    ):
         """Creates listening sockets bound to the given port and address.
 
         Returns a list of socket objects (multiple sockets are returned if
@@ -233,14 +235,14 @@ class UDPServer(object):
             sockets.append(sock)
         return sockets
 
-    def enable_reuseport(self):
+    def enable_reuseport(self) -> bool:
         """
         Override if SO_REUSEPORT should be set
         :return:
         """
         return False
 
-    def enable_freebind(self):
+    def enable_freebind(self) -> bool:
         """
         Override if IP_FREEBIND should be set
         :return:
@@ -248,14 +250,14 @@ class UDPServer(object):
         return True
 
     @property
-    def has_reuseport(self):
+    def has_reuseport(self) -> bool:
         return hasattr(socket, "SO_REUSEPORT")
 
     @property
-    def has_frebind(self):
+    def has_frebind(self) -> bool:
         return self.get_ip_freebind() is not None
 
-    def setup_socket(self, sock):
+    def setup_socket(self, sock: "socket"):
         """
         Called after socket created but before .bind().
         Can be overriden to adjust socket options in superclasses
@@ -269,7 +271,7 @@ class UDPServer(object):
         if self.has_frebind and self.enable_freebind():
             sock.setsockopt(socket.SOL_IP, self.get_ip_freebind(), 1)
 
-    def get_ip_freebind(self):
+    def get_ip_freebind(self) -> Optional[int]:
         """
         Many python distributions does not include IP_FREEBIND to socket module
         :return: IP_FREEBIND value or None
