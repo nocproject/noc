@@ -100,6 +100,7 @@ Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
     preview: function(record, backItem) {
         var me = this;
         me.callParent(arguments);
+        me.grid.mask(__('Loading...'));
         Ext.Ajax.request({
             url: "/maintenance/maintenance/" + record.get("id") + "/objects/",
             method: "GET",
@@ -109,8 +110,10 @@ Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
                 me.grid.setTitle(record.get("subject") + " " + __("objects"));
                 me.store.loadData(data);
                 me.totalField.setValue(__("Total: ") + data.length);
+                me.grid.unmask();
             },
             failure: function() {
+                me.grid.unmask();
                 NOC.error(__("Failed to get data"));
             }
         });
