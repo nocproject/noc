@@ -2,7 +2,7 @@
     "name": "Discovery | Error | Auth Failed",
     "$collection": "fm.alarmclasses",
     "uuid": "78e72d94-2975-4428-9d67-49673cd274f3",
-    "desciption": "Authentication failed on managed object login",
+    "description": "Authentication failed on managed object login",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

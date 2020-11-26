@@ -2,7 +2,7 @@
     "name": "NOC | PM | High Warning",
     "$collection": "fm.alarmclasses",
     "uuid": "51c2a38c-82f0-4b85-994c-5369e8834ec5",
-    "desciption": "Alarm Class for high warning thresholds",
+    "description": "Alarm Class for high warning thresholds",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

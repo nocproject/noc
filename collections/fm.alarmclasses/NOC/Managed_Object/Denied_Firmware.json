@@ -2,7 +2,7 @@
     "name": "NOC | Managed Object | Denied Firmware",
     "$collection": "fm.alarmclasses",
     "uuid": "cf669419-5519-476e-80fd-ba7b53ec5511",
-    "desciption": "Firmware version is denied to use by policy",
+    "description": "Firmware version is denied to use by policy",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
