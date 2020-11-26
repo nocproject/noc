@@ -45,7 +45,7 @@ class Script(GetMetricsScript):
             mc = oids[r]
             if result[r] in {1410065408, 4294967295}:
                 # Need ifHighSpeed metric
-                high_speed_oids[mib["IF-MIB::ifHighSpeed", mc.ifspeed]] = mc
+                high_speed_oids[mib["IF-MIB::ifHighSpeed", mc.ifindex]] = mc
                 continue
             self.set_metric(
                 id=mc.id,
