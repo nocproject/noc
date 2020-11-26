@@ -2,7 +2,7 @@
     "name": "NOC | PM | Low Error",
     "$collection": "fm.alarmclasses",
     "uuid": "dbe0d74c-0f5f-4392-9ca0-28df58caed28",
-    "desciption": "Alarm Class for low error thresholds",
+    "description": "Alarm Class for low error thresholds",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "MAJOR",

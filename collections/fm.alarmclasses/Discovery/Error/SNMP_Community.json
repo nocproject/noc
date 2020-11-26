@@ -2,7 +2,7 @@
     "name": "Discovery | Guess | SNMP Community",
     "$collection": "fm.alarmclasses",
     "uuid": "4163e9b6-b433-42f3-81d5-43c4902fded2",
-    "desciption": "No suitable SNMP community in suggests profile",
+    "description": "No suitable SNMP community in suggests profile",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

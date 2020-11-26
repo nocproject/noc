@@ -2,7 +2,7 @@
     "name": "Discovery | Error | No Super",
     "$collection": "fm.alarmclasses",
     "uuid": "a3c63315-09ab-42a5-82bd-7f59db4fca36",
-    "desciption": "Authentication failed when raise privilege level on managed object",
+    "description": "Authentication failed when raise privilege level on managed object",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
