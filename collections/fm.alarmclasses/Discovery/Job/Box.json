@@ -2,7 +2,7 @@
     "name": "Discovery | Job | Box",
     "$collection": "fm.alarmclasses",
     "uuid": "bcb92084-18ed-4229-9a1f-f85fc80c6a96",
-    "desciption": "Base Alarm Class for Box discovery alarms.",
+    "description": "Base Alarm Class for Box discovery alarms.",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

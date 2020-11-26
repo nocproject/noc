@@ -2,7 +2,7 @@
     "name": "NOC | PM | Low Warning",
     "$collection": "fm.alarmclasses",
     "uuid": "89e9f7ea-f325-4486-816c-2362d6460fbc",
-    "desciption": "Alarm Class for low warning thresholds",
+    "description": "Alarm Class for low warning thresholds",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",

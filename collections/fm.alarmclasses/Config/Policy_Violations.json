@@ -2,7 +2,7 @@
     "name": "Config | Policy Violations",
     "$collection": "fm.alarmclasses",
     "uuid": "581b6801-6606-48ff-bcdf-fac8d988409a",
-    "desciption": "Base Alarm Class for umbrella alarms.",
+    "description": "Base Alarm Class for umbrella alarms.",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
