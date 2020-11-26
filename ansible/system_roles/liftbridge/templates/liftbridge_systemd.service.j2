@@ -20,7 +20,6 @@ PIDFile={{ liftbridge_pid_path }}
 PermissionsStartOnly=true
 ExecStart={{ liftbridge_bin_path }}/liftbridge \
     --config={{ liftbridge_config_path }}/liftbridge.yml
-ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 KillSignal=SIGTERM
 Restart=on-failure
