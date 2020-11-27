@@ -1,0 +1,7 @@
+{
+    "vendor__code": "DZS",
+    "name": "4229-A2-520",
+    "$collection": "inv.platforms",
+    "uuid": "3e0c3c15-eafc-432a-8503-b1eda6c15712",
+    "snmp_sysobjectid": "1.3.6.1.4.1.1795.1.14.17.1.3"
+}
