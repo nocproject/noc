@@ -1,0 +1,8 @@
+{
+    "name": "Ttronics",
+    "uuid": "bbca92dd-c143-4bd9-b208-b6fd1dac48e0",
+    "full_name": "ООО «Технотроникс»",
+    "code": ["TTRONICS"],
+    "site": "https://ttronics.ru",
+    "$collection": "inv.vendors"
+}
