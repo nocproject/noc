@@ -33,5 +33,8 @@
     "acl_down_policy": "{{ consul_acl_down_policy }}",
     "acl_master_token": "{{ consul_master_token }}",
     "acl_replication_token": "{{ consul_replication_token }}"
-  {% endif -%}
+  {% endif -%},
+  "limits": {
+      "http_max_conns_per_client": 1000
+  }
 }
