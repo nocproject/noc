@@ -1,0 +1,8 @@
+{
+    "name": "SecurityCode",
+    "uuid": "73522bc9-7d3a-412a-92b9-9bebb99e3f96",
+    "full_name": "Код Безопасности",
+    "code": ["SECURITYCODE"],
+    "site": "http://www.securitycode.ru/",
+    "$collection": "inv.vendors"
+}
