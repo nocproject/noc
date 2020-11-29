@@ -11,6 +11,7 @@ from noc.core.script.base import BaseScript
 from noc.core.mib import mib
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.comp import smart_text
+from noc.core.script.cli.error import CLIError
 
 
 class Script(BaseScript):
@@ -138,7 +139,7 @@ class Script(BaseScript):
             return r
         try:
             v = self.cli("display elabel slot 0")
-        except self.CLISyntaxError:
+        except (self.ScriptError, CLIError):
             return []
         v = list(self.rx_parts.finditer(v))
         if v:
@@ -166,7 +167,7 @@ class Script(BaseScript):
             return r
         try:
             v = self.cli("display patch-information")
-        except self.CLISyntaxError:
+        except (self.ScriptError, CLIError):
             return []
         v = self.rx_patch.search(v)
         if v and v.group("patch_version"):
