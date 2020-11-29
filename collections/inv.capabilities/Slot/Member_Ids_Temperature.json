@@ -1,0 +1,8 @@
+{
+    "name": "Slot | Member Ids | Temperature",
+    "$collection": "inv.capabilities",
+    "uuid": "de8f3fdc-d6f7-4561-bac0-86b7ab67a6cc",
+    "description": "Slots with temperature metric",
+    "type": "str",
+    "card_template": null
+}
