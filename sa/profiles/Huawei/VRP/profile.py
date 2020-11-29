@@ -215,7 +215,7 @@ class Profile(BaseProfile):
         return "\n".join(r)
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Gi|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$"
+        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Gi|G|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$"
     )
 
     def convert_interface_name(self, s):
@@ -225,6 +225,8 @@ class Profile(BaseProfile):
         >>> Profile().convert_interface_name("Ten-GigabitEthernet2/0/0")
         'XGigabitEthernet2/0/0'
         >>> Profile().convert_interface_name("GE2/0/0")
+        'GigabitEthernet2/0/0'
+        >>> Profile().convert_interface_name("G2/0/0")
         'GigabitEthernet2/0/0'
         >>> Profile().convert_interface_name("Eth2/0/0")
         'Ethernet2/0/0'
@@ -240,7 +242,8 @@ class Profile(BaseProfile):
                 "Loop": "LoopBack",
                 "Ten-GigabitEthernet": "XGigabitEthernet",
                 "XGE": "XGigabitEthernet",
-                "GE": "GigabitEthernet",
+                "GE": "GigabitEthernet",  # Sometimes it used on iface description
+                "G": "GigabitEthernet",  # Sometimes it used on iface description
                 "Gi": "GigabitEthernet",
                 "Eth": "Ethernet",
                 "MEth": "M-Ethernet",
