@@ -19,6 +19,8 @@ class Script(BaseScript):
 
     CHECK_SNMP_GETNEXT = {"SNMP | MIB | ADSL-MIB": mib["ADSL-LINE-MIB::adslLineCoding"]}
 
+    SNMP_NONE_VALUE = 2147483647
+
     # Stuck respons on command and broken next script on discovery
     keep_cli_session = False
 
@@ -61,10 +63,24 @@ class Script(BaseScript):
         cmd = self.snmp.get(mib["HUAWEI-XPON-MIB::hwGponDeviceDbaAssignmentMode", 0])
         return bool(cmd)
 
+    def has_slot_temperature(self):
+        r = []
+        for oid, value in self.snmp.getnext("1.3.6.1.4.1.2011.6.3.3.2.1.13"):
+            if value == self.SNMP_NONE_VALUE:
+                continue
+            r += [oid.split(".")[-1]]
+        return r
+
     def execute_platform_cli(self, caps):
         if self.has_olt_cli():
             caps["Network | PON | OLT"] = True
+        r = self.has_slot_temperature()
+        if r:
+            caps["Slot | Member Ids | Temperature"] = " | ".join(r)
 
     def execute_platform_snmp(self, caps):
         if self.has_olt_snmp():
             caps["Network | PON | OLT"] = True
+        r = self.has_slot_temperature()
+        if r:
+            caps["Slot | Member Ids | Temperature"] = " | ".join(r)
