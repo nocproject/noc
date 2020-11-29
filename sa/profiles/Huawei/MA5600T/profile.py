@@ -80,6 +80,7 @@ class Profile(BaseProfile):
         "is_ua5k": {"platform": {"$in": ["UA5000", "UA5000IPMB", "UA5000PVM"]}},
         "is_lldp_support": {"version": {"$gte": "V800R018C10"}},
         "is_gpon_ports": {"caps": {"$in": ["Network | PON | OLT"]}},
+        "is_slots_temp": {"caps": {"$in": ["Slot | Member Ids | Temperature"]}},
     }
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
