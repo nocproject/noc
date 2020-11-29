@@ -78,6 +78,13 @@ Ext.define("NOC.inv.reportmovedmac.Application", {
                 allowBlank: true
             },
             {
+                name: "exclude_serial_change",
+                xtype: "checkboxfield",
+                boxLabel: __("Exclude Device if SerialNumber changed"),
+                checked: true,
+                allowBlank: false
+            },
+            {
                 name: "enable_autowidth",
                 xtype: "checkboxfield",
                 boxLabel: __("Enable Excel column autowidth"),

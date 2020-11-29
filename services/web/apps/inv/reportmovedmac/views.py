@@ -79,6 +79,13 @@ MAC_MOVED_QUERY = """SELECT
     "(mac < %s or mac > %s)" % (int(MAC(x[0])), int(MAC(x[1]))) for x in MULTICAST_MACS
 )
 
+DEVICE_MOVED_QUERY = """SELECT
+   managed_object, groupArray((ts, serials)) as serial_arr
+   FROM managedobjects
+   WHERE date = '%s' or date = '%s'
+   GROUP BY managed_object HAVING uniq(arraySort(serials)) > 1 ORDER BY managed_object
+"""
+
 
 def get_interface(ifaces: str):
     r = list(sorted(ast.literal_eval(ifaces), key=itemgetter(1)))
@@ -159,6 +166,7 @@ class ReportMovedMacApplication(ExtApplication):
         columns=None,
         o_format=None,
         enable_autowidth=False,
+        exclude_serial_change=True,
         **kwargs,
     ):
         def translate_row(row, cmap):
@@ -191,7 +199,6 @@ class ReportMovedMacApplication(ExtApplication):
             "TO_IFACE_NAME",
             "TO_IFACE_DOWN",
         ]
-
         if columns:
             cmap = []
             for c in columns.split(","):
@@ -228,8 +235,12 @@ class ReportMovedMacApplication(ExtApplication):
             )
         else:
             iface_filter = "is_uni = 1"
-
+        serials_changed = {}
         ch = connection()
+        for row in ch.execute(
+            DEVICE_MOVED_QUERY % (from_date.date().isoformat(), to_date.date().isoformat())
+        ):
+            serials_changed[int(row[0])] = row[1]
         for (
             mo,
             mac,
@@ -245,9 +256,14 @@ class ReportMovedMacApplication(ExtApplication):
         ):
             if int(mo) not in mos_id:
                 continue
+            if exclude_serial_change and int(mo) in serials_changed:
+                continue
             iface_from, iface_to, migrate = get_interface(ifaces)
             event_type = _("Migrate")
-            if rx_port_num.search(iface_from).group() == rx_port_num.search(iface_to).group():
+            if (
+                rx_port_num.search(iface_from).group() == rx_port_num.search(iface_to).group()
+                and iface_from != iface_to
+            ):
                 event_type = _("Migrate (Device Changed)")
             r += [
                 translate_row(
