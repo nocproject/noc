@@ -341,7 +341,8 @@ class BIAPI(API):
         d.title = config.get("title")  # @todo: Generate title
         d.description = config.get("description")
         d.tags = config.get("tags", [])
-        d.uuid = uuid.uuid4()
+        if not d.uuid:
+            d.uuid = uuid.uuid4()
         d.save()
         return str(d.id)
 
