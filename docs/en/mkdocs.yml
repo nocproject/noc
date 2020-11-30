@@ -1,0 +1,1727 @@
+site_name: NOC Docs
+site_description: NOC Documentation Project
+site_author: The NOC Project
+repo_url: https://code.getnoc.com/noc/noc/
+repo_name: Gitlab
+edit_uri: -/edit/master/docs/en
+copyright: 2007-2020, The NOC Project
+nav:
+  - Home: index.md
+  # - Installation:
+  # - Quickstart
+  - Reference:
+      - Concepts:
+          - Administrative Domain: reference/concepts/administrative-domain/index.md
+          - Allocation Group: reference/concepts/allocation-group/index.md
+          - API Key: reference/concepts/apikey/index.md
+          - Container: reference/concepts/container/index.md
+          - Dialplan: reference/concepts/dialplan/index.md
+          - DNS Zone: reference/concepts/dns-zone/index.md
+          - External Storage: reference/concepts/external-storage/index.md
+          - Group: reference/concepts/group/index.md
+          - Handler: reference/concepts/handler/index.md
+          - Interface: reference/concepts/interface/index.md
+          - Interface Profile: reference/concepts/interface-profile/index.md
+          - Managed Object: reference/concepts/managed-object/index.md
+          - Managed Object Profile: reference/concepts/managed-object-profile/index.md
+          - Network Segment: reference/concepts/network-segment/index.md
+          - Network Segment Profile: reference/concepts/network-segment-profile/index.md
+          - Notification Group: reference/concepts/notification-group/index.md
+          - Phone Number: reference/concepts/phone-number/index.md
+          - Phone Number Profile: reference/concepts/phone-number-profile/index.md
+          - Phone Range: reference/concepts/phone-range/index.md
+          - Phone Range Profile: reference/concepts/phone-range-profile/index.md
+          - Pool: reference/concepts/pool/index.md
+          - Prefix: reference/concepts/prefix/index.md
+          - Prefix Profile: reference/concepts/prefix-profile/index.md
+          - Remote System: reference/concepts/remote-system/index.md
+          - Resource Group: reference/concepts/resource-group/index.md
+          - SA Profile: reference/concepts/sa-profile/index.md
+          - Service: reference/concepts/service/index.md
+          - Service Profile: reference/concepts/service-profile/index.md
+          - Subscriber: reference/concepts/subscriber/index.md
+          - Subscriber Profile: reference/concepts/subscriber-profile/index.md
+          - Technology: reference/concepts/technology/index.md
+          - Template: reference/concepts/template/index.md
+          - Threshold Profile: reference/concepts/threshold-profile/index.md
+          - User: reference/concepts/user/index.md
+          - VC Filter: reference/concepts/vc-filter/index.md
+          - VLAN: reference/concepts/vlan/index.md
+          - VLAN Profile: reference/concepts/vlan-profile/index.md
+          - VPN: reference/concepts/vpn/index.md
+          - VPN Profile: reference/concepts/vpn-profile/index.md
+          - Workflow: reference/concepts/workflow/index.md
+      - Profiles:
+          - 3Com:
+              - Overview: reference/profiles/3Com/index.md
+              - 3Com.4500: reference/profiles/3Com/3Com.4500.md
+              - 3Com.SuperStack: reference/profiles/3Com/3Com.SuperStack.md
+              - 3Com.SuperStack3: reference/profiles/3Com/3Com.SuperStack3.md
+              - 3Com.SuperStack3_4400: reference/profiles/3Com/3Com.SuperStack3_4400.md
+              - 3Com.SuperStack3_4500: reference/profiles/3Com/3Com.SuperStack3_4500.md
+          - APC:
+              - Overview: reference/profiles/APC/index.md
+              - APC.AOS: reference/profiles/APC/APC.AOS.md
+          - AcmePacket:
+              - Overview: reference/profiles/AcmePacket/index.md
+              - AcmePacket.NetNet: reference/profiles/AcmePacket/AcmePacket.NetNet.md
+          - AddPac:
+              - Overview: reference/profiles/AddPac/index.md
+              - AddPac.APOS: reference/profiles/AddPac/AddPac.APOS.md
+          - Alcatel:
+              - Overview: reference/profiles/Alcatel/index.md
+              - Alcatel.7302: reference/profiles/Alcatel/Alcatel.7302.md
+              - Alcatel.7324RU: reference/profiles/Alcatel/Alcatel.7324RU.md
+              - Alcatel.AOS: reference/profiles/Alcatel/Alcatel.AOS.md
+              - Alcatel.OS62xx: reference/profiles/Alcatel/Alcatel.OS62xx.md
+              - Alcatel.Stinger: reference/profiles/Alcatel/Alcatel.Stinger.md
+              - Alcatel.TIMOS: reference/profiles/Alcatel/Alcatel.TIMOS.md
+          - Alentis:
+              - Overview: reference/profiles/Alentis/index.md
+              - Alentis.NetPing: reference/profiles/Alentis/Alentis.NetPing.md
+          - AlliedTelesis:
+              - Overview: reference/profiles/AlliedTelesis/index.md
+              - AlliedTelesis.AT8000: reference/profiles/AlliedTelesis/AlliedTelesis.AT8000.md
+              - AlliedTelesis.AT8000S: reference/profiles/AlliedTelesis/AlliedTelesis.AT8000S.md
+              - AlliedTelesis.AT8100: reference/profiles/AlliedTelesis/AlliedTelesis.AT8100.md
+              - AlliedTelesis.AT8500: reference/profiles/AlliedTelesis/AlliedTelesis.AT8500.md
+              - AlliedTelesis.AT8700: reference/profiles/AlliedTelesis/AlliedTelesis.AT8700.md
+              - AlliedTelesis.AT9400: reference/profiles/AlliedTelesis/AlliedTelesis.AT9400.md
+              - AlliedTelesis.AT9900: reference/profiles/AlliedTelesis/AlliedTelesis.AT9900.md
+          - Alstec:
+              - Overview: reference/profiles/Alstec/index.md
+              - Alstec.24xx: reference/profiles/Alstec/Alstec.24xx.md
+              - Alstec.5440: reference/profiles/Alstec/Alstec.5440.md
+              - Alstec.7200: reference/profiles/Alstec/Alstec.7200.md
+              - Alstec.ALS: reference/profiles/Alstec/Alstec.ALS.md
+              - Alstec.MSPU: reference/profiles/Alstec/Alstec.MSPU.md
+          - Angtel:
+              - Overview: reference/profiles/Angtel/index.md
+              - Angtel.Topaz: reference/profiles/Angtel/Angtel.Topaz.md
+          - Arista:
+              - Overview: reference/profiles/Arista/index.md
+              - Arista.EOS: reference/profiles/Arista/Arista.EOS.md
+          - Aruba:
+              - Overview: reference/profiles/Aruba/index.md
+              - Aruba.ArubaOS: reference/profiles/Aruba/Aruba.ArubaOS.md
+          - Audiocodes:
+              - Overview: reference/profiles/Audiocodes/index.md
+              - Audiocodes.Mediant2000: reference/profiles/Audiocodes/Audiocodes.Mediant2000.md
+          - Axis:
+              - Overview: reference/profiles/Axis/index.md
+              - Axis.VAPIX: reference/profiles/Axis/Axis.VAPIX.md
+          - BDCOM:
+              - Overview: reference/profiles/BDCOM/index.md
+              - BDCOM.IOS: reference/profiles/BDCOM/BDCOM.IOS.md
+              - BDCOM.xPON: reference/profiles/BDCOM/BDCOM.xPON.md
+          - Beward:
+              - Overview: reference/profiles/Beward/index.md
+              - Beward.BD: reference/profiles/Beward/Beward.BD.md
+          - Bradbury:
+              - Overview: reference/profiles/Bradbury/index.md
+              - Bradbury.HighVideo: reference/profiles/Bradbury/Bradbury.HighVideo.md
+          - Brocade:
+              - Overview: reference/profiles/Brocade/index.md
+              - Brocade.ADX: reference/profiles/Brocade/Brocade.ADX.md
+              - Brocade.CER-ADV: reference/profiles/Brocade/Brocade.CER-ADV.md
+              - Brocade.CER: reference/profiles/Brocade/Brocade.CER.md
+              - Brocade.FabricOS: reference/profiles/Brocade/Brocade.FabricOS.md
+              - Brocade.IronWare: reference/profiles/Brocade/Brocade.IronWare.md
+          - Cambium:
+              - Overview: reference/profiles/Cambium/index.md
+              - Cambium.ePMP: reference/profiles/Cambium/Cambium.ePMP.md
+          - Carelink:
+              - Overview: reference/profiles/Carelink/index.md
+              - Carelink.SWG: reference/profiles/Carelink/Carelink.SWG.md
+          - Cisco:
+              - Overview: reference/profiles/Cisco/index.md
+              - Cisco.1900: reference/profiles/Cisco/Cisco.1900.md
+              - Cisco.ASA: reference/profiles/Cisco/Cisco.ASA.md
+              - Cisco.AireOS: reference/profiles/Cisco/Cisco.AireOS.md
+              - Cisco.CatOS: reference/profiles/Cisco/Cisco.CatOS.md
+              - Cisco.DCM: reference/profiles/Cisco/Cisco.DCM.md
+              - Cisco.FWSM: reference/profiles/Cisco/Cisco.FWSM.md
+              - Cisco.IOS: reference/profiles/Cisco/Cisco.IOS.md
+              - Cisco.IOSXR: reference/profiles/Cisco/Cisco.IOSXR.md
+              - Cisco.NXOS: reference/profiles/Cisco/Cisco.NXOS.md
+              - Cisco.SANOS: reference/profiles/Cisco/Cisco.SANOS.md
+              - Cisco.SCOS: reference/profiles/Cisco/Cisco.SCOS.md
+              - Cisco.SMB: reference/profiles/Cisco/Cisco.SMB.md
+              - Cisco.WLC: reference/profiles/Cisco/Cisco.WLC.md
+          - DCN:
+              - Overview: reference/profiles/DCN/index.md
+              - DCN.DCWL: reference/profiles/DCN/DCN.DCWL.md
+              - DCN.DCWS: reference/profiles/DCN/DCN.DCWS.md
+          - DLink:
+              - Overview: reference/profiles/DLink/index.md
+              - DLink.DAS: reference/profiles/DLink/DLink.DAS.md
+              - DLink.DES21xx: reference/profiles/DLink/DLink.DES21xx.md
+              - DLink.DFL: reference/profiles/DLink/DLink.DFL.md
+              - DLink.DGS3100: reference/profiles/DLink/DLink.DGS3100.md
+              - DLink.DIR: reference/profiles/DLink/DLink.DIR.md
+              - DLink.DVG: reference/profiles/DLink/DLink.DVG.md
+              - DLink.DxS: reference/profiles/DLink/DLink.DxS.md
+              - DLink.DxS_Cisco_CLI: reference/profiles/DLink/DLink.DxS_Cisco_CLI.md
+              - DLink.DxS_Industrial_CLI: reference/profiles/DLink/DLink.DxS_Industrial_CLI.md
+              - DLink.DxS_Smart: reference/profiles/DLink/DLink.DxS_Smart.md
+          - Dahua:
+              - Overview: reference/profiles/Dahua/index.md
+              - Dahua.DH: reference/profiles/Dahua/Dahua.DH.md
+          - Dell:
+              - Overview: reference/profiles/Dell/index.md
+              - Dell.Powerconnect55xx: reference/profiles/Dell/Dell.Powerconnect55xx.md
+              - Dell.Powerconnect62xx: reference/profiles/Dell/Dell.Powerconnect62xx.md
+          - ECI:
+              - Overview: reference/profiles/ECI/index.md
+              - ECI.HiFOCuS: reference/profiles/ECI/ECI.HiFOCuS.md
+              - ECI.SAM: reference/profiles/ECI/ECI.SAM.md
+              - ECI.SANI: reference/profiles/ECI/ECI.SANI.md
+          - EdgeCore:
+              - Overview: reference/profiles/EdgeCore/index.md
+              - EdgeCore.ES: reference/profiles/EdgeCore/EdgeCore.ES.md
+          - ElectronR:
+              - Overview: reference/profiles/ElectronR/index.md
+              - ElectronR.KO01M: reference/profiles/ElectronR/ElectronR.KO01M.md
+          - Eltex:
+              - Overview: reference/profiles/Eltex/index.md
+              - Eltex.DSLAM: reference/profiles/Eltex/Eltex.DSLAM.md
+              - Eltex.ESR: reference/profiles/Eltex/Eltex.ESR.md
+              - Eltex.LTE: reference/profiles/Eltex/Eltex.LTE.md
+              - Eltex.LTP: reference/profiles/Eltex/Eltex.LTP.md
+              - Eltex.MA4000: reference/profiles/Eltex/Eltex.MA4000.md
+              - Eltex.MES: reference/profiles/Eltex/Eltex.MES.md
+              - Eltex.MES24xx: reference/profiles/Eltex/Eltex.MES24xx.md
+              - Eltex.MES5448: reference/profiles/Eltex/Eltex.MES5448.md
+              - Eltex.PON: reference/profiles/Eltex/Eltex.PON.md
+              - Eltex.RG: reference/profiles/Eltex/Eltex.RG.md
+              - Eltex.SMG: reference/profiles/Eltex/Eltex.SMG.md
+              - Eltex.TAU: reference/profiles/Eltex/Eltex.TAU.md
+              - Eltex.WOP: reference/profiles/Eltex/Eltex.WOP.md
+              - Eltex.WOPLR: reference/profiles/Eltex/Eltex.WOPLR.md
+          - Enterasys:
+              - Overview: reference/profiles/Enterasys/index.md
+              - Enterasys.EOS: reference/profiles/Enterasys/Enterasys.EOS.md
+          - Ericsson:
+              - Overview: reference/profiles/Ericsson/index.md
+              - Ericsson.MINI_LINK: reference/profiles/Ericsson/Ericsson.MINI_LINK.md
+              - Ericsson.SEOS: reference/profiles/Ericsson/Ericsson.SEOS.md
+          - Extreme:
+              - Overview: reference/profiles/Extreme/index.md
+              - Extreme.ISW: reference/profiles/Extreme/Extreme.ISW.md
+              - Extreme.Summit200: reference/profiles/Extreme/Extreme.Summit200.md
+              - Extreme.XOS: reference/profiles/Extreme/Extreme.XOS.md
+          - Force10:
+              - Overview: reference/profiles/Force10/index.md
+              - Force10.FTOS: reference/profiles/Force10/Force10.FTOS.md
+              - Force10.SFTOS: reference/profiles/Force10/Force10.SFTOS.md
+          - Fortinet:
+              - Overview: reference/profiles/Fortinet/index.md
+              - Fortinet.Fortigate: reference/profiles/Fortinet/Fortinet.Fortigate.md
+          - GWD:
+              - Overview: reference/profiles/GWD/index.md
+              - GWD.GFA: reference/profiles/GWD/GWD.GFA.md
+          - H3C:
+              - Overview: reference/profiles/H3C/index.md
+              - H3C.VRP: reference/profiles/H3C/H3C.VRP.md
+          - HP:
+              - Overview: reference/profiles/HP/index.md
+              - HP.1905: reference/profiles/HP/HP.1905.md
+              - HP.1910: reference/profiles/HP/HP.1910.md
+              - HP.Comware: reference/profiles/HP/HP.Comware.md
+              - HP.GbE2: reference/profiles/HP/HP.GbE2.md
+              - HP.ProCurve: reference/profiles/HP/HP.ProCurve.md
+              - HP.ProCurve9xxx: reference/profiles/HP/HP.ProCurve9xxx.md
+              - HP.iLO2: reference/profiles/HP/HP.iLO2.md
+          - Harmonic:
+              - Overview: reference/profiles/Harmonic/index.md
+              - Harmonic.DiviComElectra: reference/profiles/Harmonic/Harmonic.DiviComElectra.md
+              - Harmonic.ProStream1000: reference/profiles/Harmonic/Harmonic.ProStream1000.md
+              - Harmonic.bNSG9000: reference/profiles/Harmonic/Harmonic.bNSG9000.md
+          - Hikvision:
+              - Overview: reference/profiles/Hikvision/index.md
+              - Hikvision.DS2CD: reference/profiles/Hikvision/Hikvision.DS2CD.md
+              - Hikvision.DSKV8: reference/profiles/Hikvision/Hikvision.DSKV8.md
+          - Huawei:
+              - Overview: reference/profiles/Huawei/index.md
+              - Huawei.MA5300: reference/profiles/Huawei/Huawei.MA5300.md
+              - Huawei.MA5600T: reference/profiles/Huawei/Huawei.MA5600T.md
+              - Huawei.UMG8900: reference/profiles/Huawei/Huawei.UMG8900.md
+              - Huawei.VRP: reference/profiles/Huawei/Huawei.VRP.md
+              - Huawei.VRP3: reference/profiles/Huawei/Huawei.VRP3.md
+          - IBM:
+              - Overview: reference/profiles/IBM/index.md
+              - IBM.NOS: reference/profiles/IBM/IBM.NOS.md
+          - IRE-Polus:
+              - Overview: reference/profiles/IRE-Polus/index.md
+              - IRE-Polus.Taros: reference/profiles/IRE-Polus/IRE-Polus.Taros.md
+          - InfiNet:
+              - Overview: reference/profiles/InfiNet/index.md
+              - InfiNet.WANFlexX: reference/profiles/InfiNet/InfiNet.WANFlexX.md
+          - Intracom:
+              - Overview: reference/profiles/Intracom/index.md
+              - Intracom.UltraLink: reference/profiles/Intracom/Intracom.UltraLink.md
+          - Iskratel:
+              - Overview: reference/profiles/Iskratel/index.md
+              - Iskratel.ESCOM: reference/profiles/Iskratel/Iskratel.ESCOM.md
+              - Iskratel.MBAN: reference/profiles/Iskratel/Iskratel.MBAN.md
+              - Iskratel.MSAN: reference/profiles/Iskratel/Iskratel.MSAN.md
+              - Iskratel.VOIP: reference/profiles/Iskratel/Iskratel.VOIP.md
+          - Juniper:
+              - Overview: reference/profiles/Juniper/index.md
+              - Juniper.EX2500: reference/profiles/Juniper/Juniper.EX2500.md
+              - Juniper.JUNOS: reference/profiles/Juniper/Juniper.JUNOS.md
+              - Juniper.JUNOSe: reference/profiles/Juniper/Juniper.JUNOSe.md
+              - Juniper.SRCPE: reference/profiles/Juniper/Juniper.SRCPE.md
+              - Juniper.ScreenOS: reference/profiles/Juniper/Juniper.ScreenOS.md
+          - Linksys:
+              - Overview: reference/profiles/Linksys/index.md
+              - Linksys.SPS2xx: reference/profiles/Linksys/Linksys.SPS2xx.md
+              - Linksys.SRW: reference/profiles/Linksys/Linksys.SRW.md
+              - Linksys.VoIP: reference/profiles/Linksys/Linksys.VoIP.md
+          - Linux:
+              - Overview: reference/profiles/Linux/index.md
+              - Linux.Alt: reference/profiles/Linux/Linux.Alt.md
+              - Linux.Astra: reference/profiles/Linux/Linux.Astra.md
+              - Linux.Debian: reference/profiles/Linux/Linux.Debian.md
+              - Linux.Openwrt: reference/profiles/Linux/Linux.Openwrt.md
+              - Linux.RHEL: reference/profiles/Linux/Linux.RHEL.md
+          - Lucent:
+              - Overview: reference/profiles/Lucent/index.md
+              - Lucent.Stinger: reference/profiles/Lucent/Lucent.Stinger.md
+          - Maipu:
+              - Overview: reference/profiles/Maipu/index.md
+              - Maipu.OS: reference/profiles/Maipu/Maipu.OS.md
+          - MikroTik:
+              - Overview: reference/profiles/MikroTik/index.md
+              - MikroTik.RouterOS: reference/profiles/MikroTik/MikroTik.RouterOS.md
+              - MikroTik.SwOS: reference/profiles/MikroTik/MikroTik.SwOS.md
+          - NAG:
+              - Overview: reference/profiles/NAG/index.md
+              - NAG.SNR: reference/profiles/NAG/NAG.SNR.md
+          - NOC:
+              - Overview: reference/profiles/NOC/index.md
+              - NOC.SAE: reference/profiles/NOC/NOC.SAE.md
+          - NSCComm:
+              - Overview: reference/profiles/NSCComm/index.md
+              - NSCComm.LPOS: reference/profiles/NSCComm/NSCComm.LPOS.md
+          - NSN:
+              - Overview: reference/profiles/NSN/index.md
+              - NSN.TIMOS: reference/profiles/NSN/NSN.TIMOS.md
+              - NSN.hiX56xx: reference/profiles/NSN/NSN.hiX56xx.md
+          - Nateks:
+              - Overview: reference/profiles/Nateks/index.md
+              - Nateks.FlexGain: reference/profiles/Nateks/Nateks.FlexGain.md
+              - Nateks.FlexGainACE16: reference/profiles/Nateks/Nateks.FlexGainACE16.md
+              - Nateks.FlexGainACE24: reference/profiles/Nateks/Nateks.FlexGainACE24.md
+              - Nateks.NetXpert: reference/profiles/Nateks/Nateks.NetXpert.md
+          - NextIO:
+              - Overview: reference/profiles/NextIO/index.md
+              - NextIO.vNet: reference/profiles/NextIO/NextIO.vNet.md
+          - Nortel:
+              - Overview: reference/profiles/Nortel/index.md
+              - Nortel.BayStack425: reference/profiles/Nortel/Nortel.BayStack425.md
+          - OS:
+              - OS.ESXi: reference/profiles/OS/OS.ESXi.md
+              - OS.FreeBSD: reference/profiles/OS/OS.FreeBSD.md
+              - OS.Linux: reference/profiles/OS/OS.Linux.md
+          - OneAccess:
+              - Overview: reference/profiles/OneAccess/index.md
+              - OneAccess.TDRE: reference/profiles/OneAccess/OneAccess.TDRE.md
+          - Opticin:
+              - Overview: reference/profiles/Opticin/index.md
+              - Opticin.OS: reference/profiles/Opticin/Opticin.OS.md
+          - Orion:
+              - Overview: reference/profiles/Orion/index.md
+              - Orion.NOS: reference/profiles/Orion/Orion.NOS.md
+          - Planar:
+              - Overview: reference/profiles/Planar/index.md
+              - Planar.SDO3000: reference/profiles/Planar/Planar.SDO3000.md
+          - Planet:
+              - Overview: reference/profiles/Planet/index.md
+              - Planet.WGSD: reference/profiles/Planet/Planet.WGSD.md
+          - Polygon:
+              - Overview: reference/profiles/Polygon/index.md
+              - Polygon.IOS: reference/profiles/Polygon/Polygon.IOS.md
+          - Proscend:
+              - Overview: reference/profiles/Proscend/index.md
+              - Proscend.SHDSL: reference/profiles/Proscend/Proscend.SHDSL.md
+          - Protei:
+              - Overview: reference/profiles/Protei/index.md
+              - Protei.MediaGateway: reference/profiles/Protei/Protei.MediaGateway.md
+          - Qtech:
+              - Overview: reference/profiles/Qtech/index.md
+              - Qtech.BFC_PBIC_S: reference/profiles/Qtech/Qtech.BFC_PBIC_S.md
+              - Qtech.QFC: reference/profiles/Qtech/Qtech.QFC.md
+              - Qtech.QOS: reference/profiles/Qtech/Qtech.QOS.md
+              - Qtech.QSW: reference/profiles/Qtech/Qtech.QSW.md
+              - Qtech.QSW2500: reference/profiles/Qtech/Qtech.QSW2500.md
+              - Qtech.QSW2800: reference/profiles/Qtech/Qtech.QSW2800.md
+              - Qtech.QSW8200: reference/profiles/Qtech/Qtech.QSW8200.md
+          - Raisecom:
+              - Overview: reference/profiles/Raisecom/index.md
+              - Raisecom.RCIOS: reference/profiles/Raisecom/Raisecom.RCIOS.md
+              - Raisecom.ROS: reference/profiles/Raisecom/Raisecom.ROS.md
+          - Raritan:
+              - Overview: reference/profiles/Raritan/index.md
+              - Raritan.DominionSX: reference/profiles/Raritan/Raritan.DominionSX.md
+          - Rotek:
+              - Overview: reference/profiles/Rotek/index.md
+              - Rotek.BT: reference/profiles/Rotek/Rotek.BT.md
+              - Rotek.RTBS: reference/profiles/Rotek/Rotek.RTBS.md
+              - Rotek.RTBSv1: reference/profiles/Rotek/Rotek.RTBSv1.md
+          - Rubytech:
+              - Overview: reference/profiles/Rubytech/index.md
+              - Rubytech.l2ms: reference/profiles/Rubytech/Rubytech.l2ms.md
+          - Ruckus:
+              - Overview: reference/profiles/Ruckus/index.md
+              - Ruckus.SmartZone: reference/profiles/Ruckus/Ruckus.SmartZone.md
+              - Ruckus.ZoneDirector: reference/profiles/Ruckus/Ruckus.ZoneDirector.md
+          - SKS:
+              - Overview: reference/profiles/SKS/index.md
+              - SKS.SKS: reference/profiles/SKS/SKS.SKS.md
+          - STerra:
+              - Overview: reference/profiles/STerra/index.md
+              - STerra.Gate: reference/profiles/STerra/STerra.Gate.md
+          - SecurityCode:
+              - Overview: reference/profiles/SecurityCode/index.md
+              - SecurityCode.Kontinent: reference/profiles/SecurityCode/SecurityCode.Kontinent.md
+          - Sencore:
+              - Overview: reference/profiles/Sencore/index.md
+              - Sencore.Probe: reference/profiles/Sencore/Sencore.Probe.md
+          - Siklu:
+              - Overview: reference/profiles/Siklu/index.md
+              - Siklu.EH: reference/profiles/Siklu/Siklu.EH.md
+          - Sumavision:
+              - Overview: reference/profiles/Sumavision/index.md
+              - Sumavision.EMR: reference/profiles/Sumavision/Sumavision.EMR.md
+          - Sun:
+              - Overview: reference/profiles/Sun/index.md
+              - Sun.iLOM3: reference/profiles/Sun/Sun.iLOM3.md
+          - Supertel:
+              - Overview: reference/profiles/Supertel/index.md
+              - Supertel.K2X: reference/profiles/Supertel/Supertel.K2X.md
+          - TFortis:
+              - Overview: reference/profiles/TFortis/index.md
+              - TFortis.PSW: reference/profiles/TFortis/TFortis.PSW.md
+          - TPLink:
+              - Overview: reference/profiles/TPLink/index.md
+              - TPLink.EAP: reference/profiles/TPLink/TPLink.EAP.md
+              - TPLink.T2600G: reference/profiles/TPLink/TPLink.T2600G.md
+          - Tangram:
+              - Overview: reference/profiles/Tangram/index.md
+              - Tangram.GT21: reference/profiles/Tangram/Tangram.GT21.md
+          - Telindus:
+              - Overview: reference/profiles/Telindus/index.md
+              - Telindus.SHDSL: reference/profiles/Telindus/Telindus.SHDSL.md
+          - Terayon:
+              - Overview: reference/profiles/Terayon/index.md
+              - Terayon.BW: reference/profiles/Terayon/Terayon.BW.md
+          - Ttronics:
+              - Overview: reference/profiles/Ttronics/index.md
+              - Ttronics.KUB: reference/profiles/Ttronics/Ttronics.KUB.md
+          - UTST:
+              - Overview: reference/profiles/UTST/index.md
+              - UTST.ONU: reference/profiles/UTST/UTST.ONU.md
+          - Ubiquiti:
+              - Overview: reference/profiles/Ubiquiti/index.md
+              - Ubiquiti.AirOS: reference/profiles/Ubiquiti/Ubiquiti.AirOS.md
+          - Upvel:
+              - Overview: reference/profiles/Upvel/index.md
+              - Upvel.UP: reference/profiles/Upvel/Upvel.UP.md
+          - Vector:
+              - Overview: reference/profiles/Vector/index.md
+              - Vector.Lambda: reference/profiles/Vector/Vector.Lambda.md
+          - Vitesse:
+              - Overview: reference/profiles/Vitesse/index.md
+              - Vitesse.VSC: reference/profiles/Vitesse/Vitesse.VSC.md
+          - Vyatta:
+              - Overview: reference/profiles/Vyatta/index.md
+              - Vyatta.Vyatta: reference/profiles/Vyatta/Vyatta.Vyatta.md
+          - ZTE:
+              - Overview: reference/profiles/ZTE/index.md
+              - ZTE.ZXA10: reference/profiles/ZTE/ZTE.ZXA10.md
+              - ZTE.ZXDSL531: reference/profiles/ZTE/ZTE.ZXDSL531.md
+              - ZTE.ZXDSL98xx: reference/profiles/ZTE/ZTE.ZXDSL98xx.md
+              - ZTE.ZXR10: reference/profiles/ZTE/ZTE.ZXR10.md
+          - Zebra:
+              - Overview: reference/profiles/Zebra/index.md
+              - Zebra.Zebra: reference/profiles/Zebra/Zebra.Zebra.md
+          - Zhone:
+              - Overview: reference/profiles/Zhone/index.md
+              - Zhone.Bitstorm: reference/profiles/Zhone/Zhone.Bitstorm.md
+              - Zhone.MXK: reference/profiles/Zhone/Zhone.MXK.md
+          - Zyxel:
+              - Overview: reference/profiles/Zyxel/index.md
+              - Zyxel.DSLAM: reference/profiles/Zyxel/Zyxel.DSLAM.md
+              - Zyxel.MSAN: reference/profiles/Zyxel/Zyxel.MSAN.md
+              - Zyxel.ZyNOS: reference/profiles/Zyxel/Zyxel.ZyNOS.md
+              - Zyxel.ZyNOS_EE: reference/profiles/Zyxel/Zyxel.ZyNOS_EE.md
+              - Zyxel.ZyNOSv2: reference/profiles/Zyxel/Zyxel.ZyNOSv2.md
+          - f5:
+              - Overview: reference/profiles/f5/index.md
+              - f5.BIGIP: reference/profiles/f5/f5.BIGIP.md
+      - Capabilities:
+          - Bras:
+              - IPoE: reference/caps/bras/ipoe.md
+              - L2TP: reference/caps/bras/l2tp.md
+              - PPPoE: reference/caps/bras/pppoe.md
+              - PPtP: reference/caps/bras/pptp.md
+          - Cisco:
+              - ASA security context mode: reference/caps/cisco/asa-security-context-mode.md
+              - IOS syntax IP SLA: reference/caps/cisco/ios-syntax-ip-sla.md
+              - IP SLA probes: reference/caps/cisco/ip-sla-probes.md
+              - IP SLA responder: reference/caps/cisco/ip-sla-responder.md
+          - CPE:
+              - Controller: reference/caps/cpe/controller.md
+              - CPE: reference/caps/cpe/cpe.md
+          - DB:
+              - Interfaces: reference/caps/db/interfaces.md
+          - Huawei:
+              - NDP: reference/caps/huawei/ndp.md
+          - Juniper:
+              - RPM probes: reference/caps/juniper/rpm-probes.md
+          - Management:
+              - Allow sessions: reference/caps/management/allow-sessions.md
+          - Mikrotik:
+              - Routeros license level: reference/caps/mikrotik/routeros-license-level.md
+              - Routeros license softwareid: reference/caps/mikrotik/routeros-license-softwareid.md
+              - Routeros license upgradable to: reference/caps/mikrotik/routeros-license-upgradable-to.md
+          - Network:
+              - BFD: reference/caps/network/bfd.md
+              - CDP: reference/caps/network/cdp.md
+              - FDP: reference/caps/network/fdp.md
+              - IPv6: reference/caps/network/ipv6.md
+              - LACP: reference/caps/network/lacp.md
+              - LLDP: reference/caps/network/lldp.md
+              - OAM: reference/caps/network/oam.md
+              - REP: reference/caps/network/rep.md
+              - STP: reference/caps/network/stp.md
+              - UDLD: reference/caps/network/udld.md
+          - Oneaccess:
+              - IP SLA probes: reference/caps/oneaccess/ip-sla-probes.md
+              - IP SLA responder: reference/caps/oneaccess/ip-sla-responder.md
+          - Slot:
+              - Member IDs: reference/caps/slot/member-ids.md
+              - Members: reference/caps/slot/members.md
+          - Snmp:
+              - Bulk: reference/caps/snmp/bulk.md
+              - If MIB HC: reference/caps/snmp/if-mib-hc.md
+              - v1: reference/caps/snmp/v1.md
+              - v2c: reference/caps/snmp/v2c.md
+              - v3: reference/caps/snmp/v3.md
+          - Stack:
+              - Member IDs: reference/caps/stack/member-ids.md
+              - Members: reference/caps/stack/members.md
+      - Alarm Classes:
+          - "Chassis":
+              - "CPU":
+                  - "CPU Exhausted": reference/alarm-classes/chassis/cpu/cpu-exhausted.md
+              - "Clock":
+                  - "Clock Failed": reference/alarm-classes/chassis/clock/clock-failed.md
+              - "Fabric":
+                  - "CRC Errors": reference/alarm-classes/chassis/fabric/crc-errors.md
+              - "Fan":
+                  - "Fan Failed": reference/alarm-classes/chassis/fan/fan-failed.md
+                  - "Fan Removed": reference/alarm-classes/chassis/fan/fan-removed.md
+              - "Hardware":
+                  - "Hardware Error": reference/alarm-classes/chassis/hardware/hardware-error.md
+                  - "Hardware Port Error": reference/alarm-classes/chassis/hardware/hardware-port-error.md
+                  - "Hardware Port Warning": reference/alarm-classes/chassis/hardware/hardware-port-warning.md
+                  - "Hardware Warning": reference/alarm-classes/chassis/hardware/hardware-warning.md
+                  - "Module":
+                      - "Invalid Module": reference/alarm-classes/chassis/hardware/module/invalid-module.md
+                      - "Module Error": reference/alarm-classes/chassis/hardware/module/module-error.md
+              - "Linecard":
+                  - "LC Down": reference/alarm-classes/chassis/linecard/lc-down.md
+              - "PSU":
+                  - "PSU Failed": reference/alarm-classes/chassis/psu/psu-failed.md
+                  - "Power Failed": reference/alarm-classes/chassis/psu/power-failed.md
+              - "RAM":
+                  - "Insufficient Memory": reference/alarm-classes/chassis/ram/insufficient-memory.md
+                  - "RAM Failed": reference/alarm-classes/chassis/ram/ram-failed.md
+              - "Stack":
+                  - "Stack Degraded": reference/alarm-classes/chassis/stack/stack-degraded.md
+              - "Supervisor":
+                  - "Supervisor Down": reference/alarm-classes/chassis/supervisor/supervisor-down.md
+              - "TCAM":
+                  - "TCAM Entry Capacity Exceeded": reference/alarm-classes/chassis/tcam/tcam-entry-capacity-exceeded.md
+                  - "TCAM Error": reference/alarm-classes/chassis/tcam/tcam-error.md
+          - "Config":
+              - "Config Download Failed": reference/alarm-classes/config/config-download-failed.md
+              - "Config Sync Failed": reference/alarm-classes/config/config-sync-failed.md
+              - "Config Upload Failed": reference/alarm-classes/config/config-upload-failed.md
+              - "Invalid Config": reference/alarm-classes/config/invalid-config.md
+              - "Policy Violation": reference/alarm-classes/config/policy-violation.md
+              - "Policy Violations": reference/alarm-classes/config/policy-violations.md
+          - "Discovery":
+              - "Error":
+                  - "Auth Failed": reference/alarm-classes/discovery/error/auth-failed.md
+                  - "Connection Refused": reference/alarm-classes/discovery/error/connection-refused.md
+                  - "Low Privileges": reference/alarm-classes/discovery/error/low-privileges.md
+                  - "No Super": reference/alarm-classes/discovery/error/no-super.md
+                  - "SSH Protocol": reference/alarm-classes/discovery/error/ssh-protocol.md
+                  - "Service Not Available": reference/alarm-classes/discovery/error/service-not-available.md
+                  - "Unhandled Exception": reference/alarm-classes/discovery/error/unhandled-exception.md
+              - "Guess":
+                  - "CLI Credentials": reference/alarm-classes/discovery/guess/cli-credentials.md
+                  - "Profile": reference/alarm-classes/discovery/guess/profile.md
+                  - "SNMP Community": reference/alarm-classes/discovery/guess/snmp-community.md
+              - "Job":
+                  - "Box": reference/alarm-classes/discovery/job/box.md
+                  - "Periodic": reference/alarm-classes/discovery/job/periodic.md
+          - "Environment":
+              - "AC Voltage Out of Range": reference/alarm-classes/environment/ac-voltage-out-of-range.md
+              - "Chassis Voltage Out of Range": reference/alarm-classes/environment/chassis-voltage-out-of-range.md
+              - "DC Voltage Out of Range": reference/alarm-classes/environment/dc-voltage-out-of-range.md
+              - "Humidity Out of Range": reference/alarm-classes/environment/humidity-out-of-range.md
+              - "Module Voltage Out of Range": reference/alarm-classes/environment/module-voltage-out-of-range.md
+              - "Temperature Out of Range": reference/alarm-classes/environment/temperature-out-of-range.md
+              - "Total Power Loss": reference/alarm-classes/environment/total-power-loss.md
+              - "UPS":
+                  - "Battery Power Low": reference/alarm-classes/environment/ups/battery-power-low.md
+                  - "Input Power Failed": reference/alarm-classes/environment/ups/input-power-failed.md
+                  - "Input Power Low": reference/alarm-classes/environment/ups/input-power-low.md
+                  - "Self-Test Failed": reference/alarm-classes/environment/ups/self-test-failed.md
+          - "NOC":
+              - "IPAM":
+                  - "VRF Group Address Collision": reference/alarm-classes/noc/ipam/vrf-group-address-collision.md
+              - "Managed Object":
+                  - "Configuration Errors":
+                      - "Misconfigured SNMP": reference/alarm-classes/noc/managed-object/configuration-errors/misconfigured-snmp.md
+                  - "Denied Firmware": reference/alarm-classes/noc/managed-object/denied-firmware.md
+                  - "New Platform": reference/alarm-classes/noc/managed-object/new-platform.md
+                  - "Ping Failed": reference/alarm-classes/noc/managed-object/ping-failed.md
+              - "PM":
+                  - "High Error": reference/alarm-classes/noc/pm/high-error.md
+                  - "High Warning": reference/alarm-classes/noc/pm/high-warning.md
+                  - "Low Error": reference/alarm-classes/noc/pm/low-error.md
+                  - "Low Warning": reference/alarm-classes/noc/pm/low-warning.md
+                  - "Out of Thresholds": reference/alarm-classes/noc/pm/out-of-thresholds.md
+              - "Periodic":
+                  - "Periodic Failed": reference/alarm-classes/noc/periodic/periodic-failed.md
+              - "SA":
+                  - "Activator Pool Degraded": reference/alarm-classes/noc/sa/activator-pool-degraded.md
+          - "Network":
+              - "BFD":
+                  - "Session Down": reference/alarm-classes/network/bfd/session-down.md
+              - "BGP":
+                  - "Peer Down": reference/alarm-classes/network/bgp/peer-down.md
+                  - "Prefix Limit Exceeded": reference/alarm-classes/network/bgp/prefix-limit-exceeded.md
+              - "DHCP":
+                  - "Untrusted Server": reference/alarm-classes/network/dhcp/untrusted-server.md
+              - "DNS":
+                  - "Bad Query": reference/alarm-classes/network/dns/bad-query.md
+              - "DOCSIS":
+                  - "BPI Unautorized": reference/alarm-classes/network/docsis/bpi-unautorized.md
+                  - "Bad Timing Offset": reference/alarm-classes/network/docsis/bad-timing-offset.md
+                  - "Invalid CoS": reference/alarm-classes/network/docsis/invalid-cos.md
+                  - "Invalid DOCSIS Message": reference/alarm-classes/network/docsis/invalid-docsis-message.md
+                  - "Invalid QoS": reference/alarm-classes/network/docsis/invalid-qos.md
+                  - "Invalid Shared Secret": reference/alarm-classes/network/docsis/invalid-shared-secret.md
+                  - "Max CPE Reached": reference/alarm-classes/network/docsis/max-cpe-reached.md
+                  - "Maximum Capacity Reached": reference/alarm-classes/network/docsis/maximum-capacity-reached.md
+                  - "Maximum SIDs": reference/alarm-classes/network/docsis/maximum-sids.md
+              - "EIGRP":
+                  - "Neighbor Down": reference/alarm-classes/network/eigrp/neighbor-down.md
+              - "IMPB":
+                  - "Unauthenticated IP-MAC": reference/alarm-classes/network/impb/unauthenticated-ip-mac.md
+              - "IP":
+                  - "ARP Moved": reference/alarm-classes/network/ip/arp-moved.md
+                  - "Address Conflict": reference/alarm-classes/network/ip/address-conflict.md
+                  - "IP Flap": reference/alarm-classes/network/ip/ip-flap.md
+              - "IS-IS":
+                  - "Adjacency Down": reference/alarm-classes/network/is-is/adjacency-down.md
+              - "LBD":
+                  - "Loop Detected": reference/alarm-classes/network/lbd/loop-detected.md
+                  - "Vlan Loop Detected": reference/alarm-classes/network/lbd/vlan-loop-detected.md
+              - "Link":
+                  - "DOM":
+                      - "Alarm: Out of Threshold": reference/alarm-classes/network/link/dom/alarm-out-of-threshold.md
+                      - "Warning: Out of Threshold": reference/alarm-classes/network/link/dom/warning-out-of-threshold.md
+                  - "Duplex Mismatch": reference/alarm-classes/network/link/duplex-mismatch.md
+                  - "Err-Disable": reference/alarm-classes/network/link/err-disable.md
+                  - "Half-Duplex": reference/alarm-classes/network/link/half-duplex.md
+                  - "Link Down": reference/alarm-classes/network/link/link-down.md
+              - "MAC":
+                  - "Duplicate MAC": reference/alarm-classes/network/mac/duplicate-mac.md
+                  - "Invalid MAC": reference/alarm-classes/network/mac/invalid-mac.md
+                  - "MAC Flap": reference/alarm-classes/network/mac/mac-flap.md
+                  - "MAC Flood": reference/alarm-classes/network/mac/mac-flood.md
+              - "MPLS":
+                  - "LDP Neighbor Down": reference/alarm-classes/network/mpls/ldp-neighbor-down.md
+                  - "LSP Down": reference/alarm-classes/network/mpls/lsp-down.md
+                  - "Path Down": reference/alarm-classes/network/mpls/path-down.md
+                  - "TDP Neighbor Down": reference/alarm-classes/network/mpls/tdp-neighbor-down.md
+              - "MSDP":
+                  - "Peer Down": reference/alarm-classes/network/msdp/peer-down.md
+              - "Monitor":
+                  - "CRC Error Detected": reference/alarm-classes/network/monitor/crc-error-detected.md
+              - "OSPF":
+                  - "Neighbor Down": reference/alarm-classes/network/ospf/neighbor-down.md
+              - "PIM":
+                  - "DR Change": reference/alarm-classes/network/pim/dr-change.md
+                  - "Invalid RP": reference/alarm-classes/network/pim/invalid-rp.md
+                  - "MSDP Peer Down": reference/alarm-classes/network/pim/msdp-peer-down.md
+                  - "Neighbor Down": reference/alarm-classes/network/pim/neighbor-down.md
+              - "Port Security":
+                  - "Port Security Violation": reference/alarm-classes/network/port-security/port-security-violation.md
+              - "RSVP":
+                  - "Neighbor Down": reference/alarm-classes/network/rsvp/neighbor-down.md
+              - "STP":
+                  - "BPDU Guard Violation": reference/alarm-classes/network/stp/bpdu-guard-violation.md
+                  - "Root Guard Violation": reference/alarm-classes/network/stp/root-guard-violation.md
+                  - "STP Loop Detected": reference/alarm-classes/network/stp/stp-loop-detected.md
+                  - "STP Vlan Loop Detected": reference/alarm-classes/network/stp/stp-vlan-loop-detected.md
+              - "Storm Control":
+                  - "Broadcast Storm Detected": reference/alarm-classes/network/storm-control/broadcast-storm-detected.md
+                  - "Multicast Storm Detected": reference/alarm-classes/network/storm-control/multicast-storm-detected.md
+                  - "Storm Detected": reference/alarm-classes/network/storm-control/storm-detected.md
+                  - "Unicast Storm Detected": reference/alarm-classes/network/storm-control/unicast-storm-detected.md
+              - "UDLD":
+                  - "UDLD Protocol Error Detected": reference/alarm-classes/network/udld/udld-protocol-error-detected.md
+          - "Security":
+              - "Access":
+                  - "Case Open": reference/alarm-classes/security/access/case-open.md
+                  - "Door Open": reference/alarm-classes/security/access/door-open.md
+              - "Attack":
+                  - "Attack": reference/alarm-classes/security/attack/attack.md
+                  - "Blat Attack": reference/alarm-classes/security/attack/blat-attack.md
+                  - "IP Spoofing": reference/alarm-classes/security/attack/ip-spoofing.md
+                  - "Land Attack": reference/alarm-classes/security/attack/land-attack.md
+                  - "Ping Of Death": reference/alarm-classes/security/attack/ping-of-death.md
+                  - "Smurf Attack": reference/alarm-classes/security/attack/smurf-attack.md
+                  - "TCP SYNFIN Scan": reference/alarm-classes/security/attack/tcp-synfin-scan.md
+                  - "Teardrop Attack": reference/alarm-classes/security/attack/teardrop-attack.md
+              - "Authentication":
+                  - "RADIUS server failed": reference/alarm-classes/security/authentication/radius-server-failed.md
+                  - "TACACS+ server failed": reference/alarm-classes/security/authentication/tacacs+-server-failed.md
+          - "System":
+              - "Insufficient Memory": reference/alarm-classes/system/insufficient-memory.md
+              - "Process Crashed": reference/alarm-classes/system/process-crashed.md
+              - "Reboot": reference/alarm-classes/system/reboot.md
+          - "Vendor":
+              - "Arista":
+                  - "EOS":
+                      - "VMTracer":
+                          - "Failed to connect to vCenter": reference/alarm-classes/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md
+              - "Cisco":
+                  - "IOS":
+                      - "Network":
+                          - "Load Balance":
+                              - "Server Farm Degraded": reference/alarm-classes/vendor/cisco/ios/network/load-balance/server-farm-degraded.md
+                              - "vserver Out of Service": reference/alarm-classes/vendor/cisco/ios/network/load-balance/vserver-out-of-service.md
+                  - "SCOS":
+                      - "Security":
+                          - "Attack":
+                              - "Attack Detected": reference/alarm-classes/vendor/cisco/scos/security/attack/attack-detected.md
+              - "f5":
+                  - "BIGIP":
+                      - "Network":
+                          - "Load Balance":
+                              - "Node Down": reference/alarm-classes/vendor/f5/bigip/network/load-balance/node-down.md
+                              - "Service Down": reference/alarm-classes/vendor/f5/bigip/network/load-balance/service-down.md
+      - Event Classes:
+          - "Chassis":
+              - "CPU":
+                  - "CPU Usage Above Threshold": reference/event-classes/chassis/cpu/cpu-usage-above-threshold.md
+                  - "CPU Usage Drops Below Threshold": reference/event-classes/chassis/cpu/cpu-usage-drops-below-threshold.md
+                  - "CoPP Drop": reference/event-classes/chassis/cpu/copp-drop.md
+              - "Clock":
+                  - "Clock Failed": reference/event-classes/chassis/clock/clock-failed.md
+                  - "Clock Recovered": reference/event-classes/chassis/clock/clock-recovered.md
+              - "Fabric":
+                  - "CRC Errors": reference/event-classes/chassis/fabric/crc-errors.md
+              - "Fan":
+                  - "Fan Failed": reference/event-classes/chassis/fan/fan-failed.md
+                  - "Fan Inserted": reference/event-classes/chassis/fan/fan-inserted.md
+                  - "Fan Recovered": reference/event-classes/chassis/fan/fan-recovered.md
+                  - "Fan Removed": reference/event-classes/chassis/fan/fan-removed.md
+              - "Hardware":
+                  - "Hardware Error": reference/event-classes/chassis/hardware/hardware-error.md
+                  - "Hardware Port Error": reference/event-classes/chassis/hardware/hardware-port-error.md
+                  - "Hardware Port Error Recover": reference/event-classes/chassis/hardware/hardware-port-error-recover.md
+                  - "Hardware Port Warning": reference/event-classes/chassis/hardware/hardware-port-warning.md
+                  - "Hardware Port Warning Recover": reference/event-classes/chassis/hardware/hardware-port-warning-recover.md
+                  - "Hardware Warning": reference/event-classes/chassis/hardware/hardware-warning.md
+                  - "Module":
+                      - "Invalid Module": reference/event-classes/chassis/hardware/module/invalid-module.md
+                      - "Module Error": reference/event-classes/chassis/hardware/module/module-error.md
+                      - "Module Inserted": reference/event-classes/chassis/hardware/module/module-inserted.md
+                      - "Module Present": reference/event-classes/chassis/hardware/module/module-present.md
+                      - "Module Removed": reference/event-classes/chassis/hardware/module/module-removed.md
+                      - "Module not Present": reference/event-classes/chassis/hardware/module/module-not-present.md
+              - "Linecard":
+                  - "LC Down": reference/event-classes/chassis/linecard/lc-down.md
+                  - "LC Up": reference/event-classes/chassis/linecard/lc-up.md
+              - "PSU":
+                  - "Internal Voltage Out of Range": reference/event-classes/chassis/psu/internal-voltage-out-of-range.md
+                  - "PSU Changed": reference/event-classes/chassis/psu/psu-changed.md
+                  - "PSU Failed": reference/event-classes/chassis/psu/psu-failed.md
+                  - "PSU Recovered": reference/event-classes/chassis/psu/psu-recovered.md
+                  - "Power Failed": reference/event-classes/chassis/psu/power-failed.md
+              - "RAM":
+                  - "Insufficient Memory": reference/event-classes/chassis/ram/insufficient-memory.md
+                  - "RAM Failed": reference/event-classes/chassis/ram/ram-failed.md
+              - "Stack":
+                  - "Stack Degraded": reference/event-classes/chassis/stack/stack-degraded.md
+                  - "Stack is Raised": reference/event-classes/chassis/stack/stack-is-raised.md
+              - "Supervisor":
+                  - "Supervisor Down": reference/event-classes/chassis/supervisor/supervisor-down.md
+                  - "Supervisor Up": reference/event-classes/chassis/supervisor/supervisor-up.md
+              - "TCAM":
+                  - "TCAM Entry Capacity Exceeded": reference/event-classes/chassis/tcam/tcam-entry-capacity-exceeded.md
+                  - "TCAM Error": reference/event-classes/chassis/tcam/tcam-error.md
+          - "Config":
+              - "Config Changed": reference/event-classes/config/config-changed.md
+              - "Config Corrected": reference/event-classes/config/config-corrected.md
+              - "Config Download Failed": reference/event-classes/config/config-download-failed.md
+              - "Config Downloaded Successfully": reference/event-classes/config/config-downloaded-successfully.md
+              - "Config Sync Failed": reference/event-classes/config/config-sync-failed.md
+              - "Config Synced": reference/event-classes/config/config-synced.md
+              - "Config Upload Failed": reference/event-classes/config/config-upload-failed.md
+              - "Config Uploaded Successfully": reference/event-classes/config/config-uploaded-successfully.md
+              - "Entering Configuration Mode": reference/event-classes/config/entering-configuration-mode.md
+              - "Exiting Configuration Mode": reference/event-classes/config/exiting-configuration-mode.md
+              - "Invalid Config": reference/event-classes/config/invalid-config.md
+          - "Environment":
+              - "AC Voltage Out of Range": reference/event-classes/environment/ac-voltage-out-of-range.md
+              - "AC Voltage Returned to Normal Range": reference/event-classes/environment/ac-voltage-returned-to-normal-range.md
+              - "Chassis Voltage Out of Range": reference/event-classes/environment/chassis-voltage-out-of-range.md
+              - "Chassis Voltage Returned to Normal Range": reference/event-classes/environment/chassis-voltage-returned-to-normal-range.md
+              - "DC Voltage Out of Range": reference/event-classes/environment/dc-voltage-out-of-range.md
+              - "DC Voltage Returned to Normal Range": reference/event-classes/environment/dc-voltage-returned-to-normal-range.md
+              - "Humidity Out of Range": reference/event-classes/environment/humidity-out-of-range.md
+              - "Humidity Returned to Normal Range": reference/event-classes/environment/humidity-returned-to-normal-range.md
+              - "Module Voltage Out of Range": reference/event-classes/environment/module-voltage-out-of-range.md
+              - "Module Voltage Returned to Normal Range": reference/event-classes/environment/module-voltage-returned-to-normal-range.md
+              - "Temperature Out of Range": reference/event-classes/environment/temperature-out-of-range.md
+              - "Temperature Returned to Normal Range": reference/event-classes/environment/temperature-returned-to-normal-range.md
+              - "UPS":
+                  - "Battery Power Low": reference/event-classes/environment/ups/battery-power-low.md
+                  - "Battery Power Normal": reference/event-classes/environment/ups/battery-power-normal.md
+                  - "Battery Replaced": reference/event-classes/environment/ups/battery-replaced.md
+                  - "Input Power Failed": reference/event-classes/environment/ups/input-power-failed.md
+                  - "Input Power Low": reference/event-classes/environment/ups/input-power-low.md
+                  - "Input Power OK": reference/event-classes/environment/ups/input-power-ok.md
+                  - "Self-Test Failed": reference/event-classes/environment/ups/self-test-failed.md
+                  - "Self-Test Passed": reference/event-classes/environment/ups/self-test-passed.md
+                  - "Self-Test Started": reference/event-classes/environment/ups/self-test-started.md
+          - "NOC":
+              - "IPAM":
+                  - "VRF Group Address Collision": reference/event-classes/noc/ipam/vrf-group-address-collision.md
+              - "Managed Object":
+                  - "Ping Failed": reference/event-classes/noc/managed-object/ping-failed.md
+                  - "Ping OK": reference/event-classes/noc/managed-object/ping-ok.md
+              - "Periodic":
+                  - "Periodic Failed": reference/event-classes/noc/periodic/periodic-failed.md
+                  - "Periodic OK": reference/event-classes/noc/periodic/periodic-ok.md
+              - "SA":
+                  - "Join Activator Pool": reference/event-classes/noc/sa/join-activator-pool.md
+                  - "Leave Activator Pool": reference/event-classes/noc/sa/leave-activator-pool.md
+              - "Unhandled Exception": reference/event-classes/noc/unhandled-exception.md
+              - "Unknown Event Source": reference/event-classes/noc/unknown-event-source.md
+          - "Network":
+              - "802.11":
+                  - "Associated": reference/event-classes/network/802.11/associated.md
+                  - "Disassociated": reference/event-classes/network/802.11/disassociated.md
+                  - "Max Retries": reference/event-classes/network/802.11/max-retries.md
+                  - "Roamed": reference/event-classes/network/802.11/roamed.md
+              - "BFD":
+                  - "Session Down": reference/event-classes/network/bfd/session-down.md
+                  - "Session Up": reference/event-classes/network/bfd/session-up.md
+              - "BGP":
+                  - "Backward Transition": reference/event-classes/network/bgp/backward-transition.md
+                  - "Established": reference/event-classes/network/bgp/established.md
+                  - "Max Prefixes Exceeds": reference/event-classes/network/bgp/max-prefixes-exceeds.md
+                  - "Max Prefixes Warning": reference/event-classes/network/bgp/max-prefixes-warning.md
+                  - "Peer Down": reference/event-classes/network/bgp/peer-down.md
+                  - "Peer State Changed": reference/event-classes/network/bgp/peer-state-changed.md
+                  - "Prefix Limit Exceeded": reference/event-classes/network/bgp/prefix-limit-exceeded.md
+              - "DHCP":
+                  - "Untrusted Server": reference/event-classes/network/dhcp/untrusted-server.md
+              - "DNS":
+                  - "Bad Query": reference/event-classes/network/dns/bad-query.md
+              - "DOCSIS":
+                  - "BPI Unautorized": reference/event-classes/network/docsis/bpi-unautorized.md
+                  - "Bad Timing Offset": reference/event-classes/network/docsis/bad-timing-offset.md
+                  - "Channel Width Changed": reference/event-classes/network/docsis/channel-width-changed.md
+                  - "Invalid CoS": reference/event-classes/network/docsis/invalid-cos.md
+                  - "Invalid DOCSIS Message": reference/event-classes/network/docsis/invalid-docsis-message.md
+                  - "Invalid QoS": reference/event-classes/network/docsis/invalid-qos.md
+                  - "Invalid Shared Secret": reference/event-classes/network/docsis/invalid-shared-secret.md
+                  - "Max CPE Reached": reference/event-classes/network/docsis/max-cpe-reached.md
+                  - "Maximum Capacity Reached": reference/event-classes/network/docsis/maximum-capacity-reached.md
+                  - "Maximum SIDs": reference/event-classes/network/docsis/maximum-sids.md
+                  - "Unregistered Modem Deleted": reference/event-classes/network/docsis/unregistered-modem-deleted.md
+                  - "Upstream Frequency Changed": reference/event-classes/network/docsis/upstream-frequency-changed.md
+                  - "Upstream Input Power Level Changed": reference/event-classes/network/docsis/upstream-input-power-level-changed.md
+              - "EIGRP":
+                  - "Neighbor Down": reference/event-classes/network/eigrp/neighbor-down.md
+                  - "Neighbor Up": reference/event-classes/network/eigrp/neighbor-up.md
+              - "IMPB":
+                  - "Dynamic IMPB entry is conflicting with static": reference/event-classes/network/impb/dynamic-impb-entry-is-conflicting-with-static.md
+                  - "Recover IMPB stop learning state": reference/event-classes/network/impb/recover-impb-stop-learning-state.md
+                  - "Unauthenticated IP-MAC": reference/event-classes/network/impb/unauthenticated-ip-mac.md
+              - "IP":
+                  - "ARP Moved": reference/event-classes/network/ip/arp-moved.md
+                  - "ARP Zero MAC": reference/event-classes/network/ip/arp-zero-mac.md
+                  - "Address Conflict": reference/event-classes/network/ip/address-conflict.md
+                  - "IP Flap": reference/event-classes/network/ip/ip-flap.md
+                  - "Port Exhaustion": reference/event-classes/network/ip/port-exhaustion.md
+                  - "Route Limit Exceeded": reference/event-classes/network/ip/route-limit-exceeded.md
+                  - "Route Limit Warning": reference/event-classes/network/ip/route-limit-warning.md
+              - "IS-IS":
+                  - "Adjacency Down": reference/event-classes/network/is-is/adjacency-down.md
+                  - "Adjacency Up": reference/event-classes/network/is-is/adjacency-up.md
+              - "LAG":
+                  - "Bundle": reference/event-classes/network/lag/bundle.md
+                  - "Unbundle": reference/event-classes/network/lag/unbundle.md
+              - "LBD":
+                  - "Loop Cleared": reference/event-classes/network/lbd/loop-cleared.md
+                  - "Loop Detected": reference/event-classes/network/lbd/loop-detected.md
+                  - "Vlan Loop Cleared": reference/event-classes/network/lbd/vlan-loop-cleared.md
+                  - "Vlan Loop Detected": reference/event-classes/network/lbd/vlan-loop-detected.md
+              - "LLDP":
+                  - "Created New Neighbor": reference/event-classes/network/lldp/created-new-neighbor.md
+                  - "LLDP Aged Out": reference/event-classes/network/lldp/lldp-aged-out.md
+                  - "Native Vlan Not Match": reference/event-classes/network/lldp/native-vlan-not-match.md
+                  - "Remote Tables Change": reference/event-classes/network/lldp/remote-tables-change.md
+              - "Link":
+                  - "Connection Problem": reference/event-classes/network/link/connection-problem.md
+                  - "DOM":
+                      - "Alarm: Out of Threshold": reference/event-classes/network/link/dom/alarm-out-of-threshold.md
+                      - "Alarm: Out of Threshold Recovered": reference/event-classes/network/link/dom/alarm-out-of-threshold-recovered.md
+                      - "Warning: Out of Threshold": reference/event-classes/network/link/dom/warning-out-of-threshold.md
+                      - "Warning: Out of Threshold Recovered": reference/event-classes/network/link/dom/warning-out-of-threshold-recovered.md
+                  - "Duplex Mismatch": reference/event-classes/network/link/duplex-mismatch.md
+                  - "Err-Disable": reference/event-classes/network/link/err-disable.md
+                  - "Full-Duplex": reference/event-classes/network/link/full-duplex.md
+                  - "Half-Duplex": reference/event-classes/network/link/half-duplex.md
+                  - "Link Down": reference/event-classes/network/link/link-down.md
+                  - "Link Flap Error Detected": reference/event-classes/network/link/link-flap-error-detected.md
+                  - "Link Flap Error Recovery": reference/event-classes/network/link/link-flap-error-recovery.md
+                  - "Link Up": reference/event-classes/network/link/link-up.md
+              - "MAC":
+                  - "Duplicate MAC": reference/event-classes/network/mac/duplicate-mac.md
+                  - "Invalid MAC": reference/event-classes/network/mac/invalid-mac.md
+                  - "MAC Aged": reference/event-classes/network/mac/mac-aged.md
+                  - "MAC Flap": reference/event-classes/network/mac/mac-flap.md
+                  - "MAC Flood": reference/event-classes/network/mac/mac-flood.md
+                  - "MAC Learned": reference/event-classes/network/mac/mac-learned.md
+                  - "MAC Moved": reference/event-classes/network/mac/mac-moved.md
+              - "MPLS":
+                  - "LDP Neighbor Down": reference/event-classes/network/mpls/ldp-neighbor-down.md
+                  - "LDP Neighbor Up": reference/event-classes/network/mpls/ldp-neighbor-up.md
+                  - "LSP Down": reference/event-classes/network/mpls/lsp-down.md
+                  - "LSP Up": reference/event-classes/network/mpls/lsp-up.md
+                  - "Path Down": reference/event-classes/network/mpls/path-down.md
+                  - "Path Up": reference/event-classes/network/mpls/path-up.md
+                  - "TDP Neighbor Down": reference/event-classes/network/mpls/tdp-neighbor-down.md
+                  - "TDP Neighbor Up": reference/event-classes/network/mpls/tdp-neighbor-up.md
+              - "MSDP":
+                  - "Peer Down": reference/event-classes/network/msdp/peer-down.md
+                  - "Peer Up": reference/event-classes/network/msdp/peer-up.md
+              - "Monitor":
+                  - "CRC Error Cleared": reference/event-classes/network/monitor/crc-error-cleared.md
+                  - "CRC Error Detected": reference/event-classes/network/monitor/crc-error-detected.md
+              - "NTP":
+                  - "Lost synchronization": reference/event-classes/network/ntp/lost-synchronization.md
+                  - "NTP Server Reachable": reference/event-classes/network/ntp/ntp-server-reachable.md
+                  - "NTP Server Unreachable": reference/event-classes/network/ntp/ntp-server-unreachable.md
+                  - "System Clock Adjusted": reference/event-classes/network/ntp/system-clock-adjusted.md
+                  - "System Clock Synchronized": reference/event-classes/network/ntp/system-clock-synchronized.md
+              - "OAM":
+                  - "Client Clear Remote Failure": reference/event-classes/network/oam/client-clear-remote-failure.md
+                  - "Client Recieved Remote Failure": reference/event-classes/network/oam/client-recieved-remote-failure.md
+                  - "Discovery Timeout": reference/event-classes/network/oam/discovery-timeout.md
+                  - "Enter Session": reference/event-classes/network/oam/enter-session.md
+                  - "Entering Master Loopback Mode": reference/event-classes/network/oam/entering-master-loopback-mode.md
+                  - "Entering Slave Loopback Mode": reference/event-classes/network/oam/entering-slave-loopback-mode.md
+                  - "Exit Session": reference/event-classes/network/oam/exit-session.md
+                  - "Exiting Master Loopback Mode": reference/event-classes/network/oam/exiting-master-loopback-mode.md
+                  - "Exiting Slave Loopback Mode": reference/event-classes/network/oam/exiting-slave-loopback-mode.md
+                  - "Monitoring Error": reference/event-classes/network/oam/monitoring-error.md
+              - "OSPF":
+                  - "Neighbor Down": reference/event-classes/network/ospf/neighbor-down.md
+                  - "Neighbor Up": reference/event-classes/network/ospf/neighbor-up.md
+              - "PIM":
+                  - "DR Change": reference/event-classes/network/pim/dr-change.md
+                  - "Invalid RP": reference/event-classes/network/pim/invalid-rp.md
+                  - "MSDP Peer Down": reference/event-classes/network/pim/msdp-peer-down.md
+                  - "MSDP Peer Up": reference/event-classes/network/pim/msdp-peer-up.md
+                  - "Neighbor Down": reference/event-classes/network/pim/neighbor-down.md
+                  - "Neighbor Up": reference/event-classes/network/pim/neighbor-up.md
+              - "Port Security":
+                  - "Port Security Violation": reference/event-classes/network/port-security/port-security-violation.md
+              - "RSVP":
+                  - "Neighbor Down": reference/event-classes/network/rsvp/neighbor-down.md
+                  - "Neighbor Up": reference/event-classes/network/rsvp/neighbor-up.md
+              - "STP":
+                  - "BPDU Guard Recovery": reference/event-classes/network/stp/bpdu-guard-recovery.md
+                  - "BPDU Guard Violation": reference/event-classes/network/stp/bpdu-guard-violation.md
+                  - "BPDU Root Violation": reference/event-classes/network/stp/bpdu-root-violation.md
+                  - "Root Changed": reference/event-classes/network/stp/root-changed.md
+                  - "Root Guard Recovery": reference/event-classes/network/stp/root-guard-recovery.md
+                  - "STP Loop Cleared": reference/event-classes/network/stp/stp-loop-cleared.md
+                  - "STP Loop Detected": reference/event-classes/network/stp/stp-loop-detected.md
+                  - "STP Port Role Changed": reference/event-classes/network/stp/stp-port-role-changed.md
+                  - "STP Port State Changed": reference/event-classes/network/stp/stp-port-state-changed.md
+                  - "STP Vlan Loop Cleared": reference/event-classes/network/stp/stp-vlan-loop-cleared.md
+                  - "STP Vlan Loop Detected": reference/event-classes/network/stp/stp-vlan-loop-detected.md
+                  - "STP instances exceeded": reference/event-classes/network/stp/stp-instances-exceeded.md
+                  - "Topology Changed": reference/event-classes/network/stp/topology-changed.md
+              - "Storm Control":
+                  - "Broadcast Storm Cleared": reference/event-classes/network/storm-control/broadcast-storm-cleared.md
+                  - "Broadcast Storm Detected": reference/event-classes/network/storm-control/broadcast-storm-detected.md
+                  - "Multicast Storm Cleared": reference/event-classes/network/storm-control/multicast-storm-cleared.md
+                  - "Multicast Storm Detected": reference/event-classes/network/storm-control/multicast-storm-detected.md
+                  - "Storm Cleared": reference/event-classes/network/storm-control/storm-cleared.md
+                  - "Storm Detected": reference/event-classes/network/storm-control/storm-detected.md
+                  - "Unicast Storm Cleared": reference/event-classes/network/storm-control/unicast-storm-cleared.md
+                  - "Unicast Storm Detected": reference/event-classes/network/storm-control/unicast-storm-detected.md
+              - "UDLD":
+                  - "UDLD Protocol Error Detected": reference/event-classes/network/udld/udld-protocol-error-detected.md
+                  - "UDLD Protocol Recovery": reference/event-classes/network/udld/udld-protocol-recovery.md
+              - "VLAN":
+                  - "VLAN Created": reference/event-classes/network/vlan/vlan-created.md
+                  - "VLAN Deleted": reference/event-classes/network/vlan/vlan-deleted.md
+          - "PM":
+              - "Out of Thresholds": reference/event-classes/pm/out-of-thresholds.md
+              - "Returned to Normal Range": reference/event-classes/pm/returned-to-normal-range.md
+          - "Phone":
+              - "SCCP":
+                  - "Register": reference/event-classes/phone/sccp/register.md
+                  - "Register Alarm": reference/event-classes/phone/sccp/register-alarm.md
+                  - "Register New": reference/event-classes/phone/sccp/register-new.md
+                  - "Unregister Abnormal": reference/event-classes/phone/sccp/unregister-abnormal.md
+                  - "Unregister Normal": reference/event-classes/phone/sccp/unregister-normal.md
+          - "Security":
+              - "ACL":
+                  - "ACL Deny": reference/event-classes/security/acl/acl-deny.md
+                  - "ACL Permit": reference/event-classes/security/acl/acl-permit.md
+              - "Access":
+                  - "Case Close": reference/event-classes/security/access/case-close.md
+                  - "Case Open": reference/event-classes/security/access/case-open.md
+                  - "Door Close": reference/event-classes/security/access/door-close.md
+                  - "Door Open": reference/event-classes/security/access/door-open.md
+              - "Accounting":
+                  - "WebVPN":
+                      - "Assigned": reference/event-classes/security/accounting/webvpn/assigned.md
+                      - "Disconnected": reference/event-classes/security/accounting/webvpn/disconnected.md
+              - "Attack":
+                  - "Attack": reference/event-classes/security/attack/attack.md
+                  - "Blat Attack": reference/event-classes/security/attack/blat-attack.md
+                  - "IP Spoofing": reference/event-classes/security/attack/ip-spoofing.md
+                  - "Land Attack": reference/event-classes/security/attack/land-attack.md
+                  - "Ping Of Death": reference/event-classes/security/attack/ping-of-death.md
+                  - "Smurf Attack": reference/event-classes/security/attack/smurf-attack.md
+                  - "TCP SYNFIN Scan": reference/event-classes/security/attack/tcp-synfin-scan.md
+                  - "Teardrop Attack": reference/event-classes/security/attack/teardrop-attack.md
+              - "Audit":
+                  - "Clearing Counters": reference/event-classes/security/audit/clearing-counters.md
+                  - "Command": reference/event-classes/security/audit/command.md
+                  - "Cron": reference/event-classes/security/audit/cron.md
+              - "Authentication":
+                  - "802.1x failed": reference/event-classes/security/authentication/802.1x-failed.md
+                  - "Authentication Failed": reference/event-classes/security/authentication/authentication-failed.md
+                  - "Login": reference/event-classes/security/authentication/login.md
+                  - "Login Failed": reference/event-classes/security/authentication/login-failed.md
+                  - "Logout": reference/event-classes/security/authentication/logout.md
+                  - "Privilege Level Change Fail": reference/event-classes/security/authentication/privilege-level-change-fail.md
+                  - "Privilege Level Changed": reference/event-classes/security/authentication/privilege-level-changed.md
+                  - "RADIUS server failed": reference/event-classes/security/authentication/radius-server-failed.md
+                  - "RADIUS server recovered": reference/event-classes/security/authentication/radius-server-recovered.md
+                  - "Rejected": reference/event-classes/security/authentication/rejected.md
+                  - "SNMP Authentication Failure": reference/event-classes/security/authentication/snmp-authentication-failure.md
+                  - "TACACS+ server failed": reference/event-classes/security/authentication/tacacs+-server-failed.md
+                  - "TACACS+ server recovered": reference/event-classes/security/authentication/tacacs+-server-recovered.md
+          - "System":
+              - "Halt": reference/event-classes/system/halt.md
+              - "Process Crashed": reference/event-classes/system/process-crashed.md
+              - "Process Exited": reference/event-classes/system/process-exited.md
+              - "Process Started": reference/event-classes/system/process-started.md
+              - "Reboot": reference/event-classes/system/reboot.md
+              - "Started": reference/event-classes/system/started.md
+          - "Unknown":
+              - "Default": reference/event-classes/unknown/default.md
+              - "Ignore": reference/event-classes/unknown/ignore.md
+              - "SNMP Trap": reference/event-classes/unknown/snmp-trap.md
+              - "Syslog": reference/event-classes/unknown/syslog.md
+          - "Vendor":
+              - "Arista":
+                  - "EOS":
+                      - "VMTracer":
+                          - "Failed to connect to vCenter": reference/event-classes/vendor/arista/eos/vmtracer/failed-to-connect-to-vcenter.md
+              - "Cisco":
+                  - "ASA":
+                      - "Network":
+                          - "Flow Accounting":
+                              - "Built Flow": reference/event-classes/vendor/cisco/asa/network/flow-accounting/built-flow.md
+                              - "Duplicate TCP SYN": reference/event-classes/vendor/cisco/asa/network/flow-accounting/duplicate-tcp-syn.md
+                              - "Teardown Flow": reference/event-classes/vendor/cisco/asa/network/flow-accounting/teardown-flow.md
+                  - "IOS":
+                      - "Network":
+                          - "Load Balance":
+                              - "Server Farm Degraded": reference/event-classes/vendor/cisco/ios/network/load-balance/server-farm-degraded.md
+                              - "Server Farm is Operate": reference/event-classes/vendor/cisco/ios/network/load-balance/server-farm-is-operate.md
+                              - "vserver In Service": reference/event-classes/vendor/cisco/ios/network/load-balance/vserver-in-service.md
+                              - "vserver Out of Service": reference/event-classes/vendor/cisco/ios/network/load-balance/vserver-out-of-service.md
+                  - "SCOS":
+                      - "Security":
+                          - "Attack":
+                              - "Attack Detected": reference/event-classes/vendor/cisco/scos/security/attack/attack-detected.md
+                              - "End-of-attack detected": reference/event-classes/vendor/cisco/scos/security/attack/end-of-attack-detected.md
+              - "DLink":
+                  - "DxS":
+                      - "Chassis":
+                          - "CPU":
+                              - "Safeguard Engine enters EXHAUSTED mode": reference/event-classes/vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-exhausted-mode.md
+                              - "Safeguard Engine enters NORMAL mode": reference/event-classes/vendor/dlink/dxs/chassis/cpu/safeguard-engine-enters-normal-mode.md
+              - "f5":
+                  - "BIGIP":
+                      - "Network":
+                          - "Load Balance":
+                              - "Node Down": reference/event-classes/vendor/f5/bigip/network/load-balance/node-down.md
+                              - "Node Up": reference/event-classes/vendor/f5/bigip/network/load-balance/node-up.md
+                              - "Service Down": reference/event-classes/vendor/f5/bigip/network/load-balance/service-down.md
+                              - "Service Up": reference/event-classes/vendor/f5/bigip/network/load-balance/service-up.md
+      - Metrics:
+          - Metric Scopes:
+              - Overview: reference/metrics/scopes/index.md
+              - CPU: reference/metrics/scopes/cpu.md
+              - Disk: reference/metrics/scopes/disk.md
+              - Environment: reference/metrics/scopes/environment.md
+              - Interface: reference/metrics/scopes/interface.md
+              - Memory: reference/metrics/scopes/memory.md
+              - Neighbors: reference/metrics/scopes/neighbors.md
+              - Object: reference/metrics/scopes/object.md
+              - PhonePeer: reference/metrics/scopes/phonepeer.md
+              - Ping: reference/metrics/scopes/ping.md
+              - Routing: reference/metrics/scopes/routing.md
+              - SLA: reference/metrics/scopes/sla.md
+              - Subscriber: reference/metrics/scopes/subscriber.md
+              - VPN: reference/metrics/scopes/vpn.md
+          - Metric Types:
+              - Overview: reference/metrics/types/index.md
+              - "CPU":
+                  - "Load":
+                      - "1min": reference/metrics/types/cpu/load/1min.md
+                      - "5min": reference/metrics/types/cpu/load/5min.md
+                  - "Usage": reference/metrics/types/cpu/usage.md
+                  - "Usage":
+                      - "5sec": reference/metrics/types/cpu/usage/5sec.md
+              - "Disk":
+                  - "Usage": reference/metrics/types/disk/usage.md
+                  - "Usage Percent": reference/metrics/types/disk/usage-percent.md
+              - "Environment":
+                  - "Battery":
+                      - "Capacity":
+                          - "Level": reference/metrics/types/environment/battery/capacity/level.md
+                  - "Electric Current": reference/metrics/types/environment/electric-current.md
+                  - "Energy Consumption": reference/metrics/types/environment/energy-consumption.md
+                  - "Power": reference/metrics/types/environment/power.md
+                  - "Power":
+                      - "Input":
+                          - "Status": reference/metrics/types/environment/power/input/status.md
+                  - "Pulse": reference/metrics/types/environment/pulse.md
+                  - "Sensor Status": reference/metrics/types/environment/sensor-status.md
+                  - "Temperature": reference/metrics/types/environment/temperature.md
+                  - "Voltage": reference/metrics/types/environment/voltage.md
+              - "Interface":
+                  - "Broadcast":
+                      - "In": reference/metrics/types/interface/broadcast/in.md
+                      - "Out": reference/metrics/types/interface/broadcast/out.md
+                  - "DOM":
+                      - "Bias Current": reference/metrics/types/interface/dom/bias-current.md
+                      - "RxPower": reference/metrics/types/interface/dom/rxpower.md
+                      - "Temperature": reference/metrics/types/interface/dom/temperature.md
+                      - "TxPower": reference/metrics/types/interface/dom/txpower.md
+                      - "Voltage": reference/metrics/types/interface/dom/voltage.md
+                  - "Discards":
+                      - "In": reference/metrics/types/interface/discards/in.md
+                      - "Out": reference/metrics/types/interface/discards/out.md
+                  - "Errors":
+                      - "CRC": reference/metrics/types/interface/errors/crc.md
+                      - "Frame": reference/metrics/types/interface/errors/frame.md
+                      - "In": reference/metrics/types/interface/errors/in.md
+                      - "In":
+                          - "Delta": reference/metrics/types/interface/errors/in/delta.md
+                      - "Out": reference/metrics/types/interface/errors/out.md
+                      - "Out":
+                          - "Delta": reference/metrics/types/interface/errors/out/delta.md
+                  - "Load":
+                      - "In": reference/metrics/types/interface/load/in.md
+                      - "Out": reference/metrics/types/interface/load/out.md
+                  - "Multicast":
+                      - "In": reference/metrics/types/interface/multicast/in.md
+                      - "Out": reference/metrics/types/interface/multicast/out.md
+                  - "Octets":
+                      - "In": reference/metrics/types/interface/octets/in.md
+                      - "Out": reference/metrics/types/interface/octets/out.md
+                  - "Packets":
+                      - "In": reference/metrics/types/interface/packets/in.md
+                      - "Out": reference/metrics/types/interface/packets/out.md
+                  - "RF":
+                      - "TxPower": reference/metrics/types/interface/rf/txpower.md
+                  - "Speed": reference/metrics/types/interface/speed.md
+                  - "Status":
+                      - "Admin": reference/metrics/types/interface/status/admin.md
+                      - "Duplex": reference/metrics/types/interface/status/duplex.md
+                      - "Oper": reference/metrics/types/interface/status/oper.md
+                  - "xDSL":
+                      - "Line":
+                          - "Attenuation":
+                              - "Downstream": reference/metrics/types/interface/xdsl/line/attenuation/downstream.md
+                              - "Upstream": reference/metrics/types/interface/xdsl/line/attenuation/upstream.md
+                          - "Errors":
+                              - "ES":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/es/delta.md
+                              - "LOF":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/lof/delta.md
+                              - "LOLS":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/lols/delta.md
+                              - "LOSS":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/loss/delta.md
+                              - "LPRS":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/lprs/delta.md
+                              - "Retrain":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/retrain/delta.md
+                              - "SES":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/ses/delta.md
+                              - "UAS":
+                                  - "Delta": reference/metrics/types/interface/xdsl/line/errors/uas/delta.md
+                          - "Noise Margin":
+                              - "Downstream": reference/metrics/types/interface/xdsl/line/noise-margin/downstream.md
+                              - "Upstream": reference/metrics/types/interface/xdsl/line/noise-margin/upstream.md
+                          - "SNR":
+                              - "Downstream": reference/metrics/types/interface/xdsl/line/snr/downstream.md
+                              - "Upstream": reference/metrics/types/interface/xdsl/line/snr/upstream.md
+                          - "TxPower":
+                              - "Downstream": reference/metrics/types/interface/xdsl/line/txpower/downstream.md
+                              - "Upstream": reference/metrics/types/interface/xdsl/line/txpower/upstream.md
+              - "Memory":
+                  - "Load":
+                      - "1min": reference/metrics/types/memory/load/1min.md
+                  - "Usage": reference/metrics/types/memory/usage.md
+                  - "Usage":
+                      - "5sec": reference/metrics/types/memory/usage/5sec.md
+              - "Network":
+                  - "STP":
+                      - "Topology Changes": reference/metrics/types/network/stp/topology-changes.md
+                      - "Topology Changes":
+                          - "Delta": reference/metrics/types/network/stp/topology-changes/delta.md
+              - "Object":
+                  - "SysUptime": reference/metrics/types/object/sysuptime.md
+              - "Ping":
+                  - "Attempts": reference/metrics/types/ping/attempts.md
+                  - "RTT": reference/metrics/types/ping/rtt.md
+              - "Radio":
+                  - "CINR": reference/metrics/types/radio/cinr.md
+                  - "Level":
+                      - "Noise": reference/metrics/types/radio/level/noise.md
+                      - "Signal": reference/metrics/types/radio/level/signal.md
+                  - "RSSI": reference/metrics/types/radio/rssi.md
+                  - "RxPower": reference/metrics/types/radio/rxpower.md
+                  - "TxPower": reference/metrics/types/radio/txpower.md
+              - "SLA":
+                  - "ICMP RTT": reference/metrics/types/sla/icmp-rtt.md
+                  - "JITTER": reference/metrics/types/sla/jitter.md
+                  - "LOSS": reference/metrics/types/sla/loss.md
+                  - "UDP RTT": reference/metrics/types/sla/udp-rtt.md
+              - "Subscribers":
+                  - "IPoE": reference/metrics/types/subscribers/ipoe.md
+                  - "L2TP": reference/metrics/types/subscribers/l2tp.md
+                  - "PPP": reference/metrics/types/subscribers/ppp.md
+                  - "PPPoE": reference/metrics/types/subscribers/pppoe.md
+                  - "PPTP": reference/metrics/types/subscribers/pptp.md
+                  - "Summary": reference/metrics/types/subscribers/summary.md
+              - "Telephony":
+                  - "SIP":
+                      - "Register":
+                          - "Contacts":
+                              - "Active": reference/metrics/types/telephony/sip/register/contacts/active.md
+                      - "Sessions":
+                          - "Active": reference/metrics/types/telephony/sip/sessions/active.md
+  - Administration Guide:
+      - Services:
+          - activator: admin/services/activator.md
+          - bi: admin/services/bi.md
+          - card: admin/services/card.md
+          - chwriter: admin/services/chwriter.md
+          - classifier: admin/services/classifier.md
+          - correlator: admin/services/correlator.md
+          - datasource: admin/services/datasource.md
+          - datastream: admin/services/datastream.md
+          - discovery: admin/services/discovery.md
+          - escalator: admin/services/escalator.md
+          - grafanads: admin/services/grafanads.md
+          - icqsender: admin/services/icqsender/index.md
+          - login: admin/services/login.md
+          - mailsender: admin/services/mailsender.md
+          - mrt: admin/services/mrt.md
+          - nbi: admin/services/nbi.md
+          - ping: admin/services/ping.md
+          - sae: admin/services/sae.md
+          - scheduler: admin/services/scheduler.md
+          - syslogcollector: admin/services/syslogcollector.md
+          - tgsender: admin/services/tgsender.md
+          - trapcollector: admin/services/trapcollector.md
+          - web: admin/services/web.md
+      - Configuration:
+          - Configuration System Overview: admin/config/index.md
+          - Date and Time Formats: admin/datetime-format.md
+          - Global Configuration: admin/config/global.md
+          - "[activator] Section": admin/config/activator.md
+          - "[audit] section": admin/config/audit.md
+          - "[backup] section": admin/config/backup.md
+          - "[bi] section": admin/config/bi.md
+          - "[biosegmentation] section": admin/config/biosegmentation.md
+          - "[cache] section": admin/config/cache.md
+          - "[card] section": admin/config/card.md
+          - "[chwriter] section": admin/config/chwriter.md
+          - "[classifier] section": admin/config/classifier.md
+          - "[clickhouse] section": admin/config/clickhouse.md
+          - "[collections] section": admin/config/collections.md
+          - "[consul] section": admin/config/consul.md
+          - "[correlator] section": admin/config/correlator.md
+          - "[customization] section": admin/config/customization.md
+          - "[datasource] section": admin/config/datasource.md
+          - "[datastream] section": admin/config/datastream.md
+          - "[dcs] section": admin/config/dcs.md
+          - "[discovery] section": admin/config/discovery.md
+          - "[dns] section": admin/config/dns.md
+          - "[escalator] section": admin/config/escalator.md
+          - "[etl] section": admin/config/etl.md
+          - "[features] section": admin/config/features.md
+          - "[fm] section": admin/config/fm.md
+          - "[geocoding] section": admin/config/geocoding.md
+          - "[gis] section": admin/config/gis.md
+          - "[grafanads] section": admin/config/grafanads.md
+          - "[help] section": admin/config/help.md
+          - "[http_client] section": admin/config/http_client.md
+          - "[icqsender] section": admin/config/icqsender.md
+          - "[initial] section": admin/config/initial.md
+          - "[kafkasender] section": admin/config/kafkasender.md
+          - "[layout] section": admin/config/layout.md
+          - "[liftbridge] section": admin/config/liftbridge.md
+          - "[logging] section": admin/config/logging.md
+          - "[login] section": admin/config/login.md
+          - "[mailsender] section": admin/config/mailsender.md
+          - "[memcached] section": admin/config/memcached.md
+          - "[message] section": admin/config/message.md
+          - "[metrics] section": admin/config/metrics.md
+          - "[mongo] section": admin/config/mongo.md
+          - "[mrt] section": admin/config/mrt.md
+          - "[nbi] section": admin/config/nbi.md
+          - "[nsqd] section": admin/config/nsqd.md
+          - "[nsqlookupd] section": admin/config/nsqlookupd.md
+          - "[path] section": admin/config/path.md
+          - "[peer] section": admin/config/peer.md
+          - "[pg] section": admin/config/pg.md
+          - "[ping] section": admin/config/ping.md
+          - "[pmwriter] section": admin/config/pmwriter.md
+          - "[proxy] section": admin/config/proxy.md
+          - "[redis] section": admin/config/redis.md
+          - "[rpc] section": admin/config/rpc.md
+          - "[sae] section": admin/config/sae.md
+          - "[scheduler] section": admin/config/scheduler.md
+          - "[script] section": admin/config/script.md
+          - "[selfmon] section": admin/config/selfmon.md
+          - "[sentry] section": admin/config/sentry.md
+          - "[syslogcollector] section": admin/config/syslogcollector.md
+          - "[tests] section": admin/config/tests.md
+          - "[tgsender] section": admin/config/tgsender.md
+          - "[threadpool] section": admin/config/threadpool.md
+          - "[traceback] section": admin/config/traceback.md
+          - "[trapcollector] section": admin/config/trapcollector.md
+          - "[web] section": admin/config/web.md
+      - Discovery:
+          - Box Discovery:
+              - Overview: admin/discovery/box/index.md
+              - Suggest SNMP: admin/discovery/box/suggestsnmp.md
+              - Suggest CLI: admin/discovery/box/suggestcli.md
+              - Profile: admin/discovery/box/profile.md
+              - Version: admin/discovery/box/version.md
+              - Caps: admin/discovery/box/caps.md
+              - Asset: admin/discovery/box/asset.md
+              - Interface: admin/discovery/box/interface.md
+              - VRF: admin/discovery/box/vrf.md
+              - VLAN: admin/discovery/box/vlan.md
+              - SLA: admin/discovery/box/sla.md
+              - ID: admin/discovery/box/id.md
+              - Config: admin/discovery/box/config.md
+              - CPE: admin/discovery/box/cpe.md
+              - Segmentation: admin/discovery/box/segmentation.md
+              - LLDP: admin/discovery/box/lldp.md
+              - BFD: admin/discovery/box/bfd.md
+              - CDP: admin/discovery/box/cdp.md
+              - LACP: admin/discovery/box/lacp.md
+              - OAM: admin/discovery/box/oam.md
+              - FDP: admin/discovery/box/fdp.md
+              - STP: admin/discovery/box/stp.md
+              - REP: admin/discovery/box/rep.md
+              - UDLD: admin/discovery/box/udld.md
+              - Huawei NDP: admin/discovery/box/huawei_ndp.md
+              - NRI: admin/discovery/box/nri.md
+              - HouseKeeping: admin/discovery/box/hk.md
+          - Periodic Discovery:
+              - Overview: admin/discovery/periodic/index.md
+              - interfacestatus: admin/discovery/periodic/interfacestatus.md
+              - uptime: admin/discovery/periodic/uptime.md
+              - mac: admin/discovery/periodic/mac.md
+              - metrics: admin/discovery/periodic/metrics.md
+              - cpestatus: admin/discovery/periodic/cpestatus.md
+          - AS Discovery:
+              - Overview: admin/discovery/as/index.md
+              - Prefix Discovery: admin/discovery/as/prefix.md
+          - Segment Discovery:
+              - Overview: admin/discovery/segment/index.md
+              - MAC Discovery: admin/discovery/segment/mac.md
+      - Internal Metrics: admin/internal-metrics.md
+      - Man Pages:
+          - about: admin/man/about.md
+          - beef: admin/man/beef.md
+          - bi: admin/man/bi.md
+          - clean-asset: admin/man/clean-asset.md
+          - collection: admin/man/collection.md
+          - compile-mib: admin/man/compile-mib.md
+          - confdb: admin/man/confdb.md
+          - config: admin/man/config.md
+          - convert-moin: admin/man/convert-moin.md
+          - crashinfo: admin/man/crashinfo.md
+          - csv-export: admin/man/csv-export.md
+          - csv-import: admin/man/csv-import.md
+          - ctl: admin/man/ctl.md
+          - datastream: admin/man/datastream.md
+          - discovery: admin/man/discovery.md
+          - dump-addr: admin/man/dump-addr.md
+          - dump-crashinfo: admin/man/dump-crashinfo.md
+          - ensure-indexes: admin/man/ensure-indexes.md
+          - escalation: admin/man/escalation.md
+          - etl: admin/man/etl.md
+          - events: admin/man/events.md
+          - fix: admin/man/fix.md
+          - get-device-identity: admin/man/get-device-identity.md
+          - get-device-sample: admin/man/get-device-sample.md
+          - get-uuid: admin/man/get-uuid.md
+          - gridvcs: admin/man/gridvcs.md
+          - import-mib: admin/man/import-mib.md
+          - import-rancid: admin/man/import-rancid.md
+          - import-zone: admin/man/import-zone.md
+          - index: admin/man/index.md
+          - inject-event: admin/man/inject-event.md
+          - interface-profile: admin/man/interface-profile.md
+          - job: admin/man/job.md
+          - l3-topology: admin/man/l3-topology.md
+          - link: admin/man/link.md
+          - login: admin/man/login.md
+          - lookup-mib: admin/man/lookup-mib.md
+          - make-cmib: admin/man/make-cmib.md
+          - metrics: admin/man/metrics.md
+          - migrate-ch: admin/man/migrate-ch.md
+          - migrate: admin/man/migrate.md
+          - mongo: admin/man/mongo.md
+          - newapp: admin/man/newapp.md
+          - notify: admin/man/notify.md
+          - nri-link: admin/man/nri-link.md
+          - nri: admin/man/nri.md
+          - parse-events: admin/man/parse-events.md
+          - ping: admin/man/ping.md
+          - prefix-list: admin/man/prefix-list.md
+          - pretty: admin/man/pretty.md
+          - psql: admin/man/psql.md
+          - pythonpath: admin/man/pythonpath.md
+          - rca-debug: admin/man/rca-debug.md
+          - rpc: admin/man/rpc.md
+          - run: admin/man/run.md
+          - script: admin/man/script.md
+          - service: admin/man/service.md
+          - shell: admin/man/shell.md
+          - snmp: admin/man/snmp.md
+          - stencil: admin/man/stencil.md
+          - sync-doc: admin/man/sync-doc.md
+          - sync-mibs: admin/man/sync-mibs.md
+          - sync-perm: admin/man/sync-perm.md
+          - sync-refbooks: admin/man/sync-refbooks.md
+          - sync: admin/man/sync.md
+          - test: admin/man/test.md
+          - todos: admin/man/todos.md
+          - translation: admin/man/translation.md
+          - update-addr: admin/man/update-addr.md
+          - user: admin/man/user.md
+          - verify-model: admin/man/verify-model.md
+          - whois: admin/man/whois.md
+          - wipe: admin/man/wipe.md
+          - workflow: admin/man/workflow.md
+  - Developer's Guide:
+      - Merge Request Labels: dev/mr-labels.md
+      - API:
+          - DataStream:
+              - Overview: dev/api/datastream/index.md
+              - address: dev/api/datastream/address.md
+              - administrativedomain: dev/api/datastream/administrativedomain.md
+              - alarm: dev/api/datastream/alarm.md
+              - cfgping: dev/api/datastream/cfgping.md
+              - cfgsyslog: dev/api/datastream/cfgsyslog.md
+              - cfgtrap: dev/api/datastream/cfgtrap.md
+              - dnszone: dev/api/datastream/dnszone.md
+              - managedobject: dev/api/datastream/managedobject.md
+              - dnszone: dev/api/datastream/dnszone.md
+              - prefix: dev/api/datastream/prefix.md
+              - resourcegroup: dev/api/datastream/resourcegroup.md
+              - vrf: dev/api/datastream/vrf.md
+          - NBI:
+              - Overview: dev/api/nbi/index.md
+              - config: dev/api/nbi/config.md
+              - configrevisions: dev/api/nbi/configrevisions.md
+              - getmappings: dev/api/nbi/getmappings.md
+              - objectmetrics: dev/api/nbi/objectmetrics.md
+              - objectstatus: dev/api/nbi/objectstatus.md
+              - path: dev/api/nbi/path.md
+              - telemetry: dev/api/nbi/telemetry.md
+      - BI:
+          - Dictionaries:
+              - administrativedomain: dev/bi/dict/administrativedomain.md
+              - alarmclass: dev/bi/dict/alarmclass.md
+              - container: dev/bi/dict/container.md
+              - interfacedescription: dev/bi/dict/interfacedescription.md
+              - interfaceprofile: dev/bi/dict/interfaceprofile.md
+              - managedobject: dev/bi/dict/managedobject.md
+              - networksegment: dev/bi/dict/networksegment.md
+              - platform: dev/bi/dict/platform.md
+              - pool: dev/bi/dict/pool.md
+              - profile: dev/bi/dict/profile.md
+              - vendor: dev/bi/dict/vendor.md
+              - version: dev/bi/dict/version.md
+          - Models:
+              - alarms: dev/bi/model/alarms.md
+              - mac: dev/bi/model/mac.md
+              - managedobjects: dev/bi/model/managedobjects.md
+              - reboots: dev/bi/model/reboots.md
+              - routingneighbors: dev/bi/model/routingneighbors.md
+              - span: dev/bi/model/span.md
+      - ConfDB:
+          - Overview: dev/confdb/overview.md
+          - Config Fetching: dev/confdb/fetching.md
+          - Storage: dev/confdb/storage.md
+          - Tokenizer: dev/confdb/tokenizer.md
+          - Normalizer: dev/confdb/normalizer.md
+          - Query: dev/confdb/query.md
+      - Scripts:
+          - add_vlan: dev/scripts/add_vlan.md
+          - commands: dev/scripts/commands.md
+          - configure: dev/scripts/configure.md
+          - get_arp: dev/scripts/get_arp.md
+          - get_bfd_sessions: dev/scripts/get_bfd_sessions.md
+          - get_capabilities: dev/scripts/get_capabilities.md
+          - get_cdp_neighbors: dev/scripts/get_cdp_neighbors.md
+          - get_chassis_id: dev/scripts/get_chassis_id.md
+          - get_config: dev/scripts/get_config.md
+          - get_copper_tdr_diag: dev/scripts/get_copper_tdr_diag.md
+          - get_cpe: dev/scripts/get_cpe.md
+          - get_dhcp_binding: dev/scripts/get_dhcp_binding.md
+          - get_discovery_id: dev/scripts/get_discovery_id.md
+          - get_dom_status: dev/scripts/get_dom_status.md
+          - get_dot11_associations: dev/scripts/get_dot11_associations.md
+          - get_fdp_neighbors: dev/scripts/get_fdp_neighbors.md
+          - get_fqdn: dev/scripts/get_fqdn.md
+          - get_huawei_ndp_neighbors: dev/scripts/get_huawei_ndp_neighbors.md
+          - get_ifindexes: dev/scripts/get_ifindexes.md
+          - get_interface_index: dev/scripts/get_interface_index.md
+          - get_interface_status: dev/scripts/get_interface_status.md
+          - get_interface_status_ex: dev/scripts/get_interface_status_ex.md
+          - get_interfaces: dev/scripts/get_interfaces.md
+          - get_inventory: dev/scripts/get_inventory.md
+          - get_ip_discovery: dev/scripts/get_ip_discovery.md
+          - get_ipv6_neighbor: dev/scripts/get_ipv6_neighbor.md
+          - get_lacp_neighbors: dev/scripts/get_lacp_neighbors.md
+          - get_license: dev/scripts/get_license.md
+          - get_lldp_neighbors: dev/scripts/get_lldp_neighbors.md
+          - get_local_users: dev/scripts/get_local_users.md
+          - get_mac_address_table: dev/scripts/get_mac_address_table.md
+          - get_metrics: dev/scripts/get_metrics.md
+          - get_mpls_vpn: dev/scripts/get_mpls_vpn.md
+          - get_oam_status: dev/scripts/get_oam_status.md
+          - get_portchannel: dev/scripts/get_portchannel.md
+          - get_rep_topology: dev/scripts/get_rep_topology.md
+          - get_resolver_config: dev/scripts/get_resolver_config.md
+          - get_sla_probes: dev/scripts/get_sla_probes.md
+          - get_snmp_get: dev/scripts/get_snmp_get.md
+          - get_snmp_getnext: dev/scripts/get_snmp_getnext.md
+          - get_spanning_tree: dev/scripts/get_spanning_tree.md
+          - get_switch: dev/scripts/get_switch.md
+          - get_switchport: dev/scripts/get_switchport.md
+          - get_system: dev/scripts/get_system.md
+          - get_tech_support: dev/scripts/get_tech_support.md
+          - get_udld_neighbors: dev/scripts/get_udld_neighbors.md
+          - get_uptime: dev/scripts/get_uptime.md
+          - get_version: dev/scripts/get_version.md
+          - get_vlans: dev/scripts/get_vlans.md
+          - has_vlan: dev/scripts/has_vlan.md
+          - index: dev/scripts/index.md
+          - login: dev/scripts/login.md
+          - ping: dev/scripts/ping.md
+          - reboot: dev/scripts/reboot.md
+          - remove_vlan: dev/scripts/remove_vlan.md
+          - set_switchport: dev/scripts/set_switchport.md
+          - sync_prefix_lists: dev/scripts/sync_prefix_lists.md
+          - sync_vlans: dev/scripts/sync_vlans.md
+      - Handlers:
+          - Handlers Overview: dev/handlers/index.md
+          - Config Filter: dev/handlers/config-filter.md
+          - Config Diff Filter: dev/handlers/config-diff-filter.md
+          - Window Function: dev/handlers/window-function.md
+      - Model Interfaces:
+          - airflow: dev/modelinterface/airflow.md
+          - asset: dev/modelinterface/asset.md
+          - contacts: dev/modelinterface/contacts.md
+          - container: dev/modelinterface/container.md
+          - cpu: dev/modelinterface/cpu.md
+          - dimensions: dev/modelinterface/dimensions.md
+          - geopoint: dev/modelinterface/geopoint.md
+          - length: dev/modelinterface/length.md
+          - management: dev/modelinterface/management.md
+          - optical: dev/modelinterface/optical.md
+          - plan: dev/modelinterface/plan.md
+          - pop: dev/modelinterface/pop.md
+          - power: dev/modelinterface/power.md
+          - rack: dev/modelinterface/rack.md
+          - rackmount: dev/modelinterface/rackmount.md
+          - sector: dev/modelinterface/sector.md
+          - splitter: dev/modelinterface/splitter.md
+          - stack: dev/modelinterface/stack.md
+          - twinax: dev/modelinterface/twinax.md
+          - weight: dev/modelinterface/weight.md
+      - Inventory Protocols: dev/inventory-protocols.md
+      - ObjectModel Tags: dev/objectmodel-tags.md
+      - Technologies:
+          - Group: dev/technology/group.md
+          - "Network | CGNAT Termination": dev/technology/Network/cgnat-termination.md
+      - Tools: dev/tools.md
+  - HOWTO:
+      - How to Share Collections: howto/sharing-collections/index.md
+  - Releases:
+      - NOC Release and Tagging Policy: releases/policy.md
+      - NOC 20.4 Generation:
+          - NOC 20.4: releases/20.4.md
+          - NOC 20.4.1: releases/20.4.1.md
+          - NOC 20.4.2: releases/20.4.2.md
+      - NOC 20.3 Generation:
+          - NOC 20.3: releases/20.3.md
+          - NOC 20.3.1: releases/20.3.1.md
+      - NOC 20.2 Generation:
+          - NOC 20.2: releases/20.2.md
+          - NOC 20.2.1: releases/20.2.1.md
+          - NOC 20.2.2: releases/20.2.2.md
+          - NOC 20.2.3: releases/20.2.3.md
+      - NOC 20.1 Generation:
+          - NOC 20.1: releases/20.1.md
+          - NOC 20.1.1: releases/20.1.1.md
+      - NOC 19.4 Generation:
+          - NOC 19.4: releases/19.4.md
+          - NOC 19.4.1: releases/19.4.1.md
+          - NOC 19.4.2: releases/19.4.2.md
+      - NOC 19.3 Generation:
+          - NOC 19.3: releases/19.3.md
+          - NOC 19.3.1: releases/19.3.1.md
+          - NOC 19.3.2: releases/19.3.2.md
+      - NOC 19.2 Generation:
+          - NOC 19.2: releases/19.2.md
+          - NOC 19.2.1: releases/19.2.1.md
+          - NOC 19.2.2: releases/19.2.2.md
+          - NOC 19.2.3: releases/19.2.3.md
+      - NOC 19.1 Generation:
+          - NOC 19.1: releases/19.1.md
+          - NOC 19.1.1: releases/19.1.1.md
+          - NOC 19.1.2: releases/19.1.2.md
+          - NOC 19.1.3: releases/19.1.3.md
+      - NOC 18 Generation:
+          - NOC 18.1A1: releases/18.1A1.md
+          - NOC 18.1.1: releases/18.1.1.md
+      - NOC 15 Generation:
+          - NOC 15.05: releases/15.05.md
+          - NOC 15.05.1: releases/15.05.1.md
+      - NOC 0.7 Generation:
+          - NOC 0.7.1: releases/0.7.1.md
+          - NOC 0.7.2: releases/0.7.2.md
+          - NOC 0.7.3: releases/0.7.3.md
+          - NOC 0.7.4: releases/0.7.4.md
+      - NOC 0.6 Generation:
+          - NOC 0.6: releases/0.6.md
+          - NOC 0.6.1: releases/0.6.1.md
+          - NOC 0.6.2: releases/0.6.2.md
+          - NOC 0.6.3: releases/0.6.3.md
+          - NOC 0.6.4: releases/0.6.4.md
+      - NOC 0.5 Generation:
+          - NOC 0.5: releases/0.5.md
+          - NOC 0.5.1: releases/0.5.1.md
+      - NOC 0.4 Generation:
+          - NOC 0.4: releases/0.4.md
+      - NOC 0.3 Generation:
+          - NOC 0.3: releases/0.3.md
+          - NOC 0.3.1: releases/0.3.1.md
+          - NOC 0.3.2: releases/0.3.2.md
+      - NOC 0.2 Generation:
+          - NOC 0.2: releases/0.2.md
+          - NOC 0.2.1: releases/0.2.1.md
+          - NOC 0.2.2: releases/0.2.2.md
+          - NOC 0.2.3: releases/0.2.3.md
+          - NOC 0.2.4: releases/0.2.4.md
+          - NOC 0.2.5: releases/0.2.5.md
+          - NOC 0.2.6: releases/0.2.6.md
+          - NOC 0.2.7: releases/0.2.7.md
+      - NOC 0.1 Generation:
+          - NOC 0.1RC1: releases/0.1rc1.md
+          - NOC 0.1RC2: releases/0.1rc2.md
+          - NOC 0.1: releases/0.1.md
+          - NOC 0.1.1: releases/0.1.1.md
+          - NOC 0.1.2: releases/0.1.2.md
+          - NOC 0.1.3: releases/0.1.3.md
+          - NOC 0.1.4: releases/0.1.4.md
+          - NOC 0.1.5: releases/0.1.5.md
+          - NOC 0.1.6: releases/0.1.6.md
+          - NOC 0.1.7: releases/0.1.7.md
+          - NOC 0.1.8: releases/0.1.8.md
+          - NOC 0.1.9: releases/0.1.9.md
+  - Glossary: glossary.md
+  - About:
+      - License: license.md
+      - Contributing: contributing.md
+      - Documentation Structure: structure.md
+      - Style Guide: style-guide.md
+theme:
+  name: material
+  palette:
+    scheme: slate
+  logo: _static/logo.svg
+use_directory_urls: true
+site_dir: ../../build/docs/en
+# strict: true
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - attr_list
+  - def_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
+plugins:
+  - search
+  - mermaid2:
+      arguments:
+        theme: dark
+  - macros:
+      module_name: macros
+extra:
+  "tab": ":material-arrow-right:"
+  "tab2": ":material-arrow-right: :material-arrow-right:"
+  "tab3": ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
+  "complex": ":material-arrow-down:"
+  "yes": ":material-check:"
+  "no": ":material-close:"

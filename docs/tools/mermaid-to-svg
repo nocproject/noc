@@ -1,0 +1,12 @@
+#!/bin/sh
+# Convert .mermaid file to .svg
+# Usage:
+# $ mermaid-to-svg <file>.mermaid
+full=$(which $0)
+dir=$(dirname $full)
+ppt_config=$dir/puppeteer.json
+for fn in $@; do
+  out_svg=$(echo $fn|sed 's/.mermaid/.svg/')
+  echo "Converting $fn to $out_svg"
+  mmdc -t dark -p $ppt_config -i $fn -o $out_svg
+done
