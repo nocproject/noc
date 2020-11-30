@@ -222,7 +222,13 @@ class IfDescCheck(TopologyDiscoveryCheck):
                 return self.maybe_create_interface(mo, interface)
             return None
         if interface:
-            interface = self.get_remote_interface(mo, interface)
+            try:
+                interface = self.get_remote_interface(mo, interface)
+            except ValueError as e:
+                self.logger.warning(
+                    "Error getting remote interface by name '%s' (%s)", interface, e
+                )
+                interface = None
             if interface:
                 iface = ifaces.get(interface)
                 if iface:
