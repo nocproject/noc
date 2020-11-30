@@ -828,25 +828,25 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 self.logger.debug(
                     "Candidates: %s, Confirmed: %s", candidates[remote_object], confirmed
                 )
-            for l, r in candidates[remote_object] - confirmed:
-                problems[l] = "Pending link: %s - %s:%s" % (l, remote_object, r)
-                li = self.clean_interface(self.object, l)
+            for ll, rr in candidates[remote_object] - confirmed:
+                problems[ll] = "Pending link: %s - %s:%s" % (ll, remote_object, rr)
+                li = self.clean_interface(self.object, ll)
                 if not li:
-                    self.logger.info("Cannot clean interface %s:%s. Skipping", self.object, l)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", self.object, ll)
                     continue
-                ri = self.clean_interface(remote_object, r)
+                ri = self.clean_interface(remote_object, rr)
                 if not ri:
-                    self.logger.info("Cannot clean interface %s:%s. Skipping", remote_object, r)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", remote_object, rr)
                     continue
                 self.reject_link(self.object, li, remote_object, ri)
-            for l, r in candidates[remote_object] & confirmed:
-                li = self.clean_interface(self.object, l)
+            for ll, rr in candidates[remote_object] & confirmed:
+                li = self.clean_interface(self.object, ll)
                 if not li:
-                    self.logger.info("Cannot clean interface %s:%s. Skipping", self.object, l)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", self.object, ll)
                     continue
-                ri = self.clean_interface(remote_object, r)
+                ri = self.clean_interface(remote_object, rr)
                 if not ri:
-                    self.logger.info("Cannot clean interface %s:%s. Skipping", remote_object, r)
+                    self.logger.info("Cannot clean interface %s:%s. Skipping", remote_object, rr)
                     continue
                 self.confirm_link(self.object, li, remote_object, ri)
         if problems:
@@ -913,10 +913,14 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             n = None
             if len(hosts) == 1:
                 n = hosts[0].object
-            elif "." not in hostname:
+            else:
                 # Sometimes, domain part is truncated.
                 # Try to resolve anyway
-                m = list(DiscoveryID.objects.filter(hostname__startswith=hostname + "."))
+                m = list(
+                    DiscoveryID.objects.filter(
+                        hostname__istartswith=hostname + "." if "." not in hostname else hostname
+                    )
+                )
                 if len(m) == 1:
                     n = m[0].object  # Exact match
             self.neighbor_hostname_cache[hostname] = n
