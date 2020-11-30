@@ -40,16 +40,15 @@ create own tokenizer for a new platform from zero ground.
 Builtin tokenizers are collected in the `noc.core.confdb.tokenizer` package.
 Tokenizer classes form an hierarchy:
 
-.. mermaid::
-
-    graph TD
-        base --> line
-        line --> context
-        context --> indent
-        line --> curly
-        base --> ini
-        line --> routeros
-
+```mermaid
+graph TD
+    base --> line
+    line --> context
+    context --> indent
+    line --> curly
+    base --> ini
+    line --> routeros
+```
 
 
 
