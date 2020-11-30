@@ -275,7 +275,7 @@ class IfDescCheck(TopologyDiscoveryCheck):
         if self.object.object_profile.ifdesc_symmetric:
             return None  # Meaningless for symmetric ifdesc
         if (
-            self.object.object_profile.enable_box_discovery_interface
+            mo.object_profile.enable_box_discovery_interface
             or not mo.object_profile.enable_interface_autocreation
         ):
             return None  # Auto-creation is disabled
