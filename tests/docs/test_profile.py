@@ -13,6 +13,8 @@ import os
 import cachetools
 import pytest
 
+XFAIL_VENDORS = {"OS"}
+
 
 @cachetools.cached({})
 def all_vendors():
@@ -44,11 +46,24 @@ def all_profiles():
 
 @pytest.mark.parametrize("vendor", all_vendors())
 def test_vendor_doc_exists(vendor):
-    path = os.path.join("docs", "src", "en", "profiles", "vendor-%s.rst" % vendor)
+    if vendor in XFAIL_VENDORS:
+        pytest.xfail("Excluded")
+    path = os.path.join("docs", "en", "docs", "reference", "profiles", vendor, "index.md")
     assert os.path.exists(path), "Vendor '%s' must be documented in '%s'" % (vendor, path)
+
+
+@pytest.mark.parametrize("vendor", all_vendors())
+def test_vendor_doc_toc(toc, vendor):
+    if vendor in XFAIL_VENDORS:
+        pytest.xfail("Excluded")
+    path = ["Reference", "Profiles", vendor, "Overview"]
+    assert path in toc
+    v = toc[path].split("/")
+    assert v == ["reference", "profiles", vendor, "index.md"]
 
 
 @pytest.mark.parametrize("profile", all_profiles())
 def test_profile_doc_exists(profile):
-    path = os.path.join("docs", "src", "en", "profiles", "%s.rst" % profile)
+    vendor = profile.split(".")[0]
+    path = os.path.join("docs", "en", "docs", "reference", "profiles", vendor, f"{profile}.md")
     assert os.path.exists(path), "Profile '%s' must be documented in '%s'" % (profile, path)

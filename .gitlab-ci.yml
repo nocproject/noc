@@ -6,10 +6,10 @@ stages:
   - Upload
 
 include:
-  - project: 'noc/common-jobs'
+  - project: "noc/common-jobs"
     ref: stable
-    file: '/templates/upload.yml'
-  - local: '/ansible/.ansible-ci.yml'
+    file: "/templates/upload.yml"
+  - local: "/ansible/.ansible-ci.yml"
 
 workflow:
   rules:
@@ -33,7 +33,7 @@ check labels:
     reports:
       junit: ./build/reports/labels-junit.xml
     expire_in: 7 days
-  allow_failure: false
+  allow_failure: true
   retry: 2
 
 flake8:
@@ -120,7 +120,7 @@ prettier:
   image: registry.getnoc.com/infrastructure/prettier:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep "\.(js|json|yml|css)$" | grep -v ".docker/"|| true)
+    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep "\.(js|json|yml|css|md)$" | grep -v ".docker/"|| true)
     - >
       if [ ! -z "$FLIST" ];
       then
@@ -137,13 +137,15 @@ prettier:
       - "*.json"
       - "*.css"
       - "*.yml"
+      - "*.md"
       - "**/*.js"
       - "**/*.json"
       - "**/*.css"
       - "**/*.yml"
+      - "**/*.md"
   tags:
     - docker
-  allow_failure: true
+  allow_failure: false
 
 pylint:
   stage: Lint
@@ -218,23 +220,12 @@ py:test:
     expire_in: 7 days
 
 build:Docs:
-  stage: Build
+  stage: Test
   environment: docs
-  image: registry.getnoc.com/infrastructure/docs3:master
+  image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $CI_COMMIT_SHA $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) | egrep "^docs/" || true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        cd docs/
-        python3 ./scripts/build-auto-include.py
-        sphinx-build -j auto -a -E -b html src/en ../build/docs/en
-        python3 ./scripts/build-go.py ../build/docs/en/objects.inv
-      else
-        echo "No doc changes to build"
-        true;
-      fi
+    - mkdocs build --config-file=docs/en/mkdocs.yml
   tags:
     - docker
   artifacts:
@@ -242,18 +233,19 @@ build:Docs:
       - build/docs/en
     expire_in: 2 hours
   only:
-    - merge_requests
+    refs:
+      - merge_requests
+    changes:
+      - "docs/en/*"
+      - "docs/en/**/*"
 
 build:Master Docs:
   stage: Build
   environment: docs
-  image: registry.getnoc.com/infrastructure/docs3:master
+  image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
-    - cd docs/
-    - python3 ./scripts/build-auto-include.py
-    - sphinx-build -j auto -a -E -b html src/en ../build/docs/en
-    - python3 ./scripts/build-go.py ../build/docs/en/objects.inv
+    - mkdocs build --config-file=docs/en/mkdocs.yml
   tags:
     - docker
   artifacts:
@@ -275,8 +267,8 @@ build:Release Image:
     - docker build --target dev -t $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG -f Dockerfile .
     # registry.getnoc.com/noc/noc/static:stable
     - docker build --target static -t $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG -f Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG 
-    - docker push $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG 
+    - docker push $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG
+    - docker push $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG
     - docker push $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
     - docker rmi $CI_REGISTRY_IMAGE/code:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/dev:$CI_COMMIT_TAG $CI_REGISTRY_IMAGE/static:$CI_COMMIT_TAG
   tags:
@@ -360,6 +352,6 @@ gemnasium-python-dependency_scanning:
     - if: $DEPENDENCY_SCANNING_DISABLED
       when: never
     - if: $CI_COMMIT_BRANCH &&
-          $GITLAB_FEATURES =~ /\bdependency_scanning\b/
+        $GITLAB_FEATURES =~ /\bdependency_scanning\b/
       changes:
         - requirements.txt
