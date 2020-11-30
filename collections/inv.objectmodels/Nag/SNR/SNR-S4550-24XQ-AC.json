@@ -243,7 +243,7 @@
         },
         {
             "description": "Management ethernet port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Ethernet0",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
@@ -260,7 +260,7 @@
         {
             "description": "Power inlet",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "power",
             "protocols": [">220VAC"],
             "type__name": "Power | IEC 60320 C14"
