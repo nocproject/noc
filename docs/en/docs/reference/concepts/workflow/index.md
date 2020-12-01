@@ -82,27 +82,26 @@ is not given explicitly. Proper *Workflow* determined via *Resource's*
 ## Examples
 
 ### Default Workflow
-.. mermaid::
-
-    graph TD
-        Ready
+```mermaid
+graph TD
+    Ready
+```
 
 When *Process* considers the *Resource* has no designated states,
 simple *Workflow* with one "Ready" *State* may be used.
 NOC provides "Default" workflow out-of-the box.
 
 ### Resource Default Workflow
-.. mermaid::
-
-    graph TD
-        Free -->|reserve| Reserved
-        Free -->|seen| Ready
-        Reserved -->|expired| Free
-        Reserved -->|approve| Approved
-        Approved -->|seen| Ready
-        Ready -->|suspend| Suspended
-        Ready -->|expired| Cooldown
-        Suspended -->|resume| Ready
-        Cooldown -->|seen| Ready
-        Cooldown -->|expired| Free
-
+```mermaid
+graph TD
+    Free -->|reserve| Reserved
+    Free -->|seen| Ready
+    Reserved -->|expired| Free
+    Reserved -->|approve| Approved
+    Approved -->|seen| Ready
+    Ready -->|suspend| Suspended
+    Ready -->|expired| Cooldown
+    Suspended -->|resume| Ready
+    Cooldown -->|seen| Ready
+    Cooldown -->|expired| Free
+```
