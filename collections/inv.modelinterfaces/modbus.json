@@ -1,0 +1,54 @@
+{
+    "name": "modbus",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "4067ca6c-d8a7-43af-b22a-6232fde21576",
+    "description": "Modbus Configuration",
+    "attrs": [
+        {
+            "name": "type",
+            "type": "str",
+            "description": "Modbus type: RTU, ASCII or TCP",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "slave_id",
+            "type": "int",
+            "description": "Modbus slave id",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "speed",
+            "type": "int",
+            "description": "Bus speed, baud/s",
+            "required": false,
+            "is_const": false,
+            "default": 9600
+        },
+        {
+            "name": "bits",
+            "type": "int",
+            "description": "Bus baud size",
+            "required": false,
+            "is_const": false,
+            "default": 8
+        },
+        {
+            "name": "parity",
+            "type": "bool",
+            "description": "Bus parity",
+            "required": false,
+            "is_const": false,
+            "default": false
+        },
+        {
+            "name": "stop",
+            "type": "int",
+            "description": "Bus stop bits",
+            "required": false,
+            "is_const": false,
+            "default": 1
+        }
+    ]
+}

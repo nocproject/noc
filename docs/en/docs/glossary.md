@@ -89,6 +89,10 @@ management VLAN
 MIB
 : Management Information Base. NOC uses MIB to .....
 
+Modbus
+: [Modbus](https://en.wikipedia.org/wiki/Modbus) data communication protocol.
+  Mainly used for industrial electronics interconnection.
+
 MTU
 : Maximum Transmission Unit
 
