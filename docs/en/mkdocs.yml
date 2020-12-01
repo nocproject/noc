@@ -1588,6 +1588,7 @@ nav:
           - geopoint: dev/modelinterface/geopoint.md
           - length: dev/modelinterface/length.md
           - management: dev/modelinterface/management.md
+          - modbus: dev/modelinterface/modbus.md
           - optical: dev/modelinterface/optical.md
           - plan: dev/modelinterface/plan.md
           - pop: dev/modelinterface/pop.md
