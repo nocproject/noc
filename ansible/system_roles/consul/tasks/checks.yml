@@ -55,7 +55,7 @@
             - "'stdout' in current_consul_version"
             - current_consul_version.stdout != consul_version
             - has_svc_migrate_consul is not defined
-            - current_consul_version.stdout != "1.2.2"
+            - current_consul_version.stdout is version_compare("1.0.0", '<')
       when:
         - ansible_distribution != 'FreeBSD'
 
