@@ -1242,6 +1242,11 @@ nav:
                               - "Active": reference/metrics/types/telephony/sip/register/contacts/active.md
                       - "Sessions":
                           - "Active": reference/metrics/types/telephony/sip/sessions/active.md
+      - MX Messages:
+          - Overview: reference/mx/index.md
+          - alarm: reference/mx/alarm.md
+          - managedobject: reference/mx/managedobject.md
+          - reboot: reference/mx/reboot.md
   - Administration Guide:
       - Services:
           - activator: admin/services/activator.md
@@ -1256,9 +1261,11 @@ nav:
           - escalator: admin/services/escalator.md
           - grafanads: admin/services/grafanads.md
           - icqsender: admin/services/icqsender/index.md
+          - kafkasender: admin/services/kafkasender.md
           - login: admin/services/login.md
           - mailsender: admin/services/mailsender.md
           - mrt: admin/services/mrt.md
+          - mx: admin/services/mx.md
           - nbi: admin/services/nbi.md
           - ping: admin/services/ping.md
           - sae: admin/services/sae.md
@@ -1597,6 +1604,10 @@ nav:
       - Technologies:
           - Group: dev/technology/group.md
           - "Network | CGNAT Termination": dev/technology/Network/cgnat-termination.md
+      - Streams:
+          - Overview: dev/streams/index.md
+          - kafkasender: dev/streams/kafkasender.md
+          - mx: dev/streams/mx.md
       - Tools: dev/tools.md
   - HOWTO:
       - How to Share Collections: howto/sharing-collections/index.md

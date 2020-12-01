@@ -55,7 +55,7 @@ class UptimeCheck(DiscoveryCheck):
                     "name": mo.object_profile.name,
                 },
                 "vendor": mo.vendor.name,
-                "platfotm": mo.platform.name,
+                "platform": mo.platform.name,
                 "version": mo.version.version,
                 "administrative_domain": {
                     "id": str(mo.administrative_domain.id),
