@@ -126,7 +126,8 @@ class ServiceSummary(Document):
             # profile_id -> count
             svc_profiles = defaultdict(int)
             for s in iter_services(svc):
-                subscribers.add(s["subscriber"])
+                if "subscriber" in s:
+                    subscribers.add(s["subscriber"])
                 svc_profiles[s["profile"]] += 1
             # Get subscriber profiles count
             ra = Subscriber._get_collection().aggregate(
@@ -180,6 +181,7 @@ class ServiceSummary(Document):
                 {"_id": 1, "interface": 1, "service": 1, "subscriber": 1},
                 comment="[servicesummary._refresh_object] Refresh summary of services for managed object",
             )
+            if "interface" in x
         }
         # Get actual summary
         new_summary = ServiceSummary.build_summary_for_object(managed_object)
