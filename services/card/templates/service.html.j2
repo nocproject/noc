@@ -87,7 +87,7 @@
                         <a href="/api/card/view/service/{{ s.id }}/">{{ s | service_title }}</a>
                     </td>
                     <td>{{ s.logical_status | logical_status }}</td>
-                </th>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -100,7 +100,7 @@
 <tr>
     <th scope="row">{{ _("Subscriber") }}</th>
     <td>
-        {% if service.subscriber.profile.glyph %}
+        {% if service.subscriber and service.subscriber.profile.glyph %}
         <i class="{{ service.subscriber.profile.glyph }}"></i>
         {% endif %}
         {{ service.subscriber.name }}
@@ -141,7 +141,7 @@
                     <td><a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp}}</a></td>
                     <td>{{ a.duration }}</td>
                     <td>{{ a.subject }}</td>
-                </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
