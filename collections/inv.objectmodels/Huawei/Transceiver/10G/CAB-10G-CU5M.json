@@ -1,0 +1,38 @@
+{
+    "name": "Huawei | Transceiver | 10G | CAB-10G-CU5M",
+    "$collection": "inv.objectmodels",
+    "uuid": "6c26db69-734e-43a7-88ee-7a4c8c77d0b1",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei SFP+ 10G DAC 5m",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CAB-10G-CU5M"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}
