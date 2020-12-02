@@ -20,7 +20,7 @@ from .subscriber import Subscriber
 class Service(BaseModel):
     id: str
     parent: Optional[Reference["Service"]]
-    subscriber: Reference["Subscriber"]
+    subscriber: Optional[Reference["Subscriber"]]
     profile: Reference["ServiceProfile"]
     ts: Optional[datetime]
     logical_status: Optional[str]
