@@ -1,0 +1,9 @@
+{
+    "name": "Volt AC",
+    "$collection": "pm.measurementunits",
+    "uuid": "f5353c4a-68af-47e7-8b1a-60e2ff1c2c0b",
+    "description": "Electric Potential of Alternating Current measurement",
+    "label": "VAC",
+    "dashboard_label": "V(AC)",
+    "scale_type": "d"
+}

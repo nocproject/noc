@@ -1,0 +1,27 @@
+{
+    "name": "Celsius",
+    "$collection": "pm.measurementunits",
+    "uuid": "1485097a-e3c8-46f9-bf62-bf676df36150",
+    "description": "Temperature measurement",
+    "label": "C",
+    "dashboard_label": "C",
+    "scale_type": "d",
+    "alt_units": [
+        {
+            "dashboard_label": "K",
+            "description": "Kelvin degree",
+            "from_primary": "x + 273",
+            "label": "K",
+            "name": "Kelvin",
+            "to_primary": "x - 273"
+        },
+        {
+            "dashboard_label": "F",
+            "description": "Farenheit degreee",
+            "from_primary": "(x - 32.0) * 5.0 / 9.0",
+            "label": "F",
+            "name": "Farenheit",
+            "to_primary": "x * 9.0 / 5.0 + 32.0"
+        }
+    ]
+}

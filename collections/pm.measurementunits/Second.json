@@ -1,0 +1,9 @@
+{
+    "name": "Second",
+    "$collection": "pm.measurementunits",
+    "uuid": "9194bf43-6b1a-443e-8656-0b1821f369c3",
+    "description": "Time measurement",
+    "label": "s",
+    "dashboard_label": "s",
+    "scale_type": "d"
+}

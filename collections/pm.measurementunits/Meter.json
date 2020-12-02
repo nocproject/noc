@@ -1,0 +1,9 @@
+{
+    "name": "Meter",
+    "$collection": "pm.measurementunits",
+    "uuid": "c5730ec7-b7c5-47ee-90b0-b03f2297f128",
+    "description": "Distance measurement",
+    "label": "m",
+    "dashboard_label": "m",
+    "scale_type": "d"
+}
