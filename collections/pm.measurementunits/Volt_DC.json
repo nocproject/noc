@@ -1,0 +1,9 @@
+{
+    "name": "Volt DC",
+    "$collection": "pm.measurementunits",
+    "uuid": "28b4f8c1-beed-4393-b0ea-168fc3d37d9f",
+    "description": "Direct Current electric potential measurement",
+    "label": "VDC",
+    "dashboard_label": "V(DC)",
+    "scale_type": "d"
+}

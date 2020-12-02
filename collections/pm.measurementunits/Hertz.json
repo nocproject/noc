@@ -1,0 +1,9 @@
+{
+    "name": "Hertz",
+    "$collection": "pm.measurementunits",
+    "uuid": "0c4e4c27-4084-4e73-ace8-d0d244b45983",
+    "description": "Frequency measurement",
+    "label": "Hz",
+    "dashboard_label": "Hz",
+    "scale_type": "d"
+}

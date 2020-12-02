@@ -209,6 +209,35 @@ class MetricType(object):
         return f"reference/metrics/types/{'/'.join(self.dir_path)}/{self.file_name}"
 
 
+@dataclass
+class AltMeasurementUnits(object):
+    name: str
+    description: Optional[str]
+    label: str
+    dashboard_label: str
+    from_primary: str
+    to_primary: str
+
+
+@dataclass
+class MeasurementUnits(object):
+    name: str
+    uuid: str
+    description: Optional[str]
+    label: str
+    dashboard_label: str
+    scale_type: str
+    alt_units: Optional[List[AltMeasurementUnits]]
+
+    @property
+    def file_name(self) -> str:
+        return quote_file_name(self.name) + ".md"
+
+    @property
+    def rel_path(self) -> str:
+        return f"reference/measurementunits/{self.file_name}"
+
+
 class CollectionDoc(object):
     rx_indent = re.compile(r"^(\s+)-")
 
@@ -222,6 +251,7 @@ class CollectionDoc(object):
         self.alarm_class: Dict[str, AlarmClass] = {}
         self.metric_scope: Dict[str, MetricScope] = {}
         self.metric_type: Dict[str, MetricType] = {}
+        self.measurement_units: Dict[str, MeasurementUnits] = {}
 
     def build(self):
         shutil.copy(self.yml_path, self.new_yml_path)
@@ -230,12 +260,14 @@ class CollectionDoc(object):
         self.build_alarmclasses()
         self.build_metric_scopes()
         self.build_metric_types()
+        self.build_measurement_units()
 
     def read_collections(self):
         self.read_eventclasses()
         self.read_alarmclasses()
         self.read_metric_scopes()
         self.read_metric_types()
+        self.read_measurement_units()
 
     def iter_jsons(self, path: str) -> Iterable[Dict[str, Any]]:
         for root, _, files in os.walk(path):
@@ -373,6 +405,29 @@ class CollectionDoc(object):
             )
             self.metric_type[metric_type.name] = metric_type
             metric_scope.metric_types += [metric_type]
+
+    def read_measurement_units(self):
+        for d in self.iter_jsons(os.path.join("collections", "pm.measurementunits")):
+            unit = MeasurementUnits(
+                name=d["name"],
+                uuid=d["uuid"],
+                description=d.get("description") or "",
+                label=d["label"],
+                dashboard_label=d["dashboard_label"],
+                scale_type=d["scale_type"],
+                alt_units=[
+                    AltMeasurementUnits(
+                        name=a["name"],
+                        description=a.get("description") or "",
+                        label=a["label"],
+                        dashboard_label=a["dashboard_label"],
+                        from_primary=a.get("from_primary") or "",
+                        to_primary=a.get("to_primary") or "",
+                    )
+                    for a in d.get("alt_units") or []
+                ],
+            )
+            self.measurement_units[unit.name] = unit
 
     def ensure_dir(self, path: str) -> None:
         os.makedirs(path, exist_ok=True)
@@ -816,6 +871,68 @@ class CollectionDoc(object):
             f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
         )
         self.update_toc("Metric Types", toc)
+
+    def build_measurement_units(self) -> None:
+        print("# Writing measurement units doc:")
+        new_files = 0
+        changed_files = 0
+        unmodified_files = 0
+        mu_root = os.path.join(self.doc_root, "reference", "measurementunits")
+        toc = ["- Overview: reference/measurementunits/index.md"]
+        for mu_name in sorted(self.measurement_units):
+            mu = self.measurement_units[mu_name]
+            data = ["---", f"uuid: {mu.uuid}", "---", f"# {mu.name} Measurement Units"]
+            if mu.description:
+                data += ["", mu.description]
+            scale = {"d": "Decimal", "b": "Binary"}[mu.scale_type]
+            data += [
+                "",
+                "Scale",
+                f": {scale}",
+                "",
+                "Label",
+                f": `{mu.label}`",
+                "",
+                "Dashboard Label",
+                f": `{mu.dashboard_label}`",
+            ]
+            if mu.alt_units:
+                data += [
+                    "",
+                    "## Alternative Units",
+                    "",
+                    "Name | Description | Label | Dash. Label | From Primary | To Primary",
+                    "--- | --- | --- | --- | --- | ---",
+                ]
+                data += [
+                    f"{a.name} | {a.description} | {a.label} | {a.dashboard_label} | `{a.from_primary}` | `{a.to_primary}`"
+                    for a in mu.alt_units
+                ]
+            data += [""]
+            toc += [f"- {mu.name}: reference/measurementunits/{mu.file_name}"]
+            page = "\n".join(data)
+            page_path = os.path.join(mu_root, mu.file_name)
+            to_write = False
+            if os.path.exists(page_path):
+                with open(page_path) as f:
+                    old_page = f.read()
+                if old_page == page:
+                    unmodified_files += 1
+                else:
+                    changed_files += 1
+                    to_write = 1
+            else:
+                new_files += 1
+                to_write = True
+            if to_write:
+                print(f"  Writing: reference/measurementunits/{mu.file_name}")
+                with open(page_path, "w") as f:
+                    f.write(page)
+        total_files = new_files + changed_files + unmodified_files
+        print(
+            f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
+        )
+        self.update_toc("Measurement Units", toc)
 
 
 if __name__ == "__main__":

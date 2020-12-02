@@ -1,0 +1,9 @@
+{
+    "name": "RPM",
+    "$collection": "pm.measurementunits",
+    "uuid": "c5078a4f-f8e7-4c76-8432-fa9af14fc5f3",
+    "description": "Rotation measure, rotations per minute",
+    "label": "RPM",
+    "dashboard_label": "RPM",
+    "scale_type": "d"
+}

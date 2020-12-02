@@ -1,0 +1,9 @@
+{
+    "name": "Ampere",
+    "$collection": "pm.measurementunits",
+    "uuid": "9e59d6e9-debf-48d4-b122-8283e1206797",
+    "description": "Electric current measurement",
+    "label": "A",
+    "dashboard_label": "A",
+    "scale_type": "d"
+}

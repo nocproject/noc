@@ -239,6 +239,7 @@ _MODELS = {
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     "fm.Uptime": "noc.fm.models.uptime.Uptime",
     # pm models
+    "pm.MeasurementUnits": "noc.pm.models.measurementunits.MeasurementUnits",
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
     "pm.ThresholdProfile": "noc.pm.models.thresholdprofile.ThresholdProfile",
@@ -337,6 +338,7 @@ COLLECTIONS = [
     "dev.Spec",
     "sa.Action",
     "inv.Capability",
+    "pm.MeasurementUnits",
     "pm.MetricScope",
     "pm.MetricType",
     "fm.Enumeration",

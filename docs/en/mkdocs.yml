@@ -1085,6 +1085,17 @@ nav:
                               - "Node Up": reference/event-classes/vendor/f5/bigip/network/load-balance/node-up.md
                               - "Service Down": reference/event-classes/vendor/f5/bigip/network/load-balance/service-down.md
                               - "Service Up": reference/event-classes/vendor/f5/bigip/network/load-balance/service-up.md
+      - Measurement Units:
+          - Overview: reference/measurementunits/index.md
+          - Ampere: reference/measurementunits/ampere.md
+          - Celsius: reference/measurementunits/celsius.md
+          - Hertz: reference/measurementunits/hertz.md
+          - Meter: reference/measurementunits/meter.md
+          - RPM: reference/measurementunits/rpm.md
+          - Second: reference/measurementunits/second.md
+          - Volt AC: reference/measurementunits/volt-ac.md
+          - Volt DC: reference/measurementunits/volt-dc.md
+          - Watt: reference/measurementunits/watt.md
       - Metrics:
           - Metric Scopes:
               - Overview: reference/metrics/scopes/index.md
