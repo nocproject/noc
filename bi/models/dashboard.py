@@ -75,7 +75,10 @@ class Dashboard(Document):
     @property
     def name(self):
         # For collection sync
-        return "%s: %s" % (self.owner.username, self.title or str(self.uuid))
+        return "%s: %s" % (
+            self.owner.username if self.owner else "noc",
+            self.title or str(self.uuid),
+        )
 
     def get_user_access(self, user):
         # Direct match as owner
