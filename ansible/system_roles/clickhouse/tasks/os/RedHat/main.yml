@@ -1,18 +1,4 @@
 ---
-- name: Add Red Soft repository
-  yum_repository:
-    name: clickhouse
-    description: Red Soft repository
-    baseurl: http://repo.red-soft.biz/repos/clickhouse/stable/el{{ ansible_distribution_major_version }}
-    gpgcheck: "False"
-    enabled: "True"
-    state: absent
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-  tags:
-    - repo
-
 - name: Add altinity repository
   yum_repository:
     name: altinity_clickhouse
@@ -32,8 +18,8 @@
     state: present
   vars:
     packages:
-      - clickhouse-client
-      - clickhouse-server-common
+      - clickhouse-client-{{ clickhouse_version }}
+      - clickhouse-server-common-{{ clickhouse_version }}
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

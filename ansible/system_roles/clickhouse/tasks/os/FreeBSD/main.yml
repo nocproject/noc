@@ -1,7 +1,7 @@
 ---
 - name: Install Clickhouse
   pkgng:
-    name: "clickhouse"
+    name: "clickhouse-{{ clickhouse_version }}"
     state: present
   tags:
     - requirements

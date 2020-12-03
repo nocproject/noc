@@ -18,8 +18,8 @@
     state: present
   vars:
     packages:
-      - clickhouse-client
-      - clickhouse-server-common
+      - clickhouse-client-{{ clickhouse_version }}
+      - clickhouse-server-common-{{ clickhouse_version }}
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
