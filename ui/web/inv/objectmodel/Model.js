@@ -60,6 +60,10 @@ Ext.define("NOC.inv.objectmodel.Model", {
             type: "auto"
         },
         {
+            name: "sensors",
+            type: "auto"
+        },
+        {
             name: "name",
             type: "string"
         },
