@@ -256,16 +256,17 @@ class MetricsCheck(DiscoveryCheck):
                 self.id_metrics[m_id] = ipr[metric]
                 if i_profile.allow_subinterface_metrics:
                     for si in subs[i["_id"]]:
-                        m_id = next(self.id_count)
-                        m = {
-                            "id": m_id,
-                            "metric": metric,
-                            "path": ["", "", "", i["name"], si["name"]],
-                        }
-                        if si["ifindex"] is not None:
-                            m["ifindex"] = si["ifindex"]
-                        metrics += [m]
-                        self.id_metrics[m_id] = ipr[metric]
+                        if si["name"] != i["name"]:
+                            m_id = next(self.id_count)
+                            m = {
+                                "id": m_id,
+                                "metric": metric,
+                                "path": ["", "", "", i["name"], si["name"]],
+                            }
+                            if si["ifindex"] is not None:
+                                m["ifindex"] = si["ifindex"]
+                            metrics += [m]
+                            self.id_metrics[m_id] = ipr[metric]
         if not metrics:
             self.logger.info("Interface metrics are not configured. Skipping")
         return metrics
