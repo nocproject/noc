@@ -1,88 +1,87 @@
 {
+  "title": "CPU | Load | 1min per CPU",
+  "aliasColors": {},
   "bars": false,
-  "timeFrom": null,
-  "links": [],
-  "thresholds": [],
-  "nullPointMode": "connected",
-  "renderer": "flot",
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": 1151104820716515,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
   "linewidth": 2,
+  "links": [],
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "span": 6,
+  "stack": false,
   "steppedLine": false,
   "targets": [
     {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "cpu",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((slot, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'/') as slot, \n        avg(load_1min) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY arrayStringConcat(path,'/'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
-      "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((concat('CPU | Load | 1min ',path[3]), d)) AS groupArr\nFROM \n    ( SELECT \n          $timeSeries as t, \n        path[3], \n        avg(load_1min) d \n        from $table\n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
-      "database": "noc",
-      "tableLoading": false,
-      "table": "cpu",
-      "dateLoading": false,
-      "datetimeLoading": false,
-      "dateColDataType": "date",
-      "dateTimeColDataType": "ts",
       "interval": "$discovery_interval"
     }
   ],
-  "fill": 1,
-  "span": 6,
-  "title": "CPU | Load | 1min per cpu",
-  "tooltip": {
-    "sort": 0,
-    "shared": true,
-    "value_type": "cumulative",
-    "msResolution": false
-  },
-  "id": 1391774823725701,
-  "points": false,
-  "xaxis": {
-    "values": [],
-    "mode": "time",
-    "name": null,
-    "show": true,
-    "buckets": null
-  },
-  "seriesOverrides": [],
-  "percentage": false,
-  "type": "graph",
-  "pointradius": 5,
-  "editable": true,
-  "grid": {},
-  "stack": false,
+  "timeFrom": null,
   "timeShift": null,
-  "aliasColors": {},
-  "lines": true,
-  "legend": {
-    "rightSide": false,
-    "total": false,
-    "show": true,
-    "max": true,
-    "min": true,
-    "current": true,
-    "values": true,
-    "alignAsTable": true,
-    "avg": true
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
   },
+  "type": "graph",
+  "x-axis": true,
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
   "yaxes": [
     {
+      "format": "short",
+      "label": null,
       "logBase": 1,
-      "min": "0",
-      "max": "100",
-      "format": "percent",
+      "max": null,
+      "min": null,
       "show": true,
-      "label": null
+      "decimals": null
     },
     {
-      "logBase": 1,
-      "min": null,
-      "max": null,
       "format": "short",
-      "show": true,
-      "label": null
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": false
     }
   ],
-  "datasource": null,
-  "error": false,
-  "dashes": false,
-  "dashLength": 10,
-  "spaceLength": 10
+  "decimals": 2
 }

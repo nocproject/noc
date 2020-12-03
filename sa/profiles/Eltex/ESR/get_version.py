@@ -51,7 +51,7 @@ class Script(BaseScript):
         platform = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.13.680000")
         return {
             "vendor": "Eltex",
-            "platform": "ERS-%s" % platform,
+            "platform": "ESR-%s" % platform,
             "version": match.group("version"),
             "attributes": {
                 "HW version": hw,
