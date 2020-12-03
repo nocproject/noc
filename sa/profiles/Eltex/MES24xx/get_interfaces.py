@@ -52,7 +52,7 @@ class Script(BaseScript):
             }
             sub = {"name": ifname, "admin_status": admin_status, "oper_status": oper_status}
             if iface["type"] == "physical":
-                sub["enable_afi"] = ["BRIDGE"]
+                sub["enabled_afi"] = ["BRIDGE"]
                 if ifname.startswith("Gi"):
                     sw_ifname = "gigabitethernet %s" % ifname[2:]
                 elif ifname.startswith("Fa"):
