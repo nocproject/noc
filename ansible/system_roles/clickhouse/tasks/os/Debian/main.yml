@@ -9,13 +9,6 @@
   tags:
     - repo
 
-- name: remove obsolete yandex repo
-  file:
-    path: /etc/apt/sources.list.d/repo_yandex_ru_clickhouse_trusty.list
-    state: absent
-  tags:
-    - repo
-
 - name: Add CH repository
   apt_repository:
     repo: "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
@@ -34,8 +27,9 @@
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   vars:
     packages:
-      - clickhouse-client
-      - clickhouse-server-common
+      - clickhouse-client={{ clickhouse_version }}
+      - clickhouse-server={{ clickhouse_version }}
+      - clickhouse-common-static={{ clickhouse_version }}
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
