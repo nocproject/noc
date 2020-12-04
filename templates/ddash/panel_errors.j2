@@ -5,8 +5,8 @@
       "value": "avg"
     },
     {
-      "text": "Count",
-      "value": "count"
+      "text": "Total",
+      "value": "total"
     }
   ],
   "fontSize": "100%",
@@ -54,7 +54,6 @@
       "intervalFactor": 1,
       "interval": "$discovery_interval",
       "query": "SELECT \n\tt, \n\tgroupArray((concat('Discards Out ',path), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries as t, \n\t\tpath[4] as path, \n\t\tavg(discards_out) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
-      "refId": "A",
       "resultFormat": "time_series",
       "table": "interface",
       "tableLoading": false
@@ -68,7 +67,6 @@
       "intervalFactor": 1,
       "interval": "$discovery_interval",
       "query": "SELECT \n\tt, \n\tgroupArray((concat('Discards In ',path), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries as t, \n\t\tpath[4] as path, \n\t\tavg(discards_in) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
-      "refId": "B",
       "resultFormat": "time_series",
       "table": "interface",
       "tableLoading": false
@@ -82,7 +80,6 @@
       "intervalFactor": 1,
       "interval": "$discovery_interval",
       "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors Out ',path), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries as t, \n\t\tpath[4] as path, \n\t\tavg(errors_out) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
-      "refId": "C",
       "resultFormat": "time_series",
       "table": "interface",
       "tableLoading": false
@@ -96,7 +93,32 @@
       "intervalFactor": 1,
       "interval": "$discovery_interval",
       "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors In ',path), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries as t, \n\t\tpath[4] as path, \n\t\tavg(errors_in) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
-      "refId": "D",
+      "resultFormat": "time_series",
+      "table": "interface",
+      "tableLoading": false
+    },
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "intervalFactor": 1,
+      "interval": "$discovery_interval",
+      "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors Out Delta ',path), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries as t, \n\t\tpath[4] as path, \n\t\tavg(errors_out_delta) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
+      "resultFormat": "time_series",
+      "table": "interface",
+      "tableLoading": false
+    },
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "intervalFactor": 1,
+      "interval": "$discovery_interval",
+      "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors In Delta ',path), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries as t, \n\t\tpath[4] as path, \n\t\tavg(errors_in_delta) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
       "resultFormat": "time_series",
       "table": "interface",
       "tableLoading": false
