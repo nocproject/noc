@@ -177,6 +177,7 @@ class ReportMovedMacApplication(ExtApplication):
             "object_address",
             "object_adm_domain",
             "event_type",
+            "sn_changed",
             "vendor_mac",
             "mac",
             "migrate_ts",
@@ -191,6 +192,7 @@ class ReportMovedMacApplication(ExtApplication):
             "OBJECT_ADDRESS",
             "OBJECT_ADM_DOMAIN",
             "EVENT_TYPE",
+            "SN_CHANGED",
             "VENDOR_MAC",
             "MAC",
             "MIGRATE_TS",
@@ -272,6 +274,7 @@ class ReportMovedMacApplication(ExtApplication):
                         mo_address,
                         mo_adm_domain,
                         event_type,
+                        int(mo) in serials_changed,
                         MACVendor.get_vendor(mac),
                         mac,
                         datetime.datetime.fromtimestamp(migrate[1]).isoformat(sep=" "),  # TS
