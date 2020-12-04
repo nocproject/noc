@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.objectmodel application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.objectmodel.Application");
@@ -16,6 +16,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
         "NOC.inv.connectionrule.LookupField",
+        "NOC.pm.measurementunits.LookupField",
         "Ext.ux.form.ModelDataField",
         "Ext.ux.form.GridField"
     ],
@@ -278,6 +279,45 @@ Ext.define("NOC.inv.objectmodel.Application", {
                         scope: me,
                         clone: me.onCloneConnection
                     }
+                },
+                {
+                    name: "sensors",
+                    fieldLabel: __("Sensors"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Name"),
+                            dataIndex: "name",
+                            width: 150,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Description"),
+                            dataIndex: "description",
+                            width: 200,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Units"),
+                            dataIndex: "units",
+                            width: 100,
+                            editor: "pm.measurementunits.LookupField",
+                            renderer: NOC.render.Lookup("units")
+                        },
+                        {
+                            text: __("Modbus Register"),
+                            dataIndex: "modbus_register",
+                            width: 100,
+                            editor: "number_field"
+                        },
+                        {
+                            text: __("SNMP OID"),
+                            dataIndex: "snmp_oid",
+                            flex: 1,
+                            editor: "textfield"
+                        }
+                    ]
                 }
             ],
             formToolbar: [

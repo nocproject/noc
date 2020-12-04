@@ -16,6 +16,7 @@ from typing import Optional, List, Tuple, Union
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
+    IntField,
     UUIDField,
     DictField,
     ListField,
@@ -27,15 +28,16 @@ import cachetools
 from pymongo import InsertOne, DeleteOne
 
 # NOC modules
-from .connectiontype import ConnectionType
-from .connectionrule import ConnectionRule
-from .unknownmodel import UnknownModel
-from .vendor import Vendor
 from noc.main.models.doccategory import category
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check, on_save
+from noc.pm.models.measurementunits import MeasurementUnits
+from .connectiontype import ConnectionType
+from .connectionrule import ConnectionRule
+from .unknownmodel import UnknownModel
+from .vendor import Vendor
 
 id_lock = Lock()
 
@@ -113,6 +115,31 @@ class ObjectModelConnection(EmbeddedDocument):
         super().clean()
 
 
+class ObjectModelSensor(EmbeddedDocument):
+    # Sensor name, may be duplicated for various collection methods
+    name = StringField()
+    description = StringField()
+    units = PlainReferenceField(MeasurementUnits)
+    # Register address for modbus access
+    modbus_register = IntField()
+    # OID for SNMP access
+    snmp_oid = StringField()
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def json_data(self):
+        r = {"name": self.name}
+        if self.description:
+            r["description"] = self.description
+        r["units__name"] = self.units.name
+        if self.modbus_register:
+            r["modbus_register"] = self.modbus_register
+        if self.snmp_oid:
+            r["snmp_oid"] = self.snmp_oid
+
+
 @category
 @on_delete_check(check=[("inv.ModelMapping", "model"), ("inv.Object", "model")])
 @on_save
@@ -128,10 +155,11 @@ class ObjectModel(Document):
         "indexes": [("vendor", "data.asset.part_no"), ("vendor", "data.asset.order_part_no")],
         "json_collection": "inv.objectmodels",
         "json_unique_fields": ["name", "uuid"],
-        "json_depends_on": ["inv.vendors", "inv.connectionrules"],
+        "json_depends_on": ["inv.vendors", "inv.connectionrules", "pm.measurementunits"],
     }
 
     name = StringField(unique=True)
+    uuid = UUIDField(binary=True)
     description = StringField()
     vendor = PlainReferenceField(Vendor)
     connection_rule = PlainReferenceField(ConnectionRule, required=False)
@@ -139,7 +167,7 @@ class ObjectModel(Document):
     cr_context = StringField(required=False)
     data = DictField()
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
-    uuid = UUIDField(binary=True)
+    sensors = ListField(EmbeddedDocumentField(ObjectModelSensor))
     plugins = ListField(StringField(), required=False)
     tags = ListField(StringField())
     category = ObjectIdField()
@@ -263,6 +291,8 @@ class ObjectModel(Document):
             "data": self.data,
             "connections": [c.json_data for c in self.connections],
         }
+        if self.sensors:
+            r["sensors"] = [s.json_data for s in self.sensors]
         if self.connection_rule:
             r["connection_rule__name"] = self.connection_rule.name
         if self.cr_context:
