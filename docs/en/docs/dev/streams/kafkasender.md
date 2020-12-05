@@ -1,5 +1,9 @@
 # kafkasender stream
 
+kafkasender stream is a part of [GMX Pipeline](index.md#generic-message-exchange-pipeline).
+Outbound messages directed to the external Kafka cluster are routed into
+`kafkasender` stream by [mx](../../admin/services/mx.md) service.
+
 ## Publishers
 
 - [mx](../../admin/services/mx.md) service
@@ -13,7 +17,10 @@
 To
 : Kafka topic name
 
+Sharding-Key
+: Key for consistent sharding.
+
 ## Message Format
 
-`kafkasender` stream does not enforce specific format. Messages are passed
+`kafkasender` stream does not enforce a specific format. Messages are passed
 to external Kafka system as-is.
