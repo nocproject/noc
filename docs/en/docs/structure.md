@@ -3,41 +3,27 @@
 This document provides an overview of the global organization of the
 documentation resource. Refer to the notes below if you are having
 trouble understanding the reasoning behind a file's current location,
-or if you want to add new documentation but aren't sure how to
+or if you want to add a new documentation but aren't sure how to
 integrate it into the existing resource.
 
-If you have questions, don't hesitate to open a ticket in the
-`Documentation GitLab Project <https://code.getnoc.com/noc/docs/issues>`_.
-
-<!-- prettier-ignore -->
-!!! todo
-    Describe documentation telegram channel
+If you have any questions or suggestions regarding the documentation,
+join the
+[NOC Docs](https://t.me/nocdocs) telegram channel.
 
 ## Global Organization
 
-### Indexes and Experience
-The documentation project has two "index files": ``/contents.rst`` and
-``/index.rst``. The "contents" file provides the documentation's tree structure,
-which Sphinx uses to create the left-pane navigational structure,
-to power the "Next" and "Previous" page functionality,
-and to provide all overarching outlines of the resource.
-The *index* file is not included in the "contents" file (and
-thus builds will produce a warning here) and is the page that users
-first land on when visiting the resource.
+### Index
+`mkdocs.yml` file holds all documentation project configuration, including
+the topics structure. Every markdown file should be enumerated in the `nav`
+section.
 
-Having separate "contents" and "index" files provides a bit more
-flexibility with the organization of the resource while also making it
-possible to customize the primary user experience.
+### Documentation section
+Documentation split in following sections:
 
-### Topical Organization
-The placement of files in the repository depends on the *type* of
-documentation rather than the *topic* of the content. Like the
-difference between ``contents.rst`` and ``index.rst``, by decoupling
-the organization of the files from the organization of the information
-the documentation can be more flexible and can more adequately address
-changes in the product and in users' needs.
-
-*Files* in the ``src/`` directory represent the tip of a logical
-tree of documents, while *directories* are containers of types of
-content. There is only one or two levels of sub-directories in the ``src/``
-directory
+* `Reference` - technical description of machinery and how to operate it.
+* `Admin's Guide` - technical references for a system administrators.
+* `Developer's Guide` - technical references for system developers.
+* `Tutorials` - Step-by-step lessons for beginners.
+* `HOWTO` - Step-by-step answers to the practical questions.
+* `Release Notes` - NOC Release notes.
+* `About` - Common information about the project.
