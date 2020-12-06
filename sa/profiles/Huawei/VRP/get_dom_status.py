@@ -158,7 +158,7 @@ class Script(BaseScript):
         return r
 
     def execute(self, interface=None):
-        if self.is_ne_platform:
+        if self.is_ne_platform or self.is_cx600:
             return self.execute_ne(interface=interface)
         if self.is_ar:
             return self.execute_ar(interface=interface)
