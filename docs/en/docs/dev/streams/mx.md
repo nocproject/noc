@@ -1,5 +1,7 @@
 # mx Stream
 
+mx stream is a part of [GMX Pipeline](index.md#generic-message-exchange-pipeline).
+
 ## Publishers
 
 - [datastream](../../admin/services/datastream.md) service

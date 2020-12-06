@@ -1618,6 +1618,8 @@ nav:
           - "Network | CGNAT Termination": dev/technology/Network/cgnat-termination.md
       - Streams:
           - Overview: dev/streams/index.md
+          - dispose.POOL: dev/streams/dispose.md
+          - events.POOL: dev/streams/events.md
           - kafkasender: dev/streams/kafkasender.md
           - mx: dev/streams/mx.md
       - Tools: dev/tools.md

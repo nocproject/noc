@@ -30,5 +30,7 @@ which perform delivery to outside endpoints.
 ```mermaid
 graph LR
    System((System)) -->|mx| mx
+   discovery -->|mx| mx
+   datatream -->|mx| mx
    mx -->|kafkasender| kafkasender([kafkasender])
 ```
