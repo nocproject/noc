@@ -19,9 +19,9 @@ This section contains guidelines on naming files, sections, documents and other 
     that describes the material covered in the document.
     Allow the path of the file within the document tree
     to add some of the required context/categorization.
-    For example it’s acceptable to have /core/sharding.rst and /administration/sharding.rst.
+    For example, it’s acceptable to have `/reference/sharding.md` and `/admin/sharding.md`.
   - For tutorials, the full title of the document should be in the file name.
-    For example, /tutorial/replace-one-configuration-server-in-a-shard-cluster.rst
+    For example, `/tutorials/removing-object-from-monitoring.md`
 
 - Phrase headlines and titles so users can determine what questions
   the text will answer, and material that will be addressed,
@@ -30,8 +30,8 @@ This section contains guidelines on naming files, sections, documents and other 
 - Prefer titles and headers in the form of "Using foo" over "How to Foo."
   When using target references (i.e. [references](#referencing) in documents),
   use names that include enough context to be intelligible through all documentation.
-  For example, use "replica-set-secondary-only-node” as opposed to
-  "secondary-only-node”. This makes the source more usable and easier to maintain.
+  For example, use "replica-set-secondary-only-node" as opposed to
+  "secondary-only-node". This makes the source more usable and easier to maintain.
 
 ## Style Guide
 
@@ -58,48 +58,49 @@ Use American spelling.
 Use title case for headings and document titles.
 Title case capitalizes the first letter of the first, last, and all significant words.
 
-## Verbs
+### Verbs
 
 Verb tense and mood preferences, with examples:
 
 - **Avoid** the first person. For example do not say,
-  "We will begin the backup process by locking the database,” or
-  "I begin the backup process by locking my database instance.”
-- **Use** the second person. "If you need to back up your database, start by locking the database first.”
+  "We will begin the backup process by locking the database," or
+  "I begin the backup process by locking my database instance."
+- **Use** the second person. "If you need to back up your database, start by locking the database first."
   In practice, however, it’s more concise to imply second person using the imperative,
-  as in "Before initiating a backup, lock the database.”
+  as in "Before initiating a backup, lock the database."
 - When indicated, use the imperative mood. For example:
-  "Back up your databases often” and "To prevent data loss, back up your databases.”
+  "Back up your databases often" and "To prevent data loss, back up your databases."
 - The future perfect is also useful in some cases.
-  For example, "Creating disk snapshots without locking the database will lead to an invalid state.”
+  For example, "Creating disk snapshots without locking the database will lead to an invalid state."
 - Avoid helper verbs, as possible, to increase clarity and concision.
-  For example, attempt to avoid "this does foo” and "this will do foo”
-  when possible. Use "does foo” over "will do foo” in situations
-  where "this foos” is unacceptable.
+  For example, attempt to avoid "this does foo" and "this will do foo"
+  when possible. Use "does foo" over "will do foo" in situations
+  where "this foos" is unacceptable.
 
 ## Referencing
 
 - To refer to future or planned functionality in NOC, always link to the GitLab case.
-  The Manual’s conf.py provides an :issue: role that links directly to a GitLab case (e.g. :issue:\`426\`).
+  The Manual provides `\{\{ issue(N) \}\}` macro to create a link to the issue.  
+- Use relative Markdown links (`[text](../foo/bar.md)`) to link different parts of document.
 - For non-object references (i.e. functions, operators, methods, database commands, settings)
   always reference only the first occurrence of the reference in a section.
   You should always reference objects, except in section headings.
-- Structure references with the why first; the link second.
+- Structure references with the "why" first; the "link" second.
   For example, instead of this:
 
   |
-  | Use the :doc:`/tutorial/convert-replica-set-to-replicated-shard-cluster`
-  | procedure if you have an existing replica set.
+  | Use the [Enable Monitoring](enable-monitoring.md)
+  | procedure to enable object's monitoring.
   |
 
   Type this:
 
   |
-  | To deploy a sharded cluster for an existing replica set, see
-  | :doc:`/tutorial/convert-replica-set-to-replicated-shard-cluster`.
+  | To enable the object's monitoring, see
+  | [Enable Monitoring](enable-monitoring.md).
   |
 
-### General Formulations
+## General Formulations
 
 - Contractions are acceptable insofar as they are necessary to increase
   readability and flow. Avoid otherwise.
@@ -116,15 +117,15 @@ Verb tense and mood preferences, with examples:
   - standalone
   - workflow
 
-- Use "unavailable,” "offline,” or "unreachable” to refer to a service instance that cannot be accessed.
-  Do not use the colloquialism "down.”
-- Always write out units (e.g. "megabytes”) rather than using abbreviations (e.g. "MB”.)
+- Use "unavailable," "offline," or "unreachable" to refer to a service instance that cannot be accessed.
+  Do not use the colloquialism "down."
+- Always write out units (e.g. "megabytes") rather than using abbreviations (e.g. "MB".)
 
-### Structural Formulations
-
+## Structural Formulations
+- Each document must have exactly one "h1" (`#`) block at the top of the document
 - There should be at least two headings at every nesting level.
-  Within an "h2” block, there should be either: no "h3” blocks,
-  2 "h3” blocks, or more than 2 "h3” blocks.
+  Within an "h2" (`##`) block, there should be either: no "h3" (`###`) blocks,
+  2 "h3" blocks, or more than 2 "h3" blocks.
 - Section headers are in title case (capitalize first, last, and all important words)
   and should effectively describe the contents of the section.
   In a single document you should strive to have section titles
@@ -142,41 +143,40 @@ Verb tense and mood preferences, with examples:
 - For longer lists and more complex lists, use bulleted items
   rather than integrating them inline into a sentence.
 - Do not expect that the content of any example (inline or blocked)
-  will be self explanatory. Even when it feels redundant,
+  will be self-explanatory. Even when it feels redundant,
   make sure that the function and use of every example is clearly described.
 
-### ReStructured Text and Typesetting
+## Markdown and Typesetting
 
 - For underlines associated with headers in RST, use:
 
-  - **=** for heading level 1 or h1s. Use underlines and overlines for document titles.
-  - **-** for heading level 2 or h2s.
-  - **~** for heading level 3 or h3s.
-  - **`** for heading level 4 or h4s.
+  - `#` for heading level 1 or h1s.
+  - `##` for heading level 2 or h2s.
+  - `###` for heading level 3 or h3s.
+  - `####` for heading level 4 or h4s.
 
-- Use hyphens (-) to indicate items of an ordered list.
-- Place footnotes and other references, if you use them,
-  at the end of a section rather than the end of a file.
-  Use the footnote format that includes automatic numbering and
-  a target name for ease of use. For instance a footnote tag
-  may look like: [#note]\_ with the corresponding directive holding
-  the body of the footnote that resembles the following: .. [#note].
-  Do not include .. code-block:: [language] in footnotes.
-- As it makes sense, use the .. code-block:: [language] form
-  to insert literal blocks into the text. While the double colon,
-  ::, is functional, the .. code-block:: [language] form makes the source
-  easier to read and understand.
-- For all mentions of referenced types (i.e. commands, operators, expressions,
-  functions, statuses, etc.) use the reference types to ensure uniform
-  formatting and cross-referencing.
+- Use hyphens (`-`) to indicate items of an ordered list.
 
-### Paths and Hostnames
+## Paths and Hostnames
 
 - Use angle brackets to denote areas that users should input the relevant path, as in **--dbpath <path>**.
 - When including sample hostnames, use example.com, example.net, or example.org,
   which are reserved for documentation purposes. See [RFC2606](https://tools.ietf.org/html/rfc2606) and [RFC6761](https://tools.ietf.org/html/rfc6761) for more information.
 
-### Examples
+## Definitions
+Use *deflists* extension to introduce definitions or key-value explanations.
+
+<!-- prettier-ignore -->
+!!! example "Example"
+    ```
+    Term1
+    : Explanation1
+
+    Term2
+    : Explanation2
+    ```
+
+## Examples
 Use *example* admonition to add an example.
 
 <!-- prettier-ignore -->
@@ -187,7 +187,7 @@ Use *example* admonition to add an example.
         example text
     ```
 
-### Todos
+## Todos
 Use *todo* admonition to denote work in progress
 
 <!-- prettier-ignore -->
