@@ -21,3 +21,6 @@ cache-memcached
 {% if 'svc-redis-exec' in groups and groups["svc-redis-exec"]|length>0 %}
 cache-redis
 {% endif %}
+{% if 'svc-kafkasender-exec' in groups and inventory_hostname in groups["svc-kafkasender-exec"] %}
+sender-kafka
+{% endif %}
