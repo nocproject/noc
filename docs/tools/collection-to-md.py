@@ -235,7 +235,7 @@ class MeasurementUnits(object):
 
     @property
     def rel_path(self) -> str:
-        return f"reference/measurementunits/{self.file_name}"
+        return f"reference/measurement-units/{self.file_name}"
 
 
 class CollectionDoc(object):
@@ -470,8 +470,8 @@ class CollectionDoc(object):
         new_files = 0
         changed_files = 0
         unmodified_files = 0
-        toc = []
-        ec_root = os.path.join(self.doc_root, "reference", "event-classes")
+        toc = ["- Overview: user/reference/event-classes/index.md"]
+        ec_root = os.path.join(self.doc_root, "user", "reference", "event-classes")
         last_path: List[str] = []
         indent: str = ""
         for ec_name in sorted(self.event_class):
@@ -495,7 +495,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = ec_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": reference/event-classes/{rel_dir}/{ec.file_name}'
+                f'{indent}    - "{short_name}": user/reference/event-classes/{rel_dir}/{ec.file_name}'
             ]
             # render page
             data = ["---", f"uuid: {ec.uuid}", "---", f"# {ec.name}"]
@@ -582,8 +582,8 @@ class CollectionDoc(object):
         new_files = 0
         changed_files = 0
         unmodified_files = 0
-        toc = []
-        ac_root = os.path.join(self.doc_root, "reference", "alarm-classes")
+        toc = ["- Overview: user/reference/alarm-classes/index.md"]
+        ac_root = os.path.join(self.doc_root, "user", "reference", "alarm-classes")
         last_path: List[str] = []
         indent: str = ""
         for ac_name in sorted(self.alarm_class):
@@ -607,7 +607,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = ac_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": reference/alarm-classes/{rel_dir}/{ac.file_name}'
+                f'{indent}    - "{short_name}": user/reference/alarm-classes/{rel_dir}/{ac.file_name}'
             ]
             # render page
             data = ["---", f"uuid: {ac.uuid}", "---", f"# {ac.name}"]
@@ -739,9 +739,9 @@ class CollectionDoc(object):
         new_files = 0
         changed_files = 0
         unmodified_files = 0
-        ms_root = os.path.join(self.doc_root, "reference", "metrics", "scopes")
+        ms_root = os.path.join(self.doc_root, "user", "reference", "metrics", "scopes")
         tab = "{{ tab }}"
-        toc = ["- Overview: reference/metrics/scopes/index.md"]
+        toc = ["- Overview: user/reference/metrics/scopes/index.md"]
         for ms_name in sorted(self.metric_scope):
             ms = self.metric_scope[ms_name]
             data = ["---", f"uuid: {ms.uuid}", "---", f"# {ms.name} Metric Scope"]
@@ -769,7 +769,7 @@ class CollectionDoc(object):
                     f"[{mt.field_name}]({mt_ref}) | {mt.field_type} | [{mq(mt.name)}]({mt_ref})"
                 ]
             data += [""]
-            toc += [f"- {ms.name}: reference/metrics/scopes/{ms.file_name}"]
+            toc += [f"- {ms.name}: user/reference/metrics/scopes/{ms.file_name}"]
             page = "\n".join(data)
             page_path = os.path.join(ms_root, ms.file_name)
             to_write = False
@@ -785,7 +785,7 @@ class CollectionDoc(object):
                 new_files += 1
                 to_write = True
             if to_write:
-                print(f"  Writing: reference/metrics/scopes/{ms.file_name}")
+                print(f"  Writing: user/reference/metrics/scopes/{ms.file_name}")
                 with open(page_path, "w") as f:
                     f.write(page)
         total_files = new_files + changed_files + unmodified_files
@@ -799,10 +799,10 @@ class CollectionDoc(object):
         new_files = 0
         changed_files = 0
         unmodified_files = 0
-        ms_root = os.path.join(self.doc_root, "reference", "metrics", "types")
+        ms_root = os.path.join(self.doc_root, "user", "reference", "metrics", "types")
         last_path: List[str] = []
         indent: str = ""
-        toc = ["- Overview: reference/metrics/types/index.md"]
+        toc = ["- Overview: user/reference/metrics/types/index.md"]
         for mt_name in sorted(self.metric_type):
             mt = self.metric_type[mt_name]
             rel_dir = os.path.join(*mt.dir_path)
@@ -824,7 +824,7 @@ class CollectionDoc(object):
                 last_path = path
             short_name = mt_name.split(" | ")[-1].strip()
             toc += [
-                f'{indent}    - "{short_name}": reference/metrics/types/{rel_dir}/{mt.file_name}'
+                f'{indent}    - "{short_name}": user/reference/metrics/types/{rel_dir}/{mt.file_name}'
             ]
             # Render page
             data = ["---", f"uuid: {mt.uuid}", "---", f"# {mt.name} Metric Type"]
@@ -877,8 +877,8 @@ class CollectionDoc(object):
         new_files = 0
         changed_files = 0
         unmodified_files = 0
-        mu_root = os.path.join(self.doc_root, "reference", "measurementunits")
-        toc = ["- Overview: reference/measurementunits/index.md"]
+        mu_root = os.path.join(self.doc_root, "user", "reference", "measurement-units")
+        toc = ["- Overview: user/reference/measurement-units/index.md"]
         for mu_name in sorted(self.measurement_units):
             mu = self.measurement_units[mu_name]
             data = ["---", f"uuid: {mu.uuid}", "---", f"# {mu.name} Measurement Units"]
@@ -909,7 +909,7 @@ class CollectionDoc(object):
                     for a in mu.alt_units
                 ]
             data += [""]
-            toc += [f"- {mu.name}: reference/measurementunits/{mu.file_name}"]
+            toc += [f"- {mu.name}: user/reference/measurement-units/{mu.file_name}"]
             page = "\n".join(data)
             page_path = os.path.join(mu_root, mu.file_name)
             to_write = False
@@ -925,7 +925,7 @@ class CollectionDoc(object):
                 new_files += 1
                 to_write = True
             if to_write:
-                print(f"  Writing: reference/measurementunits/{mu.file_name}")
+                print(f"  Writing: user/reference/measurement-units/{mu.file_name}")
                 with open(page_path, "w") as f:
                     f.write(page)
         total_files = new_files + changed_files + unmodified_files

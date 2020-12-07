@@ -80,7 +80,8 @@ class ObjectAttr(EmbeddedDocument):
         ("sa.ManagedObject", "container"),
         ("inv.CoveredObject", "object"),
         ("inv.Object", "container"),
-    ]
+    ],
+    delete=[("inv.Sensor", "object")],
 )
 class Object(Document):
     """
@@ -213,6 +214,8 @@ class Object(Document):
                     old_pop.update_pop_links()
                 if new_pop:
                     new_pop.update_pop_links()
+        if self.model.sensors:
+            self._sync_sensors()
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self) -> List[str]:
@@ -787,6 +790,15 @@ class Object(Document):
 
     def reset_connection_interface(self, name):
         self.connections = [c for c in self.connections if c.name != name]
+
+    def _sync_sensors(self):
+        """
+        Synchronize sensors
+        :return:
+        """
+        from .sensor import Sensor
+
+        Sensor.sync_object(self)
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

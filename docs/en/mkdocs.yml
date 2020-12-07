@@ -45,6 +45,8 @@ nav:
               - Remote System: user/reference/concepts/remote-system/index.md
               - Resource Group: user/reference/concepts/resource-group/index.md
               - SA Profile: user/reference/concepts/sa-profile/index.md
+              - Sensor: user/reference/concepts/sensor/index.md
+              - Sensor Profile: user/reference/concepts/sensor-profile/index.md
               - Service: user/reference/concepts/service/index.md
               - Service Profile: user/reference/concepts/service-profile/index.md
               - Subscriber: user/reference/concepts/subscriber/index.md
@@ -1097,16 +1099,16 @@ nav:
                                   - "Service Down": user/reference/event-classes/vendor/f5/bigip/network/load-balance/service-down.md
                                   - "Service Up": user/reference/event-classes/vendor/f5/bigip/network/load-balance/service-up.md
           - Measurement Units:
-              - Overview: user/reference/measurementunits/index.md
-              - Ampere: user/reference/measurementunits/ampere.md
-              - Celsius: user/reference/measurementunits/celsius.md
-              - Hertz: user/reference/measurementunits/hertz.md
-              - Meter: user/reference/measurementunits/meter.md
-              - RPM: user/reference/measurementunits/rpm.md
-              - Second: user/reference/measurementunits/second.md
-              - Volt AC: user/reference/measurementunits/volt-ac.md
-              - Volt DC: user/reference/measurementunits/volt-dc.md
-              - Watt: user/reference/measurementunits/watt.md
+              - Overview: user/reference/measurement-units/index.md
+              - Ampere: user/reference/measurement-units/ampere.md
+              - Celsius: user/reference/measurement-units/celsius.md
+              - Hertz: user/reference/measurement-units/hertz.md
+              - Meter: user/reference/measurement-units/meter.md
+              - RPM: user/reference/measurement-units/rpm.md
+              - Second: user/reference/measurement-units/second.md
+              - Volt AC: user/reference/measurement-units/volt-ac.md
+              - Volt DC: user/reference/measurement-units/volt-dc.md
+              - Watt: user/reference/measurement-units/watt.md
           - Metrics:
               - Metric Scopes:
                   - Overview: user/reference/metrics/scopes/index.md

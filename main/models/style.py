@@ -28,6 +28,7 @@ id_lock = Lock()
         ("crm.SupplierProfile", "style"),
         ("sla.SLAProfile", "style"),
         ("inv.NetworkSegmentProfile", "style"),
+        ("inv.SensorProfile", "style"),
         ("ip.Address", "style"),
         ("ip.AddressProfile", "style"),
         ("ip.PrefixProfile", "style"),
