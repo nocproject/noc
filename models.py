@@ -176,6 +176,8 @@ _MODELS = {
     "inv.ObjectLog": "noc.inv.models.objectlog.ObjectLog",
     "inv.ObjectModel": "noc.inv.models.objectmodel.ObjectModel",
     "inv.Platform": "noc.inv.models.platform.Platform",
+    "inv.Sensor": "noc.inv.models.sensor.Sensor",
+    "inv.SensorProfile": "noc.inv.models.sensor.SensorProfile",
     "inv.SubInterface": "noc.inv.models.subinterface.SubInterface",
     "inv.Technology": "noc.inv.models.technology.Technology",
     "inv.ResourceGroup": "noc.inv.models.resourcegroup.ResourceGroup",

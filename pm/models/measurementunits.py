@@ -16,6 +16,7 @@ from mongoengine.fields import StringField, IntField, UUIDField, ListField, Embe
 import cachetools
 
 # NOC modules
+from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 
@@ -66,6 +67,7 @@ class EnumValue(EmbeddedDocument):
         return {"key": self.key, "value": self.value}
 
 
+@on_delete_check(check=[("inv.Sensor", "units")])
 class MeasurementUnits(Document):
     meta = {
         "collection": "measurementunits",

@@ -309,7 +309,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             text: __("Modbus Register"),
                             dataIndex: "modbus_register",
                             width: 100,
-                            editor: "number_field"
+                            editor: "numberfield"
                         },
                         {
                             text: __("SNMP OID"),
