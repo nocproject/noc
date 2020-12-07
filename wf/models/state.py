@@ -45,6 +45,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
         ("wf.Transition", "to_state"),
         ("crm.Subscriber", "state"),
         ("crm.Supplier", "state"),
+        ("inv.Sensor", "state"),
         ("ip.Address", "state"),
         ("ip.Prefix", "state"),
         ("ip.VRF", "state"),

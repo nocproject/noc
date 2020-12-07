@@ -131,6 +131,7 @@ logger = logging.getLogger(__name__)
         ("inv.MACDB", "managed_object"),
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
+        ("inv.Sensor", "managed_object"),
         ("sa.ObjectCapabilities", "object"),
     ],
     clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
