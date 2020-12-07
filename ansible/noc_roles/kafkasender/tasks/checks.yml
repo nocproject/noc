@@ -7,3 +7,12 @@
       - has_svc_noc is not defined
     tags:
       - checks
+
+- name: fail if liftbridge is not selected
+  fail:
+    msg: "Kafkasender works only with liftbridge service. Please install at least one"
+  when:
+    - has_svc_kafkasender is defined
+    - "'svc-liftbridge' not in groups"
+  tags:
+    - checks
