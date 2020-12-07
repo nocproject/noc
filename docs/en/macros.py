@@ -32,7 +32,7 @@ def define_env(env):
             scripts = list(
                 sorted(
                     x[:-3]
-                    for x in os.listdir(os.path.join(doc_root, "dev", "scripts"))
+                    for x in os.listdir(os.path.join(doc_root, "dev", "reference", "scripts"))
                     if x.endswith(".md") and not x.startswith(".")
                 )
             )
@@ -49,7 +49,7 @@ def define_env(env):
                 mark = ":material-check:"
             else:
                 mark = ":material-close:"
-            r += [f"[{script}](../../../dev/scripts/{script}.md) | {mark}"]
+            r += [f"[{script}](../../../../dev/reference/scripts/{script}.md) | {mark}"]
         r += [""]
         return "\n".join(r)
 
@@ -75,7 +75,7 @@ def define_env(env):
             r += [
                 "!!! todo",
                 "    Platform collection is not populated still.",
-                "    You may be first to [contribute](../../../howto/sharing-collections/index.md)",
+                "    You may be first to [contribute](../../../../dev/howto/sharing-collections/index.md)",
                 "",
             ]
         return "\n".join(r)

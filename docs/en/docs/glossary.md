@@ -39,10 +39,10 @@ DC {: #dc }
 discovery
 : See :doc:`/reference/discovery`.
 
-FRU {: fru }
+FRU {: #fru }
 : Field Replaceable Unit. Vendor's identification
 
-G.703 {: g-703 }
+G.703 {: #g-703 }
 : [ITU-T G.703 standard](https://en.wikipedia.org/wiki/G.703)
 
 LACP
@@ -121,7 +121,7 @@ PoP
 postgres
 : See :doc:`/reference/postgres`.
 
-RCA
+RCA {: #rca }
 : See [Root-Cause Analysis](#root-cause-analysis)
 
 Root-Cause Analysis {: #root-cause-analysis }
@@ -147,7 +147,7 @@ STP
 : Spanning Tree Protocol
 
 subscriber
-: See [subscriber](reference/concepts/subscriber/index.md)
+: See [subscriber](user/reference/concepts/subscriber/index.md)
 
 Telnet
 : [Telnet](https://en.wikipedia.org/wiki/Telnet) Protocol. Unencrypted [CLI](#cli) protocol
