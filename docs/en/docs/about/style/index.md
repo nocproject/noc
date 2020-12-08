@@ -5,7 +5,23 @@ documentation stored in this repository. The overarching goal of this style guid
 is to provide an accessible base style to ensure that our documentation is easy to read,
 simple to use, and straightforward to maintain.
 
-For information regarding the NOC Manual organization, see [Structure](structure.md).
+## Documentation Structure
+
+Documentation is organized into three sections:
+
+- [User's Guide](../../user/index.md) - intended for NOC end users.
+- [Administrator's Guide](../../admin/index.md) - intended for NOC administrators.
+- [Developer's Guide](../../dev/index.md) - intended for developers who wish
+  to extend NOC's functionality.
+
+Each section is split into four parts:
+
+![Docs Structure](../../doc-structure.svg)
+
+- [Tutorials](tutorials.md) - A hands-on introduction to NOC for users.
+- [How-to Guides](howto.md) - Step-by-step guides. Cover key tasks and operations and common problems.
+- [References](references.md) - Technical references.
+- [Explanations](explanations.md) - Clarification and discussion of key topics.
 
 ## Naming Conventions
 
@@ -80,7 +96,7 @@ Verb tense and mood preferences, with examples:
 ## Referencing
 
 - To refer to future or planned functionality in NOC, always link to the GitLab case.
-  The Manual provides `\{\{ issue(N) \}\}` macro to create a link to the issue.  
+  The Manual provides `\{\{ issue(N) \}\}` macro to create a link to the issue.
 - Use relative Markdown links (`[text](../foo/bar.md)`) to link different parts of document.
 - For non-object references (i.e. functions, operators, methods, database commands, settings)
   always reference only the first occurrence of the reference in a section.
@@ -122,6 +138,7 @@ Verb tense and mood preferences, with examples:
 - Always write out units (e.g. "megabytes") rather than using abbreviations (e.g. "MB".)
 
 ## Structural Formulations
+
 - Each document must have exactly one "h1" (`#`) block at the top of the document
 - There should be at least two headings at every nesting level.
   Within an "h2" (`##`) block, there should be either: no "h3" (`###`) blocks,
@@ -164,7 +181,8 @@ Verb tense and mood preferences, with examples:
   which are reserved for documentation purposes. See [RFC2606](https://tools.ietf.org/html/rfc2606) and [RFC6761](https://tools.ietf.org/html/rfc6761) for more information.
 
 ## Definitions
-Use *deflists* extension to introduce definitions or key-value explanations.
+
+Use _deflists_ extension to introduce definitions or key-value explanations.
 
 <!-- prettier-ignore -->
 !!! example "Example"
@@ -177,7 +195,8 @@ Use *deflists* extension to introduce definitions or key-value explanations.
     ```
 
 ## Examples
-Use *example* admonition to add an example.
+
+Use _example_ admonition to add an example.
 
 <!-- prettier-ignore -->
 !!! example "Example"
@@ -188,7 +207,8 @@ Use *example* admonition to add an example.
     ```
 
 ## Todos
-Use *todo* admonition to denote work in progress
+
+Use _todo_ admonition to denote work in progress
 
 <!-- prettier-ignore -->
 !!! example "Example"
