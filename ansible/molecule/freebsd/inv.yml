@@ -43,6 +43,7 @@ all:
           correlator_loglevel: info
           correlator_max_threads: 10
           correlator_power: 1
+          correlator_backup_power: 1
           datastream_loglevel: info
           datastream_power: 2
           datastream_mode: wait
