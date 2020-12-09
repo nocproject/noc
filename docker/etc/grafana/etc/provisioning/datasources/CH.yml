@@ -1,0 +1,15 @@
+apiVersion: 1
+datasources:
+-  access: 'proxy'                       # make grafana perform the requests
+   editable: false                        # whether it should be editable
+   isDefault: true                      # whether this should be the default DS
+   name: 'ClickHouse'                    # name of the datasource
+   org_id: 1                             # id of the organization to tie this datasource to
+   type: vertamedia-clickhouse-datasource                    # type of the data source
+   url: 'http://clickhouse:8123'         # url of the prom instance
+   version: 3                            # well, versioning
+   basicAuth: true
+   basicAuthUser: 'readonly'                # user in CkickHouse for access to noc db	
+   basicAuthPassword: ''            # password for user "grafana" 
+   #user: readonly
+   #password: ''

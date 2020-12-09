@@ -1,0 +1,1312 @@
+---
+version: "3.0"
+
+volumes:
+  mongo_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-mongo
+      o: bind
+      type: bind
+  postgres_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-postgres
+      o: bind
+      type: bind
+  clickhouse_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-clickhouse/data
+      o: bind
+      type: bind
+  clickhouse_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/etc/clickhouse/etc
+      o: bind
+      type: bind
+  nsq_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-nsq
+      o: bind
+      type: bind
+  redis_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-redis
+      o: bind
+      type: bind
+  consul_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-consul
+      o: bind
+      type: bind
+  nginx_ssl:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-nginx/ssl
+      o: bind
+      type: bind
+  grafana_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/etc/grafana/etc
+      o: bind
+      type: bind
+  grafana_dashboards:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/etc/grafana/dashboards
+      o: bind
+      type: bind
+  grafana_db:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-grafana/db
+      o: bind
+      type: bind
+  grafana_plugins:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-grafana/plugins
+      o: bind
+      type: bind
+  liftbridge_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-liftbridge/etc
+      o: bind
+      type: bind
+  liftbridge_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-liftbridge/data
+      o: bind
+      type: bind
+  noc_custom:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/custom
+      o: bind
+      type: bind
+  noc_etlimport:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/etlimport
+      o: bind
+      type: bind
+  noc_speedup:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/speedup
+      o: bind
+      type: bind
+  noc_code:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/../
+      o: bind
+      type: bind
+  noc_beef:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-noc/beef
+      o: bind
+      type: bind
+
+
+services:
+  ########## NOC Components ##########
+  activator-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: activator-default
+    depends_on:
+      - consul
+      - discovery-default
+    restart: "always"
+    command: /usr/local/bin/python3 /opt/noc/services/activator/service.py
+    mem_limit: 150m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+      - noc_beef:/var/lib/noc/beef
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  bi:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    restart: "always"
+    hostname: bi
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/bi/service.py
+    mem_limit: 100m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: bi
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /api/bi/"
+      traefik.frontend.entryPoints: noc
+
+  card:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: card
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/card/service.py
+    mem_limit: 140m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: card
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /api/card/"
+      traefik.frontend.entryPoints: noc
+
+  chwriter:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: chwriter
+    restart: "always"
+    depends_on:
+      - consul
+      - clickhouse
+      - nsqlookupd
+      - nsqd
+    command: /usr/local/bin/python3 /opt/noc/services/chwriter/service.py
+    mem_limit: 90m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  classifier-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: classifier-default
+    restart: "always"
+    mem_limit: 120m
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/classifier/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  correlator-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: correlator-default
+    restart: "always"
+    mem_limit: 120m
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/correlator/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  datasource:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    restart: "always"
+    hostname: datasource
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/datasource/service.py
+    mem_limit: 300m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  datastream:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    restart: "always"
+    hostname: datastream
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/datastream/service.py
+    mem_limit: 110m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  discovery-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: discovery-default
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/discovery/service.py
+    mem_limit: 150m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  escalator:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: escalator
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/escalator/service.py
+    mem_limit: 90m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  grafanads:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    restart: "always"
+    hostname: grafanads
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/grafanads/service.py
+    mem_limit: 110m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: grafanads
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /api/grafanads/"
+      traefik.frontend.entryPoints: noc
+
+  login:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: login
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/login/service.py
+    mem_limit: 75m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: login
+      traefik.port: 1200
+      traefik.auth.frontend.rule: "PathPrefix: /api/auth/"
+      traefik.login.frontend.rule: "PathPrefix: /api/login/"
+      traefik.frontend.entryPoints: noc
+
+  mailsender:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: mailsender
+    restart: "always"
+    mem_limit: 52m
+    depends_on:
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/mailsender/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  mib:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: mib
+    restart: "always"
+    mem_limit: 100m
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/mib/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  migrate:
+    image: registry.getnoc.com/noc/noc/dev:${NOC_VERSION_TAG}
+    hostname: migrate
+    working_dir: /opt/noc
+    depends_on:
+      consul:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mongodb-repl-set-init:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    command: >
+      sh -c "set -xe
+      && env
+      && /usr/local/bin/python3 ./commands/migrate.py
+      && ./noc ensure-indexes
+      && /usr/local/bin/python3 ./commands/migrate-ch.py
+      && ./noc collection sync
+      && ./noc sync-perm
+      && ./noc sync-mibs
+      && mkdir -p /opt/noc/etc
+      && echo 'cG9vbHM6CiAgZGVmYXVsdDoKICAgIGRlc2NyaXB0aW9uOiBkZWZhdWx0Cg==' \
+      |base64 -d > /opt/noc/etc/noc.yml
+      && cat /opt/noc/etc/noc.yml
+      && /usr/local/bin/python3 ./scripts/deploy/apply-pools
+      "
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+      - .env.proxy
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  mrt:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: mrt
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/mrt/service.py
+    mem_limit: 103m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: mrt
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /api/mrt/"
+      traefik.frontend.entryPoints: noc
+
+  mx:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: mx
+    restart: "always"
+    depends_on:
+      liftbridge:
+        condition: service_started
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/mx/service.py
+    mem_limit: 103m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: mx
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /api/mx/"
+      traefik.frontend.entryPoints: noc
+
+  nbi:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    restart: "always"
+    hostname: nbi
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/nbi/service.py
+    mem_limit: 100m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  noc-code-cythonize:
+    image: registry.getnoc.com/noc/noc/dev:${NOC_VERSION_TAG}
+    restart: "no"
+    hostname: noc-code-cythonize
+    command: >
+      sh -c "set -xe
+        ls /opt/noc/speedup/*.so || apk add --no-cache --virtual .build-deps  \
+        cython \
+        musl-dev \
+        cython-dev \
+        python3-dev \
+        gcc \
+        && /usr/bin/cythonize -i speedup/*.pyx" \
+        && cp /opt/noc/speedup/*.so /opt/nocspeedup \
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_speedup:/opt/nocspeedup:rw
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  kafkasender:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: kafkasender
+    restart: "always"
+    depends_on:
+#      mongo:
+#        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/kafkasender/service.py
+    mem_limit: 103m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  ping-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: ping-default
+    restart: "always"
+    command: /usr/local/bin/python3 /opt/noc/services/ping/service.py
+    privileged: true
+    mem_limit: 50m
+    depends_on:
+      - datastream
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  sae:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    restart: "always"
+    hostname: sae
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/sae/service.py
+    mem_limit: 85m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  scheduler:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: scheduler
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/scheduler/service.py
+    mem_limit: 150m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  selfmon:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: selfmon
+    restart: "always"
+    mem_limit: 110m
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/selfmon/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  syslogcollector-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: syslogcollector-default
+    restart: "always"
+    depends_on:
+      - nsqd
+      - datastream
+    command: /usr/local/bin/python3 /opt/noc/services/syslogcollector/service.py
+    mem_limit: 80m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    ports:
+      - 514:514/udp
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  tgsender:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: tgsender
+    restart: "always"
+    mem_limit: 52m
+    depends_on:
+      - nsqd
+    command: /usr/local/bin/python3 /opt/noc/services/tgsender/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  trapcollector-default:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: trapcollector-default
+    restart: "always"
+    depends_on:
+      - nsqd
+      - datastream
+    command: /usr/local/bin/python3 /opt/noc/services/trapcollector/service.py
+    mem_limit: 80m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    ports:
+      - 162:162/udp
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  web:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: web
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/web/service.py
+    mem_limit: 120m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: web
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /"
+      traefik.frontend.entryPoints: noc
+
+  ########## External Components #########
+  clickhouse:
+    image: yandex/clickhouse-server:${CLICKHOUSE_VERSION_TAG}
+    hostname: clickhouse
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_etc:/etc/clickhouse-server
+    healthcheck:
+      # "clickhouse", "client", "-u ${CLICKHOUSE_USER}", \
+      # "--password ${CLICKHOUSE_PASSWORD}", "-q 'SELECT 1'"
+      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  consul:
+    hostname: consul
+    image: consul:${CONSUL_VERSION_TAG}
+    restart: always
+    ports:
+      - 8500:8500
+    environment:
+      - CONSUL_LOCAL_CONFIG={"disable_update_check":true}
+    entrypoint:
+      - consul
+      - agent
+      - -server
+      - -bootstrap
+      - -data-dir=/data
+      - -bind={{ GetInterfaceIP "eth0" }}
+      - -client=0.0.0.0
+      - -ui
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    volumes:
+      - consul_data:/data
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: consul
+      traefik.port: 8500
+      traefik.frontend.rule: "PathPrefix: /consul"
+      traefik.frontend.entryPoints: noc
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION_TAG}
+    hostname: grafana
+    restart: always
+    env_file:
+      - .env.proxy
+    volumes:
+      - grafana_etc:/etc/grafana
+      - grafana_dashboards:/usr/share/grafana/public/dashboards
+      - grafana_db:/var/lib/grafana
+      - grafana_plugins:/var/lib/grafana/plugins
+    # comment "environment" if node doesn't have access to internet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:3000/api/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    environment:
+      GF_INSTALL_PLUGINS: grafana-simple-json-datasource,
+                          vertamedia-clickhouse-datasource
+
+  liftbridge:
+    image: liftbridge/liftbridge:${LIFTBRIDGE_VERSION_TAG}
+    #image: liftbridge/standalone-dev
+    hostname: liftbridge
+    volumes:
+      - liftbridge_data:/data
+      - liftbridge_etc:/etc/liftbridge
+    depends_on:
+      - nats
+    entrypoint: >
+      liftbridge
+      --config /etc/liftbridge/liftbridge.yml
+      --data-dir=/data
+      --raft-bootstrap-seed
+#    healthcheck:
+#      test: [ "CMD", "wget", "--spider", "-q", "localhost:9292/ping" ]
+#      interval: 10s
+#      timeout: 2s
+#      retries: 3
+#      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  mongo:
+    image: mongo:${MONGO_VERSION_TAG}
+    hostname: mongo
+    command: >
+             --wiredTigerCacheSizeGB 1.5
+             --bind_ip_all
+             --replSet noc
+             --port 27017
+    restart: "no"
+    volumes:
+      - ./etc/mongo/mongo-init.js:/docker-entrypoint-initdb.d/01mongo-init.js
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: noc
+      MONGO_INITDB_ROOT_USERNAME: noc
+      MONGO_INITDB_ROOT_PASSWORD: ${NOC_MONGO_PASSWORD}
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  mongodb-repl-set-init:
+    image: mongo:${MONGO_VERSION_TAG}
+    restart: "no"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./etc/mongo/rs-init.sh:/rs-init.sh
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: noc
+      MONGO_INITDB_ROOT_PASSWORD: ${NOC_MONGO_PASSWORD}
+      MONGO_REPL_SET_NAME: noc
+      MONGO_REPL_SET_HOSTS: mongo
+    entrypoint: sh /rs-init.sh
+    #entrypoint: ["sh", "-c", "cat rs-init.sh"]
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  nats:
+    image: nats:${NATS_VERSION_TAG}
+    hostname: nats
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  nginx_openssl:
+    image: alpine:latest
+    restart: "no"
+    command: >
+      sh -c "set -xe;
+      if [ ! -f /etc/nginx/ssl/noc.crt ]; then
+        apk add --no-cache openssl;
+        openssl req \
+        -newkey rsa:2048 \
+        -nodes \
+        -keyout /etc/nginx/ssl/noc.key \
+        -out /etc/nginx/ssl/noc.crt \
+        -x509 \
+        -days 365 \
+        -subj "/C=US/ST=NOC/L=NOC/O=NOC/OU=NOC/CN=NOC/emailAddress=NOC@NOC";
+      fi
+      "
+    volumes:
+      - nginx_ssl:/etc/nginx/ssl
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  nginx:
+    image: registry.getnoc.com/noc/noc/static:${NOC_VERSION_TAG}
+    hostname: nginx
+    restart: "always"
+    mem_limit: 30m
+    ports:
+      - 443:443
+    depends_on:
+      - nginx_openssl
+      - traefik
+      - grafana
+    volumes:
+      - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx_ssl:/etc/nginx/ssl:ro
+    labels:
+      traefik.enable: false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+
+  nsqd:
+    image: nsqio/nsq:v1.2.0
+    hostname: nsqd
+    depends_on:
+      - nsqlookupd
+    command: >
+             /nsqd
+             --lookupd-tcp-address=nsqlookupd:4160
+             --mem-queue-size=10000
+             --data-path=/data
+             --log-level=${NSQ_LOG_LEVEL}
+    volumes:
+      - nsq_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:4151/ping"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  nsqlookupd:
+    image: nsqio/nsq:v1.2.0
+    hostname: nsqlookupd
+    command: >
+             /nsqlookupd
+             --broadcast-address=nsqlookupd:4160
+             --log-level=${NSQ_LOG_LEVEL}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "localhost:4161/ping"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  postgres:
+    image: postgres:${PG_VERSION_TAG}
+    hostname: postgres
+    restart: "no"
+    environment:
+      POSTGRES_USER: noc
+      POSTGRES_DB: noc
+      POSTGRES_PASSWORD: ${NOC_PG_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # TODO need setup username\passwd for check script
+      test: ["CMD", "su", "-", "postgres", "-c", "psql -U noc -l | grep noc"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  redis:
+    image: redis:5-alpine
+    hostname: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    volumes:
+      - redis_data:/data
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  traefik:
+    image: traefik:1.7-alpine
+    hostname: traefik
+    restart: "always"
+    # depends_on:
+    #  - web
+    # - login
+    #  - card
+    #  - datastream
+    #  - mrt
+    #  - bi
+    #  - grafanads
+    command: >
+      - traefik
+      - --web
+      - --web.metrics.prometheus
+      - --web.metrics.prometheus.buckets="0.1,0.3,1.2,5.0"
+      - --docker
+      - --entryPoints='Name:noc Address::1200'
+      - --accesslog
+    ports:
+      - 8080:8080
+      - 1200:1200
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 3s
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.port: "8080"
+      traefik.backend: manager
+      traefik.frontend.rule: Host:traefik

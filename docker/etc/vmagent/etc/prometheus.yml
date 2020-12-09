@@ -1,0 +1,57 @@
+# my global config
+global:
+
+rule_files:
+
+scrape_configs:
+    # see Readme.md
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['127.0.0.1:9323']
+        labels:
+           env: 'infrastructure'
+
+    # see Readme.md
+  - job_name: 'dockerhost'
+    static_configs:
+      - targets: ['127.0.0.1:9273']
+        labels:
+           env: 'infrastructure'
+
+  - job_name: 'vm'
+    static_configs:
+      - targets: ['vm:8428']
+        labels:
+           env: 'infrastructure'
+
+  - job_name: 'prod_consul'
+    consul_sd_configs:
+      - server: 'consul:8500'
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*,noc,.*
+        action: keep
+      - source_labels: [__meta_consul_service]
+        target_label: job
+      - source_labels: [env]
+        target_label: env
+        replacement: "prod"
+
+  - job_name: 'prommongo'
+    static_configs:
+      - targets: ['prommongo:9104']
+        labels:
+           env: 'prod'
+
+  - job_name: 'ch'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['promclickhouse:9116']
+        labels:
+           env: 'prod'
+
+  - job_name: 'alertmanager'
+    static_configs:
+      - targets: ['alertmanager:9093']
+        labels:
+           env: 'infrastructure'
