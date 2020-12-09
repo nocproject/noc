@@ -1,0 +1,13 @@
+---
+listen: 0.0.0.0:9292
+host: liftbridge
+nats:
+  servers:
+    - nats://nats:4222/
+logging:
+  level: info
+  raft: true
+streams:
+  compact.enabled: true
+  retention.max:
+    age: 24h

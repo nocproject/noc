@@ -1,0 +1,61 @@
+---
+version: "3.0"
+
+volumes:
+  mongo_data_restore:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-mongorestore
+      o: bind
+      type: bind
+  postgres_data_restore:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-postgresrestore
+      o: bind
+      type: bind
+
+services:
+  mongostore:
+    image: mongo:${MONGO_VERSION_TAG}
+    hostname: mongostore
+    command: >
+      sh -c "set -xe
+      && ANAME=/home/mongodb-`date +%Y%m%d-%H-%M`.archive
+      && mongodump --host=mongo -u noc -p noc -d noc --archive=$$ANAME
+      "
+    restart: "no"
+    volumes:
+      - mongo_data_restore:/home
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
+  postgresstore:
+    image: postgres:${PG_VERSION_TAG}
+    hostname: postgresstore
+    command: >
+      sh -c "set -xe
+      && env
+      && echo "-----------------------"
+      && pg_dump -h postgres -U noc -Fc noc > /home/pg-`date +%Y%m%d-%H-%M`.dump
+      "
+    restart: "no"
+    volumes:
+      - postgres_data_restore:/home
+    environment:
+      POSTGRES_USER: noc
+      POSTGRES_DB: noc
+      POSTGRES_PASSWORD: ${NOC_PG_PASSWORD}
+      PGPASSWORD: ${NOC_PG_PASSWORD}
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false

@@ -1,0 +1,315 @@
+---
+version: "3.0"
+
+
+volumes:
+  vmagent_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-vmagent/etc
+      o: bind
+      type: bind
+  vmagent_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-vmagent/data
+      o: bind
+      type: bind
+  vmalert_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-vmalert/etc
+      o: bind
+      type: bind
+  vm_metrics:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-vmmetrics
+      o: bind
+      type: bind
+  promgrafana_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-promgrafana/etc
+      o: bind
+      type: bind
+  promgrafana_db:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-promgrafana/db
+      o: bind
+      type: bind
+  promgrafana_plugins:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-promgrafana/plugins
+      o: bind
+      type: bind
+  promgrafana_dashboards:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-promgrafana/etc/dashboards
+      o: bind
+      type: bind
+  alertmanager_etc:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-alertmanager/etc
+      o: bind
+      type: bind
+  sentryredis_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-sentry/redis
+      o: bind
+      type: bind
+  sentrypostgres_data:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-sentry/pg
+      o: bind
+      type: bind
+
+services:
+  promgrafana:
+    image: grafana/grafana:${GRAFANA_VERSION_TAG}
+    restart: always
+    hostname: prometheusgrafana
+    env_file:
+      - .env.proxy
+    volumes:
+      - promgrafana_etc/:/etc/grafana
+      - promgrafana_db:/var/lib/grafana/
+      - promgrafana_plugins:/var/lib/grafana/plugins
+      - promgrafana_dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3000:3000"
+    depends_on:
+      - vm
+    environment:
+      GF_SERVER_ROOT_URL: https://promgrafana
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_INSTALL_PLUGINS: grafana-simple-json-datasource,
+                          vertamedia-clickhouse-datasource
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  vm:
+    container_name: vm
+    hostname: vm
+    restart: always
+    image: victoriametrics/victoria-metrics:v${VICTORIAMETRICS_VERSION_TAG}
+    env_file:
+      - .env.infra
+    volumes:
+      - vm_metrics:/storage
+    command: >
+        -storageDataPath=/storage
+        -httpListenAddr=:8428
+        -envflag.enable
+        -envflag.COMPOSEPREFIX=vm_
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  vmalert:
+    container_name: vmalert
+    hostname: vmalert
+    restart: always
+    image: victoriametrics/vmalert:v${VICTORIAMETRICS_VERSION_TAG}
+    env_file:
+      - .env.infra
+    volumes:
+      - vmalert_etc:/rules:ro
+    ports:
+      - "8880:8880"
+    command: >
+      -datasource.url=http://vm:8428
+      -notifier.url=http://alertmanager:9093
+      -remoteWrite.url=http://vm:8428
+      -envflag.COMPOSEPREFIX=vmalert_
+      -envflag.enable
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  vmagent:
+    container_name: vmagent
+    hostname: vmagent
+    restart: always
+    image: victoriametrics/vmagent:v${VICTORIAMETRICS_VERSION_TAG}
+    env_file:
+      - .env.infra
+    volumes:
+      - vmagent_etc:/etc/prometheus
+      - vmagent_data:/vmagent-remotewrite-data
+    command: >
+        -promscrape.config=/etc/prometheus/prometheus.yml
+        -envflag.enable
+        -remoteWrite.url=http://vm:8428/api/v1/write
+        -envflag.COMPOSEPREFIX=vmagent_
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  promclickhouse:
+    image: f1yegor/clickhouse-exporter
+    restart: always
+    hostname: promclickhouse
+    command: -scrape_uri=http://default:@clickhouse:8123/
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    restart: always
+    hostname: alertmanager
+    volumes:
+      - alertmanager_etc:/etc/alertmanager
+    ports:
+      - "9093:9093"
+    command: >
+        --config.file=/etc/alertmanager/alertmanager.conf
+        --log.level=info
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  prommongo:
+    image: eses/mongodb_exporter
+    restart: always
+    hostname: prommongo
+    command: >
+        -mongodb.uri=mongodb://noc:$NOC_MONGO_PASSWORD@mongo:27017
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  sentry-redis:
+    image: redis:5-alpine
+    hostname: sentry-redis
+    restart: always
+    volumes:
+      - sentryredis_data:/data
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  sentry-postgres:
+    image: postgres:9.6-alpine
+    hostname: sentry-postgres
+    restart: always
+    env_file:
+      - ${COMPOSEPATH}/var/${COMPOSEPREFIX}-sentry/sentry.env
+    volumes:
+      - sentrypostgres_data:/var/lib/postgresql/data
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  # after firsh start need run
+  # cd $INSTALLPATH && docker-compose exec sentry sentry upgrade
+  # for run migration and setup admin user\passwd
+  sentry:
+    image: sentry:9
+    hostname: sentry
+    restart: always
+    links:
+      - sentry-redis
+      - sentry-postgres
+    command: "sentry run web -w 4"
+    ports:
+      - "9000:9000"
+    env_file:
+      - ${COMPOSEPATH}/var/${COMPOSEPREFIX}-sentry/sentry.env
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+
+  sentry-cron:
+    image: sentry:9
+    hostname: sentry-cron
+    restart: always
+    links:
+      - sentry-redis
+      - sentry-postgres
+    command: "sentry run cron"
+    env_file:
+      - ${COMPOSEPATH}/var/${COMPOSEPREFIX}-sentry/sentry.env
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
+
+  sentry-worker:
+    image: sentry:9
+    hostname: sentry-worker
+    restart: always
+    links:
+      - sentry-redis
+      - sentry-postgres
+    command: "sentry run worker"
+    env_file:
+      - ${COMPOSEPATH}/var/${COMPOSEPREFIX}-sentry/sentry.env
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      - traefik.enable=false
