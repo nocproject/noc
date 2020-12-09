@@ -16,7 +16,7 @@ Field | Type | Description
 --- | --- | ---
 date | Date | Measurement Date
 ts | DateTime | Measurement Timestamp
-path | Array of String {complex} | Measurement Path
+path | Array of String {{ complex }} | Measurement Path
 {{ tab }} `instance` | {{ no }} | 
 {{ tab }} `local_endpoint` | {{ no }} | 
 {{ tab }} `remote_endpoint` | {{ no }} | 

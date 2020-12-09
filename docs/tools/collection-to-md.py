@@ -760,7 +760,7 @@ class CollectionDoc(object):
             ]
             if ms.path:
                 data += [
-                    "path | Array of String {complex} | Measurement Path",
+                    "path | Array of String {{complex}} | Measurement Path",
                 ]
                 data += [f"{tab} `{p.name}` | {p.is_required_mark} | " for p in ms.path]
             for mt in sorted(ms.metric_types, key=operator.attrgetter("field_name")):

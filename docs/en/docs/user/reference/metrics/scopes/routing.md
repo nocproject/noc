@@ -13,7 +13,7 @@ Field | Type | Description
 --- | --- | ---
 date | Date | Measurement Date
 ts | DateTime | Measurement Timestamp
-path | Array of String {complex} | Measurement Path
+path | Array of String {{ complex }} | Measurement Path
 {{ tab }} `vr` | {{ no }} | 
 {{ tab }} `instance` | {{ no }} | 
 [stp_topology_changes](../types/network/stp/topology-changes.md) | UInt32 | [Network \| STP \| Topology Changes](../types/network/stp/topology-changes.md)
