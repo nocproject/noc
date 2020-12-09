@@ -20,6 +20,7 @@ from noc.core.video.resolution import (
     RES_SXGA,
     RES_QUADVGA,
 )
+from noc.core.validators import is_ipv4
 
 RESOLUTION_ALIASES = {
     # "2048x2048": "2048x2048",
@@ -66,7 +67,8 @@ class BDNormalizer(BaseNormalizer):
 
     @match("root", "Time", "NTP", "Server", REST)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name="0", address=".".join(tokens[4:]))
+        if is_ipv4(".".join(tokens[4:])):
+            yield self.make_ntp_server_address(name="0", address=".".join(tokens[4:]))
 
     @match("root", "ImageSource", "I0", "Sensor", "Wdr", ANY)
     def normalize_image_wdr(self, tokens):
