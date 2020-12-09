@@ -490,7 +490,10 @@ class ManagedObjectSelector(NOCModel):
                 % self.filter_description
             ]
         if self.filter_tags:
-            query += ["Match%r" % (("meta", "tags", self.filter_tags),)]
+            query += [
+                "( %s )"
+                % " and ".join("Match%r" % (("meta", "tags", t),) for t in self.filter_tags)
+            ]
         return " and ".join(query)
 
 
