@@ -207,6 +207,8 @@ class MIB(Document):
     @classmethod
     def get_name_and_syntax(cls, oid):
         """
+        Resolve oid to name and syntax
+        :param oid: OID
         :return: (name, syntax)
         """
         oid = OIDAlias.rewrite(oid)
@@ -214,14 +216,12 @@ class MIB(Document):
         rest = []
         while l_oid:
             c_oid = ".".join(l_oid)
-            d = MIBData.objects.filter(oid=c_oid).first()
-            if d:
-                name = d.name
+            name, syntax = MIBData.get_name_and_syntax(c_oid)
+            if name:
                 if rest:
                     name += "." + ".".join(reversed(rest))
-                return MIBAlias.rewrite(name), SyntaxAlias.rewrite(name, d.syntax)
-            else:
-                rest += [l_oid.pop()]
+                return MIBAlias.rewrite(name), SyntaxAlias.rewrite(name, syntax)
+            rest += [l_oid.pop()]
         return oid, None
 
     @classmethod

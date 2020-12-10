@@ -46,12 +46,10 @@ class OIDAlias(Document):
         rest = []
         while l_oid:
             c_oid = ".".join(l_oid)
-            try:
-                a_oid = cls.cache[c_oid]
-                # Found
+            a_oid = cls.cache.get(c_oid)
+            if a_oid is not None:
                 return ".".join(a_oid + rest)
-            except KeyError:
-                rest = [l_oid.pop()] + rest
+            rest.insert(0, l_oid.pop())
         # Not found
         return oid
 
