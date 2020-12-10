@@ -26,7 +26,7 @@ from noc.core.clickhouse.connect import connection
 from noc.core.mac import MAC
 from noc.main.models.pool import Pool
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.sa.interfaces.base import StringParameter
+from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -147,6 +147,7 @@ class ReportMovedMacApplication(ExtApplication):
             "segment": StringParameter(required=False),
             "selector": StringParameter(required=False),
             "interface_profile": StringParameter(required=False),
+            "exclude_serial_change": BooleanParameter(default=False),
             "columns": StringParameter(required=False),
             "o_format": StringParameter(choices=["csv", "csv_zip", "xlsx"]),
         },
@@ -166,7 +167,7 @@ class ReportMovedMacApplication(ExtApplication):
         columns=None,
         o_format=None,
         enable_autowidth=False,
-        exclude_serial_change=True,
+        exclude_serial_change=False,
         **kwargs,
     ):
         def translate_row(row, cmap):
@@ -240,7 +241,11 @@ class ReportMovedMacApplication(ExtApplication):
         serials_changed = {}
         ch = connection()
         for row in ch.execute(
-            DEVICE_MOVED_QUERY % (from_date.date().isoformat(), to_date.date().isoformat())
+            DEVICE_MOVED_QUERY
+            % (
+                from_date.date().isoformat(),
+                (to_date.date() - datetime.timedelta(days=1)).isoformat(),
+            )
         ):
             serials_changed[int(row[0])] = row[1]
         for (
@@ -274,7 +279,7 @@ class ReportMovedMacApplication(ExtApplication):
                         mo_address,
                         mo_adm_domain,
                         event_type,
-                        int(mo) in serials_changed,
+                        _("Yes") if int(mo) in serials_changed else _("No"),
                         MACVendor.get_vendor(mac),
                         mac,
                         datetime.datetime.fromtimestamp(migrate[1]).isoformat(sep=" "),  # TS
