@@ -1503,6 +1503,8 @@ nav:
       - How-to Guides:
           - Overview: dev/howto/index.md
           - How to Share Collections: dev/howto/sharing-collections/index.md
+          - How to Setup black Formatter in PyCharm: dev/howto/setup-black-in-pycharm/index.md
+          - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
       - Background:
           - Overview: dev/background/index.md
       - Reference:
@@ -1654,7 +1656,11 @@ nav:
               - events.POOL: dev/reference/streams/events.md
               - kafkasender: dev/reference/streams/kafkasender.md
               - mx: dev/reference/streams/mx.md
-          - Tools: dev/reference/tools.md
+          - Tools:
+              - Overview: dev/reference/tools/index.md
+              - PyCharm: dev/reference/tools/pycharm.md
+              - black: dev/reference/tools/black.md
+              - flake8: dev/reference/tools/flake8.md
   - About:
       - Overview: about/index.md
       - License: license.md

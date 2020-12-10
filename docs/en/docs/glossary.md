@@ -45,6 +45,9 @@ FRU {: #fru }
 G.703 {: #g-703 }
 : [ITU-T G.703 standard](https://en.wikipedia.org/wiki/G.703)
 
+IDE {: #ide }
+: Integrated Developer Environment.
+
 LACP
 <!-- prettier-ignore -->
 !!! todo
