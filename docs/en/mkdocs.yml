@@ -1659,6 +1659,7 @@ nav:
       - Overview: about/index.md
       - License: license.md
       - Contributing: about/contributing.md
+      - Translations: about/translations.md
       - Style Guide:
           - Overview: about/style/index.md
           - Tutorials: about/style/tutorials.md
