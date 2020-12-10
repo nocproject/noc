@@ -29,6 +29,7 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB
+from noc.fm.models.mibdata import MIBData
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface
@@ -140,6 +141,8 @@ class ClassifierService(TornadoService):
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
+        # Heat up MIB cache
+        MIBData.preload()
         self.slot_number, self.total_slots = await self.acquire_slot()
         await self.subscribe_stream("events.%s" % config.pool, self.slot_number, self.on_event)
         report_callback = PeriodicCallback(self.report, 1000)
