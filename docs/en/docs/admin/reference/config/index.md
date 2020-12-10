@@ -189,7 +189,7 @@ URL format:
 legacy://<path>
 ```
 
-where _<path>_ is YAML file absolute path.
+where `<path>` is YAML file absolute path.
 
 Examples:
 
