@@ -39,6 +39,7 @@ from noc.core.escape import fm_unescape
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.patternset import PatternSet
+from noc.services.classifier.dedup import DedupFilter
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
@@ -119,6 +120,7 @@ class ClassifierService(TornadoService):
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
+        self.dedup_filter = DedupFilter()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Reporting
@@ -462,6 +464,8 @@ class ClassifierService(TornadoService):
         # Activate event
         event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
         event.save()
+        # Fill deduplication filter
+        self.dedup_filter.register(event)
         # Call handlers
         if self.call_event_handlers(event):
             return
@@ -500,7 +504,7 @@ class ClassifierService(TornadoService):
         )
         metrics[CR_DISPOSED] += 1
 
-    def deduplicate_event(self, event):
+    def deduplicate_event(self, event: ActiveEvent) -> bool:
         """
         Deduplicate event when necessary
         :param event:
@@ -510,30 +514,19 @@ class ClassifierService(TornadoService):
         dw = event.event_class.deduplication_window
         if not dw:
             return False  # No deduplication for event class
-        t0 = event.timestamp - datetime.timedelta(seconds=dw)
-        q = {
-            "managed_object": event.managed_object.id,
-            "timestamp__gte": t0,
-            "timestamp__lte": event.timestamp,
-            "event_class": event.event_class.id,
-            "id__ne": event.id,
-        }
-        for v in event.vars:
-            q["vars__%s" % v] = event.vars[v]
-        de = ActiveEvent.objects.filter(**q).first()
-        if de:
-            self.logger.info(
-                "[%s|%s|%s] Duplicates event %s. Discarding",
-                event.id,
-                event.managed_object.name,
-                event.managed_object.address,
-                de.id,
-            )
-            de.log_message("Duplicated event %s has been discarded" % event.id)
-            metrics[CR_DUPLICATED] += 1
-            return True
-        else:
+        de_id = self.dedup_filter.find_duplicated(event)
+        if not de_id:
             return False
+        self.logger.info(
+            "[%s|%s|%s] Duplicates event %s. Discarding",
+            event.id,
+            event.managed_object.name,
+            event.managed_object.address,
+            de_id,
+        )
+        # de.log_message("Duplicated event %s has been discarded" % event.id)
+        metrics[CR_DUPLICATED] += 1
+        return True
 
     def suppress_repeats(self, event):
         """
