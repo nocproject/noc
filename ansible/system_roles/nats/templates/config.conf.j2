@@ -6,14 +6,13 @@ http_port: 4300
 
 server_name: {{ inventory_hostname }}
 logtime: true
-#log_file: {{ nats_log_path }}/nats.log
 {% if nats_loglevel is defined and nats_loglevel == "debug" %}
 debug: true
 {% endif %}
 syslog: true
 pid_file: {{ nats_pid_path }}
-#port_file_dir: {{ nats_data_path }}
 
+max_payload: 6Mb
 cluster: {
     host: {{ ansible_host }}
     port: {{ nats_cluster_port }}
