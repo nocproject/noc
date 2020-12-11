@@ -40,14 +40,15 @@ class Script(BaseScript):
             mac = self.snmp.get("1.3.6.1.4.1.27514.103.0.4.0")
         else:
             for ifindex in self.profile.LIGHT_PORT_TYPE.keys():
-                print(ifindex)
                 s_status = 0
                 status = self.snmp.get("1.3.6.1.4.1.27514.102.0.%s" % ifindex)
-                if ifindex in [5, 6] and status == 1:
+                if ifindex in [5, 6, 7, 8, 9, 10] and status == 1:
                     s_status = 1
-                elif ifindex in [9, 10] and -55 < status < 600:
+                elif ifindex in [13, 14] and -55 < status < 600:
                     s_status = 1
-                elif ifindex == 16 and status > 0:
+                elif ifindex == 12 and status > 0:
+                    s_status = 1
+                elif ifindex == 29 and int(status) > 0:
                     s_status = 1
                 interfaces += [
                     {

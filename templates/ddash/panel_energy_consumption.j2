@@ -3,7 +3,7 @@
   "datasource": null,
   "type": "stat",
   "title": "{{ port.name }} {{ port.profile }}",
-  "id": {{lindex + 1130000}},
+  "id": 1561422825611,
   "span": 3,
   "timeFrom": null,
   "timeShift": null,
@@ -14,47 +14,26 @@
     "fieldOptions": {
       "values": false,
       "calcs": [
-        "last"
+        "lastNotNull"
       ],
       "defaults": {
         "thresholds": {
           "mode": "absolute",
           "steps": [
             {
-              "color": "dark-green",
+              "color": "blue",
               "value": null
-            },
-            {
-              "color": "dark-red",
-              "value": 1
             }
           ]
         },
-        "mappings": [
-          {
-            "id": 1,
-            "operator": "",
-            "value": "1",
-            "text": "{{ port.name }} Power Off ",
-            "type": 1,
-            "from": "",
-            "to": ""
-          },
-          {
-            "id": 2,
-            "operator": "",
-            "value": "0",
-            "text": "{{ port.name }} Power On",
-            "type": 1,
-            "from": "",
-            "to": ""
-          }
-        ],
-        "unit": "none"
+        "mappings": [],
+        "unit": "kWh",
+        "nullValueMode": "connected",
+        "decimals": 2
       },
       "overrides": []
     },
-    "orientation": "auto"
+    "orientation": "horizontal"
   },
   "pluginVersion": "6.7.0",
   "targets": [
@@ -64,7 +43,7 @@
       "dateTimeType": "DATETIME",
       "round": "0s",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, argMax(power_input_status, t) FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{ port.name }}') and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, argMax(energy_consumption, t) FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{ port.name }}') and $timeFilter GROUP BY t ORDER BY t",
       "database": "noc",
       "tableLoading": false,
       "table": "environment",
