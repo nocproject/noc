@@ -1,12 +1,21 @@
-.noc-app-name {
-    margin-left: 8px;
+.app-header-logo {
+    width: 20px;
+    height: 20px;
 }
 
-.noc-spacer {
+.app-header-app-name {
+    margin-left: 1rem;
+}
+
+.app-header__start {
+    display: flex;
+    align-items: center;
+}
+.app-header__middle {
     flex: 1 1 auto;
 }
 
-.noc-toolbar {
-    /*position: fixed;*/
-    /*z-index: 2;*/
+.app-header__end {
+    display: flex;
+    align-items: center;
 }

@@ -1,0 +1,19 @@
+<mat-toolbar color="primary">
+  <div class="app-header__start">
+    <button [style.visibility]="isAuth ? 'visible' : 'hidden'" mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+    <svg class="app-header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+      <path fill="white"
+            d="M120 500 L0 380 H45 V75 A75 75 0 0 1 180 30 L305 197 V120 H259 L380 0 L500 120 H455 V425 A75 75 0 0 1 319 469 L195 302 L195 380 H241 Z" />
+    </svg>
+    <span class="app-header-app-name">NOC</span>
+  </div>
+  <div class="app-header__middle"></div>
+  <div class="app-header__end">
+    <noc-lang-picker lang="{{lang}}" (langSwitchEvent)="langSwitch($event)"></noc-lang-picker>
+    <button [style.visibility]="isAuth ? 'visible' : 'hidden'" mat-icon-button (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
