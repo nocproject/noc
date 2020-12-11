@@ -77,6 +77,12 @@ class UptimeCheck(DiscoveryCheck):
                 "id": str(mo.container.id),
                 "name": mo.container.name,
             }
+        if mo.remote_system and mo.remote_id:
+            data["managed_object"]["remote_system"] = {
+                "id": str(mo.remote_system.id),
+                "name": mo.remote_system.name,
+            }
+            data["managed_object"]["remote_id"] = str(mo.remote_id)
         send_message(
             data,
             message_type="reboot",
