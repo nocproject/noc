@@ -2,8 +2,8 @@
 {
   "datasource": null,
   "type": "stat",
-  "title": "Power Input Status",
-  "id": 121561422823611,
+  "title": "{{ port.name }} Power Input Status",
+  "id": {{lindex + 1130000}},
   "span": 3,
   "timeFrom": null,
   "timeShift": null,
@@ -35,7 +35,7 @@
             "id": 1,
             "operator": "",
             "value": "1",
-            "text": "Power Off",
+            "text": "{{ port.name }} Power Off ",
             "type": 1,
             "from": "",
             "to": ""
@@ -44,7 +44,7 @@
             "id": 2,
             "operator": "",
             "value": "0",
-            "text": "Power On",
+            "text": "{{ port.name }} Power On",
             "type": 1,
             "from": "",
             "to": ""
