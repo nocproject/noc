@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.TAU.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,10 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         self.cli("config")
-        show = self.cli("show")
-        self.cli("exit")
+        try:
+            show = self.cli("show")
+            self.cli("exit")
+        except self.CLISyntaxError:
+            self.cli("exit")
+            show = self.cli("show configuration")
         return self.cleaned_config(show)

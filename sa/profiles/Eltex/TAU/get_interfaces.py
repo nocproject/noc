@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.TAU.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,14 +26,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
 
-    INTERFACE_TYPES = {"local": "loopback", "ethernet": "physical"}  # Loopback
-
-    @classmethod
-    def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES.get(name.lower())
-        return c
-
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         with self.profile.shell(self):
             v = self.cli("ifconfig", cached=True)
@@ -41,34 +34,41 @@ class Script(BaseScript):
                 match = self.rx_sh_int.search(line)
                 if match:
                     ifname = match.group("ifname")
-                    itype = match.group("itype")
-                    iface = {
-                        "type": self.get_interface_type(itype),
+                    sub = {
                         "name": ifname,
+                        "mtu": match.group("mtu"),
                         "admin_status": True,
                         "oper_status": True,
-                        "subinterfaces": [
-                            {
-                                "name": ifname,
-                                "mtu": match.group("mtu"),
-                                "admin_status": True,
-                                "oper_status": True,
-                                "enabled_afi": ["BRIDGE"],
-                            }
-                        ],
+                        "enabled_afi": ["BRIDGE"],
                     }
                     if match.group("ip"):
                         ip_address = match.group("ip")
                         ip_subnet = match.group("mask")
                         ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-                        ip_list = [ip_address]
-                        enabled_afi = []
-                        ip_interfaces = "ipv4_addresses"
-                        enabled_afi += ["IPv4"]
-                        iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
-                        iface["subinterfaces"][0][ip_interfaces] = ip_list
+                        sub["enabled_afi"] = ["IPv4"]
+                        sub["ipv4_addresses"] = [ip_address]
+                    if "." in ifname:
+                        parent, vlan = ifname.split(".")
+                        sub["vlan_ids"] = int(vlan)
+                        found = False
+                        for i in interfaces:
+                            if i["name"] == parent:
+                                i["subinterfaces"] += [sub]
+                                found = True
+                                break
+                        if found:
+                            continue
+                    iface = {
+                        "type": self.profile.get_interface_type(ifname),
+                        "name": ifname,
+                        "mtu": match.group("mtu"),
+                        "admin_status": True,
+                        "oper_status": True,
+                        "subinterfaces": [],
+                    }
                     if match.group("mac"):
                         mac = match.group("mac")
                         iface["mac"] = mac
+                    iface["subinterfaces"] = [sub]
                     interfaces += [iface]
         return [{"interfaces": interfaces}]
