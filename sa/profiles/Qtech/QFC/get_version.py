@@ -19,12 +19,13 @@ class Script(BaseScript):
     def execute_snmp(self):
         try:
             platform = self.snmp.get("1.3.6.1.4.1.27514.102.0.1")
-            oid = 102
+            sn = self.snmp.get("1.3.6.1.4.1.27514.102.0.3")
+            version = self.snmp.get("1.3.6.1.4.1.27514.102.0.2")
         except Exception:
             platform = self.snmp.get("1.3.6.1.4.1.27514.103.0.1")
-            oid = 103
-        version = self.snmp.get("1.3.6.1.4.1.27514.%s.0.2" % oid)
-        sn = self.snmp.get("1.3.6.1.4.1.27514.%s.0.3" % oid)
+            sn = self.snmp.get("1.3.6.1.4.1.27514.103.0.3")
+            version = self.snmp.get("1.3.6.1.4.1.27514.103.0.2")
+
         result = {
             "vendor": "Qtech",
             "version": version,

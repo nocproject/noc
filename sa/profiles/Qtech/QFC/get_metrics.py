@@ -35,13 +35,13 @@ class Script(GetMetricsScript):
                     value = 0
             else:
                 status = self.snmp.get("1.3.6.1.4.1.27514.102.0.%s.0" % metric.ifindex)
-                if metric.ifindex in [5, 6, 13] and status == 1:
+                if metric.ifindex in [5, 6, 7, 8, 9, 10] and status == 1:
                     value = 0
-                elif metric.ifindex in [8] and status > 0:
+                elif metric.ifindex in [13, 14] and -55 < status < 600:
                     value = 0
-                elif metric.ifindex in [9, 10] and -55 < status < 600:
+                elif metric.ifindex == 12 and status > 0:
                     value = 0
-                elif metric.ifindex in [16] and status > 0:
+                elif metric.ifindex == 29 and int(status) > 0:
                     value = 0
             self.set_metric(
                 id=("Environment | Sensor Status", metric.path),
@@ -91,10 +91,12 @@ class Script(GetMetricsScript):
             if self.is_lite:
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.28.0")
             else:
-                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.17")
+                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.21")
             if is_float(value) or is_int(value):
                 self.set_metric(
-                    id=("Environment | Electric Current", metric.path), value=value, scale=scale(10)
+                    id=("Environment | Electric Current", metric.path),
+                    value=value,
+                    scale=scale(0.01),
                 )
 
     @metrics(["Environment | Energy Consumption"], volatile=False, access="S")  # SNMP version
@@ -103,7 +105,7 @@ class Script(GetMetricsScript):
             if self.is_lite:
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.30.0")
             else:
-                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.19")
+                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.24")
             self.set_metric(
                 id=("Environment | Energy Consumption", metric.path),
                 value=value,
@@ -116,7 +118,7 @@ class Script(GetMetricsScript):
             if self.is_lite:
                 value = self.snmp.get("1.3.6.1.4.1.27514.103.0.29.0")
             else:
-                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.18")
+                value = self.snmp.get("1.3.6.1.4.1.27514.102.0.22")
             if value:
                 self.set_metric(
                     id=("Environment | Power", metric.path),
@@ -136,7 +138,7 @@ class Script(GetMetricsScript):
                         value = 0
             else:
                 if "220" in metric.path[3]:
-                    res = self.snmp.get("1.3.6.1.4.1.27514.102.0.8")
+                    res = self.snmp.get("1.3.6.1.4.1.27514.102.0.12")
                     if res != 0:
                         value = 0
             self.set_metric(id=("Environment | Power | Input | Status", metric.path), value=value)
