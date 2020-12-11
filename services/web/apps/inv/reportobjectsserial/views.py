@@ -92,15 +92,15 @@ class ReportFilterApplication(SimpleReport):
             platform = Platform.get_by_id(mo["platform"]) if mo.get("platform") else None
             vendor = Vendor.get_by_id(mo["vendor"]) if mo.get("vendor") else None
             version = Firmware.get_by_id(mo["version"]) if mo.get("version") else None
-            sn, hw = ra[mo["id"]][:2]
+            sn, hw = ra[mo["id"]][:2] if mo["id"] in ra else (None, None)
             if mo["id"] in objects_serials:
                 sn = objects_serials[mo["id"]]
             data += [
                 [
                     mo["name"],
                     mo["address"],
-                    vendor or None,
-                    platform.full_name,
+                    vendor,
+                    platform,
                     hw,
                     version,
                     sn,
