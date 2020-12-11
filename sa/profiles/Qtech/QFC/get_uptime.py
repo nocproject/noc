@@ -23,7 +23,7 @@ class Script(BaseScript):
     def check_oid(self):
         if self.is_lite:
             return "103.0.12.0"
-        return "102.0.15.0"
+        return "102.0.19.0"
 
     def execute(self):
         if self.has_snmp():
