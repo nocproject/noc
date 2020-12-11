@@ -90,6 +90,10 @@
                             {% from "panel_pulse.j2" import sensors -%}
                             {{sensors(sensor, loop.index)}},
                       {% endif %}
+                      {% if "energy_consumption" in sensor.metrics %}
+                            {% from "panel_energy_consumption.j2" import sensors -%}
+                            {{sensors(sensor, loop.index)}},
+                      {% endif %}
                   {%- endfor %}
               {% endif %}
               ]
@@ -132,7 +136,7 @@
                                     {% from "graph_sensor_temperature.j2" import sensors -%}
                                   {{sensors(sensor, loop.index)}},
                                 {% endif %}
-                                {% if "power" in sensor.metrics %}
+                                {% if "power_consume" in sensor.metrics %}
                                     {% from "graph_sensor_power.j2" import sensors -%}
                                   {{sensors(sensor, loop.index)}},
                                 {% endif %}
