@@ -19,30 +19,34 @@ Profile-Id
 
 Message contains JSON with following fields:
 
-| Name                            | Type                 | Description                                                       |
-| ------------------------------- | -------------------- | ----------------------------------------------------------------- |
-| ts                              | DateTime             | ISO 8601 timestamp (i.e. YYYY-MM-DDTHH:MM:SS) of estimated reboot |
-| managed_object                  | Object {{ complex }} | Managed Object details                                            |
-| {{ tab }} id                    | String               | Managed Object's ID                                               |
-| {{ tab }} name                  | String               | Managed Object's name                                             |
-| {{ tab }} bi_id                 | Integer              | Managed Object's BI ID                                            |
-| {{ tab }} address               | String               | Managed Object's management address                               |
-| {{ tab }} pool"                 | String               | Managed Object's pool name                                        |
-| {{ tab }} profile               | String               | SA Profile Name                                                   |
-| {{ tab }} object_profile        | Object {{ complex }} | Managed Object's Profile Details                                  |
-| {{ tab2 }} id                   | String               | Managed Object Profile's ID                                       |
-| {{ tab2 }} name                 | String               | Managed Object Profile's name                                     |
-| {{ tab }} vendor                | String               | Vendor name                                                       |
-| {{ tab }} platform              | String               | Platform name                                                     |
-| {{ tab }} version               | String               | Firmware version                                                  |
-| {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details                                     |
-| {{ tab2 }} id                   | String               | Administrative Domain's ID                                        |
-| {{ tab2 }} name                 | String               | Administrative Domain's name                                      |
-| {{ tab }} segment               | Object {{ complex }} | Network Segment details                                           |
-| {{ tab2 }} id                   | String               | Network Segment's ID                                              |
-| {{ tab2 }} name                 | String               | Network Segment's name                                            |
-| {{ tab }} x                     | Float                | Map coordinates, longitude                                        |
-| {{ tab }} x                     | Float                | Map coordinates, latitude                                         |
-| {{ tab }} container             | Object {{ complex }} | Object Container details                                          |
-| {{ tab2 }} id                   | String               | Object Container's ID                                             |
-| {{ tab2 }} name                 | String               | Object Container's name                                           |
+| Name                            | Type                 | Description                                                                   |
+| ------------------------------- | -------------------- | ----------------------------------------------------------------------------- |
+| ts                              | DateTime             | ISO 8601 timestamp (i.e. YYYY-MM-DDTHH:MM:SS) of estimated reboot             |
+| managed_object                  | Object {{ complex }} | Managed Object details                                                        |
+| {{ tab }} id                    | String               | Managed Object's ID                                                           |
+| {{ tab }} remote_system         | Object {{ complex }} | Source [remote system](../concepts/remote-system/index.md) for Managed Object |
+| {{ tab2 }} id                   | String               | External system's id                                                          |
+| {{ tab2 }} name                 | String               | External system's name                                                        |
+| {{ tab }} remote_id             | String               | External system's id (Opaque attribbute)                                      |
+| {{ tab }} name                  | String               | Managed Object's name                                                         |
+| {{ tab }} bi_id                 | Integer              | Managed Object's BI ID                                                        |
+| {{ tab }} address               | String               | Managed Object's management address                                           |
+| {{ tab }} pool                  | String               | Managed Object's pool name                                                    |
+| {{ tab }} profile               | String               | SA Profile Name                                                               |
+| {{ tab }} object_profile        | Object {{ complex }} | Managed Object's Profile Details                                              |
+| {{ tab2 }} id                   | String               | Managed Object Profile's ID                                                   |
+| {{ tab2 }} name                 | String               | Managed Object Profile's name                                                 |
+| {{ tab }} vendor                | String               | Vendor name                                                                   |
+| {{ tab }} platform              | String               | Platform name                                                                 |
+| {{ tab }} version               | String               | Firmware version                                                              |
+| {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details                                                 |
+| {{ tab2 }} id                   | String               | Administrative Domain's ID                                                    |
+| {{ tab2 }} name                 | String               | Administrative Domain's name                                                  |
+| {{ tab }} segment               | Object {{ complex }} | Network Segment details                                                       |
+| {{ tab2 }} id                   | String               | Network Segment's ID                                                          |
+| {{ tab2 }} name                 | String               | Network Segment's name                                                        |
+| {{ tab }} x                     | Float                | Map coordinates, longitude                                                    |
+| {{ tab }} x                     | Float                | Map coordinates, latitude                                                     |
+| {{ tab }} container             | Object {{ complex }} | Object Container details                                                      |
+| {{ tab2 }} id                   | String               | Object Container's ID                                                         |
+| {{ tab2 }} name                 | String               | Object Container's name                                                       |
