@@ -9,21 +9,27 @@
             "name": "farm",
             "description": "SLB server farm name",
             "type": "str",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "real",
             "description": "Real IP",
             "type": "ip_address",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "state",
             "description": "Real state",
             "type": "str",
-            "required": true
+            "required": true,
+            "match_suppress": true
         }
     ],
+    "deduplication_window": 3,
+    "suppression_window": 15,
+    "ttl": 86400,
     "subject_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
     "body_template": "Real {{real}} on SLB server farm {{farm}} has changed state to {{state}}",
     "symptoms": "",
@@ -35,21 +41,6 @@
             "condition": "True",
             "action": "clear",
             "alarm_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded"
-        }
-    ],
-    "repeat_suppression": [
-        {
-            "name": "Workaround for console flood",
-            "condition": "True",
-            "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate",
-            "match_condition": {
-                "vars__state": "vars['state']",
-                "vars__farm": "vars['farm']",
-                "vars__real": "vars['real']",
-                "managed_object": "event.managed_object.id"
-            },
-            "window": 15,
-            "suppress": true
         }
     ]
 }

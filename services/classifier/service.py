@@ -40,7 +40,8 @@ from noc.core.escape import fm_unescape
 from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.patternset import PatternSet
-from noc.services.classifier.dedup import DedupFilter
+from noc.services.classifier.evfilter.dedup import DedupFilter
+from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
@@ -116,12 +117,12 @@ class ClassifierService(TornadoService):
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
-        self.suppression = {}  # event_class_id -> (condition, suppress)
         self.alter_handlers = []
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
         self.dedup_filter = DedupFilter()
+        self.suppress_filter = SuppressFilter()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Reporting
@@ -140,7 +141,6 @@ class ClassifierService(TornadoService):
         self.ruleset.load()
         self.patternset.load()
         self.load_triggers()
-        self.load_suppression()
         self.load_link_action()
         self.load_handlers()
         # Heat up MIB cache
@@ -188,68 +188,6 @@ class ClassifierService(TornadoService):
                         self.logger.debug("    %s", c_name)
             n += 1
         self.logger.info("%d triggers has been loaded to %d classes", n, cn)
-
-    def load_suppression(self):
-        """
-        Load suppression rules
-        """
-
-        def compile_rule(s):
-            """
-            Compile suppression rule
-            """
-            x = [
-                "'timestamp__gte': event.timestamp - datetime.timedelta(seconds=%d)" % s["window"],
-                "'timestamp__lte': event.timestamp + datetime.timedelta(seconds=%d)" % s["window"],
-            ]
-            if len(s["event_class"]) == 1:
-                x += ["'event_class': ObjectId('%s')" % s["event_class"][0]]
-            else:
-                x += [
-                    "'event_class__in: [%s]"
-                    % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])
-                ]
-            for k, v in s["match_condition"].items():
-                x += ["'%s': %s" % (k, v)]
-            return compile("{%s}" % ", ".join(x), "<string>", "eval")
-
-        self.logger.info("Loading suppression rules")
-        self.suppression = {}
-        for c in EventClass.objects.filter(repeat_suppression__exists=True):
-            # Read event class rules
-            suppression = []
-            for r in c.repeat_suppression:
-                to_skip = False
-                for s in suppression:
-                    if (
-                        s["condition"] == r.condition
-                        and s["window"] == r.window
-                        and s["suppress"] == r.suppress
-                        and s["match_condition"] == r.match_condition
-                        and r.event_class.id not in s["event_class"]
-                    ):
-                        s["event_class"] += [r.event_class.id]
-                        s["name"] += ", " + r.name
-                        to_skip = True
-                        break
-                if to_skip:
-                    continue
-                suppression += [
-                    {
-                        "name": r.name,
-                        "condition": r.condition,
-                        "window": r.window,
-                        "suppress": r.suppress,
-                        "match_condition": r.match_condition,
-                        "event_class": [r.event_class.id],
-                    }
-                ]
-            # Compile suppression rules
-            self.suppression[c.id] = [
-                (compile_rule(s), "%s::%s" % (c.name, s["name"]), s["suppress"])
-                for s in suppression
-            ]
-        self.logger.info("Suppression rules are loaded")
 
     def load_link_action(self):
         self.default_link_action = None
@@ -316,31 +254,6 @@ class ClassifierService(TornadoService):
         for e in FailedEvent.objects.filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
-
-    def to_suppress(self, event, vars):
-        """
-        Check wrether event must be suppressed
-
-        :returns: (bool, rule name, event)
-        """
-        ts = event.timestamp
-        n_delta = None
-        nearest = None
-        n_name = None
-        n_suppress = False
-        for r, name, suppress in self.suppression[event.event_class.id]:
-            q = eval(
-                r, {}, {"event": event, "ObjectId": ObjectId, "datetime": datetime, "vars": vars}
-            )
-            e = ActiveEvent.objects.filter(**q).order_by("-timestamp").first()
-            if e:
-                d = ts - e.timestamp
-                if n_delta is None or d < n_delta:
-                    n_delta = d
-                    nearest = e
-                    n_name = name
-                    n_suppress = suppress
-        return n_suppress, n_name, nearest
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
@@ -469,6 +382,8 @@ class ClassifierService(TornadoService):
         event.save()
         # Fill deduplication filter
         self.dedup_filter.register(event)
+        # Fill suppress filter
+        self.suppress_filter.register(event)
         # Call handlers
         if self.call_event_handlers(event):
             return
@@ -514,10 +429,7 @@ class ClassifierService(TornadoService):
         :param vars:
         :return: True, if event is duplication of existent one
         """
-        dw = event.event_class.deduplication_window
-        if not dw:
-            return False  # No deduplication for event class
-        de_id = self.dedup_filter.find_duplicated(event)
+        de_id = self.dedup_filter.find(event)
         if not de_id:
             return False
         self.logger.info(
@@ -531,31 +443,28 @@ class ClassifierService(TornadoService):
         metrics[CR_DUPLICATED] += 1
         return True
 
-    def suppress_repeats(self, event):
+    def suppress_repeats(self, event: ActiveEvent) -> bool:
         """
         Suppress repeated events
         :param event:
         :param vars:
         :return:
         """
-        if event.event_class.id not in self.suppression:
+        se_id = self.suppress_filter.find(event)
+        if not se_id:
             return False
-        suppress, name, nearest = self.to_suppress(event, event.vars)
-        if suppress:
-            self.logger.info(
-                "[%s|%s|%s] Suppressed by rule %s",
-                event.id,
-                event.managed_object.name,
-                event.managed_object.address,
-                name,
-            )
-            # Update suppressing event
-            nearest.log_suppression(event.timestamp)
-            # Delete suppressed event
-            metrics[CR_SUPPRESSED] += 1
-            return True
-        else:
-            return False
+        self.logger.info(
+            "[%s|%s|%s] Suppressed by event %s",
+            event.id,
+            event.managed_object.name,
+            event.managed_object.address,
+            se_id,
+        )
+        # Update suppressing event
+        ActiveEvent.log_suppression(se_id, event.timestamp)
+        # Delete suppressed event
+        metrics[CR_SUPPRESSED] += 1
+        return True
 
     def call_event_handlers(self, event):
         """

@@ -62,6 +62,7 @@ class EventClassVar(EmbeddedDocument):
         ],
     )
     required = BooleanField(required=True)
+    match_suppress = BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -72,6 +73,7 @@ class EventClassVar(EmbeddedDocument):
             and self.description == other.description
             and self.type == other.type
             and self.required == other.required
+            and self.match_suppress == other.match_suppress
         )
 
 
@@ -163,29 +165,6 @@ class EventDispositionRule(EmbeddedDocument):
         return True
 
 
-class EventSuppressionRule(EmbeddedDocument):
-    meta = {"strict": False}
-    name = StringField()
-    condition = StringField(required=True, default="True")
-    event_class = PlainReferenceField("fm.EventClass", required=True)
-    match_condition = DictField(required=True, default={})
-    window = IntField(required=True, default=3600)
-    suppress = BooleanField(required=True, default=True)
-
-    def __str__(self):
-        return self.name
-
-    def __eq__(self, other):
-        return (
-            self.name == other.name
-            and self.condition == other.condition
-            and self.event_class.id == other.event_class.id
-            and self.match_condition == other.match_condition
-            and self.window == other.window
-            and self.suppress == other.suppress
-        )
-
-
 class EventPlugin(EmbeddedDocument):
     meta = {"strict": False}
 
@@ -256,10 +235,12 @@ class EventClass(Document):
     recommended_actions = StringField()
 
     disposition = ListField(EmbeddedDocumentField(EventDispositionRule))
-    repeat_suppression = ListField(EmbeddedDocumentField(EventSuppressionRule))
     # Window to suppress duplicated events (in seconds)
     # 0 means no deduplication
     deduplication_window = IntField(default=3)
+    # Window to suppress repeated events (in seconds)
+    # 0 means no suppression
+    suppression_window = IntField(default=0)
     # Time to live in active window, unless not belonging to any alarm
     # (in seconds)
     ttl = IntField(default=86400)
@@ -334,7 +315,8 @@ class EventClass(Document):
             vd += ['            "name": "%s",' % q(v.name)]
             vd += ['            "description": "%s",' % q(v.description)]
             vd += ['            "type": "%s",' % q(v.type)]
-            vd += ['            "required": %s' % q(v.required)]
+            vd += ['            "required": %s,' % q(v.required)]
+            vd += ['            "match_suppress": %s' % q(v.required)]
             vd += ["        }"]
             vars += ["\n".join(vd)]
         r += ['    "vars": [']
@@ -343,6 +325,7 @@ class EventClass(Document):
         if self.link_event:
             r += ['    "link_event": true,']
         r += ['    "deduplication_window": %d,' % self.deduplication_window]
+        r += ['    "suppression_window": %d,' % self.suppression_window]
         r += ['    "ttl": %d,' % self.ttl]
         # Handlers
         if self.handlers:
@@ -377,26 +360,6 @@ class EventClass(Document):
             #
             if not r[-1].endswith(","):
                 r[-1] += ","
-        r += ['    "repeat_suppression": [']
-        if c.repeat_suppression:
-            rep = []
-            for rs in c.repeat_suppression:
-                ll = ["        {"]
-                lll = ['            "name": "%s",' % q(rs.name)]
-                lll += ['            "condition": "%s",' % q(rs.condition)]
-                lll += ['            "event_class__name": "%s",' % q(rs.event_class.name)]
-                lll += ['            "match_condition": {']
-                llll = []
-                for rsc in rs.match_condition:
-                    llll += ['                "%s": "%s"' % (q(rsc), q(rs.match_condition[rsc]))]
-                lll += [",\n".join(llll) + "\n            },"]
-                lll += ['            "window": %d,' % rs.window]
-                lll += ['            "suppress": %s' % ("true" if rs.suppress else "false")]
-                ll += ["\n".join(lll)]
-                ll += ["        }"]
-                rep += ["\n".join(ll)]
-            r += [",\n".join(rep)]
-        r += ["    ]"]
         # Plugins
         if self.plugins:
             if not r[-1].endswith(","):

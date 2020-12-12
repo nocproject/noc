@@ -22,6 +22,7 @@ from mongoengine.fields import (
     DictField,
     ObjectIdField,
 )
+from bson import ObjectId
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
@@ -176,14 +177,14 @@ class ActiveEvent(Document):
         ]
         self.save()
 
-    def log_suppression(self, timestamp):
+    @classmethod
+    def log_suppression(cls, event_id: ObjectId, timestamp: datetime.datetime):
         """
-        Increate repeat count and update timestamp, if required
+        Increase repeat count and update timestamp, if required
         """
-        self.repeats += 1
-        if timestamp > self.timestamp:
-            self.timestamp = timestamp
-        self.save()
+        ActiveEvent._get_collection().update_one(
+            {"_id": event_id}, {"$inc": {"repeats": 1}, "$set": {"timestamp": timestamp}}
+        )
 
     @property
     def duration(self):

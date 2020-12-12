@@ -9,27 +9,34 @@
             "name": "mac",
             "description": "MAC Address",
             "type": "mac",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "vlan",
             "description": "VLAN",
             "type": "int",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "from_interface",
             "description": "From interface",
             "type": "interface_name",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "to_interface",
             "description": "To interface",
             "type": "interface_name",
-            "required": true
+            "required": true,
+            "match_suppress": true
         }
     ],
+    "deduplication_window": 3,
+    "suppression_window": 160,
+    "ttl": 86400,
     "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
     "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
     "symptoms": "",
@@ -41,19 +48,6 @@
             "condition": "True",
             "action": "raise",
             "alarm_class__name": "Network | MAC | MAC Flap"
-        }
-    ],
-    "repeat_suppression": [
-        {
-            "name": "Workaround for console flood on some Cisco routers",
-            "condition": "True",
-            "event_class__name": "Network | MAC | MAC Flap",
-            "match_condition": {
-                "vars__mac": "vars['mac']",
-                "managed_object": "event.managed_object.id"
-            },
-            "window": 160,
-            "suppress": true
         }
     ]
 }

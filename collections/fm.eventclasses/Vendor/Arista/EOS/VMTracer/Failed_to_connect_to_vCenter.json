@@ -9,9 +9,13 @@
             "name": "reason",
             "description": "Reason",
             "type": "str",
-            "required": false
+            "required": false,
+            "match_suppress": false
         }
     ],
+    "deduplication_window": 3,
+    "suppression_window": 120,
+    "ttl": 86400,
     "subject_template": "Failed to connect to vCenter",
     "body_template": "Failed to connect to vCenter: {{reason}}",
     "symptoms": "",
@@ -23,18 +27,6 @@
             "condition": "True",
             "action": "raise",
             "alarm_class__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter"
-        }
-    ],
-    "repeat_suppression": [
-        {
-            "name": "Suppress repeated messages",
-            "condition": "True",
-            "event_class__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
-            "match_condition": {
-                "managed_object": "event.managed_object.id"
-            },
-            "window": 120,
-            "suppress": true
         }
     ]
 }

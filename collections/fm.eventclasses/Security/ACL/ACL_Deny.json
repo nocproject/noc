@@ -78,7 +78,5 @@
     "body_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} {{src_interface}} {{src_mac}} -> {{dst_ip}}:{{dst_port}} {% if flags %} flags {{flags}}{% endif %}{% if Count %} Count {{count}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": "",
-    "repeat_suppression": [
-    ]
+    "recommended_actions": ""
 }

@@ -80,11 +80,11 @@ Ext.define("NOC.fm.eventclass.Model", {
             name: "handlers"
         },
         {
-            name: "repeat_suppression",
-            type: "auto"
+            name: "deduplication_window",
+            type: "integer"
         },
         {
-            name: "deduplication_window",
+            name: "suppression_window",
             type: "integer"
         },
         {

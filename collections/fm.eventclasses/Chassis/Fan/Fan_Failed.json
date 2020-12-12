@@ -9,9 +9,13 @@
             "name": "name",
             "description": "Fan Name",
             "type": "str",
-            "required": true
+            "required": true,
+            "match_suppress": true
         }
     ],
+    "deduplication_window": 3,
+    "suppression_window": 120,
+    "ttl": 86400,
     "subject_template": "Fan Failed: {{name}}",
     "body_template": "Fan Unit Failed: {{name}}",
     "symptoms": "",
@@ -23,19 +27,6 @@
             "condition": "True",
             "action": "raise",
             "alarm_class__name": "Chassis | Fan | Fan Failed"
-        }
-    ],
-    "repeat_suppression": [
-        {
-            "name": "Suppress repeated events",
-            "condition": "True",
-            "event_class__name": "Chassis | Fan | Fan Failed",
-            "match_condition": {
-                "managed_object": "event.managed_object.id",
-                "vars__name": "vars['name']"
-            },
-            "window": 120,
-            "suppress": true
         }
     ]
 }
