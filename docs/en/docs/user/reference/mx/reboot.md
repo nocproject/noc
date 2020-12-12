@@ -50,3 +50,45 @@ Message contains JSON with following fields:
 | {{ tab }} container             | Object {{ complex }} | Object Container details                                                      |
 | {{ tab2 }} id                   | String               | Object Container's ID                                                         |
 | {{ tab2 }} name                 | String               | Object Container's name                                                       |
+
+## Example
+
+```json
+{
+  "ts": "2020-12-12T13:25:39.263107",
+  "managed_object": {
+    "id": "4352586",
+    "name": "msk-1.sw",
+    "remote_system": {
+      "id": "5717e96fcc044b4498d7e85",
+      "name": "ISP NRI"
+    },
+    "remote_id": "125",
+    "bi_id": "1708151174931250727",
+    "address": "10.5.59.93",
+    "pool": "MSK",
+    "profile": "Qtech.QSW2800",
+    "object_profile": {
+      "id": "52",
+      "name": "msk.sw.default"
+    },
+    "vendor": "Qtech",
+    "platform": "QSW-3500-10T-AC",
+    "version": "8.2.1.108",
+    "administrative_domain": {
+      "id": "3",
+      "name": "Moscow"
+    },
+    "segment": {
+      "id": "5717e96fcc044b4e98d7e853",
+      "name": "Access segment #5"
+    },
+    "x": 37.256,
+    "y": 55.521,
+    "container": {
+      "id": "6baa8d8f1c8440527788b138",
+      "name": "Room #217"
+    }
+  }
+}
+```
