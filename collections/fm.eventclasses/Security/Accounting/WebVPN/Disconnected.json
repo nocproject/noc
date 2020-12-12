@@ -60,7 +60,5 @@
     "body_template": "{{group}} {{user}} {{ip}} {{type}} {{duration}} {{bytes_xmt}} {{bytes_rcv}} {{reason}}",
     "symptoms": "No specific symptoms",
     "probable_causes": "Session terminated",
-    "recommended_actions": "No reaction needed",
-    "repeat_suppression": [
-    ]
+    "recommended_actions": "No reaction needed"
 }

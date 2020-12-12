@@ -182,6 +182,13 @@ Ext.define("NOC.fm.eventclass.Application", {
                                             renderer: NOC.render.Bool
                                         },
                                         {
+                                            text: __("Suppression"),
+                                            dataIndex: "match_suppress",
+                                            width: 50,
+                                            editor: "checkboxfield",
+                                            renderer: NOC.render.Bool
+                                        },
+                                        {
                                             text: __("Description"),
                                             dataIndex: "description",
                                             flex: 1,
@@ -267,57 +274,18 @@ Ext.define("NOC.fm.eventclass.Application", {
                                     allowBlank: false
                                 },
                                 {
+                                    name: "suppression_window",
+                                    xtype: "numberfield",
+                                    uiStyle: "small",
+                                    fieldLabel: __("Suppression Window"),
+                                    allowBlank: false
+                                },
+                                {
                                     name: "ttl",
                                     xtype: "numberfield",
                                     uiStyle: "small",
                                     fieldLabel: __("Event TTL"),
                                     allowBlank: false
-                                },
-                                {
-                                    name: "repeat_suppression",
-                                    xtype: "gridfield",
-                                    fieldLabel: __("Repeat Suppression"),
-                                    columns: [
-                                        {
-                                            text: __("Name"),
-                                            dataIndex: "name",
-                                            width: 150,
-                                            editor: "textfield"
-                                        },
-                                        {
-                                            text: __("Window"),
-                                            dataIndex: "window",
-                                            width: 50,
-                                            editor: "numberfield"
-                                        },
-                                        {
-                                            text: __("Suppress"),
-                                            dataIndex: "suppress",
-                                            width: 50,
-                                            editor: "checkbox",
-                                            renderer: NOC.render.Bool
-                                        },
-                                        {
-                                            text: __("Event Class"),
-                                            dataIndex: "event_class",
-                                            width: 200,
-                                            editor: "fm.eventclass.LookupField",
-                                            renderer: NOC.render.Lookup("event_class")
-                                        },
-                                        {
-                                            text: __("Condition"),
-                                            dataIndex: "condition",
-                                            width: 150,
-                                            editor: "textfield"
-                                        },
-                                        {
-                                            text: __("Match Condition"),
-                                            dataIndex: "match_condition",
-                                            flex: 1,
-                                            editor: "jsonfield",
-                                            renderer: NOC.render.JSON
-                                        }
-                                    ]
                                 }
                             ]
                         },

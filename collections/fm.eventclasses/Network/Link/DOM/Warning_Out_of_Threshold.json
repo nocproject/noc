@@ -9,34 +9,42 @@
             "name": "interface",
             "description": "Physical port",
             "type": "str",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "threshold",
             "description": "Threshold type",
             "type": "str",
-            "required": false
+            "required": false,
+            "match_suppress": false
         },
         {
             "name": "sensor",
             "description": "Measured name",
             "type": "str",
-            "required": false
+            "required": false,
+            "match_suppress": false
         },
         {
             "name": "ovalue",
             "description": "Operating value",
             "type": "str",
-            "required": false
+            "required": false,
+            "match_suppress": false
         },
         {
             "name": "tvalue",
             "description": "Threshold value",
             "type": "str",
-            "required": false
+            "required": false,
+            "match_suppress": false
         }
     ],
     "link_event": true,
+    "deduplication_window": 3,
+    "suppression_window": 900,
+    "ttl": 86400,
     "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}",
     "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
     "symptoms": "Connection lost",
@@ -48,19 +56,6 @@
             "condition": "True",
             "action": "raise",
             "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
-        }
-    ],
-    "repeat_suppression": [
-        {
-            "name": "Warning: Out of Threshold",
-            "condition": "True",
-            "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
-            "match_condition": {
-                "vars__interface": "vars['interface']",
-                "managed_object": "event.managed_object.id"
-            },
-            "window": 900,
-            "suppress": true
         }
     ]
 }

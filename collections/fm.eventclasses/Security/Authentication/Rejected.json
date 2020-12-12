@@ -39,7 +39,5 @@
     "body_template": "Authentication Rejected: {{reason}} {{server}} {{user}} {{ip}}",
     "symptoms": "No specific symptoms",
     "probable_causes": "User successfully logged out. Session terminated",
-    "recommended_actions": "No reaction needed",
-    "repeat_suppression": [
-    ]
+    "recommended_actions": "No reaction needed"
 }

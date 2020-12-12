@@ -42,7 +42,5 @@
     "body_template": "{{group}} {{user}} {{src_ip}} -> {{dst_ip}} {% if dst_ipv6 %} IPv6 address {{dst_ipv6}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": "",
-    "repeat_suppression": [
-    ]
+    "recommended_actions": ""
 }

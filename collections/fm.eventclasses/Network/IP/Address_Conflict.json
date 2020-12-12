@@ -9,21 +9,27 @@
             "name": "ip",
             "description": "Conflicting IP",
             "type": "ip_address",
-            "required": true
+            "required": true,
+            "match_suppress": true
         },
         {
             "name": "mac",
             "description": "MAC",
             "type": "mac",
-            "required": false
+            "required": false,
+            "match_suppress": false
         },
         {
             "name": "interface",
             "description": "Interface",
             "type": "interface_name",
-            "required": false
+            "required": false,
+            "match_suppress": false
         }
     ],
+    "deduplication_window": 3,
+    "suppression_window": 45,
+    "ttl": 86400,
     "subject_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
     "body_template": "Address conflict detected for {{ip}}{% if mac %} MAC: {{mac}}{% endif %}{% if interface %} on {{interface}}{% endif %}",
     "symptoms": "",
@@ -35,19 +41,6 @@
             "condition": "True",
             "action": "raise",
             "alarm_class__name": "Network | IP | Address Conflict"
-        }
-    ],
-    "repeat_suppression": [
-        {
-            "name": "Workaround for console flood on some Cisco routers",
-            "condition": "True",
-            "event_class__name": "Network | IP | Address Conflict",
-            "match_condition": {
-                "managed_object": "event.managed_object.id",
-                "vars__ip": "vars['ip']"
-            },
-            "window": 45,
-            "suppress": true
         }
     ]
 }

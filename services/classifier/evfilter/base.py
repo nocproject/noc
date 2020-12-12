@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# DedupFilter
+# EvFilter
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -15,40 +15,67 @@ from bson import ObjectId
 
 # NOC modules
 from noc.fm.models.activeevent import ActiveEvent
-from noc.core.hash import hash_int, dict_hash_int
 
 NS = 1_000_000_000
 
 
-class DedupFilter(object):
+class BaseEvFilter(object):
+    """
+    BaseEvFilter implements in-memory event filtering basing on hashes.
+
+    `event_hash` method must be implemented in subclasses.
+    `get_window` method must be implemented in subclasses.
+    `register` method assigns event to a filter.
+    `find` method returns matched event_id or None
+    """
+
+    update_deadline: bool = False
+
     def __init__(self):
         self.events: Dict[int, Tuple[int, ObjectId]] = {}
         self.pq: List[Tuple[int, int]] = []
 
     @staticmethod
     def event_hash(event: ActiveEvent) -> int:
-        var_hash = dict_hash_int(event.vars) if event.vars else 0
-        return hash_int(f"{event.managed_object.id}:{event.event_class.id}:{var_hash}")
-
-    def register(self, event: ActiveEvent) -> None:
         """
-        Register event to dedup filter
+        Collapse event to a hash
         :param event:
         :return:
         """
-        dw = event.event_class.deduplication_window
-        if not dw:
+        raise NotImplementedError
+
+    @staticmethod
+    def get_window(event: ActiveEvent) -> int:
+        """
+        Return filter window in seconds or 0, if disabled
+        :param event:
+        :return:
+        """
+        raise NotImplementedError
+
+    def register(self, event: ActiveEvent) -> None:
+        """
+        Register event to filter
+        :param event:
+        :return:
+        """
+        fw = self.get_window(event)
+        if not fw:
             return  # No deduplication for event class
         now = perf_counter_ns()
         eh = self.event_hash(event)
         r = self.events.get(eh)
-        if r and r[0] > now:
+        if r and r[0] > now and not self.update_deadline:
             return  # deadline is not expired still
-        deadline = now + dw * NS
+        deadline = now + fw * NS
         heappush(self.pq, (deadline, eh))
-        self.events[eh] = (deadline, event.id)
+        if r and self.update_deadline:
+            event_id = r[1]  # Preserve original event id
+        else:
+            event_id = event.id
+        self.events[eh] = (deadline, event_id)
 
-    def find_duplicated(self, event: ActiveEvent) -> Optional[ObjectId]:
+    def find(self, event: ActiveEvent) -> Optional[ObjectId]:
         """
         Check if event is duplicated
         :param event:
