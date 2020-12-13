@@ -98,7 +98,7 @@ state, including capabilities, interfaces and topology
 | {{ tab }} model                | Object {{ complex }}          | Inventory model (Object model)                                                                     |
 | {{ tab2 }} id                  | String                        | Inventory model\'s ID                                                                              |
 | {{ tab2 }} name                | String                        | Inventory model\'s name                                                                            |
-| {{ tab2 }} tags                | Array of String               | [Object model's](../../../../dev/reference/objectmodel-tags.md)                                                 |
+| {{ tab2 }} tags                | Array of String               | [Object model's tags](../../../../dev/reference/object-model/tags.md)                              |
 | {{ tab2 }} vendor              | Object {{ complex }}          | Inventory model\'s vendor                                                                          |
 | {{ tab3 }} id                  | String                        | Vendor\'s ID                                                                                       |
 | {{ tab3 }} name                | String                        | Vendor\'s Name                                                                                     |
@@ -112,7 +112,7 @@ state, including capabilities, interfaces and topology
 |                                |                               | &bull; i - inner (nested object)                                                                   |
 |                                |                               | &bull; s - same level (horizontal connection)                                                      |
 | {{ tab2 }} protocols           | Array of String               | List of protocols, supported by slot                                                               |
-|                                |                               | (see [Inventory Protocols](../../../../dev/reference/inventory-protocols.md))                                   |
+|                                |                               | (see [Inventory Protocols](../../../../dev/reference/inventory-protocols.md))                      |
 | {{ tab2 }} interface           | String                        | Optional interface name related to the slot                                                        |
 | {{ tab2 }} slots               | Array of Object {{ complex }} | List of inner slots for `i` direction, same structure as `slots`                                   |
 

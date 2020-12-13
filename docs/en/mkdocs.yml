@@ -56,6 +56,7 @@ nav:
               - Threshold Profile: user/reference/concepts/threshold-profile/index.md
               - User: user/reference/concepts/user/index.md
               - VC Filter: user/reference/concepts/vc-filter/index.md
+              - Vendor: user/reference/concepts/vendor/index.md
               - VLAN: user/reference/concepts/vlan/index.md
               - VLAN Profile: user/reference/concepts/vlan-profile/index.md
               - VPN: user/reference/concepts/vpn/index.md
@@ -1507,6 +1508,7 @@ nav:
           - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
       - Background:
           - Overview: dev/background/index.md
+          - Connection Restrictions: dev/background/connection-restrictions/index.md
       - Reference:
           - Overview: dev/reference/index.md
           - Merge Request Labels: dev/reference/mr-labels.md
@@ -1626,30 +1628,35 @@ nav:
               - Config Filter: dev/reference/handlers/config-filter.md
               - Config Diff Filter: dev/reference/handlers/config-diff-filter.md
               - Window Function: dev/reference/handlers/window-function.md
+          - Object Models:
+              - Overview: dev/reference/object-model/index.md
+              - ObjectModel Tags: dev/reference/object-model/tags.md
           - Model Interfaces:
-              - airflow: dev/reference/modelinterface/airflow.md
-              - asset: dev/reference/modelinterface/asset.md
-              - contacts: dev/reference/modelinterface/contacts.md
-              - container: dev/reference/modelinterface/container.md
-              - cpu: dev/reference/modelinterface/cpu.md
-              - dimensions: dev/reference/modelinterface/dimensions.md
-              - geopoint: dev/reference/modelinterface/geopoint.md
-              - length: dev/reference/modelinterface/length.md
-              - management: dev/reference/modelinterface/management.md
-              - modbus: dev/reference/modelinterface/modbus.md
-              - optical: dev/reference/modelinterface/optical.md
-              - plan: dev/reference/modelinterface/plan.md
-              - pop: dev/reference/modelinterface/pop.md
-              - power: dev/reference/modelinterface/power.md
-              - rack: dev/reference/modelinterface/rack.md
-              - rackmount: dev/reference/modelinterface/rackmount.md
-              - sector: dev/reference/modelinterface/sector.md
-              - splitter: dev/reference/modelinterface/splitter.md
-              - stack: dev/reference/modelinterface/stack.md
-              - twinax: dev/reference/modelinterface/twinax.md
-              - weight: dev/reference/modelinterface/weight.md
+              - Overview: dev/reference/model-interface/index.md
+              - airflow: dev/reference/model-interface/airflow.md
+              - asset: dev/reference/model-interface/asset.md
+              - contacts: dev/reference/model-interface/contacts.md
+              - container: dev/reference/model-interface/container.md
+              - cpu: dev/reference/model-interface/cpu.md
+              - dimensions: dev/reference/model-interface/dimensions.md
+              - geopoint: dev/reference/model-interface/geopoint.md
+              - length: dev/reference/model-interface/length.md
+              - management: dev/reference/model-interface/management.md
+              - modbus: dev/reference/model-interface/modbus.md
+              - optical: dev/reference/model-interface/optical.md
+              - plan: dev/reference/model-interface/plan.md
+              - pop: dev/reference/model-interface/pop.md
+              - power: dev/reference/model-interface/power.md
+              - rack: dev/reference/model-interface/rack.md
+              - rackmount: dev/reference/model-interface/rackmount.md
+              - sector: dev/reference/model-interface/sector.md
+              - splitter: dev/reference/model-interface/splitter.md
+              - stack: dev/reference/model-interface/stack.md
+              - twinax: dev/reference/model-interface/twinax.md
+              - weight: dev/reference/model-interface/weight.md
+          - Connection Types:
+              - Overview: dev/reference/connection-type/index.md
           - Inventory Protocols: dev/reference/inventory-protocols.md
-          - ObjectModel Tags: dev/reference/objectmodel-tags.md
           - Streams:
               - Overview: dev/reference/streams/index.md
               - dispose.POOL: dev/reference/streams/dispose.md
@@ -1797,3 +1804,4 @@ extra:
   "complex": ":material-arrow-down:"
   "yes": ":material-check:"
   "no": ":material-close:"
+  "wbr": "<wbr>"

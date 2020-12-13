@@ -1,7 +1,7 @@
 # ObjectModel Tags
 
-`ObjectModel` may contain additional tags, containing additional
-information about component's capabilities
+[ObjectModel](index.md) may contain tags, providing additional
+information about component's capabilities.
 
 # Common Tags
 
