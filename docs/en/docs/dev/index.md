@@ -1,4 +1,4 @@
-# NOC User's Guide
+# NOC Developer's Guide
 
 <div class="noc-book-index">
     <div class="item">
@@ -24,5 +24,6 @@
 </div>
 
 ## About the NOC
+
 NOC is the scalable, high-performance Open-Source OSS system for ISP,
 service, content providers and enterprises.

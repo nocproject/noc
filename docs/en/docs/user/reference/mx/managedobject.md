@@ -119,7 +119,7 @@ Message contains JSON with following fields:
 | {{ tab }} model                | Object {{ complex }}          | Inventory model (Object model)                                                        |
 | {{ tab2 }} id                  | String                        | Inventory model\'s ID                                                                 |
 | {{ tab2 }} name                | String                        | Inventory model\'s name                                                               |
-| {{ tab2 }} tags                | Array of String               | [Object model's](../../../dev/reference/objectmodel-tags.md)                          |
+| {{ tab2 }} tags                | Array of String               | [Object model's](../../../dev/reference/object-model/tags.md)                         |
 | {{ tab2 }} vendor              | Object {{ complex }}          | Inventory model\'s vendor                                                             |
 | {{ tab3 }} id                  | String                        | Vendor\'s ID                                                                          |
 | {{ tab3 }} name                | String                        | Vendor\'s Name                                                                        |
