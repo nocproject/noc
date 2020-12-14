@@ -1,0 +1,32 @@
+{
+    "name": "MlaxLink | Transceiver | 1G | ML-30T",
+    "$collection": "inv.objectmodels",
+    "uuid": "af1cab8b-a69d-4819-b0c6-37d654619ff6",
+    "vendor__code": "MLAXLINK",
+    "description": "MlaxLink SFP WDM transceiver, 1310 tx, 1550 rx, SC, 20km without dom",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "RxTx SC Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ML-30T"]
+        }
+    }
+}
