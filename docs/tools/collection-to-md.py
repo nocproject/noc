@@ -9,16 +9,17 @@
 import sys
 import json
 import os
-from typing import Dict, Any, Iterable, List, Optional
+from typing import Dict, DefaultDict, Any, Iterable, List, Optional
 from dataclasses import dataclass
 import enum
 import re
 import shutil
 import operator
+from collections import defaultdict
 
 
 def quote_file_name(s: str) -> str:
-    return s.strip().lower().replace(" ", "-").replace(":", "")
+    return s.strip().lower().replace(" ", "-").replace(":", "").replace("/", "-")
 
 
 def mq(s: str) -> str:
@@ -238,6 +239,79 @@ class MeasurementUnits(object):
         return f"reference/measurement-units/{self.file_name}"
 
 
+@dataclass
+class ConnectionType(object):
+    name: str
+    uuid: str
+    description: Optional[str]
+    extend: Optional[str]
+    genders: str
+    c_group: Optional[List[str]]
+
+    @property
+    def dir_path(self) -> List[str]:
+        return [quote_file_name(x) for x in self.name.split(" | ")][:-1]
+
+    @property
+    def file_name(self) -> str:
+        return quote_file_name(self.name.split(" | ")[-1]) + ".md"
+
+    @property
+    def rel_path(self) -> str:
+        return f"reference/connection-type/{'/'.join(self.dir_path)}/{self.file_name}"
+
+
+GENDER_DESC = {
+    "s": "symmetric, genderless same type connection",
+    "ss": "symmetric, genderless same type connection. More than two objects may be connected",
+    "m": "only male types, compatible female types are selected via `c_groups`",
+    "f": "only female types, compatible male types are selected via `c_groups`",
+    "mf": "male and female types",
+    "mmf": "one or more male may be connected to one female",
+    "mff": "two or one females may be connected to one male",
+}
+
+
+class FileWriter(object):
+    def __init__(self, root: str):
+        self.root = root
+        self.new_files = 0
+        self.changed_files = 0
+        self.unmodified_files = 0
+
+    def write(self, path: str, data: List[str]):
+        path = os.path.join(self.root, path)
+        # Ensure directory
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        # Add line break to the end of file, when necessary
+        if data and data[-1]:
+            data += [""]
+        # Check if page modified
+        page = "\n".join(data)
+        to_write = False
+        if os.path.exists(path):
+            with open(path) as f:
+                old_page = f.read()
+            if old_page == page:
+                self.unmodified_files += 1
+            else:
+                self.changed_files += 1
+                to_write = 1
+        else:
+            self.new_files += 1
+            to_write = True
+        if to_write:
+            print(f"  Writing: {path}")
+            with open(path, "w") as f:
+                f.write(page)
+
+    def summary(self):
+        total_files = self.new_files + self.changed_files + self.unmodified_files
+        print(
+            f"  Pages: new {self.new_files}, changed {self.changed_files}, unmodified {self.unmodified_files}, total {total_files}"
+        )
+
+
 class CollectionDoc(object):
     rx_indent = re.compile(r"^(\s+)-")
 
@@ -252,6 +326,8 @@ class CollectionDoc(object):
         self.metric_scope: Dict[str, MetricScope] = {}
         self.metric_type: Dict[str, MetricType] = {}
         self.measurement_units: Dict[str, MeasurementUnits] = {}
+        self.connection_types: Dict[str, ConnectionType] = {}
+        self.c_groups: DefaultDict[str, List[str]] = defaultdict(list)
 
     def build(self):
         shutil.copy(self.yml_path, self.new_yml_path)
@@ -261,6 +337,7 @@ class CollectionDoc(object):
         self.build_metric_scopes()
         self.build_metric_types()
         self.build_measurement_units()
+        self.build_connection_types()
 
     def read_collections(self):
         self.read_eventclasses()
@@ -268,6 +345,7 @@ class CollectionDoc(object):
         self.read_metric_scopes()
         self.read_metric_types()
         self.read_measurement_units()
+        self.read_connection_types()
 
     def iter_jsons(self, path: str) -> Iterable[Dict[str, Any]]:
         for root, _, files in os.walk(path):
@@ -429,8 +507,20 @@ class CollectionDoc(object):
             )
             self.measurement_units[unit.name] = unit
 
-    def ensure_dir(self, path: str) -> None:
-        os.makedirs(path, exist_ok=True)
+    def read_connection_types(self):
+        for d in self.iter_jsons(os.path.join("collections", "inv.connectiontypes")):
+            ct = ConnectionType(
+                name=d["name"],
+                uuid=d["uuid"],
+                description=d.get("description") or "",
+                extend=d.get("extend") or None,
+                genders=d.get("genders") or "mf",
+                c_group=d.get("c_group") or None,
+            )
+            self.connection_types[ct.name] = ct
+            if ct.c_group:
+                for c_group in ct.c_group:
+                    self.c_groups[c_group] += [ct.name]
 
     def update_toc(self, key: str, lines: List[str]):
         r = []
@@ -467,18 +557,13 @@ class CollectionDoc(object):
 
     def build_eventclasses(self):
         print("# Writing event classes doc:")
-        new_files = 0
-        changed_files = 0
-        unmodified_files = 0
         toc = ["- Overview: user/reference/event-classes/index.md"]
-        ec_root = os.path.join(self.doc_root, "user", "reference", "event-classes")
+        writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "event-classes"))
         last_path: List[str] = []
         indent: str = ""
         for ec_name in sorted(self.event_class):
             ec = self.event_class[ec_name]
             rel_dir = os.path.join(*ec.dir_path)
-            ec_dir = os.path.join(ec_root, rel_dir)
-            self.ensure_dir(ec_dir)
             path = [x.strip() for x in ec_name.split(" | ")][:-1]
             if not last_path or path != last_path:
                 level = 0
@@ -551,46 +636,19 @@ class CollectionDoc(object):
                     for d in d_list:
                         alarm_ref = rel_ref(ec.rel_path, self.alarm_class[d.alarm].rel_path)
                         data += [f"[{mq(d.alarm)}]({alarm_ref}) | {d.name}"]
-            data += [""]
-            page = "\n".join(data)
-            #
-            page_path = os.path.join(ec_dir, ec.file_name)
-            to_write = False
-            if os.path.exists(page_path):
-                with open(page_path) as f:
-                    old_page = f.read()
-                if old_page == page:
-                    unmodified_files += 1
-                else:
-                    changed_files += 1
-                    to_write = 1
-            else:
-                new_files += 1
-                to_write = True
-            if to_write:
-                print(f"  Writing: {ec_dir}/{ec.file_name}")
-                with open(page_path, "w") as f:
-                    f.write(page)
-        total_files = new_files + changed_files + unmodified_files
-        print(
-            f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
-        )
+            writer.write(os.path.join(rel_dir, ec.file_name), data)
+        writer.summary()
         self.update_toc("Event Classes", toc)
 
     def build_alarmclasses(self):
         print("# Writing alarm classes doc:")
-        new_files = 0
-        changed_files = 0
-        unmodified_files = 0
         toc = ["- Overview: user/reference/alarm-classes/index.md"]
-        ac_root = os.path.join(self.doc_root, "user", "reference", "alarm-classes")
+        writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "alarm-classes"))
         last_path: List[str] = []
         indent: str = ""
         for ac_name in sorted(self.alarm_class):
             ac = self.alarm_class[ac_name]
             rel_dir = os.path.join(*ac.dir_path)
-            ac_dir = os.path.join(ac_root, rel_dir)
-            self.ensure_dir(ac_dir)
             path = [x.strip() for x in ac_name.split(" | ")][:-1]
             if not last_path or path != last_path:
                 level = 0
@@ -708,38 +766,13 @@ class CollectionDoc(object):
                 for e in ac.closing_events:
                     e_ref = rel_ref(ac.rel_path, self.event_class[e.event_class].rel_path)
                     data += [f"[{mq(e.event_class)}]({e_ref}) | {e.name}"]
-            data += [""]
-            page = "\n".join(data)
-            #
-            page_path = os.path.join(ac_dir, ac.file_name)
-            to_write = False
-            if os.path.exists(page_path):
-                with open(page_path) as f:
-                    old_page = f.read()
-                if old_page == page:
-                    unmodified_files += 1
-                else:
-                    changed_files += 1
-                    to_write = 1
-            else:
-                new_files += 1
-                to_write = True
-            if to_write:
-                print(f"  Writing: {ac_dir}/{ac.file_name}")
-                with open(page_path, "w") as f:
-                    f.write(page)
-        total_files = new_files + changed_files + unmodified_files
-        print(
-            f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
-        )
+            writer.write(os.path.join(rel_dir, ac.file_name), data)
+        writer.summary()
         self.update_toc("Alarm Classes", toc)
 
     def build_metric_scopes(self):
         print("# Writing metric scopes doc:")
-        new_files = 0
-        changed_files = 0
-        unmodified_files = 0
-        ms_root = os.path.join(self.doc_root, "user", "reference", "metrics", "scopes")
+        writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "metrics", "scopes"))
         tab = "{{ tab }}"
         toc = ["- Overview: user/reference/metrics/scopes/index.md"]
         for ms_name in sorted(self.metric_scope):
@@ -760,7 +793,7 @@ class CollectionDoc(object):
             ]
             if ms.path:
                 data += [
-                    "path | Array of String {{complex}} | Measurement Path",
+                    "path | Array of String {{ complex }} | Measurement Path",
                 ]
                 data += [f"{tab} `{p.name}` | {p.is_required_mark} | " for p in ms.path]
             for mt in sorted(ms.metric_types, key=operator.attrgetter("field_name")):
@@ -770,44 +803,19 @@ class CollectionDoc(object):
                 ]
             data += [""]
             toc += [f"- {ms.name}: user/reference/metrics/scopes/{ms.file_name}"]
-            page = "\n".join(data)
-            page_path = os.path.join(ms_root, ms.file_name)
-            to_write = False
-            if os.path.exists(page_path):
-                with open(page_path) as f:
-                    old_page = f.read()
-                if old_page == page:
-                    unmodified_files += 1
-                else:
-                    changed_files += 1
-                    to_write = 1
-            else:
-                new_files += 1
-                to_write = True
-            if to_write:
-                print(f"  Writing: user/reference/metrics/scopes/{ms.file_name}")
-                with open(page_path, "w") as f:
-                    f.write(page)
-        total_files = new_files + changed_files + unmodified_files
-        print(
-            f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
-        )
+            writer.write(ms.file_name, data)
+        writer.summary()
         self.update_toc("Metric Scopes", toc)
 
     def build_metric_types(self):
         print("# Writing metric types doc:")
-        new_files = 0
-        changed_files = 0
-        unmodified_files = 0
-        ms_root = os.path.join(self.doc_root, "user", "reference", "metrics", "types")
+        writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "metrics", "types"))
         last_path: List[str] = []
         indent: str = ""
         toc = ["- Overview: user/reference/metrics/types/index.md"]
         for mt_name in sorted(self.metric_type):
             mt = self.metric_type[mt_name]
             rel_dir = os.path.join(*mt.dir_path)
-            mt_dir = os.path.join(ms_root, rel_dir)
-            self.ensure_dir(mt_dir)
             path = [x.strip() for x in mt_name.split(" | ")][:-1]
             if not last_path or path != last_path:
                 level = 0
@@ -848,36 +856,13 @@ class CollectionDoc(object):
                 f": `{mt.measure}`",
                 "",
             ]
-            page = "\n".join(data)
-            page_path = os.path.join(mt_dir, mt.file_name)
-            to_write = False
-            if os.path.exists(page_path):
-                with open(page_path) as f:
-                    old_page = f.read()
-                if old_page == page:
-                    unmodified_files += 1
-                else:
-                    changed_files += 1
-                    to_write = 1
-            else:
-                new_files += 1
-                to_write = True
-            if to_write:
-                print(f"  Writing: {mt_dir}/{mt.file_name}")
-                with open(page_path, "w") as f:
-                    f.write(page)
-        total_files = new_files + changed_files + unmodified_files
-        print(
-            f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
-        )
+            writer.write(os.path.join(rel_dir, mt.file_name), data)
+        writer.summary()
         self.update_toc("Metric Types", toc)
 
     def build_measurement_units(self) -> None:
         print("# Writing measurement units doc:")
-        new_files = 0
-        changed_files = 0
-        unmodified_files = 0
-        mu_root = os.path.join(self.doc_root, "user", "reference", "measurement-units")
+        writer = FileWriter(os.path.join(self.doc_root, "user", "reference", "measurement-units"))
         toc = ["- Overview: user/reference/measurement-units/index.md"]
         for mu_name in sorted(self.measurement_units):
             mu = self.measurement_units[mu_name]
@@ -910,29 +895,59 @@ class CollectionDoc(object):
                 ]
             data += [""]
             toc += [f"- {mu.name}: user/reference/measurement-units/{mu.file_name}"]
-            page = "\n".join(data)
-            page_path = os.path.join(mu_root, mu.file_name)
-            to_write = False
-            if os.path.exists(page_path):
-                with open(page_path) as f:
-                    old_page = f.read()
-                if old_page == page:
-                    unmodified_files += 1
-                else:
-                    changed_files += 1
-                    to_write = 1
-            else:
-                new_files += 1
-                to_write = True
-            if to_write:
-                print(f"  Writing: user/reference/measurement-units/{mu.file_name}")
-                with open(page_path, "w") as f:
-                    f.write(page)
-        total_files = new_files + changed_files + unmodified_files
-        print(
-            f"  Pages: new {new_files}, changed {changed_files}, unmodified {unmodified_files}, total {total_files}"
-        )
+            writer.write(mu.file_name, data)
+        writer.summary()
         self.update_toc("Measurement Units", toc)
+
+    def build_connection_types(self):
+        print("# Writing connection types doc:")
+        writer = FileWriter(os.path.join(self.doc_root, "dev", "reference", "connection-type"))
+        last_path: List[str] = []
+        indent: str = ""
+        toc = ["- Overview: dev/reference/connection-type/index.md"]
+        for ct_name in sorted(self.connection_types):
+            ct = self.connection_types[ct_name]
+            dir_path = ct.dir_path
+            rel_dir = os.path.join(*ct.dir_path) if dir_path else ""
+            path = [x.strip() for x in ct_name.split(" | ")][:-1]
+            if not last_path or path != last_path:
+                level = 0
+                for last_pc, current_pc in zip(last_path, path):
+                    if last_pc == current_pc:
+                        level += 1
+                    else:
+                        break
+                indent = "    " * (level - 1)
+                for current_pc in path[level:]:
+                    indent = "    " * level
+                    toc += [f'{indent}- "{current_pc}":']
+                    level += 1
+                last_path = path
+            short_name = ct_name.split(" | ")[-1].strip()
+            toc += [
+                f'{indent}    - "{short_name}": dev/reference/connection-type/{rel_dir}/{ct.file_name}'
+            ]
+            # Render page
+            data = ["---", f"uuid: {ct.uuid}", "---", f"# {ct.name} Connection Type"]
+            if ct.description:
+                data += ["", ct.description]
+            if ct.extend:
+                data += ["", "Extends", f": {ct.extend}"]
+            data += ["", "Genders", f": `{ct.genders}` - {GENDER_DESC[ct.genders]}"]
+            if ct.c_group:
+                data += ["", "CGroups"]
+                for n, c_group in enumerate(sorted(ct.c_group)):
+                    if n:
+                        data += [f"    - {c_group}:", ""]
+                    else:
+                        data += [f":   - {c_group}:", ""]
+                    for name in sorted(self.c_groups[c_group]):
+                        rel = rel_ref(ct.rel_path, self.connection_types[name].rel_path)
+                        data += [f"        - [{name}]({rel})"]
+                    data += [""]
+            writer.write(os.path.join(rel_dir, ct.file_name), data)
+        writer.summary()
+        self.update_toc("Connection Types", toc)
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ Field
 : `elec_current`
 
 Type
-: UInt16
+: Float32
 
 Measure
 : `mA`
