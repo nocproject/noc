@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <marker id="arrowhead" viewBox="0 0 20 20" overflow="visible" orient="auto-start-reverse" refX="20" refY="10" bx:pinned="true&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6" bx:pinned="true">
+    <marker id="arrowhead" viewBox="0 0 20 20" overflow="visible" orient="auto-start-reverse" refX="20" refY="10" markerWidth="6" markerHeight="6">
       <title>Arrowhead</title>
       <path d="M 0 0 L 20 10 L 0 20 z" stroke="rgb(233, 235, 252)" fill="rgb(233, 235, 252)"/>
     </marker>

@@ -19,7 +19,7 @@ path | Array of String {{ complex }} | Measurement Path
 {{ tab }} `module` | {{ no }} | 
 {{ tab }} `name` | {{ no }} | 
 [battery_capacity_level](../types/environment/battery/capacity/level.md) | UInt8 | [Environment \| Battery \| Capacity \| Level](../types/environment/battery/capacity/level.md)
-[elec_current](../types/environment/electric-current.md) | UInt16 | [Environment \| Electric Current](../types/environment/electric-current.md)
+[elec_current](../types/environment/electric-current.md) | Float32 | [Environment \| Electric Current](../types/environment/electric-current.md)
 [energy_consumption](../types/environment/energy-consumption.md) | Float32 | [Environment \| Energy Consumption](../types/environment/energy-consumption.md)
 [power_consume](../types/environment/power.md) | UInt16 | [Environment \| Power](../types/environment/power.md)
 [power_input_status](../types/environment/power/input/status.md) | Int8 | [Environment \| Power \| Input \| Status](../types/environment/power/input/status.md)

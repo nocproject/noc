@@ -20,13 +20,17 @@ Connection may be established only with same or compatible types.
 
 Connection type examples:
 
-- RJ-45
-- C13
-- C14
-- LC
+- [RJ45](../../reference/connection-type/electrical/rj45.md)
+- [C13](../../reference/connection-type/power/iec-60320-c13.md)
+- [C14](../../reference/connection-type/power/iec-60320-c14.md)
+- [LC](../../reference/connection-type/optical/lc.md)
 
 Type may be considered as mechanical form-factor, something like the form, size,
 and patterns of pins and holes.
+
+Connection type compatibility may be complex.
+See [Connection Type Restrictions discussion](../connection-type-restrictions/index.md)
+for explanation.
 
 ## Gender
 
@@ -49,6 +53,10 @@ Or mnemonically: side-to-side, male-to-female, female-to-male.
 Unlike the real life, NOC doesn't support advanced combinations of relations.
 
 Males and females are equal in rights and division is very arbitrary.
+
+Possible genders on connections may be additionally restricted by Connection Types.
+See [Genders Restriction Discussion](../connection-type-restrictions/index.md#gender-restrictions) for
+additional explanation.
 
 ## Direction
 
@@ -169,8 +177,6 @@ be continued over `out` slot, as having `o` direction.
 
 ### Groups
 
-group Необязательное поле для группировки соединений объекта, название группы в произвольной форме. Может использоваться совместно с полем cross, для наложение дополнительных ограничений на связь
-
 To apply additional restriction on crossing paths, slots can be assigned
 into different groups. Path can stay only within same connection groups.
 Consider the picture.
@@ -182,6 +188,16 @@ so it can be propagated only to slots `3` and `4`. Path via the slot '2'
 is prohibited, as leaving outside the group.
 
 ### Cross
+
+Cross applies explicit restrictions on internal connections. Cross may contain
+the name of the peer connection, and the behavior depends on peer connection
+crossing settings:
+
+- If the peer connection defines crossing back to the starting, direct
+  crossing is considered.
+- If the peer connection defines no crossing, peer considered to be the source,
+  and the signal power applied to the source will be divided between
+  all referring connections.
 
 ### Examples
 
@@ -195,6 +211,8 @@ is prohibited, as leaving outside the group.
     | 1    | `s`       |       | 0     |
 
     Note that connectors are crossed together and the `group` is not used.
+    This case doesn't apply any additional restrictions, as two `s` connections
+    will be interconnected by default.
 
 <!-- prettier-ignore -->
 !!! example "Example: Optical duplex cable"
