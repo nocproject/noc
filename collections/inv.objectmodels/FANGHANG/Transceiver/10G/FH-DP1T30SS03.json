@@ -1,0 +1,40 @@
+{
+    "name": "FANG HANG | Transceiver | 10G | FH-DP1T30SS03",
+    "$collection": "inv.objectmodels",
+    "uuid": "518aad99-51b5-4bc6-bb85-30ccaaa808ec",
+    "vendor__code": "FANG HANG",
+    "description": "FANG HANG SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FH-DP1T30SS03"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}
