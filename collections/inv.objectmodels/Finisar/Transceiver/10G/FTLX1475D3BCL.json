@@ -1,0 +1,40 @@
+{
+    "name": "Finisar | Transceiver | 10G | FTLX1475D3BCL",
+    "$collection": "inv.objectmodels",
+    "uuid": "9599aa83-e075-40b9-8b9c-f563f70a5884",
+    "vendor__code": "FINISAR",
+    "description": "10GBASE-LR/LW, SFP+, SFM, 1310nm, 10km",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASE-LR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASE-LR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FTLX1475D3BCL"]
+        }
+    }
+}
