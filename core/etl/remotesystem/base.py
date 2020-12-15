@@ -29,6 +29,7 @@ class BaseRemoteSystem(object):
         "ttsystem",
         "project",
         "managedobject",
+        "object",
         "link",
         "subscriberprofile",
         "subscriber",

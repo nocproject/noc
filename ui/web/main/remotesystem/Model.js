@@ -68,7 +68,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             name: "enable_networksegmentprofile",
             type: "boolean"
         },
-
+        {
+            name: "enable_object",
+            type: "boolean"
+        },
         {
             name: "enable_service",
             type: "boolean"

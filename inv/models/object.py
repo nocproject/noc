@@ -21,6 +21,7 @@ from mongoengine.fields import (
     LongField,
     EmbeddedDocumentField,
     DynamicField,
+    ReferenceField,
 )
 from mongoengine import signals
 import cachetools
@@ -36,6 +37,7 @@ from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.datastream.decorator import datastream
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.comp import smart_text
 from noc.config import config
 from .connectiontype import ConnectionType
@@ -111,6 +113,11 @@ class Object(Document):
     connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
     #
     tags = ListField(StringField())
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
 
