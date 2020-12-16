@@ -1531,6 +1531,11 @@ Ext.define("NOC.sa.managedobject.Application", {
             ftype: "boolean"
         },
         {
+            title: __("By Geo Address"),
+            ftype: "geoaddress",
+            hidden: !NOC.settings.has_geocoder
+        },
+        {
             title: __("By SA Profile"),
             name: "profile",
             ftype: "lookup",

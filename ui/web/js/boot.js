@@ -41,6 +41,7 @@ if(httpRequest.status === 200) {
         timezone: setup.timezone,
         enable_remote_system_last_extract_info: setup.enable_remote_system_last_extract_info,
         enableHelp: setup.helpUrl && setup.helpUrl !== "",
+        has_geocoder: setup.has_geocoder
     };
     NOC.templates = {};
     // Change title
