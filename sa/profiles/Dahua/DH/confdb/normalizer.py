@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST, deferable
+from noc.core.validators import is_ipv4
 
 
 class DHNormalizer(BaseNormalizer):
@@ -42,7 +43,8 @@ class DHNormalizer(BaseNormalizer):
 
     @match("table", "NTP", "Address", REST)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name="0", address=".".join(tokens[3:]))
+        if is_ipv4(".".join(tokens[3:])):
+            yield self.make_ntp_server_address(name="0", address=".".join(tokens[3:]))
 
     @match("users", ANY, "Name", ANY)
     def normalize_user_name(self, tokens):
