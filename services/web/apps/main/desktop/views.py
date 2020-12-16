@@ -104,6 +104,7 @@ class DesktopApplication(ExtApplication):
             "help_language": config.help.language,
             "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
             "timezone": config.timezone,
+            "has_geocoder": bool(config.geocoding.ui_geocoder),
         }
         return self.render(
             request, "desktop.html", language=self.get_language(request), apps=apps, setup=setup
@@ -154,6 +155,7 @@ class DesktopApplication(ExtApplication):
             "timezone": config.timezone,
             "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
             "theme": config.web.theme,
+            "has_geocoder": bool(config.geocoding.ui_geocoder),
         }
 
     @view(method=["GET"], url="^version/$", access=True, api=True)

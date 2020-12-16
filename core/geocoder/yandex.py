@@ -7,6 +7,7 @@
 
 # Python modules
 from urllib.parse import quote as urllib_quote
+from typing import Optional
 
 # Third-party modules
 import orjson
@@ -25,7 +26,7 @@ class YandexGeocoder(BaseGeocoder):
         self.key = key or config.geocoding.yandex_key
         self.apikey = apikey or config.geocoding.yandex_apikey
 
-    def forward(self, query, bounds=None, region=None):
+    def forward(self, query: str, bounds=None, region=None) -> Optional[GeoCoderResult]:
         url = ["https://geocode-maps.yandex.ru/1.x/?", "format=json"]
         if region:
             url += ["&region=%s" % region]
@@ -84,4 +85,13 @@ class YandexGeocoder(BaseGeocoder):
                 self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision")
                 == "exact"
             )
-            return GeoCoderResult(exact=is_exact, query=query, path=path, lon=lon, lat=lat)
+            return GeoCoderResult(
+                exact=is_exact,
+                query=query,
+                path=path,
+                lon=lon,
+                lat=lat,
+                id=None,
+                scope="yandex",
+                address=None,
+            )

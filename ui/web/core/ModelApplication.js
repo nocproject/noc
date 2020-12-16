@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -256,7 +256,8 @@ Ext.define("NOC.core.ModelApplication", {
                         vc: "NOC.core.modelfilter.VC",
                         tag: "NOC.core.modelfilter.Tag",
                         favorites: "NOC.core.modelfilter.Favorites",
-                        tree: "NOC.core.modelfilter.Tree"
+                        tree: "NOC.core.modelfilter.Tree",
+                        geoaddress: "NOC.core.modelfilter.GeoAddress"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
                         referrer: me.appName,

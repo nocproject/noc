@@ -30,6 +30,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.object import Object
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.main.models.resourcestate import ResourceState
@@ -205,6 +206,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return super().clean(data)
 
     def cleaned_query(self, q):
+        geoaddr = q.pop("__geoaddress", None)
         if "administrative_domain" in q:
             ad = AdministrativeDomain.get_nested_ids(int(q["administrative_domain"]))
             if ad:
@@ -221,6 +223,21 @@ class ManagedObjectApplication(ExtModelApplication):
             r["id__in"] = ManagedObject.objects.filter(s.Q)
         if ad:
             r["administrative_domain__in"] = ad
+        if geoaddr:
+            scope, addr_id = geoaddr.split(":", 1)
+            addr_mo = set()
+            for o in Object.iter_by_address_id(addr_id, scope):
+                addr_mo |= set(o.iter_managed_object_id())
+                # If ManagedObject has container refer to Object
+                addr_mo |= set(
+                    ManagedObject.objects.filter(container__in=o.get_nested_ids()).values_list(
+                        "id", flat=True
+                    )
+                )
+            # Intersect with selector expression
+            if "id__in" in r:
+                addr_mo &= set(r["id__in"])
+            r["id__in"] = list(addr_mo)
         return r
 
     def get_Q(self, request, query):

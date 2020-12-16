@@ -7,6 +7,7 @@
 
 # Python modules
 from urllib.parse import quote as urllib_quote
+from typing import Iterator
 
 # Third-party modules
 import orjson
@@ -19,11 +20,9 @@ from .errors import GeoCoderError
 class OSMNominatimGeocoder(BaseGeocoder):
     name = "osm"
 
-    def forward(self, query, bounds=None, region=None):
-        url = (
-            "http://nominatim.openstreetmap.org/search?q=%s&format=json&addressdetails=1"
-            % urllib_quote(query)
-        )
+    def iter_query(self, query: str, bounds=None) -> Iterator[GeoCoderResult]:
+        q = urllib_quote(query)
+        url = f"https://nominatim.openstreetmap.org/search?q={q}&format=json&addressdetails=1"
         if bounds:
             url += "viewbox=%s,%s" % bounds
         code, response = self.get("".join(url))
@@ -33,4 +32,15 @@ class OSMNominatimGeocoder(BaseGeocoder):
             r = orjson.loads(response)
         except ValueError:
             raise GeoCoderError("Cannot decode result")
-        return GeoCoderResult(exact=False, query=query, path=[], lon=r[0]["lon"], lat=r[0]["lat"])
+        for x in r:
+            osm_cls = x.get("class")
+            yield GeoCoderResult(
+                exact=osm_cls == "building",
+                query=query,
+                path=[],
+                lon=self.maybe_float(x["lon"]),
+                lat=self.maybe_float(x["lat"]),
+                id=str(x["place_id"]),
+                scope="osm",
+                address=x["display_name"],
+            )

@@ -7,6 +7,7 @@
 
 # Python modules
 from urllib.parse import quote as urllib_quote
+from typing import Optional
 
 # Third-party modules
 import orjson
@@ -25,7 +26,7 @@ class GoogleGeocoder(BaseGeocoder):
         self.key = key or config.geocoding.google_key
         self.language = language or config.geocoding.google_language
 
-    def forward(self, query, bounds=None, region=None):
+    def forward(self, query: str, bounds=None, region=None) -> Optional[GeoCoderResult]:
         query = query.lower().strip()
         if not query:
             return None
@@ -63,4 +64,13 @@ class GoogleGeocoder(BaseGeocoder):
                 self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision")
                 == "exact"
             )
-            return GeoCoderResult(exact=is_exact, query=query, path=path, lon=lon, lat=lat)
+            return GeoCoderResult(
+                exact=is_exact,
+                query=query,
+                path=path,
+                lon=lon,
+                lat=lat,
+                id=None,
+                scope="google",
+                address=None,
+            )
