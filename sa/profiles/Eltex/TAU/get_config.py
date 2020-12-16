@@ -15,11 +15,10 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        self.cli("config")
-        try:
-            show = self.cli("show")
-            self.cli("exit")
-        except self.CLISyntaxError:
-            self.cli("exit")
-            show = self.cli("show configuration")
-        return self.cleaned_config(show)
+        if self.is_tau4:
+            c = self.cli("cat /etc/config/cfg.yaml", cached=True)
+        elif self.is_tau8:
+            c = self.cli("cat /etc/config/*", cached=True)
+        else:
+            c = self.cli("cat /tmp/etc/config/cfg.yaml")
+        return self.cleaned_config(c)

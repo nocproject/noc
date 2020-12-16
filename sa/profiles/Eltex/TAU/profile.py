@@ -18,11 +18,11 @@ class Profile(BaseProfile):
     pattern_username = r"^\S+ [Ll]ogin:"
     pattern_password = r"^[Pp]assword:"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
-    pattern_prompt = r"^(\S+# |> |config> |\S+]\s*)"
+    pattern_prompt = r"^(\S+# |> |config> |\[\S+\]\s*|root@\S+:(~|/\S+)\$)"
     pattern_more = (
         r'Press any key to continue|\| Press any key to continue \| Press "q" to exit \| '
     )
-    pattern_syntax_error = "Syntax error: Unknown command"
+    pattern_syntax_error = r"Syntax error: Unknown command|-sh: .+: not found"
     command_exit = "exit"
     command_more = "\n"
     command_enter_config = "config"
@@ -30,24 +30,38 @@ class Profile(BaseProfile):
     command_super = "enable"
     rogue_chars = [re.compile(rb"\^J"), b"\r"]
 
-    class shell(object):
-        """Switch context manager to use with "with" statement"""
+    matchers = {
+        "is_tau4": {"platform": {"$regex": r"^TAU\-4"}},
+        "is_tau8": {"platform": {"$regex": r"^TAU-8"}},
+        "is_tau36": {"platform": {"$regex": r"^TAU-36"}},
+    }
 
-        def __init__(self, script):
-            self.script = script
+    def setup_session(self, script):
+        try:
+            script.cli("show hwaddr", cached=True)
+            script.cli("shell", ignore_errors=True)
+            self.already_in_shell = False
+        except script.CLISyntaxError:
+            self.already_in_shell = True
 
-        def __enter__(self):
-            """Enter switch context"""
-            self.script.cli("shell")
+    def shutdown_session(self, script):
+        if not self.already_in_shell:
+            script.cli("exit\r", ignore_errors=True)
 
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            """Leave switch context"""
-            if exc_type is None:
-                self.script.cli("exit\r")
+    empty_lines = re.compile(r"(?:\n){3,}", re.MULTILINE)
+    empty_spaces = re.compile(r"^\s+\n", re.MULTILINE)
+
+    def cleaned_config(self, config):
+        config = config.replace("cat: read error: Is a directory\n", "")
+        config = self.empty_lines.sub("\n\n", config)
+        config = self.empty_spaces.sub("\n", config)
+        config = super().cleaned_config(config)
+        return config
 
     INTERFACE_TYPES = {
         "e": "physical",  # Ethernet
         "p": "physical",  # Virtual Ethernet
+        "b": "physical",  # Bridge
         "l": "loopback",  # Local Loopback
     }
 
