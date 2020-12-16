@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,10 +18,18 @@ class Script(BaseScript):
     interface = IGetSpanningTree
 
     rx_section = re.compile(r"^(?:-----*|\s*)\n", re.MULTILINE | re.DOTALL)
+    rx_invalid_desg = re.compile(r"\.\d\.")
+    rx_mstp = re.compile(
+        r"^\s*Configuration Name\s*:\s*(?P<region>\S+)\s*\n"
+        r"^\s*Revision Level\s*:\s*(?P<revision>\d+)",
+        re.MULTILINE,
+    )
+    rx_instance = re.compile(r"^\s+(?P<instance>\d+)\s+\d+\S+\s*$", re.MULTILINE)
 
     TOKENS = {
         "spanning tree mode": "STP_MODE",
         "spanning tree enabled/disabled": "STP_ENABLED",
+        "instance": "INSTANCE",
         "vlans configuration": "VLANS",
         "vlans configured": "VLANS",
         "designated root": "DESG_ROOT",
@@ -33,7 +41,6 @@ class Script(BaseScript):
         "state": "STATE",
         "oper link type": "LINK_TYPE",
     }
-
     STATE_MAP = {
         "discarding": "discarding",
         "forwarding": "forwarding"
@@ -73,16 +80,9 @@ class Script(BaseScript):
             sv = parse_section(sections.pop(0).strip())
             yield ifname, sv
 
-    def execute_cli(self, **kwargs):
-        r = self.cli("show spanning-tree")
-        g = self.iter_blocks(r)
-        _, cfg = next(g)
-        if cfg["STP_ENABLED"].lower() != "enabled":
-            # No STP
-            return {"mode": "None", "instances": []}
-
+    def parse_instance(self, cfg, g):
         # Sometimes crazy root ids like <root_priority>.0.<mac> is shown
-        desg_root = cfg["DESG_ROOT"].replace(".0.", ".")
+        desg_root = self.rx_invalid_desg.sub(".", cfg["DESG_ROOT"])
         root_priority, root_id = desg_root.split(".")
 
         instance = {
@@ -94,9 +94,13 @@ class Script(BaseScript):
             "root_priority": int(root_priority),
             "interfaces": [],
         }
+        if cfg.get("INSTANCE"):
+            instance["id"] = cfg.get("INSTANCE")
         for sn, sv in g:
             if sv.get("DESG_BRIDGE"):
-                desg_priority, desg_id = sv.get("DESG_BRIDGE").split(".")
+                # Sometimes crazy bridge ids like <bridge_priority>.N.<mac> is shown
+                desg_bridge = self.rx_invalid_desg.sub(".", sv.get("DESG_BRIDGE"))
+                desg_priority, desg_id = desg_bridge.split(".")
             else:
                 desg_priority, desg_id = None, None
                 continue
@@ -117,4 +121,32 @@ class Script(BaseScript):
                 "point_to_point": sv.get("LINK_TYPE", None) == "point-to-point",
             }
             instance["interfaces"] += [iface]
-        return {"mode": cfg["STP_MODE"].upper(), "instances": [instance]}
+        return instance
+
+    def execute_cli(self, **kwargs):
+        r = self.cli("show spanning-tree")
+        g = self.iter_blocks(r)
+        _, cfg = next(g)
+        if cfg["STP_ENABLED"].lower() != "enabled":
+            # No STP
+            return {"mode": "None", "instances": []}
+
+        res = {"mode": cfg["STP_MODE"].upper(), "instances": []}
+        res["instances"] += [self.parse_instance(cfg, g)]
+
+        if cfg["STP_MODE"].upper() == "MSTP":
+            v = self.cli("show spanning-tree mst configuration")
+            match = self.rx_mstp.search(v)
+            if match:
+                res["configuration"] = {
+                    "MSTP": {"region": match.group("region"), "revision": match.group("revision")}
+                }
+            for inst in self.rx_instance.finditer(v):
+                if int(inst["instance"]) == 0:
+                    continue
+                r = self.cli("show spanning-tree mst %s" % inst["instance"])
+                g = self.iter_blocks(r)
+                _, cfg = next(g)
+                res["instances"] += [self.parse_instance(cfg, g)]
+
+        return res
