@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from time import perf_counter_ns
+import time
 from heapq import heappush, heappop
 from typing import Optional, Tuple, List, Dict
 
@@ -14,9 +14,8 @@ from typing import Optional, Tuple, List, Dict
 from bson import ObjectId
 
 # NOC modules
+from noc.config import config
 from noc.fm.models.activeevent import ActiveEvent
-
-NS = 1_000_000_000
 
 
 class BaseEvFilter(object):
@@ -53,6 +52,10 @@ class BaseEvFilter(object):
         """
         raise NotImplementedError
 
+    @staticmethod
+    def _get_timestamp(event: ActiveEvent) -> int:
+        return int(event.timestamp.timestamp())
+
     def register(self, event: ActiveEvent) -> None:
         """
         Register event to filter
@@ -62,12 +65,12 @@ class BaseEvFilter(object):
         fw = self.get_window(event)
         if not fw:
             return  # No deduplication for event class
-        now = perf_counter_ns()
+        now = self._get_timestamp(event)
         eh = self.event_hash(event)
         r = self.events.get(eh)
         if r and r[0] > now and not self.update_deadline:
             return  # deadline is not expired still
-        deadline = now + fw * NS
+        deadline = now + fw
         heappush(self.pq, (deadline, eh))
         if r and self.update_deadline:
             event_id = r[1]  # Preserve original event id
@@ -83,11 +86,12 @@ class BaseEvFilter(object):
         """
         eh = self.event_hash(event)
         r = self.events.get(eh)
-        now = perf_counter_ns()
-        if r and r[0] > now:
+        ts = self._get_timestamp(event)
+        if r and r[0] > ts:
             return r[1]
         # Expire
-        while self.pq and self.pq[0][0] < now:
+        threshold = int(time.time()) - config.classifier.allowed_time_drift
+        while self.pq and self.pq[0][0] < threshold:
             deadline, eh = heappop(self.pq)
             r = self.events.get(eh)
             if deadline == r[0]:

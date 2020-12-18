@@ -135,6 +135,7 @@ class Config(BaseConfig):
         lookup_handler = HandlerParameter(default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
         default_rule = StringParameter(default="Unknown | Default")
+        allowed_time_drift = SecondsParameter(default="5m")
 
     class clickhouse(ConfigSection):
         rw_addresses = ServiceParameter(service="clickhouse", wait=True)
