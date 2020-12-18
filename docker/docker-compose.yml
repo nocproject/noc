@@ -1,5 +1,5 @@
 ---
-version: "3.0"
+version: "2.4"
 
 volumes:
   mongo_data:
@@ -550,7 +550,7 @@ services:
       && ./noc sync-mibs
       && mkdir -p /opt/noc/etc
       && echo 'cG9vbHM6CiAgZGVmYXVsdDoKICAgIGRlc2NyaXB0aW9uOiBkZWZhdWx0Cg==' \
-      |base64 -d > /opt/noc/etc/noc.yml
+      |base64 -di > /opt/noc/etc/noc.yml
       && cat /opt/noc/etc/noc.yml
       && /usr/local/bin/python3 ./scripts/deploy/apply-pools
       "

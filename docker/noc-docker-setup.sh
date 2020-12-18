@@ -31,7 +31,7 @@ CHECKWAN() {
 }
 
 CREATEDIR() {
-  echo "Created directory"
+  echo "Creating directories"
   echo "----"
   mkdir -p -v "$INSTALLPATH"/docker/var/backup-data
   mkdir -p -v "$INSTALLPATH"/docker/var/backup-images
@@ -313,7 +313,7 @@ fi
 if [ -z "$INSTALLPATH" ]
     then
         INSTALLPATH=/opt/noc
-        echo "NOC-DC install in: $INSTALLPATH/docker"
+        echo "NOC-DC installing in: $INSTALLPATH/docker"
         echo "---"
 fi
 
