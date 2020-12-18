@@ -28,7 +28,7 @@ Run initial db init and migrations:
 ```
 docker-compose up migrate
 ```
-Wait for process to finish and than run noc itself.
+Wait for process to finish and then run noc itself.
 
 Be aware that command will run lots of noc daemons and intended
 to be pretty slow.  

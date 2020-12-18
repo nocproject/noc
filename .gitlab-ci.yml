@@ -276,6 +276,25 @@ build:Release Image:
   only:
     - tags
 
+build:Master Image:
+  stage: Build
+  script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+    # registry.getnoc.com/noc/noc/code:stable
+    - docker build --target code -t $CI_REGISTRY_IMAGE/code:master -f Dockerfile .
+    # registry.getnoc.com/noc/noc/dev:stable
+    - docker build --target dev -t $CI_REGISTRY_IMAGE/dev:master -f Dockerfile .
+    # registry.getnoc.com/noc/noc/static:stable
+    - docker build --target static -t $CI_REGISTRY_IMAGE/static:master -f Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/code:master
+    - docker push $CI_REGISTRY_IMAGE/dev:master
+    - docker push $CI_REGISTRY_IMAGE/static:master
+    - docker rmi $CI_REGISTRY_IMAGE/code:master $CI_REGISTRY_IMAGE/dev:master $CI_REGISTRY_IMAGE/static:master
+  tags:
+    - shell
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_NOC_BUILD_MASTER'
+
 build:web:
   stage: Build
   image: node:12
