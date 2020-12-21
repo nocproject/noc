@@ -31,6 +31,7 @@ class Script(BaseScript):
         "SCXM": "gei_",
         "SCXL": "gei_",
         "SMXA": "gei_",
+        "PTWVN": "",  # Telephone service
         "PRWGS": "",
     }
     rx_iface = re.compile(
