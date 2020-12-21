@@ -19,11 +19,11 @@ class GeoCoderResult(object):
     exact: bool
     query: str
     path: List[str]
-    lon: Optional[float]
-    lat: Optional[float]
-    id: Optional[str]
-    address: Optional[str]
-    scope: Optional[str]
+    lon: Optional[float] = None
+    lat: Optional[float] = None
+    id: Optional[str] = None
+    address: Optional[str] = None
+    scope: Optional[str] = None
 
 
 class BaseGeocoder(object):
