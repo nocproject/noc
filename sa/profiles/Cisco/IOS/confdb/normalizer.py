@@ -45,10 +45,16 @@ class CiscoIOSNormalizer(BaseNormalizer):
             community=tokens[2], level={"RO": "read-only", "RW": "read-write"}[tokens[3]]
         )
 
+    @match("vlan", "database", "vlan", REST)
+    def normalize_vlan_database(self, tokens):
+        for vid in ranges_to_list(tokens[3]):
+            yield self.make_vlan_id(vlan_id=vid)
+
     @match("vlan", ANY)
     def normalize_vlan(self, tokens):
-        for vid in ranges_to_list(tokens[1]):
-            yield self.make_vlan_id(vlan_id=vid)
+        if tokens[1] != "database":
+            for vid in ranges_to_list(tokens[1]):
+                yield self.make_vlan_id(vlan_id=vid)
 
     @match("vlan", ANY, "name", REST)
     def normalize_vlan_name(self, tokens):
