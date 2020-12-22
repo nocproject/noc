@@ -36,11 +36,12 @@ class Script(BaseScript):
     )
     rx_shell_platform_tau8 = re.compile(r"^(?P<platform>\S+)$")
     rx_shell_serial_tau8 = re.compile(r"^(?P<serial>\S+)$")
+    rx_shell_platform_a = re.compile(r"^(?P<platform>\S+)\s+PLD\s+(?P<serial>\S+)", re.MULTILINE)
     rx_shell_version = re.compile(r"^#?(?P<version>\S+)")
-    rx_shell_fwversion = re.compile(r"^cat /tmp/msp_version\n(?P<fwversion>\S+)\[", re.MULTILINE)
+    rx_shell_fwversion = re.compile(r"^(?P<fwversion>[v\d]\S+)(?:\[)?", re.MULTILINE)
     rx_snmp_version = re.compile(r"^#(?P<version>\S+)$")
 
-    # Working only on TAU-36
+    # Working only on TAU-36 and above
     def execute_snmp(self):
         platform = self.snmp.get("1.3.6.1.4.1.35265.4.14.0", cached=True)
         v = self.snmp.get("1.3.6.1.4.1.35265.4.5.0", cached=True)
@@ -62,10 +63,14 @@ class Script(BaseScript):
 
         v = self.cli("cat /tmp/factory", cached=True)
         if "No such file or directory" not in v:
-            match = self.rx_shell_platform.search(v)
+            if v != "":
+                match = self.rx_shell_platform.search(v)
+            else:
+                v = self.cli("cat /tmp/arm_version; echo", cached=True)
+                match = self.rx_shell_platform_a.search(v)
             platform = match.group("platform")
             serial = match.group("serial")
-            v = self.cli("cat /tmp/msp_version\r\r", cached=True)
+            v = self.cli("cat /tmp/msp_version; echo", cached=True)
             match = self.rx_shell_fwversion.search(v)
             fwversion = match.group("fwversion")
             return {
