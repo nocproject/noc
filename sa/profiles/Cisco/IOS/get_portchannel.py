@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,6 +38,15 @@ class Script(BaseScript):
             else:
                 iface["type"] = "S"
             for ifname in i[len(i) - 1].split():
+                # Found on some ASR100X
+                #
+                # Group  Port-channel  Protocol    Ports
+                # ------+-------------+-----------+-----------------------------------------------
+                # 1       Po1(RD)
+                # 55      Po55(RU)                LACP     Gi1/1/0(bndl) Gi1/1/1(bndl)
+                if ifname == "ACP":
+                    iface["type"] = "L"
+                    continue
                 iface["members"] += [self.extract_iface(ifname)]
             r += [iface]
         return r
