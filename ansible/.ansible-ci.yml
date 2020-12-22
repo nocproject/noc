@@ -18,10 +18,12 @@ lint_ansible:
     - ansible-review --version
     - git ls-files ansible | grep -v molecule/ | xargs -P 32 -n 4 ansible-review -c .ansible-review -q
   rules:
-    - changes:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
         - ansible/**/*
         - ansible/*
-    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "web" && $CHECK_DEPLOY == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CHECK_DEPLOY == "true"'
   tags:
     - docker
 
@@ -46,10 +48,12 @@ lint_ansible:
     PIP_CACHE: /root/.cache/pip
     PKG_CACHE: /var/cache/apt/archives
   rules:
-    - changes:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
         - ansible/**/*
         - ansible/*
-    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "web" && $CHECK_DEPLOY == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CHECK_DEPLOY == "true"'
 
 build_centos7:
    extends: .base_builder
