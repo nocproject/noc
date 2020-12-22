@@ -206,7 +206,8 @@ py:test:
       -p "${DOCKER_COMPOSE_PROJECT}"
       down -v
   rules:
-    - changes:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
         - "*.py"
         - "**/*.py"
         - requirements.txt
@@ -290,10 +291,10 @@ build:Master Image:
     - docker push $CI_REGISTRY_IMAGE/dev:master
     - docker push $CI_REGISTRY_IMAGE/static:master
     - docker rmi $CI_REGISTRY_IMAGE/code:master $CI_REGISTRY_IMAGE/dev:master $CI_REGISTRY_IMAGE/static:master
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $BUILD_MASTER == "true"'
   tags:
     - shell
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_NOC_BUILD_MASTER'
 
 build:web:
   stage: Build
@@ -370,7 +371,9 @@ gemnasium-python-dependency_scanning:
   rules:
     - if: $DEPENDENCY_SCANNING_DISABLED
       when: never
-    - if: $CI_COMMIT_BRANCH &&
-        $GITLAB_FEATURES =~ /\bdependency_scanning\b/
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH &&
+        $GITLAB_FEATURES =~ /\bdependency_scanning\b/ && $CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
         - requirements.txt
