@@ -36,5 +36,7 @@ class Script(BaseScript):
         else:
             c = self.cli("cat /tmp/factory", cached=True)
             match = self.rx_shell_mac.search(c)
+        if not match:
+            return []
         s = match.group("mac")
         return {"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}
