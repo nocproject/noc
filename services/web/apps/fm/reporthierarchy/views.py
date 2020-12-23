@@ -32,7 +32,7 @@ class HierarchyReportAppplication(ReportApplication):
             ec += [(len(p) * 24, cc.name, None)]
             ec += [(-1, c, EventClassificationRule.objects.filter(event_class=c.id)) for c in e]
             ne += len(e)
-        ncr = sum(len(r[2]) for r in ec)
+        ncr = sum(len(r[2]) if r[2] else 0 for r in ec)
         # Alarm classes
         ac = []
         na = 0
