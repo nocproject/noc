@@ -94,8 +94,8 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
         var me = this;
         Ext.Ajax.request({
             method: "POST",
-            url: "/main/desktop/change_credentials/",
-            params: values,
+            url: "/api/login/change_credentials",
+            params: Ext.apply(values, {user: NOC.username}),
             scope: me,
             success: function(response) {
                 var status = Ext.decode(response.responseText);
