@@ -47,10 +47,14 @@ class Script(BaseScript):
             base = match.group("mac")
             count = int(match.group("count"))
             return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
-        # Found in ex4550-32f JUNOS 15.1R7-S7.1
-        # Chassic ID MAC somehow differs from `Public base address`
-        v = self.cli("show lldp local-information", cached=True)
-        match = self.rx_lldp.search(v)
-        if match:
-            macs += [[match.group("mac"), match.group("mac")]]
+        try:
+            # Found in ex4550-32f JUNOS 15.1R7-S7.1
+            # Chassic ID MAC somehow differs from `Public base address`
+            v = self.cli("show lldp local-information", cached=True)
+            match = self.rx_lldp.search(v)
+            if match:
+                macs += [[match.group("mac"), match.group("mac")]]
+        except self.CLISyntaxError:
+            # Found in m7i JUNOS 8.5R4.3
+            pass
         return [{"first_chassis_mac": f, "last_chassis_mac": t} for f, t in macs]
