@@ -690,7 +690,12 @@ class BaseService(object):
         if not self.publish_queue:
             self._init_publisher()
         req = LiftBridgeClient.get_publish_request(
-            value=value, stream=stream, partition=partition, key=key, headers=headers
+            value=value,
+            stream=stream,
+            partition=partition,
+            key=key,
+            headers=headers,
+            auto_compress=bool(config.liftbridge.compression_method),
         )
         self.publish_queue.put(req)
 

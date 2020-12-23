@@ -14,7 +14,7 @@ class CompressorLoader(BaseLoader):
     name = "compressor"
     base_cls = BaseCompressor
     base_path = ("core", "compressor")
-    ignored_names = {"base", "loader"}
+    ignored_names = {"base", "loader", "util"}
 
 
 loader = CompressorLoader()

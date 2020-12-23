@@ -338,6 +338,8 @@ class Config(BaseConfig):
         addresses = ServiceParameter(service="liftbridge", wait=True, near=True, full_result=False)
         max_message_size = IntParameter(default=-1, help="Max message size for GRPC client")
         publish_async_ack_timeout = IntParameter(default=10)
+        compression_threshold = IntParameter(default=524288)
+        compression_method = StringParameter(choices=["", "zlib", "lzma"], default="zlib")
 
     listen = StringParameter(default="auto:0")
 
