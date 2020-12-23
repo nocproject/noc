@@ -50,7 +50,7 @@ class KBEntry(NOCModel):
         on_delete=models.CASCADE,
     )
     markup_language = models.CharField(
-        "Markup Language", max_length="16", choices=[(x, x) for x in loader]
+        "Markup Language", max_length=16, choices=[(x, x) for x in loader]
     )
     tags = TagsField("Tags", null=True, blank=True)
 
