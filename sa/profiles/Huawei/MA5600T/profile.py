@@ -178,6 +178,7 @@ class Profile(BaseProfile):
         "adsl": "physical",
         "gpon": "physical",
         "vdsl": "physical",
+        "tunn": "tunnel",
     }
 
     @classmethod
