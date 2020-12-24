@@ -109,16 +109,22 @@ async def auth_authorization(request: Request, authorization: str) -> ORJSONResp
     """
     Authenticate against Authorization header
     """
-    schema, data = authorization.split(" ", 1)
-    if schema == "Basic":
-        return await auth_authorization_basic(request=request, data=data)
-    elif schema == "Bearer":
-        return await auth_authorization_bearer(request=request, data=data)
-    logger.error(
-        "[Authorization][%s] Denied: Unsupported authorization schema '%s'",
-        request.client.host,
-        schema,
-    )
+    if " " in authorization:
+        schema, data = authorization.split(" ", 1)
+        if schema == "Basic":
+            return await auth_authorization_basic(request=request, data=data)
+        elif schema == "Bearer":
+            return await auth_authorization_bearer(request=request, data=data)
+        logger.error(
+            "[Authorization][%s] Denied: Unsupported authorization schema '%s'",
+            request.client.host,
+            schema,
+        )
+    else:
+        logger.error(
+            "[Authorization][%s] Denied: Unsupported authorization header",
+            request.client.host,
+        )
     return ORJSONResponse({"status": False}, status_code=401)
 
 
