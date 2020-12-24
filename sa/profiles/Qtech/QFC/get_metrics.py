@@ -41,7 +41,7 @@ class Script(GetMetricsScript):
                     value = 0
                 elif metric.ifindex == 12 and status > 0:
                     value = 0
-                elif metric.ifindex == 29 and int(status) > 0:
+                elif status and metric.ifindex == 29 and int(status) > 0:
                     value = 0
             self.set_metric(
                 id=("Environment | Sensor Status", metric.path),

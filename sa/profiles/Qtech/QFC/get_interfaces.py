@@ -48,7 +48,7 @@ class Script(BaseScript):
                     s_status = 1
                 elif ifindex == 12 and status > 0:
                     s_status = 1
-                elif ifindex == 29 and int(status) > 0:
+                elif status and ifindex == 29 and int(status) > 0:
                     s_status = 1
                 interfaces += [
                     {

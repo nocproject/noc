@@ -69,7 +69,9 @@ class Script(GetMetricsScript):
         for metric in metrics:
             value = 1
             if metric.ifindex == 29:
-                value = self.snmp.get("1.3.6.1.4.1.51315.1.27.0")
+                status = self.snmp.get("1.3.6.1.4.1.51315.1.%s.0" % metric.ifindex)
+                if status != 1:
+                    value = self.snmp.get("1.3.6.1.4.1.51315.1.27.0")
             elif metric.ifindex == 3:
                 s_type = self.snmp.get("1.3.6.1.4.1.51315.1.15.0")
                 status = self.snmp.get("1.3.6.1.4.1.51315.1.%s.0" % metric.ifindex)
@@ -103,7 +105,11 @@ class Script(GetMetricsScript):
     def get_battery_capacity(self, metrics):
         for metric in metrics:
             if metric.ifindex == 29:
-                value = self.snmp.get("1.3.6.1.4.1.51315.1.41.0")
+                status = self.snmp.get("1.3.6.1.4.1.51315.1.%s.0" % metric.ifindex)
+                if status != 1:
+                    value = self.snmp.get("1.3.6.1.4.1.51315.1.41.0")
+                else:
+                    value = self.snmp.get("1.3.6.1.4.1.51315.1.28.0")
                 self.set_metric(
                     id=("Environment | Battery | Capacity | Level", metric.path),
                     value=value,
