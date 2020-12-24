@@ -1,0 +1,32 @@
+{
+    "name": "FANG HANG | Transceiver | 1G | FH-SB5312CDS20",
+    "$collection": "inv.objectmodels",
+    "uuid": "76ecf0dd-5609-4a78-805c-abe39a19d5fe",
+    "vendor__code": "FANG HANG",
+    "description": "FANG HANG RX-1310/TX-1550 nm Singl-mode Bi-directional, 20 km, SC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "RxTx SC Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        },
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FH-SB5312CDS20"]
+        }
+    }
+}
