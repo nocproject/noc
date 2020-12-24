@@ -48,9 +48,19 @@ class BaseGeocoder(object):
         """
         Get list of probable address candidates
         :param query:
+        :param bounds:
         :return:
         """
         raise NotImplementedError()
+
+    def iter_recursive_query(self, query: str, bounds) -> Iterator[GeoCoderResult]:
+        """
+        Get list of all addresses within the query
+        :param query:
+        :param bounds:
+        :return:
+        """
+        yield from self.iter_query(query, bounds)
 
     def get(self, url):
         """

@@ -19,11 +19,18 @@ Ext.define("NOC.core.modelfilter.GeoAddress", {
       width: me.width,
       typeAheadDelay: 500,
       minChars: 4,
+      pageSize: 0,
+      hideTrigger:  true,
       listeners: {
         scope: me,
         select: me.onChange,
         clear: me.onChange
-      }
+      },
+      dataFields: ["id", "label", "style", "is_loose"],
+      tpl:
+        '<tpl for=".">' +
+        '<div class="x-boundlist-item {style}">{label}</div>' +
+        "</tpl>"
     });
     Ext.apply(me, {
       items: [me.combo]

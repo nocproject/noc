@@ -19,15 +19,24 @@ class GeoCoderApplication(ExtApplication):
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         limit = int(q.get(self.limit_param, 0))
         start = int(q.get(self.start_param, 0))
-        format = q.get(self.format_param)
+        fmt = q.get(self.format_param)
         query = q.get(self.query_param)
         scope = config.geocoding.ui_geocoder
         geocoder = loader.get_class(scope)()
-        data = [{"id": f"{scope}:{r.id}", "label": r.address} for r in geocoder.iter_query(query)]
+        g_data = list(geocoder.iter_query(query))
         if start:
-            data = data[start:]
+            g_data = g_data[start:]
         if limit:
-            data = data[:limit]
-        if format == "ext":
+            g_data = g_data[: limit - 1]
+        data = [
+            {
+                "id": f"{scope}:{r.address}",
+                "label": r.address if r.exact else f"{r.address}...",
+                "style": "geo-loose" if not r.exact else "",
+                "is_loose": not r.exact,
+            }
+            for r in g_data
+        ]
+        if fmt == "ext":
             return {"total": len(data), "success": True, "data": data}
         return data
