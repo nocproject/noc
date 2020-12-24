@@ -870,21 +870,28 @@ class Object(Document):
         Sensor.sync_object(self)
 
     @classmethod
-    def iter_by_address_id(cls, address: str, scope: str = None) -> Iterable["Object"]:
+    def iter_by_address_id(
+        cls, address: Union[str, List[str]], scope: str = None
+    ) -> Iterable["Object"]:
         """
         Get objects
         :param address:
         :param scope:
         :return:
         """
-        yield from cls.objects.filter(
-            data__match={
-                "interface": "address",
-                "scope": scope or "",
-                "attr": "id",
-                "value": address,
-            }
-        )
+        q = {
+            "interface": "address",
+            "scope": scope or "",
+            "attr": "id",
+        }
+        if isinstance(address, list):
+            if len(address) == 1:
+                q["value"] = address[0]
+            else:
+                q["value__in"] = address
+        else:
+            q["value"] = address
+        yield from cls.objects.filter(data__match=q)
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

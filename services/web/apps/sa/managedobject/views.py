@@ -51,6 +51,7 @@ from noc.core.mongo.connection import get_db
 from noc.core.defer import call_later
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
+from noc.core.geocoder.loader import loader as geocoder_loader
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -224,9 +225,11 @@ class ManagedObjectApplication(ExtModelApplication):
         if ad:
             r["administrative_domain__in"] = ad
         if geoaddr:
-            scope, addr_id = geoaddr.split(":", 1)
+            scope, query = geoaddr.split(":", 1)
+            geocoder = geocoder_loader.get_class(scope)()
+            addr_ids = {r.id for r in geocoder.iter_recursive_query(query)}
             addr_mo = set()
-            for o in Object.iter_by_address_id(addr_id, scope):
+            for o in Object.iter_by_address_id(list(addr_ids), scope):
                 addr_mo |= set(o.iter_managed_object_id())
                 # If ManagedObject has container refer to Object
                 addr_mo |= set(
