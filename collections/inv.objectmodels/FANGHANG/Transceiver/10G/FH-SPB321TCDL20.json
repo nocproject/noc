@@ -1,0 +1,32 @@
+{
+    "name": "FANG HANG | Transceiver | 10G | FH-SPB321TCDL20",
+    "$collection": "inv.objectmodels",
+    "uuid": "a7094641-fc0a-4f4c-a346-c12fdbad47fc",
+    "vendor__code": "FANG HANG",
+    "description": "FANG HANG RX-1270/TX-1310 nm Singl-mode Bi-directional, 20 km, LC",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "RxTx SC Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1270", "<1000BASELX-1330"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FH-SPB321TCDL20"]
+        }
+    }
+}
