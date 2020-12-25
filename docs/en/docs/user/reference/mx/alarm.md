@@ -45,6 +45,7 @@ Message contains JSON with following fields:
 | {{ tab }} name            | String               | Alarm Class' Name                                                                                       |
 | vars                      | Object {{ complex }} | Key-value dictionary of alarm's variables                                                               |
 | reopens                   | Integer              | Number of alarm's reopens                                                                               |
+| tags                      | Object {{ complex }} | Alarm tags                                                                                              |
 | escalation                | Object {{ complex }} | Escalation data (if escalated)                                                                          |
 | {{ tab }} timestamp       | String               | Escalation timestamp in ISO 8601 format                                                                 |
 | {{ tab }} tt_system       | Object {{ complex }} | TT System to escalate                                                                                   |
