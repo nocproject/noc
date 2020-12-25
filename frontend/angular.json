@@ -79,7 +79,10 @@
                 "en"
               ]
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -124,7 +127,10 @@
           "options": {
             "jestConfig": "apps/desktop/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": [
+            "coverage/apps/desktop"
+          ]
         },
         "xliffmerge": {
           "builder": "@ngx-i18nsupport/tooling:xliffmerge",
@@ -168,7 +174,10 @@
             "ci": {
               "quiet": true
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         }
       }
     },
@@ -240,7 +249,10 @@
           "options": {
             "jestConfig": "libs/logging/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": [
+            "coverage/libs/logging"
+          ]
         }
       },
       "schematics": {}
@@ -282,7 +294,10 @@
           "options": {
             "jestConfig": "libs/auth/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": [
+            "coverage/libs/auth"
+          ]
         },
         "storybook": {
           "builder": "@nrwl/storybook:storybook",
@@ -312,7 +327,10 @@
             "ci": {
               "quiet": true
             }
-          }
+          },
+          "outputs": [
+            "{options.outputPath}"
+          ]
         }
       },
       "schematics": {}
