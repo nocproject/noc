@@ -35,6 +35,7 @@ class AlarmDataStream(DataStream):
             "timestamp": cls.qs(alarm.timestamp),
             "severity": alarm.severity,
             "reopens": alarm.reopens,
+            "tags": alarm.tags,
         }
         if alarm.root:
             r["root"] = str(alarm.root)

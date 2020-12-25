@@ -133,6 +133,8 @@ class ActiveAlarm(Document):
     dlm_windows = ListField(IntField())
     # RCA_* enums
     rca_type = IntField(default=RCA_NONE)
+    # tags
+    tags = ListField(StringField())
 
     def __str__(self):
         return "%s" % self.id
@@ -152,6 +154,10 @@ class ActiveAlarm(Document):
         self.uplinks = data.uplinks
         self.rca_neighbors = data.rca_neighbors
         self.dlm_windows = data.dlm_windows
+        if not self.id:
+            tags = set(self.managed_object.tags or [])
+            tags |= set(self.managed_object.object_profile.tags or [])
+            self.tags = list(tags)
 
     def safe_save(self, **kwargs):
         """
@@ -279,6 +285,7 @@ class ActiveAlarm(Document):
             uplinks=self.uplinks,
             rca_neighbors=self.rca_neighbors,
             rca_type=self.rca_type,
+            tags=self.tags,
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
