@@ -1,0 +1,30 @@
+{
+  "$metric": "Environment | Sensor Status",
+  "$type": "oids",
+  "oids": [{
+    "oid": "1.3.6.1.4.1.35265.1.9.10.9.0",
+    "path": ["","","", "Fan State"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "oid": "1.3.6.1.4.1.35265.1.9.10.10.0",
+    "path": ["","","", "Fan 1 Rotate"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "oid": "1.3.6.1.4.1.35265.1.9.10.11.0",
+    "path": ["","","", "Fan 2 Rotate"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "oid": "1.3.6.1.4.1.35265.1.9.10.14.0",
+    "path": ["","","", "Device Power (ac/dc)"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+  }]
+}
+
