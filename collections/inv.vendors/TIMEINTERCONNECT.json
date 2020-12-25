@@ -1,0 +1,8 @@
+{
+    "name": "Time Interconnect",
+    "uuid": "8979a54d-424d-4ed1-9308-135454486d1c",
+    "full_name": "Time Interconnect Limited",
+    "code": ["TIMEINTERCONNECT"],
+    "site": "https://www.time-interconnect.com/",
+    "$collection": "inv.vendors"
+}

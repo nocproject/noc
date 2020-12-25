@@ -1,0 +1,40 @@
+{
+    "name": "Time Interconnect | Transceiver | 40G | DAC 1m",
+    "$collection": "inv.objectmodels",
+    "uuid": "c2f5e30f-ccf5-4bcf-b27f-d432a67dadbc",
+    "vendor__code": "TIMEINTERCONNECT",
+    "description": "40GE QSFP+ DAC 1m",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["D10045-02-1m-06"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}
