@@ -450,6 +450,11 @@ class Script(BaseScript):
             l_old = ll
         return r
 
+    def to_keep_cli_session(self):
+        if self.is_s77xx:
+            return False
+        return self.keep_cli_session
+
     def execute_cli(self, **kwargs):
         r = []
         proccessed_serials = set()
