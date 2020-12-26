@@ -1,21 +1,12 @@
 .app-header-logo {
-    width: 20px;
-    height: 20px;
+    width: 1em;
+    height: 1em;
 }
 
 .app-header-app-name {
-    margin-left: 1rem;
+    margin-left: 0.5em;
 }
 
-.app-header__start {
-    display: flex;
-    align-items: center;
-}
-.app-header__middle {
+.app-header-spacer {
     flex: 1 1 auto;
-}
-
-.app-header__end {
-    display: flex;
-    align-items: center;
 }

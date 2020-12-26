@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 //
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
@@ -10,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 const EXPORT_MODULES = [
   MatButtonModule,
+  MatButtonToggleModule,
   MatFormFieldModule,
   MatIconModule,
   MatMenuModule,

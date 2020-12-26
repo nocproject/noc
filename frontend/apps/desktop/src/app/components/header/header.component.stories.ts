@@ -3,6 +3,7 @@ import { boolean, select } from '@storybook/addon-knobs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -19,9 +20,11 @@ export const primary = () => ({
     imports: [
       BrowserAnimationsModule,
       MatButtonModule,
+      MatButtonToggleModule,
       MatIconModule,
       MatMenuModule,
-      MatToolbarModule
+      MatToolbarModule,
+
     ],
     declarations: [
       LanguagePicker
