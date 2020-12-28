@@ -9,6 +9,7 @@
 import datetime
 import dateutil.parser
 import operator
+import re
 from threading import Lock
 
 # Third-party modules
@@ -32,8 +33,10 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
-from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.main.models.template import Template
 from noc.core.defer import call_later
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.core.service.pub import pub
 
 id_lock = Lock()
 
@@ -62,6 +65,8 @@ class Maintenance(Document):
     start = DateTimeField()
     stop = DateTimeField()
     is_completed = BooleanField(default=False)
+    auto_confirm = BooleanField(default=False)
+    template = ForeignKeyField(Template)
     contacts = StringField()
     suppress_alarms = BooleanField()
     # Escalate TT during maintenance
@@ -102,7 +107,26 @@ class Maintenance(Document):
         super().save(*args, **kwargs)
 
     def on_save(self):
-        self.update_affected_objects()
+        if (
+            hasattr(self, "_changed_fields")
+            and "direct_objects" in self._changed_fields
+            or hasattr(self, "_changed_fields")
+            and "direct_segments" in self._changed_fields
+        ):
+            call_later(
+                "noc.maintenance.models.maintenance.update_affected_objects",
+                60,
+                maintenance_id=self.id,
+            )
+        if hasattr(self, "_changed_fields") and "stop" in self._changed_fields:
+            if not self.is_completed and self.auto_confirm:
+                stop = datetime.datetime.strptime(self.stop, "%Y-%m-%dT%H:%M:%S")
+                now = datetime.datetime.now()
+                if stop > now:
+                    delay = (stop - now).total_seconds()
+                    call_later(
+                        "noc.maintenance.models.maintenance.stop", delay, maintenance_id=self.id
+                    )
         if self.escalate_managed_object:
             if not self.is_completed:
                 call_later(
@@ -124,66 +148,6 @@ class Maintenance(Document):
                     pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id,
                 )
-
-    def update_affected_objects(self):
-        """
-        Calculate and fill affected objects
-        """
-
-        def get_downlinks(objects):
-            r = set()
-            # Get all additional objects which may be affected
-            for d in ObjectData._get_collection().find(
-                {"uplinks": {"$in": list(objects)}}, {"_id": 1}
-            ):
-                if d["_id"] not in objects:
-                    r.add(d["_id"])
-            if not r:
-                return r
-            # Leave only objects with all uplinks affected
-            rr = set()
-            for d in ObjectData._get_collection().find(
-                {"_id": {"$in": list(r)}}, {"_id": 1, "uplinks": 1}
-            ):
-                if len([1 for u in d["uplinks"] if u in objects]) == len(d["uplinks"]):
-                    rr.add(d["_id"])
-            return rr
-
-        def get_segment_objects(segment):
-            # Get objects belonging to segment
-            so = set(ManagedObject.objects.filter(segment=segment).values_list("id", flat=True))
-            # Get objects from underlying segments
-            for ns in NetworkSegment.objects.filter(parent=segment):
-                so |= get_segment_objects(ns)
-            return so
-
-        # Calculate affected objects
-        affected = set(o.object.id for o in self.direct_objects if o.object)
-        for o in self.direct_segments:
-            if o.segment:
-                affected |= get_segment_objects(o.segment)
-        while True:
-            r = get_downlinks(affected)
-            if not r:
-                break
-            affected |= r
-
-        # Calculate affected administrative_domain
-        affected_ad = list(
-            set(
-                ManagedObject.objects.filter(id__in=list(affected)).values_list(
-                    "administrative_domain__id", flat=True
-                )
-            )
-        )
-
-        # @todo: Calculate affected objects considering topology
-        affected = [{"object": o} for o in sorted(affected)]
-
-        Maintenance._get_collection().update(
-            {"_id": self.id},
-            {"$set": {"affected_objects": affected, "administrative_domain": affected_ad}},
-        )
 
     @classmethod
     def currently_affected(cls):
@@ -224,3 +188,80 @@ class Maintenance(Document):
                 continue
             r += [m]
         return r
+
+
+def update_affected_objects(maintenance_id):
+    """
+    Calculate and fill affected objects
+    """
+
+    def get_downlinks(objects):
+        r = set()
+        # Get all additional objects which may be affected
+        for d in ObjectData._get_collection().find({"uplinks": {"$in": list(objects)}}, {"_id": 1}):
+            if d["_id"] not in objects:
+                r.add(d["_id"])
+        if not r:
+            return r
+        # Leave only objects with all uplinks affected
+        rr = set()
+        for d in ObjectData._get_collection().find(
+            {"_id": {"$in": list(r)}}, {"_id": 1, "uplinks": 1}
+        ):
+            if len([1 for u in d["uplinks"] if u in objects]) == len(d["uplinks"]):
+                rr.add(d["_id"])
+        return rr
+
+    def get_segment_objects(segment):
+        # Get objects belonging to segment
+        so = set(ManagedObject.objects.filter(segment=segment).values_list("id", flat=True))
+        # Get objects from underlying segments
+        for ns in NetworkSegment._get_collection().find({"parent": segment}, {"_id": 1}):
+            so |= get_segment_objects(ns["_id"])
+        return so
+
+    data = Maintenance.get_by_id(maintenance_id)
+    # Calculate affected objects
+    affected = set(o.object.id for o in data.direct_objects if o.object)
+    for o in data.direct_segments:
+        if o.segment:
+            affected |= get_segment_objects(o.segment.id)
+    while True:
+        r = get_downlinks(affected)
+        if not r:
+            break
+        affected |= r
+    # Calculate affected administrative_domain
+    affected_ad = list(
+        set(
+            ManagedObject.objects.filter(id__in=list(affected)).values_list(
+                "administrative_domain__id", flat=True
+            )
+        )
+    )
+
+    # @todo: Calculate affected objects considering topology
+    affected = [{"object": o} for o in sorted(affected)]
+
+    Maintenance._get_collection().update(
+        {"_id": maintenance_id},
+        {"$set": {"affected_objects": affected, "administrative_domain": affected_ad}},
+    )
+
+
+def stop(maintenance_id):
+    rx_mail = re.compile(r"(?P<mail>[A-Za-z0-9\.\_\-]+\@[A-Za-z0-9\@\.\_\-]+)", re.MULTILINE)
+    # Find Active Maintenance
+    mai = Maintenance.get_by_id(maintenance_id)
+    mai.is_completed = True
+    # Find email addresses on Maintenance Contacts
+    if mai.template:
+        ctx = {"maintenance": mai}
+        contacts = rx_mail.findall(mai.contacts)
+        if contacts:
+            # Create message
+            subject = mai.template.render_subject(**ctx)
+            body = mai.template.render_body(**ctx)
+            for mail in contacts:
+                pub("mailsender", {"address": mail, "subject": subject, "body": body})
+    Maintenance._get_collection().update({"_id": maintenance_id}, {"$set": {"is_completed": True}})

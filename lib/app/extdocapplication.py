@@ -290,10 +290,12 @@ class ExtDocApplication(ExtApplication):
     def has_field_editable(self, field):
         return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
-    def instance_to_dict(self, o, fields=None, nocustom=False):
+    def instance_to_dict(self, o, fields=None, exclude_fields=None, nocustom=False):
         r = {}
         for n, f in o._fields.items():
             if fields and n not in fields:
+                continue
+            if exclude_fields and n in exclude_fields:
                 continue
             v = getattr(o, n)
             if v is not None:

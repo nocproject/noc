@@ -46,6 +46,7 @@ def template_validator(value):
         ("sa.ManagedObjectProfile", "config_mirror_template"),
         ("sa.ManagedObjectProfile", "config_download_template"),
         ("vc.VPNProfile", "name_template"),
+        ("maintenance.Maintenance", "template"),
     ]
 )
 class Template(NOCModel):

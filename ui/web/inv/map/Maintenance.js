@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Network Map Panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.log('Defining NOC.inv.map.Maintenance');
@@ -150,32 +150,12 @@ Ext.define('NOC.inv.map.Maintenance', {
             NOC.error(__('Your must select maintenance!'));
             return;
         }
-        if('Object' === me.noc.args[0].mode) {
-            selected[0].data.direct_objects = selected[0].data.direct_objects.concat(me.noc.args[1]);
-        } else if('Segment' === me.noc.args[0].mode) {
-            selected[0].data.direct_segments = selected[0].data.direct_segments.concat(me.noc.args[1]);
-        } else {
-            NOC.error(__('Unknows mode :') + me.noc.args[0].mode);
-            return;
-        }
-
-        selected[0].data.direct_objects = selected[0].data.direct_objects.map(function(o) {
-            return {object: o.object};
-        });
-
-        selected[0].data.affected_objects = selected[0].data.affected_objects.map(function(o) {
-            return {object: o.object};
-        });
         Ext.Ajax.request({
-            url: me.rest_url + selected[0].data.id + "/",
-            method: 'PUT',
-            jsonData: Ext.JSON.encode(selected[0].data),
+            url: me.rest_url + selected[0].data.id + "/add/",
+            method: 'POST',
+            jsonData: Ext.JSON.encode({mode: me.noc.args[0].mode, elements: me.noc.args[1]}),
             success: function(response) {
-                NOC.msg.complete(__('Saved'));
                 Ext.ComponentQuery.query('[xtype=viewport]')[0].workplacePanel.activeTab.close();
-            },
-            failure: function() {
-                NOC.error(__('Failed to load data'));
             }
         });
     },

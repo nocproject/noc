@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // maintenance.maintenance application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.maintenance.maintenance.Application");
@@ -15,6 +15,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.networksegment.ComboTree",
         "NOC.main.timepattern.LookupField",
+        "NOC.main.template.LookupField",
         "NOC.maintenance.maintenance.DirectObjectsModel",
         "NOC.maintenance.maintenance.DirectSegmentsModel",
         'NOC.core.filter.Filter'
@@ -63,6 +64,12 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                 {
                     text: __("Completed"),
                     dataIndex: "is_completed",
+                    width: 25,
+                    renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Auto-confirm"),
+                    dataIndex: "auto_confirm",
                     width: 25,
                     renderer: NOC.render.Bool
                 },
@@ -159,6 +166,17 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     name: "is_completed",
                     xtype: "checkbox",
                     boxLabel: __("Completed")
+                },
+                {
+                    name: "auto_confirm",
+                    xtype: "checkbox",
+                    boxLabel: __("Auto-confirm")
+                },
+                {
+                    name: "template",
+                    xtype: "main.template.LookupField",
+                    fieldLabel: __("Close Template"),
+                    allowBlank: true
                 },
                 {
                     name: "description",
