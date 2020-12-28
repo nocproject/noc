@@ -85,13 +85,14 @@ class TestSuite(object):
     KIND_LABELS = ["kind::feature", "kind::improvement", "kind::bug", "kind::cleanup"]
     BACKPORT = "backport"
 
-    def __init__(self, files):
+    def __init__(self, files, verbose=False):
         self.files = files
         self.tests = []
         self.start = None
         self.stop = None
         self._is_failed = None
         self._labels = None
+        self.verbose = verbose
 
     def to_junit_xml(self):
         pass
@@ -102,6 +103,9 @@ class TestSuite(object):
         return t
 
     def check(self):
+        if self.verbose:
+            print("# MR Labels:\n%s\n" % "\n".join(self.labels))
+            print("# Affected files:\n%s\n" % "\n".join(self.files))
         self.start = time.time()
         try:
             self.do_check()
@@ -113,10 +117,10 @@ class TestSuite(object):
         self.check_env_labels()
         if self.is_contribution():
             print("Thank you for contributing to the project!")
-        else:
-            self.check_required_scoped_labels()
-            self.check_backport_label()
-            self.check_affected()
+            return
+        self.check_required_scoped_labels()
+        self.check_backport_label()
+        self.check_affected()
 
     @property
     def is_failed(self):
@@ -240,8 +244,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--junit-report", help="Write JUnit XML report to file")
     parser.add_argument("files", nargs="*", help="List of affected files")
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
     args = parser.parse_args()
-    suite = TestSuite(args.files)
+    suite = TestSuite(args.files, verbose=args.verbose)
     suite.check()
     if suite.is_failed:
         suite.report()
