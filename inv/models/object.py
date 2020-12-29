@@ -40,7 +40,6 @@ from noc.core.datastream.decorator import datastream
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.comp import smart_text
 from noc.config import config
-from .connectiontype import ConnectionType
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -432,23 +431,9 @@ class Object(Document):
         if rc is None:
             raise ConnectionError("Remote connection not found: %s" % remote_name)
         remote_name = rc.name
-        # Check genders are compatible
-        r_gender = ConnectionType.OPPOSITE_GENDER[rc.gender]
-        if lc.gender != r_gender:
-            raise ConnectionError("Incompatible genders: %s - %s" % (lc.gender, rc.gender))
-        # Check directions are compatible
-        if (
-            (lc.direction == "i" and rc.direction != "o")
-            or (lc.direction == "o" and rc.direction != "i")
-            or (lc.direction == "s" and rc.direction != "s")
-        ):
-            raise ConnectionError("Incompatible directions: %s - %s" % (lc.direction, rc.direction))
-        # Check types are compatible
-        c_types = lc.type.get_compatible_types(lc.gender)
-        if rc.type.id not in c_types:
-            raise ConnectionError(
-                "Incompatible connection types: %s - %s" % (lc.type.name, rc.type.name)
-            )
+        valid, cause = self.model.check_connection(lc, rc)
+        if not valid:
+            raise ConnectionError(cause)
         # Check existing connecitons
         if lc.type.genders in ("s", "m", "f", "mf"):
             ec, r_object, r_name = self.get_p2p_connection(name)

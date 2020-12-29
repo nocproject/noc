@@ -8,10 +8,12 @@
 # Python modules
 import inspect
 import os
+from typing import Optional, Dict, List, Any
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
+from noc.inv.models.error import ConnectionError
 from noc.inv.models.objectmodel import ObjectModel
 from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
@@ -19,6 +21,7 @@ from noc.sa.interfaces.base import (
     ObjectIdParameter,
     UnicodeParameter,
     ListOfParameter,
+    BooleanParameter,
 )
 from noc.core.translation import ugettext as _
 
@@ -211,3 +214,182 @@ class InvApplication(ExtApplication):
             o = o.container
             path.insert(0, {"id": str(o.id), "name": o.name})
         return path
+
+    @view(
+        "^crossing_proposals/$",
+        method=["GET"],
+        access="read",
+        api=True,
+        validate={
+            "o1": ObjectIdParameter(required=True),
+            "o2": ObjectIdParameter(required=False),
+            "left_filter": UnicodeParameter(required=False),
+            "right_filter": UnicodeParameter(required=False),
+            "cable_filter": UnicodeParameter(required=False),
+        },
+    )
+    def api_get_crossing_proposals(
+        self,
+        request,
+        o1,
+        o2=None,
+        left_filter: Optional[str] = None,
+        right_filter: Optional[str] = None,
+        cable_filter: Optional[str] = None,
+    ):
+        """
+        API for connnection form.
+        1) If cable_filter set, checked connection capable with cable.
+        2) If left_filter set, check renmote object
+        :param request:
+        :param o1:
+        :param o2:
+        :param left_filter:
+        :param right_filter:
+        :param cable_filter:
+        :return:
+        """
+        self.logger.info(
+            "Crossing proposals: %s:%s, %s:%s. Cable: %s",
+            o1,
+            left_filter,
+            o2,
+            right_filter,
+            cable_filter,
+        )
+        lo: Object = self.get_object_or_404(Object, id=o1)
+        ro: Optional[Object] = None
+        if o2:
+            ro = self.get_object_or_404(Object, id=o2)
+        lcs: List[Dict[str, Any]] = []
+        cable: Optional[ObjectModel] = None
+        # Getting cable
+        cables = ObjectModel.objects.filter(data__length__length__gte=0)
+        if cable_filter:
+            cable = ObjectModel.get_by_name(cable_filter)
+        for c in lo.model.connections:
+            valid, disable_reason = True, ""
+            if cable_filter:
+                # If select cable_filter - check every connection to cable
+                cable_connections = [
+                    c for c in lo.model.get_connection_proposals(c.name) if c[0] == cable.id
+                ]
+                valid = bool(cable_connections)
+            elif ro and right_filter:
+                rc = ro.model.get_model_connection(right_filter)
+                if not rc:
+                    raise
+                valid, disable_reason = lo.model.check_connection(c, rc)
+            elif ro:
+                valid = bool(
+                    [c for c in lo.model.get_connection_proposals(c.name) if c[0] == ro.model.id]
+                )
+            oc, oo, _ = lo.get_p2p_connection(c.name)
+            lcs += [
+                {
+                    "name": c.name,
+                    "type": str(c.type.id),
+                    "type__label": c.type.name,
+                    "gender": c.gender,
+                    "direction": c.direction,
+                    "protocols": c.protocols,
+                    "free": not bool(oc),
+                    "valid": valid,
+                    "disable_reason": disable_reason,
+                }
+            ]
+        rcs: List[Dict[str, Any]] = []
+        if ro:
+            for c in ro.model.connections:
+                valid, disable_reason = True, ""
+                if cable_filter:
+                    cable_connections = [
+                        c for c in ro.model.get_connection_proposals(c.name) if c[0] == cable.id
+                    ]
+                    valid = bool(cable_connections)
+                elif left_filter:
+                    lc = lo.model.get_model_connection(left_filter)
+                    if not lc:
+                        raise
+                    valid, disable_reason = lo.model.check_connection(c, lc)
+                else:
+                    valid = bool(
+                        [
+                            c
+                            for c in ro.model.get_connection_proposals(c.name)
+                            if c[0] == lo.model.id
+                        ]
+                    )
+                oc, oo, _ = ro.get_p2p_connection(c.name)
+                rcs += [
+                    {
+                        "name": c.name,
+                        "type": str(c.type.id),
+                        "type__label": c.type.name,
+                        "gender": c.gender,
+                        "direction": c.direction,
+                        "protocols": c.protocols,
+                        "free": not bool(oc),
+                        "valid": valid,
+                        "disable_reason": disable_reason,
+                    }
+                ]
+        # Forming cable
+        return {
+            "left": {"connections": lcs},
+            "right": {"connections": rcs},
+            "cable": [{"name": c.name, "available": True} for c in cables],
+            "valid": lcs and rcs and left_filter and right_filter,
+        }
+
+    @view(
+        "^connect/$",
+        method=["POST"],
+        access="connect",
+        api=True,
+        validate={
+            "object": ObjectIdParameter(required=True),
+            "name": StringParameter(required=True),
+            "remote_object": ObjectIdParameter(required=True),
+            "remote_name": StringParameter(required=True),
+            # "cable": ObjectIdParameter(required=False),
+            "cable": StringParameter(required=False),
+            "reconnect": BooleanParameter(default=False, required=False),
+        },
+    )
+    def api_connect(
+        self,
+        request,
+        object,
+        name,
+        remote_object,
+        remote_name,
+        cable: Optional[str] = None,
+        reconnect=False,
+    ):
+        lo: Object = self.get_object_or_404(Object, id=object)
+        ro: Object = self.get_object_or_404(Object, id=remote_object)
+        cable_o: Optional[Object] = None
+        if cable:
+            cable = ObjectModel.get_by_name(cable)
+            cable_o = Object(
+                name="Wire %s:%s <-> %s:%s" % (lo.name, name, ro.name, remote_name),
+                model=cable,
+                container=lo.container.id,
+            )
+            cable_o.save()
+        print(lo, ro, cable_o)
+        try:
+            if cable_o:
+                c1, c2 = cable_o.model.connections[:2]
+                self.logger.debug("Wired connect c1:c2", c1, c2)
+                lo.connect_p2p(name, cable_o, c1.name, {}, reconnect=reconnect)
+                ro.connect_p2p(remote_name, cable_o, c2.name, {}, reconnect=reconnect)
+                lo.save()
+                ro.save()
+            else:
+                lo.connect_p2p(name, ro, remote_name, {}, reconnect=reconnect)
+        except ConnectionError as e:
+            self.logger.warning("Connection Error: %s", str(e))
+            return self.render_json({"status": False, "text": str(e)})
+        return True
