@@ -557,6 +557,30 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         """
         return cls._oid_rules.get(name)
 
+    @metrics(
+        ["Interface | Last Сhange"],
+        volatile=False,
+        access="S",
+    )
+    def get_interface_lastchange(self, metrics):
+        uptime = self.snmp.get("1.3.6.1.2.1.1.3.0")
+        oids = {"1.3.6.1.2.1.2.2.1.9." + str(m.ifindex): m for m in metrics if m.ifindex}
+        result = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in result:
+            mc = oids[r]
+            self.set_metric(
+                id=mc.id,
+                metric=mc.metric,
+                value=(int(int(uptime - result[r]) / 8640000)),
+                ts=ts,
+                path=mc.path,
+            )
+
     # @metrics(
     #     [
     #         "Interface | DOM | RxPower",
