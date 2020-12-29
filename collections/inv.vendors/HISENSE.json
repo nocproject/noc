@@ -1,0 +1,8 @@
+{
+    "name": "Hisense",
+    "uuid": "ff485bcd-3164-468f-802b-6b35de666c07",
+    "full_name": "Hisense",
+    "code": ["HISENSE"],
+    "site": "http://www.hisensebroadband.com/",
+    "$collection": "inv.vendors"
+}

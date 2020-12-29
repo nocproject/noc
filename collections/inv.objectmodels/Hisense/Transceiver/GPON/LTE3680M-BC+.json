@@ -1,0 +1,32 @@
+{
+    "name": "Hisense | Transceiver | GPON | LTE3680M-BC+",
+    "$collection": "inv.objectmodels",
+    "uuid": "73f6e6a9-8bee-4fe9-97bc-277ecae1572a",
+    "vendor__code": "HISENSE",
+    "description": "LTE3680M-BC+ GPON OLT Class B+ 20km DDM SFP optical module",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LTE3680M-BC+"]
+        }
+    }
+}
