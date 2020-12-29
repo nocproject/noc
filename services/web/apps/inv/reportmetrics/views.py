@@ -38,6 +38,7 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+from noc.bi.models.mac import MAC as MACDBC
 
 
 def get_column_width(name):
@@ -148,13 +149,16 @@ class ReportMetricsDetailApplication(ExtApplication):
             "discards_in_sum",
             "discards_out",
             "discards_out_sum",
+            "lastchange",
+            "status_oper",
+            "mac_counter",
+            "interface_load_url",
             "slot",
             "cpu_usage",
             "memory_usage",
             "ping_rtt",
             "ping_attempts",
             "interface_flap",
-            "interface_load_url",
         ]
 
         header_row = [
@@ -182,13 +186,16 @@ class ReportMetricsDetailApplication(ExtApplication):
             "DISCARDS_IN_SUM",
             "DISCARDS_OUT",
             "DISCARDS_OUT_SUM",
+            "INTERFACE_LASTCHANGE",
+            "INTERFACE_OPERATION_STATUS",
+            "MAC_COUNTER",
+            "INTERFACE_LOAD_URL",
             "SLOT",
             "CPU_USAGE",
             "MEMORY_USAGE",
             "PING_RTT",
             "PING_ATTEMPTS",
             "INTERFACE_FLAP",
-            "INTERFACE_LOAD_URL",
         ]
 
         if columns:
@@ -233,6 +240,41 @@ class ReportMetricsDetailApplication(ExtApplication):
         if object_profile:
             mos = mos.filter(object_profile=object_profile)
         # iface_dict = {}
+
+        if "mac_counter" in columns_order:
+            macdb = MACDBC()
+            ts_cur_date = int(time.time())
+            if ts_cur_date - ts_to_date < 0:
+                offset = 0
+            else:
+                offset = round((ts_cur_date - ts_to_date) / 86400)
+            mac_aggregate = {}
+            for mo in mos:
+                mac_responce = macdb.mac_filter(
+                    {"managed_object": mo.bi_id}, offset=offset, limit=20000000
+                )
+                for record in mac_responce:
+                    for record in mac_responce:
+                        if record["managed_object"] in mac_aggregate.keys():
+                            if (
+                                record["interface"]
+                                in mac_aggregate[record["managed_object"]].keys()
+                            ):
+                                mac_aggregate[record["managed_object"]][record["interface"]].add(
+                                    record["mac"]
+                                )
+                            else:
+                                mac_aggregate[record["managed_object"]].update(
+                                    {record["interface"]: {record["mac"]}}
+                                )
+                        elif mac_aggregate == {}:
+                            mac_aggregate = {
+                                record["managed_object"]: {record["interface"]: {record["mac"]}}
+                            }
+                        else:
+                            mac_aggregate.update(
+                                {record["managed_object"]: {record["interface"]: {record["mac"]}}}
+                            )
 
         d_url = {
             "path": "/ui/grafana/dashboard/script/report.js",
@@ -319,6 +361,8 @@ class ReportMetricsDetailApplication(ExtApplication):
             "discards_in_sum": ("discards_in_delta", "disc_in_d", "sum(discards_in_delta)"),
             "discards_out": ("discards_out", "disc_out", "quantile(0.90)(discards_out)"),
             "discards_out_sum": ("discards_out_delta", "disc_out_d", "sum(discards_out_delta)"),
+            "lastchange": ("lastchange", "l_change", "anyLast(lastchange)"),
+            "status_oper": ("status_oper", "status_oper", "anyLast(status_oper)"),
             "interface_flap": (
                 "interface_flap",
                 "flap_count",
@@ -384,13 +428,24 @@ class ReportMetricsDetailApplication(ExtApplication):
             for y in columns_order:
                 if y in object_columns:
                     res += [getattr(mo, y)]
+                elif y == "interface_load_url":
+                    d_url["biid"] = mm.id
+                    d_url["oname"] = mo[2].replace("#", "%23")
+                    # res += [url % d_url, interval]$:
+                    res.insert(columns_order.index("interface_load_url"), url % d_url)
+                elif y == "mac_counter":
+                    if getattr(mm, "id") in mac_aggregate.keys():
+                        if getattr(mm, "iface_name") in mac_aggregate[getattr(mm, "id")].keys():
+                            mac_counter = len(
+                                mac_aggregate[getattr(mm, "id")][getattr(mm, "iface_name")]
+                            )
+                        else:
+                            mac_counter = 0
+                    else:
+                        mac_counter = 0
+                    res.insert(columns_order.index("mac_counter"), mac_counter)
                 else:
                     res += [getattr(mm, y)]
-            if "interface_load_url" in columns_filter:
-                d_url["biid"] = mm.id
-                d_url["oname"] = mo[2].replace("#", "%23")
-                # res += [url % d_url, interval]
-                res.insert(columns_order.index("interface_load_url"), url % d_url)
             r += [res]
         filename = "metrics_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":

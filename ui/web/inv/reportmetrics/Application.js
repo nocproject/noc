@@ -39,7 +39,10 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["discards_in", __("Discards In (packets/s)"), false],
         ["discards_out", __("Discards Out (packets/s)"), false],
         ["interface_flap", __("Interface Flap count"), false],
-        ["interface_load_url", __("Interface Load URL"), false]
+        ["interface_load_url", __("Interface Load URL"), false],
+        ["lastchange", __("Interface Last Change (days)"), false],
+        ["status_oper", __("Operational status"), false],
+        ["mac_counter", __("Mac counter"), false]
     ],
     objectData: [
         ["id", __("ID"), false],
