@@ -11,8 +11,9 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryPanel", {
     requires: [
         "NOC.inv.inv.plugins.inventory.InventoryModel"
     ],
+    layout: "fit",
     app: null,
-    autoScroll: true,
+    scrollable: true,
     title: __("Inventory"),
 
     initComponent: function() {

@@ -227,6 +227,34 @@ class ObjectModel(Document):
                 return c
         return None
 
+    def check_connection(
+        self,
+        lc: "ObjectModelConnection",
+        rc: "ObjectModelConnection",
+    ) -> Tuple[bool, str]:
+        """
+
+        :param lc:
+        :param rc:
+        :return:
+        """
+        # Check genders are compatible
+        r_gender = ConnectionType.OPPOSITE_GENDER[rc.gender]
+        if lc.gender != r_gender:
+            return False, "Incompatible genders: %s - %s" % (lc.gender, rc.gender)
+        # Check directions are compatible
+        if (
+            (lc.direction == "i" and rc.direction != "o")
+            or (lc.direction == "o" and rc.direction != "i")
+            or (lc.direction == "s" and rc.direction != "s")
+        ):
+            return False, "Incompatible directions: %s - %s" % (lc.direction, rc.direction)
+        # Check types are compatible
+        c_types = lc.type.get_compatible_types(lc.gender)
+        if rc.type.id not in c_types:
+            return False, "Incompatible connection types: %s - %s" % (lc.type.name, rc.type.name)
+        return True, ""
+
     @classmethod
     def get_model(cls, vendor: "Vendor", part_no: Union[List[str], str]) -> Optional["ObjectModel"]:
         """

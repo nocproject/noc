@@ -10,7 +10,8 @@ Ext.define("NOC.inv.inv.Application", {
     extend: "NOC.core.Application",
     layout: "card",
     requires: [
-        "NOC.inv.inv.NavModel"
+        "NOC.inv.inv.NavModel",
+        "NOC.inv.inv.CreateConnectionForm"
     ],
     initComponent: function() {
         var me = this;
@@ -46,6 +47,13 @@ Ext.define("NOC.inv.inv.Application", {
             handler: me.onAddObject
         });
 
+        me.createConnectionButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.plug,
+            tooltip: __("Create connection"),
+            scope: me,
+            handler: me.onCreateConnection
+        });
+
         me.removeButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.minus,
             tooltip: __("Remove group"),
@@ -71,7 +79,8 @@ Ext.define("NOC.inv.inv.Application", {
                     me.navReloadButton,
                     "-",
                     me.addButton,
-                    me.removeButton
+                    me.removeButton,
+                    me.createConnectionButton
                 ]
             }],
             listeners: {
@@ -79,37 +88,38 @@ Ext.define("NOC.inv.inv.Application", {
                 select: me.onSelectNav
             },
             viewConfig: {
-                plugins: [
-                    {
-                        ptype: "treeviewdragdrop"
-                    }
-                ]
+                plugins: {
+                    ptype: "treeviewdragdrop",
+                    ddGroup: "navi-tree-to-form"
+                }
             }
         });
         me.navTree.getView().on("drop", me.onNavDrop, me);
-        //
+
 
         me.tabPanel = Ext.create("Ext.tab.Panel", {
             region: "center",
             layout: "fit",
             border: false,
-            autoScroll: true,
+            scrollable: true,
             defaults: {
-                autoScroll: true
+                scrollable: true
             },
-            items: [
-            ]
+            items: []
         });
         //
-        me.ITEM_MAIN = me.registerItem(
-            Ext.create("Ext.panel.Panel", {
-                        layout: "border",
-                        items: [
-                            me.navTree,
-                            me.tabPanel
-                        ]
-                    })
-        );
+        me.connectionPanel = Ext.create("NOC.inv.inv.CreateConnectionForm", {
+            app: me
+        });
+        //
+        me.mainPanel = Ext.create("Ext.panel.Panel", {
+            layout: "border",
+            items: [
+                me.navTree,
+                me.tabPanel
+            ]
+        });
+        me.ITEM_MAIN = me.registerItem(me.mainPanel);
         //
         me.ITEM_ADD = me.registerItem("NOC.inv.inv.AddObjectForm", {
             app: me
@@ -136,7 +146,6 @@ Ext.define("NOC.inv.inv.Application", {
     },
     //
     runPlugin: function(objectId, pData) {
-        console.log("runPlugin", pData.name);
         var me = this,
             plugin = Ext.create(pData.xtype, {app: me});
         me.tabPanel.add(plugin);
@@ -213,8 +222,10 @@ Ext.define("NOC.inv.inv.Application", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText),
-                    path = [,me.navTree.getRootNode().get("id")];
-                path = path.concat(data.map(function(v) {return v.id}));
+                    path = [, me.navTree.getRootNode().get("id")];
+                path = path.concat(data.map(function(v) {
+                    return v.id
+                }));
                 me.navTree.selectPath(
                     path.join("/"), "id", "/",
                     function(success, lastNode) {
@@ -244,7 +255,9 @@ Ext.define("NOC.inv.inv.Application", {
     //
     onNavDrop: function(node, data, overModel, dropPosition, eOpts) {
         var me = this,
-            objects = data.records.map(function(r) {return r.get("id")});
+            objects = data.records.map(function(r) {
+                return r.get("id")
+            });
         Ext.Ajax.request({
             url: "/inv/inv/insert/",
             method: "POST",
@@ -302,5 +315,13 @@ Ext.define("NOC.inv.inv.Application", {
         var me = this,
             objectId = args[0];
         me.showObject(args[0]);
+    },
+    //
+    onCreateConnection: function() {
+        var me = this;
+        if(me.mainPanel.items.items.length > 2) {
+            me.mainPanel.remove(me.mainPanel.items.items[2], false);
+        }
+        me.mainPanel.add(me.connectionPanel);
     }
 });
