@@ -1555,6 +1555,7 @@ nav:
                   - alarms: dev/reference/bi/model/alarms.md
                   - mac: dev/reference/bi/model/mac.md
                   - managedobjects: dev/reference/bi/model/managedobjects.md
+                  - netflow: dev/reference/bi/model/netflow.md
                   - reboots: dev/reference/bi/model/reboots.md
                   - routingneighbors: dev/reference/bi/model/routingneighbors.md
                   - span: dev/reference/bi/model/span.md

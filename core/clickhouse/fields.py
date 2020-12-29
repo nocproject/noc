@@ -293,6 +293,29 @@ class IPv4Field(BaseField):
         return "IPv4"
 
 
+class IPv6Field(BaseField):
+    db_type = "UInt128"
+
+    def to_json(self, value):
+        """
+        Convert IPv6 as integer
+
+        :param value:
+        :return:
+        """
+        if value is None:
+            return 0
+        return struct.unpack("!I", socket.inet_aton(value))[0]
+
+    def to_python(self, value):
+        if value is None:
+            return "0"
+        return socket.inet_ntoa(struct.pack("!I", int(value)))
+
+    def get_displayed_type(self):
+        return "IPv6"
+
+
 class AggregatedField(BaseField):
     def __init__(self, field_type, agg_functions, description=None, f_expr=""):
         super().__init__(description=description)
