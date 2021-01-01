@@ -12,7 +12,6 @@ debug: true
 syslog: true
 pid_file: {{ nats_pid_path }}
 
-max_payload: 6Mb
 cluster: {
     host: {{ ansible_host }}
     port: {{ nats_cluster_port }}
