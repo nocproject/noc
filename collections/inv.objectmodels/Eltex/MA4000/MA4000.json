@@ -9,6 +9,13 @@
     "tags": ["chassis"],
     "connections": [
         {
+            "description": "Linecard 0 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "linecard0",
+            "type__name": "Eltex | MA4000 | Linecard"
+        },
+        {
             "description": "Linecard 1 slot",
             "direction": "i",
             "gender": "f",
@@ -111,13 +118,6 @@
             "direction": "i",
             "gender": "f",
             "name": "linecard15",
-            "type__name": "Eltex | MA4000 | Linecard"
-        },
-        {
-            "description": "Linecard 16 slot",
-            "direction": "i",
-            "gender": "f",
-            "name": "linecard16",
             "type__name": "Eltex | MA4000 | Linecard"
         }
     ],
