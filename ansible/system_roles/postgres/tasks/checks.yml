@@ -45,7 +45,7 @@
       when:
         - has_svc_consul is not defined
 
-    - include_tasks: "os/{{ ansible_distribution }}/checks.yml"
+    - include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/checks.yml"
       when:
         - has_svc_postgres is defined
 
