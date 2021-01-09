@@ -9,8 +9,8 @@
     - nats
   vars_files:
     - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}.yml"
-    - "vars/{{ ansible_distribution }}.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+    - "vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
   roles:
     - role: nats
       when: nats_complete is not defined
