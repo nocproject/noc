@@ -8,9 +8,9 @@
     - mongod
     - external
   vars_files:
-    - "vars/{{ ansible_distribution }}.yml"
+    - "vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
     - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
   pre_tasks:
     - name: set bootstrap state to single mongod
       set_fact:

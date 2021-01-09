@@ -24,7 +24,7 @@
       mode: "u=rwx,g=rx,o=rx"
 
 - name: include nsqd os specific tasks
-  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
   tags:
     - requirements
 

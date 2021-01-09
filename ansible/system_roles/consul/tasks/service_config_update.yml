@@ -1,6 +1,6 @@
 ---
 - name: import path to control repo
-  include_vars: "vars/{{ ansible_distribution }}.yml"
+  include_vars: "vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
 
 # Read default value.
 - name: Read key/value pair for key {{ consul_service_key }}
