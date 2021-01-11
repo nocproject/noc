@@ -13,7 +13,7 @@ driver:
   zone: ${yc_zone}
   network_id: ${yc_network_id}
   subnet_id: ${yc_subnet_id}
-  image_id: ${yc_ub18_disk}
+  image_id: ${yc_ub20_disk}
 platforms:
   - name: noc-node-ubuntu20
     distr: ubuntu20
