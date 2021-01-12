@@ -80,5 +80,6 @@
   when: "has_svc_mongod_arbiter | default(False)"
 
 - name: Reload systemd daemon
-  command: /bin/systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
   when: mongod_service.changed
