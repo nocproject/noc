@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -94,7 +94,7 @@ class Script(BaseScript):
         i = 0
         v = self.scripts.get_sla_probes()
         for p in v:
-            i += len(p["tests"])
+            i += 1
         return i
 
     def execute_platform_cli(self, caps):
