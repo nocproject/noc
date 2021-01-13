@@ -36,6 +36,7 @@ class Profile(BaseProfile):
         "po": "aggregated",  # Port-channel/Portgroup
         "vf": "aggregated",  # FCoE FiberChannel Over Ethernet
         "Vl": "SVI",  # Vlan
+        "Lo": "loopback",  # Loopback
     }
 
     @classmethod
