@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 from noc.core.text import parse_table
+from noc.core.validators import is_int
 
 
 class Script(BaseScript):
@@ -37,16 +38,14 @@ class Script(BaseScript):
             tagged = self.expand_rangelist(i[4])
         else:
             tagged = []
-        untagged = i[5]
-        if untagged in ["none", "N/S"]:
-            untagged = pvid
+        untagged = i[5] if is_int(i[5]) else pvid
         iface = {
             "name": ifname,
             "type": "physical",
-            "subinterfaces": [{"name": ifname, "enabled_afi": ["BRIDGE"]}],
+            "subinterfaces": [
+                {"name": ifname, "enabled_afi": ["BRIDGE"], "untagged_vlan": untagged}
+            ],
         }
-        if untagged != "N/S":
-            iface["subinterfaces"][0]["untagged_vlan"] = int(untagged)
         if tagged:
             iface["subinterfaces"][0]["tagged_vlans"] = tagged
         return iface
