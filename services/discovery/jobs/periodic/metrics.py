@@ -658,14 +658,14 @@ class MetricsCheck(DiscoveryCheck):
         alarms = []
         events = []
         new_threshold = None
-        # Check if profile has configured thresholds
-        if not cfg.threshold_profile.thresholds:
-            return alarms, events
-        w_value = self.get_window_function(m, cfg)
-        if w_value is None:
-            return alarms, events
         # Get active threshold name
         active = self.job.context["active_thresholds"].get(path)
+        # Check if profile has configured thresholds
+        if not cfg.threshold_profile.thresholds and not active:
+            return alarms, events
+        w_value = self.get_window_function(m, cfg)
+        if w_value is None and not active:
+            return alarms, events
         if active:
             # Check we should close existing threshold
             for th in cfg.threshold_profile.thresholds:
@@ -728,6 +728,25 @@ class MetricsCheck(DiscoveryCheck):
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
             else:
                 # Threshold has been reconfigured or deleted
+                if active.get("close_event_class"):
+                    events += self.get_event_cfg(
+                        cfg,
+                        active["threshold_profile"],
+                        active["threshold"],
+                        active["close_event_class"].name,
+                        path,
+                        w_value,
+                    )
+                if active.get("close_handler"):
+                    if active["close_handler"].allow_threshold:
+                        handler = active["close_handler"].get_handler()
+                        if handler:
+                            try:
+                                handler(self, cfg, active["threshold"], w_value)
+                            except Exception as e:
+                                self.logger.error("Exception when calling close handler: %s", e)
+                    else:
+                        self.logger.warning("Handler is not allowed for Thresholds")
                 active = None
                 del self.job.context["active_thresholds"][path]
         if not active:
@@ -739,6 +758,8 @@ class MetricsCheck(DiscoveryCheck):
                 self.job.context["active_thresholds"][path] = {
                     "threshold": threshold.name,
                     "threshold_profile": cfg.threshold_profile,
+                    "close_event_class": threshold.close_event_class,
+                    "close_handler": threshold.close_handler,
                 }
                 if threshold.open_event_class:
                     # Raise Event

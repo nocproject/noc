@@ -126,7 +126,7 @@ def handler(mo, event):
                     event["linked_object"] = linked_object[0].managed_object.name
                     event["linked_object_interface"] = linked_object[0].name
         if is_float(event["value"]):
-            event["value"] = round(event["value"], 2)
+            event["value"] = round(float(event["value"]), 2)
         return event
     except Exception as e:
         logger.info("Error: %s \n %s" % (e, event["path"].split("|")[-1::][0].strip()))
@@ -140,6 +140,8 @@ def handler_object(mo, event):
         res = event["path"].split("|")
         if len(res) > 2:
             event["name"] = res[-1::][0]
+        if is_float(event["value"]):
+            event["value"] = round(float(event["value"]), 2)
         return event
     except Exception as e:
         logger.info("Error: %s \n %s" % (e, event["path"].split("|")[-1::][0].strip()))
