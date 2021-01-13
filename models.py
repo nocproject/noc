@@ -343,6 +343,7 @@ COLLECTIONS = [
     "pm.MeasurementUnits",
     "pm.MetricScope",
     "pm.MetricType",
+    "pm.ThresholdProfile",
     "fm.Enumeration",
     "inv.ConnectionRule",
     "inv.ConnectionType",
