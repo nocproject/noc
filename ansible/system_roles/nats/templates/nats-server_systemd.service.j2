@@ -14,6 +14,7 @@ Type=simple
 ExecStart={{ nats_bin_path }}/nats-server -c {{ nats_config_path }}/nats-server.conf
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s SIGINT $MAINPID
+RuntimeDirectory=nats
 
 [Install]
 WantedBy=multi-user.target
