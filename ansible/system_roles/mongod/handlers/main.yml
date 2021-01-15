@@ -10,9 +10,3 @@
   service:
     name: "{{ mongod_system_service }}"
     state: restarted
-
-- name: restart mongod-arbiter
-  become: "True"
-  service:
-    name: "{{ mongod_arbiter_system_service }}"
-    state: restarted

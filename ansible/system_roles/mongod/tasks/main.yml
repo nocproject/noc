@@ -32,16 +32,6 @@
   tags:
     - config
 
-- name: Setting mongod-arbiter config
-  template:
-    src: mongod-arbiter.conf.j2
-    dest: "{{ mongo_dir }}/mongod-arbiter.conf"
-    owner: "{{ mongo_user }}"
-    mode: "0644"
-  notify: restart mongod-arbiter
-  when: "has_svc_mongod_arbiter | default(False)"
-  tags:
-    - config
 
 - name: Generating mongo key file
   template:

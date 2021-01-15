@@ -5,7 +5,7 @@ storage:
   dbPath: {{ mongo_db_path }}
   journal:
     enabled: true
-  engine: {{ mongod_engine }}
+  engine: wiredTiger
   wiredTiger:
     engineConfig:
       directoryForIndexes: true
@@ -36,7 +36,3 @@ security:
 
 replication:
   replSetName: {{ mongod_rs }}
-
-#operationProfiling:
-
-#sharding:
