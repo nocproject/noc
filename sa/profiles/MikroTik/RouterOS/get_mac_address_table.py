@@ -16,6 +16,7 @@ class Script(BaseScript):
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "/interface ethernet switch host print detail without-paging where dynamic"
+        out = []
         if mac is not None:
             cmd += " mac-address=%s" % mac
         if interface is not None:
@@ -26,13 +27,18 @@ class Script(BaseScript):
             v = self.cli_detail(cmd)
         except self.CLISyntaxError:
             return []
+        for n,f,r in v:
+            if "vlan-id" not in r:
+                break
+            if r['vlan-id'] == '0':
+                continue
+            out.append(
+                {
+                    "vlan_id": r["vlan-id"],
+                    "mac": r["mac-address"],
+                    "interfaces": [r["ports"]],
+                    "type": "D",
+                }
+            )
 
-        return [
-            {
-                "vlan_id": r["vlan-id"],
-                "mac": r["mac-address"],
-                "interfaces": [r["ports"]],
-                "type": "D",
-            }
-            for n, f, r in v
-        ]
+        return out
