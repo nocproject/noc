@@ -111,6 +111,3 @@
     http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
-
-- include_tasks: "arbiter.yml"
-  when: "has_svc_mongo_arbiter | default(False)"

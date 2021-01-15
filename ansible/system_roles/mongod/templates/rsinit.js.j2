@@ -21,15 +21,6 @@
         _id: {{ hostvars[n]["node_id"] }},
         host: "{{ n }}:27017",
         priority: 1
-        {% elif hostvars[n]["mongod_power"] == 'arbiter' %}
-        _id: 99,
-        host: "{{ n }}:27018",
-        arbiterOnly: true
-        {% elif hostvars[n]["mongod_power"] == 'hidden' %}
-        _id: {{ hostvars[n]["node_id"] }},
-        host: "{{ n }}:27017",
-        priority: 0,
-        hidden: true
         {% endif %}
     });
 {% endfor %}

@@ -62,25 +62,6 @@
     enabled: "True"
     state: started
 
-- name: Create MongoDB arbiter directory
-  file:
-    path: "{{ noc_root }}/var/db/mongo-arbiter"
-    owner: "{{ mongo_user }}"
-    group: "{{ mongo_user }}"
-    mode: 0700
-    state: directory
-  when: "mongod_power == 'arbiter'"
-
-- name: Install MongoDB arbiter logrotated config
-  template:
-    src: "etc/logrotate.d/mongod-arbiter.conf.j2"
-    dest: "/etc/logrotate.d/mongod-arbiter.conf"
-  when:
-    - "mongod_power == 'arbiter'"
-    - "'Linux' in ansible_system"
-  tags:
-    - config
-
 - name: Install shell.js
   template:
     src: shell.js.j2
@@ -89,14 +70,6 @@
   no_log: "{{ tower_show_secrets }}"
   tags:
     - config
-
-- name: Enable MongoDB arbiter system service
-  service:
-    name: "{{ mongod_arbiter_system_service }}"
-    enabled: "True"
-    state: started
-  when:
-    - "mongod_power == 'arbiter'"
 
 - name: include master settings
   include_tasks: "master.yml"
