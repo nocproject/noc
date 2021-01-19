@@ -315,6 +315,7 @@ class LiftBridgeClient(object):
             await self.close_channel(broker)
 
     async def __refresh_leaders(self):
+        logger.info("Refresh leaders")
         await self.fetch_metadata(wait_for_stream=True)
 
     def __reset_leaders(self):
@@ -666,8 +667,8 @@ class LiftBridgeClient(object):
     async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
         with rpc_error():
             while True:
-                channel = await self.get_leader_channel(CURSOR_STREAM, 0)
                 try:
+                    channel = await self.get_leader_channel(CURSOR_STREAM, 0)
                     await channel.SetCursor(
                         SetCursorRequest(
                             stream=stream,
