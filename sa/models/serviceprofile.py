@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ from mongoengine.fields import (
     BooleanField,
     LongField,
     ListField,
+    EmbeddedDocumentField,
 )
 import cachetools
 
@@ -28,6 +29,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later
+from noc.inv.models.capsitem import CapsItem
 
 id_lock = Lock()
 
@@ -52,6 +54,8 @@ class ServiceProfile(Document):
     interface_profile = ReferenceField(InterfaceProfile)
     # Alarm weight
     weight = IntField(default=0)
+    # Capabilities
+    caps = ListField(EmbeddedDocumentField(CapsItem))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
