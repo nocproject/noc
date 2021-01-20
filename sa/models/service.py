@@ -1,17 +1,25 @@
 # ----------------------------------------------------------------------
 # Service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
 import logging
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField, ReferenceField, ListField, LongField
+from mongoengine.fields import (
+    StringField,
+    DateTimeField,
+    ReferenceField,
+    ListField,
+    EmbeddedDocumentField,
+    LongField,
+)
 
 # NOC modules
 from .serviceprofile import ServiceProfile
@@ -21,6 +29,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
+from noc.inv.models.capsitem import CapsItem
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +88,8 @@ class Service(Document):
     cpe_mac = StringField()
     cpe_model = StringField()
     cpe_group = StringField()
+    # Capabilities
+    caps = ListField(EmbeddedDocumentField(CapsItem))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -122,3 +133,6 @@ class Service(Document):
                 return self.managed_object
             r = r.parent
         return None
+
+    def get_caps(self) -> Dict[str, Any]:
+        return CapsItem.get_caps(self.caps, self.profile.caps)

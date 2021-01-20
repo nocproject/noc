@@ -9,14 +9,8 @@
 import logging
 
 # Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (
-    ListField,
-    StringField,
-    ReferenceField,
-    DynamicField,
-    EmbeddedDocumentField,
-)
+from mongoengine.document import Document
+from mongoengine.fields import ListField, EmbeddedDocumentField
 
 # NOC modules
 from noc.inv.models.capability import Capability
@@ -25,18 +19,9 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 from noc.core.datastream.decorator import datastream
+from noc.inv.models.capsitem import CapsItem
 
 logger = logging.getLogger(__name__)
-
-
-class CapsItem(EmbeddedDocument):
-    capability = ReferenceField(Capability)
-    value = DynamicField()
-    # Source name like "caps", "interface", "manual"
-    source = StringField()
-
-    def __str__(self):
-        return self.capability.name
 
 
 @on_save
