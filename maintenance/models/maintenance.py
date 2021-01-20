@@ -95,6 +95,9 @@ class Maintenance(Document):
         return Maintenance.objects.filter(id=id).first()
 
     def save(self, *args, **kwargs):
+        created = False
+        if self._created:
+            created = self._created
         if self.direct_objects:
             if any(o_elem.object is None for o_elem in self.direct_objects):
                 raise ValidationError("Object line is Empty")
@@ -105,6 +108,12 @@ class Maintenance(Document):
                 except Exception:
                     raise ValidationError("Segment line is Empty")
         super().save(*args, **kwargs)
+        if created:
+            call_later(
+                "noc.maintenance.models.maintenance.update_affected_objects",
+                60,
+                maintenance_id=self.id,
+            )
 
     def on_save(self):
         if (
