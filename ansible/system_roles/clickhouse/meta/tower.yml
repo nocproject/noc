@@ -25,6 +25,12 @@ forms:
       default: noc
       type: str
       common: environment
+    ro_grafana_password:
+      label: "Password for user grafana"
+      description: "RO grafana user password"
+      default: noc
+      type: str
+      common: environment
     db:
       default: noc
       label: "DB name"
