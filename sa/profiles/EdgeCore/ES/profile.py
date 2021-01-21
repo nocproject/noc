@@ -2,7 +2,7 @@
 # Vendor: EdgeCore
 # OS:     ES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -52,8 +52,8 @@ class Profile(BaseProfile):
         "is_platform_46": {"platform": {"$regex": r"46"}},
         "is_platform_4612": {"platform": {"$regex": r"4612"}},
         "is_platform_4626": {"platform": {"$regex": r"4626"}},
-        "is_platform_3510": {"platform": {"$regex": r"3510|3526|3528|3552|2228N|ECS4210"}},
-        "is_platform_3510ma": {"platform": {"$regex": r"3510MA|ECS4210"}},
+        "is_platform_3510": {"platform": {"$regex": r"3510|3526|3528|3552|2228N|ECS4210|ECS4510"}},
+        "is_platform_3510ma": {"platform": {"$regex": r"3510MA|ECS4210|ECS4510"}},
         "is_platform_3526s": {"platform": {"$regex": r"3526S"}},
         "is_platform_3528mv2": {"platform": {"$regex": r"3528MV2"}},
         "is_platform_ecs4100": {"platform": {"$regex": r"ECS4100"}},
@@ -114,8 +114,8 @@ class Profile(BaseProfile):
             r[current_iface][k.strip()] = v.strip()
         return r
 
-    _IF_TYPES = {"eth": "physical", "vla": "SVI", "tru": "aggregated"}
+    INTERFACE_TYPES = {"eth": "physical", "vla": "SVI", "tru": "aggregated"}
 
     @classmethod
     def get_interface_type(cls, name):
-        return cls._IF_TYPES.get(name[:3].lower(), "unknown")
+        return cls.INTERFACE_TYPES.get(name[:3].lower(), "unknown")

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -68,6 +68,18 @@ class Script(BaseScript):
     rx_hw_35 = re.compile(r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$", re.MULTILINE)
     rx_boot_35 = re.compile(r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$", re.MULTILINE)
 
+    PLATFORM_TYPES = {
+        "1.3.6.1.4.1.259.10.1.42.101": "ECS4210-28T",
+        "1.3.6.1.4.1.259.10.1.42.102": "ECS4210-28P",
+        "1.3.6.1.4.1.259.10.1.42.103": "ECS4210-12T",
+        "1.3.6.1.4.1.259.10.1.42.104": "ECS4210-12P",
+        "1.3.6.1.4.1.259.10.1.24.101": "ECS4510-28T",
+        "1.3.6.1.4.1.259.10.1.24.102": "ECS4510-28P",
+        "1.3.6.1.4.1.259.10.1.24.103": "ECS4510-28F",
+        "1.3.6.1.4.1.259.10.1.24.104": "ECS4510-52T",
+        "1.3.6.1.4.1.259.6.10.50": "ES3526X",
+    }
+
     def get_version_35xx(self, show_system, version):
         # Vendor default
         vendor = "EdgeCore"
@@ -122,19 +134,9 @@ class Script(BaseScript):
             match = self.rx_sys_42.search(show_system)
             if not match:
                 raise self.NotSupportedError(platform)
-            platform = match.group("platform")
-            if platform == "1.3.6.1.4.1.259.10.1.42.101":
-                platform = "ECS4210-28T"
-            elif platform == "1.3.6.1.4.1.259.10.1.42.102":
-                platform = "ECS4210-28P"
-            elif platform == "1.3.6.1.4.1.259.10.1.42.103":
-                platform = "ECS4210-12T"
-            elif platform == "1.3.6.1.4.1.259.10.1.42.104":
-                platform = "ECS4210-12P"
-            elif platform == "1.3.6.1.4.1.259.6.10.50":
-                platform = "ES3526X"
-            else:
-                raise self.NotSupportedError(platform)
+            platform = self.PLATFORM_TYPES.get(match.group("platform"))
+            if not platform:
+                raise self.NotSupportedError(match.group("platform"))
         r = {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}
         if not v:
             return r
