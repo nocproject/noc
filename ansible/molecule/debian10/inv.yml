@@ -33,6 +33,7 @@ all:
           clickhouse_password: noc
           clickhouse_query_size: 262144
           clickhouse_ro_password: noc
+          clickhouse_ro_grafana_password: noc
           clickhouse_user: noc
           config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
           consul_master_token: null
