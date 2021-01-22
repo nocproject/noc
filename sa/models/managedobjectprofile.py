@@ -583,6 +583,9 @@ class ManagedObjectProfile(NOCModel):
     # xRCA settings
     enable_rca_downlink_merge = models.BooleanField(default=False)
     rca_downlink_merge_window = models.IntegerField(default=120)
+    # Abduct Detection settings
+    abduct_detection_window = models.IntegerField(default=0)
+    abduct_detection_threshold = models.IntegerField(default=0)
     # Limits
     snmp_rate_limit = models.IntegerField(default=0)
     #

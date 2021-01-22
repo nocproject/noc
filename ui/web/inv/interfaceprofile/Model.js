@@ -130,6 +130,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "allow_vacuum_bulling",
             type: "bool"
         },
+        {
+            name: "enable_abduct_detection",
+            type: "bool"
+        },
         // CSS
         {
             name: "row_class",

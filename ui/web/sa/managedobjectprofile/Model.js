@@ -884,6 +884,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "snmp_rate_limit",
             type: "int",
             defaultValue: 0
+        },
+        {
+            name: "abduct_detection_window",
+            type: "integer",
+            defaultValue: 0
+        },
+        {
+            name: "abduct_detection_threshold",
+            type: "integer",
+            defaultValue: 0
         }
     ]
 });

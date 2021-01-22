@@ -1,0 +1,15 @@
+{
+    "name": "Security | Abduct | Cable Abduct",
+    "$collection": "fm.alarmclasses",
+    "uuid": "59e90376-3893-4966-80d7-1790c2a4e51c",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars": [
+    ],
+    "subject_template": "Cable Abduction Detected",
+    "body_template": "Possible cable abduction detected",
+    "symptoms": "",
+    "probable_causes": "Multiple access links goes down almost in same time",
+    "recommended_actions": "Check electrics and send security team to catch the thief"
+}

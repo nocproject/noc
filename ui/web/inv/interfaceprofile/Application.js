@@ -214,6 +214,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        xtype: "checkbox",
+                        name: "enable_abduct_detection",
+                        boxLabel: __("Enable Abduct Detection"),
+                        allowBlank: true
+                    },
+                    {
                         xtype: "fieldset",
                         layout: "hbox",
                         title: __("IfDesc Settings"),
