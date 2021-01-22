@@ -94,6 +94,20 @@ class Maintenance(Document):
     def get_by_id(cls, id):
         return Maintenance.objects.filter(id=id).first()
 
+    def update_affected_objects_maintenance(self):
+        call_later(
+            "noc.maintenance.models.maintenance.update_affected_objects",
+            60,
+            maintenance_id=self.id,
+        )
+
+    def auto_confirm_maintenance(self):
+        stop = datetime.datetime.strptime(self.stop, "%Y-%m-%dT%H:%M:%S")
+        now = datetime.datetime.now()
+        if stop > now:
+            delay = (stop - now).total_seconds()
+            call_later("noc.maintenance.models.maintenance.stop", delay, maintenance_id=self.id)
+
     def save(self, *args, **kwargs):
         created = False
         if self._created:
@@ -109,11 +123,8 @@ class Maintenance(Document):
                     raise ValidationError("Segment line is Empty")
         super().save(*args, **kwargs)
         if created:
-            call_later(
-                "noc.maintenance.models.maintenance.update_affected_objects",
-                60,
-                maintenance_id=self.id,
-            )
+            self.update_affected_objects_maintenance()
+            self.auto_confirm_maintenance()
 
     def on_save(self):
         if (
@@ -122,20 +133,12 @@ class Maintenance(Document):
             or hasattr(self, "_changed_fields")
             and "direct_segments" in self._changed_fields
         ):
-            call_later(
-                "noc.maintenance.models.maintenance.update_affected_objects",
-                60,
-                maintenance_id=self.id,
-            )
+            self.update_affected_objects_maintenance()
+
         if hasattr(self, "_changed_fields") and "stop" in self._changed_fields:
             if not self.is_completed and self.auto_confirm:
-                stop = datetime.datetime.strptime(self.stop, "%Y-%m-%dT%H:%M:%S")
-                now = datetime.datetime.now()
-                if stop > now:
-                    delay = (stop - now).total_seconds()
-                    call_later(
-                        "noc.maintenance.models.maintenance.stop", delay, maintenance_id=self.id
-                    )
+                self.auto_confirm_maintenance()
+
         if self.escalate_managed_object:
             if not self.is_completed:
                 call_later(
