@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.mib import mib
 from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
@@ -78,6 +79,11 @@ class Script(BaseScript):
             if port_subtype == 1:
                 # Iface alias
                 iface_name = port_id  # BUG. Look in PortID instead PortDesc
+                try:
+                    iface_name = self.profile.convert_interface_name(iface_name)
+                except InterfaceTypeError:
+                    # Last resort
+                    iface_name = names[int(port_num)]
             elif port_subtype == 3:
                 # Iface MAC address
                 raise NotImplementedError()
