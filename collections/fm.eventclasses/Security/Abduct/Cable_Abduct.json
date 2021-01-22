@@ -1,0 +1,22 @@
+{
+    "name": "Security | Abduct | Cable Abduct",
+    "$collection": "fm.eventclasses",
+    "uuid": "0442ed1a-b2cb-457f-926e-f6822885c0a4",
+    "description": "Possible cable abduction detected",
+    "action": "A",
+    "vars": [
+    ],
+    "subject_template": "Cable Abduction Detected",
+    "body_template": "Possible cable abduction detected",
+    "symptoms": "",
+    "probable_causes": "Multiple access links goes down almost in same time",
+    "recommended_actions": "Check electrics and send security team to catch the thief",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Abduct | Cable Abduct"
+        }
+    ]
+}

@@ -2393,6 +2393,25 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             }
                         },
                         {
+                            title: __("Abduct Detection"),
+                            items: [
+                                {
+                                    name: "abduct_detection_window",
+                                    fieldLabel: __("Abduct Detection Window"),
+                                    xtype: "numberfield",
+                                    allowBlank: true,
+                                    uiStyle: "small"
+                                },
+                                {
+                                    name: "abduct_detection_threshold",
+                                    fieldLabel: __("Abduct Detection Threshold"),
+                                    xtype: "numberfield",
+                                    allowBlank: true,
+                                    uiStyle: "small"
+                                }
+                            ]
+                        },
+                        {
                             title: __("Telemetry"),
                             tooltip: __("Setting for saving discovery operation on ClickHouse telemetry table. <br/>" +
                                 "Warning! Activate telemetry if you really know for it. <br/>" +

@@ -9,6 +9,7 @@
 import datetime
 import time
 from threading import Lock
+from typing import Any, Optional
 
 # Third-party modules
 from django.template import Template, Context
@@ -248,6 +249,17 @@ class ActiveEvent(Document):
         if hasattr(self, "_do_not_dispose"):
             return False
         return len(self.event_class.disposition) > 0
+
+    def set_hint(self, k: str, v: Any) -> None:
+        if not hasattr(self, "_hints"):
+            setattr(self, "_hints", {})
+        self._hints[k] = v
+
+    def get_hint(self, k: str) -> Optional[Any]:
+        h = getattr(self, "_hints", None)
+        if not h:
+            return None
+        return h.get(k)
 
 
 # Avoid circular references

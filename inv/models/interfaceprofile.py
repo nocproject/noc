@@ -122,6 +122,8 @@ class InterfaceProfile(Document):
     #
     ifdesc_patterns = PlainReferenceField(IfDescPatterns)
     ifdesc_handler = PlainReferenceField(Handler)
+    # Enable abduct detection on interface
+    enable_abduct_detection = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)

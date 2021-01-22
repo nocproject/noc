@@ -693,6 +693,8 @@ nav:
                   - "UDLD":
                       - "UDLD Protocol Error Detected": user/reference/alarm-classes/network/udld/udld-protocol-error-detected.md
               - "Security":
+                  - "Abduct":
+                      - "Cable Abduct": user/reference/alarm-classes/security/abduct/cable-abduct.md
                   - "Access":
                       - "Case Open": user/reference/alarm-classes/security/access/case-open.md
                       - "Door Open": user/reference/alarm-classes/security/access/door-open.md
@@ -1013,6 +1015,8 @@ nav:
                   - "ACL":
                       - "ACL Deny": user/reference/event-classes/security/acl/acl-deny.md
                       - "ACL Permit": user/reference/event-classes/security/acl/acl-permit.md
+                  - "Abduct":
+                      - "Cable Abduct": user/reference/event-classes/security/abduct/cable-abduct.md
                   - "Access":
                       - "Case Close": user/reference/event-classes/security/access/case-close.md
                       - "Case Open": user/reference/event-classes/security/access/case-open.md

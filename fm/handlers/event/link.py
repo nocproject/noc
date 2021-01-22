@@ -22,6 +22,7 @@ def oper_up(event):
     ).first()
     if iface:
         iface.set_oper_status(True)
+        event.set_hint("link_status", True)
 
 
 def oper_down(event):
@@ -33,3 +34,4 @@ def oper_down(event):
     ).first()
     if iface:
         iface.set_oper_status(False)
+        event.set_hint("link_status", False)

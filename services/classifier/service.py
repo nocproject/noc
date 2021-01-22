@@ -14,7 +14,7 @@ from collections import defaultdict
 import operator
 import re
 from time import perf_counter
-from typing import Dict
+from typing import Optional, Dict
 
 # Third-party modules
 import cachetools
@@ -42,6 +42,7 @@ from noc.services.classifier.ruleset import RuleSet
 from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
+from noc.services.classifier.abdetector import AbductDetector
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
@@ -92,6 +93,8 @@ E_SRC_METRICS = {
 
 NS = 1000000000.0
 
+CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
+
 
 class ClassifierService(TornadoService):
     """
@@ -123,6 +126,7 @@ class ClassifierService(TornadoService):
         self.handlers = {}  # event class id -> [<handler>]
         self.dedup_filter = DedupFilter()
         self.suppress_filter = SuppressFilter()
+        self.abduct_detector = AbductDetector()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Reporting
@@ -132,6 +136,8 @@ class ClassifierService(TornadoService):
         self.slot_number = 0
         self.total_slots = 0
         self.pool_partitions: Dict[str, int] = {}
+        #
+        self.cable_abduct_ecls: Optional[EventClass] = None
 
     async def on_activate(self):
         """
@@ -368,9 +374,6 @@ class ClassifierService(TornadoService):
             event.event_class.name,
             event.vars,
         )
-        # Additionally check link events
-        if self.check_link_event(event):
-            return
         # Deduplication
         if self.deduplicate_event(event):
             return
@@ -386,6 +389,9 @@ class ClassifierService(TornadoService):
         self.suppress_filter.register(event)
         # Call handlers
         if self.call_event_handlers(event):
+            return
+        # Additionally check link events
+        if await self.check_link_event(event):
             return
         # Call triggers
         if self.call_event_triggers(event):
@@ -543,7 +549,7 @@ class ClassifierService(TornadoService):
                 return True
         return False
 
-    def check_link_event(self, event):
+    async def check_link_event(self, event):
         """
         Additional link events check
         :param event:
@@ -571,6 +577,22 @@ class ClassifierService(TornadoService):
                 if_name,
             )
             action = self.default_link_action
+        # Abduct detection
+        link_status = event.get_hint("link_status")
+        if (
+            link_status is not None
+            and iface
+            and iface.profile.enable_abduct_detection
+            and event.managed_object.object_profile.abduct_detection_window
+            and event.managed_object.object_profile.abduct_detection_threshold
+        ):
+            ts = int(event.timestamp.timestamp())
+            if link_status:
+                self.abduct_detector.register_up(ts, iface)
+            else:
+                if self.abduct_detector.register_down(ts, iface):
+                    await self.raise_abduct_event(event)
+        # Link actions
         if action == "I":
             # Ignore
             if iface:
@@ -697,6 +719,25 @@ class ClassifierService(TornadoService):
         Check codebooks for match
         """
         return cb1 == cb2
+
+    async def raise_abduct_event(self, event: ActiveEvent) -> None:
+        """
+        Create Cable Abduct Event and dispose it to correlator
+        :param event:
+        :return:
+        """
+        if not self.cable_abduct_ecls:
+            self.cable_abduct_ecls = EventClass.get_by_name(CABLE_ABDUCT)
+        abd_event = ActiveEvent(
+            timestamp=event.timestamp,
+            start_timestamp=event.timestamp,
+            managed_object=event.managed_object,
+            source=event.source,
+            repeats=1,
+            event_class=self.cable_abduct_ecls,
+        )
+        abd_event.save()
+        await self.dispose_event(abd_event)
 
 
 if __name__ == "__main__":

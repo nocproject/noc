@@ -106,6 +106,16 @@
                 "vars__interface": "alarm.vars['interface']",
                 "managed_object": "alarm.managed_object.id"
             }
+        },
+        {
+            "name": "Cable Abduct",
+            "root__name": "Security | Abduct | Cable Abduct",
+            "window": 300,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
         }
-    ]
+    ],
+    "recover_time": 300
 }
