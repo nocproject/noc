@@ -12,6 +12,7 @@ import bson
 # Third-party modules
 from django.http import HttpResponse
 from mongoengine.errors import ValidationError
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
@@ -40,7 +41,7 @@ class MaintenanceApplication(ExtDocApplication):
         qs = super().queryset(request)
         if not request.user.is_superuser:
             user_ads = UserAccess.get_domains(request.user)
-            qs = qs.filter(administrative_domain__in=user_ads)
+            qs = qs.filter(Q(administrative_domain=[]) | Q(administrative_domain__in=user_ads))
         if query and self.query_fields:
             q = qs.filter(self.get_Q(request, query))
             if q:
