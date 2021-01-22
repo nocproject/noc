@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.service Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.service.Model");
@@ -131,6 +131,10 @@ Ext.define("NOC.sa.service.Model", {
         },
         {
             name: "stage_start",
+            type: "auto"
+        },
+        {
+            name: "caps",
             type: "auto"
         }
     ]

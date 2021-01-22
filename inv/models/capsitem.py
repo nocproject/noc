@@ -21,6 +21,7 @@ class CapsItem(EmbeddedDocument):
     value = DynamicField()
     # Source name like "caps", "interface", "manual"
     source = StringField()
+    scope = StringField()
 
     def __str__(self):
         return self.capability.name
@@ -43,3 +44,7 @@ class CapsItem(EmbeddedDocument):
                     continue
                 r[cn] = ci.value
         return r
+
+    def clean(self):
+        if self.capability:
+            self.value = self.capability.clean_value(self.value)

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.serviceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.serviceprofile.Application");
@@ -13,7 +13,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
         "NOC.sa.serviceprofile.Model",
         "NOC.main.ref.glyph.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.inv.interfaceprofile.LookupField"
+        "NOC.inv.interfaceprofile.LookupField",
+        "NOC.inv.capability.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
     search: true,
@@ -159,6 +160,33 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     fieldLabel: __("Tags"),
                     allowBlank: true,
                     uiStyle: "extra"
+                },
+                {
+                    name: "caps",
+                    xtype: "gridfield",
+                    fieldLabel: __("Capabilities"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Name"),
+                            dataIndex: "capability",
+                            renderer: NOC.render.Lookup("capability"),
+                            width: 250,
+                            editor: "inv.capability.LookupField"
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            flex: 1,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Scope"),
+                            dataIndex: "scope",
+                            width: 150,
+                            editor: "textfield"
+                        }
+                    ]
                 }
             ]
         });
