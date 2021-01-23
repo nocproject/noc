@@ -24,6 +24,7 @@ class CapabilityApplication(ExtDocApplication):
     menu = [_("Setup"), _("Capabilities")]
     model = Capability
     query_fields = ["name", "description"]
+    query_condition = "icontains"
     parent_model = DocCategory
     parent_field = "parent"
 

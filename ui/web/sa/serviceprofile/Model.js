@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.serviceprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.serviceprofile.Model");
@@ -77,6 +77,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
         },
         {
             name: "tags",
+            type: "auto"
+        },
+        {
+            name: "caps",
             type: "auto"
         }
     ]

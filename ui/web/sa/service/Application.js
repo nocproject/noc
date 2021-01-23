@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.service application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.service.Application");
@@ -14,7 +14,8 @@ Ext.define("NOC.sa.service.Application", {
         "NOC.sa.serviceprofile.LookupField",
         "NOC.crm.subscriber.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.sa.managedobject.LookupField"
+        "NOC.sa.managedobject.LookupField",
+        "NOC.inv.capability.LookupField"
     ],
     model: "NOC.sa.service.Model",
     search: true,
@@ -196,6 +197,33 @@ Ext.define("NOC.sa.service.Application", {
                             fieldLabel: __("BI ID"),
                             allowBlank: true,
                             uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    name: "caps",
+                    xtype: "gridfield",
+                    fieldLabel: __("Capabilities"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Name"),
+                            dataIndex: "capability",
+                            renderer: NOC.render.Lookup("capability"),
+                            width: 250,
+                            editor: "inv.capability.LookupField"
+                        },
+                        {
+                            text: __("Value"),
+                            dataIndex: "value",
+                            flex: 1,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Scope"),
+                            dataIndex: "scope",
+                            width: 150,
+                            editor: "textfield"
                         }
                     ]
                 }
