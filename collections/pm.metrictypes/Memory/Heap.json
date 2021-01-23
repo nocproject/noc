@@ -1,0 +1,10 @@
+{
+    "name": "Memory | Heap",
+    "$collection": "pm.metrictypes",
+    "uuid": "0d792d93-3613-4dd6-9a3b-4482a4590df5",
+    "scope__name": "Memory",
+    "field_name": "heap",
+    "field_type": "UInt8",
+    "description": "Memory Heap in percents",
+    "measure": "%"
+}
