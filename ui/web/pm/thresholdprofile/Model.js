@@ -20,6 +20,10 @@ Ext.define("NOC.pm.thresholdprofile.Model", {
             type: "string"
         },
         {
+            name: "value_handler",
+            type: "string"
+        },
+        {
             name: "description",
             type: "string"
         },
