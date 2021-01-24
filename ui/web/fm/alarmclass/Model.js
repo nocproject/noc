@@ -122,6 +122,14 @@ Ext.define("NOC.fm.alarmclass.Model", {
             type: "int"
         },
         {
+            name: "repeat_window",
+            type: "int"
+        },
+        {
+            name: "repeat_threshold",
+            type: "int"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

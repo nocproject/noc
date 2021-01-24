@@ -473,7 +473,37 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                     }
                                 }
                             ]
-                        }  // Timing
+                        },  // Timing
+                        {
+                            title: __('Repeat'),
+                            defaults: {
+                                labelWidth: 150
+                            },
+                            items: [
+                                {
+                                    name: 'repeat_window',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Repeat window (sec)'),
+                                    tooltip: __('Control time to reopen alarm after >1 reopen'),
+                                    allowBlank: true,
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: 'repeat_threshold',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Repeat threshold interval (cout'),
+                                    tooltip: __('Consequence recover time. Root cause will be detached if consequence alarm will not clear itself in *recover_time*'),
+                                    allowBlank: true,
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                }
+                            ]
+                        }  // Repeat
                     ]
                 }
             ],
