@@ -1,0 +1,17 @@
+{
+    "name": "NOC | Alarm | Repeat Threshold",
+    "$collection": "fm.alarmclasses",
+    "uuid": "bf9df7ef-4d8e-4127-9ba4-71aefb20e91f",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+
+    ],
+    "subject_template": "Alarm Repeat: {{ alarm.vars.alarm_class_name }}",
+    "body_template": "Exceeded the number {{ alarm.vars.repeat_threshold }} of alarms \"{{ alarm.vars.alarm_class_name }}\" for the period {{ alarm.vars.repeat_window }}\n{% if alarm.vars %}\n{% for key, v in alarm.vars.items %}\n<b>{{key}}:</b> {{ v }}\n{%endfor%}\n{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "recover_time": 100
+}
