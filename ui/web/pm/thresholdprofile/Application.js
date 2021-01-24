@@ -107,6 +107,12 @@ Ext.define("NOC.pm.thresholdprofile.Application", {
                             xtype: "textfield",
                             fieldLabel: __("Config"),
                             allowBlank: true
+                        },
+                        {
+                            name: "value_handler",
+                            xtype: "textfield",
+                            fieldLabel: __("Value Handler"),
+                            allowBlank: true
                         }
                     ]
                 },

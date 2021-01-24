@@ -8,15 +8,17 @@
 # Python modules
 from threading import Lock
 import operator
-from collections import namedtuple
 import itertools
 import time
 from collections import defaultdict
+from typing import Any, Optional, List, Dict, Set
+from dataclasses import dataclass
 
 # Third-party modules
 import cachetools
 from pymongo import ReadPreference
 import orjson
+from bson import ObjectId
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -53,10 +55,14 @@ SCOPE_SLA = "sla"
 
 metrics_lock = Lock()
 
-MetricConfig = namedtuple(
-    "MetricConfig",
-    ["metric_type", "enable_box", "enable_periodic", "is_stored", "threshold_profile"],
-)
+
+@dataclass
+class MetricConfig(object):
+    metric_type: MetricType
+    enable_box: bool
+    enable_periodic: bool
+    is_stored: bool
+    threshold_profile: Optional[ThresholdProfile]
 
 
 class MData(object):
@@ -107,7 +113,8 @@ class MetricsCheck(DiscoveryCheck):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id_count = itertools.count()
-        self.id_metrics = {}
+        self.id_metrics: Dict[str, MetricConfig] = {}
+        self.id_ctx: Dict[str, Dict[str, Any]] = {}
 
     @staticmethod
     @cachetools.cached({})
@@ -118,7 +125,7 @@ class MetricsCheck(DiscoveryCheck):
     @cachetools.cachedmethod(
         operator.attrgetter("_object_profile_metrics"), lock=lambda _: metrics_lock
     )
-    def get_object_profile_metrics(cls, p_id):
+    def get_object_profile_metrics(cls, p_id: int) -> Dict[str, MetricConfig]:
         r = {}
         opr = ManagedObjectProfile.get_by_id(id=p_id)
         if not opr:
@@ -153,7 +160,7 @@ class MetricsCheck(DiscoveryCheck):
         return "[%s]" % ",".join("'%s'" % p for p in path)
 
     @staticmethod
-    def config_from_settings(m):
+    def config_from_settings(m) -> MetricConfig:
         """
         Returns MetricConfig from .metrics field
         :param m:
@@ -167,7 +174,7 @@ class MetricsCheck(DiscoveryCheck):
     @cachetools.cachedmethod(
         operator.attrgetter("_interface_profile_metrics"), lock=lambda _: metrics_lock
     )
-    def get_interface_profile_metrics(cls, p_id):
+    def get_interface_profile_metrics(cls, p_id: ObjectId) -> Dict[str, MetricConfig]:
         r = {}
         ipr = InterfaceProfile.get_by_id(id=p_id)
         if not ipr:
@@ -180,7 +187,7 @@ class MetricsCheck(DiscoveryCheck):
     @cachetools.cachedmethod(
         operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock
     )
-    def get_slaprofile_metrics(cls, p_id):
+    def get_slaprofile_metrics(cls, p_id: ObjectId) -> Dict[str, MetricConfig]:
         r = {}
         spr = SLAProfile.get_by_id(p_id)
         if not spr:
@@ -231,7 +238,15 @@ class MetricsCheck(DiscoveryCheck):
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
                 {"managed_object": self.object.id, "type": "physical"},
-                {"_id": 1, "name": 1, "ifindex": 1, "profile": 1},
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "ifindex": 1,
+                    "profile": 1,
+                    "in_speed": 1,
+                    "out_speed": 1,
+                    "bandwidth": 1,
+                },
             )
         ):
             ipr = self.get_interface_profile_metrics(i["profile"])
@@ -267,6 +282,23 @@ class MetricsCheck(DiscoveryCheck):
                                 m["ifindex"] = si["ifindex"]
                             metrics += [m]
                             self.id_metrics[m_id] = ipr[metric]
+                threshold_profile = ipr[metric].threshold_profile
+                if threshold_profile and threshold_profile.value_handler:
+                    # Fill window context
+                    in_speed: int = i.get("in_speed") or 0
+                    out_speed: int = i.get("out_speed") or 0
+                    bandwidth: int = i.get("bandwidth") or 0
+                    if in_speed and not out_speed:
+                        out_speed = in_speed
+                    elif not in_speed and out_speed:
+                        in_speed = out_speed
+                    if not bandwidth:
+                        bandwidth = max(in_speed, out_speed)
+                    self.id_ctx[m_id] = {
+                        "in_speed": in_speed,
+                        "out_speed": out_speed,
+                        "bandwidth": bandwidth,
+                    }
         if not metrics:
             self.logger.info("Interface metrics are not configured. Skipping")
         return metrics
@@ -312,7 +344,7 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("SLA metrics are not configured. Skipping")
         return metrics
 
-    def process_result(self, result):
+    def process_result(self, result: List[MData]):
         """
         Process IGetMetrics result
         :param result:
@@ -339,7 +371,7 @@ class MetricsCheck(DiscoveryCheck):
             )
             time_delta = None
         # Process collected metrics
-        seen = set()
+        seen: Set[str] = set()
         for m in result:
             path = m.path
             cfg = self.id_metrics.get(m.id)
@@ -530,7 +562,7 @@ class MetricsCheck(DiscoveryCheck):
             return delta
         return float(delta) / dt
 
-    def get_window_function(self, m, cfg):
+    def get_window_function(self, m: MData, cfg: MetricConfig) -> Optional[Any]:
         """
         Check thresholds
         :param m: dict with metric result
@@ -545,6 +577,18 @@ class MetricsCheck(DiscoveryCheck):
         #
         states = self.job.context["metric_windows"]
         value = m.abs_value
+        if cfg.threshold_profile.value_handler:
+            vh = get_handler(cfg.threshold_profile.value_handler)
+            if vh:
+                ctx = self.id_ctx.get(m.id) or {}
+                try:
+                    value = vh(value, **ctx)
+                except Exception as e:
+                    self.logger.error(
+                        "Failed to execute value handler %s: %s",
+                        cfg.threshold_profile.value_handler,
+                        e,
+                    )
         ts = m.ts // 1000000000
         # Do not store single-value windows
         window_type = cfg.threshold_profile.window_type
@@ -648,11 +692,12 @@ class MetricsCheck(DiscoveryCheck):
                     self.logger.warning("Handler is not allowed for Thresholds")
         return alarms, events
 
-    def process_thresholds(self, m, cfg, path):
+    def process_thresholds(self, m: MData, cfg: MetricConfig, path: str):
         """
         Check thresholds
         :param m: dict with metric result
         :param cfg: MetricConfig
+        :param path: Metric path
         :return: List of umbrella alarm details
         """
         alarms = []

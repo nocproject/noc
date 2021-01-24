@@ -144,6 +144,8 @@ class ThresholdProfile(Document):
     window_function = StringField(choices=wf_choices, default="last")
     # Window function configuration
     window_config = StringField()
+    # Window preprocessor
+    value_handler = StringField()
     # thresholds config
     thresholds = ListField(EmbeddedDocumentField(ThresholdConfig))
 
