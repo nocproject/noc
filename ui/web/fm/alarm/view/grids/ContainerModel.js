@@ -12,7 +12,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
     data: {
         total: {
             alarmsTotal: 0,
-            selected: []
+            selected: [],
+            activeAlarmsSelected: null
         }
     },
     formulas: {
@@ -31,6 +32,9 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
                 + summary
                 + "<div>" + __("Total: ") + get("total.alarmsTotal") + "</div>"
                 + "</div>";
+        },
+        isActiveAlarmsSelected: function(get) {
+            return get("total.activeAlarmsSelected") == null;
         }
     }
 });

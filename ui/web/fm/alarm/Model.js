@@ -76,6 +76,10 @@ Ext.define("NOC.fm.alarm.Model", {
             type: "auto"
         },
         {
+            name: "logs",
+            type: "auto"
+        },
+        {
             name: "segment__label",
             type: "auto",
             persist: true

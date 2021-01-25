@@ -198,7 +198,7 @@ class ActiveAlarm(Document):
         if to_save:
             self.safe_save()
 
-    def log_message(self, message, to_save=True, bulk=None):
+    def log_message(self, message, to_save=True, bulk=None, source=None):
         if bulk:
             bulk += [
                 UpdateOne(
@@ -210,6 +210,7 @@ class ActiveAlarm(Document):
                                 "from_status": self.status,
                                 "to_status": self.status,
                                 "message": message,
+                                "source": source,
                             }
                         }
                     },
@@ -221,17 +222,19 @@ class ActiveAlarm(Document):
                 from_status=self.status,
                 to_status=self.status,
                 message=message,
+                source=source,
             )
         ]
         if to_save and not bulk:
             self.safe_save()
 
-    def clear_alarm(self, message, ts=None, force=False):
+    def clear_alarm(self, message, ts=None, force=False, source=None):
         """
         Clear alarm
         :param message: Log clearing message
         :param ts: Clearing timestamp
         :param force: Clear ever if wait_tt seg
+        :param source: Source clear alarm
         """
         ts = ts or datetime.datetime.now()
         if self.wait_tt and not force:
@@ -253,7 +256,9 @@ class ActiveAlarm(Document):
                     h(self)
                 except Exception:
                     error_report()
-        log = self.log + [AlarmLog(timestamp=ts, from_status="A", to_status="C", message=message)]
+        log = self.log + [
+            AlarmLog(timestamp=ts, from_status="A", to_status="C", message=message, source=source)
+        ]
         a = ArchivedAlarm(
             id=self.id,
             timestamp=self.timestamp,
@@ -389,9 +394,10 @@ class ActiveAlarm(Document):
         if user.id not in self.subscribers:
             self.subscribers += [user.id]
             self.log_message(
-                "%s(%s) has been subscribed"
+                "%s(%s): has been subscribed"
                 % ((" ".join([user.first_name, user.last_name]), user.username)),
                 to_save=False,
+                source=user.username,
             )
             self.save()
 
@@ -402,13 +408,14 @@ class ActiveAlarm(Document):
                 "%s(%s) has been unsubscribed"
                 % ((" ".join([user.first_name, user.last_name]), user.username)),
                 to_save=False,
+                source=user.username,
             )
             self.save()
 
     def is_subscribed(self, user):
         return user.id in self.subscribers
 
-    def acknowledge(self, user):
+    def acknowledge(self, user, msg=""):
         self.ack_ts = datetime.datetime.now()
         self.ack_user = user.username
         self.log = self.log + [
@@ -416,12 +423,13 @@ class ActiveAlarm(Document):
                 timestamp=self.ack_ts,
                 from_status="A",
                 to_status="A",
-                message="Acknowledged by %s(%s)" % (user.get_full_name(), user.username),
+                message="Acknowledged by %s(%s): %s" % (user.get_full_name(), user.username, msg),
+                source=user.username,
             )
         ]
         self.save()
 
-    def unacknowledge(self, user):
+    def unacknowledge(self, user, msg=""):
         self.ack_ts = None
         self.ack_user = None
         self.log = self.log + [
@@ -429,7 +437,8 @@ class ActiveAlarm(Document):
                 timestamp=datetime.datetime.now(),
                 from_status="A",
                 to_status="A",
-                message="Unacknowledged by %s(%s)" % (user.get_full_name(), user.username),
+                message="Unacknowledged by %s(%s): %s" % (user.get_full_name(), user.username, msg),
+                source=user.username,
             )
         ]
         self.save()

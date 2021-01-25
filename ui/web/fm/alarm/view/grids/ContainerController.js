@@ -136,5 +136,33 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         }
         // use html from backend
         return "";
+    },
+    addGroupComment: function() {
+        var grid = this.lookupReference("fm-alarm-active"),
+            ids = grid.getSelection().map((alarm) => alarm.id);
+
+        Ext.MessageBox.prompt(
+            __("Set group comment"),
+            __("Please enter comment"),
+            function(btn, text) {
+                if(btn === "ok") {
+                    Ext.Ajax.request({
+                        url: "/fm/alarm/comment/post/",
+                        method: "POST",
+                        jsonData: {
+                            ids: ids,
+                            msg: text
+                        },
+                        success: function() {
+                            NOC.info(__("Success"))
+                        },
+                        failure: function() {
+                            NOC.error(__("Failed to save group comment"));
+                        }
+                    });
+                }
+            },
+            this
+        );
     }
 });

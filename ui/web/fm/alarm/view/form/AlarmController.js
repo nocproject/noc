@@ -93,28 +93,29 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
 
     },
     onClear: function() {
-        Ext.MessageBox.show({
-            title: __("Clear alarm?"),
-            msg: __("Please confirm the alarm is closed and must be cleared?"),
-            buttons: Ext.Msg.YESNO,
-            icon: Ext.Msg.QUESTION,
-            scope: this,
-            fn: function(btn) {
-                if(btn === "yes") {
+        Ext.MessageBox.prompt(
+            __("Clear alarm?"),
+            __("Please confirm the alarm is closed and must be cleared?"),
+            function(btn, text) {
+                if(btn === "ok") {
                     Ext.Ajax.request({
                         url: "/fm/alarm/" + this.getViewModel().get("selected.id") + "/clear/",
                         method: "POST",
+                        jsonData: {
+                            msg: text
+                        },
                         scope: this,
                         success: function() {
-                            this.onRefresh()
+                            NOC.info(__("Alarm cleared"))
                         },
                         failure: function() {
                             NOC.error(__("Failed to clear alarm"));
                         }
                     });
                 }
-            }
-        });
+            },
+            this
+        );
     },
     onWatch: function(self) {
         var cmd = self.pressed ? "/subscribe/" : "/unsubscribe/";
