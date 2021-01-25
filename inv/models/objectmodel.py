@@ -138,6 +138,7 @@ class ObjectModelSensor(EmbeddedDocument):
             r["modbus_register"] = self.modbus_register
         if self.snmp_oid:
             r["snmp_oid"] = self.snmp_oid
+        return r
 
 
 @category
