@@ -8,80 +8,78 @@
 .noc-geo-wrap {
 }
 
-.noc-geo-lon, .noc-geo-lat {
-    display: inline-block;
+.noc-geo-lon,
+.noc-geo-lat {
+  display: inline-block;
 }
 
 /* Clickable cell */
-.noc-clickable-cell, .noc-clickable-cell:visited {
-    color: #000000;
-    text-decoration: none;
-    border-bottom: 1px black dotted;
+.noc-clickable-cell,
+.noc-clickable-cell:visited {
+  color: #000000;
+  text-decoration: none;
+  border-bottom: 1px black dotted;
 }
 
 .noc-clickable-cell:hover {
-    color: #808080;
-    text-decoration: none;
-    border-bottom: 1px #808080 solid;
+  color: #808080;
+  text-decoration: none;
+  border-bottom: 1px #808080 solid;
 }
 
 .noc-label-required {
-    font-weight: bold !important;
-    color: #c0392b;
+  font-weight: bold !important;
+  color: #c0392b;
 }
 
 .noc-const {
-    color: #c0c0c0;
+  color: #c0c0c0;
 }
 
 /* Styles used by Ext.ux.form.ItemSelector */
 
 .x-form-multiselect-body .x-boundlist .x-mask {
-    background: none;
+  background: none;
 }
 
 .x-form-itemselector-body .x-form-item {
-    margin: 0;
+  margin: 0;
 }
 
 .x-form-itemselector-top {
-    background-image: url(/ui/web/img/ux/top2.gif);
+  background-image: url(/ui/web/img/ux/top2.gif);
 }
 
 .x-form-itemselector-up {
-    background-image: url(/ui/web/img/ux/up2.gif);
+  background-image: url(/ui/web/img/ux/up2.gif);
 }
 
 .x-form-itemselector-add {
-    background-image: url(/ui/web/img/ux/right2.gif);
+  background-image: url(/ui/web/img/ux/right2.gif);
 }
 
 .x-form-itemselector-remove {
-    background-image: url(/ui/web/img/ux/left2.gif);
+  background-image: url(/ui/web/img/ux/left2.gif);
 }
 
 .x-form-itemselector-down {
-    background-image: url(/ui/web/img/ux/down2.gif);
+  background-image: url(/ui/web/img/ux/down2.gif);
 }
 
 .x-form-itemselector-bottom {
-    background-image: url(/ui/web/img/ux/bottom2.gif);
+  background-image: url(/ui/web/img/ux/bottom2.gif);
 }
 .x-display-tag {
-    display: inline-block;
-    position: relative;
-    zoom:1; /* IE */
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
-    border-radius: 7px;
-    o-border-radius: 7px;
-    khtml-border-radius: 7px;
-    padding: 0px 4px 0px 4px !important;
-    margin: 0px 1px 0px 0px;
-    background-color: #7f8c8d;
-    color: #ffffff;
-    border: 1px solid;
-    cursor: default;
+  display: inline-block;
+  position: relative;
+  zoom: 1; /* IE */
+  border-radius: 7px;
+  padding: 0px 4px 0px 4px !important;
+  margin: 0px 1px 0px 0px;
+  background-color: #7f8c8d;
+  color: #ffffff;
+  border: 1px solid;
+  cursor: default;
 }
 
 /*.x-panel-body-default {*/
@@ -93,5 +91,29 @@
 /*}*/
 
 .x-summary {
-    color: #7f8c8d;
+  color: #7f8c8d;
+}
+
+/*
+ Labels
+ */
+.x-noc-label {
+  display: inline-block;
+  font-size: 0.875rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  vertical-align: top;
+  max-width: 100%;
+  border-radius: 0.75rem;
+}
+
+.x-noc-label-text {
+  display: inline-block;
+}
+
+.x-noc-label-text-scoped {
+  display: inline-block;
+  padding-left: 0.25rem;
 }

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # main.style application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,18 +26,6 @@ class StyleApplication(ExtModelApplication):
 
     def field_row_class(self, o):
         return o.css_class_name
-
-    def field_font_color(self, o):
-        if o is None:
-            return None
-        else:
-            return "%06X" % o.font_color
-
-    def field_background_color(self, o):
-        if o is None:
-            return None
-        else:
-            return "%06X" % o.background_color
 
     @view(url=r"^css/$", method=["GET"], access=True)
     def view_css(self, request):
