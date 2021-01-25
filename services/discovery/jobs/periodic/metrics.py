@@ -566,7 +566,7 @@ class MetricsCheck(DiscoveryCheck):
                 window_full = len(window) == ws
             elif window_type == WT_TIME:
                 # Time-based window
-                window_full = ts - window[0][0] >= ws
+                window_full = ts - window[0][0] >= ws >= ts - window[-2::][0][0]
                 while ts - window[0][0] > ws:
                     window.pop(0)
             else:
@@ -669,7 +669,7 @@ class MetricsCheck(DiscoveryCheck):
         if active:
             # Check we should close existing threshold
             for th in cfg.threshold_profile.thresholds:
-                if th.is_open_match(w_value):
+                if w_value and th.is_open_match(w_value):
                     new_threshold = th
                     break
             threshold = cfg.threshold_profile.find_threshold(active["threshold"])
@@ -700,7 +700,7 @@ class MetricsCheck(DiscoveryCheck):
                     # Remain umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
             elif threshold:
-                if threshold.is_clear_match(w_value):
+                if w_value and threshold.is_clear_match(w_value):
                     # Close Event
                     active = None  # Reset threshold
                     del self.job.context["active_thresholds"][path]
