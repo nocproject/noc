@@ -117,15 +117,54 @@ Ext.apply(NOC.render, {
         }
     },
 
-    ArrayChoices: function(choices) {
-        return function(value) {
-            for(var i = 0; i < choices.length; i++) {
-                var v = choices[i];
-                if(value == v[0]) {
-                    return v[1];
-                }
+    Label: function(v) {
+        let toHexColor = function(x) {
+            let hex = Number(x).toString(16);
+            while(hex.length < 6) {
+                hex = "0" + hex;
             }
+            return "#" + hex;
+        };
+
+        let name = v.name,
+            scopedName = "",
+            description = v.description || "",
+            bg_color1 = toHexColor(v.bg_color1 || 0),
+            fg_color1 = toHexColor(v.fg_color1 || 0),
+            bg_color2 = toHexColor(v.bg_color2 || 0),
+            fg_color2 = toHexColor(v.fg_color2 || 0),
+            parts = name.split("::");
+        if(parts.length > 1) {
+            scopedName = parts.pop();
+            name = parts.join("::");
         }
+        let r = [
+            "<div class='x-noc-label' style='background-color:",
+            bg_color1,
+            ";border-color:",
+            bg_color1,
+            "'>"
+        ];
+        r.push("<div class='x-noc-label-text' style='color:" + fg_color1 +
+            "'>");
+        r.push(Ext.util.Format.htmlEncode(name));
+        r.push("</div>");
+        if(scopedName !== "") {
+            r.push("<div class='x-noc-label-text-scoped' style='color:" +
+                fg_color2 +
+                ";background-color:" +
+                bg_color2 +
+                "'>");
+            r.push(Ext.util.Format.htmlEncode(scopedName));
+            r.push("</div>");
+        }
+        r.push("</div>");
+        return r.join("");
+    },
+
+    Labels: function(v) {
+        v = v || [];
+        return v.map(NOC.render.Label).join("");
     },
 
     Timestamp: function(val) {

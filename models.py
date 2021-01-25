@@ -113,6 +113,7 @@ _MODELS = {
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",
     "main.PyRule": "noc.main.models.pyrule.PyRule",
+    "main.Label": "noc.main.models.label.Label",
     "main.RefBook": "noc.main.models.refbook.RefBook",
     "main.RefBookData": "noc.main.models.refbookdata.RefBookData",
     "main.RefBookField": "noc.main.models.refbookfield.RefBookField",

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # gis.layer application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,19 +20,5 @@ class LayerApplication(ExtDocApplication):
     title = _("Layers")
     menu = [_("Setup"), _("Layers")]
     model = Layer
-
     clean_fields = {"stroke_color": ColorParameter(), "fill_color": ColorParameter()}
-
     query_fields = ["name__icontains", "description__icontains"]
-
-    def field_stroke_color(self, o):
-        if o is None:
-            return None
-        else:
-            return "%06X" % o.stroke_color
-
-    def field_fill_color(self, o):
-        if o is None:
-            return None
-        else:
-            return "%06X" % o.fill_color

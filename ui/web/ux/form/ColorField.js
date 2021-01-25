@@ -16,7 +16,7 @@ Ext.define("Ext.ux.form.ColorField", {
         }
     },
     width: 190,
-    vtype: "color",
+    //vtype: "color",
 
     onTriggerClick: function() {
         var me = this;
@@ -36,7 +36,31 @@ Ext.define("Ext.ux.form.ColorField", {
                     scope: me,
                     select: me.onSelectColor,
                     show: me.onShowPicker
-                }
+                },
+                colors: [
+                    '1abc9c',
+                    '2ecc71',
+                    '3498db',
+                    '9b59b6',
+                    '34495e',
+                    '16a085',
+                    '27ae60',
+                    '2980b9',
+                    '8e44ad',
+                    '2c3e50',
+                    'f1c40f',
+                    'e67e22',
+                    'e74c3c',
+                    'ecf0f1',
+                    '95a5a6',
+                    'f39c12',
+                    'd35400',
+                    'c0392b',
+                    'bdc3c7',
+                    '7f8c8d',
+                    '000000',
+                    'ffffff'
+                ]
             });
         }
         me.picker.show(me.inputEl);
@@ -44,7 +68,7 @@ Ext.define("Ext.ux.form.ColorField", {
 
     onSelectColor: function(field, value, opts) {
         var me = this;
-        me.setValue(value);
+        me.setValue(parseInt(value, 16));
         me.picker.hide();
     },
 
@@ -55,7 +79,7 @@ Ext.define("Ext.ux.form.ColorField", {
     setColor: function(color) {
         var me = this;
         me.setFieldStyle({
-            backgroundColor: "#" + color,
+            backgroundColor: this.toHexColor(color),
             backgroundImage: "none"
         });
     },
@@ -64,5 +88,13 @@ Ext.define("Ext.ux.form.ColorField", {
         var me = this;
         me.callParent([value]);
         me.setColor(value);
+    },
+
+    toHexColor: function(x) {
+        let hex = Number(x).toString(16);
+        while(hex.length < 6) {
+            hex = "0" + hex;
+        }
+        return "#" + hex;
     }
 });
