@@ -507,3 +507,24 @@ table {
 .geo-loose {
   font-style: italic;
 }
+
+/* Tooltip background for Alarms */
+.noc-alarm-tooltip th {
+    text-align: left;
+}
+.noc-alarm-tooltip td {
+    border-bottom: 1px black solid;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.noc-alarm-tooltip-flat,
+.noc-alarm-tooltip table {
+    font-size: 1em;
+    color: black;
+}
+
+.noc-alarm-tooltip {
+    background: #fff;
+}

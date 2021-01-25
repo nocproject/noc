@@ -114,13 +114,14 @@ class ArchivedAlarm(Document):
         if config.datastream.enable_alarm:
             yield "alarm", self.id
 
-    def log_message(self, message):
+    def log_message(self, message, source=None):
         self.log += [
             AlarmLog(
                 timestamp=datetime.datetime.now(),
                 from_status=self.status,
                 to_status=self.status,
                 message=message,
+                source=None,
             )
         ]
         self.save()

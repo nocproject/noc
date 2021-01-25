@@ -22,6 +22,27 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
     ],
     layout: 'border',
     reference: "fm-alarm-list",
+    tbar: [
+        {
+            glyph: NOC.glyph.download,
+            tooltip: __("Group actions"),
+            itemId: "alarm_action_menu",
+            bind: {
+                disabled: "{isActiveAlarmsSelected}"
+            },
+            menu: {
+                xtype: "menu",
+                plain: true,
+                items: [
+                    {
+                        text: __("Group comment"),
+                        listeners: {
+                            click: "addGroupComment"
+                        }
+                    }
+                ]
+            }
+        }],
     items: [
         {
             layout: "border",

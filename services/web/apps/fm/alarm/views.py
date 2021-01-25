@@ -40,6 +40,7 @@ from noc.sa.interfaces.base import (
     UnicodeParameter,
     DateTimeParameter,
     StringParameter,
+    StringListParameter,
 )
 from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -336,6 +337,15 @@ class AlarmApplication(ExtApplication):
             "total_services": self.f_summary(
                 {"service": SummaryItem.items_to_dict(o.total_services)}
             ),
+            "logs": [
+                {
+                    "timestamp": self.to_json(ll.timestamp),
+                    "user": ll.source or "NOC",
+                    "message": ll.message,
+                }
+                for ll in o.log[: config.web.api_alarm_comments_limit]
+                if getattr(ll, "source", None)
+            ],
         }
         if fields:
             d = {k: d[k] for k in fields}
@@ -409,6 +419,7 @@ class AlarmApplication(ExtApplication):
                     "timestamp": self.to_json(ll.timestamp),
                     "from_status": ll.from_status,
                     "to_status": ll.to_status,
+                    "source": getattr(ll, "source", ""),
                     "message": ll.message,
                 }
                 for ll in alarm.log
@@ -513,13 +524,38 @@ class AlarmApplication(ExtApplication):
         alarm = get_alarm(id)
         if not alarm:
             self.response_not_found()
-        alarm.log_message("%s: %s" % (request.user.username, msg))
+        alarm.log_message(msg, source=request.user.username)
         return True
 
     @view(
-        url=r"^(?P<id>[a-z0-9]{24})/acknowledge/", method=["POST"], api=True, access="acknowledge"
+        url=r"^comment/post/",
+        method=["POST"],
+        api=True,
+        access="launch",
+        validate={
+            "ids": StringListParameter(required=True),
+            "msg": UnicodeParameter(),
+        },
     )
-    def api_acknowledge(self, request, id):
+    def api_comment_post(self, request, ids, msg):
+        alarms = list(ActiveAlarm.objects.filter(id__in=ids))
+        alarms += list(ArchivedAlarm.objects.filter(id__in=ids))
+        if not alarms:
+            self.response_not_found()
+        for alarm in alarms:
+            alarm.log_message(msg, source=request.user.username)
+        return True
+
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/acknowledge/",
+        method=["POST"],
+        api=True,
+        access="acknowledge",
+        validate={
+            "msg": UnicodeParameter(default=""),
+        },
+    )
+    def api_acknowledge(self, request, id, msg=""):
         alarm = get_alarm(id)
         if not alarm:
             return self.response_not_found()
@@ -527,13 +563,19 @@ class AlarmApplication(ExtApplication):
             return self.response_not_found()
         if alarm.ack_ts:
             return {"status": False, "message": "Already acknowledged by %s" % alarm.ack_user}
-        alarm.acknowledge(request.user)
+        alarm.acknowledge(request.user, msg)
         return {"status": True}
 
     @view(
-        url=r"^(?P<id>[a-z0-9]{24})/unacknowledge/", method=["POST"], api=True, access="acknowledge"
+        url=r"^(?P<id>[a-z0-9]{24})/unacknowledge/",
+        method=["POST"],
+        api=True,
+        access="acknowledge",
+        validate={
+            "msg": UnicodeParameter(default=""),
+        },
     )
-    def api_unacknowledge(self, request, id):
+    def api_unacknowledge(self, request, id, msg=""):
         alarm = get_alarm(id)
         if not alarm:
             return self.response_not_found()
@@ -541,7 +583,7 @@ class AlarmApplication(ExtApplication):
             return self.response_not_found()
         if not alarm.ack_ts:
             return {"status": False, "message": "Already unacknowledged"}
-        alarm.unacknowledge(request.user)
+        alarm.unacknowledge(request.user, msg=msg)
         return {"status": True}
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/subscribe/", method=["POST"], api=True, access="launch")
@@ -566,13 +608,23 @@ class AlarmApplication(ExtApplication):
         else:
             return []
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/clear/", method=["POST"], api=True, access="launch")
-    def api_clear(self, request, id):
+    @view(
+        url=r"^(?P<id>[a-z0-9]{24})/clear/",
+        method=["POST"],
+        api=True,
+        access="launch",
+        validate={
+            "msg": UnicodeParameter(default=""),
+        },
+    )
+    def api_clear(self, request, id, msg=""):
         alarm = get_alarm(id)
         if not alarm.alarm_class.user_clearable:
             return {"status": False, "error": "Deny clear alarm by user"}
         if alarm.status == "A":
-            alarm.clear_alarm("Cleared by %s" % request.user)
+            alarm.clear_alarm(
+                "Cleared by %s: %s" % (request.user, msg), source=request.user.username
+            )
         return True
 
     @view(

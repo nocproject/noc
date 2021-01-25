@@ -16,6 +16,7 @@ class AlarmLog(EmbeddedDocument):
     from_status = StringField(max_length=1, regex=r"^[AC]$", required=True)
     to_status = StringField(max_length=1, regex=r"^[AC]$", required=True)
     message = StringField()
+    source = StringField(required=False)
 
     def __str__(self):
         return "%s [%s -> %s]: %s" % (

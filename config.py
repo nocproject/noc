@@ -581,6 +581,9 @@ class Config(BaseConfig):
         api_row_limit = IntParameter(default=0)
         api_unlimited_row_limit = IntParameter(default=1000)
         api_arch_alarm_limit = IntParameter(default=4 * 86400)
+        api_alarm_comments_limit = IntParameter(
+            default=10, help="Max Alarm comment count on UI Popup"
+        )
         max_upload_size = IntParameter(default=16777216)
         language = StringParameter(default="en")
         install_collection = BooleanParameter(default=False)

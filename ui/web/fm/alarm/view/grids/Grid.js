@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarm application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.view.grids.Grid");
@@ -132,21 +132,65 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
             xtype: "actioncolumn",
             text: __("Ack"),
             width: 35,
+            defaultRenderer: function(v, cellValues, record, rowIdx, colIdx, store, view) {
+                var me = this,
+                    scope = me.origScope || me,
+                    items = me.items,
+                    len = items.length,
+                    i, item, ret, disabled, tooltip, altText, icon;
+
+                ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
+
+                cellValues.tdCls += ' ' + Ext.baseCSSPrefix + 'action-col-cell';
+                for(i = 0; i < len; i++) {
+                    item = items[i];
+                    icon = item.icon;
+
+                    var tooltipFromData = "<span class='noc-alarm-tooltip-flat'>" + __("no comments") + "</span>";
+                    if(record.get("logs").length) {
+                        tooltipFromData = "<table><thead><tr><th>" + __("Date") + "</th><th>" + __("User") + "</th><th>" + __("Message") + "</th></tr></thead><tbody>";
+                        for(var j = 0; j < record.get("logs").length; j++) {
+                            var r = record.get("logs")[j];
+                            tooltipFromData += "<tr><td>" + Ext.util.Format.date(r.timestamp, "d.m.Y H:i") + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + r.message + "</td></tr>";
+                        }
+                        tooltipFromData += "</tbody></table>"
+                    }
+                    disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
+                    tooltip = disabled ? null : (tooltipFromData || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
+                    altText = item.getAltText ? item.getAltText.apply(item.scope || scope, arguments) : item.altText || me.altText;
+
+                    if(!item.hasActionConfiguration) {
+                        item.stopSelection = me.stopSelection;
+                        item.disable = Ext.Function.bind(me.disableAction, me, [i], 0);
+                        item.enable = Ext.Function.bind(me.enableAction, me, [i], 0);
+                        item.hasActionConfiguration = true;
+                    }
+
+                    ret += '<' + (icon ? 'img' : 'div') + ' tabIndex="0" role="button"' + (icon ? (' alt="' + altText + '" src="' + item.icon + '"') : '') +
+                        ' class="' + me.actionIconCls + ' ' + Ext.baseCSSPrefix + 'action-col-' + String(i) + ' ' +
+                        (disabled ? me.disabledCls + ' ' : ' ') +
+                        (Ext.isFunction(item.getClass) ? item.getClass.apply(item.scope || scope, arguments) : (item.iconCls || me.iconCls || '')) + '"' +
+                        (tooltip ? ' data-qclass="noc-alarm-tooltip" data-qtip="' + tooltip + '"' : '') + (icon ? '/>' : '></div>');
+                }
+                return ret;
+            },
             items: [{
-                tooltip: __("Alarm Acknowledged"),
                 handler: function(view, rowIndex, colIndex, item, e, record) {
                     var isAck = !!record.get("ack_user");
                     // ToDo double code #acknowledge
-                    Ext.MessageBox.confirm(
+                    Ext.MessageBox.prompt(
                         __("Acknowledge"),
                         isAck ? __("Set alarm as unacknowledged") : __("Set alarm as acknowledged"),
-                        function(btn) {
+                        function(btn, text) {
                             var msg = __("Failed to set acknowledgedun/acknowledged"),
                                 url = "/fm/alarm/" + record.id + (isAck ? "/unacknowledge/" : "/acknowledge/");
-                            if(btn === "yes") {
+                            if(btn === "ok") {
                                 Ext.Ajax.request({
                                     url: url,
                                     method: "POST",
+                                    jsonData: {
+                                        msg: text
+                                    },
                                     scope: this,
                                     success: function(response) {
                                         var data = Ext.decode(response.responseText);

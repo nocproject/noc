@@ -27,6 +27,9 @@ Ext.define("NOC.fm.alarm.view.grids.Active", {
             this.getController().fireViewEvent("fmAlarmSelectionChange", sel);
         }
     },
+    bind: {
+        selection: "{total.activeAlarmsSelected}"
+    },
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
