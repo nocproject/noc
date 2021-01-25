@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,37 +11,22 @@ import sys
 import datetime
 import re
 from collections import defaultdict
-import threading
-from typing import DefaultDict, Union, Any, Iterable, Optional, Tuple, Dict, List, Set
+from typing import Optional, Dict, List
 import operator
-from itertools import chain
-from hashlib import sha512
 
 # Third-party modules
 import orjson
-from bson import ObjectId
-from dateutil.parser import parse as parse_date
-from pydantic import parse_obj_as, ValidationError
-import cachetools
-from pymongo import UpdateOne
 
 # NOC modules
 from noc.config import config
 from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.mongo.connection import connect
-from noc.sa.models.managedobject import ManagedObject
-from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
-from noc.services.correlator.rule import Rule
-from noc.services.correlator.rcacondition import RCACondition
-from noc.services.correlator.trigger import Trigger
-from noc.services.correlator.models.disposereq import DisposeRequest
-from noc.services.correlator.models.eventreq import EventRequest
-from noc.services.correlator.models.clearreq import ClearRequest
-from noc.services.correlator.models.raisereq import RaiseRequest
-from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
-from noc.fm.models.eventclass import EventClass
+from services.correlator.rule import Rule
+from services.correlator.rcacondition import RCACondition
+from services.correlator.trigger import Trigger
 from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
@@ -49,19 +34,14 @@ from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
-from noc.fm.models.alarmrule import AlarmRule
-from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
-from noc.services.correlator import utils
+from services.correlator import utils
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.liftbridge.message import Message
 from noc.services.correlator.rcalock import RCALock
-from noc.services.correlator.alarmrule import GroupItem
-
-ref_lock = threading.Lock()
 
 ALARM_REPEAT = "NOC | Alarm | Repeat Threshold"
 
@@ -72,23 +52,19 @@ class CorrelatorService(TornadoService):
     use_mongo = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
-    _reference_cache = cachetools.TTLCache(100, ttl=60)
-
     def __init__(self):
         super().__init__()
         self.version = version.version
-        self.rules: Dict[ObjectId, List[Rule]] = {}
-        self.back_rules: Dict[ObjectId, List[Rule]] = {}
-        self.triggers: Dict[ObjectId, List[Trigger]] = {}
+        self.rules = {}  # event_class -> [Rule]
+        self.back_rules = {}  # event_class -> [Rule]
+        self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
-        self.alarm_rule_set = AlarmRuleSet()
         #
         self.slot_number = 0
         self.total_slots = 0
         self.is_distributed = False
-        # Alarm Repeat
-        self.repeat: Dict[str, List[Tuple[int, int]]] = {}
+        self.repeat: Dict[str, List[int]] = {}
         # Scheduler
         self.scheduler: Optional[Scheduler] = None
         # Locks
@@ -137,7 +113,6 @@ class CorrelatorService(TornadoService):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
-        self.load_alarm_rules()
 
     def load_rules(self):
         """
@@ -163,7 +138,7 @@ class CorrelatorService(TornadoService):
                                 self.back_rules[cc.id] = [dr]
                             nbr += 1
                 self.rules[c.id] = r
-        self.logger.debug("%d rules are loaded. %d combos", nr, nbr)
+        self.logger.debug("%d rules are loaded. %d combos" % (nr, nbr))
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -182,7 +157,7 @@ class CorrelatorService(TornadoService):
                     cn += 1
                     self.logger.debug("    %s" % c_name)
             n += 1
-        self.logger.info("%d triggers has been loaded to %d classes", n, cn)
+        self.logger.info("%d triggers has been loaded to %d classes" % (n, cn))
 
     def load_rca_rules(self):
         """
@@ -203,21 +178,9 @@ class CorrelatorService(TornadoService):
                     self.rca_reverse[rc.root.id] = []
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
-        self.logger.info("%d RCA Rules have been loaded", n)
+        self.logger.info("%d RCA Rules have been loaded" % n)
 
-    def load_alarm_rules(self):
-        """
-        Load Alarm Rules
-        """
-        self.logger.info("Loading alarm rules")
-        n = 0
-        for rule in AlarmRule.objects.filter(is_active=True):
-            self.alarm_rule_set.add(rule)
-            n += 1
-        self.alarm_rule_set.compile()
-        self.logger.info("%d Alam Rules have been loaded", n)
-
-    def mark_as_failed(self, event: "ActiveEvent"):
+    def mark_as_failed(self, event):
         """
         Write error log and mark event as failed
         """
@@ -231,7 +194,7 @@ class CorrelatorService(TornadoService):
         r = "\n".join(r)
         event.mark_as_failed(version=self.version, traceback=r)
 
-    def set_root_cause(self, a: ActiveAlarm) -> bool:
+    def set_root_cause(self, a):
         """
         Search for root cause and set, if found
         :returns: Boolean. True, if root cause set
@@ -251,11 +214,11 @@ class CorrelatorService(TornadoService):
                 return True
         return False
 
-    def set_reverse_root_cause(self, a: ActiveAlarm) -> bool:
+    def set_reverse_root_cause(self, a):
         """
-        Set `a` as root cause for existing events
+        Set *a* as root cause for existing events
         :param a:
-        :return: True, if set as root
+        :return:
         """
         found = False
         for rc in self.rca_reverse[a.alarm_class.id]:
@@ -278,92 +241,7 @@ class CorrelatorService(TornadoService):
                     found = True
         return found
 
-    @staticmethod
-    def get_default_reference(
-        managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
-    ) -> str:
-        """
-        Generate default reference for event-based alarms.
-        Reference has a form of
-
-        ```
-        e:<mo id>:<alarm class id>:<value1>:...:<value N>
-        ```
-
-        :param managed_object: Managed Object instance
-        :param alarm_class: Alarm Class instance
-        :param vars: Variables
-        :returns: Reference string
-        """
-        if not vars:
-            return f"e:{managed_object.id}:{alarm_class.id}"
-        var_suffix = ":".join(
-            str(vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
-            for n in alarm_class.reference
-        )
-        return f"e:{managed_object.id}:{alarm_class.id}:{var_suffix}"
-
-    @staticmethod
-    def get_reference_hash(reference: str) -> bytes:
-        """
-        Generate hashed form of reference
-        """
-        return sha512(reference.encode("utf-8")).digest()[:10]
-
-    def try_reopen_alarm(
-        self,
-        reference: bytes,
-        timestamp: datetime.datetime,
-        event: ActiveEvent = None,
-    ) -> Optional[ActiveAlarm]:
-        """
-        Try to reopen archived alarm
-
-        :param managed_object: Managed Object instance
-        :param reference: Reference hash
-        :param timestamp: New alarm timestamp
-        :param event:
-        :returns: Reopened alarm, when found, None otherwise
-        """
-        arch = ArchivedAlarm.objects.filter(
-            reference=reference,
-            control_time__gte=timestamp,
-        ).first()
-        if not arch:
-            return None
-        if event:
-            self.logger.info(
-                "[%s|%s|%s] %s reopens alarm %s(%s)",
-                event.id,
-                arch.managed_object.name,
-                arch.managed_object.address,
-                event.event_class.name,
-                arch.alarm_class.name,
-                arch.id,
-            )
-            reason = f"Reopened by {event.event_class.name}({event.id})"
-        else:
-            reason = "Reopened by alarm"
-        alarm = arch.reopen(reason)
-        metrics["alarm_reopen"] += 1
-        return alarm
-
-    def refresh_alarm(self, alarm: ActiveAlarm, timestamp: datetime.datetime):
-        """
-        Refresh active alarm data
-        """
-        if timestamp < alarm.timestamp:
-            # Set to earlier date
-            alarm.timestamp = timestamp
-            alarm.save()
-        elif timestamp > alarm.last_update:
-            # Refresh last update
-            alarm.last_update = timestamp
-            alarm.save()
-
-    async def check_repeat(
-        self, managed_object: ManagedObject, vars, ref_hash, alarm: ActiveAlarm, event: ActiveEvent
-    ):
+    async def check_repeat(self, rule: Rule, alarm: ActiveAlarm, event: ActiveEvent):
         """
         Check thresholds
         :param discriminator: Unique
@@ -390,153 +268,169 @@ class CorrelatorService(TornadoService):
                     result.append("{} {}".format(value, name))
             return ", ".join(result[:granularity])
 
-        # Build window state ref_hash
+        # Build window state key
+        managed_object = self.eval_expression(rule.managed_object, event=event)
+        discriminator, vars = rule.get_vars(event)
         alarm_class = AlarmClass.get_by_name(ALARM_REPEAT)
+        key = "%s|%s" % (alarm.alarm_class.id, discriminator)
         ts = int(alarm.timestamp.timestamp())
         ets = int(event.timestamp.timestamp())
-        acrw = alarm.alarm_class.repeat_window
-        acrt = alarm.alarm_class.repeat_threshold
-        window = self.repeat.get(ref_hash, [])
-
-        if ets - ts > acrw:
+        window = self.repeat.get(key, [])
+        # Check if Event timestamp > Alarm timestamp use Event timestamp
+        if ets - ts > alarm.alarm_class.repeat_window:
             ts = ets
         window.append(ts)
         # Trim window according to policy
-        window_full = ts - window[0] >= acrw >= ts - window[-1:][0]
-        while ts - window[0] > acrw:
+        window_full = ts - window[0] >= alarm.alarm_class.repeat_window >= ts - window[-2::][0]
+        while ts - window[0] > alarm.alarm_class.repeat_window:
             window.pop(0)
-        self.repeat[ref_hash] = window
-        if not window_full:
+        self.repeat[key] = window
+        # Check window_full and len(window)
+        if (window_full and len(window) < alarm.alarm_class.repeat_threshold) or (
+            not window_full and len(window) < alarm.alarm_class.repeat_threshold
+        ):
             self.logger.debug(
                 "Cannot calculate thresholds for %s: Window is not filled", alarm.alarm_class
             )
             return
-        if len(window) >= acrt:
-            a = ActiveAlarm.objects.filter(
-                managed_object=managed_object.id, reference=ref_hash
-            ).first()
-            if not a:
-                vars.update(
-                    {
-                        "alarm_class_name": alarm.alarm_class.name,
-                        "repeat_window": display_time(alarm.alarm_class.repeat_window),
-                        "repeat_threshold": alarm.alarm_class.repeat_threshold,
-                    }
-                )
-                a = ActiveAlarm(
-                    timestamp=datetime.datetime.now(),
-                    last_update=datetime.datetime.now(),
-                    managed_object=managed_object.id,
-                    alarm_class=alarm_class,
-                    severity=alarm_class.default_severity.severity,
-                    vars=vars,
-                    reference=ref_hash,
-                    log=[
-                        AlarmLog(
-                            timestamp=datetime.datetime.now(),
-                            from_status="A",
-                            to_status="A",
-                            message="Alarm risen from alarm %s(%s)"
-                            % (str(alarm.id), str(alarm.alarm_class.name)),
-                        )
-                    ],
-                )
+        # Find active alarm
+        a = ActiveAlarm.objects.filter(managed_object=managed_object.id, discriminator=key).first()
+        # Crate new Alarm
+        if not a:
+            vars.update(
+                {
+                    "alarm_class_name": alarm.alarm_class.name,
+                    "repeat_window": display_time(alarm.alarm_class.repeat_window),
+                    "repeat_threshold": alarm.alarm_class.repeat_threshold,
+                }
+            )
+            a = ActiveAlarm(
+                timestamp=datetime.datetime.now(),
+                last_update=datetime.datetime.now(),
+                managed_object=managed_object.id,
+                alarm_class=alarm_class,
+                severity=alarm_class.default_severity.severity,
+                vars=vars,
+                discriminator=key,
+                log=[
+                    AlarmLog(
+                        timestamp=datetime.datetime.now(),
+                        from_status="A",
+                        to_status="A",
+                        message="Alarm Threshold risen from alarm %s (%s)"
+                        % (str(alarm.id), str(alarm.alarm_class.name)),
+                    )
+                ],
+            )
+            a.save()
+            self.logger.info(
+                "[%s|%s|%s] %s raises alarm %s (%s): %r",
+                alarm.id,
+                managed_object.name,
+                managed_object.address,
+                alarm.alarm_class.name,
+                a.id,
+                a.alarm_class.name,
+                a.vars,
+            )
+            metrics["alarm_raise"] += 1
+            # Watch for escalations, when necessary
+            if config.correlator.auto_escalation and not a.root:
+                AlarmEscalation.watch_escalations(a)
+            return
+        # Update active alarm
+        if a:
+            if datetime.datetime.now() > a.last_update:
+                # Refresh last update
+                a.last_update = datetime.datetime.now()
+                a.log += [
+                    AlarmLog(
+                        timestamp=datetime.datetime.now(),
+                        from_status="A",
+                        to_status="A",
+                        message="Alarm update by event %s (%s)"
+                        % (str(event.id), str(event.event_class.name)),
+                    )
+                ]
                 a.save()
                 self.logger.info(
-                    "[%s|%s|%s] %s raises alarm %s(%s): %r",
-                    a.id,
+                    "[%s|%s|%s] %s Update alarm %s (%s): %r",
+                    event.id,
                     managed_object.name,
                     managed_object.address,
+                    event.event_class.name,
+                    a.id,
                     a.alarm_class.name,
                     a.vars,
                 )
-                metrics["alarm_raise"] += 1
-                # Gather diagnostics when necessary
-                AlarmDiagnosticConfig.on_raise(a)
-                # Watch for escalations, when necessary
-                if config.correlator.auto_escalation and not a.root:
-                    AlarmEscalation.watch_escalations(a)
-            if a:
-                if datetime.datetime.now() > a.last_update:
-                    # Refresh last update
-                    a.last_update = datetime.datetime.now()
-                    a.save()
+                metrics["alarm_contribute"] += 1
+                return
 
-    async def raise_alarm(
-        self,
-        managed_object: ManagedObject,
-        timestamp: datetime.datetime,
-        alarm_class: AlarmClass,
-        vars: Optional[Dict[str, Any]],
-        event: Optional[ActiveEvent] = None,
-        reference: Optional[str] = None,
-        remote_system: Optional[RemoteSystem] = None,
-        remote_id: Optional[str] = None,
-        groups: Optional[List[GroupItem]] = None,
-        labels: Optional[List[str]] = None,
-    ) -> Optional[ActiveAlarm]:
-        """
-        Raise alarm
-        :param managed_object: Managed Object instance
-        :param timestamp: Alarm Timestamp
-        :param alarm_class: Alarm Class reference
-        :param vars: Alarm variables
-        :param event:
-        :param reference:
-        :param remote_system:
-        :param remote_id:
-        :param groups:
-        :param labels:
-        :returns: Alarm, if created, None otherwise
-        """
-        scope_label = str(event.id) if event else "DIRECT"
-        labels = labels or []
+    async def raise_alarm(self, r, e):
+        managed_object = self.eval_expression(r.managed_object, event=e)
+        if not managed_object:
+            self.logger.info("Empty managed object, ignoring")
+            return
         # @todo: Make configurable
         if not managed_object.is_managed:
             self.logger.info("Managed object is not managed. Do not raise alarm")
-            return None
-        if not reference:
-            reference = self.get_default_reference(
-                managed_object=managed_object, alarm_class=alarm_class, vars=vars
-            )
-        ref_hash = self.get_reference_hash(reference)
-        if alarm_class.is_unique:
-            alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
-            if not alarm:
-                alarm = self.try_reopen_alarm(
-                    reference=ref_hash,
-                    timestamp=timestamp,
-                    event=event,
-                )
-            if alarm:
+            return
+        if e.managed_object.id != managed_object.id:
+            metrics["alarm_change_mo"] += 1
+            self.logger.info("Changing managed object to %s", managed_object.name)
+        discriminator, vars = r.get_vars(e)
+        if r.unique:
+            assert discriminator is not None
+            a = ActiveAlarm.objects.filter(
+                managed_object=managed_object.id, discriminator=discriminator
+            ).first()
+            if not a:
+                # Try to reopen alarm
+                a = ArchivedAlarm.objects.filter(
+                    managed_object=managed_object.id,
+                    discriminator=discriminator,
+                    control_time__gte=e.timestamp,
+                ).first()
+                if a:
+                    # Reopen alarm
+                    self.logger.info(
+                        "[%s|%s|%s] %s reopens alarm %s(%s)",
+                        e.id,
+                        managed_object.name,
+                        managed_object.address,
+                        e.event_class.name,
+                        a.alarm_class.name,
+                        a.id,
+                    )
+                    a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
+                    if r.alarm_class.repeat_window and r.alarm_class.repeat_threshold:
+                        await self.check_repeat(r, a, e)
+                    metrics["alarm_reopen"] += 1
+            if a:
+                # Active alarm found, refresh
                 self.logger.info(
-                    "[%s|%s|%s] Contributing %s to active alarm %s(%s)",
-                    scope_label,
+                    "[%s|%s|%s] Contributing event %s to active alarm %s(%s)",
+                    e.id,
                     managed_object.name,
                     managed_object.address,
-                    f"event {event.event_class.name}" if event else "DIRECT",
-                    alarm.alarm_class.name,
-                    alarm.id,
+                    e.event_class.name,
+                    a.alarm_class.name,
+                    a.id,
                 )
-                if event:
-                    event.contribute_to_alarm(alarm)
-                    metrics["alarm_contribute"] += 1
-                self.refresh_alarm(alarm, timestamp)
-                return alarm
                 # Contribute event to alarm
-                event.contribute_to_alarm(alarm)
-                if event.timestamp < alarm.timestamp:
+                e.contribute_to_alarm(a)
+                if e.timestamp < a.timestamp:
                     # Set to earlier date
-                    alarm.timestamp = event.timestamp
-                    alarm.save()
-                    if alarm_class.repeat_window and alarm_class.repeat_threshold:
-                        await self.check_repeat(managed_object, vars, ref_hash, alarm, event)
-                elif event.timestamp > alarm.last_update:
+                    a.timestamp = e.timestamp
+                    a.save()
+                    if r.alarm_class.repeat_window and r.alarm_class.repeat_threshold:
+                        await self.check_repeat(r, a, e)
+                elif e.timestamp > a.last_update:
                     # Refresh last update
-                    alarm.last_update = event.timestamp
-                    alarm.save()
-                    if alarm_class.repeat_window and alarm_class.repeat_threshold:
-                        await self.check_repeat(managed_object, vars, ref_hash, alarm, event)
+                    a.last_update = e.timestamp
+                    a.save()
+                    if r.alarm_class.repeat_window and r.alarm_class.repeat_threshold:
+                        await self.check_repeat(r, a, e)
                 metrics["alarm_contribute"] += 1
                 return
         # Calculate alarm coverage
@@ -544,31 +438,25 @@ class CorrelatorService(TornadoService):
         summary["object"] = {managed_object.object_profile.id: 1}
         #
         severity = max(ServiceSummary.get_severity(summary), 1)
-        # @todo: Fix
         self.logger.info(
-            "[%s|%s|%s] Calculated alarm severity is: %s",
-            scope_label,
+            "[%s|%s|%s] %s: Calculated alarm severity is: %s",
+            e.id,
             managed_object.name,
             managed_object.address,
+            r.u_name,
             severity,
         )
         # Create new alarm
-        direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
         direct_services = SummaryItem.dict_to_items(summary["service"])
         direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
-        if event:
-            msg = f"Alarm risen from event {event.id}({event.event_class.name})"
-        else:
-            msg = "Alarm risen directly"
         a = ActiveAlarm(
-            timestamp=timestamp,
-            last_update=timestamp,
+            timestamp=e.timestamp,
+            last_update=e.timestamp,
             managed_object=managed_object.id,
-            alarm_class=alarm_class,
+            alarm_class=r.alarm_class,
             severity=severity,
             vars=vars,
-            reference=ref_hash,
-            direct_objects=direct_objects,
+            discriminator=discriminator,
             direct_services=direct_services,
             direct_subscribers=direct_subscribers,
             total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
@@ -579,49 +467,28 @@ class CorrelatorService(TornadoService):
                     timestamp=datetime.datetime.now(),
                     from_status="A",
                     to_status="A",
-                    message=msg,
+                    message="Alarm risen from event %s(%s) by rule '%s'"
+                    % (str(e.id), str(e.event_class.name), r.u_name),
                 )
             ],
-            opening_event=event.id if event else None,
-            labels=labels,
-            remote_system=remote_system,
-            remote_id=remote_id,
+            opening_event=e.id,
         )
-        a.effective_labels = list(chain.from_iterable(ActiveAlarm.iter_effective_labels(a)))
-        a.raw_reference = reference
-        # Static groups
-        alarm_groups: Dict[str, GroupItem] = {}
-        if groups:
-            for gi in groups:
-                if gi.reference and gi.reference not in alarm_groups:
-                    alarm_groups[gi.reference] = gi
-        # Apply rules
-        for rule in self.alarm_rule_set.iter_rules(a):
-            for gi in rule.iter_groups(a):
-                if gi.reference and gi.reference not in alarm_groups:
-                    alarm_groups[gi.reference] = gi
-        all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
-        a.groups = [g.reference for g in all_groups]
-        a.deferred_groups = deferred_groups
-        # Save
         a.save()
-        if event:
-            event.contribute_to_alarm(a)
-        if alarm_class.repeat_window and alarm_class.repeat_threshold:
-            await self.check_repeat(managed_object, vars, ref_hash, a, event)
-        event.contribute_to_alarm(a)
+        if r.alarm_class.repeat_window and r.alarm_class.repeat_threshold:
+            await self.check_repeat(r, a, e)
+        e.contribute_to_alarm(a)
         self.logger.info(
-            "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
-            scope_label,
+            "[%s|%s|%s] %s raises alarm %s(%s): %r",
+            e.id,
             managed_object.name,
             managed_object.address,
+            e.event_class.name,
             a.alarm_class.name,
             a.id,
             a.vars,
-            ", ".join(labels),
         )
         metrics["alarm_raise"] += 1
-        await self.correlate(a)
+        await self.correlate(r, a)
         # Notify about new alarm
         if not a.root:
             a.managed_object.event(
@@ -638,36 +505,11 @@ class CorrelatorService(TornadoService):
             )
         # Gather diagnostics when necessary
         AlarmDiagnosticConfig.on_raise(a)
-        # Update groups summary
-        await self.update_groups_summary(a.groups)
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
-        return a
 
-    async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent):
-        """
-        Raise alarm from incoming event
-        """
-        # Find effective managed object
-        managed_object = self.eval_expression(rule.managed_object, event=event)
-        if not managed_object:
-            self.logger.info("Empty managed object, ignoring")
-            return
-        if event.managed_object.id != managed_object.id:
-            metrics["alarm_change_mo"] += 1
-            self.logger.info("Changing managed object to %s", managed_object.name)
-        # Extract variables
-        vars = rule.get_vars(event)
-        await self.raise_alarm(
-            managed_object=managed_object,
-            timestamp=event.timestamp,
-            alarm_class=rule.alarm_class,
-            vars=vars,
-            event=event,
-        )
-
-    async def correlate(self, a: ActiveAlarm):
+    async def correlate(self, r, a):
         # Topology RCA
         if a.alarm_class.topology_rca:
             await self.topology_rca(a)
@@ -696,8 +538,8 @@ class CorrelatorService(TornadoService):
                 error_report()
                 metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
-        if a.alarm_class.id in self.triggers:
-            for t in self.triggers[a.alarm_class.id]:
+        if r.alarm_class.id in self.triggers:
+            for t in self.triggers[r.alarm_class.id]:
                 try:
                     t.call(a)
                 except:  # noqa. Can probable happens anything from trigger
@@ -711,83 +553,75 @@ class CorrelatorService(TornadoService):
             metrics["alarm_drop"] += 1
             return
 
-    async def clear_alarm_from_rule(self, rule: "Rule", event: "ActiveEvent"):
-        managed_object = self.eval_expression(rule.managed_object, event=event)
+    def clear_alarm(self, r, e):
+        managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info(
-                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", event.id
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", e.id
             )
             metrics["unknown_object"] += 1
             return
-        if not rule.unique:
-            return
-        vars = rule.get_vars(event)
-        reference = self.get_default_reference(
-            managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
-        )
-        ref_hash = self.get_reference_hash(reference)
-        alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
-        if not alarm:
-            return
-        self.logger.info(
-            "[%s|%s|%s] %s clears alarm %s(%s)",
-            event.id,
-            managed_object.name,
-            managed_object.address,
-            event.event_class.name,
-            alarm.alarm_class.name,
-            alarm.id,
-        )
-        event.contribute_to_alarm(alarm)
-        alarm.closing_event = event.id
-        alarm.last_update = max(alarm.last_update, event.timestamp)
-        groups = alarm.groups
-        alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
-        metrics["alarm_clear"] += 1
-        await self.clear_groups(groups, ts=event.timestamp)
+        if r.unique:
+            discriminator, vars = r.get_vars(e)
+            assert discriminator is not None
+            a = ActiveAlarm.objects.filter(
+                managed_object=managed_object.id, discriminator=discriminator
+            ).first()
+            if a:
+                self.logger.info(
+                    "[%s|%s|%s] %s clears alarm %s(%s)",
+                    e.id,
+                    managed_object.name,
+                    managed_object.address,
+                    e.event_class.name,
+                    a.alarm_class.name,
+                    a.id,
+                )
+                e.contribute_to_alarm(a)
+                a.closing_event = e.id
+                a.last_update = max(a.last_update, e.timestamp)
+                a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name, ts=e.timestamp)
+                metrics["alarm_clear"] += 1
 
-    def get_delayed_event(self, rule: Rule, event: ActiveEvent):
+    def get_delayed_event(self, r, e):
         """
         Check wrether all delayed conditions are met
 
-        :param rule: Delayed rule
-        :param event: Event which can trigger delayed rule
+        :param r: Delayed rule
+        :param e: Event which can trigger delayed rule
         """
         # @todo: Rewrite to scheduler
-        vars = rule.get_vars(event)
-        reference = self.get_default_reference(
-            managed_object=event.managed_object, alarm_class=rule.alarm_class, vars=vars
-        )
-        ref_hash = self.get_reference_hash(reference)
-        ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
+        discriminator, vars = r.get_vars(e)
+        ws = e.timestamp - datetime.timedelta(seconds=r.combo_window)
         de = ActiveEvent.objects.filter(
-            managed_object=event.managed_object_id,
-            event_class=rule.event_class,
-            reference=ref_hash,
+            managed_object=e.managed_object_id,
+            event_class=r.event_class,
+            discriminator=discriminator,
             timestamp__gte=ws,
         ).first()
         if not de:
             # No starting event
             return None
-        # Probable starting event found, get all interesting following event classes
+        # Probable starting event found, get all interesting following event
+        # classes
         fe = [
             ee.event_class.id
             for ee in ActiveEvent.objects.filter(
-                managed_object=event.managed_object_id,
-                event_class__in=rule.combo_event_classes,
-                reference=ref_hash,
+                managed_object=e.managed_object_id,
+                event_class__in=r.combo_event_classes,
+                discriminator=discriminator,
                 timestamp__gte=ws,
             ).order_by("timestamp")
         ]
-        if rule.combo_condition == "sequence":
+        if r.combo_condition == "sequence":
             # Exact match
-            if fe == rule.combo_event_classes:
+            if fe == self.combo_event_classes:
                 return de
-        elif rule.combo_condition == "all":
+        elif r.combo_condition == "all":
             # All present
-            if not any([c for c in rule.combo_event_classes if c not in fe]):
+            if not any([c for c in r.combo_event_classes if c not in fe]):
                 return de
-        elif rule.combo_condition == "any":
+        elif r.combo_condition == "any":
             # Any found
             if fe:
                 return de
@@ -803,34 +637,15 @@ class CorrelatorService(TornadoService):
 
     async def on_dispose_event(self, msg: Message) -> None:
         """
-        Called on new `dispose` message
+        Called on new dispose message
         """
         data = orjson.loads(msg.value)
-        # Backward-compatibility
-        if "$op" not in data:
-            data["$op"] = "event"
-        # Parse request
-        try:
-            req = parse_obj_as(DisposeRequest, data)
-        except ValidationError as e:
-            self.logger.error("Malformed message: %s", e)
-            metrics["malformed_messages"] += 1
-            return
-        # Call handler, may not be invalid
-        msg_handler = getattr(self, f"on_msg_{req.op}")
-        if not msg_handler:
-            self.logger.error("Internal error. No handler for '%s'", req.op)
-            return
-        await msg_handler(req)
+        event_id = data["event_id"]
+        hint = data["event"]
+        self.logger.info("[%s] Receiving message", event_id)
         metrics["alarm_dispose"] += 1
-
-    async def on_msg_event(self, req: EventRequest) -> None:
-        """
-        Process `event` message type
-        """
-        self.logger.info("[event|%s] Receiving message", req.event_id)
         try:
-            event = ActiveEvent.from_json(req.event)
+            event = ActiveEvent.from_json(hint)
             event.timestamp = event.timestamp.replace(tzinfo=None)
             await self.dispose_event(event)
         except Exception:
@@ -842,191 +657,7 @@ class CorrelatorService(TornadoService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
-    async def on_msg_raise(self, req: RaiseRequest) -> None:
-        """
-        Process `raise` message.
-        """
-        # Fetch timestamp
-        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
-        # Managed Object
-        managed_object = ManagedObject.get_by_id(int(req.managed_object))
-        if not managed_object:
-            self.logger.error("Invalid managed object: %s", req.managed_object)
-            return
-        # Get alarm class
-        alarm_class = AlarmClass.get_by_name(req.alarm_class)
-        if not alarm_class:
-            self.logger.error("Invalid alarm class: %s", req.alarm_class)
-            return
-        # Groups
-        if req.groups:
-            groups = []
-            for gi in req.groups:
-                ac = AlarmClass.get_by_name(gi.alarm_class) if gi.alarm_class else None
-                ac = ac or CAlarmRule.get_default_alarm_class()
-                gi_name = gi.name or "Alarm Group"
-                groups.append(GroupItem(reference=gi.reference, alarm_class=ac, title=gi_name))
-        else:
-            groups = None
-        # Remote system
-        if req.remote_system and req.remote_id:
-            remote_system = RemoteSystem.get_by_id(req.remote_system)
-        else:
-            remote_system = None
-        try:
-            await self.raise_alarm(
-                managed_object=managed_object,
-                timestamp=ts,
-                alarm_class=alarm_class,
-                vars=req.vars,
-                reference=req.reference,
-                groups=groups,
-                labels=req.labels or [],
-                remote_system=remote_system,
-                remote_id=req.remote_id if remote_system else None,
-            )
-        except Exception:
-            metrics["alarm_dispose_error"] += 1
-            error_report()
-        finally:
-            if self.topo_rca_lock:
-                # Release pending RCA Lock
-                await self.topo_rca_lock.release()
-                self.topo_rca_lock = None
-
-    async def on_msg_clear(self, req: ClearRequest) -> None:
-        """
-        Process `clear` message.
-        """
-        # Fetch timestamp
-        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
-        await self.clear_by_reference(req.reference, ts)
-
-    async def on_msg_ensure_group(self, req: EnsureGroupRequest) -> None:
-        """
-        Process `ensure_group` message.
-        """
-        # Find existing group alarm
-        group_alarm = self.get_by_reference(req.reference)
-        if not group_alarm and not req.alarms:
-            return  # Nothing to clear, nothing to create
-        # Check managed objects and timestamps
-        mos: Dict[str, ManagedObject] = {}
-        tses: Dict[str, datetime.datetime] = {}
-        alarm_classes: Dict[str, AlarmClass] = {}
-        for ai in req.alarms:
-            # Managed Object
-            mo = ManagedObject.get_by_id(int(ai.managed_object))
-            if not mo:
-                self.logger.error("Invalid managed object: %s", ai.managed_object)
-                return
-            mos[ai.managed_object] = mo
-            # Timestamp
-            if ai.timestamp:
-                tses[ai.timestamp] = parse_date(ai.timestamp)
-            # Alarm class
-            alarm_class = AlarmClass.get_by_name(ai.alarm_class)
-            if not alarm_class:
-                self.logger.error("Invalid alarm class: %s", ai.alarm_class)
-                return
-            alarm_classes[ai.alarm_class] = alarm_class
-        #
-        now = datetime.datetime.now()
-        if not group_alarm:
-            # Create group alarm
-            # Calculate timestamp and managed object
-            mo_id = req.alarms[0].managed_object
-            min_ts = now
-            for ai in req.alarms:
-                if not ai.timestamp:
-                    continue
-                ts = tses[ai.timestamp]
-                if ts < min_ts:
-                    mo_id = ai.managed_object
-                    min_ts = ts
-            # Resolve managed object
-            mo = mos[mo_id]
-            # Get group alarm's alarm class
-            if req.alarm_class:
-                alarm_class = AlarmClass.get_by_name(req.alarm_class)
-                if not alarm_class:
-                    self.logger.error("Invalid group alarm class: %s", req.alarm_class)
-                    return
-            else:
-                alarm_class = CAlarmRule.get_default_alarm_class()
-            # Raise group alarm
-            group_alarm = await self.raise_alarm(
-                managed_object=mo,
-                timestamp=min_ts,
-                alarm_class=alarm_class,
-                vars={"name": req.name or "Group"},
-                reference=req.reference,
-                labels=req.labels or [],
-            )
-        # Fetch all open alarms in group
-        open_alarms: Dict[bytes, ActiveAlarm] = {
-            alarm.reference: alarm
-            for alarm in ActiveAlarm.objects.filter(groups__in=[group_alarm.reference])
-        }
-        seen_refs: Set[bytes] = set()
-        for ai in req.alarms:
-            h_ref = self.get_reference_hash(ai.reference)
-            if h_ref in open_alarms:
-                seen_refs.add(h_ref)
-                continue  # Alarm is still active, skipping
-            # Raise new alarm
-            await self.raise_alarm(
-                managed_object=mos[ai.managed_object],
-                timestamp=tses[ai.timestamp] if ai.timestamp else now,
-                alarm_class=alarm_classes[ai.alarm_class],
-                vars=ai.vars or {},
-                reference=ai.reference,
-                groups=[
-                    GroupItem(
-                        reference=req.reference,
-                        alarm_class=group_alarm.alarm_class,
-                        title=req.name or "Group",
-                    )
-                ],
-                labels=ai.labels,
-            )
-        # Close hanging alarms
-        for h_ref in set(open_alarms) - seen_refs:
-            await self.clear_by_reference(h_ref, ts=now)
-
-    async def clear_by_reference(
-        self, reference: Union[str, bytes], ts: Optional[datetime.datetime] = None
-    ) -> None:
-        """
-        Clear alarm by reference
-        """
-        ts = ts or datetime.datetime.now()
-        # Normalize reference
-        if isinstance(reference, str):
-            ref_hash = self.get_reference_hash(reference)
-        else:
-            ref_hash = reference
-        # Get alarm
-        alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
-        if not alarm:
-            self.logger.info("Alarm '%s' is not found. Skipping", reference)
-            return
-        # Clear alarm
-        self.logger.info(
-            "[%s|%s] Clear alarm %s(%s) by reference %s",
-            alarm.managed_object.name,
-            alarm.managed_object.address,
-            alarm.alarm_class.name,
-            alarm.id,
-            reference,
-        )
-        alarm.last_update = max(alarm.last_update, ts)
-        groups = alarm.groups
-        alarm.clear_alarm("Cleared by reference")
-        metrics["alarm_clear"] += 1
-        await self.clear_groups(groups, ts=ts)
-
-    async def dispose_event(self, e: ActiveEvent):
+    async def dispose_event(self, e):
         """
         Dispose event according to disposition rule
         """
@@ -1039,41 +670,37 @@ class CorrelatorService(TornadoService):
             )
             return
         # Apply disposition rules
-        for rule in drc:
-            if not self.eval_expression(rule.condition, event=e):
-                continue  # Rule is not applicable
-            # Process action
-            if rule.action == "drop":
-                self.logger.info("[%s] Dropped by action", event_id)
-                e.delete()
-                return
-            elif rule.action == "ignore":
-                self.logger.info("[%s] Ignored by action", event_id)
-                return
-            elif rule.action == "raise" and rule.combo_condition == "none":
-                await self.raise_alarm_from_rule(rule, e)
-            elif rule.action == "clear" and rule.combo_condition == "none":
-                await self.clear_alarm_from_rule(rule, e)
-            if rule.action in ("raise", "clear"):
-                # Write reference if can trigger delayed event
-                if rule.unique and rule.event_class.id in self.back_rules:
-                    vars = rule.get_vars(e)
-                    reference = self.get_default_reference(
-                        managed_object=e.managed_object, alarm_class=rule.alarm_class, vars=vars
-                    )
-                    e.reference = self.get_reference_hash(reference)
-                    e.save()
-                # Process delayed combo conditions
-                if e.event_class.id in self.back_rules:
-                    for br in self.back_rules[e.event_class.id]:
-                        de = self.get_delayed_event(br, e)
-                        if de:
-                            if br.action == "raise":
-                                await self.raise_alarm_from_rule(br, de)
-                            elif br.action == "clear":
-                                await self.clear_alarm_from_rule(br, de)
-            if rule.stop_disposition:
-                break
+        for r in drc:
+            if self.eval_expression(r.condition, event=e):
+                # Process action
+                if r.action == "drop":
+                    self.logger.info("[%s] Dropped by action", event_id)
+                    e.delete()
+                    return
+                elif r.action == "ignore":
+                    self.logger.info("[%s] Ignored by action", event_id)
+                    return
+                elif r.action == "raise" and r.combo_condition == "none":
+                    await self.raise_alarm(r, e)
+                elif r.action == "clear" and r.combo_condition == "none":
+                    self.clear_alarm(r, e)
+                if r.action in ("raise", "clear"):
+                    # Write discriminator if can trigger delayed event
+                    if r.unique and r.event_class.id in self.back_rules:
+                        discriminator, vars = r.get_vars(e)
+                        e.discriminator = discriminator
+                        e.save()
+                    # Process delayed combo conditions
+                    if e.event_class.id in self.back_rules:
+                        for br in self.back_rules[e.event_class.id]:
+                            de = self.get_delayed_event(br, e)
+                            if de:
+                                if br.action == "raise":
+                                    await self.raise_alarm(br, de)
+                                elif br.action == "clear":
+                                    self.clear_alarm(br, de)
+                if r.stop_disposition:
+                    break
         self.logger.info("[%s] Disposition complete", event_id)
 
     async def topology_rca(self, alarm):
@@ -1208,202 +835,6 @@ class CorrelatorService(TornadoService):
         for a in iter_downlink_alarms(alarm):
             correlate_uplinks(a)
         self.logger.debug("[%s] Correlation completed", alarm.id)
-
-    def get_group_deferred_count(
-        self, h_ref: bytes, min_ts: datetime.datetime, max_ts: datetime.datetime
-    ) -> int:
-        """
-        Get amount of waiting alarms for reference
-        """
-        for doc in ActiveAlarm._get_collection().aggregate(
-            [
-                {
-                    "$match": {
-                        "deferred_groups": h_ref,
-                        "timestamp": {"$gte": min_ts, "$lte": max_ts},
-                    }
-                },
-                {"$group": {"_id": None, "def_count": {"$sum": 1}}},
-                {"$project": {"_id": 0}},
-            ]
-        ):
-            return doc.get("def_count", 0) or 0
-        return 0
-
-    def resolve_deferred_groups(self, h_ref: bytes) -> None:
-        """
-        Mark all resolved groups as permanent
-        """
-        ActiveAlarm._get_collection().update_many(
-            {"deferred_groups": {"$in": [h_ref]}},
-            {"$push": {"groups": h_ref}, "$pullAll": {"deferred_groups": [h_ref]}},
-        )
-        # Reset affected cached values
-        with ref_lock:
-            deprecated: List[Tuple[str]] = [
-                a_ref
-                for a_ref, alarm in self._reference_cache.items()
-                if alarm and alarm.deferred_groups and h_ref in alarm.deferred_groups
-            ]
-            for a_ref in deprecated:
-                del self._reference_cache[a_ref]
-
-    async def get_groups(
-        self, alarm: ActiveAlarm, groups: Iterable[GroupItem]
-    ) -> Tuple[List[ActiveAlarm], List[bytes]]:
-        """
-        Resolve all groups and create when necessary
-
-        :param alarm: Active Alarm to match groups
-        :param groups: Iterable of group configurations
-        :returns: Tuple of list of active group alarms
-                  and the list of the deferred group references
-        """
-        active: List[ActiveAlarm] = []
-        deferred: List[bytes] = []
-        for group in groups:
-            if group.reference == alarm.raw_reference:
-                continue  # Reference cycle
-            def_h_ref: Optional[bytes] = None
-            # Fetch or raise group alarm
-            g_alarm = self.get_by_reference(group.reference)
-            if not g_alarm:
-                if group.min_threshold > 0 and group.window > 0:
-                    # Check group has enough deferred alarms to raise thresholds
-                    h_ref = self.get_reference_hash(group.reference)
-                    w_delta = datetime.timedelta(seconds=group.window)
-                    n_waiting = self.get_group_deferred_count(
-                        h_ref, alarm.timestamp - w_delta, alarm.timestamp + w_delta
-                    )
-                    if n_waiting < group.min_threshold - 1:
-                        # Below the threshold, set group as deferred
-                        deferred.append(h_ref)
-                        continue
-                    else:
-                        # Pull deferred alarms later
-                        def_h_ref = h_ref
-                # Raise group alarm
-                g_alarm = await self.raise_alarm(
-                    managed_object=alarm.managed_object,
-                    timestamp=alarm.timestamp,
-                    alarm_class=group.alarm_class,
-                    vars={"name": group.title},
-                    reference=group.reference,
-                    labels=group.labels,
-                )
-                if g_alarm:
-                    # Update cache
-                    self._reference_cache[(group.reference,)] = g_alarm
-            if g_alarm:
-                active.append(g_alarm)
-                if def_h_ref:
-                    self.resolve_deferred_groups(def_h_ref)
-        return active, deferred
-
-    async def clear_groups(self, groups: List[bytes], ts: Optional[datetime.datetime]) -> None:
-        """
-        Clear group alarms from list when necessary
-
-        @todo: Possible race when called from different processes
-
-        :param groups: List of group reference hashes
-        :param ts: Clear timestamp
-        """
-        # Get groups summary
-        r: Dict[bytes, int] = {}
-        for doc in ActiveAlarm._get_collection().aggregate(
-            [
-                # Filter all active alarms in the selected groups
-                {"$match": {"groups": {"$in": groups}}},
-                # Leave only `groups` field
-                {"$project": {"groups": 1}},
-                # Unwind `groups` array to separate documents
-                {"$unwind": "$groups"},
-                # Group by each group reference
-                {"$group": {"_id": "$groups", "n": {"$sum": 1}}},
-            ]
-        ):
-            r[doc["_id"]] = doc["n"]
-        left: List[bytes] = []
-        for ref in groups:
-            if r.get(ref, 0) == 0:
-                self.logger.info("Clear empty group %r", ref)
-                await self.clear_by_reference(ref, ts=ts)
-            else:
-                left.append(ref)
-        if left:
-            await self.update_groups_summary(left)
-
-    async def update_groups_summary(self, refs: Iterable[bytes]) -> None:
-        """
-        Recalculate summaries for all changed groups defined by references
-
-        :param refs: Iterable of group reference hashes
-        """
-
-        def update_totals(totals, group_refs, summary):
-            if not group_refs or not summary:
-                return
-            for g_ref in group_refs:
-                for si in summary:
-                    totals[g_ref][si["profile"]] += si["summary"]
-
-        all_groups = list(refs)
-        if not all_groups:
-            return
-        total_objects: DefaultDict[bytes, DefaultDict[int, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
-        total_services: DefaultDict[bytes, DefaultDict[ObjectId, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
-        total_subscribers: DefaultDict[bytes, DefaultDict[ObjectId, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
-        for doc in ActiveAlarm._get_collection().find(
-            {"groups": {"$in": list(all_groups)}},
-            {
-                "_id": 0,
-                "groups": 1,
-                "direct_objects": 1,
-                "direct_services": 1,
-                "direct_subscribers": 1,
-            },
-        ):
-            groups = doc.get("groups", [])
-            if not groups:
-                continue
-            update_totals(total_objects, groups, doc.get("direct_objects", []))
-            update_totals(total_services, groups, doc.get("direct_services", []))
-            update_totals(total_subscribers, groups, doc.get("direct_subscribers", []))
-        # Perform bulk update
-        bulk = [
-            UpdateOne(
-                {"reference": ref},
-                {
-                    "$set": {
-                        "total_objects": [
-                            si.to_mongo()
-                            for si in ObjectSummaryItem.dict_to_items(total_objects[ref])
-                        ],
-                        "total_services": [
-                            si.to_mongo() for si in SummaryItem.dict_to_items(total_services[ref])
-                        ],
-                        "total_subscribers": [
-                            si.to_mongo()
-                            for si in SummaryItem.dict_to_items(total_subscribers[ref])
-                        ],
-                    }
-                },
-            )
-            for ref in all_groups
-        ]
-        ActiveAlarm._get_collection().bulk_write(bulk)
-
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_reference_cache"), lock=lambda _: ref_lock)
-    def get_by_reference(cls, reference: str) -> Optional["ActiveAlarm"]:
-        return ActiveAlarm.objects.filter(reference=cls.get_reference_hash(reference)).first()
 
 
 if __name__ == "__main__":
