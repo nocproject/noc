@@ -311,8 +311,8 @@ class CorrelatorService(TornadoService):
         ets = int(event.timestamp.timestamp())
         acrw = r_config.window
         window = self.repeat.get(key, [])
-
-        if ets - ts > acrw:
+        # Check if Event timestamp > Alarm timestamp use Event timestamp
+        if ets - ts > alarm.alarm_class.repeat_window:
             ts = ets
         window += [(ts, 1)]
         # Trim window according to policy
