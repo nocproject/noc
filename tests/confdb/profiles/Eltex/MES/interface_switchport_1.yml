@@ -1,0 +1,69 @@
+config: |
+  interface gigabitethernet1/0/1
+   description "Switch Eltex MES-1124 p28"
+   switchport mode general
+   switchport general allowed vlan add 5,89 tagged
+   switchport general allowed vlan add 803-804 untagged
+   switchport protected-port
+   lldp optional-tlv port-desc sys-name sys-desc sys-cap 802.3-mac-phy
+   lldp med enable
+   lldp management-address automatic
+   selective-qinq list ingress add_vlan 803 ingress_vlan 2001
+   selective-qinq list ingress add_vlan 804 ingress_vlan 2500,2525
+  exit
+  !
+  interface gigabitethernet1/0/6
+   description "SZO_ID_1339 s.Malaya Minusa, ul.Mikrorajon, 19"
+   storm-control broadcast kbps 500 shutdown
+   storm-control multicast kbps 500 shutdown
+   spanning-tree disable
+   switchport mode general
+   switchport general allowed vlan add 3492 untagged
+   switchport protected-port
+   lldp optional-tlv port-desc sys-name sys-desc sys-cap 802.3-mac-phy
+   lldp med enable
+   lldp management-address automatic
+   selective-qinq list ingress add_vlan 3492
+  exit
+  !
+  interface tengigabitethernet1/0/2
+   shutdown
+   description "-- UNUSED --"
+  exit
+  !
+  interface tengigabitethernet1/0/3
+   description "Switch Eltex MES-3124F  te1/0/2 Uplink"
+   switchport mode trunk
+   switchport trunk allowed vlan add 5,85,89,803-804
+   lldp optional-tlv port-desc sys-name sys-desc sys-cap 802.3-mac-phy
+   lldp med enable
+   lldp management-address automatic
+   no negotiation bypass
+  exit
+result:
+  - ['interfaces', 'Gi 1/0/1']
+  - ['interfaces', 'Gi 1/0/1', 'description', '"Switch Eltex MES-1124 p28"', {'replace': true}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', 'switchport', 'tagged', 5]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', 'switchport', 'tagged', 89]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', 'switchport', 'untagged', '803']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', '1', 'inner_vlans', '2001']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', '1', null, 'push', '803']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', '1', 'inner_vlans', '2500,2525']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/1', 'unit', 'Gi 1/0/1', 'bridge', '1', null, 'push', '804']
+  - ['interfaces', 'Gi 1/0/6']
+  - ['interfaces', 'Gi 1/0/6', 'description', '"SZO_ID_1339 s.Malaya Minusa, ul.Mikrorajon, 19"', {'replace': true}]
+  - ['interfaces', 'Gi 1/0/6', 'storm-control', 'broadcast', 'level', 500.0, {'replace': True}]
+  - ['interfaces', 'Gi 1/0/6', 'storm-control', 'multicast', 'level', 500.0, {'replace': True}]
+  - ['hints', 'protocols', 'spanning-tree', 'interface', 'Gi 1/0/6', 'off']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/6', 'unit', 'Gi 1/0/6', 'bridge', 'switchport', 'untagged', '3492']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/6', 'unit', 'Gi 1/0/6', 'bridge', '1', null, 'push', '3492']
+  - ['interfaces', 'Te 1/0/2']
+  - ['interfaces', 'Te 1/0/2', 'admin-status', False, {'replace': True}]
+  - ['interfaces', 'Te 1/0/2', 'description', '"-- UNUSED --"', {'replace': true}]
+  - ['interfaces', 'Te 1/0/3']
+  - ['interfaces', 'Te 1/0/3', 'description', '"Switch Eltex MES-3124F te1/0/2 Uplink"', {'replace': true}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Te 1/0/3', 'unit', 'Te 1/0/3', 'bridge', 'switchport', 'tagged', 5]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Te 1/0/3', 'unit', 'Te 1/0/3', 'bridge', 'switchport', 'tagged', 85]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Te 1/0/3', 'unit', 'Te 1/0/3', 'bridge', 'switchport', 'tagged', 89]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Te 1/0/3', 'unit', 'Te 1/0/3', 'bridge', 'switchport', 'tagged', 803]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Te 1/0/3', 'unit', 'Te 1/0/3', 'bridge', 'switchport', 'tagged', 804]
