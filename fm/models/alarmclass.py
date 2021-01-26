@@ -179,9 +179,6 @@ class AlarmClass(Document):
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
     recover_time = IntField(required=False, default=300)
-    # Repeat Alarm settings
-    repeat_window = IntField(required=False, default=0)
-    repeat_threshold = IntField(required=False, default=0)
     #
     bi_id = LongField(unique=True)
     #
@@ -343,6 +340,9 @@ class AlarmClass(Document):
 
     @property
     def config(self):
+        # Avoid circular references
+        from .alarmclassconfig import AlarmClassConfig
+
         if not hasattr(self, "_config"):
             self._config = AlarmClassConfig.objects.filter(alarm_class=self.id).first()
         return self._config
@@ -370,6 +370,9 @@ class AlarmClass(Document):
             else:
                 return self.control_timeN or None
 
-
-# Avoid circular references
-from .alarmclassconfig import AlarmClassConfig
+    def repeat(self):
+        if self.config and self._config.enable_alarm_repeat:
+            if self._config.thresholdprofile and self._config.thresholdprofile.window_type == "t":
+                return self._config.thresholdprofile
+            else:
+                return None

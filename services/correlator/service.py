@@ -62,8 +62,6 @@ from services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
 
-ALARM_REPEAT = "NOC | Alarm | Repeat Threshold"
-
 
 class CorrelatorService(TornadoService):
     name = "correlator"
@@ -86,7 +84,8 @@ class CorrelatorService(TornadoService):
         self.slot_number = 0
         self.total_slots = 0
         self.is_distributed = False
-        self.repeat: Dict[str, List[int]] = {}
+        # Alarm Repeat
+        self.repeat: Dict[str, List[Tuple[int, int]]] = {}
         # Scheduler
         self.scheduler: Optional[Scheduler] = None
         # Locks
@@ -311,8 +310,8 @@ class CorrelatorService(TornadoService):
         ets = int(event.timestamp.timestamp())
         acrw = r_config.window
         window = self.repeat.get(key, [])
-        # Check if Event timestamp > Alarm timestamp use Event timestamp
-        if ets - ts > alarm.alarm_class.repeat_window:
+
+        if ets - ts > acrw:
             ts = ets
         window += [(ts, 1)]
         # Trim window according to policy
