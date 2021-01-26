@@ -145,14 +145,14 @@ class AlarmApplication(ExtApplication):
                     q[field] += [q[p]]
                 del q[p]
         # Normalize parameters
-        for p in q:
+        for p in list(q):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
         # Advanced filter
         for p in self.advanced_filter_params:
             params = []
-            for x in q:
+            for x in list(q):
                 if x.startswith(p):
                     params += [q[x]]
                     del q[x]
