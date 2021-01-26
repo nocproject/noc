@@ -334,6 +334,8 @@ class CorrelatorService(TornadoService):
                 a.vars,
             )
             metrics["alarm_raise"] += 1
+            # Gather diagnostics when necessary
+            AlarmDiagnosticConfig.on_raise(a)
             # Watch for escalations, when necessary
             if config.correlator.auto_escalation and not a.root:
                 AlarmEscalation.watch_escalations(a)
@@ -363,6 +365,8 @@ class CorrelatorService(TornadoService):
                     a.alarm_class.name,
                     a.vars,
                 )
+                # Gather diagnostics when necessary
+                AlarmDiagnosticConfig.on_raise(a)
                 metrics["alarm_contribute"] += 1
                 return
 
