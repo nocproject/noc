@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.event application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.event.Application");
@@ -16,156 +16,51 @@ Ext.define("NOC.fm.event.Application", {
         "NOC.sa.administrativedomain.LookupField",
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.event.EventPanel",
+        "NOC.core.combotree.ComboTree",
+        "NOC.fm.alarm.view.grids.Lookup",
+        "NOC.fm.event.ApplicationModel",
+        "NOC.fm.event.ApplicationController",
     ],
     layout: "card",
+    controller: "fm.event",
+    viewModel: {
+        type: "fm.event"
+    },
     STATUS_MAP: {
         A: "Active",
         S: "Archived",
         F: "Failed"
     },
-    pollingInterval: 30000,
     //
     initComponent: function() {
         var me = this,
             bs = Math.max(50, Math.ceil(screen.height / 24) + 10);
-        me.pollingTaskId = null;
+
         me.currentQuery = {status: "A"};
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.event.Model",
             autoLoad: false,
             customFields: [],
-            filterParams: {
-                status: "A"
-            },
             pageSize: bs,
             leadingBufferZone: bs,
             numFromEdge: bs,
-            trailingBufferZone: bs
-        });
-
-        me.typeCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: __("State"),
-            labelWidth: 30,
-            queryMode: "local",
-            displayField: "name",
-            valueField: "id",
-            store: Ext.create("Ext.data.Store", {
-                fields: ["id", "name"],
-                data: [
-                    {id: "A", name: "Active"},
-                    {id: "S", name: "Archived"},
-                    {id: "F", name: "Failed"}
-                ]
-            }),
-            value: "A",
-            width: 110,
-            listeners: {
-                select: {
-                    scope: me,
-                    fn: me.onChangeFilter
+            trailingBufferZone: bs,
+            sorters: [
+                {
+                    property: 'timestamp',
+                    direction: 'DESC'
                 }
-            }
-        });
-
-        me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
-            fieldLabel: __("Object"),
-            labelWidth: 40,
-            width: 200,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter,
-                clear: me.onChangeFilter
-            }
-        });
-
-        me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
-            fieldLabel: __("Selector"),
-            labelWidth: 40,
-            width: 200,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter,
-                clear: me.onChangeFilter
-            }
-        });
-
-        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
-            fieldLabel: __("Adm. Domain"),
-            labelWidth: 40,
-            width: 200,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter,
-                clear: me.onChangeFilter
-            }
-        });
-
-        me.eventClassCombo = Ext.create("NOC.fm.eventclass.LookupField", {
-            fieldLabel: __("Class"),
-            labelWidth: 40,
-            width: 300,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter,
-                clear: me.onChangeFilter
-            }
-        });
-
-        me.fromDateField = Ext.create("Ext.form.field.Date", {
-            fieldLabel: __("From"),
-            labelWidth: 35,
-            format: "d.m.Y",
-            startDay: 1,
-            width: 130,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter
-            }
-        });
-
-        me.toDateField = Ext.create("Ext.form.field.Date", {
-            fieldLabel: __("To"),
-            labelWidth: 25,
-            format: "d.m.Y",
-            startDay: 1,
-            width: 120,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter
-            }
+            ]
         });
 
         me.gridPanel = Ext.create("Ext.grid.Panel", {
+            region: "center",
+            split: true,
             store: me.store,
             border: false,
-            itemId: "grid-panel",
-            stateful: true,
+            itemId: "fm-event-grid",
+            stateful: false,
             stateId: "fm.event-grid",
-            plugins: [
-                {
-                    ptype: "bufferedrenderer"
-                    //trailingBufferZone: 50,
-                    //leadingBufferZone: 50
-                }
-            ],
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    dock: "top",
-                    layout: {
-                        overflowHandler: "Menu"
-                    },
-                    items: [
-                        me.typeCombo,
-                        me.admdomCombo,
-                        me.selectorCombo,
-                        me.objectCombo,
-                        me.eventClassCombo,
-                        me.fromDateField,
-                        me.toDateField
-                    ]
-                }
-            ],
             columns: [
                 {
                     text: __("ID"),
@@ -228,21 +123,175 @@ Ext.define("NOC.fm.event.Application", {
                     renderer: NOC.render.Duration
                 }
             ],
-            selModel: Ext.create("Ext.selection.CheckboxModel"),
+            selModel: {
+                selType: 'checkboxmodel'
+            },
+            viewConfig: {
+                enableTextSelection: true,
+                getRowClass: Ext.bind(me.getRowClass, me)
+            },
             listeners: {
                 itemdblclick: {
                     scope: me,
                     fn: me.onSelectEvent
                 }
-            },
-            viewConfig: {
-                enableTextSelection: true,
-                getRowClass: Ext.bind(me.getRowClass, me)
-                /* listeners: {
-                    scope: me,
-                    cellclick: me.onCellClick
-                }*/
             }
+        });
+
+        me.filterPanel = Ext.create("Ext.form.Panel", {
+            region: "east",
+            width: 210,
+            split: true,
+            titleAlign: "right",
+            minWidth: 210,
+            title: __("Filters"),
+            scrollable: {
+                indicators: false,
+                x: false,
+                y: true
+            },
+            suspendLayout: true,
+            defaults: {
+                xtype: "fieldset",
+                margin: 5,
+                collapsible: true
+            },
+            items: [
+                {
+                    title: __("Control"),
+                    width: "100%",
+                    items: [
+                        {
+                            xtype: "fieldcontainer",
+                            padding: "5 0 5",
+                            layout: "column",
+                            defaults: {
+                                xtype: "button",
+                                width: "50%"
+                            },
+                            items: [
+                                {
+                                    text: __("Reload"),
+                                    iconAlign: "right",
+                                    enableToggle: true,
+                                    tooltip: __("Toggle auto reload"),
+                                    pressed: false,
+                                    glyph: NOC.glyph.ban, // or "NOC.glyph.refresh" when pressed is true
+                                    listeners: {
+                                        toggle: "onAutoReloadToggle"
+                                    }
+                                },
+                                {
+                                    text: __("Reset Filter"),
+                                    enableToggle: false,
+                                    listeners: {
+                                        click: "onResetFilter"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    title: __("Filters"),
+                    collapsed: false,
+                    defaults: {
+                        labelAlign: "top",
+                        width: "100%"
+                    },
+                    items: [
+                        {
+                            xtype: "fm.alarm.lookup",
+                            fieldLabel: __("State"),
+                            editable: false,
+                            queryMode: "local",
+                            displayField: "name",
+                            valueField: "id",
+                            store: {
+                                fields: ["id", "name"],
+                                data: [
+                                    {id: "A", name: "Active"},
+                                    {id: "S", name: "Archived"},
+                                    {id: "F", name: "Failed"}
+                                ]
+                            },
+                            name: "status",
+                            bind: {
+                                value: "{filter.status}"
+                            }
+                        },
+                        {
+                            xtype: "fm.alarm.lookup",
+                            url: "/sa/managedobject/lookup/",
+                            fieldLabel: __("Object"),
+                            name: "managed_object",
+                            bind: {
+                                selection: "{filter.managed_object}"
+                            }
+                        },
+                        {
+                            xtype: "noc.core.combotree",
+                            restUrl: "/sa/administrativedomain/",
+                            fieldLabel: __("Adm. Domain"),
+                            name: "administrative_domain",
+                            bind: {
+                                selection: "{filter.administrative_domain}"
+                            }
+                        },
+                        {
+                            xtype: "fm.alarm.lookup",
+                            url: "/sa/managedobjectselector/lookup/",
+                            fieldLabel: __("Selector"),
+                            name: "managedobjectselector",
+                            bind: {
+                                selection: "{filter.managedobjectselector}"
+                            }
+                        },
+                        {
+                            xtype: "fm.alarm.lookup",
+                            url: "/fm/eventclass/lookup/",
+                            fieldLabel: __("Event Class"),
+                            name: "event_class",
+                            bind: {
+                                selection: "{filter.event_class}"
+                            }
+                        },
+                        {
+                            xtype: "fieldcontainer",
+                            fieldLabel: __("By Date"),
+                            layout: "column",
+                            padding: "5 0 5",
+                            defaults: {
+                                xtype: "datefield",
+                                format: "d.m.Y",
+                                submitFormat: "Y-m-d\\TH:i:s",
+                                startDay: 1,
+                                width: "50%",
+                                hideLabel: true
+                            },
+                            items: [ // format 2018-11-16T00:00:00
+                                {
+                                    name: "timestamp__gte",
+                                    bind: {value: "{filter.timestamp__gte}"}
+                                },
+                                {
+                                    name: "timestamp__lte",
+                                    bind: {value: "{filter.timestamp__lte}"}
+                                }
+                            ]
+                        },
+                    ]
+                }
+            ]
+        });
+
+        me.mainPanel = Ext.create("Ext.panel.Panel", {
+            layout: "border",
+            itemId: "fm-event-main",
+            items: [
+                me.gridPanel,
+                me.filterPanel
+            ]
         });
         //
         me.eventPanel = Ext.create("NOC.fm.event.EventPanel", {
@@ -254,7 +303,7 @@ Ext.define("NOC.fm.event.Application", {
             restUrl: new Ext.XTemplate('/fm/event/{id}/json/'),
             previewName: new Ext.XTemplate('Event: {id}')
         });
-        me.ITEM_GRID = me.registerItem(me.gridPanel);
+        me.ITEM_GRID = me.registerItem(me.mainPanel);
         me.ITEM_FORM = me.registerItem(me.eventPanel);
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         Ext.apply(me, {
@@ -262,47 +311,10 @@ Ext.define("NOC.fm.event.Application", {
         });
         me.callParent();
         //
-        me.startPolling();
         if(me.getCmd() === "history") {
             me.showEvent(me.noc.cmd.args[0]);
         }
 
-    },
-    //
-    reloadStore: function() {
-        var me = this;
-        if(me.currentQuery) {
-            me.store.setFilterParams(me.currentQuery);
-        }
-        me.store.load();
-    },
-    //
-    onChangeFilter: function() {
-        var me = this,
-            q = {},
-            setIf = function(k, v) {
-                if(v) {
-                    q[k] = v;
-                }
-            };
-
-        // Status
-        q.status = me.typeCombo.getValue();
-        // Selector
-        setIf("managedobjectselector", me.selectorCombo.getValue());
-        // Adm Domain
-        setIf("administrative_domain", me.admdomCombo.getValue());
-        // Object
-        setIf("managed_object", me.objectCombo.getValue());
-        // Class
-        setIf("event_class", me.eventClassCombo.getValue());
-        // From Date
-        setIf("timestamp__gte", me.fromDateField.getValue());
-        // To Date
-        setIf("timestamp__lte", me.toDateField.getValue());
-        //
-        me.currentQuery = q;
-        me.reloadStore();
     },
     // Return Grid's row classes
     getRowClass: function(record, index, params, store) {
@@ -318,60 +330,15 @@ Ext.define("NOC.fm.event.Application", {
     showGrid: function() {
         var me = this;
         me.getLayout().setActiveItem(0);
-        //me.reloadStore();
-        me.startPolling();
+        me.getController().startPolling();
         me.setHistoryHash();
     },
     //
     onSelectEvent: function(grid, record, item, index) {
         var me = this;
-        me.stopPolling();
+        me.getController().stopPolling();
         me.getLayout().setActiveItem(1);
         me.eventPanel.showEvent(record.get("id"));
-    },
-    // Returns true if polling is locked
-    isPollLocked: function() {
-        var me = this,
-            ls;
-        ls = me.gridPanel.getView().getScrollable().getPosition().y !== 0;
-        return ls;
-    },
-    //
-    pollingTask: function() {
-        var me = this;
-        // Poll only application tab is visible
-        if(!me.isActiveApp()) {
-            return;
-        }
-        // Poll only when in grid preview
-        if(me.getLayout().getActiveItem().itemId !== "grid-panel") {
-            return;
-        }
-        // Poll only if polling is not locked
-        if(!me.isPollLocked()) {
-            me.store.load();
-        }
-    },
-    //
-    startPolling: function() {
-        var me = this;
-        if(me.pollingTaskId) {
-            me.pollingTask();
-        } else {
-            me.pollingTaskId = Ext.TaskManager.start({
-                run: me.pollingTask,
-                interval: me.pollingInterval,
-                scope: me
-            });
-        }
-    },
-    //
-    stopPolling: function() {
-        var me = this;
-        if(me.pollingTaskId) {
-            Ext.TaskManager.stop(me.pollingTaskId);
-            me.pollingTaskId = null;
-        }
     },
     //
     showForm: function() {
@@ -387,6 +354,6 @@ Ext.define("NOC.fm.event.Application", {
     //
     onCloseApp: function() {
         var me = this;
-        me.stopPolling();
+        me.getController().stopPolling();
     }
 });
