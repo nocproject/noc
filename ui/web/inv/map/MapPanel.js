@@ -642,7 +642,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             };
         // Get nodes position
         Ext.each(me.graph.getElements(), function(e) {
-            if('wrench' !== e.get('data').type) {
+            if('wrench' !== e.get('data').type && 'badge' !== e.get('data').type) {
                 var v = e.get("id").split(":");
                 r.nodes.push({
                     type: v[0],
@@ -807,6 +807,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             attrs: {
                 body: {strokeWidth: 0.5},
                 text: {text: String.fromCharCode(config.code), 'font-family': 'FontAwesome', 'font-size': size / 1.7}
+            },
+            data: {
+                type: "badge"
             }
         });
     },
