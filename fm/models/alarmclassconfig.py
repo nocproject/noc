@@ -12,7 +12,6 @@ from mongoengine.fields import StringField, BooleanField, ReferenceField, IntFie
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.pm.models.thresholdprofile import ThresholdProfile
-from noc.fm.models.alarmlog import AlarmLog
 from .alarmclass import AlarmClass
 
 
