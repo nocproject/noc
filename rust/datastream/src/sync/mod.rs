@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------
  * DataStream SyncService
  * ---------------------------------------------------------------------
- * Copyright (C) 2007-2020 The NOC Project
+ * Copyright (C) 2007-2021 The NOC Project
  * See LICENSE for details
  * ---------------------------------------------------------------------
  */
@@ -10,7 +10,7 @@ use crate::client::ClientService;
 use crate::error::Error;
 use crate::state::StateService;
 use log::{error, info};
-use serde::export::PhantomData;
+use std::marker::PhantomData;
 
 const DEFAULT_ERR_TIMEOUT: u64 = 5;
 const MIN_PULL_TIME: u64 = 1000; // ms
@@ -84,12 +84,12 @@ where
         // Main loop
         while !self.to_shutdown {
             let now = std::time::SystemTime::now();
-            self.pull_and_apply().map_err(|e| {
+            if let Err(e) = self.pull_and_apply() {
                 info!("Failed to pull and apply changes: {}", e);
                 if !self.to_shutdown {
                     std::thread::sleep(std::time::Duration::from_secs(self.err_timeout));
                 }
-            });
+            }
             // DDoS prevention
             if !self.to_shutdown {
                 match now.elapsed() {
