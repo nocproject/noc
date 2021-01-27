@@ -1,5 +1,5 @@
 [workspace]
 members = [
     "datastream",
-    "noc-dns-sync",
+    "dnssync",
 ]

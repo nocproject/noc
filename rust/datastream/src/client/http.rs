@@ -10,7 +10,7 @@ use crate::change::ChangeVec;
 use crate::client::ClientService;
 use crate::error::Error;
 use log::{debug, error, info, max_level, LevelFilter};
-use serde::export::PhantomData;
+use std::marker::PhantomData;
 
 //
 const DEFAULT_USER_AGENT: &str = "NOC DataStream Client";
