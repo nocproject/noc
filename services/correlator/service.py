@@ -481,6 +481,7 @@ class CorrelatorService(FastAPIService):
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
         summary["object"] = {managed_object.object_profile.id: 1}
+        summary["alarm_class"] = alarm_class.min_weight
         if a.is_link_alarm and a.components.interface:
             summary["interface"] = {a.components.interface.profile.id: 1}
         #
