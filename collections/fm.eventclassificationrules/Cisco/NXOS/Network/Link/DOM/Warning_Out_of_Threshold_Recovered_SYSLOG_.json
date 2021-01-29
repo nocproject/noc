@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NXOS | Network | Link | DOM | Warning: Out of Threshold Recovered (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "3fcabe1c-6c60-43a8-a550-1d6a0a30b89e",
+    "description": "2020 Oct 22 20:09:11 MSK: %ETHPORT-4-IF_SFP_WARNING: Interface Ethernet1/1, High Rx Power Warning cleared",
+    "event_class__name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.NXOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "IF_SFP_WARNING: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Warning cleared$"
+        }
+    ]
+}

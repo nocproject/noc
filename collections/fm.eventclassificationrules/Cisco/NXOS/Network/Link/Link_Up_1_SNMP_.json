@@ -11,14 +11,6 @@
             "value_re": "^Cisco\\.NXOS$"
         },
         {
-            "key_re": "^IF-MIB::ifOperStatus.436277248$",
-            "value_re": "^up$"
-        },
-        {
-            "key_re": "^IF-MIB::ifDescr.436277248$",
-            "value_re": "^(?P<interface>.+)$"
-        },
-        {
             "key_re": "^source$",
             "value_re": "^SNMP Trap$"
         },
@@ -27,7 +19,15 @@
             "value_re": "^IF-MIB::linkUp$"
         },
         {
-            "key_re": "^IF-MIB::ifAdminStatus.436277248$",
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "^up$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
             "value_re": "^up$"
         }
     ]

@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NXOS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4a284c12-b27d-4180-8765-bb6747f239be",
+    "description": "2020 Oct 22 19:01:28 MSK: %ETHPORT-3-IF_SFP_ALARM: Interface Ethernet1/1, High Rx Power Alarm",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.NXOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "IF_SFP_ALARM: Interface (?P<interface>.+), (?P<threshold>Low|High) (?P<sensor>.+) Alarm$"
+        }
+    ]
+}
