@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | NXOS | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "90fc4fbd-1454-41ed-8e69-f03b013752d2",
+    "description": ": 2019 Dec 11 11:50:02 MSK: %ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet1/8 is down (Link failure)",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.NXOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface (?P<interface>.+) is down"
+        }
+    ]
+}
