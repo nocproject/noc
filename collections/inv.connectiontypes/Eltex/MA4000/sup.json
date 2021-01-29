@@ -1,0 +1,8 @@
+{
+    "name": "Eltex | MA4000 | SUP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "3fd2d985-e005-437f-895a-7fbf5880fe7d",
+    "description": "Eltex MA4000 SUP slot",
+    "c_group": [],
+    "genders": "mf"
+}

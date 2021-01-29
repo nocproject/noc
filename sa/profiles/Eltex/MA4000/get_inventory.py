@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ class Script(BaseScript):
     name = "Eltex.MA4000.get_inventory"
     interface = IGetInventory
 
+    rx_serial = re.compile(r"^\s+Serial number: (?P<serial>\S+)", re.MULTILINE)
     rx_slot = re.compile(
         r"^\s*Module type:\s+(?P<part_no>\S+)\s*\n"
         r"^\s*Hardware version:\s+(?P<revision>\S+)\s*\n",
@@ -30,16 +31,25 @@ class Script(BaseScript):
     rx_sep = re.compile(r"\s\s+")
 
     def execute_cli(self, **kwargs):
-        v = self.scripts.get_version()
         res = [
             {
                 "type": "CHASSIS",
                 "vendor": "ELTEX",
-                "part_no": v["platform"],
-                "serial": v["attributes"]["Serial Number"],
+                "part_no": "MA4000",
             }
         ]
-
+        for i in [1, 2]:
+            v = self.cli("show system information %d" % i, cached=True)
+            match = self.rx_serial.search(v)
+            if match:
+                r = {
+                    "type": "SUP",
+                    "number": i,
+                    "vendor": "ELTEX",
+                    "serial": match.group("serial"),
+                    "part_no": "PP4X",
+                }
+                res += [r]
         v = self.cli("show shelf")
         for i in parse_table(v):
             if i[2] == "none":

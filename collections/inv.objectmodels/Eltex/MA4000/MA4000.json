@@ -65,6 +65,20 @@
             "type__name": "Eltex | MA4000 | Linecard"
         },
         {
+            "description": "Switch 1 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "sup1",
+            "type__name": "Eltex | MA4000 | SUP"
+        },
+        {
+            "description": "Switch 2 slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "sup2",
+            "type__name": "Eltex | MA4000 | SUP"
+        },
+        {
             "description": "Linecard 8 slot",
             "direction": "i",
             "gender": "f",

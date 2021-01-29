@@ -18,6 +18,14 @@
     "rules": [
         {
             "match_connection": "in",
+            "match_type": "SUP",
+            "scope": "chassis",
+            "target_connection": "sup{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
             "match_type": "LINECARD",
             "scope": "chassis",
             "target_connection": "linecard{N}",

@@ -5,7 +5,7 @@
     "vendor__code": "ELTEX",
     "description": "Eltex MA4000 плата управления и коммутации PP4X 4x10GBase-X(SFP+), 2x (10/100/1000Base-T/1000Base-X (SFP))",
     "connection_rule__name": "Eltex | MA4000",
-    "cr_context": "LINECARD",
+    "cr_context": "SUP",
     "tags": ["lc", "sup", "fabric", "port"],
     "connections": [
         {
@@ -13,7 +13,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Eltex | MA4000 | Linecard"
+            "type__name": "Eltex | MA4000 | SUP"
         },
         {
             "description": "front-port X/0",
