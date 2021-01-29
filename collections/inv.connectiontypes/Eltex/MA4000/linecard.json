@@ -2,7 +2,7 @@
     "name": "Eltex | MA4000 | Linecard",
     "$collection": "inv.connectiontypes",
     "uuid": "4ba0900e-ea91-4a4a-8c94-738bbf4f1424",
-    "description": "Eltex  Linecard slot",
+    "description": "Eltex MA4000 Linecard slot",
     "c_group": [],
     "genders": "mf"
 }
