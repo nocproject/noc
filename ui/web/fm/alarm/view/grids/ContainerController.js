@@ -102,7 +102,11 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                     badgeSpan = "<span class='x-display-tag'>",
                     closeSpan = "</span>",
                     sortFn = function(a, b) {
-                        return (a.display_order > b.display_order) ? 1 : -1;
+                        if(a.display_order > b.display_order) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
                     },
                     iconTag = function(cls, title) {
                         return "<i class='" + cls + "' title='" + title + "'></i>";
@@ -139,30 +143,34 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     },
     addGroupComment: function() {
         var grid = this.lookupReference("fm-alarm-active"),
-            ids = grid.getSelection().map((alarm) => alarm.id);
-
-        Ext.MessageBox.prompt(
-            __("Set group comment"),
-            __("Please enter comment"),
-            function(btn, text) {
-                if(btn === "ok") {
-                    Ext.Ajax.request({
-                        url: "/fm/alarm/comment/post/",
-                        method: "POST",
-                        jsonData: {
-                            ids: ids,
-                            msg: text
-                        },
-                        success: function() {
-                            NOC.info(__("Success"))
-                        },
-                        failure: function() {
-                            NOC.error(__("Failed to save group comment"));
-                        }
-                    });
-                }
-            },
-            this
-        );
+            ids = grid.getSelection().map(function(alarm) {
+                return alarm.id
+            }),
+            view = this.getView(),
+            msg = new Ext.window.MessageBox().prompt(
+                __("Set group comment"),
+                __("Please enter comment"),
+                function(btn, text) {
+                    if(btn === "ok") {
+                        Ext.Ajax.request({
+                            url: "/fm/alarm/comment/post/",
+                            method: "POST",
+                            jsonData: {
+                                ids: ids,
+                                msg: text
+                            },
+                            success: function() {
+                                view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+                                NOC.info(__("Success"));
+                            },
+                            failure: function() {
+                                NOC.error(__("Failed to save group comment"));
+                            }
+                        });
+                    }
+                },
+                this
+            );
+        msg.setWidth(500);
     }
 });
