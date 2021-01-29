@@ -131,13 +131,15 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
         {
             xtype: "actioncolumn",
             text: __("Ack"),
-            width: 35,
+            flex: 1,
+            innerCls: undefined,
             defaultRenderer: function(v, cellValues, record, rowIdx, colIdx, store, view) {
                 var me = this,
                     scope = me.origScope || me,
                     items = me.items,
                     len = items.length,
-                    i, item, ret, disabled, tooltip, altText, icon;
+                    i, item, ret, disabled, tooltip, altText, icon,
+                    tooltipFromData = me.getView().tooltip(record);
 
                 ret = Ext.isFunction(me.origRenderer) ? me.origRenderer.apply(scope, arguments) || '' : '';
 
@@ -145,15 +147,9 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
                 for(i = 0; i < len; i++) {
                     item = items[i];
                     icon = item.icon;
-
-                    var tooltipFromData = "<span class='noc-alarm-tooltip-flat'>" + __("no comments") + "</span>";
-                    if(record.get("logs").length) {
-                        tooltipFromData = "<table><thead><tr><th>" + __("Date") + "</th><th>" + __("User") + "</th><th>" + __("Message") + "</th></tr></thead><tbody>";
-                        for(var j = 0; j < record.get("logs").length; j++) {
-                            var r = record.get("logs")[j];
-                            tooltipFromData += "<tr><td>" + Ext.util.Format.date(r.timestamp, "d.m.Y H:i") + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + r.message + "</td></tr>";
-                        }
-                        tooltipFromData += "</tbody></table>"
+                    if(item.renderer) {
+                        ret += "<div>" + item.renderer(undefined, undefined, record) + "</div>";
+                        continue;
                     }
                     disabled = item.disabled || (item.isDisabled ? item.isDisabled.call(item.scope || scope, view, rowIdx, colIdx, item, record) : false);
                     tooltip = disabled ? null : (tooltipFromData || (item.getTip ? item.getTip.apply(item.scope || scope, arguments) : null));
@@ -174,63 +170,75 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
                 }
                 return ret;
             },
-            items: [{
-                handler: function(view, rowIndex, colIndex, item, e, record) {
-                    var isAck = !!record.get("ack_user");
-                    // ToDo double code #acknowledge
-                    Ext.MessageBox.prompt(
-                        __("Acknowledge"),
-                        isAck ? __("Set alarm as unacknowledged") : __("Set alarm as acknowledged"),
-                        function(btn, text) {
-                            var msg = __("Failed to set acknowledgedun/acknowledged"),
-                                url = "/fm/alarm/" + record.id + (isAck ? "/unacknowledge/" : "/acknowledge/");
-                            if(btn === "ok") {
-                                Ext.Ajax.request({
-                                    url: url,
-                                    method: "POST",
-                                    jsonData: {
-                                        msg: text
-                                    },
-                                    scope: this,
-                                    success: function(response) {
-                                        var data = Ext.decode(response.responseText);
-                                        if(!data.status) {
-                                            Ext.MessageBox.show({
-                                                title: "Error",
-                                                message: data.hasOwnProperty("message") ? data.message : msg,
-                                                buttons: Ext.Msg.OK,
-                                                icon: Ext.Msg.ERROR
-                                            });
-                                        }
-                                        view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
-                                    },
-                                    failure: function() {
-                                        NOC.error(msg);
+            items: [
+                {
+                    handler: function(view, rowIndex, colIndex, item, e, record) {
+                        var isAck = !!record.get("ack_user"),
+                            // ToDo double code #acknowledge
+                            msg = new Ext.window.MessageBox().prompt(
+                                __("Acknowledge"),
+                                isAck ? __("Set alarm as unacknowledged") : __("Set alarm as acknowledged"),
+                                function(btn, text) {
+                                    var msg = __("Failed to set acknowledgedun/acknowledged"),
+                                        url = "/fm/alarm/" + record.id + (isAck ? "/unacknowledge/" : "/acknowledge/");
+                                    if(btn === "ok") {
+                                        Ext.Ajax.request({
+                                            url: url,
+                                            method: "POST",
+                                            jsonData: {
+                                                msg: text
+                                            },
+                                            scope: this,
+                                            success: function(response) {
+                                                var data = Ext.decode(response.responseText);
+                                                if(!data.status) {
+                                                    Ext.MessageBox.show({
+                                                        title: "Error",
+                                                        message: data.hasOwnProperty("message") ? data.message : msg,
+                                                        buttons: Ext.Msg.OK,
+                                                        icon: Ext.Msg.ERROR
+                                                    });
+                                                }
+                                                view.up("[itemId=fm-alarm]").getController().reloadActiveGrid();
+                                            },
+                                            failure: function() {
+                                                NOC.error(msg);
+                                            }
+                                        })
                                     }
-                                })
-                            }
-                        },
-                        this
-                    );
+                                },
+                                this
+                            );
+                        msg.setWidth(500);
+                    },
+                    getClass: function(v, _, record) {
+                        return "x-fa fa-" + (record.get("ack_user") ? "toggle-on" : "toggle-off");
+                    },
+                    isDisabled: function(view, rowIndex, colIndex, item, record) {
+                        var isActive = record.get("status") === "A" || false;
+                        return !(view.up("[itemId=fm-alarm]").permissions["acknowledge"] && isActive);
+                    }
                 },
-                getClass: function(v, _, record) {
-                    return "x-fa fa-" + (record.get("ack_user") ? "toggle-on" : "toggle-off");
-                },
-                isDisabled: function(view, rowIndex, colIndex, item, record) {
-                    var isActive = record.get("status") === "A" || false;
-                    return !(view.up("[itemId=fm-alarm]").permissions["acknowledge"] && isActive);
+                {
+                    renderer: function(v, _, record) {
+                        return record.get("ack_user")
+                            ? record.get("ack_user")
+                            + "-"
+                            + Ext.Date.format(record.get("ack_ts"), "Y-m-d H:i")
+                            : "-";
+                    }
                 }
-            }]
+            ]
         },
         {
-            text: __("Acknowledged"),
-            dataIndex: "ack_user",
+            text: __("Comments Qty"),
+            width: 40,
             renderer: function(v, _, record) {
-                return record.get("ack_user")
-                    ? record.get("ack_user")
-                    + "<br/>"
-                    + NOC.render.DateTime(record.get("ack_ts"))
-                    : "-";
+                var commentsLength = record.get("logs").length;
+                return '<div data-qclass="noc-alarm-tooltip" data-qtip="' + this.getView().tooltip(record)
+                    + '"><div class="x-fa fa-' + (commentsLength ? 'commenting' : 'comment-o')
+                    + '"></div><span style="padding-left: 5px;">'
+                    + commentsLength + '</span></div>';
             }
         },
         {

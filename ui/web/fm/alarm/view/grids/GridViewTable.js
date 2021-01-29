@@ -127,5 +127,21 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
         // value[item.reference] = record.get(item.reference);
         // }
         vm.set("activeFilter", Ext.merge(vm.get("activeFilter"), value));
+    },
+    //
+    tooltip: function(record) {
+    var tooltipFromData = "<span class='noc-alarm-tooltip-flat'>" + __("no comments") + "</span>";
+
+    if(record.get("logs").length) {
+        tooltipFromData = "<table><thead><tr><th>" + __("Date") + "</th><th>" + __("User") + "</th><th>" + __("Message") + "</th></tr></thead><tbody>";
+        for(var j = 0; j < record.get("logs").length; j++) {
+            var r = record.get("logs")[j];
+            tooltipFromData += "<tr><td>" + Ext.util.Format.date(r.timestamp, "d.m.Y H:i")
+                + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + r.message + "</td></tr>";
+        }
+        tooltipFromData += "</tbody></table>";
     }
+    return tooltipFromData;
+}
+
 });
