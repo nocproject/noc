@@ -1,0 +1,66 @@
+{
+  "id": 561422823612,
+  "title": "{{device}}",
+  "tags": ["{{pool}}"],
+  "style": "dark",
+  "timezone": "browser",
+  "refresh": "15m",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [ "5m","10m","15m"],
+    "time_options": ["1h","3h","6h","12h","24h","2d","7d"]
+  },
+  "templating": {
+    "list": [
+      {% include "template_device.j2" with context -%},
+      {% include "template_vendor.j2" with context -%},
+      {% include "template_platform.j2" with context -%},
+      {% include "template_device_id.j2" with context -%},
+      {% include "template_ip_info.j2" with context -%},
+      {% include "template_segment.j2" with context -%},
+      {% include "template_firmware_version.j2" with context -%},
+      {% include "template_discovery_interval.j2" with context -%},
+      {% include "template_bi_id.j2" with context -%},
+      {% include "template_ping_interval.j2" with context -%}
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "NocDS",
+        "enable": false,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "name": "Alarm",
+        "query": "{{device_id}}"
+      }
+    ]
+  },
+  "schemaVersion": 12,
+  "version": 33,
+  "links": [],
+  "gnetId": null,
+  "rows": [
+    {%if extra_template %}
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "700px",
+          "showTitle": true,
+          "title": "{{ extra_template }} ",
+          "internal_comment": "row",
+          "panels": [
+                {% if extra_template == "Bitrate" %}
+                    {% include "graph_multicast_group_bitrate.j2" with context -%}
+                    ,
+                {% endif %}
+          ]
+        }
+    {% endif %}
+  ]
+}

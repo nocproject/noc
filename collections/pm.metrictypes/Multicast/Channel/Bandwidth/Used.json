@@ -1,0 +1,10 @@
+{
+    "name": "Multicast | Channel | Bandwidth | Used",
+    "$collection": "pm.metrictypes",
+    "uuid": "283681f3-e7b2-4644-b32c-2aafe8315c98",
+    "scope__name": "Multicast",
+    "field_name": "c_bandwidth_used",
+    "field_type": "Float32",
+    "description": "Used Bandwidth (bps)",
+    "measure": "bps"
+}

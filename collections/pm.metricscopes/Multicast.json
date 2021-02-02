@@ -1,0 +1,22 @@
+{
+    "name": "Multicast",
+    "$collection": "pm.metricscopes",
+    "uuid": "bd64ffb4-7352-42fd-8096-e6e1a4adea39",
+    "table_name": "multicast",
+    "description": "Scope for Multicast protocols metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "group"
+        },
+        {
+            "is_required": false,
+            "name": "channel"
+        }
+    ],
+    "enable_timedelta": false
+}

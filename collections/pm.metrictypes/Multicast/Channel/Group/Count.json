@@ -1,0 +1,10 @@
+{
+    "name": "Multicast | Channel | Group | Count",
+    "$collection": "pm.metrictypes",
+    "uuid": "2dc31dd9-c7b5-42cb-bdba-fc45438b2427",
+    "scope__name": "Multicast",
+    "field_name": "c_group_count",
+    "field_type": "UInt8",
+    "description": "Used multicast groups on channel",
+    "measure": " "
+}

@@ -1,0 +1,10 @@
+{
+    "name": "Multicast | Group | Bitrate | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "80abd245-d44f-49db-b47f-7c82b4858886",
+    "scope__name": "Multicast",
+    "field_name": "g_bitrate_in",
+    "field_type": "UInt64",
+    "description": "Input Bitrate (bps)",
+    "measure": "bps"
+}

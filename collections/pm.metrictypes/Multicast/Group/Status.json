@@ -1,0 +1,10 @@
+{
+    "name": "Multicast | Group | Status",
+    "$collection": "pm.metrictypes",
+    "uuid": "8b6068a9-9a77-44eb-9157-bf6c6a3e0a37",
+    "scope__name": "Multicast",
+    "field_name": "g_status",
+    "field_type": "Int8",
+    "description": "Multicast Group status 1 - Ok, 0 - Off, -1 - Error ",
+    "measure": " "
+}

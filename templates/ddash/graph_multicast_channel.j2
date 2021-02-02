@@ -1,0 +1,195 @@
+{
+  "links": [],
+  "id": 6102099622138834,
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "multicast",
+      "intervalFactor": 1,
+      "query": "SELECT path[2], c_bandwidth_percent, c_bandwidth_used, c_group_count FROM $table WHERE $timeFilterByColumn(ts) and managed_object=$bi_id and $timeFilter and like(path[1], '')",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "format": "table",
+      "extrapolate": true,
+      "skip_comments": true,
+      "dateTimeType": "DATETIME",
+      "round": "0s",
+    }
+  ],
+  "title": "Multicast | Channel",
+  "type": "table",
+  "span": 6,
+  "options": {
+    "showHeader": true,
+    "sortBy": [
+      {
+        "displayName": "Channel",
+        "desc": false
+      }
+    ]
+  },
+  "fieldConfig": {
+    "defaults": {
+      "custom": {
+        "align": "left",
+        "displayMode": "color-text",
+        "filterable": false
+      },
+      "unit": "none",
+      "thresholds": {
+        "mode": "absolute",
+        "steps": [
+          {
+            "color": "green",
+            "value": null
+          }
+        ]
+      },
+      "mappings": []
+    },
+    "overrides": [
+      {
+        "matcher": {
+          "id": "byName",
+          "options": "Channel"
+        },
+        "properties": [
+          {
+            "id": "custom.width",
+            "value": 300
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byName",
+          "options": "Bandwidth Load"
+        },
+        "properties": [
+          {
+            "id": "custom.width",
+            "value": 300
+          },
+          {
+            "id": "custom.displayMode",
+            "value": "gradient-gauge"
+          },
+          {
+            "id": "unit",
+            "value": "percent"
+          },
+          {
+            "id": "thresholds",
+            "value": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-green",
+                  "value": null
+                },
+                {
+                  "value": 30,
+                  "color": "semi-dark-green"
+                },
+                {
+                  "value": 60,
+                  "color": "semi-dark-yellow"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byName",
+          "options": "Bandwidth Used"
+        },
+        "properties": [
+          {
+            "id": "unit",
+            "value": "bps"
+          },
+          {
+            "id": "custom.width",
+            "value": 200
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "id": "byName",
+          "options": "Group Count"
+        },
+        "properties": [
+          {
+            "id": "custom.width",
+            "value": 100
+          }
+        ]
+      }
+    ]
+  },
+  "pluginVersion": "7.3.5",
+  "transformations": [
+    {
+      "id": "groupBy",
+      "options": {
+        "fields": {
+          "path": {
+            "aggregations": [],
+            "operation": "groupby"
+          },
+          "c_bandwidth_percent": {
+            "aggregations": [
+              "last"
+            ],
+            "operation": "aggregate"
+          },
+          "c_bandwidth_used": {
+            "aggregations": [
+              "last"
+            ],
+            "operation": "aggregate"
+          },
+          "arrayElement(path, 2)": {
+            "aggregations": [],
+            "operation": "groupby"
+          },
+          "c_group_count": {
+            "aggregations": [
+              "last"
+            ],
+            "operation": "aggregate"
+          }
+        }
+      }
+    },
+    {
+      "id": "organize",
+      "options": {
+        "excludeByName": {},
+        "indexByName": {},
+        "renameByName": {
+          "path": "Channel",
+          "c_bandwidth_percent (last)": "Bandwidth Load",
+          "c_bandwidth_used (last)": "Bandwidth Used",
+          "arrayElement(path, 2)": "Channel",
+          "c_group_count (last)": "Group Count"
+        }
+      }
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "datasource": null
+}
