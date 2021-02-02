@@ -1,0 +1,144 @@
+{
+    "links": [],
+    "id": 622138835,
+    "targets": [
+        {
+            "dateTimeColDataType": "ts",
+            "datetimeLoading": false,
+            "database": "noc",
+            "dateLoading": false,
+            "tableLoading": false,
+            "dateColDataType": "date",
+            "table": "multicast",
+            "intervalFactor": 1,
+            "query": "SELECT $timeSeries as t, path[1] as ip, argMax(g_status, t) as Status, argMax(g_bitrate_in, t) as Input, argMax(g_bitrate_out, t) as Output FROM $table WHERE managed_object = $bi_id and path[1] != '' and $timeFilter GROUP BY t, ip ORDER BY t, ip",
+            "refId": "B",
+            "resultFormat": "time_series",
+            "format": "table",
+            "extrapolate": true,
+            "skip_comments": true,
+            "dateTimeType": "DATETIME",
+            "round": "0s",
+            "interval": "",
+        }
+    ],
+    "title": "Multicast | Group",
+    "type": "table",
+    "options": {"showHeader": true, "sortBy": [{"displayName": "ts", "desc": true}]},
+    "fieldConfig": {
+        "defaults": {
+            "custom": {"align": "left", "displayMode": "color-text", "filterable": false},
+            "unit": "none",
+            "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+            "mappings": [],
+        },
+        "overrides": [
+            {
+                "matcher": {"id": "byName", "options": "IP Group"},
+                "properties": [
+                    {"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}},
+                    {"id": "custom.width", "value": 300},
+                ],
+            },
+            {
+                "matcher": {"id": "byName", "options": "Status"},
+                "properties": [
+                    {"id": "custom.width", "value": 200},
+                    {"id": "unit", "value": "none"},
+                    {
+                        "id": "mappings",
+                        "value": [
+                            {
+                                "id": 1,
+                                "type": 1,
+                                "from": "",
+                                "to": "",
+                                "text": "Disable",
+                                "value": "0",
+                            },
+                            {
+                                "id": 2,
+                                "type": 1,
+                                "from": "",
+                                "to": "",
+                                "text": "Online",
+                                "value": "1",
+                            },
+                            {
+                                "id": 3,
+                                "type": 1,
+                                "from": "",
+                                "to": "",
+                                "text": "Offline",
+                                "value": "-1",
+                            },
+                        ],
+                    },
+                    {
+                        "id": "thresholds",
+                        "value": {
+                            "mode": "absolute",
+                            "steps": [
+                                {"color": "super-light-green", "value": null},
+                                {"color": "red", "value": -1},
+                                {"value": 0, "color": "#EAB839"},
+                                {"value": 1, "color": "dark-green"},
+                            ],
+                        },
+                    },
+                ],
+            },
+            {
+                "matcher": {"id": "byRegexp", "options": "^Bitrate.*"},
+                "properties": [
+                    {"id": "custom.width", "value": 200},
+                    {"id": "unit", "value": "bps"},
+                    {
+                        "id": "links",
+                        "value": [
+                            {
+                                "title": "",
+                                "url": '/ui/grafana/dashboard/script/noc.js?dashboard=modvbc&id=${device_id}&extra_template=Bitrate&ifaces=${__data.fields["IP Group"]}',
+                                "targetBlank": true,
+                            }
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    "pluginVersion": "7.3.5",
+    "transformations": [
+        {
+            "id": "groupBy",
+            "options": {
+                "fields": {
+                    "ts": {"aggregations": [], "operation": null},
+                    "t": {"aggregations": [], "operation": null},
+                    "Input": {"aggregations": ["last"], "operation": "aggregate"},
+                    "Output": {"aggregations": ["last"], "operation": "aggregate"},
+                    "ip": {"aggregations": [], "operation": "groupby"},
+                    "Status": {"aggregations": ["last"], "operation": "aggregate"},
+                }
+            },
+        },
+        {
+            "id": "organize",
+            "options": {
+                "excludeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                    "ts": "",
+                    "Input (last)": "Bitrate In",
+                    "Output (last)": "Bitrate Out",
+                    "Status (last)": "Status",
+                    "ip": "IP Group",
+                },
+            },
+        },
+    ],
+    "span": 6,
+    "timeFrom": null,
+    "timeShift": null,
+    "datasource": null,
+}

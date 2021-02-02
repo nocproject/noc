@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # pm.ddash application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,11 +25,13 @@ class DynamicDashboardApplication(ExtApplication):
     def api_dashboard(self, request):
         dash_name = request.GET.get("dashboard")
         try:
-            # if object Sensor Controller
+            # ddash by cals
             oid = request.GET.get("id")
             mo = ManagedObject.get_by_id(oid)
             if mo.get_caps().get("Sensor | Controller"):
                 dash_name = "sensor_controller"
+            if mo.get_caps().get("Network | DVBC"):
+                dash_name = "modvbc"
         except Exception:
             pass
         try:

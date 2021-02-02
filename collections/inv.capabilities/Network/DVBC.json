@@ -1,0 +1,8 @@
+{
+    "name": "Network | DVBC",
+    "$collection": "inv.capabilities",
+    "uuid": "b849ef5d-6076-469f-b9d6-0a96fb06b37a",
+    "description": "Digital Video Broadcasting - Cable",
+    "type": "bool",
+    "card_template": null
+}

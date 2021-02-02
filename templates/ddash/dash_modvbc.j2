@@ -1,0 +1,163 @@
+{
+  "id": 1811561422823612,
+  "title": "{{device}}",
+  "tags": ["{{pool}}"],
+  "style": "dark",
+  "timezone": "browser",
+  "refresh": "15m",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [ "5m","10m","15m"],
+    "time_options": ["1h","3h","6h","12h","24h","2d","7d"]
+  },
+  "templating": {
+    "list": [
+      {% if port_types %}
+        {% set comma = joiner(",") -%}
+        {% for port_type in port_types -%}
+          {% from 'template_port.j2' import ports -%}
+          {{ comma() }}{{ ports(port_type, selected_types) }}
+        {% endfor -%},
+      {% endif %}
+      {% include "template_device.j2" with context -%},
+      {% include "template_vendor.j2" with context -%},
+      {% include "template_platform.j2" with context -%},
+      {% include "template_device_id.j2" with context -%},
+      {% include "template_ip_info.j2" with context -%},
+      {% include "template_segment.j2" with context -%},
+      {% include "template_firmware_version.j2" with context -%},
+      {% include "template_discovery_interval.j2" with context -%},
+      {% include "template_bi_id.j2" with context -%},
+      {% include "template_ping_interval.j2" with context -%}
+    ]
+  },
+
+  "annotations": {
+    "list": [
+      {
+        "datasource": "NocDS",
+        "enable": false,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "name": "Alarm",
+        "query": "{{device_id}}"
+      }
+    ]
+  },
+  "schemaVersion": 12,
+  "version": 33,
+  "links": [
+    {
+      "icon": "doc",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [],
+      "targetBlank": true,
+      "type": "link",
+      "title": "png",
+      "tooltip": "png",
+      "url": "/ui/grafana/render/dashboard/script/noc.js?width=1800&dashboard=mo&id={{device_id}}"
+    },
+    {
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "{{pool}}"
+      ],
+      "targetBlank": true,
+      "type": "dashboards"
+    },
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "tags": [
+        "SYSTEM"
+      ],
+      "targetBlank": true,
+      "type": "dashboards"
+    }
+  ],
+  "gnetId": null,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": false,
+      "height": "250px",
+      "showTitle": true,
+      "internal_comment": "info_row",
+      "title": "$device $ip $vendor $platform",
+      "panels": [
+      {% include "panel_device.j2" with context -%}
+      ]
+
+    }
+    {%if groups or channels %}
+    ,
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "700px",
+          "showTitle": true,
+          "title": "Channel",
+          "internal_comment": "m_row",
+          "panels": [
+                {% if channels %}
+                    {% include "graph_multicast_channel.j2" with context -%}
+                    ,
+                {% endif %}
+                {% if groups %}
+                    {% include "graph_multicast_group.j2" with context -%}
+                    ,
+                {% endif %}
+          ]
+        }
+    {% endif %}
+    {%if port_types %}
+    ,
+        {% set comma = joiner(",") -%}
+        {% for port in port_types -%}
+            {{ comma() }}
+            {
+              "collapse": true,
+              "editable": false,
+              "height": "250px",
+              "showTitle": true,
+              "title": "{{port.name}}",
+              "internal_comment": "port_row",
+              "panels": [
+
+                 {% from "graph_interface_load.j2" import interface -%}
+
+                {{interface(port, loop.index)}}
+              ]
+            }
+        {%- endfor %}
+    {% endif %}
+    {% if object_metrics %}
+        ,
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "250px",
+          "showTitle": true,
+          "internal_comment": "object_metrics",
+          "title": "Objects metrics",
+          "panels": [
+            {% set comma = joiner(",") -%}
+            {% for graph in object_metrics -%}
+              {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
+              {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
+            {%- endfor %}
+          ]
+
+        }
+    {% endif %}
+  ]
+}

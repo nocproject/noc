@@ -1,0 +1,10 @@
+{
+    "name": "Multicast | Channel | Bandwidth | Percent",
+    "$collection": "pm.metrictypes",
+    "uuid": "e9ce1508-4d90-4068-935a-6fac4024be00",
+    "scope__name": "Multicast",
+    "field_name": "c_bandwidth_percent",
+    "field_type": "UInt8",
+    "description": "Used Bandwidth in Percent",
+    "measure": "%"
+}
