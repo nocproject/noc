@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,20 +26,19 @@ class Script(GetMetricsScript):
                 oid2 = oid.split("1.3.6.1.4.1.2636.3.64.1.1.1.5.1.3.")
                 interf = oid2[1].split(".")
                 del interf[0]
-                slot = ""
+                port = ""
                 for x in interf:
-                    slot += chr(int(x))
+                    port += chr(int(x))
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    path=("0", str(slot), ""),
+                    path=("0", "", "", str(port)),
                     value=int(v),
                     multi=True,
                 )
-        else:
-            metric = self.snmp.get("1.3.6.1.4.1.2636.3.64.1.1.1.2.0")
-            self.set_metric(
-                id=("Subscribers | Summary", None),
-                path=("0", "", ""),
-                value=int(metric),
-                multi=True,
-            )
+        metric = self.snmp.get("1.3.6.1.4.1.2636.3.64.1.1.1.2.0")
+        self.set_metric(
+            id=("Subscribers | Summary", None),
+            path=("0", "", "", ""),
+            value=int(metric),
+            multi=True,
+        )
