@@ -305,8 +305,14 @@
               "panels": [
                 {% set comma = joiner(",") -%}
                 {% for graph in object_metrics -%}
-                  {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
-                  {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
+                  {% if "Subscribers | Summary" in graph %}
+                    {{ comma() }}{% include "graph_subscribers_summary_total.j2" with context -%},
+                    {% include "graph_subscribers_summary_slot.j2" with context -%},
+                    {% include "graph_subscribers_summary_port.j2" with context -%}
+                  {% else %}
+                    {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
+                    {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
+                  {% endif %}
                 {%- endfor %}
               ]
 
