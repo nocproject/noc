@@ -112,7 +112,7 @@ services:
         -storageDataPath=/storage
         -httpListenAddr=:8428
         -envflag.enable
-        -envflag.COMPOSEPREFIX=vm_
+        -envflag.prefix=vm_
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
@@ -136,7 +136,7 @@ services:
       -datasource.url=http://vm:8428
       -notifier.url=http://alertmanager:9093
       -remoteWrite.url=http://vm:8428
-      -envflag.COMPOSEPREFIX=vmalert_
+      -envflag.prefix=vmalert_
       -envflag.enable
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
@@ -160,7 +160,7 @@ services:
         -promscrape.config=/etc/prometheus/prometheus.yml
         -envflag.enable
         -remoteWrite.url=http://vm:8428/api/v1/write
-        -envflag.COMPOSEPREFIX=vmagent_
+        -envflag.prefix=vmagent_
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
