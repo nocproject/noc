@@ -173,15 +173,17 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="row">
-                        <div class="col-sm-1">
-                            <b>{{ _("Service") }}</b>
-                            </br><b>{{ _("MAC") }}</b>
-                        </div>
-                        <div class="col-sm-5 col-sm-offset-3">
-                            <small>{{ service_summary | glyph_summary }}</small>
-                            </br><small>{{ macs }}</small>
-                        </div>
-                   </div>
+                        <div class="col-sm-6"><b>{{ _("Service") }}</b></div>
+                        <div class="col-sm-6"><small>{{ service_summary | glyph_summary }}</small></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6"><b>{{ _("Hostname") }}</b></div>
+                        <div class="col-sm-6"><small>{{ hostname }}</small></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6"><b>{{ _("MAC") }}</b></div>
+                        <div class="col-sm-6"><small>{{ macs }}</small></div>
+                    </div>
                 </div>
             </div> <!-- row-->
             <div class="line"></div>
