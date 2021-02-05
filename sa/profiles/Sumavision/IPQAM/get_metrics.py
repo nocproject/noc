@@ -65,7 +65,7 @@ class Script(GetMetricsScript):
                 path=(["", "1/1.%s" % metric.ifindex]),
                 value=float(used_bandwidth.rstrip("Mbps")),
                 type="gauge",
-                scale=100000,
+                scale=1000000,
             )
 
     @metrics(
@@ -130,17 +130,22 @@ class Script(GetMetricsScript):
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
             )
+            m_astatus = self.snmp.get(
+                "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.7.1.1.%s.%s" % (channel, index)
+            )
             try:
                 minname = self.snmp.get(
                     "1.3.6.1.4.1.32285.2.2.10.3008.4.6.1.8.1.1.%s.%s" % (channel, index)
                 )
-                if minname and mname == minname:
+                if minname and mname == minname and m_astatus:
                     m_ostatus = 1
+                else:
+                    m_ostatus = 0
             except self.snmp.SNMPError:
                 m_ostatus = -1
 
             self.set_metric(
-                id=("Multicast | Group | Status", ["", "", "", mname]),
+                id=("Multicast | Group | Status", ["", "", "", "%s/%s" % (channel, mname)]),
                 path=([mname, "1/1.%s" % channel]),
                 value=m_ostatus,
                 type="gauge",
@@ -167,11 +172,11 @@ class Script(GetMetricsScript):
             except self.snmp.SNMPError:
                 input = 0
             self.set_metric(
-                id=("Multicast | Group | Bitrate | In", ["", "", "", mname]),
+                id=("Multicast | Group | Bitrate | In", ["", "", "", "%s/%s" % (channel, mname)]),
                 path=([mname, "1/1.%s" % channel]),
                 value=input,
                 type="gauge",
-                scale=100000,
+                scale=1000000,
             )
 
     @metrics(
@@ -194,9 +199,9 @@ class Script(GetMetricsScript):
             except self.snmp.SNMPError:
                 input = 0
             self.set_metric(
-                id=("Multicast | Group | Bitrate | Out", ["", "", "", mname]),
+                id=("Multicast | Group | Bitrate | Out", ["", "", "", "%s/%s" % (channel, mname)]),
                 path=([mname, "1/1.%s" % channel]),
                 value=input,
                 type="gauge",
-                scale=100000,
+                scale=1000000,
             )

@@ -1,0 +1,36 @@
+{
+    "name": "Multicast | Frequency | Overflow",
+    "$collection": "fm.alarmclasses",
+    "uuid": "88d36558-6e26-4b29-a67c-2f07f75ff6dd",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "MINOR",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface name"
+        },
+        {
+            "name": "description",
+            "description": "Interface description",
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "subject_template": "RF {{ description }} Frequency {{interface}}MHz Bit rate  Overflow",
+    "body_template": "RF {{ description }} Frequency {{interface}}MHz Bit rate  Overflow",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "recover_time": 300
+}
