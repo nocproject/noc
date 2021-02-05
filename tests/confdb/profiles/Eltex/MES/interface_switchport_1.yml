@@ -26,6 +26,20 @@ config: |
    selective-qinq list ingress add_vlan 3492
   exit
   !
+  interface gigabitethernet1/0/11
+   description "Switch QTech QSW-2800-28T 1/28"
+   switchport mode general
+   switchport general allowed vlan add 89,900,903 tagged
+   switchport general allowed vlan add 901-902,905 untagged
+   switchport protected-port
+   lldp optional-tlv port-desc sys-name sys-desc sys-cap 802.3-mac-phy
+   lldp med enable
+   lldp management-address automatic
+   selective-qinq list ingress add_vlan 901 ingress_vlan 4056
+   selective-qinq list ingress add_vlan 902 ingress_vlan 872-884
+   selective-qinq list ingress add_vlan 905 ingress_vlan 861-871,986-994
+  exit
+  !
   interface tengigabitethernet1/0/2
    shutdown
    description "-- UNUSED --"
@@ -57,6 +71,18 @@ result:
   - ['hints', 'protocols', 'spanning-tree', 'interface', 'Gi 1/0/6', 'off']
   - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/6', 'unit', 'Gi 1/0/6', 'bridge', 'switchport', 'untagged', '3492']
   - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/6', 'unit', 'Gi 1/0/6', 'bridge', '1', null, 'push', '3492']
+  - ['interfaces', 'Gi 1/0/11']
+  - ['interfaces', 'Gi 1/0/11', 'description', '"Switch QTech QSW-2800-28T 1/28"', {'replace': true}]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', 'switchport', 'tagged', 89]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', 'switchport', 'tagged', 900]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', 'switchport', 'tagged', 903]
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', 'switchport', 'untagged', '901']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', '1', 'inner_vlans', '4056']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', '1', null, 'push', '901']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', '1', 'inner_vlans', '872-884']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', '1', null, 'push', '902']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', '1', 'inner_vlans', '861-871,986-994']
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'interfaces', 'Gi 1/0/11', 'unit', 'Gi 1/0/11', 'bridge', '1', null, 'push', '905']
   - ['interfaces', 'Te 1/0/2']
   - ['interfaces', 'Te 1/0/2', 'admin-status', False, {'replace': True}]
   - ['interfaces', 'Te 1/0/2', 'description', '"-- UNUSED --"', {'replace': true}]
