@@ -10,7 +10,7 @@ import re
 import copy
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -30,22 +30,25 @@ class Script(BaseScript):
     rx_lag = re.compile(r"^Smartgroup\:(?P<lag>\d+)")
     rx_lag_member = re.compile(r"^(?P<lag_member>x?gei_\S+)")
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         ifaces = {}
         last_if = None
         if_list = []
-        vlans_raw = self.cli("show vlan").splitlines()
-        vlan_set = self.get_vlan(vlans_raw)
-        for l in self.cli("show interface").splitlines():
+        vlans_raw = self.cli("show vlan")
+        if "VlanType: 802.1q vlan" in vlans_raw:
+            # Unsupported output: 2928E - V2.05.10B26
+            raise NotImplementedError
+        vlan_set = self.get_vlan(vlans_raw.splitlines())
+        for line in self.cli("show interface").splitlines():
             # New interface
-            match = self.rx_int.search(l)
+            match = self.rx_int.search(line)
             if match:
                 last_if = match.group("name")
                 if_list += [last_if]  # preserve order
                 ifaces[last_if] = {
                     "name": last_if,
                     "ipv4_addresses": [],
-                    "type": self.type_by_name(last_if),
+                    "type": self.profile.get_interface_type(last_if),
                     "admin_status": "",
                     "oper_status": "",
                     "enabled_protocols": [],
@@ -64,23 +67,23 @@ class Script(BaseScript):
                         ifaces[last_if]["oper_status"] = True
                 continue
             # Description
-            match = self.rx_descr.search(l)
+            match = self.rx_descr.search(line)
             if match:
                 ifaces[last_if]["description"] = match.group("descr")
                 continue
             # inet
-            match = self.rx_inet.search(l)
+            match = self.rx_inet.search(line)
             if match:
                 if match.group("inet") != "unassigned":
                     ifaces[last_if]["ipv4_addresses"] += [match.group("inet")]
                 continue
             # Mac-address
-            match = self.rx_mac.search(l)
+            match = self.rx_mac.search(line)
             if match:
                 ifaces[last_if]["mac"] = match.group("mac")
                 continue
             # MTU
-            match = self.rx_mtu.search(l)
+            match = self.rx_mtu.search(line)
             if match:
                 ifaces[last_if]["mtu"] = match.group("mtu")
                 continue
@@ -122,31 +125,15 @@ class Script(BaseScript):
                 subif["mtu"] = ifaces[iface]["mtu"]
             ifaces[iface]["subinterfaces"] += [subif]
         # Process LACP aggregated links
-        for l in self.cli("show lacp internal").splitlines():
-            match = self.rx_lag.search(l)
+        for line in self.cli("show lacp internal").splitlines():
+            match = self.rx_lag.search(line)
             if match:
                 last_lag = match.group("lag")
-            match = self.rx_lag_member.search(l)
+            match = self.rx_lag_member.search(line)
             if match:
                 ifaces[match.group("lag_member")]["enabled_protocols"] += ["LACP"]
                 ifaces[match.group("lag_member")]["aggregated_interface"] = "smartgroup" + last_lag
         return [{"interfaces": list(ifaces.values())}]
-
-    def type_by_name(self, name):
-        if name.startswith("gei"):
-            return "physical"
-        elif name.startswith("xgei"):
-            return "physical"
-        elif name.startswith("smartgroup"):
-            return "aggregated"
-        elif name.startswith("lo"):
-            return "loopback"
-        elif name.startswith("vlan"):
-            return "SVI"
-        elif name.startswith("null"):
-            return "null"
-        else:
-            raise Exception("Cannot detect interface type for %s" % name)
 
     def get_si(self, si):
         if si["ipv4_addresses"]:

@@ -17,6 +17,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name = "ZTE.ZXR10.get_version"
     cache = True
+    always_prefer = "S"
     interface = IGetVersion
 
     rx_ver = re.compile(
