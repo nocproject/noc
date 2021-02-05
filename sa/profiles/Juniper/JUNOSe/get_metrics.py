@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -54,14 +54,14 @@ class Script(GetMetricsScript):
             port = oid2[1][2:].replace(".", "/")
             self.set_metric(
                 id=("Subscribers | Summary", None),
-                path=("0", str(port), ""),
+                path=("0", "", "", str(port)),
                 value=int(v),
                 multi=True,
             )
         metric = self.snmp.get("1.3.6.1.4.1.4874.2.2.20.1.8.3.0")
         self.set_metric(
             id=("Subscribers | Summary", None),
-            path=("0", "Total Subscribers", ""),
+            path=("0", "", "", ""),
             value=int(metric),
             multi=True,
         )
@@ -81,7 +81,7 @@ class Script(GetMetricsScript):
             for port, rtt in r_v.items():
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    path=("0", str(port), ""),
+                    path=("0", "", "", str(port)),
                     value=int(rtt),
                     multi=True,
                 )
