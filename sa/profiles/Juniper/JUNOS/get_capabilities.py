@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.core.mib import mib
 from noc.core.validators import is_int
 from noc.core.comp import smart_text
@@ -34,6 +34,7 @@ class Script(BaseScript):
         r = self.cli("show lldp | match Enabled")
         return "Enabled" in r
 
+    @false_on_snmp_error
     def has_lldp_snmp(self):
         """
         Check box has lldp enabled
@@ -71,6 +72,7 @@ class Script(BaseScript):
         r = self.cli("show bfd session")
         return "0 sessions, 0 clients" not in r
 
+    @false_on_snmp_error
     def has_bfd_snmp(self):
         """
         Check box has bfd enabled
