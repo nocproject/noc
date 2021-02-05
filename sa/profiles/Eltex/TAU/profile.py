@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     TAU
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,6 +35,8 @@ class Profile(BaseProfile):
         "is_tau8": {"platform": {"$regex": r"^TAU-8"}},
         "is_tau36": {"platform": {"$regex": r"^TAU-36"}},
     }
+
+    already_in_shell = False
 
     def setup_session(self, script):
         try:
