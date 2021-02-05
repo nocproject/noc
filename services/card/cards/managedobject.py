@@ -165,7 +165,11 @@ class ManagedObjectCard(BaseCard):
                     macs += [f]
                 else:
                     macs += ["%s - %s" % (f, l)]
-
+        # Hostname
+        hostname = ""
+        did = DiscoveryID.objects.filter(object=self.object.id).first()
+        if did and did.hostname:
+            hostname = did.hostname
         # Links
         uplinks = set(self.object.data.uplinks)
         if len(uplinks) > 1:
@@ -461,6 +465,7 @@ class ManagedObjectCard(BaseCard):
             "description": self.object.description,
             "object_profile": self.object.object_profile.id,
             "object_profile_name": self.object.object_profile.name,
+            "hostname": hostname,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
             "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
