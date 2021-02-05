@@ -11,7 +11,6 @@
       "dateColDataType": "date",
       "table": "multicast",
       "intervalFactor": 1,
-      "query": "SELECT path[2], c_bandwidth_percent, c_bandwidth_used, c_group_count FROM $table WHERE $timeFilterByColumn(ts) and managed_object=$bi_id and $timeFilter and like(path[1], '')",
       "query": "SELECT $timeSeries as t, path[2] as channel, argMax(c_bandwidth_percent, t) as c_bandwidth_percent, argMax(c_bandwidth_used, t) as c_bandwidth_used, argMax(c_group_count, t) as c_group_count FROM $table WHERE managed_object = $bi_id and like(path[1], '') and $timeFilter GROUP BY t, channel ORDER BY t, channel",
       "refId": "A",
       "resultFormat": "time_series",

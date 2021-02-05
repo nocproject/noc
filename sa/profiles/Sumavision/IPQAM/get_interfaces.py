@@ -35,15 +35,17 @@ class Script(BaseScript):
                 minname = self.snmp.get(
                     "1.3.6.1.4.1.32285.2.2.10.3008.4.6.1.8.1.1.%s.%s" % (channel, mindex)
                 )
-                if minname and mname == minname:
+                if minname and mname == minname and m_astatus:
                     m_ostatus = True
+                else:
+                    m_ostatus = False
             except self.snmp.SNMPError:
                 m_ostatus = False
             interfaces += [
                 {
                     "type": "physical",
-                    "name": mname,
-                    "admin_status": m_astatus,
+                    "name": "%s/%s" % (channel, mname),
+                    "admin_status": True if m_astatus else False,
                     "oper_status": m_ostatus,
                     "snmp_ifindex": int("%s%s" % (channel, mindex)),
                     "description": "",
@@ -52,6 +54,7 @@ class Script(BaseScript):
             ]
         for coid, cindex in self.snmp.getnext("1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.8"):
             cstatus = self.snmp.get("1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.17.1.1.%s" % cindex)
+            freq = self.snmp.get("1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.4.1.1.%s" % cindex)
             interfaces += [
                 {
                     "type": "physical",
@@ -60,7 +63,7 @@ class Script(BaseScript):
                     "oper_status": True if cstatus > 0 else False,
                     "snmp_ifindex": cindex,
                     "description": "",
-                    "subinterfaces": [],
+                    "subinterfaces": [{"name": freq, "description": "1/1.%s" % cindex}],
                 }
             ]
 

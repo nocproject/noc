@@ -39,14 +39,16 @@ class Script(BaseScript):
                 minname = self.snmp.get(
                     "1.3.6.1.4.1.32285.2.2.10.3008.4.6.1.8.1.1.%s.%s" % (channel, mindex)
                 )
-                if minname and mname == minname:
+                if minname and mname == minname and m_astatus:
                     m_ostatus = True
+                else:
+                    m_ostatus = False
             except self.snmp.SNMPError:
                 m_ostatus = False
             result += [
                 {
-                    "interface": mname,
-                    "admin_status": m_astatus,
+                    "interface": "%s/%s" % (channel, mname),
+                    "admin_status": True if m_astatus else False,
                     "oper_status": m_ostatus,
                     "full_duplex": False,
                 }

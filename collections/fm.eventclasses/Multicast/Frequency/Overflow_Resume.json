@@ -1,0 +1,33 @@
+{
+    "name": "Multicast | Frequency | Overflow Resume",
+    "$collection": "fm.eventclasses",
+    "uuid": "64643558-f3c1-4519-a5b9-4f0189c05956",
+    "description": "Frequency Overflow",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface name",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "link_event": true,
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Frequency {{interface}}MHz Bit rate Overflow Resume",
+    "body_template": "Frequency {{interface}}MHz Bit rate Overflow Resume",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Multicast | Frequency | Overflow"
+        }
+    ]
+}

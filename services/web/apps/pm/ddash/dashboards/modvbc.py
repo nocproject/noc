@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DVBC dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ class DVBCDashboard(JinjaDashboard):
                     continue
                 for metric in iface.profile.metrics:
                     if metric.enable_box or metric.enable_periodic:
-                        if is_ipv4(iface.name):
+                        if is_ipv4(iface.name.split("/")[1]):
                             groups.append(iface.name)
                         else:
                             channels.append(iface.name)
@@ -88,7 +88,6 @@ class DVBCDashboard(JinjaDashboard):
             om += [mt.name]
         object_metrics.extend(sorted(om))
         if self.extra_template and self.extra_vars:
-            # result = json.loads(extra_template)
             self.template = "dash_multicast.j2"
         return {
             "channels": set(channels),
