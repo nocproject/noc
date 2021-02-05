@@ -147,11 +147,10 @@ class MESNormalizer(BaseNormalizer):
     def normalize_switchport_untagged(self, tokens):
         if_name = self.interface_name(tokens[1])
         untagged = tokens[7]
-        if "," in tokens[7]:
-            # QinQ
-            untagged = tokens[7].split(",")[0]
-        elif "-" in tokens[7]:
-            untagged = tokens[7].split("-")[0]
+        if "," in tokens[7] or "-" in tokens[7]:
+            # QinQ "861-871,986-994"
+            untagged = tokens[7].replace("-", ",").split(",")[0]
+
         yield self.make_switchport_untagged(interface=if_name, unit=if_name, vlan_filter=untagged)
 
     @match("interface", ANY, "switchport", ANY, "native", "vlan", ANY)
