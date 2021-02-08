@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,8 +23,10 @@ class Script(BaseScript):
         "HUVQ": "gei_",
         "GMRA": "gei-",
         "GTGHK": "gpon-olt_",
+        "GTGHG": "gpon-olt_",
         "GTGOG": "gpon-onu_",
         "GVGO": "gpon_olt-",
+        "ETGHG": "epon-olt_",
         "VDWVD": "vdsl_",
         "SCXN": "gei_",
         "SCTM": "gei_",
@@ -32,6 +34,7 @@ class Script(BaseScript):
         "SCXL": "gei_",
         "SMXA": "gei_",
         "PTWVN": "",  # Telephone service
+        "PRAM": "",
         "PRWGS": "",
     }
     rx_iface = re.compile(
@@ -101,7 +104,7 @@ class Script(BaseScript):
             if int(p["port"]) < 1 or p["realtype"] == "":
                 continue
             prefix = self.type[p["realtype"]]
-            if prefix == "gpon-onu_":
+            if prefix in ["gpon-onu_", ""]:
                 continue
             for i in range(int(p["port"])):
                 port_num = "%s/%s/%s" % (p["shelf"], p["slot"], str(i + 1))
@@ -130,7 +133,7 @@ class Script(BaseScript):
                     descr = match.group("descr").strip()
                     if descr not in ["none", "none.", "null"]:
                         iface["description"] = descr
-                if prefix in ["gei_", "gpon-olt_", "gei-"]:
+                if prefix in ["gei_", "gpon-olt_", "epon-olt_", "gei-"]:
                     v = self.cli("show vlan port %s" % ifname)
                     match = self.rx_vlan.search(v)
                     sub = {
@@ -148,7 +151,7 @@ class Script(BaseScript):
                         ai, is_lacp = portchannel_members[ifname]
                         iface["aggregated_interface"] = ai
                         iface["enabled_protocols"] = ["LACP"]
-                if prefix in ["gpon_olt-"] and admin_status is True:
+                if prefix in ["gpon_olt-", "epon_olt-"] and admin_status is True:
                     v = self.cli("show vlan port vport-%s.?" % port_num, command_submit=b"")
                     match1 = self.rx_range.search(v)
                     for dim1 in self.expand_rangelist(match1.group("range")):
