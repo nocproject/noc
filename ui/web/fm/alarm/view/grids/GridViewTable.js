@@ -137,7 +137,7 @@ Ext.define("NOC.fm.alarm.view.grids.GridViewTable", {
         for(var j = 0; j < record.get("logs").length; j++) {
             var r = record.get("logs")[j];
             tooltipFromData += "<tr><td>" + Ext.util.Format.date(r.timestamp, "d.m.Y H:i")
-                + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + r.message + "</td></tr>";
+                + "</td><td>" + r.user + "</td><td style='white-space: pre-line;'>" + Ext.String.htmlEncode(r.message) + "</td></tr>";
         }
         tooltipFromData += "</tbody></table>";
     }
