@@ -13,11 +13,13 @@ import argparse
 
 # Third-party modules
 import bson
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.service.pub import publish, pub
 from noc.core.nsq.pub import nsq_pub
 
 
@@ -62,8 +64,8 @@ class Command(BaseCommand):
                 data = json.load(f)
             except ValueError as e:
                 self.die('Failed to decode JSON file "%s": %s' % (path, str(e)))
+        stream, partition = obj.events_stream_and_partition
         # Load events
-        topic = "events.%s" % obj.pool.name
         for e in data:
             if e["profile"] != obj.profile.name:
                 self.stdout.write(
@@ -71,19 +73,20 @@ class Command(BaseCommand):
                     % (path, obj.profile.name, e["profile"], e)
                 )
                 continue
+            raw_vars = {"collector": obj.pool.name}
+            raw_vars.update(e["raw_vars"])
             msg = {
-                "id": str(bson.ObjectId()),
                 "ts": time.time(),
                 "object": obj.id,
-                "data": e["raw_vars"],
+                "data": raw_vars,
             }
-            nsq_pub(topic, msg)
-            self.stdout.write(msg["id"])
+            publish(orjson.dumps(msg), stream, partition=partition)
 
     def syslog_message(self, obj, msg):
-        topic = "events.%s" % obj.pool.name
+        stream, partition = obj.events_stream_and_partition
         raw_vars = {"source": "syslog", "facility": "23", "severity": "6", "message": msg}
-        msg = {"id": str(bson.ObjectId()), "ts": time.time(), "object": obj.id, "data": raw_vars}
+        msg = {"ts": time.time(), "object": obj.id, "data": raw_vars}
+        publish(orjson.dumps(msg), stream, partition=partition)
         nsq_pub(topic, msg)
         self.stdout.write(msg["id"])
 
