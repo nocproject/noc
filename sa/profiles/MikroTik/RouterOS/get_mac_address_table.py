@@ -27,10 +27,10 @@ class Script(BaseScript):
             v = self.cli_detail(cmd)
         except self.CLISyntaxError:
             return []
-        for n,f,r in v:
+        for n, f, r in v:
             if "vlan-id" not in r:
                 break
-            if r['vlan-id'] == '0':
+            if r["vlan-id"] == "0":
                 continue
             out.append(
                 {
