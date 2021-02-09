@@ -24,10 +24,10 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Wrong parameter|% Unrecognized command found at"
 
     matchers = {
-        "is_old_version": {"version": {"$regex": r"3.02.*"}},
-        "is_310_version": {"version": {"$regex": r"3.10.*"}},
-        "is_52_version": {"version": {"$regex": r"5.2\S+"}},
-        "is_53_version": {"version": {"$regex": r"5.3\S+"}},
+        "is_old_version": {"version": {"$regex": r"3\.02.*"}},
+        "is_310_version": {"version": {"$regex": r"3\.10.*"}},
+        "is_52_version": {"version": {"$regex": r"5\.2\S+"}},
+        "is_53_version": {"version": {"$regex": r"5\.3\S+"}},
         "is_S3600_platform": {"platform": {"$regex": r".*S3600.*"}},
     }
 
