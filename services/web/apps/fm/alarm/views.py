@@ -343,9 +343,9 @@ class AlarmApplication(ExtApplication):
                     "user": ll.source or "NOC",
                     "message": ll.message,
                 }
-                for ll in o.log[: config.web.api_alarm_comments_limit]
+                for ll in o.log
                 if getattr(ll, "source", None)
-            ],
+            ][: config.web.api_alarm_comments_limit],
         }
         if fields:
             d = {k: d[k] for k in fields}
