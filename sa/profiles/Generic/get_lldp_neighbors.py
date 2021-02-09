@@ -91,7 +91,6 @@ class Script(BaseScript):
                     mib["LLDP-MIB::lldpRemPortDesc"],
                     mib["LLDP-MIB::lldpRemSysName"],
                 ],
-                bulk=True,
                 max_retries=1,
                 display_hints={
                     "1.0.8802.1.1.2.1.4.1.1.7": render_bin,
