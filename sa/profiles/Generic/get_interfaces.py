@@ -90,7 +90,11 @@ class Script(BaseScript):
                 )
                 continue
             o = int(oid.split(".")[-1])
-            result[pid_ifindex_mappings[o]]["untagged_vlan"] = pvid
+            if o in pid_ifindex_mappings:
+                o = pid_ifindex_mappings[o]
+            else:
+                self.logger.warning("PortID %s not in ifindex mapping. Use as is", o)
+            result[o]["untagged_vlan"] = pvid
         for oid, ports_mask in self.snmp.getnext(
             mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
             max_repetitions=self.get_max_repetitions(),
