@@ -121,7 +121,7 @@ class ArchivedAlarm(Document):
                 from_status=self.status,
                 to_status=self.status,
                 message=message,
-                source=None,
+                source=source,
             )
         ]
         self.save()
