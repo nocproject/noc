@@ -36,7 +36,7 @@ class Script(BaseScript):
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"
-        r"protocol\s+is\s+(?P<oper_status>up|down)\s"
+        r"protocol\s+is\s+(?P<oper_status>up|down)\s?(?:\s+NOTE.+\n.+)?"
         r"(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*|, Autostate \S+)?\n"
         r"(^\s+Hardware is .+\n)?"
         r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
