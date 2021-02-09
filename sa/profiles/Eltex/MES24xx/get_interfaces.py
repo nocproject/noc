@@ -59,6 +59,10 @@ class Script(BaseScript):
                     sw_ifname = "fastethernet %s" % ifname[2:]
                 elif ifname.startswith("Ex"):
                     sw_ifname = "extreme-ethernet %s" % ifname[2:]
+                elif ifname.startswith("Te"):
+                    sw_ifname = "tengigabitethernet %s" % ifname[2:]
+                elif ifname.startswith("Po"):
+                    sw_ifname = "port-channel %s" % ifname[2:]
                 c = self.cli("show interfaces switchport %s" % sw_ifname)
                 for i in parse_table(c, footer="^Forbidden VLANs:"):
                     vlan_id = i[0]

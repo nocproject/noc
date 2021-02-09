@@ -43,9 +43,11 @@ class Profile(BaseProfile):
     ]
 
     INTERFACE_TYPES = {
+        "te": "physical",  # tengigabitethernet
         "gi": "physical",  # gigabitethernet
         "fa": "physical",  # fastethernet
         "ex": "physical",  # extreme-ethernet
+        "po": "aggregated",  # Port-channel/Portgroup
         "vl": "SVI",  # vlan
     }
 
