@@ -20,6 +20,10 @@
         {
             "is_required": false,
             "name": "module"
+        },
+        {
+            "is_required": false,
+            "name": "port"
         }
     ]
 }
