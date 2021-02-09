@@ -206,12 +206,12 @@ class EventApplication(ExtApplication):
         if event.log:
             dd["log"] = [
                 {
-                    "timestamp": self.to_json(l.timestamp),
-                    "from_status": l.from_status,
-                    "to_status": l.to_status,
-                    "message": l.message,
+                    "timestamp": self.to_json(ll.timestamp),
+                    "from_status": ll.from_status,
+                    "to_status": ll.to_status,
+                    "message": ll.message,
                 }
-                for l in event.log
+                for ll in event.log
             ]
         #
         d.update(dd)
@@ -283,8 +283,8 @@ class EventApplication(ExtApplication):
         # Get event class
         e_class = None
         if event.status in ("A", "S"):
-            for l in event.log:
-                match = self.rx_parse_log.match(l.message)
+            for ll in event.log:
+                match = self.rx_parse_log.match(ll.message)
                 if match:
                     e_class = match.group(1)
         r = {"profile": event.managed_object.profile.name}
