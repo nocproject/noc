@@ -106,6 +106,7 @@ class ReportAlarmCommentsApplication(ExtApplication):
             "alarm_class",
             "alarm_from_ts",
             "alarm_to_ts",
+            "alarm_tt",
             "object_name",
             "object_address",
             "object_admdomain",
@@ -121,6 +122,7 @@ class ReportAlarmCommentsApplication(ExtApplication):
             _("ALARM_CLASS"),
             _("ALARM_FROM_TS"),
             _("ALARM_TO_TS"),
+            _("ALARM_TT"),
             _("OBJECT_NAME"),
             _("OBJECT_ADDRESS"),
             _("OBJECT_ADMDOMAIN"),
@@ -144,7 +146,7 @@ class ReportAlarmCommentsApplication(ExtApplication):
         match = {
             "timestamp": {"$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"), "$lte": fd}
         }
-        mos = ManagedObject.objects.filter(is_managed=True)
+        mos = ManagedObject.objects.filter()
 
         ads = []
         if administrative_domain:
@@ -182,12 +184,13 @@ class ReportAlarmCommentsApplication(ExtApplication):
             [
                 {"$match": match},
                 {"$unwind": "$log"},
-                {"$match": {"log.source": {"$exists": True}}},
+                {"$match": {"log.source": {"$exists": True, "$ne": None}}},
                 {
                     "$project": {
                         "timestamp": 1,
                         "managed_object": 1,
                         "alarm_class": 1,
+                        "escalation_tt": 1,
                         "adm_path": 1,
                         "log": 1,
                     }
@@ -203,6 +206,7 @@ class ReportAlarmCommentsApplication(ExtApplication):
                             AlarmClass.get_by_id(aa["alarm_class"]).name,
                             aa["timestamp"],
                             "",
+                            aa.get("escalation_tt", ""),
                             addr_map[aa["managed_object"]][0],
                             addr_map[aa["managed_object"]][1],
                             AdministrativeDomain.get_by_id(aa["adm_path"][-1]).name,
@@ -227,6 +231,7 @@ class ReportAlarmCommentsApplication(ExtApplication):
                         "clear_timestamp": 1,
                         "managed_object": 1,
                         "alarm_class": 1,
+                        "escalation_tt": 1,
                         "adm_path": 1,
                         "log": 1,
                     }
@@ -242,6 +247,7 @@ class ReportAlarmCommentsApplication(ExtApplication):
                             AlarmClass.get_by_id(aa["alarm_class"]).name,
                             aa["timestamp"],
                             aa["clear_timestamp"],
+                            aa.get("escalation_tt", ""),
                             addr_map[aa["managed_object"]][0],
                             addr_map[aa["managed_object"]][1],
                             AdministrativeDomain.get_by_id(aa["adm_path"][-1]).name,

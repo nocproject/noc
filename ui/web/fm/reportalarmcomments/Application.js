@@ -80,13 +80,13 @@ Ext.define("NOC.fm.reportalarmcomments.Application", {
             ["id", __("ID"), false],
             ["alarm_from_ts", __("From"), true],
             ["alarm_to_ts", __("To"), true],
+            ["alarm_tt", __("Alarm TT"), true],
             ["object_name", __("Object Name"), true],
             ["object_address", __("IP"), true],
             ["object_admdomain", __("Administrative Domain"), true],
             ["log_timestamp", __("Comment Time"), true],
             ["log_source", __("Comment Source"), true],
             ["log_message", __("Comment Message"), true],
-            // ["tt", __("TT"), true],
             // ["escalation_ts", __("Escalation Time"), true],
         ]
     }
