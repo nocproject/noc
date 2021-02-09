@@ -9,6 +9,7 @@
 import os
 import inspect
 import re
+import orjson
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -23,6 +24,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
 from noc.core.escape import json_escape
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -204,12 +206,12 @@ class EventApplication(ExtApplication):
         if event.log:
             dd["log"] = [
                 {
-                    "timestamp": self.to_json(l.timestamp),
-                    "from_status": l.from_status,
-                    "to_status": l.to_status,
-                    "message": l.message,
+                    "timestamp": self.to_json(ll.timestamp),
+                    "from_status": ll.from_status,
+                    "to_status": ll.to_status,
+                    "message": ll.message,
                 }
-                for l in event.log
+                for ll in event.log
             ]
         #
         d.update(dd)
@@ -281,26 +283,21 @@ class EventApplication(ExtApplication):
         # Get event class
         e_class = None
         if event.status in ("A", "S"):
-            for l in event.log:
-                match = self.rx_parse_log.match(l.message)
+            for ll in event.log:
+                match = self.rx_parse_log.match(ll.message)
                 if match:
                     e_class = match.group(1)
-        r = ["["]
-        r += ["    {"]
-        r += ['        "profile": "%s",' % json_escape(event.managed_object.profile.name)]
+        r = {"profile": event.managed_object.profile.name}
         if e_class:
-            r += ['        "event_class__name": "%s",' % e_class]
-        r += ['        "raw_vars": {']
-        rr = []
-        for k in event.raw_vars:
-            if k in ("collector", "severity", "facility"):
-                continue
-            rr += ['            "%s": "%s"' % (json_escape(k), json_escape(str(event.raw_vars[k])))]
-        r += [",\n".join(rr)]
-        r += ["        }"]
-        r += ["    }"]
-        r += ["]"]
-        return "\n".join(r)
+            r["event_class__name"] = "%s" % e_class
+        r["raw_vars"] = {
+            json_escape(k): json_escape(str(event.raw_vars[k]))
+            for k in event.raw_vars
+            if k not in {"collector", "severity", "facility"}
+        }
+        if event.source:
+            r["raw_vars"]["source"] = event.source
+        return smart_text(orjson.dumps(r, option=orjson.OPT_INDENT_2))
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="launch")
     def api_reclassify(self, request, id):
