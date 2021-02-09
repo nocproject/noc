@@ -12,15 +12,13 @@ import json
 import argparse
 
 # Third-party modules
-import bson
 import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.service.pub import publish, pub
-from noc.core.nsq.pub import nsq_pub
+from noc.core.service.pub import publish
 
 
 class Command(BaseCommand):
@@ -87,8 +85,6 @@ class Command(BaseCommand):
         raw_vars = {"source": "syslog", "facility": "23", "severity": "6", "message": msg}
         msg = {"ts": time.time(), "object": obj.id, "data": raw_vars}
         publish(orjson.dumps(msg), stream, partition=partition)
-        nsq_pub(topic, msg)
-        self.stdout.write(msg["id"])
 
 
 if __name__ == "__main__":
