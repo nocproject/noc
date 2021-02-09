@@ -58,6 +58,7 @@ class Script(BaseScript):
         "Analogmodem": "physical",
         "Cellular": "physical",
         "Atm": "physical",
+        "Serial": "physical",
     }
 
     def get_ospfint(self):
