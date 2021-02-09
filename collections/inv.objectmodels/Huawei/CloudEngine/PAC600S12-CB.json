@@ -1,0 +1,34 @@
+{
+    "name": "Huawei | CloudEngine | PAC600S12-CB",
+    "$collection": "inv.objectmodels",
+    "uuid": "1c3a4369-a6b7-4798-a0fd-1a7f325167ab",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei CloudEngine AC Power Supply Unit PAC600S12-CB",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | CloudEngine | PSU"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PAC600S12-CB"]
+        },
+        "power": {
+            "power": 600.0
+        }
+    }
+}
