@@ -21,6 +21,7 @@ import pytz
 from noc.config import config
 from noc.core.service.tornado import TornadoService
 from noc.core.perf import metrics
+from noc.core.comp import smart_text
 
 
 class MailSenderService(TornadoService):
@@ -35,15 +36,16 @@ class MailSenderService(TornadoService):
         await self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
 
     def on_message(self, message, address, subject, body, attachments=None, **kwargs):
+        message_id = smart_text(message.id)
         self.logger.info(
             "[%s] Receiving message: %s (%s) [%s, attempt %d]",
-            message.id,
+            message_id,
             subject,
             address,
             datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
             message.attempts,
         )
-        return self.send_mail(message.id, address, subject, body, attachments)
+        return self.send_mail(message_id, address, subject, body, attachments)
 
     def send_mail(self, message_id, address, subject, body, attachments=None):
         """
@@ -78,7 +80,6 @@ class MailSenderService(TornadoService):
         msg = message.as_string()
         self.logger.debug("Message: %s", msg)
         # Connect to SMTP server
-        smtp = smtplib.SMTP()
         self.logger.debug(
             "[%s] Connecting %s:%s",
             message_id,
@@ -86,7 +87,9 @@ class MailSenderService(TornadoService):
             config.mailsender.smtp_port,
         )
         try:
-            smtp.connect(config.mailsender.smtp_server, config.mailsender.smtp_port)
+            smtp = smtplib.SMTP(
+                host=config.mailsender.smtp_server, port=config.mailsender.smtp_port
+            )
         except OSError as e:
             self.logger.error("[%s] SMTP error: %s", message_id, e)
             return False
