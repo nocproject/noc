@@ -78,7 +78,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "address_resolution_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "D"
         },
         {
             name: "resolver_handler",
