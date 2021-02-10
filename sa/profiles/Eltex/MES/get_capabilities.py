@@ -117,14 +117,29 @@ class Script(BaseScript):
             r += [str(stack_num)]
         return r
 
+    @false_on_snmp_error
+    def has_qos_interface_stats(self):
+        # eltCountersQosStatisticsEnable
+        # On config enabled by 'qos statistics interface'
+        r = self.snmp.get("1.3.6.1.4.1.35265.1.23.1.8.1.1.2.1.0")
+        if r == 1:
+            # qos statistics interface
+            return True
+
     def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) >= 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
+        s = self.has_qos_interface_stats()
+        if s:
+            caps["Metrics | QOS | Statistics"] = True
 
     def execute_platform_snmp(self, caps):
         s = self.has_stack_snmp()
         if s:
             caps["Stack | Members"] = len(s) if len(s) >= 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
+        s = self.has_qos_interface_stats()
+        if s:
+            caps["Metrics | QOS | Statistics"] = True

@@ -1,0 +1,10 @@
+{
+    "name": "Interface | QOS | Octets | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "08d33a7b-8227-41b0-a42e-c6860ff83460",
+    "scope__name": "Interface",
+    "field_name": "qos_octets_in",
+    "field_type": "UInt64",
+    "description": "The total number of received octets passed by the interface queue.",
+    "measure": "bytes"
+}
