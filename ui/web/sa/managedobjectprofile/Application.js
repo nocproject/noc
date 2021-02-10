@@ -274,6 +274,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["E", __("Enabled")]
                                     ],
                                     allowBlank: false,
+                                    value: "D",
                                     uiStyle: "medium"
                                 },
                                 {
