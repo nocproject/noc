@@ -193,8 +193,6 @@ class MODiscoveryJob(PeriodicJob):
             * vars - dict of alarm vars
         :return:
         """
-        from noc.fm.models.activealarm import ActiveAlarm
-        from noc.fm.models.alarmescalation import AlarmEscalation
 
         now = datetime.datetime.now()
         umbrella = ActiveAlarm.objects.filter(
@@ -289,9 +287,6 @@ class MODiscoveryJob(PeriodicJob):
             AlarmEscalation.watch_escalations(umbrella)
 
     def update_alarms(self):
-        from noc.fm.models.alarmseverity import AlarmSeverity
-        from noc.fm.models.alarmclass import AlarmClass
-
         prev_status = self.context.get("umbrella_settings", False)
         current_status = self.can_update_alarms()
         self.context["umbrella_settings"] = current_status
@@ -1574,3 +1569,10 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
 
     def has_required_script(self):
         return super().has_required_script() or self.get_policy() != ["script"]
+
+
+# Avoid circular references
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmescalation import AlarmEscalation
