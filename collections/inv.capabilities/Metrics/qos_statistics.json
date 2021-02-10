@@ -1,0 +1,8 @@
+{
+    "name": "Metrics | QOS | Statistics",
+    "$collection": "inv.capabilities",
+    "uuid": "000d287c-4206-457c-80b2-8c9c5848e6f5",
+    "description": "QoS interface metrics is enable",
+    "type": "bool",
+    "card_template": null
+}

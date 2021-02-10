@@ -1,0 +1,10 @@
+{
+    "name": "Interface | QOS | Discards | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "33079364-1e2d-4f6b-93a8-d11bf8af6f80",
+    "scope__name": "Interface",
+    "field_name": "qos_discards_in_delta",
+    "field_type": "UInt64",
+    "description": "Discards packet on input queue (delta)",
+    "measure": "packets"
+}
