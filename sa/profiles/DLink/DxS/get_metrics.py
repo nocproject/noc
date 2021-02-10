@@ -13,23 +13,22 @@ from noc.core.mib import mib
 class Script(GetMetricsScript):
     name = "DLink.DxS.get_metrics"
 
-    @metrics(["CPU | Usage"], volatile=False, access="S")
+    @metrics(
+        ["CPU | Usage"],
+        has_capability="Metrics | OID | CPU | Usage | Value",
+        volatile=False,
+        access="S",
+    )
     def get_cpu_metrics(self, metrics):
         # DLINK-AGENT-MIB::agentCPUutilizationIn5sec
-        cpu = None
-        try:
-            cpu = self.snmp.get("1.3.6.1.4.1.171.12.1.1.6.1.0")
-            if cpu is None:
-                v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
-                if v.startswith("DES-3200"):  # need testing
-                    cpu = self.snmp.get("1.3.6.1.4.1.171.12.1.1.6.1")
-                elif v.startswith("DGS-3212SR") or v.startswith("DGS-3312SR"):
-                    cpu = self.snmp.get("1.3.6.1.4.1.171.11.55.2.2.1.4.1.0")
-        except Exception:
-            pass
-
-        if cpu is not None:
-            self.set_metric(id=("CPU | Usage", None), value=round(float(cpu)))
+        oid = self.capabilities.get("Metrics | OID | CPU | Usage | Value")
+        if oid:
+            try:
+                cpu = self.snmp.get(oid)
+                if cpu is not None:
+                    self.set_metric(id=("CPU | Usage", None), value=round(float(cpu)))
+            except Exception:
+                pass
 
     @metrics(["Interface | Speed"], volatile=False, access="S")
     def get_interface_speed(self, metrics):

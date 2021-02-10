@@ -1,0 +1,8 @@
+{
+    "name": "Metrics | OID | CPU | Usage | Value",
+    "$collection": "inv.capabilities",
+    "uuid": "3ca68296-1546-4585-8bb7-0876e461cf2d",
+    "description": "Capability for 'CPU | Usage' metric value OID",
+    "type": "str",
+    "card_template": null
+}
