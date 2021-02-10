@@ -17,7 +17,6 @@ import socket
 # Third-party modules
 from grpc.aio import insecure_channel, AioRpcError
 from grpc import StatusCode, ChannelConnectivity
-from grpc._cython.cygrpc import EOF
 
 # NOC modules
 from noc.config import config
@@ -611,9 +610,6 @@ class LiftBridgeClient(object):
                 # and hangs forever trying to get error status from core.
                 # So we use own inlined `_fetch_stream_responses` implementation here
                 msg = await call._read()
-                # Should be EOF, error otherwise
-                if msg is not EOF:
-                    raise ErrorChannelClosed()
                 logger.debug("[%s] Stream is ready, waiting for messages", broker)
                 # Next, process all other messages
                 msg = await call._read()
