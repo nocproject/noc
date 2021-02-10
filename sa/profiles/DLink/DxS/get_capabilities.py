@@ -10,7 +10,7 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.sa.profiles.DLink.DxS.profile import DES3x2x, DES30xx
 
 
@@ -63,6 +63,24 @@ class Script(BaseScript):
         cmd = self.cli("show ethernet_oam ports status")
         return self.rx_oam.search(cmd) is not None
 
+    @false_on_snmp_error
+    def has_metric_cpu_usage_oid(self):
+        # DLINK-AGENT-MIB::agentCPUutilizationIn5sec
+        cpu_oids = ["1.3.6.1.4.1.171.12.1.1.6.1.0"]
+        if self.is_des_3200:  # need testing
+            cpu_oids += ["1.3.6.1.4.1.171.12.1.1.6.1"]
+        elif self.is_dgs_32_33:
+            cpu_oids += ["1.3.6.1.4.1.171.11.55.2.2.1.4.1.0"]
+        cpu_oids += ["1.3.6.1.4.1.171.10.75.15.2.100.1.1.0"]
+        for oid in cpu_oids:
+            try:
+                r = self.snmp.get(oid)
+                if r:
+                    return oid
+            except Exception:
+                pass
+        return None
+
     def execute_platform_cli(self, caps):
         try:
             cmd = self.cli("show stack_device")
@@ -74,3 +92,6 @@ class Script(BaseScript):
                 caps["Stack | Member Ids"] = " | ".join(s)
         except self.CLISyntaxError:
             pass
+        c = self.has_metric_cpu_usage_oid()
+        if c:
+            caps["Metrics | OID | CPU | Usage | Value"] = c
