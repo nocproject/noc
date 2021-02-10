@@ -22,4 +22,5 @@ class MetricTypeApplication(ExtDocApplication):
     model = MetricType
     parent_model = DocCategory
     parent_field = "parent"
+    query_condition = "icontains"
     query_fields = ["name", "description"]
