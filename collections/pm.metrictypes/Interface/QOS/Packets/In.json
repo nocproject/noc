@@ -1,0 +1,10 @@
+{
+    "name": "Interface | QOS | Packets | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "bd3590c9-b250-4c06-93e7-feacf0f82975",
+    "scope__name": "Interface",
+    "field_name": "qos_packets_in",
+    "field_type": "UInt64",
+    "description": "Packets on input interface queue",
+    "measure": "packet/s"
+}
