@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -35,15 +36,29 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         # Try SNMP first
-        platform = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.19.0")
-        version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.1.0")
-        if not version:
-            # QSW-8200-28F 3.41.307
-            version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.16.0").split()[1]
-        serial = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.14.0")
-        bootprom = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.13.0")
-        if bootprom and "/" in bootprom:
-            _, bootprom = bootprom.split("/")
+        sysdesr = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0])
+        if "##" in sysdesr:
+            # QOS_5.2.1 (Compiled Mar 29 2019,14:37:05)
+            r = {
+                ll.split(":")[0].strip().lower(): ll.split(":")[1].strip()
+                for ll in sysdesr.split("##")
+                if ":" in ll
+            }
+            platform = r["product name"]
+            version = r["qos version"]
+            bootprom = r["boot room version"]
+            serial = r["serial number"]
+        else:
+            # QOS_.QSW-8200-28F.2017911.3.41.307(Compiled Sep 11 2017 18:09:48)
+            platform = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.19.0")
+            version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.1.0")
+            if not version:
+                # QSW-8200-28F 3.41.307
+                version = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.16.0").split()[1]
+            serial = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.14.0")
+            bootprom = self.snmp.get("1.3.6.1.4.1.8886.6.1.1.1.13.0")
+            if bootprom and "/" in bootprom:
+                _, bootprom = bootprom.split("/")
         return {
             "vendor": "Qtech",
             "platform": platform,
