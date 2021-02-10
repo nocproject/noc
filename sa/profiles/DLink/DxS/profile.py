@@ -66,6 +66,8 @@ class Profile(BaseProfile):
         # IF-MIB::ifPhysAddress return equal values, but
         # LLDP-MIB::lldpLocPortId return different values
         "is_bad_ifmib_snmp": {"platform": {"$regex": r"^DES-3200-\d\dF*/C1"}},
+        "is_des_3200": {"platform": {"$regex": r"^DES-3200.+"}},
+        "is_dgs_32_33": {"platform": {"$regex": r"^DGS-3[23]12SR.+"}},
     }
     #
     # Version comparison
