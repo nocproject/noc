@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # FastAPIService
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,8 +12,10 @@ from typing import Optional, Tuple, Dict
 # Third-party modules
 import uvicorn
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
-from starlette.responses import Response, PlainTextResponse
+from starlette.responses import Response, PlainTextResponse, JSONResponse
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
+from fastapi.encoders import jsonable_encoder
 
 # NOC modules
 from noc.core.version import version
@@ -44,6 +46,21 @@ class FastAPIService(BaseService):
         error_report(logger=self.logger)
         return PlainTextResponse("Internal Server Error", status_code=500)
 
+    async def request_validation_error_handler(self, request, exc) -> Response:
+        """
+        Handle request validation and customize response
+        :param request:
+        :param exc:
+        :return:
+        """
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "invalid_request",
+                "error_description": jsonable_encoder(exc.errors()),
+            },
+        )
+
     async def init_api(self):
         # Build tags docs
         openapi_tags = []
@@ -60,7 +77,10 @@ class FastAPIService(BaseService):
             docs_url="/api/%s/docs" % self.name,
             redoc_url="/api/%s/redoc" % self.name,
             openapi_tags=openapi_tags,
-            exception_handlers={Exception: self.error_handler},
+            exception_handlers={
+                Exception: self.error_handler,
+                RequestValidationError: self.request_validation_error_handler,
+            },
         )
         self.app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
         self.app.add_middleware(LoggingMiddleware, logger=PrefixLoggerAdapter(self.logger, "api"))
