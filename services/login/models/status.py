@@ -15,3 +15,8 @@ from pydantic import BaseModel
 class StatusResponse(BaseModel):
     status: bool
     message: Optional[str]
+
+
+class StatusResponseError(BaseModel):
+    error: Optional[str] = None
+    error_description: Optional[str] = None
