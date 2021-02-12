@@ -39,7 +39,7 @@ class Script(BaseScript):
     }
     rx_iface = re.compile(
         r"^\s*(?P<ifname>\S+) (?:admin status )?is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
-        r"line protocol is (?P<oper_status>down|up).+\n"
+        r"line protocol is (?P<oper_status>down|up).*\n"
         r"(^\s*(?:Description|Byname) is (?P<descr>.+)\n)?",
         re.MULTILINE,
     )
