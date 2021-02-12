@@ -693,6 +693,15 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream address records older days",
         )
+        enable_cfgnetflow = BooleanParameter(default=True)
+        enable_cfgnetflow_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgNetflow datastream (Mongo greater 3.6 needed)",
+        )
+        cfgnetflow_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream cfgnetflow records older days",
+        )
 
     class help(ConfigSection):
         base_url = StringParameter(default="https://docs.getnoc.com")

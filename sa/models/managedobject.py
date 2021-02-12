@@ -606,6 +606,13 @@ class ManagedObject(NOCModel):
             }
         ):
             yield "cfgtrap", self.id
+        if config.datastream.enable_cfgnetflow and changed_fields.intersection(
+            {
+                "bi_id",
+                "address",
+            }
+        ):
+            yield "cfgnetflow", self.id
 
     @property
     def data(self) -> ObjectData:

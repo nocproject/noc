@@ -34,6 +34,7 @@ class Command(BaseCommand):
         "administrativedomain": "sa.AdministrativeDomain",
         "cfgping": "sa.ManagedObject",
         "cfgsyslog": "sa.ManagedObject",
+        "cfgnetflow": "sa.ManagedObject",
         "cfgtrap": "sa.ManagedObject",
         "dnszone": "dns.DNSZone",
         "resourcegroup": "inv.ResourceGroup",
