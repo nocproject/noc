@@ -20,6 +20,8 @@ class CfgNetflowDataStream(DataStream):
             "id",
             "bi_id",
             "address",
+            "syslog_source_ip",
+            "syslog_source_type",
         )[:1]
         if not mo:
             raise KeyError()
@@ -27,12 +29,33 @@ class CfgNetflowDataStream(DataStream):
             mo_id,
             bi_id,
             address,
+            syslog_source_ip,
+            syslog_source_type,
         ) = mo[0]
         r = {
             "id": str(mo_id),
             "bi_id": str(bi_id),
             "addresses": [],
         }
+
+        if syslog_source_type == "m" and address:
+            # Managed Object's address
+            r["addresses"] += [str(address)]
+        elif syslog_source_type == "s" and syslog_source_ip:
+            # Syslog source set manually
+            r["addresses"] = [str(syslog_source_ip)]
+        elif syslog_source_type == "l":
+            # Loopback address
+            r["addresses"] = cls._get_loopback_addresses(mo_id)
+            if not r["addresses"]:
+                raise KeyError()
+        elif syslog_source_type == "a":
+            # All interface addresses
+            r["addresses"] = cls._get_all_addresses(mo_id)
+            if not r["addresses"]:
+                raise KeyError()
+        else:
+            raise KeyError()
 
         return r
 
