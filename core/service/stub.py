@@ -81,7 +81,12 @@ class ServiceStub(object):
         async def wrap():
             async with LiftBridgeClient() as client:
                 await client.publish(
-                    value=value, stream=stream, partition=partition, key=key, headers=headers
+                    value=value,
+                    stream=stream,
+                    partition=partition,
+                    key=key,
+                    headers=headers,
+                    auto_compress=bool(config.liftbridge.compression_method),
                 )
 
         run_sync(wrap)
