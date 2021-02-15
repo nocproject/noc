@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,11 @@ class Script(BaseScript):
         # Fallback to CLI
         lldp = self.cli("show lldp neighbors")
         for link in parse_table(
-            lldp, allow_wrap=True, line_wrapper=None, row_wrapper=lambda x: x.strip()
+            lldp,
+            allow_wrap=True,
+            line_wrapper=None,
+            row_wrapper=lambda x: x.strip(),
+            footer="\r\n\r\n",
         ):
             local_interface = link[0]
             remote_chassis_id = link[1]
