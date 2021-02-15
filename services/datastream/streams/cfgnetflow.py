@@ -34,9 +34,9 @@ class CfgNetflowDataStream(DataStream):
             "addresses": [],
         }
 
-        r["addresses"] = cls._get_all_addresses(mo_id)
-        r["addresses"] += [str(address)]
-        r["addresses"] = list(set([x for x in r["addresses"] if x != "127.0.0.1"]))
+        addresses = cls._get_all_addresses(mo_id)
+        addresses.add(str(address))
+        r["addresses"] = [x for x in addresses if x != "127.0.0.1"]
         if not r["addresses"]:
             raise KeyError()
 
@@ -52,4 +52,4 @@ class CfgNetflowDataStream(DataStream):
         ):
             for a in d.get("ipv4_addresses", []):
                 r += [str(a).split("/")[0]]
-        return r
+        return set(r)
