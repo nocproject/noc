@@ -33,7 +33,7 @@ check labels:
     reports:
       junit: ./build/reports/labels-junit.xml
     expire_in: 7 days
-  allow_failure: false
+  allow_failure: true
   retry: 2
 
 flake8:
