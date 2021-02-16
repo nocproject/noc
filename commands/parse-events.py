@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # parse-events command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,16 +24,24 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.core.fileutils import iter_open
 from noc.core.text import format_table
 from noc.core.perf import metrics
+from noc.sa.models.profile import Profile
 
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
+        parser.add_argument("paths", nargs="+", help="List of input file paths")
         parser.add_argument("--profile", default="Generic.Host", help="Object profile")
         parser.add_argument("--format", default="syslog", help="Input format")
+        parser.add_argument(
+            "--reject",
+            type=argparse.FileType("w", encoding="UTF-8"),
+            required=False,
+            metavar="FILE",
+            help="Path output file unknown data",
+        )
         parser.add_argument("--progress", action="store_true", help="Display progress")
-        parser.add_argument("paths", nargs=argparse.REMAINDER, help="List of input file paths")
 
-    def handle(self, paths, profile, format, progress=False, *args, **options):
+    def handle(self, paths, profile, format, reject, progress=False, *args, **options):
         assert profile_loader.get_profile(profile), "Invalid profile: %s" % profile
         connect()
         t0 = time.time()
@@ -43,7 +51,7 @@ class Command(BaseCommand):
         reader = getattr(self, "read_%s" % format, None)
         assert reader, "Invalid format %s" % format
         self.managed_object = ManagedObject(
-            id=1, name="test", address="127.0.0.1", profile_name=profile
+            id=1, name="test", address="127.0.0.1", profile=Profile.get_by_name("Generic.Host")
         )
         t0 = time.time()
         stats = defaultdict(int)
@@ -57,6 +65,8 @@ class Command(BaseCommand):
                     if event.source == "SNMP Trap":
                         e_vars.update(MIB.resolve_vars(event.raw_vars))
                     rule, r_vars = ruleset.find_rule(event, e_vars)
+                    if reject and rule.is_unknown:
+                        reject.write(f'{event.raw_vars["message"]}\n')
                     stats[rule.event_class.name] += 1
                     total += 1
                     if progress and total % 1000 == 0:
