@@ -174,6 +174,46 @@ class SecondsParameter(BaseParameter):
         return "%ss" % self.value
 
 
+class BytesParameter(BaseParameter):
+    SHORT_FORM = (
+        (1099511627776, "T"),
+        (1073741824, "G"),
+        (1048576, "M"),
+        (1024, "K"),
+    )
+
+    SCALE = {
+        "B": 1,
+        "K": 1024,
+        "M": 1048576,
+        "G": 1073741824,
+        "T": 1099511627776,
+    }
+
+    def clean(self, v):
+        if isinstance(v, int):
+            return v
+        m = self.SCALE.get(v[-1], None)
+        if m is None:
+            m = 1
+        else:
+            v = v[:-1]
+        try:
+            v = int(v)
+        except ValueError:
+            raise ValueError("Invalid value: %s" % v)
+        return v * m
+
+    def dump_value(self):
+        if not self.value > 0:
+            return 0
+        for d, s in self.SHORT_FORM:
+            n, r = divmod(self.value, d)
+            if not r:
+                return "%d%s" % (n, s)
+        return "%ss" % self.value
+
+
 class ListParameter(BaseParameter):
     def __init__(self, default=None, help=None, item=None):
         self.item = item

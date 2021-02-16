@@ -20,6 +20,7 @@ from noc.core.config.params import (
     HandlerParameter,
     SecondsParameter,
     ListParameter,
+    BytesParameter,
 )
 
 
@@ -225,6 +226,38 @@ def test_seconds_parameter():
     assert config.s == 157680000
     # default_s
     assert config.default_s == 60
+
+
+def test_bytes_parameter():
+    class Config(BaseConfig):
+        s = BytesParameter()
+        default_s = BytesParameter(default="1M")
+
+    config = Config()
+    # s
+    assert config.s is None
+    config.s = 15
+    assert config.s == 15
+    config.s = "15"
+    assert config.s == 15
+    config.s = "1K"
+    assert config.s == 1024
+    config.s = "5K"
+    assert config.s == 5120
+    config.s = "1M"
+    assert config.s == 1048576
+    config.s = "5M"
+    assert config.s == 5242880
+    config.s = "1G"
+    assert config.s == 1073741824
+    config.s = "5G"
+    assert config.s == 5368709120
+    config.s = "1T"
+    assert config.s == 1099511627776
+    config.s = "5T"
+    assert config.s == 5497558138880
+    # default_s
+    assert config.default_s == 1048576
 
 
 def my_handler():
