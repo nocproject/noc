@@ -22,6 +22,7 @@ from noc.core.config.params import (
     BooleanParameter,
     HandlerParameter,
     SecondsParameter,
+    BytesParameter,
     FloatParameter,
     ServiceParameter,
     SecretParameter,
@@ -340,6 +341,59 @@ class Config(BaseConfig):
         publish_async_ack_timeout = IntParameter(default=10)
         compression_threshold = IntParameter(default=524288)
         compression_method = StringParameter(choices=["", "zlib", "lzma"], default="zlib")
+        #  mx, kafkasender, events, dispose
+        stream_events_retention_max_age = SecondsParameter(
+            default="24h",
+            help="FM events stream retention interval. If 0 use Liftbrdige setting value",
+        )
+        stream_events_retention_max_bytes = BytesParameter(
+            default=0,
+            help="FM events stream retention size (in bytes). If 0 use Liftbrdige setting value",
+        )
+        stream_events_segment_max_age = SecondsParameter(
+            default="1h",
+            help="FM events stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
+        )
+        stream_events_segment_max_bytes = BytesParameter(
+            default=0,
+            help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
+        )
+        stream_events_auto_pause_time = SecondsParameter(
+            default=0, help="FM events stream pause time. If 0 use Liftbrdige setting value"
+        )
+        stream_events_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_dispose_retention_max_age = SecondsParameter(
+            default="24h",
+            help="FM alarms stream retention interval. If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_retention_max_bytes = BytesParameter(
+            default=0,
+            help="FM alarms stream retention size (in bytes). If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_segment_max_age = SecondsParameter(
+            default="1h",
+            help="FM alarms stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_segment_max_bytes = BytesParameter(
+            default=0,
+            help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_auto_pause_time = SecondsParameter(
+            default=0, help="FM alarms stream pause time. If 0 use Liftbrdige setting value"
+        )
+        stream_dispose_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_message_retention_max_age = SecondsParameter(default="1h")
+        stream_message_retention_max_bytes = BytesParameter(default=0)
+        stream_message_segment_max_age = SecondsParameter(default="30M")
+        stream_message_segment_max_bytes = BytesParameter(default=0)
+        stream_message_auto_pause_time = SecondsParameter(default=0)
+        stream_message_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_kafkasender_retention_max_age = SecondsParameter(default="1h")
+        stream_kafkasender_retention_max_bytes = BytesParameter(default=0)
+        stream_kafkasender_segment_max_age = SecondsParameter(default="30M")
+        stream_kafkasender_segment_max_bytes = BytesParameter(default=0)
+        stream_kafkasender_auto_pause_time = SecondsParameter(default=0)
+        stream_kafkasender_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
     listen = StringParameter(default="auto:0")
 
