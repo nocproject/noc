@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Nexus 9k | 9300-EX PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "deba9a37-c1a3-4de3-ad04-e98b6fe0e0fb",
+    "description": "Cisco Nexus 9300-EX power supply unit connection",
+    "c_group": [],
+    "genders": "mf"
+}
