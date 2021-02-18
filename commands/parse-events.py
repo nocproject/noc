@@ -46,8 +46,10 @@ class Command(BaseCommand):
         connect()
         assert profile_loader.has_profile(profile), "Invalid profile: %s" % profile
         if report:
-            spamwriter = csv.writer(report, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            spamwriter.writerow(["message", "event class", "rule name", "vars"])
+            report_writer = csv.writer(
+                report, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
+            report_writer.writerow(["message", "event class", "rule name", "vars"])
         t0 = time.time()
         ruleset = RuleSet()
         ruleset.load()
@@ -70,7 +72,7 @@ class Command(BaseCommand):
                         e_vars.update(MIB.resolve_vars(event.raw_vars))
                     rule, r_vars = ruleset.find_rule(event, e_vars)
                     if report:
-                        spamwriter.writerow(
+                        report_writer.writerow(
                             [event.raw_vars["message"], rule.event_class.name, rule.name, r_vars]
                         )
                     stats[rule.event_class.name] += 1
