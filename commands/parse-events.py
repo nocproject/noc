@@ -33,17 +33,19 @@ class Command(BaseCommand):
         parser.add_argument("--profile", default="Generic.Host", help="Object profile")
         parser.add_argument("--format", default="syslog", help="Input format")
         parser.add_argument(
-            "--reject",
+            "--report",
             type=argparse.FileType("w", encoding="UTF-8"),
             required=False,
             metavar="FILE",
-            help="Path output file unknown data",
+            help="Path output file identified data",
         )
         parser.add_argument("--progress", action="store_true", help="Display progress")
 
-    def handle(self, paths, profile, format, reject, progress=False, *args, **options):
-        assert profile_loader.get_profile(profile), "Invalid profile: %s" % profile
+    def handle(self, paths, profile, format, report=None, progress=False, *args, **options):
         connect()
+        assert profile_loader.has_profile(profile), "Invalid profile: %s" % profile
+        if report:
+            report.write("message,event class,rule name,vars\n")
         t0 = time.time()
         ruleset = RuleSet()
         ruleset.load()
@@ -51,7 +53,7 @@ class Command(BaseCommand):
         reader = getattr(self, "read_%s" % format, None)
         assert reader, "Invalid format %s" % format
         self.managed_object = ManagedObject(
-            id=1, name="test", address="127.0.0.1", profile=Profile.get_by_name("Generic.Host")
+            id=1, name="test", address="127.0.0.1", profile=Profile.get_by_name(profile)
         )
         t0 = time.time()
         stats = defaultdict(int)
@@ -65,8 +67,10 @@ class Command(BaseCommand):
                     if event.source == "SNMP Trap":
                         e_vars.update(MIB.resolve_vars(event.raw_vars))
                     rule, r_vars = ruleset.find_rule(event, e_vars)
-                    if reject and rule.is_unknown:
-                        reject.write(f'{event.raw_vars["message"]}\n')
+                    if report:
+                        report.write(
+                            f'"{event.raw_vars["message"]}","{rule.event_class.name}","{rule.name}","{r_vars}",\n'
+                        )
                     stats[rule.event_class.name] += 1
                     total += 1
                     if progress and total % 1000 == 0:
