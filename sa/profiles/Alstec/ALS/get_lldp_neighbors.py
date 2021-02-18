@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Alstec.ALS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,8 +47,13 @@ class Script(BaseScript):
             v = self.blank_line.sub("", v)
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        t = parse_table(v, allow_wrap=True, allow_extend=True)
-        for i in t:
+        for i in parse_table(
+            v,
+            allow_wrap=True,
+            line_wrapper=None,
+            row_wrapper=lambda x: x.strip(),
+            footer="\r\n\r\n",
+        ):
             chassis_id = i[1]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
                 chassis_id_subtype = LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS
