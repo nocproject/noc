@@ -16,6 +16,7 @@ from noc.main.models.pool import Pool
 from noc.core.mongo.connection import connect
 from noc.core.service.loader import get_dcs
 from noc.core.ioloop.util import run_sync
+from noc.config import config
 
 
 class Command(BaseCommand):
@@ -91,6 +92,8 @@ class Command(BaseCommand):
             run_sync(wrapper)
 
         def create_stream(name: str, n_partitions: int, replication_factor: int):
+            base_name = name.split(".")[0]
+
             async def wrapper():
                 async with LiftBridgeClient() as client:
                     await client.create_stream(
@@ -98,6 +101,26 @@ class Command(BaseCommand):
                         name=name,
                         partitions=n_partitions,
                         replication_factor=replication_factor,
+                        retention_max_bytes=getattr(
+                            config.liftbridge, f"stream_{base_name}_retention_max_age", 0
+                        ),
+                        retention_max_age=getattr(
+                            config.liftbridge, f"stream_{base_name}_retention_max_bytes", 0
+                        ),
+                        segment_max_bytes=getattr(
+                            config.liftbridge, f"stream_{base_name}_segment_max_bytes", 0
+                        ),
+                        segment_max_age=getattr(
+                            config.liftbridge, f"stream_{base_name}_segment_max_age", 0
+                        ),
+                        auto_pause_time=getattr(
+                            config.liftbridge, f"stream_{base_name}_auto_pause_time", 0
+                        ),
+                        auto_pause_disable_if_subscribers=getattr(
+                            config.liftbridge,
+                            f"stream_{base_name}_auto_pause_disable_if_subscribers",
+                            False,
+                        ),
                     )
 
             run_sync(wrapper)

@@ -386,6 +386,12 @@ class LiftBridgeClient(object):
         replication_factor: int = 1,
         partitions: int = 1,
         enable_compact: bool = False,
+        retention_max_age: int = 0,
+        retention_max_bytes: int = 0,
+        segment_max_age: int = 0,
+        segment_max_bytes: int = 0,
+        auto_pause_time: int = 0,
+        auto_pause_disable_if_subscribers: bool = False,
     ):
         with rpc_error():
             req = CreateStreamRequest(
@@ -396,7 +402,25 @@ class LiftBridgeClient(object):
                 partitions=partitions,
             )
             if enable_compact:
-                req.CompactEnabled.value = True
+                req.compactEnabled.value = True
+            else:
+                req.compactEnabled.value = False
+            # Retention settings
+            if retention_max_age:
+                # in ms
+                req.retentionMaxAge.value = retention_max_age * 1000
+            if retention_max_bytes:
+                req.retentionMaxBytes.value = retention_max_bytes
+            # Segment settiongs
+            if segment_max_bytes:
+                req.segmentMaxBytes.value = segment_max_bytes
+            if segment_max_age:
+                # in ms
+                req.segmentMaxAge.value = segment_max_age * 1000
+            if auto_pause_time:
+                req.autoPauseTime.value = auto_pause_time * 1000
+                if auto_pause_disable_if_subscribers:
+                    req.autoPauseDisableIfSubscribers.value = True
             channel = await self.get_channel()
             await channel.CreateStream(req)
 

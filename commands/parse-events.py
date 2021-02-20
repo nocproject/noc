@@ -40,9 +40,16 @@ class Command(BaseCommand):
             metavar="FILE",
             help="Path output file identified data",
         )
+        parser.add_argument(
+            "--reject",
+            type=argparse.FileType("w", encoding="UTF-8"),
+            required=False,
+            metavar="FILE",
+            help="Path output file unknown data",
+        )
         parser.add_argument("--progress", action="store_true", help="Display progress")
 
-    def handle(self, paths, profile, format, report=None, progress=False, *args, **options):
+    def handle(self, paths, profile, format, report=None, reject=None, progress=False, *args, **options):
         connect()
         assert profile_loader.has_profile(profile), "Invalid profile: %s" % profile
         if report:
@@ -75,6 +82,8 @@ class Command(BaseCommand):
                         report_writer.writerow(
                             [event.raw_vars["message"], rule.event_class.name, rule.name, r_vars]
                         )
+                    if reject and rule.is_unknown:
+                        reject.write(f'{event.raw_vars["message"]}\n')
                     stats[rule.event_class.name] += 1
                     total += 1
                     if progress and total % 1000 == 0:

@@ -1,15 +1,15 @@
-# Translations template for The NOC Project.
-# Copyright (C) 2019 The NOC Project
-# This file is distributed under the same license as the The NOC Project
+# Translations template for 'The NOC Project'.
+# Copyright (C) 2021 'The NOC Project'
+# This file is distributed under the same license as the 'The NOC Project'
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: The NOC Project VERSION\n"
+"Project-Id-Version: 'The NOC Project' VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-01-13 11:53+0300\n"
+"POT-Creation-Date: 2021-02-20 14:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,75 +18,168 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: bi/models/alarms.py:50
-msgid "Close Time"
+#: bi/models/alarms.py:55 bi/models/mac.py:61 bi/models/managedobjects.py:44
+#: bi/models/netflow.py:41 bi/models/reboots.py:38
+#: bi/models/routingneighbors.py:27 bi/models/span.py:27 bi/models/syslog.py:29
+msgid "Date"
 msgstr ""
 
-#: bi/models/alarms.py:51
-msgid "Duration"
-msgstr ""
-
-#: bi/models/alarms.py:52
-msgid "Id"
-msgstr ""
-
-#: bi/models/alarms.py:53
-msgid "Alarm Root"
-msgstr ""
-
-#: bi/models/alarms.py:54
-msgid "Alarm Class"
-msgstr ""
-
-#: bi/models/alarms.py:56
-msgid "Reopens"
+#: bi/models/alarms.py:56 bi/models/mac.py:62 bi/models/managedobjects.py:45
+#: bi/models/netflow.py:42 bi/models/reboots.py:39
+#: bi/models/routingneighbors.py:28 bi/models/span.py:28 bi/models/syslog.py:30
+msgid "Created"
 msgstr ""
 
 #: bi/models/alarms.py:57
-msgid "Direct Services"
+msgid "Close Time"
 msgstr ""
 
 #: bi/models/alarms.py:58
-msgid "Direct Subscribers"
+msgid "Duration"
 msgstr ""
 
 #: bi/models/alarms.py:59
-msgid "Total Objects"
+msgid "Id"
 msgstr ""
 
 #: bi/models/alarms.py:60
-msgid "Total Services"
+msgid "Alarm Root"
 msgstr ""
 
 #: bi/models/alarms.py:61
-msgid "Total Subscribers"
+msgid "RCA Type"
 msgstr ""
 
-#: bi/models/alarms.py:63
-msgid "Escalation Time"
+#: bi/models/alarms.py:62
+msgid "Alarm Class"
+msgstr ""
+
+#: bi/models/alarms.py:63 bi/models/syslog.py:33
+msgid "Severity"
 msgstr ""
 
 #: bi/models/alarms.py:64
-msgid "Number of Escalation"
+msgid "Reopens"
+msgstr ""
+
+#: bi/models/alarms.py:65
+msgid "Direct Services"
 msgstr ""
 
 #: bi/models/alarms.py:66
+msgid "Direct Subscribers"
+msgstr ""
+
+#: bi/models/alarms.py:67
+msgid "Total Objects"
+msgstr ""
+
+#: bi/models/alarms.py:68
+msgid "Total Services"
+msgstr ""
+
+#: bi/models/alarms.py:69
+msgid "Total Subscribers"
+msgstr ""
+
+#: bi/models/alarms.py:71
+msgid "Escalation Time"
+msgstr ""
+
+#: bi/models/alarms.py:72
+msgid "Number of Escalation"
+msgstr ""
+
+#: bi/models/alarms.py:74
 msgid "Qty of Reboots"
 msgstr ""
 
-#: bi/models/alarms.py:81
+#: bi/models/alarms.py:76 bi/models/mac.py:63 bi/models/managedobjects.py:46
+#: bi/models/netflow.py:43 bi/models/reboots.py:40
+#: bi/models/routingneighbors.py:29 bi/models/syslog.py:31
+msgid "Object Name"
+msgstr ""
+
+#: bi/models/alarms.py:77 bi/models/managedobjects.py:57
+#: bi/models/reboots.py:41
+msgid "Pool Name"
+msgstr ""
+
+#: bi/models/alarms.py:78 bi/models/managedobjects.py:58
+#: bi/models/reboots.py:44
+msgid "Object Profile"
+msgstr ""
+
+#: bi/models/alarms.py:79 bi/models/managedobjects.py:61
+#: bi/models/reboots.py:42
+msgid "IP Address"
+msgstr ""
+
+#: bi/models/alarms.py:80 bi/models/managedobjects.py:64
+#: bi/models/reboots.py:43
+msgid "Profile"
+msgstr ""
+
+#: bi/models/alarms.py:81 bi/models/reboots.py:45
+msgid "Vendor Name"
+msgstr ""
+
+#: bi/models/alarms.py:82 bi/models/managedobjects.py:66
+#: bi/models/reboots.py:46
+msgid "Platform"
+msgstr ""
+
+#: bi/models/alarms.py:83 bi/models/managedobjects.py:68
+#: bi/models/reboots.py:47
+msgid "Version"
+msgstr ""
+
+#: bi/models/alarms.py:84 bi/models/managedobjects.py:48
+#: bi/models/reboots.py:48
+msgid "Admin. Domain"
+msgstr ""
+
+#: bi/models/alarms.py:85 bi/models/mac.py:67 bi/models/managedobjects.py:49
+#: bi/models/reboots.py:49
+msgid "Network Segment"
+msgstr ""
+
+#: bi/models/alarms.py:86 bi/models/managedobjects.py:50
+#: bi/models/reboots.py:50
+msgid "Container"
+msgstr ""
+
+#: bi/models/alarms.py:88 bi/models/managedobjects.py:54
+#: bi/models/netflow.py:45 bi/models/reboots.py:52
+msgid "Longitude"
+msgstr ""
+
+#: bi/models/alarms.py:89 bi/models/managedobjects.py:55
+#: bi/models/netflow.py:46 bi/models/reboots.py:53
+msgid "Latitude"
+msgstr ""
+
+#: bi/models/alarms.py:90
 msgid "Affected Services"
 msgstr ""
 
-#: bi/models/alarms.py:82
+#: bi/models/alarms.py:91
 msgid "Affected Subscribers"
 msgstr ""
 
-#: bi/models/mac.py:62
+#: bi/models/alarms.py:94
+msgid "Manual acknowledgement user name"
+msgstr ""
+
+#: bi/models/alarms.py:95
+msgid "Manual acknowledgement timestamp"
+msgstr ""
+
+#: bi/models/mac.py:64
 msgid "MAC"
 msgstr ""
 
-#: bi/models/mac.py:63
+#: bi/models/mac.py:65
 msgid "Interface"
 msgstr ""
 
@@ -94,255 +187,601 @@ msgstr ""
 msgid "Interface Profile"
 msgstr ""
 
-#: bi/models/mac.py:72
+#: bi/models/mac.py:68
 msgid "VLAN"
 msgstr ""
 
-#: bi/models/mac.py:73
+#: bi/models/mac.py:69
 msgid "Is UNI"
 msgstr ""
 
-#: bi/models/managedobjects.py:45
+#: bi/models/managedobjects.py:52
 msgid "Level"
 msgstr ""
 
-#: bi/models/managedobjects.py:51
+#: bi/models/managedobjects.py:59
 msgid "Name"
 msgstr ""
 
-#: bi/models/managedobjects.py:52
+#: bi/models/managedobjects.py:60
 msgid "Hostaname"
 msgstr ""
 
-#: bi/models/managedobjects.py:54
+#: bi/models/managedobjects.py:62
 msgid "Is Managed"
 msgstr ""
 
-#: bi/models/managedobjects.py:57
+#: bi/models/managedobjects.py:65
 msgid "Vendor"
 msgstr ""
 
-#: bi/models/managedobjects.py:60
-msgid "Interface count"
-msgstr ""
-
-#: bi/models/managedobjects.py:61
-msgid "Subscribers count"
-msgstr ""
-
-#: bi/models/managedobjects.py:62
-msgid "Services count"
-msgstr ""
-
-#: bi/models/managedobjects.py:64
-msgid "Neighbors"
-msgstr ""
-
-#: bi/models/managedobjects.py:65
-msgid "Links count"
-msgstr ""
-
-#: bi/models/managedobjects.py:66
-msgid "Links (NRI)"
-msgstr ""
-
 #: bi/models/managedobjects.py:67
-msgid "Links (MAC)"
-msgstr ""
-
-#: bi/models/managedobjects.py:68
-msgid "Links (STP)"
+msgid "HW. Version"
 msgstr ""
 
 #: bi/models/managedobjects.py:69
-msgid "Links (LLDP)"
+msgid "BootPROM. Version"
 msgstr ""
 
 #: bi/models/managedobjects.py:70
-msgid "Links (CDP)"
+msgid "Interface count"
+msgstr ""
+
+#: bi/models/managedobjects.py:71
+msgid "Subscribers count"
 msgstr ""
 
 #: bi/models/managedobjects.py:72
-msgid "Has STP"
-msgstr ""
-
-#: bi/models/managedobjects.py:73
-msgid "Has LLDP"
+msgid "Services count"
 msgstr ""
 
 #: bi/models/managedobjects.py:74
-msgid "Has CDP"
+msgid "Neighbors"
 msgstr ""
 
 #: bi/models/managedobjects.py:75
-msgid "Has SNMP"
+msgid "Links count"
 msgstr ""
 
 #: bi/models/managedobjects.py:76
-msgid "Has SNMP v1"
+msgid "Links (BFD)"
 msgstr ""
 
 #: bi/models/managedobjects.py:77
-msgid "Has SNMP v2c"
+msgid "Links (CDP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:78
+msgid "Links (FDP)"
 msgstr ""
 
 #: bi/models/managedobjects.py:79
+msgid "Links (Huawei NDP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:80
+msgid "Links (LACP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:81
+msgid "Links (LLDP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:82
+msgid "Links (MAC)"
+msgstr ""
+
+#: bi/models/managedobjects.py:83
+msgid "Links (NRI)"
+msgstr ""
+
+#: bi/models/managedobjects.py:84
+msgid "Links (OAM)"
+msgstr ""
+
+#: bi/models/managedobjects.py:85
+msgid "Links (REP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:86
+msgid "Links (STP)"
+msgstr ""
+
+#: bi/models/managedobjects.py:87
+msgid "Links (UDLD)"
+msgstr ""
+
+#: bi/models/managedobjects.py:88 bi/models/managedobjects.py:89
+msgid "Links (xMAC)"
+msgstr ""
+
+#: bi/models/managedobjects.py:91
+msgid "Has STP"
+msgstr ""
+
+#: bi/models/managedobjects.py:92
+msgid "Has LLDP"
+msgstr ""
+
+#: bi/models/managedobjects.py:93
+msgid "Has CDP"
+msgstr ""
+
+#: bi/models/managedobjects.py:94
+msgid "Has SNMP"
+msgstr ""
+
+#: bi/models/managedobjects.py:95
+msgid "Has SNMP v1"
+msgstr ""
+
+#: bi/models/managedobjects.py:96
+msgid "Has SNMP v2c"
+msgstr ""
+
+#: bi/models/managedobjects.py:98
 msgid "Uptime"
 msgstr ""
 
-#: bi/models/alarms.py:69 bi/models/managedobjects.py:50
-#: bi/models/reboots.py:37
-msgid "Pool Name"
+#: bi/models/managedobjects.py:100
+msgid "Reboots by period"
 msgstr ""
 
-#: bi/models/alarms.py:70 bi/models/managedobjects.py:53
-#: bi/models/reboots.py:38
-msgid "IP Address"
+#: bi/models/managedobjects.py:101
+msgid "Availability by period (%)"
 msgstr ""
 
-#: bi/models/alarms.py:71 bi/models/managedobjects.py:56
-#: bi/models/reboots.py:39
-msgid "Profile"
+#: bi/models/managedobjects.py:102
+msgid "Unavailability (sec.)"
 msgstr ""
 
-#: bi/models/alarms.py:72 bi/models/reboots.py:40
-msgid "Vendor Name"
+#: bi/models/managedobjects.py:103
+msgid "Outagees count by period"
 msgstr ""
 
-#: bi/models/alarms.py:73 bi/models/managedobjects.py:58
-#: bi/models/reboots.py:41
-msgid "Platform"
+#: bi/models/managedobjects.py:105
+msgid "STP Topology Changes by period"
 msgstr ""
 
-#: bi/models/alarms.py:74 bi/models/managedobjects.py:59
-#: bi/models/reboots.py:42
-msgid "Version"
+#: bi/models/managedobjects.py:107
+msgid "Serial Numbers"
 msgstr ""
 
-#: bi/models/alarms.py:75 bi/models/managedobjects.py:41
-#: bi/models/reboots.py:43
-msgid "Admin. Domain"
+#: bi/models/managedobjects.py:109
+msgid "Tags"
 msgstr ""
 
-#: bi/models/alarms.py:76 bi/models/mac.py:70 bi/models/managedobjects.py:42
-#: bi/models/reboots.py:44
-msgid "Network Segment"
+#: bi/models/netflow.py:48
+msgid "Flow version"
 msgstr ""
 
-#: bi/models/alarms.py:77 bi/models/managedobjects.py:43
-#: bi/models/reboots.py:45
-msgid "Container"
+#: bi/models/netflow.py:49
+msgid "Incoming octets"
 msgstr ""
 
-#: bi/models/alarms.py:79 bi/models/managedobjects.py:47
-#: bi/models/reboots.py:47
-msgid "Longitude"
+#: bi/models/netflow.py:50
+msgid "Incoming packets"
 msgstr ""
 
-#: bi/models/alarms.py:80 bi/models/managedobjects.py:48
-#: bi/models/reboots.py:48
-msgid "Latitude"
+#: bi/models/netflow.py:51
+msgid "Aggregated flows"
+msgstr ""
+
+#: bi/models/netflow.py:52
+msgid "IP protocol type"
+msgstr ""
+
+#: bi/models/netflow.py:53
+msgid "Type of Service byte"
+msgstr ""
+
+#: bi/models/netflow.py:54
+msgid "TCP flags cumulative byte"
+msgstr ""
+
+#: bi/models/netflow.py:55
+msgid "TCP/UDP src port number"
+msgstr ""
+
+#: bi/models/netflow.py:56
+msgid "IPv4 source address"
+msgstr ""
+
+#: bi/models/netflow.py:57
+msgid "Number of mask bits in src adr"
+msgstr ""
+
+#: bi/models/netflow.py:58
+msgid "Input interface index"
+msgstr ""
+
+#: bi/models/netflow.py:59
+msgid "TCP/UDP dst port number"
+msgstr ""
+
+#: bi/models/netflow.py:60
+msgid "IPv4 destination address"
+msgstr ""
+
+#: bi/models/netflow.py:61
+msgid "Number of mask bits in dst adr"
+msgstr ""
+
+#: bi/models/netflow.py:62
+msgid "Output interface index"
+msgstr ""
+
+#: bi/models/netflow.py:63
+msgid "IPv4 adr of nexthop router"
+msgstr ""
+
+#: bi/models/netflow.py:64
+msgid "Src BGP AS number"
+msgstr ""
+
+#: bi/models/netflow.py:65
+msgid "Dst BGP AS number"
+msgstr ""
+
+#: bi/models/netflow.py:66
+msgid "Nexthop router's IP in BGP domain"
+msgstr ""
+
+#: bi/models/netflow.py:67 bi/models/netflow.py:68
+msgid "IP multicast outgoing packet counter"
+msgstr ""
+
+#: bi/models/netflow.py:69 bi/models/netflow.py:70
+msgid "System uptime when last pkt of flow was switched"
+msgstr ""
+
+#: bi/models/netflow.py:71
+msgid "Outgoing octets"
+msgstr ""
+
+#: bi/models/netflow.py:72
+msgid "Outgoing packets"
+msgstr ""
+
+#: bi/models/netflow.py:73
+msgid "Min IP pkt length on inc packets of flow"
+msgstr ""
+
+#: bi/models/netflow.py:74
+msgid "Max IP pkt length on inc packets of flow"
+msgstr ""
+
+#: bi/models/netflow.py:80
+msgid "ICMP packet type"
+msgstr ""
+
+#: bi/models/netflow.py:81
+msgid "IGMP packet type"
+msgstr ""
+
+#: bi/models/netflow.py:82
+msgid "Rate of sampling of packets"
+msgstr ""
+
+#: bi/models/netflow.py:84
+msgid ""
+"Type of algorithm for sampled netflow: 01 deterministic or 02 random "
+"sampling"
+msgstr ""
+
+#: bi/models/netflow.py:89
+msgid "Timeout value in seconds for active entries in netflow cache"
+msgstr ""
+
+#: bi/models/netflow.py:92
+msgid "Timeout value in seconds for inactive entries in netflow cache"
+msgstr ""
+
+#: bi/models/netflow.py:94
+msgid "Type of flow switching engine: RP=0, VIP/Linecard=1"
+msgstr ""
+
+#: bi/models/netflow.py:95
+msgid "ID number of flow switching engine"
+msgstr ""
+
+#: bi/models/netflow.py:96
+msgid "Counter for bytes exported"
+msgstr ""
+
+#: bi/models/netflow.py:97
+msgid "Counter for pkts exported"
+msgstr ""
+
+#: bi/models/netflow.py:98
+msgid "Counter for flows exported"
+msgstr ""
+
+#: bi/models/netflow.py:100
+msgid "IPv4 source address prefix (Catalyst architecture)"
+msgstr ""
+
+#: bi/models/netflow.py:103
+msgid "IPv4 destination address prefix (Catalyst architecture)"
+msgstr ""
+
+#: bi/models/netflow.py:105
+msgid "MPLS top label type"
+msgstr ""
+
+#: bi/models/netflow.py:107
+msgid "Forwarding equivalent class corresponding to MPLS top label"
+msgstr ""
+
+#: bi/models/netflow.py:109
+msgid "ID from 'show flow-sampler'"
+msgstr ""
+
+#: bi/models/netflow.py:110
+msgid "Type of algorithm used for sampling data"
+msgstr ""
+
+#: bi/models/netflow.py:111
+msgid "Packet interval at which to sample"
+msgstr ""
+
+#: bi/models/netflow.py:112
+msgid "Minimum TTL on incoming packets"
+msgstr ""
+
+#: bi/models/netflow.py:113
+msgid "Maximum TTL on incoming packets"
+msgstr ""
+
+#: bi/models/netflow.py:114
+msgid "IPv4 identification field"
+msgstr ""
+
+#: bi/models/netflow.py:116
+msgid "Type of Service byte setting when exiting outgoing interface"
+msgstr ""
+
+#: bi/models/netflow.py:118
+msgid "Incoming source MAC address"
+msgstr ""
+
+#: bi/models/netflow.py:119
+msgid "Outcoming destination MAC address"
+msgstr ""
+
+#: bi/models/netflow.py:120
+msgid "VLAN id associated with ingress interface"
+msgstr ""
+
+#: bi/models/netflow.py:121
+msgid "VLAN id associated with egress interface"
+msgstr ""
+
+#: bi/models/netflow.py:123
+msgid "IP protocol version for IPv4 is 4 and 6 for IPv6. If none, assumed 4"
+msgstr ""
+
+#: bi/models/netflow.py:125
+msgid "Flow direction: 0 -- ingress, 1 -- egress flow"
+msgstr ""
+
+#: bi/models/netflow.py:132
+msgid ""
+"MPLS label at position 1 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:137
+msgid ""
+"MPLS label at position 2 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:142
+msgid ""
+"MPLS label at position 3 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:147
+msgid ""
+"MPLS label at position 4 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:152
+msgid ""
+"MPLS label at position 5 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:157
+msgid ""
+"MPLS label at position 6 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:162
+msgid ""
+"MPLS label at position 7 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:167
+msgid ""
+"MPLS label at position 8 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:172
+msgid ""
+"MPLS label at position 9 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:177
+msgid ""
+"MPLS label at position 10 in the stack. This comprises 20 bits of MPLS "
+"label, 3 EXP (experimental) bits and 1 S (end-of-stack) bit"
+msgstr ""
+
+#: bi/models/netflow.py:181
+msgid "Incoming destination MAC address"
+msgstr ""
+
+#: bi/models/netflow.py:182
+msgid "Outcoming source MAC address"
+msgstr ""
+
+#: bi/models/netflow.py:183
+msgid "Shortened interface name i.e.: 'FE1/0'"
+msgstr ""
+
+#: bi/models/netflow.py:184
+msgid "Full interface name i.e.: 'FastEthernet 1/0'"
+msgstr ""
+
+#: bi/models/netflow.py:185
+msgid "Name of the flow sampler"
+msgstr ""
+
+#: bi/models/netflow.py:186
+msgid "Running byte counter for a permanent flow"
+msgstr ""
+
+#: bi/models/netflow.py:187
+msgid "Running packet counter for a permanent flow"
+msgstr ""
+
+#: bi/models/netflow.py:189
+msgid "The fragment-offset value from fragmented IP packets"
+msgstr ""
+
+#: bi/models/netflow.py:192
+msgid ""
+"Forwarding status is encoded on 1 byte with the 2 left bits giving the "
+"status and the 6 remaining bits giving the reason code."
+msgstr ""
+
+#: bi/models/netflow.py:196
+msgid "MPLS PAL Route Distinguisher"
+msgstr ""
+
+#: bi/models/netflow.py:198
+msgid "Number of consecutive bits in the MPLS prefix length"
+msgstr ""
+
+#: bi/models/netflow.py:200
+msgid "BGP Policy Accounting Source Traffic Index"
+msgstr ""
+
+#: bi/models/netflow.py:202
+msgid "BGP Policy Accounting Destination Traffic Index"
+msgstr ""
+
+#: bi/models/netflow.py:204
+msgid "Application description"
+msgstr ""
+
+#: bi/models/netflow.py:206
+msgid "8 bits of engine ID, followed by n bits of classification"
+msgstr ""
+
+#: bi/models/netflow.py:208
+msgid "Name associated with a classification"
+msgstr ""
+
+#: bi/models/netflow.py:210
+msgid ""
+"The value of a Differentiated Services Code Point (DSCP) encoded in the "
+"Differentiated Services Field, after modification"
+msgstr ""
+
+#: bi/models/netflow.py:214
+msgid "Multicast replication factor"
 msgstr ""
 
 #: bi/models/routingneighbors.py:30
 msgid "Physical Interface"
 msgstr ""
 
-#: bi/models/routingneighbors.py:33
+#: bi/models/routingneighbors.py:31
 msgid "Logical Interface"
 msgstr ""
 
-#: bi/models/routingneighbors.py:36
+#: bi/models/routingneighbors.py:32
 msgid "Neighbor Address"
 msgstr ""
 
-#: bi/models/routingneighbors.py:40
+#: bi/models/routingneighbors.py:33
 msgid "Neighbor Object"
 msgstr ""
 
-#: bi/models/routingneighbors.py:43
+#: bi/models/routingneighbors.py:34
 msgid "Protocol"
 msgstr ""
 
-#: bi/models/routingneighbors.py:46
+#: bi/models/routingneighbors.py:35
 msgid "BGP Local AS"
 msgstr ""
 
-#: bi/models/routingneighbors.py:49
+#: bi/models/routingneighbors.py:36
 msgid "BGP Remogte AS"
 msgstr ""
 
-#: bi/models/span.py:24
+#: bi/models/span.py:29
 msgid "Span context"
 msgstr ""
 
-#: bi/models/span.py:25
+#: bi/models/span.py:30
 msgid "Span id"
 msgstr ""
 
-#: bi/models/span.py:26
+#: bi/models/span.py:31
 msgid "Span parent"
 msgstr ""
 
-#: bi/models/span.py:27
+#: bi/models/span.py:32
 msgid "Called service"
 msgstr ""
 
-#: bi/models/span.py:28
+#: bi/models/span.py:33
 msgid "Called function"
 msgstr ""
 
-#: bi/models/span.py:29
+#: bi/models/span.py:34
 msgid "Caller service"
 msgstr ""
 
-#: bi/models/span.py:30
+#: bi/models/span.py:35
 msgid "Duration (us)"
 msgstr ""
 
-#: bi/models/span.py:31
+#: bi/models/span.py:36
 msgid "Sampling rate"
 msgstr ""
 
-#: bi/models/span.py:32
+#: bi/models/span.py:37
 msgid "Error code"
 msgstr ""
 
-#: bi/models/span.py:33
+#: bi/models/span.py:38
 msgid "Error text"
 msgstr ""
 
-#: bi/models/span.py:34
+#: bi/models/span.py:39
 msgid "Input arguments"
 msgstr ""
 
-#: bi/models/span.py:35
+#: bi/models/span.py:40
 msgid "Output results"
 msgstr ""
 
-#: bi/models/alarms.py:48 bi/models/mac.py:56 bi/models/managedobjects.py:34
-#: bi/models/reboots.py:34 bi/models/routingneighbors.py:23
-#: bi/models/span.py:22 bi/models/syslog.py:24
-msgid "Date"
-msgstr ""
-
-#: bi/models/alarms.py:49 bi/models/mac.py:57 bi/models/managedobjects.py:35
-#: bi/models/reboots.py:35 bi/models/routingneighbors.py:24
-#: bi/models/span.py:23 bi/models/syslog.py:25
-msgid "Created"
-msgstr ""
-
-#: bi/models/alarms.py:68 bi/models/mac.py:60 bi/models/managedobjects.py:38
-#: bi/models/reboots.py:36 bi/models/routingneighbors.py:27
-#: bi/models/syslog.py:26
-msgid "Object Name"
-msgstr ""
-
-#: bi/models/syslog.py:27
+#: bi/models/syslog.py:32
 msgid "Facility"
 msgstr ""
 
-#: bi/models/alarms.py:55 bi/models/syslog.py:28
-msgid "Severity"
+#: bi/models/syslog.py:34
+msgid "Syslog Message"
 msgstr ""
 

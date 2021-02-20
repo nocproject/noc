@@ -2,13 +2,15 @@
 # Vendor: Allied Telesis
 # OS:     AT8100
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # coded by azhur
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
+# Python modules
 import re
+
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -32,3 +34,12 @@ class Profile(BaseProfile):
         if match:
             return "port%s" % s
         return s
+
+    INTERFACE_TYPES = {
+        "port": "physical",
+        "vlan": "SVI",
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:4])
