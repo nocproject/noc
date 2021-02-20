@@ -27,6 +27,8 @@ class Script(BaseScript):
 
     FREQ = {"bg-n": "2400GHz", "a-n": "5150GHz"}
 
+    EXCLUDE_MAC = {"00:AA:BB:CC:DD:13"}
+
     @classmethod
     def get_interface_freq(cls, name):
         c = cls.FREQ.get(name)
@@ -81,7 +83,11 @@ class Script(BaseScript):
                 "name": ifname,
                 "subinterfaces": [],
             }
-            if value["mac"] and value["mac"] != "00:00:00:00:00:00":
+            if (
+                value["mac"]
+                and value["mac"] != "00:00:00:00:00:00"
+                and value["mac"] not in self.EXCLUDE_MAC
+            ):
                 interfaces[ifname]["mac"] = value["mac"]
             if "eth" in ifname:
                 interfaces[ifname]["subinterfaces"] += [
@@ -102,7 +108,11 @@ class Script(BaseScript):
                 interfaces[ifname]["subinterfaces"] += [
                     {"name": ifname, "enabled_afi": ["IPv4"], "ipv4_addresses": [ip_address]}
                 ]
-                if value["mac"] and value["mac"] != "00:00:00:00:00:00":
+                if (
+                    value["mac"]
+                    and value["mac"] != "00:00:00:00:00:00"
+                    and value["mac"] not in self.EXCLUDE_MAC
+                ):
                     interfaces[ifname]["subinterfaces"][-1]["mac"] = value["mac"]
             if value.get("bss") and value.get("ssid"):
                 # For some reason creating SSID as interfaces otherwise sub.
@@ -118,7 +128,6 @@ class Script(BaseScript):
                     interfaces[bss_ifname] = {
                         "type": "physical",
                         "name": bss_ifname,
-                        "mac": value["mac"],
                         "description": self.BSS_DESCRIPTION_TEMPLATE
                         % (
                             "Enable" if r["ignore-broadcast-ssid"] == "off" else "Disable",
@@ -135,4 +144,6 @@ class Script(BaseScript):
                             }
                         ],
                     }
+                    if value["mac"] and value["mac"] not in self.EXCLUDE_MAC:
+                        interfaces[bss_ifname]["mac"] = value["mac"]
         return [{"interfaces": list(interfaces.values())}]
