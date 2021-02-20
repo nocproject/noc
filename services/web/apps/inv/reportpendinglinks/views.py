@@ -8,6 +8,7 @@
 # Python modules
 import re
 from collections import defaultdict
+import ast
 
 # Third-party modules
 from django import forms
@@ -21,25 +22,28 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobject import ManagedObjectProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.link import Link
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.main.models.pool import Pool
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
 class ReportPendingLinks(object):
-    def __init__(self, ids, cache_key=None, ignore_profiles=None):
+    def __init__(self, ids, cache_key=None, ignore_profiles=None, filter_exists_link=False):
         self.ids = ids
         self.ignore_profiles = ignore_profiles
+        self.filter_exists_link = filter_exists_link
         if cache_key:
             self.out = cache.get(key=cache_key)
             if not self.out:
-                self.out = self.load(self.ids, self.ignore_profiles)
+                self.out = self.load(self.ids, self.ignore_profiles, self.filter_exists_link)
                 cache.set(cache_key, self.out, ttl=28800)
         else:
-            self.out = self.load(self.ids, self.ignore_profiles)
+            self.out = self.load(self.ids, self.ignore_profiles, self.filter_exists_link)
 
     @staticmethod
-    def load(ids, ignore_profiles=None):
+    def load(ids, ignore_profiles=None, filter_exists_link=False):
         problems = defaultdict(dict)  # id -> problem
         rg = re.compile(
             r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
@@ -51,6 +55,18 @@ class ReportPendingLinks(object):
         ]
         n = 0
         ignored_ifaces = []
+        find = DiscoveryID._get_collection().aggregate(
+            [
+                {"$unwind": "$macs"},
+                {"$group": {"_id": "$macs", "count": {"$sum": 1}, "mo": {"$push": "$object"}}},
+                {"$match": {"count": {"$gt": 1}}},
+                {"$unwind": "$mo"},
+                {"$group": {"_id": "", "mos": {"$addToSet": "$mo"}}},
+            ],
+            allowDiskUse=True,
+        )
+        find = next(find)
+        duplicate_macs = set(find["mos"])
         while mos_job[(0 + n) : (10000 + n)]:
             job_logs = (
                 get_db()["noc.joblog"]
@@ -90,14 +106,22 @@ class ReportPendingLinks(object):
                         )
                     ]
                 for iface in discovery["problems"]["lldp"]:
-                    if (mo_id, iface) in ignored_ifaces:
+                    if (mo.id, iface) in ignored_ifaces:
                         continue
                     # print iface
                     if "is not found" in discovery["problems"]["lldp"][iface]:
-                        problems[mo_id] = {
+                        _, parsed_x = discovery["problems"]["lldp"][iface].split("'", 1)
+                        parsed_x, _ = parsed_x.rsplit("'", 1)
+                        parsed_x = ast.literal_eval(parsed_x)
+                        problems[mo.id] = {
                             iface: {
                                 "problem": "Remote object is not found",
-                                "remote_id": discovery["problems"]["lldp"][iface],
+                                "detail": "Remote object not in system or ID discovery not success",
+                                "remote_id": "",
+                                "remote_iface": parsed_x.get("remote_port"),
+                                "remote_hostname": parsed_x.get("remote_system_name"),
+                                "remote_description": parsed_x.get("remote_system_description"),
+                                "remote_chassis": parsed_x.get("remote_chassis_id"),
                             }
                         }
                     if "Pending link:" in discovery["problems"]["lldp"][iface]:
@@ -106,17 +130,27 @@ class ReportPendingLinks(object):
                             rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
                         except ManagedObject.DoesNotExist:
                             continue
+                        if (
+                            filter_exists_link
+                            and Link.objects.filter(linked_objects=[mo.id, rmo.id]).first()
+                        ):
+                            # If already linked on other proto
+                            continue
+                        detail = ""
+                        if mo.id in duplicate_macs or rmo.id in duplicate_macs:
+                            detail = "Duplicate ID"
                         # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
-                        problems[mo_id][iface] = {
+                        problems[mo.id][iface] = {
                             "problem": "Not found iface on remote",
-                            "remote_id": "%s; %s ;%s"
-                            % (rmo.name, rmo.profile.name, pend_str.group("remote_iface")),
+                            "detail": detail,
+                            "remote_id": "%s::: %s" % (rmo.name, rmo.profile.name),
                             "remote_iface": pend_str.group("remote_iface"),
                         }
                         problems[rmo.id][pend_str.group("remote_iface")] = {
                             "problem": "Not found local iface on remote",
-                            "remote_id": "%s; %s; %s" % (mo.name, mo.profile.name, iface),
-                            "remote_iface": pend_str.group("remote_iface"),
+                            "detail": detail,
+                            "remote_id": "%s::: %s" % (mo.name, mo.profile.name),
+                            "remote_iface": iface,
                         }
                         # print(discovery["problems"]["lldp"])
             n += 10000
@@ -139,10 +173,21 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 required=False,
                 queryset=ManagedObjectProfile.objects.order_by("name"),
             )
+            show_already_linked = forms.BooleanField(
+                label=_("Show problem on already linked"), required=False
+            )
 
         return ReportForm
 
-    def get_data(self, request, pool=None, obj_profile=None, filter_ignore_iface=True, **kwargs):
+    def get_data(
+        self,
+        request,
+        pool=None,
+        obj_profile=None,
+        show_already_linked=False,
+        filter_ignore_iface=True,
+        **kwargs,
+    ):
 
         rn = re.compile(
             r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
@@ -169,6 +214,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         report = ReportPendingLinks(
             list(mos_id),
             ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),
+            filter_exists_link=not show_already_linked,
         )
         problems = report.out
         for mo_id in problems:
@@ -182,7 +228,12 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                         mo.administrative_domain.name,
                         iface,
                         problem[problems[mo_id][iface]["problem"]],
+                        problems[mo_id][iface]["remote_iface"],
                         problems[mo_id][iface]["remote_id"],
+                        problems[mo_id][iface]["detail"],
+                        problems[mo_id][iface].get("remote_hostname"),
+                        problems[mo_id][iface].get("remote_description"),
+                        problems[mo_id][iface].get("remote_chassis"),
                     )
                 ]
                 if problems[mo_id][iface]["problem"] == "Remote object is not found":
@@ -208,7 +259,12 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 _("Administrative domain"),
                 _("Interface"),
                 _("Direction"),
-                _("Remote Object")
+                _("Remote Interface"),
+                _("Remote Object"),
+                _("Detail"),
+                _("Remote Hostname"),
+                _("Remote Description"),
+                _("Remote Chassis"),
                 # _("Discovery"), _("Error")
             ],
             data=data,
