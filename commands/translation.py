@@ -17,14 +17,15 @@ from babel.util import pathmatch
 from noc.core.management.base import BaseCommand
 from noc.settings import LANGUAGES
 from noc.config import config
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
     SERVICES = {
-        "bi": {
-            "messages": ["services/bi/**.py", "services/bi/**.html.j2", "bi/models/**.py"],
-            "messages_js": ["ui/bi/bi.js"],
-        },
+        # "bi": {
+        #    "messages": ["services/bi/**.py", "services/bi/**.html.j2", "bi/models/**.py"],
+        #    "messages_js": ["ui/bi2/bi.js"],
+        #},
         "card": {
             "messages": ["services/card/**.py", "services/card/**.html.j2"],
             "messages_js": ["ui/card/**.js"],
@@ -70,7 +71,7 @@ class Command(BaseCommand):
             # @fixme: Remove hg
             f = subprocess.Popen(["git", "ls-files"], stdout=subprocess.PIPE).stdout
             self._files = f.read().splitlines()
-        return [p for p in self._files if pathmatch(expr, p)]
+        return [smart_text(p) for p in self._files if pathmatch(expr, smart_text(p))]
 
     def handle_extract(self, services=None):
         if not services:
