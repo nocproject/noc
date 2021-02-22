@@ -7,7 +7,8 @@
 console.debug("Defining NOC.main.soform.LookupField");
 
 Ext.define("NOC.main.ref.soform.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.soform.LookupField",
-    restUrl: "/main/ref/soform/lookup/"
+    uiStyle: "medium",
+    askPermission: false
 });

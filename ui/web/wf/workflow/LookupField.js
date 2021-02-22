@@ -7,7 +7,7 @@
 console.debug("Defining NOC.wf.workflow.LookupField");
 
 Ext.define("NOC.wf.workflow.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.wf.workflow.LookupField",
     uiStyle: "medium"
 });

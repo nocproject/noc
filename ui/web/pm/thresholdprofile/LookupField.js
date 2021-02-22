@@ -7,7 +7,7 @@
 console.debug("Defining NOC.pm.thresholdprofile.LookupField");
 
 Ext.define("NOC.pm.thresholdprofile.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.pm.thresholdprofile.LookupField",
     uiStyle: "medium"
 });

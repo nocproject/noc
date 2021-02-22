@@ -7,6 +7,7 @@
 console.debug("Defining NOC.inv.networksegment.LookupField");
 
 Ext.define("NOC.inv.networksegment.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.inv.networksegment.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.inv.networksegment.LookupField",
+    uiStyle: "medium"
 });

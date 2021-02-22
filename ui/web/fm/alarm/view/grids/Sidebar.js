@@ -15,7 +15,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     },
     requires: [
         "NOC.core.combotree.ComboTree",
-        "NOC.fm.alarm.view.grids.Lookup",
+        "NOC.core.ComboBox",
         "NOC.fm.alarm.view.grids.Tagfield",
         "NOC.fm.alarm.view.grids.SidebarModel",
         "NOC.fm.alarm.view.grids.SidebarController",
@@ -198,8 +198,8 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
             },
             items: [
                 {
-                    xtype: "fm.alarm.lookup",
-                    url: "/sa/managedobject/lookup/",
+                    xtype: "core.combo",
+                    restUrl: "/sa/managedobject/lookup/",
                     fieldLabel: __("Object"),
                     name: "managed_object",
                     bind: {
@@ -226,8 +226,8 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    xtype: "fm.alarm.lookup",
-                    url: "/sa/managedobjectselector/lookup/",
+                    xtype: "core.combo",
+                    restUrl: "/sa/managedobjectselector/lookup/",
                     fieldLabel: __("Selector"),
                     name: "managedobjectselector",
                     bind: {

@@ -18,7 +18,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
     INVALID_COLOR: "lightcoral",
     requires: [
         "NOC.core.Pin",
-        "NOC.fm.alarm.view.grids.Lookup"
+        "NOC.core.ComboBox"
     ],
     viewModel: {
         data: {
@@ -49,7 +49,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             plugins: ["spriteevents"]
         });
         me.cableCombo = Ext.create({
-            xtype: "fm.alarm.lookup",
+            xtype: "core.combo",
             fieldLabel: __("Cable"),
             labelAlign: "right",
             labelWidth: 50,

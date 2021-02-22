@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.allocationgroup.LookupField");
 
 Ext.define("NOC.inv.allocationgroup.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.inv.allocationgroup.LookupField",
     uiStyle: "medium"
 });

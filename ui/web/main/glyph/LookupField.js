@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.glyph.LookupField");
 
 Ext.define("NOC.main.glyph.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.main.glyph.LookupField",
     uiStyle: "medium",
     dataFields: ["id", "label", "font", "code"],

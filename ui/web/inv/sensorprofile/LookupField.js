@@ -7,6 +7,7 @@
 console.debug("Defining NOC.inv.sensorprofile.LookupField");
 
 Ext.define("NOC.inv.sensorprofile.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.inv.sensorprofile.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.inv.sensorprofile.LookupField",
+    uiStyle: "medium"
 });
