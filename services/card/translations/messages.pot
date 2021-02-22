@@ -1,15 +1,15 @@
 # Translations template for The NOC Project.
-# Copyright (C) 2019 The NOC Project
+# Copyright (C) 2021 The NOC Project
 # This file is distributed under the same license as the The NOC Project
 # project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-01-13 11:20+0300\n"
+"POT-Creation-Date: 2021-02-20 14:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +18,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: services/card/cards/base.py:227 services/card/cards/base.py:242
+#: services/card/cards/base.py:241 services/card/cards/base.py:256
 msgid "N/A"
 msgstr ""
 
 #: services/card/templates/address.html.j2:14
 #: services/card/templates/dialplan.html.j2:32
-#: services/card/templates/managedobject.html.j2:242
-#: services/card/templates/managedobject.html.j2:496
+#: services/card/templates/kbentry.html.j2:25
+#: services/card/templates/managedobject.html.j2:510
 #: services/card/templates/object.html.j2:28
 #: services/card/templates/object.html.j2:117
 #: services/card/templates/prefix.html.j2:14
 #: services/card/templates/project.html.j2:4
-#: services/card/templates/project.html.j2:19
-#: services/card/templates/project.html.j2:43
-#: services/card/templates/project.html.j2:69
-#: services/card/templates/project.html.j2:93
-#: services/card/templates/project.html.j2:161
-#: services/card/templates/project.html.j2:181
-#: services/card/templates/project.html.j2:224
-#: services/card/templates/project.html.j2:250
-#: services/card/templates/project.html.j2:296
+#: services/card/templates/project.html.j2:20
+#: services/card/templates/project.html.j2:46
+#: services/card/templates/project.html.j2:76
+#: services/card/templates/project.html.j2:100
+#: services/card/templates/project.html.j2:126
+#: services/card/templates/project.html.j2:150
+#: services/card/templates/project.html.j2:240
+#: services/card/templates/project.html.j2:260
+#: services/card/templates/project.html.j2:303
+#: services/card/templates/project.html.j2:329
+#: services/card/templates/project.html.j2:375
 #: services/card/templates/segment.html.j2:71
 #: services/card/templates/segment.html.j2:129
 msgid "Name"
@@ -46,25 +48,31 @@ msgstr ""
 
 #: services/card/templates/address.html.j2:18
 #: services/card/templates/firmware.html.j2:14
-#: services/card/templates/managedobject.html.j2:397
+#: services/card/templates/managedobject.html.j2:406
 #: services/card/templates/phonenumber.html.j2:47
 #: services/card/templates/phonerange.html.j2:49
 #: services/card/templates/prefix.html.j2:18
+#: services/card/templates/project.html.j2:21
+#: services/card/templates/project.html.j2:47
 #: services/card/templates/segment.html.j2:9
+#: services/card/templates/sensor_controller.html.j2:381
 #: services/card/templates/vlan.html.j2:9 services/card/templates/vrf.html.j2:9
 msgid "Profile"
 msgstr ""
 
 #: services/card/templates/address.html.j2:22
+#: services/card/templates/interfacepath.html.j2:244
 #: services/card/templates/phonenumber.html.j2:31
 #: services/card/templates/phonerange.html.j2:25
 #: services/card/templates/prefix.html.j2:28
-#: services/card/templates/project.html.j2:20
-#: services/card/templates/project.html.j2:44
-#: services/card/templates/project.html.j2:70
-#: services/card/templates/project.html.j2:117
-#: services/card/templates/project.html.j2:226
-#: services/card/templates/project.html.j2:252
+#: services/card/templates/project.html.j2:22
+#: services/card/templates/project.html.j2:48
+#: services/card/templates/project.html.j2:77
+#: services/card/templates/project.html.j2:101
+#: services/card/templates/project.html.j2:127
+#: services/card/templates/project.html.j2:196
+#: services/card/templates/project.html.j2:305
+#: services/card/templates/project.html.j2:331
 #: services/card/templates/segment.html.j2:130
 msgid "State"
 msgstr ""
@@ -73,9 +81,11 @@ msgstr ""
 #: services/card/templates/dialplan.html.j2:11
 #: services/card/templates/dialplan.html.j2:41
 #: services/card/templates/firmware.html.j2:19
+#: services/card/templates/kbentry.html.j2:26
 #: services/card/templates/maintenance.html.j2:21
-#: services/card/templates/managedobject.html.j2:128
-#: services/card/templates/managedobject.html.j2:500
+#: services/card/templates/managedobject.html.j2:143
+#: services/card/templates/managedobject.html.j2:409
+#: services/card/templates/managedobject.html.j2:514
 #: services/card/templates/phonenumber.html.j2:64
 #: services/card/templates/phonerange.html.j2:66
 #: services/card/templates/phonerange.html.j2:133
@@ -84,6 +94,8 @@ msgstr ""
 #: services/card/templates/prefix.html.j2:32
 #: services/card/templates/project.html.j2:9
 #: services/card/templates/resourcegroup.html.j2:29
+#: services/card/templates/sensor_controller.html.j2:146
+#: services/card/templates/sensor_controller.html.j2:382
 #: services/card/templates/technology.html.j2:11
 #: services/card/templates/timepattern.html.j2:9
 #: services/card/templates/tt.html.j2:65
@@ -101,8 +113,56 @@ msgstr ""
 msgid "Alarm"
 msgstr ""
 
+#: services/card/templates/alarm.html.j2:13
+#: services/card/templates/alarm.html.j2:118
+#: services/card/templates/managedobject.html.j2:367
+#: services/card/templates/sensor_controller.html.j2:261
+msgid "Class"
+msgstr ""
+
 #: services/card/templates/alarm.html.j2:17
 msgid "Severity"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:21
+#: services/card/templates/alarm.html.j2:116
+#: services/card/templates/maintenance.html.j2:49
+#: services/card/templates/managedobject.html.j2:365
+#: services/card/templates/project.html.j2:172
+#: services/card/templates/project.html.j2:194
+#: services/card/templates/project.html.j2:218
+#: services/card/templates/segmentalarm.html.j2:4
+#: services/card/templates/sensor_controller.html.j2:259
+#: services/card/templates/tt.html.j2:31
+#: services/card/templates/vlan.html.j2:43
+msgid "Object"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:34
+#: services/card/templates/managedobject.html.j2:74
+#: services/card/templates/object.html.j2:50
+#: services/card/templates/sensor_controller.html.j2:74
+msgid "Location"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:43
+#: services/card/templates/managedobject.html.j2:94
+#: services/card/templates/project.html.j2:374
+#: services/card/templates/segment.html.j2:39
+#: services/card/templates/sensor_controller.html.j2:94
+#: services/card/templates/vlan.html.j2:13
+msgid "Segment"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:49
+#: services/card/templates/managedobject.html.j2:117
+#: services/card/templates/sensor_controller.html.j2:120
+msgid "Administrative Domain"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:54
+#: services/card/templates/maintenance.html.j2:34
+msgid "Escalation"
 msgstr ""
 
 #: services/card/templates/alarm.html.j2:62
@@ -139,12 +199,101 @@ msgstr ""
 msgid "Recommended Actions"
 msgstr ""
 
+#: services/card/templates/alarm.html.j2:107
+#: services/card/templates/managedobject.html.j2:356
+#: services/card/templates/object.html.j2:138
+#: services/card/templates/sensor_controller.html.j2:251
+#: services/card/templates/tt.html.j2:25
+msgid "Alarms"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:113
+#: services/card/templates/managedobject.html.j2:362
+#: services/card/templates/object.html.j2:142
+#: services/card/templates/sensor_controller.html.j2:257
+#: services/card/templates/service.html.j2:133
+#: services/card/templates/tt.html.j2:30
+msgid "Timestamp"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:114
+#: services/card/templates/maintenance.html.j2:17
+#: services/card/templates/maintenance.html.j2:52
+#: services/card/templates/managedobject.html.j2:363
+#: services/card/templates/service.html.j2:72
+#: services/card/templates/tt.html.j2:34
+msgid "Services"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:115
+#: services/card/templates/managedobject.html.j2:364
+#: services/card/templates/object.html.j2:143
+#: services/card/templates/segmentalarm.html.j2:6
+#: services/card/templates/sensor_controller.html.j2:258
+#: services/card/templates/service.html.j2:134
+#: services/card/templates/tt.html.j2:32
+msgid "Duration"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:117
+#: services/card/templates/maintenance.html.j2:51
+#: services/card/templates/managedobject.html.j2:141
+#: services/card/templates/managedobject.html.j2:366
+#: services/card/templates/segmentalarm.html.j2:5
+#: services/card/templates/sensor_controller.html.j2:144
+#: services/card/templates/sensor_controller.html.j2:260
+msgid "IP"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:119
+#: services/card/templates/alarm.html.j2:185
+#: services/card/templates/managedobject.html.j2:39
+#: services/card/templates/managedobject.html.j2:368
+#: services/card/templates/object.html.j2:144
+#: services/card/templates/sensor_controller.html.j2:39
+#: services/card/templates/sensor_controller.html.j2:262
+#: services/card/templates/service.html.j2:53
+#: services/card/templates/service.html.j2:135
+#: services/card/templates/tt.html.j2:33
+msgid "Subject"
+msgstr ""
+
 #: services/card/templates/alarm.html.j2:145
 msgid "Diagnostic"
 msgstr ""
 
 #: services/card/templates/alarm.html.j2:162
 msgid "Log"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:181
+#: services/card/templates/managedobject.html.j2:33
+#: services/card/templates/sensor_controller.html.j2:33
+#: services/card/templates/service.html.j2:48
+msgid "Maintenance"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:186
+#: services/card/templates/maintenance.html.j2:9
+#: services/card/templates/managedobject.html.j2:200
+#: services/card/templates/managedobject.html.j2:226
+#: services/card/templates/phonenumber.html.j2:88
+#: services/card/templates/phonenumber.html.j2:111
+#: services/card/templates/phonerange.html.j2:80
+#: services/card/templates/phonerange.html.j2:103
+msgid "Type"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:187
+#: services/card/templates/maintenance.html.j2:13
+msgid "Date"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:188
+#: services/card/templates/maintenance.html.j2:41
+#: services/card/templates/object.html.j2:72
+#: services/card/templates/service.html.j2:110
+msgid "Contacts"
 msgstr ""
 
 #: services/card/templates/alarmheat.html.j2:2
@@ -162,6 +311,13 @@ msgstr ""
 msgid "Ranges"
 msgstr ""
 
+#: services/card/templates/dialplan.html.j2:35
+#: services/card/templates/phonerange.html.j2:33
+#: services/card/templates/phonerange.html.j2:127
+#: services/card/templates/project.html.j2:304
+msgid "Range"
+msgstr ""
+
 #: services/card/templates/dialplan.html.j2:38
 #: services/card/templates/phonerange.html.j2:41
 #: services/card/templates/phonerange.html.j2:130
@@ -177,288 +333,363 @@ msgstr ""
 msgid "URL"
 msgstr ""
 
-#: services/card/templates/alarm.html.j2:187
-#: services/card/templates/maintenance.html.j2:13
-msgid "Date"
+#: services/card/templates/interfacepath.html.j2:235
+msgid "Alternative path"
 msgstr ""
 
-#: services/card/templates/alarm.html.j2:54
-#: services/card/templates/maintenance.html.j2:34
-msgid "Escalation"
+#: services/card/templates/interfacepath.html.j2:237
+msgid "Object Name"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:237
+msgid "IP Address"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:238
+msgid "Platform Name"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:238
+msgid "Soft Version"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:242
+#: services/card/templates/project.html.j2:190
+#: services/card/templates/project.html.j2:195
+msgid "Interface"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:246
+#: services/card/templates/managedobject.html.j2:399
+msgid "Speed"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:247
+#: services/card/templates/managedobject.html.j2:399
+msgid "Duplex"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:251
+msgid "Utilization"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:253
+#: services/card/templates/interfacepath.html.j2:260
+#: services/card/templates/interfacepath.html.j2:267
+msgid "In"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:254
+#: services/card/templates/interfacepath.html.j2:261
+#: services/card/templates/interfacepath.html.j2:268
+msgid "Out"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:258
+msgid "Packets"
+msgstr ""
+
+#: services/card/templates/interfacepath.html.j2:265
+#: services/card/templates/managedobject.html.j2:407
+msgid "Errors"
+msgstr ""
+
+#: services/card/templates/kbentry.html.j2:21
+msgid "Attachments"
+msgstr ""
+
+#: services/card/templates/kbentry.html.j2:27
+msgid "Size"
+msgstr ""
+
+#: services/card/templates/kbentry.html.j2:28
+msgid "Last Changed"
+msgstr ""
+
+#: services/card/templates/maintenance.html.j2:26
+#: services/card/templates/managedobject.html.j2:127
+#: services/card/templates/sensor_controller.html.j2:130
+#: services/card/templates/timepattern.html.j2:5
+msgid "Time Pattern"
 msgstr ""
 
 #: services/card/templates/maintenance.html.j2:45
 msgid "Affected objects"
 msgstr ""
 
-#: services/card/templates/alarm.html.j2:181
-#: services/card/templates/managedobject.html.j2:21
-#: services/card/templates/service.html.j2:48
-msgid "Maintenance"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:119
-#: services/card/templates/alarm.html.j2:185
-#: services/card/templates/managedobject.html.j2:28
-#: services/card/templates/managedobject.html.j2:355
-#: services/card/templates/object.html.j2:144
-#: services/card/templates/service.html.j2:53
-#: services/card/templates/service.html.j2:135
-#: services/card/templates/tt.html.j2:33
-msgid "Subject"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:29
-#: services/card/templates/service.html.j2:54
-msgid "Start"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:30
-#: services/card/templates/service.html.j2:55
-msgid "Stop"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:50
-msgid "Container"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:34
-#: services/card/templates/managedobject.html.j2:64
-#: services/card/templates/object.html.j2:50
-msgid "Location"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:82
-#: services/card/templates/managedobject.html.j2:96
-#: services/card/templates/segment.html.j2:23
-#: services/card/templates/segment.html.j2:49
-msgid "Lost redundancy"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:84
-#: services/card/templates/managedobject.html.j2:96
-#: services/card/templates/segment.html.j2:25
-#: services/card/templates/segment.html.j2:51
-msgid "Redundant"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:87
-#: services/card/templates/managedobject.html.j2:96
-#: services/card/templates/segment.html.j2:28
-#: services/card/templates/segment.html.j2:54
-msgid "No redundancy"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:49
-#: services/card/templates/managedobject.html.j2:100
-msgid "Administrative Domain"
-msgstr ""
-
-#: services/card/templates/maintenance.html.j2:26
-#: services/card/templates/managedobject.html.j2:111
-#: services/card/templates/timepattern.html.j2:5
-msgid "Time Pattern"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:117
-#: services/card/templates/maintenance.html.j2:51
-#: services/card/templates/managedobject.html.j2:126
-#: services/card/templates/managedobject.html.j2:353
-#: services/card/templates/segmentalarm.html.j2:5
-msgid "IP"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:127
-#: services/card/templates/object.html.j2:61
-#: services/card/templates/object.html.j2:108
-msgid "Dashboard"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:132
-#: services/card/templates/object.html.j2:64
-#: services/card/templates/object.html.j2:108
-msgid "Graphics"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:139
-msgid "Profile SA"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:143
-#: services/card/templates/platform.html.j2:26
-msgid "End of Sale"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:144
-#: services/card/templates/platform.html.j2:32
-msgid "End of Support"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:149
-msgid "Recommended"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:156
-msgid "Service Range"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:165
-#: services/card/templates/managedobject.html.j2:400
-#: services/card/templates/service.html.j2:78
-msgid "Service"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:237
-#: services/card/templates/object.html.j2:113
-msgid "Metrics"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:243
-#: services/card/templates/object.html.j2:118
-msgid "Value"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:272
-msgid "Neighbors"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:277
-msgid "Local port"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:278
-msgid "Remote object"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:279
-msgid "Remote port"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:280
-msgid "Local description"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:281
-msgid "Remote description"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:296
-msgid "LinkGraph"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:332
-#: services/card/templates/segmentalarm.html.j2:7
-#: services/card/templates/service.html.j2:178
-#: services/card/templates/tt.html.j2:5
-msgid "TT"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:107
-#: services/card/templates/managedobject.html.j2:342
-#: services/card/templates/object.html.j2:138
-#: services/card/templates/tt.html.j2:25
-msgid "Alarms"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:113
-#: services/card/templates/managedobject.html.j2:349
-#: services/card/templates/object.html.j2:142
-#: services/card/templates/service.html.j2:133
-#: services/card/templates/tt.html.j2:30
-msgid "Timestamp"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:114
-#: services/card/templates/maintenance.html.j2:17
-#: services/card/templates/maintenance.html.j2:52
-#: services/card/templates/managedobject.html.j2:350
-#: services/card/templates/service.html.j2:72
-#: services/card/templates/tt.html.j2:34
-msgid "Services"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:115
-#: services/card/templates/managedobject.html.j2:351
-#: services/card/templates/object.html.j2:143
-#: services/card/templates/segmentalarm.html.j2:6
-#: services/card/templates/service.html.j2:134
-#: services/card/templates/tt.html.j2:32
-msgid "Duration"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:13
-#: services/card/templates/alarm.html.j2:118
-#: services/card/templates/managedobject.html.j2:354
-msgid "Class"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:388
-#: services/card/templates/service.html.j2:152
-msgid "Port"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:389
-msgid "Admin"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:389
-msgid "Oper"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:390
-msgid "Speed"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:390
-msgid "Duplex"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:391
-msgid "Load In"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:392
-msgid "Load Out"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:393
-msgid "Errors In"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:394
-msgid "Errors Out"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:398
-msgid "Errors"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:399
-#: services/card/templates/phonerange.html.j2:163
-#: services/card/templates/service.html.j2:79
-msgid "Status"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:491
-msgid "Inventory"
-msgstr ""
-
 #: services/card/templates/maintenance.html.j2:50
-#: services/card/templates/managedobject.html.j2:497
+#: services/card/templates/managedobject.html.j2:511
 #: services/card/templates/object.html.j2:39
 #: services/card/templates/segment.html.j2:73
 msgid "Model"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:498
+#: services/card/templates/managedobject.html.j2:40
+#: services/card/templates/sensor_controller.html.j2:40
+#: services/card/templates/service.html.j2:54
+msgid "Start"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:41
+#: services/card/templates/sensor_controller.html.j2:41
+#: services/card/templates/service.html.j2:55
+msgid "Stop"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:61
+#: services/card/templates/sensor_controller.html.j2:61
+msgid "Container"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:84
+#: services/card/templates/phonenumber.html.j2:55
+#: services/card/templates/phonerange.html.j2:57
+#: services/card/templates/sensor_controller.html.j2:84
+msgid "Project"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:101
+#: services/card/templates/managedobject.html.j2:114
+#: services/card/templates/segment.html.j2:23
+#: services/card/templates/segment.html.j2:49
+#: services/card/templates/sensor_controller.html.j2:101
+#: services/card/templates/sensor_controller.html.j2:114
+msgid "Lost redundancy"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:103
+#: services/card/templates/managedobject.html.j2:114
+#: services/card/templates/segment.html.j2:25
+#: services/card/templates/segment.html.j2:51
+#: services/card/templates/sensor_controller.html.j2:103
+#: services/card/templates/sensor_controller.html.j2:114
+msgid "Redundant"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:106
+#: services/card/templates/managedobject.html.j2:114
+#: services/card/templates/segment.html.j2:28
+#: services/card/templates/segment.html.j2:54
+#: services/card/templates/sensor_controller.html.j2:106
+#: services/card/templates/sensor_controller.html.j2:114
+msgid "No redundancy"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:142
+#: services/card/templates/object.html.j2:61
+#: services/card/templates/object.html.j2:108
+#: services/card/templates/sensor_controller.html.j2:145
+msgid "Dashboard"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:147
+#: services/card/templates/object.html.j2:64
+#: services/card/templates/object.html.j2:108
+#: services/card/templates/sensor_controller.html.j2:150
+msgid "Graphics"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:153
+#: services/card/templates/sensor_controller.html.j2:156
+msgid "Profile SA"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:157
+#: services/card/templates/platform.html.j2:26
+#: services/card/templates/sensor_controller.html.j2:160
+msgid "End of Sale"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:158
+#: services/card/templates/platform.html.j2:32
+#: services/card/templates/sensor_controller.html.j2:161
+msgid "End of Support"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:163
+#: services/card/templates/sensor_controller.html.j2:166
+msgid "Recommended"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:170
+msgid "Service Range"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:176
+#: services/card/templates/service.html.j2:78
+msgid "Service"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:180
+msgid "Hostname"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:184
+#: services/card/templates/managedobject.html.j2:404
+#: services/card/templates/subscribersession.html.j2:6
+msgid "MAC"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:193
+#: services/card/templates/phonenumber.html.j2:82
+#: services/card/templates/phonerange.html.j2:74
+msgid "Provides Resources"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:198
+#: services/card/templates/managedobject.html.j2:224
+#: services/card/templates/phonenumber.html.j2:86
+#: services/card/templates/phonenumber.html.j2:109
+#: services/card/templates/phonerange.html.j2:78
+#: services/card/templates/phonerange.html.j2:101
+#: services/card/templates/resourcegroup.html.j2:67
+msgid "Group"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:199
+#: services/card/templates/managedobject.html.j2:225
+#: services/card/templates/phonenumber.html.j2:87
+#: services/card/templates/phonenumber.html.j2:110
+#: services/card/templates/phonerange.html.j2:79
+#: services/card/templates/phonerange.html.j2:102
+#: services/card/templates/resourcegroup.html.j2:21
+#: services/card/templates/resourcegroup.html.j2:68
+msgid "Technology"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:207
+#: services/card/templates/managedobject.html.j2:233
+#: services/card/templates/phonenumber.html.j2:95
+#: services/card/templates/phonenumber.html.j2:118
+#: services/card/templates/phonerange.html.j2:87
+#: services/card/templates/phonerange.html.j2:110
+msgid "Static"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:207
+#: services/card/templates/managedobject.html.j2:233
+#: services/card/templates/phonenumber.html.j2:95
+#: services/card/templates/phonenumber.html.j2:118
+#: services/card/templates/phonerange.html.j2:87
+#: services/card/templates/phonerange.html.j2:110
+msgid "Dynamic"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:219
+#: services/card/templates/phonenumber.html.j2:105
+#: services/card/templates/phonerange.html.j2:97
+msgid "Consumes Resources"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:245
+#: services/card/templates/object.html.j2:113
+msgid "Metrics"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:288
+#: services/card/templates/sensor_controller.html.j2:183
+msgid "Neighbors"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:293
+#: services/card/templates/sensor_controller.html.j2:188
+msgid "Local port"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:294
+#: services/card/templates/sensor_controller.html.j2:189
+msgid "Remote object"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:295
+#: services/card/templates/sensor_controller.html.j2:190
+msgid "Remote port"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:296
+#: services/card/templates/sensor_controller.html.j2:191
+msgid "Local description"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:297
+#: services/card/templates/sensor_controller.html.j2:192
+msgid "Remote description"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:312
+#: services/card/templates/sensor_controller.html.j2:207
+msgid "LinkGraph"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:346
+#: services/card/templates/segmentalarm.html.j2:7
+#: services/card/templates/sensor_controller.html.j2:241
+#: services/card/templates/service.html.j2:178
+#: services/card/templates/tt.html.j2:5
+msgid "TT"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:397
+#: services/card/templates/sensor_controller.html.j2:379
+#: services/card/templates/service.html.j2:152
+msgid "Port"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:398
+#: services/card/templates/sensor_controller.html.j2:380
+msgid "Admin"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:398
+#: services/card/templates/sensor_controller.html.j2:380
+msgid "Oper"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:400
+msgid "Load In"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:401
+msgid "Load Out"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:402
+msgid "Errors In"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:403
+msgid "Errors Out"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:405
+#: services/card/templates/project.html.j2:370
+#: services/card/templates/project.html.j2:376
+#: services/card/templates/segment.html.j2:128
+#: services/card/templates/subscribersession.html.j2:5
+msgid "VLAN"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:408
+#: services/card/templates/phonerange.html.j2:163
+#: services/card/templates/service.html.j2:79
+msgid "Status"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:416
+msgid "trace vpn"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:505
+msgid "Inventory"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:512
 msgid "Revision"
 msgstr ""
 
-#: services/card/templates/alarm.html.j2:188
-#: services/card/templates/maintenance.html.j2:41
-#: services/card/templates/object.html.j2:72
-#: services/card/templates/service.html.j2:110
-msgid "Contacts"
+#: services/card/templates/managedobject.html.j2:513
+#: services/card/templates/project.html.j2:151
+msgid "Serial"
 msgstr ""
 
 #: services/card/templates/object.html.j2:100
@@ -466,19 +697,23 @@ msgstr ""
 msgid "Children"
 msgstr ""
 
+#: services/card/templates/object.html.j2:118
+msgid "Value"
+msgstr ""
+
 #: services/card/templates/outage.html.j2:7
 msgid "Outages Summary"
 msgstr ""
 
 #: services/card/templates/phonenumber.html.j2:6
-#: services/card/templates/project.html.j2:245
+#: services/card/templates/project.html.j2:324
 msgid "Phone Number"
 msgstr ""
 
 #: services/card/templates/phonenumber.html.j2:11
 #: services/card/templates/phonerange.html.j2:11
-#: services/card/templates/project.html.j2:223
-#: services/card/templates/project.html.j2:249
+#: services/card/templates/project.html.j2:302
+#: services/card/templates/project.html.j2:328
 msgid "Dialplan"
 msgstr ""
 
@@ -491,75 +726,19 @@ msgstr ""
 msgid "Protocol"
 msgstr ""
 
-#: services/card/templates/phonenumber.html.j2:55
-#: services/card/templates/phonerange.html.j2:57
-msgid "Project"
-msgstr ""
-
 #: services/card/templates/phonenumber.html.j2:73
 msgid "ENUM"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:181
-#: services/card/templates/phonenumber.html.j2:82
-#: services/card/templates/phonerange.html.j2:74
-msgid "Provides Resources"
+#: services/card/templates/phonerange.html.j2:6
+#: services/card/templates/project.html.j2:298
+msgid "Phone Range"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:186
-#: services/card/templates/managedobject.html.j2:213
-#: services/card/templates/phonenumber.html.j2:86
-#: services/card/templates/phonenumber.html.j2:109
-#: services/card/templates/phonerange.html.j2:78
-#: services/card/templates/phonerange.html.j2:101
-#: services/card/templates/resourcegroup.html.j2:67
-msgid "Group"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:187
-#: services/card/templates/managedobject.html.j2:214
-#: services/card/templates/phonenumber.html.j2:87
-#: services/card/templates/phonenumber.html.j2:110
-#: services/card/templates/phonerange.html.j2:79
-#: services/card/templates/phonerange.html.j2:102
-#: services/card/templates/resourcegroup.html.j2:21
-#: services/card/templates/resourcegroup.html.j2:68
-msgid "Technology"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:186
-#: services/card/templates/maintenance.html.j2:9
-#: services/card/templates/managedobject.html.j2:188
-#: services/card/templates/managedobject.html.j2:215
-#: services/card/templates/phonenumber.html.j2:88
-#: services/card/templates/phonenumber.html.j2:111
-#: services/card/templates/phonerange.html.j2:80
-#: services/card/templates/phonerange.html.j2:103
-msgid "Type"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:195
-#: services/card/templates/managedobject.html.j2:222
-#: services/card/templates/phonenumber.html.j2:95
-#: services/card/templates/phonenumber.html.j2:118
-#: services/card/templates/phonerange.html.j2:87
-#: services/card/templates/phonerange.html.j2:110
-msgid "Static"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:195
-#: services/card/templates/managedobject.html.j2:222
-#: services/card/templates/phonenumber.html.j2:95
-#: services/card/templates/phonenumber.html.j2:118
-#: services/card/templates/phonerange.html.j2:87
-#: services/card/templates/phonerange.html.j2:110
-msgid "Dynamic"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:208
-#: services/card/templates/phonenumber.html.j2:105
-#: services/card/templates/phonerange.html.j2:97
-msgid "Consumes Resources"
+#: services/card/templates/phonerange.html.j2:160
+#: services/card/templates/project.html.j2:330
+#: services/card/templates/project.html.j2:354
+msgid "Number"
 msgstr ""
 
 #: services/card/templates/platform.html.j2:10
@@ -579,112 +758,93 @@ msgid "SNMP sysObjectId"
 msgstr ""
 
 #: services/card/templates/prefix.html.j2:23
-#: services/card/templates/project.html.j2:177
-#: services/card/templates/project.html.j2:182
+#: services/card/templates/project.html.j2:256
+#: services/card/templates/project.html.j2:261
 msgid "AS"
 msgstr ""
 
-#: services/card/templates/project.html.j2:15
-#: services/card/templates/project.html.j2:41
-#: services/card/templates/project.html.j2:67
-msgid "VRF"
+#: services/card/templates/project.html.j2:16
+msgid "Supplier"
 msgstr ""
 
-#: services/card/templates/project.html.j2:37
+#: services/card/templates/project.html.j2:23
+msgid "Is affilated"
+msgstr ""
+
+#: services/card/templates/project.html.j2:31
+msgid "Yes"
+msgstr ""
+
+#: services/card/templates/project.html.j2:31
+msgid "No"
+msgstr ""
+
 #: services/card/templates/project.html.j2:42
-msgid "Prefix"
+msgid "Subscribers"
 msgstr ""
 
-#: services/card/templates/project.html.j2:63
-#: services/card/templates/project.html.j2:68
+#: services/card/templates/project.html.j2:49
+#: services/card/templates/project.html.j2:120
+#: services/card/templates/project.html.j2:125
+#: services/card/templates/project.html.j2:173
 #: services/card/templates/segment.html.j2:72
 #: services/card/templates/service.html.j2:97
 #: services/card/templates/vlan.html.j2:44
 msgid "Address"
 msgstr ""
 
-#: services/card/templates/project.html.j2:89
+#: services/card/templates/project.html.j2:50
+msgid "Tech Contact"
+msgstr ""
+
+#: services/card/templates/project.html.j2:51
+msgid "Tech Contact Phone"
+msgstr ""
+
+#: services/card/templates/project.html.j2:72
+#: services/card/templates/project.html.j2:98
+#: services/card/templates/project.html.j2:124
+msgid "VRF"
+msgstr ""
+
+#: services/card/templates/project.html.j2:94
+#: services/card/templates/project.html.j2:99
+msgid "Prefix"
+msgstr ""
+
+#: services/card/templates/project.html.j2:146
 msgid "DNS Zone"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:499
-#: services/card/templates/project.html.j2:94
-msgid "Serial"
+#: services/card/templates/project.html.j2:168
+msgid "Managed Objects"
 msgstr ""
 
-#: services/card/templates/project.html.j2:111
-#: services/card/templates/project.html.j2:116
-msgid "Interface"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:21
-#: services/card/templates/alarm.html.j2:116
-#: services/card/templates/maintenance.html.j2:49
-#: services/card/templates/managedobject.html.j2:352
-#: services/card/templates/project.html.j2:115
-#: services/card/templates/project.html.j2:139
-#: services/card/templates/segmentalarm.html.j2:4
-#: services/card/templates/tt.html.j2:31
-#: services/card/templates/vlan.html.j2:43
-msgid "Object"
-msgstr ""
-
-#: services/card/templates/project.html.j2:135
+#: services/card/templates/project.html.j2:214
 msgid "Sub.Interfaces"
 msgstr ""
 
-#: services/card/templates/project.html.j2:140
+#: services/card/templates/project.html.j2:219
 msgid "Sub.Interface"
 msgstr ""
 
-#: services/card/templates/project.html.j2:157
+#: services/card/templates/project.html.j2:236
 msgid "as-set"
 msgstr ""
 
-#: services/card/templates/project.html.j2:199
-#: services/card/templates/project.html.j2:203
+#: services/card/templates/project.html.j2:278
+#: services/card/templates/project.html.j2:282
 msgid "Peer"
 msgstr ""
 
-#: services/card/templates/phonerange.html.j2:6
-#: services/card/templates/project.html.j2:219
-msgid "Phone Range"
-msgstr ""
-
-#: services/card/templates/dialplan.html.j2:35
-#: services/card/templates/phonerange.html.j2:33
-#: services/card/templates/phonerange.html.j2:127
-#: services/card/templates/project.html.j2:225
-msgid "Range"
-msgstr ""
-
-#: services/card/templates/phonerange.html.j2:160
-#: services/card/templates/project.html.j2:251
-msgid "Number"
-msgstr ""
-
-#: services/card/templates/project.html.j2:271
+#: services/card/templates/project.html.j2:350
 msgid "VPN"
 msgstr ""
 
-#: services/card/templates/project.html.j2:275
-msgid "Numner"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:396
-#: services/card/templates/project.html.j2:291
-#: services/card/templates/project.html.j2:297
-#: services/card/templates/segment.html.j2:128
-#: services/card/templates/subscribersession.html.j2:5
-msgid "VLAN"
-msgstr ""
-
-#: services/card/templates/alarm.html.j2:43
-#: services/card/templates/managedobject.html.j2:75
-#: services/card/templates/project.html.j2:295
-#: services/card/templates/segment.html.j2:39
-#: services/card/templates/vlan.html.j2:13
-msgid "Segment"
+#: services/card/templates/resourcegroup.html.j2:12
+#: services/card/templates/segment.html.j2:14
+#: services/card/templates/segment.html.j2:104
+msgid "Parent"
 msgstr ""
 
 #: services/card/templates/resourcegroup.html.j2:38
@@ -699,14 +859,14 @@ msgstr ""
 msgid "Nested Groups"
 msgstr ""
 
-#: services/card/templates/resourcegroup.html.j2:12
-#: services/card/templates/segment.html.j2:14
-#: services/card/templates/segment.html.j2:104
-msgid "Parent"
-msgstr ""
-
 #: services/card/templates/segment.html.j2:19
 msgid "Redundancy"
+msgstr ""
+
+#: services/card/templates/segment.html.j2:40
+#: services/card/templates/segment.html.j2:74
+#: services/card/templates/segmentalarm.html.j2:8
+msgid "Summary"
 msgstr ""
 
 #: services/card/templates/segment.html.j2:67
@@ -733,10 +893,17 @@ msgstr ""
 msgid "VLANs"
 msgstr ""
 
-#: services/card/templates/segment.html.j2:40
-#: services/card/templates/segment.html.j2:74
-#: services/card/templates/segmentalarm.html.j2:8
-msgid "Summary"
+#: services/card/templates/segment.html.j2:131
+#: services/card/templates/vlan.html.j2:24
+msgid "Translation"
+msgstr ""
+
+#: services/card/templates/sensor_controller.html.j2:288
+msgid "Object Metrics"
+msgstr ""
+
+#: services/card/templates/sensor_controller.html.j2:333
+msgid "Sensors"
 msgstr ""
 
 #: services/card/templates/service.html.j2:101
@@ -761,12 +928,6 @@ msgstr ""
 
 #: services/card/templates/service.html.j2:171
 msgid "Session"
-msgstr ""
-
-#: services/card/templates/managedobject.html.j2:166
-#: services/card/templates/managedobject.html.j2:395
-#: services/card/templates/subscribersession.html.j2:6
-msgid "MAC"
 msgstr ""
 
 #: services/card/templates/subscribersession.html.j2:7
@@ -815,11 +976,6 @@ msgstr ""
 
 #: services/card/templates/tt.html.j2:81
 msgid "Comments"
-msgstr ""
-
-#: services/card/templates/segment.html.j2:131
-#: services/card/templates/vlan.html.j2:24
-msgid "Translation"
 msgstr ""
 
 #: services/card/templates/vlan.html.j2:39
