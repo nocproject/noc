@@ -687,7 +687,7 @@ NOC.uiStyles = function(style) {
         case "medium": {
             // 20 letters
             return {
-                width: Ext.create("NOC.core.modelfilter.Base").width - 25,
+                width: Ext.create("NOC.core.modelfilter.Base").width - 100,
                 anchor: null
             };
         }

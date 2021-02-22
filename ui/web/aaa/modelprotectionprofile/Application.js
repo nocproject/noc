@@ -10,7 +10,7 @@ Ext.define("NOC.aaa.modelprotectionprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.aaa.modelprotectionprofile.Model",
-        "NOC.fm.alarm.view.grids.Lookup"
+        "NOC.core.ComboBox"
     ],
     model: "NOC.aaa.modelprotectionprofile.Model",
     search: true,
@@ -109,7 +109,7 @@ Ext.define("NOC.aaa.modelprotectionprofile.Application", {
                             width: 150,
                             renderer: NOC.render.Lookup("name"),
                             editor: {
-                                xclass: "NOC.core.LookupField"
+                                xclass: "NOC.core.ComboBox"
                             }
                         },
                         {

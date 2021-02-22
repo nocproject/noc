@@ -7,6 +7,7 @@
 console.debug("Defining NOC.inv.firmwarepolicy.LookupField");
 
 Ext.define("NOC.inv.firmwarepolicy.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.inv.firmwarepolicy.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.inv.firmwarepolicy.LookupField",
+    uiStyle: "medium"
 });

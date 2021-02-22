@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.serviceprofile.LookupField");
 
 Ext.define("NOC.sa.serviceprofile.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.sa.serviceprofile.LookupField",
     uiStyle: "medium"
 });

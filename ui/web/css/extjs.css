@@ -403,7 +403,7 @@ table {
 .x-form-trigger.fa {
   display: table-cell;
   background-image: none !important;
-  padding-top: 5px;
+  padding-top: 2px;
   border: 1px solid #b5b8c8;
   background-color: #d7dbed;
 }
@@ -527,4 +527,30 @@ table {
 
 .noc-alarm-tooltip {
     background: #fff;
+}
+
+.x-form-edit-trigger, .x-form-clean-trigger, .x-form-plus-trigger {
+  font-size: 12px;
+  font-family: FontAwesome;
+  /* vertical-align: middle; FF problem */
+  padding-top: 10px;
+  padding-right: 1px;
+  background: 0 0 transparent url(images/form/trigger-tpl.gif) no-repeat;
+  color: black;
+}
+
+.x-form-clean-trigger {
+  padding-top: 9px;
+}
+
+.x-form-edit-trigger:before {
+  content: "\f044";
+}
+
+.x-form-clean-trigger:before {
+  content: "\f00d";
+}
+
+.x-form-plus-trigger:before {
+  content: "\f067";
 }

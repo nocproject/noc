@@ -7,6 +7,7 @@
 console.debug("Defining NOC.maintenance.maintenancetype.LookupField");
 
 Ext.define("NOC.maintenance.maintenancetype.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.maintenance.maintenancetype.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.maintenance.maintenancetype.LookupField",
+    uiStyle: "medium"
 });

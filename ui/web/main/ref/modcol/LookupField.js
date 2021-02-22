@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.ref.modcol.LookupField");
 
 Ext.define("NOC.main.ref.modcol.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.modcol.LookupField",
     tpl: [
         '<tpl for=".">',

@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.font.LookupField");
 
 Ext.define("NOC.main.font.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.main.font.LookupField",
     uiStyle: "medium"
 });

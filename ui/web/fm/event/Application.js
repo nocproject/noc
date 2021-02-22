@@ -17,7 +17,7 @@ Ext.define("NOC.fm.event.Application", {
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.event.EventPanel",
         "NOC.core.combotree.ComboTree",
-        "NOC.fm.alarm.view.grids.Lookup",
+        "NOC.core.ComboBox",
         "NOC.fm.event.ApplicationModel",
         "NOC.fm.event.ApplicationController",
     ],
@@ -201,7 +201,7 @@ Ext.define("NOC.fm.event.Application", {
                     },
                     items: [
                         {
-                            xtype: "fm.alarm.lookup",
+                            xtype: "core.combo",
                             fieldLabel: __("State"),
                             editable: false,
                             queryMode: "local",
@@ -221,7 +221,7 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "fm.alarm.lookup",
+                            xtype: "core.combo",
                             url: "/sa/managedobject/lookup/",
                             fieldLabel: __("Object"),
                             name: "managed_object",
@@ -239,7 +239,7 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "fm.alarm.lookup",
+                            xtype: "core.combo",
                             url: "/sa/managedobjectselector/lookup/",
                             fieldLabel: __("Selector"),
                             name: "managedobjectselector",
@@ -248,7 +248,7 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "fm.alarm.lookup",
+                            xtype: "core.combo",
                             url: "/fm/eventclass/lookup/",
                             fieldLabel: __("Event Class"),
                             name: "event_class",
