@@ -529,7 +529,6 @@ table {
     background: #fff;
 }
 
-<<<<<<< HEAD
 .x-form-edit-trigger, .x-form-clean-trigger, .x-form-plus-trigger {
   font-size: 12px;
   font-family: FontAwesome;
@@ -554,12 +553,13 @@ table {
 
 .x-form-plus-trigger:before {
   content: "\f067";
-=======
+}
+
 .x-item-disabled {
   opacity: 0.6 !important;
 }
 
 .x-item-disabled, .x-item-disabled * {
   pointer-events: unset !important;
->>>>>>> noc/noc#1517
+
 }
