@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,13 +21,13 @@ class Script(BaseScript):
     rx_cont = re.compile(r",\s*$\s+", re.MULTILINE)
     rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
     rx_body = re.compile(
-        r"^(?P<interface>\S+).+"
-        r"^  Switchport: .+"
-        r"^  Switchport Monitor: .+"
-        r"^  Operational Mode: (?P<omode>\S+).+"
-        r"^  Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
-        r"^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
-        r"^  Trunking VLANs Allowed: (?P<vlans>.+?)$",
+        r"^(?P<interface>\S+).*"
+        r"^  Switchport: .*"
+        r"^  Switchport Monitor: .*"
+        r"^  Operational Mode: (?P<omode>\S+).*"
+        r"^  Access Mode VLAN: (?P<avlan>\d+) \(.*\).*"
+        r"^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.*\).*"
+        r"^  Trunking VLANs Allowed: (?P<vlans>[0-9-,\n]*)$",
         # "Pruning VLANs Enabled:",
         re.MULTILINE | re.DOTALL,
     )
@@ -100,6 +100,7 @@ class Script(BaseScript):
                 elif "more" in vlans:
                     tagged = self.expand_rangelist(vlans[:-7])
                 else:
+                    vlans = vlans.replace("\n", "")
                     tagged = self.expand_rangelist(vlans)
                 if untagged in tagged:
                     # Exclude native vlan from tagged
