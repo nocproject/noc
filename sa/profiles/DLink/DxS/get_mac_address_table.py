@@ -122,6 +122,7 @@ class Script(BaseScript):
                         "self": "C",
                         "cpu": "C",
                         "asymmetric": "C",
+                        "asymmetric_vlan": "C",
                         "permanent": "S",
                         "drop": "D",
                         "deleteontimeout": "D",
