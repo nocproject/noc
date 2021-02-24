@@ -554,3 +554,11 @@ table {
 .x-form-plus-trigger:before {
   content: "\f067";
 }
+
+.x-item-disabled {
+  opacity: 0.6 !important;
+}
+
+.x-item-disabled, .x-item-disabled * {
+  pointer-events: unset !important;
+}
