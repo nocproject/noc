@@ -561,5 +561,4 @@ table {
 
 .x-item-disabled, .x-item-disabled * {
   pointer-events: unset !important;
-
 }
