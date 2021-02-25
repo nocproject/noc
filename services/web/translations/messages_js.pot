@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 14:18+0300\n"
+"POT-Creation-Date: 2021-02-25 10:24+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -552,7 +552,7 @@ msgstr ""
 #: ui/web/inv/inv/plugins/map/MapPanel.js:310
 #: ui/web/inv/inv/plugins/rack/RackPanel.js:184 ui/web/inv/map/MapPanel.js:282
 #: ui/web/inv/objectmodel/Application.js:362
-#: ui/web/main/desktop/Application.js:115
+#: ui/web/main/desktop/Application.js:120
 #: ui/web/sa/managedobject/LinksPanel.js:107
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:111
 #: ui/web/sa/monitor/JobLogPanel.js:42 ui/web/sa/runcommands/Controller.js:603
@@ -2881,7 +2881,7 @@ msgstr ""
 #: ui/web/fm/alarm/view/grids/Sidebar.js:141
 #: ui/web/fm/alarm/view/grids/Sidebar.js:158
 #: ui/web/fm/alarm/view/grids/Sidebar.js:184 ui/web/inv/map/Basket.js:31
-#: ui/web/main/desktop/Application.js:45
+#: ui/web/main/desktop/Application.js:50
 #: ui/web/sa/managedobjectprofile/Application.js:2491
 #: ui/web/sa/managedobjectprofile/Application.js:2520
 #: ui/web/sa/managedobjectprofile/Application.js:2541
@@ -7060,31 +7060,35 @@ msgstr ""
 msgid "About system"
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:143
+#: ui/web/main/desktop/Application.js:148
 msgid "Starting \"{0}\""
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:194
+#: ui/web/main/desktop/Application.js:199
 msgid "Failed to launch application "
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:241
+#: ui/web/main/desktop/Application.js:246
 #: ui/web/support/account/ChangeCredentials.js:41
 msgid "Old Password"
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:249
+#: ui/web/main/desktop/Application.js:254
 #: ui/web/support/account/ChangeCredentials.js:48
 msgid "New Password"
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:257
+#: ui/web/main/desktop/Application.js:262
 msgid "Retype New Password"
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:278
-#: ui/web/main/desktop/Application.js:282
+#: ui/web/main/desktop/Application.js:283
+#: ui/web/main/desktop/Application.js:287
 msgid "Login failed"
+msgstr ""
+
+#: ui/web/main/desktop/Application.js:332
+msgid "Failed to get user settings"
 msgstr ""
 
 #: ui/web/main/desktop/Breadcrumbs.js:25
