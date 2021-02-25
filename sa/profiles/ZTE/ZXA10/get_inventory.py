@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,8 @@ class Script(BaseScript):
         "HUVQ": "LINECARD",
         "VDWVD": "LINECARD",
         "GVGO": "LINECARD",
+        "PTWV": "LINECARD",
+        "PTWVN": "LINECARD",
         "FUMO": "FAN",
         "CVST": "unknown",
     }
