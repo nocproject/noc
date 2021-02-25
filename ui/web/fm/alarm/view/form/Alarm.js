@@ -178,7 +178,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                         },
                         {
                             dataIndex: "managed_object",
-                            text: __("Object"),
+                            text: __("Managed Object"),
                             width: 200,
                             renderer: NOC.render.Lookup("managed_object")
                         },

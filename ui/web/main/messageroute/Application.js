@@ -35,7 +35,7 @@ Ext.define("NOC.main.messageroute.Application", {
                     width: 150
                 },
                 {
-                    text: __("Descriprion"),
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
