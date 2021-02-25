@@ -75,7 +75,7 @@ pylibmc==1.5.1; extra == "cache-memcached"
 # Dev requirements
 Babel==2.3.4; extra == "dev"
 ipython==7.18.1; extra == "dev"
-pojson==0.6; extra == "dev"
+pojson==0.7; extra == "dev"
 # Login LDAP
 ldap3==2.8.1; extra == "login-ldap"
 # Login PAM
