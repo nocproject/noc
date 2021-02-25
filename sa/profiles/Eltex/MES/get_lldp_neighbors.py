@@ -62,6 +62,8 @@ class Script(BaseScript):
             row_wrapper=lambda x: x.strip(),
             footer="\r\n\r\n",
         ):
+            if link[0] == "":
+                continue
             local_interface = link[0]
             remote_chassis_id = link[1]
             remote_port = link[2]
