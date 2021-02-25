@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-20 14:18+0300\n"
+"POT-Creation-Date: 2021-02-25 10:24+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -688,7 +688,7 @@ msgstr ""
 #: services/web/apps/fm/reportreboots/views.py:102
 #: services/web/apps/inv/reportdiscoverycaps/views.py:56
 #: services/web/apps/inv/reportdiscoverypoison/views.py:79
-#: services/web/apps/inv/reportpendinglinks/views.py:205
+#: services/web/apps/inv/reportpendinglinks/views.py:256
 #: services/web/apps/ip/reportvpnstatus/views.py:42
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:225
 #: services/web/apps/sa/reportprofilechecksdetailed/views.py:138
@@ -707,7 +707,7 @@ msgstr ""
 #: services/web/apps/inv/reportdiscoverycaps/views.py:56
 #: services/web/apps/inv/reportdiscoverypoison/views.py:79
 #: services/web/apps/inv/reportobjectsserial/views.py:48
-#: services/web/apps/inv/reportpendinglinks/views.py:206
+#: services/web/apps/inv/reportpendinglinks/views.py:257
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:226
 #: services/web/apps/sa/reportprofilechecksdetailed/views.py:139
 #: services/web/apps/sa/reportstalediscovery/views.py:66
@@ -718,7 +718,7 @@ msgstr ""
 #: services/web/apps/fm/reportclassificationrule/views.py:22
 #: services/web/apps/fm/reportoutages/views.py:123
 #: services/web/apps/inv/reportdiscoverypoison/views.py:79
-#: services/web/apps/inv/reportpendinglinks/views.py:207
+#: services/web/apps/inv/reportpendinglinks/views.py:258
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:227
 #: services/web/apps/sa/reportobjectsummary/views.py:83
 #: services/web/apps/sa/reportobjectsummary/views.py:102
@@ -1238,7 +1238,7 @@ msgstr ""
 #: services/web/apps/inv/reportdiscoverycaps/views.py:33
 #: services/web/apps/inv/reportdiscoveryproblem/views.py:40
 #: services/web/apps/inv/reportdiscoveryproblem/views.py:45
-#: services/web/apps/inv/reportpendinglinks/views.py:138
+#: services/web/apps/inv/reportpendinglinks/views.py:172
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:99
 msgid "Managed Objects Profile"
 msgstr ""
@@ -1293,6 +1293,7 @@ msgid "Percent at All"
 msgstr ""
 
 #: services/web/apps/inv/reportdiscoverylinks/views.py:80
+#: services/web/apps/inv/reportpendinglinks/views.py:264
 #: services/web/apps/sa/reportprofilechecksummary/views.py:120
 msgid "Detail"
 msgstr ""
@@ -1328,7 +1329,7 @@ msgid "Discovery Topology Problems"
 msgstr ""
 
 #: services/web/apps/inv/reportdiscoveryproblem/views.py:34
-#: services/web/apps/inv/reportpendinglinks/views.py:132
+#: services/web/apps/inv/reportpendinglinks/views.py:166
 msgid "Managed Objects Pools"
 msgstr ""
 
@@ -1514,24 +1515,44 @@ msgstr ""
 msgid "Part Numbers"
 msgstr ""
 
-#: services/web/apps/inv/reportpendinglinks/views.py:127
+#: services/web/apps/inv/reportpendinglinks/views.py:161
 msgid "Pending Links"
 msgstr ""
 
-#: services/web/apps/inv/reportpendinglinks/views.py:208
+#: services/web/apps/inv/reportpendinglinks/views.py:177
+msgid "Show problem on already linked"
+msgstr ""
+
+#: services/web/apps/inv/reportpendinglinks/views.py:259
 msgid "Administrative domain"
 msgstr ""
 
-#: services/web/apps/inv/reportpendinglinks/views.py:209
+#: services/web/apps/inv/reportpendinglinks/views.py:260
 msgid "Interface"
 msgstr ""
 
-#: services/web/apps/inv/reportpendinglinks/views.py:210
+#: services/web/apps/inv/reportpendinglinks/views.py:261
 msgid "Direction"
 msgstr ""
 
-#: services/web/apps/inv/reportpendinglinks/views.py:211
+#: services/web/apps/inv/reportpendinglinks/views.py:262
+msgid "Remote Interface"
+msgstr ""
+
+#: services/web/apps/inv/reportpendinglinks/views.py:263
 msgid "Remote Object"
+msgstr ""
+
+#: services/web/apps/inv/reportpendinglinks/views.py:265
+msgid "Remote Hostname"
+msgstr ""
+
+#: services/web/apps/inv/reportpendinglinks/views.py:266
+msgid "Remote Description"
+msgstr ""
+
+#: services/web/apps/inv/reportpendinglinks/views.py:267
+msgid "Remote Chassis"
 msgstr ""
 
 #: services/web/apps/inv/reportunknownsummary/views.py:15
