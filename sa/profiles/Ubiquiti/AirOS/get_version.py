@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Ubiquiti.AirOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_version = re.compile(r"^(?P<prefix>\S+)\.\S+?\.(?P<version>(v\d+\.\d+.\d+))\.\S+$")
+    rx_version = re.compile(r"^(?P<prefix>\S+)\.\S+?\.(?P<version>(v\d+\.\d+.\d+))[\.\-]\S+$")
 
     def execute_cli(self):
         version = self.cli("cat /etc/version").strip()
