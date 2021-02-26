@@ -73,6 +73,7 @@ impl CmdArgs {
 #[cfg(test)]
 mod test {
     use super::*;
+    use clap::crate_name;
 
     #[test]
     fn test_no_args() {
@@ -81,6 +82,6 @@ mod test {
 
     #[test]
     fn test_help() {
-        CmdArgs::new_from([crate_name!(), "--help"].iter()).unwrap();
+        CmdArgs::new_from([crate_name!(), "--help"].iter()).unwrap_err();
     }
 }

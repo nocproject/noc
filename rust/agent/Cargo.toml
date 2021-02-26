@@ -1,0 +1,50 @@
+[package]
+name = "agent"
+version = "0.2.0"
+authors = ["The NOC Project"]
+edition = "2018"
+description = "NOC Agent"
+
+[[bin]]
+name = "noc-agent"
+path = "src/main.rs"
+
+[features]
+default = ["dns", "test", "twamp-sender", "twamp-reflector"]
+# dns collector
+dns = ["trust-dns-proto"]
+# test collector
+test = []
+# modbus_serial collector
+# modbus_serial = []
+# twamp-sender collector
+twamp-sender = []
+# twamp-reflector collector
+twamp-reflector = []
+
+[dependencies]
+clap = "2.33"
+log = "0.4"
+env_logger = "0.8"
+tokio = { version = "1.2", features = ["full"] }
+bytes = "1.0"
+trust-dns-resolver = "0.20"
+serde = {version = "1.0", features=["derive"]}
+serde_json = "1.0"
+async-trait = "0.1"
+rand = "0.8"
+lazy_static = "1.4"
+chrono = "0.4"
+# Optional dependencies
+trust-dns-proto = {version = "0.20", optional = true}
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "twamp_benchmark"
+harness = false
+
+[[bench]]
+name = "pktmodel_benchmark"
+harness = false

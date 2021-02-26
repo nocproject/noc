@@ -319,11 +319,12 @@ build:web:
 
 build:rust:
   stage: Build
-  image: rust:1.49
+  image: rust:1.50
   script:
     - set -x
     - cd rust/
     - export CARGO_TARGET_DIR=../build/rust
+    - cargo test
     - cargo build --release
   tags:
     - docker
@@ -336,7 +337,8 @@ build:rust:
       - "rust/**/*"
   artifacts:
     paths:
-      - build/rust/release/
+      - build/rust/release/noc-agent
+      - build/rust/release/noc-dns-sync
     expire_in: 7 days
 
 upload docs:
