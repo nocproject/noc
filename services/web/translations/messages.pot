@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-25 10:24+0300\n"
+"POT-Creation-Date: 2021-02-25 17:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,31 +218,32 @@ msgstr ""
 msgid "Object Validation Policies"
 msgstr ""
 
-#: services/web/apps/cm/reportlatestchanges/views.py:28
-msgid "Type"
-msgstr ""
-
 #: services/web/apps/cm/reportlatestchanges/views.py:29
-msgid "In Days"
+#: services/web/apps/sa/reportobjectsummary/views.py:30
+msgid "Report Type"
 msgstr ""
 
 #: services/web/apps/cm/reportlatestchanges/views.py:31
+msgid "In Days"
+msgstr ""
+
+#: services/web/apps/cm/reportlatestchanges/views.py:33
 msgid "Managed Objects Administrative Domain (for config only)"
 msgstr ""
 
-#: services/web/apps/cm/reportlatestchanges/views.py:36
+#: services/web/apps/cm/reportlatestchanges/views.py:38
 msgid "Managed object search (for config only)"
 msgstr ""
 
-#: services/web/apps/cm/reportlatestchanges/views.py:38
+#: services/web/apps/cm/reportlatestchanges/views.py:40
 msgid "Use name, network (ex 10.0.0.0/8) or MAC"
 msgstr ""
 
-#: services/web/apps/cm/reportlatestchanges/views.py:43
+#: services/web/apps/cm/reportlatestchanges/views.py:45
 msgid "Latest Changes"
 msgstr ""
 
-#: services/web/apps/cm/reportlatestchanges/views.py:109
+#: services/web/apps/cm/reportlatestchanges/views.py:111
 msgid "Last Changed"
 msgstr ""
 
@@ -2447,10 +2448,6 @@ msgstr ""
 
 #: services/web/apps/sa/reportobjectsummary/views.py:25
 msgid "By Version"
-msgstr ""
-
-#: services/web/apps/sa/reportobjectsummary/views.py:30
-msgid "Report Type"
 msgstr ""
 
 #: services/web/apps/sa/reportobjectsummary/views.py:34

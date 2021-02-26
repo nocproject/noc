@@ -1,18 +1,20 @@
 {
     "": {
         "Content-Transfer-Encoding": "8bit",
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "text/plain; charset=UTF-8",
         "Generated-By": "Babel 2.3.4",
         "Language": "ru",
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2021-02-25 17:43+0500",
-        "POT-Creation-Date": "2021-02-25 10:24+0300",
+        "PO-Revision-Date": "2021-02-25 20:43+0500",
+        "POT-Creation-Date": "2021-02-25 17:10+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 2.3"
+        "X-Generator": "Poedit 2.3",
+        "X-Poedit-Basepath": "../../../../..",
+        "X-Poedit-SearchPath-0": "."
     },
     "15 min": [
         null,
@@ -53,6 +55,18 @@
     "AVG Load Out": [
         null,
         "Средняя загрузка исходящий"
+    ],
+    "Abduct Detection": [
+        null,
+        "Обнаружение обрыва"
+    ],
+    "Abduct Detection Threshold": [
+        null,
+        "Порог обнаружения"
+    ],
+    "Abduct Detection Window": [
+        null,
+        "Окно обнаржения"
     ],
     "About system": [
         null,
@@ -137,6 +151,10 @@
     "Add Interface": [
         null,
         "Добавить интерфейс"
+    ],
+    "Add State": [
+        null,
+        "Добавить состояние"
     ],
     "Add To Maintenance": [
         null,
@@ -312,7 +330,7 @@
     ],
     "Alarm reopened": [
         null,
-        "Авария открыта снова"
+        "Авария переоткрыта"
     ],
     "Alarm risen": [
         null,
@@ -442,9 +460,17 @@
         null,
         "Альтернативные единицы"
     ],
+    "Always Collect": [
+        null,
+        "Собирать всегда"
+    ],
     "Always Enable": [
         null,
         "Всегда включить"
+    ],
+    "Always Mirror": [
+        null,
+        "Всегда зеркалировать"
     ],
     "Always Run": [
         null,
@@ -578,6 +604,10 @@
         null,
         "Хранение тушенки"
     ],
+    "Beef Policy": [
+        null,
+        "Политика сбора тушёнки"
+    ],
     "Beef Test": [
         null,
         "Хранение тестов тушенки"
@@ -608,7 +638,7 @@
     ],
     "Blt": [
         null,
-        "Бит"
+        "Встроенный"
     ],
     "Body": [
         null,
@@ -633,6 +663,14 @@
     "Box Alarm": [
         null,
         "Авария при опросе"
+    ],
+    "Box CPE Status Policy": [
+        null,
+        "Политика опроса CPE"
+    ],
+    "Box Discovery": [
+        null,
+        "Полный опрос"
     ],
     "Box Sample": [
         null,
@@ -698,6 +736,10 @@
         null,
         "По категории"
     ],
+    "By Client Group": [
+        null,
+        "По клиентской группе"
+    ],
     "By Controller": [
         null,
         "По контроллеру"
@@ -721,6 +763,14 @@
     "By Event Class": [
         null,
         "По классу события"
+    ],
+    "By From": [
+        null,
+        "По начальному состоянию"
+    ],
+    "By Geo Address": [
+        null,
+        "По местоположению"
     ],
     "By Group": [
         null,
@@ -834,6 +884,10 @@
         null,
         "По Селектору:"
     ],
+    "By Service Group": [
+        null,
+        "По Сервисной группе"
+    ],
     "By State": [
         null,
         "По состоянию"
@@ -857,6 +911,10 @@
     "By Technology": [
         null,
         "По технологии"
+    ],
+    "By To": [
+        null,
+        "По конечному состоянию"
     ],
     "By Type": [
         null,
@@ -905,6 +963,10 @@
     "CLI Session Policy": [
         null,
         "Политика работы в CLI"
+    ],
+    "CPE Status": [
+        null,
+        "Статус CPE"
     ],
     "CPU Usage": [
         null,
@@ -1030,10 +1092,6 @@
         null,
         "Изменения"
     ],
-    "Changeset": [
-        null,
-        "Набор изменений"
-    ],
     "Changing language": [
         null,
         "Смена языка"
@@ -1057,6 +1115,10 @@
     "Clean All": [
         null,
         "Очистить все"
+    ],
+    "Cleanup": [
+        null,
+        "Очистить"
     ],
     "Clear": [
         null,
@@ -1089,6 +1151,10 @@
     "Clone": [
         null,
         "Клонировать"
+    ],
+    "Cloned": [
+        null,
+        "Клонировано"
     ],
     "Close": [
         null,
@@ -1142,6 +1208,10 @@
         null,
         "Собирать все"
     ],
+    "Collect MAC only for VLAN on VCFilter. <br/>MVCFilter set in VC Management -> Setup -> VCFilter": [
+        null,
+        "Собирать MAC адреса только из указанных вланов (в фильтре Вланов). Настраивается в Управление ВЛАНами -> Настройки -> Фильтр VC"
+    ],
     "Collect from VLAN matching VC Filter": [
         null,
         "Собирать согласно фильтру вланов"
@@ -1157,6 +1227,10 @@
     "Collect if permitted by interface profile": [
         null,
         "Собирать разрешенные профилем интерфейса"
+    ],
+    "Collect on Change": [
+        null,
+        "Собирать при изменении"
     ],
     "Collision Policy": [
         null,
@@ -1234,6 +1308,10 @@
         null,
         "Колодцы"
     ],
+    "ConfDB, Script": [
+        null,
+        "Конфиг, Скрипт"
+    ],
     "Config": [
         null,
         "Конфиг"
@@ -1245,6 +1323,14 @@
     "Config Diff Filter Handler": [
         null,
         "Обработчик для фильтрации изменений конф-ии"
+    ],
+    "Config Fetch Policy": [
+        null,
+        "Политика сбора конфигурации"
+    ],
+    "Config Fetching": [
+        null,
+        "Сбор конфигурации"
     ],
     "Config Filter Handler": [
         null,
@@ -1474,6 +1560,10 @@
         null,
         "Создать новый IP адрес"
     ],
+    "Create new diagram not implement": [
+        null,
+        "Создание новой диаграммы не реализовано."
+    ],
     "Create new maintaince": [
         null,
         "Создать новый РНР"
@@ -1593,6 +1683,14 @@
     "Delete Prefix": [
         null,
         "Удалить префикс"
+    ],
+    "Delete Workflow": [
+        null,
+        "Удалить процесс"
+    ],
+    "Delete Workflow?": [
+        null,
+        "Удалить процесс?"
     ],
     "Delete address?": [
         null,
@@ -1742,6 +1840,10 @@
         null,
         "Не сегментировать"
     ],
+    "Do you wish to delete Workflow? This operation cannot be undone!": [
+        null,
+        "Вы уверены что желаете процесс? Операцию невозможно отменить!"
+    ],
     "Do you wish to delete address? This operation cannot be undone!": [
         null,
         "Вы действительно желаете удалить IP адрес? Действие невозжно будет отменить."
@@ -1838,6 +1940,10 @@
         null,
         "Включить"
     ],
+    "Enable - allow escalate alarm for ManagedObject. <br/>As Depended - allow escalate ManagedObject only as depend (not root) on alarm": [
+        null,
+        "Включить - разрешает эскалацию аварий для Объекта. Как Зависимую - эскалировать аварию только в составе другой аварии (указана первопричина)"
+    ],
     "Enable Abduct Detection": [
         null,
         "Включить порт в обнаружение "
@@ -1853,6 +1959,10 @@
     "Enable Horizontal Transit": [
         null,
         "Разрешить транзит пути"
+    ],
+    "Enable Manual": [
+        null,
+        "Переключение вручную"
     ],
     "Enable VLAN Discovery": [
         null,
@@ -1990,6 +2100,10 @@
         null,
         "Владение2"
     ],
+    "Event": [
+        null,
+        "Событие"
+    ],
     "Event Class": [
         null,
         "Класс события"
@@ -2082,6 +2196,10 @@
         null,
         "Расширение"
     ],
+    "External storage for config save. Setup in Main -> Setup -> Ext. storage": [
+        null,
+        "Внешнее хранилище для сохранения конфигурации. Настраивается в Основные -> Настройки -> Внешние хранилища."
+    ],
     "Extra Small": [
         null,
         "Очень маленький"
@@ -2109,6 +2227,10 @@
     "Failed interval": [
         null,
         "Интервал при сбое"
+    ],
+    "Failed save data": [
+        null,
+        "Ошибка при сохранении"
     ],
     "Failed to change VC Domain": [
         null,
@@ -2141,6 +2263,10 @@
     "Failed to clear alarm": [
         null,
         "Не удалось закрыть аварию"
+    ],
+    "Failed to clone": [
+        null,
+        "Ошибка клонирования"
     ],
     "Failed to connect interfaces": [
         null,
@@ -2470,6 +2596,10 @@
         null,
         "Фильтровать по З.О. "
     ],
+    "Filter by Client Group": [
+        null,
+        "Фильтровать по клиентской группе"
+    ],
     "Filter by Description (REGEXP)": [
         null,
         "Фильтровать по описанию (Шаблон)"
@@ -2501,6 +2631,10 @@
     "Filter by Remote Path (REGEXP)": [
         null,
         "Фильтровать по Пути (Шаблон)"
+    ],
+    "Filter by Service Group": [
+        null,
+        "Фильтровать по сервисной группе"
     ],
     "Filter by User (REGEXP)": [
         null,
@@ -2569,6 +2703,10 @@
     "First MAC": [
         null,
         "Первый MAC"
+    ],
+    "First N": [
+        null,
+        "Первые N"
     ],
     "First Name": [
         null,
@@ -2642,6 +2780,10 @@
         null,
         "С серийного номера"
     ],
+    "From State": [
+        null,
+        "Из состояния"
+    ],
     "From serial": [
         null,
         "С серийного номера"
@@ -2649,6 +2791,10 @@
     "Front": [
         null,
         "Передняя часть"
+    ],
+    "Full": [
+        null,
+        "Полный"
     ],
     "Full Name": [
         null,
@@ -2878,6 +3024,10 @@
         null,
         "Индексировать"
     ],
+    "Industries": [
+        null,
+        "Род деятельности"
+    ],
     "Insert": [
         null,
         "Вставить"
@@ -3042,6 +3192,10 @@
         null,
         "Заблокированный"
     ],
+    "Is Managed": [
+        null,
+        "Управляемый"
+    ],
     "Is Managed?": [
         null,
         "Управляемый?"
@@ -3061,6 +3215,10 @@
     "Job": [
         null,
         "Задание"
+    ],
+    "Job Handler": [
+        null,
+        "Обработчик задачи"
     ],
     "Job scheduled to start": [
         null,
@@ -3201,6 +3359,10 @@
     "Level Up": [
         null,
         "На уровень вверх"
+    ],
+    "Limit SNMP (Query per second).": [
+        null,
+        "Ограничение запросов `SNMP` (запросов в секунду)"
     ],
     "Line Style": [
         null,
@@ -3414,6 +3576,10 @@
         null,
         "VLAN управления"
     ],
+    "Manual": [
+        null,
+        "Вручную"
+    ],
     "Map": [
         null,
         "Карта"
@@ -3586,6 +3752,10 @@
         null,
         "Мин. уровень атакующего"
     ],
+    "Min Duration": [
+        null,
+        "Минимальная продолж"
+    ],
     "Min Zoom": [
         null,
         "Мин. увел."
@@ -3617,6 +3787,14 @@
     "Min. Zoom": [
         null,
         "Мин. Увел."
+    ],
+    "Mirror Policy": [
+        null,
+        "Политика зеркалирования"
+    ],
+    "Mirror on Change": [
+        null,
+        "Зеркалировать при изменении"
     ],
     "Modbus Register": [
         null,
@@ -3801,6 +3979,10 @@
     "Not Found": [
         null,
         "Не найдено"
+    ],
+    "Not filter collected MACs": [
+        null,
+        "Не фильтровать собранные MAC адреса"
     ],
     "Not found": [
         null,
@@ -4146,6 +4328,10 @@
         null,
         "Путь"
     ],
+    "Path Template": [
+        null,
+        "Шаблон пути"
+    ],
     "Pattern": [
         null,
         "Маска"
@@ -4158,6 +4344,10 @@
         null,
         "Маски"
     ],
+    "Period start,qty": [
+        null,
+        "Диапазон (начало, число)"
+    ],
     "Periodic": [
         null,
         "Периодический"
@@ -4166,13 +4356,29 @@
         null,
         "Авария при опросе"
     ],
+    "Periodic Completed Time": [
+        null,
+        "Время окончания периодика"
+    ],
     "Periodic Discovery": [
         null,
         "Периодический опрос"
     ],
+    "Periodic Duration": [
+        null,
+        "Время периодика"
+    ],
+    "Periodic Last success": [
+        null,
+        "Время успешного окончания периодика"
+    ],
     "Periodic Sample": [
         null,
         "Частота телеметрии"
+    ],
+    "Periodic Status": [
+        null,
+        "Статус периодика"
     ],
     "Periodic discovery": [
         null,
@@ -4282,6 +4488,10 @@
         null,
         "Политика"
     ],
+    "Policy for do managedobject in escalation proccess: FM -> Setup -> Escalation": [
+        null,
+        "Политика эскалации устройства"
+    ],
     "Pool": [
         null,
         "Пул"
@@ -4317,6 +4527,10 @@
     "Port untagged vlan": [
         null,
         "Нетэг. VLAN"
+    ],
+    "Portmapper": [
+        null,
+        "Привязка портов"
     ],
     "Position": [
         null,
@@ -4424,7 +4638,7 @@
     ],
     "Profile Check Rule Name": [
         null,
-        "Имя правила определения профиля"
+        "Имя"
     ],
     "Profile saved": [
         null,
@@ -4742,6 +4956,10 @@
         null,
         "Сбросить фильтр"
     ],
+    "Resolver Handler": [
+        null,
+        "Обработчик резолва адресов"
+    ],
     "Resource Group": [
         null,
         "Группа ресурсов"
@@ -4882,9 +5100,21 @@
         null,
         "Версия ПО"
     ],
+    "Sampling value for Box discovery. Interval from 0 to 1. <br/>1 - all jobs will saved, 0 - Not collect telemetry, <br/> 0,99 ... 0,1 - chance to save": [
+        null,
+        "Настройка частоты для Полного опроса. Интервал с 0 до 1. 1 - каждая задача сохранит операции, 0 - отключает. 0,99 .. 0,1 частота сохранения."
+    ],
+    "Sampling value for Periodic discovery. Interval from 0 to 1. <br/>1 - all jobs will saved, 0 - Not collect telemetry,  0,99 ... 0,1 - chance to save": [
+        null,
+        "Настройка частоты для Периодического опроса. Интервал с 0 до 1. 1 - каждая задача сохранит операции, 0 - отключает. 0,99 .. 0,1 частота сохранения."
+    ],
     "Save": [
         null,
         "Сохранить"
+    ],
+    "Save Workflow": [
+        null,
+        "Сохранить процесс"
     ],
     "Save changes": [
         null,
@@ -4929,6 +5159,10 @@
     "Script failed": [
         null,
         "Ошибка скрипта"
+    ],
+    "Script, ConfDB": [
+        null,
+        "Скрипт, Конфиг"
     ],
     "Scripts": [
         null,
@@ -5134,6 +5368,10 @@
         null,
         "Сервис"
     ],
+    "Service Binding": [
+        null,
+        "Привязка сервисов к портам"
+    ],
     "Service Model": [
         null,
         "Модель сервиса"
@@ -5189,6 +5427,10 @@
     "Set unmanaged": [
         null,
         "Сделать неуправляемым"
+    ],
+    "Setting for saving discovery operation on ClickHouse telemetry table. <br/>Warning! Activate telemetry if you really know for it. <br/>Enable overhad about +25% CPU usage": [
+        null,
+        "Настройка задаёт частоту сохранения операция опроса в таблицу телеметрии Clickhouse. Внимание! Включайте только если понимаете зачем оно надо! При выставленной 1 нагрузка на процессор возрастает на 25%"
     ],
     "Settings": [
         null,
@@ -5398,6 +5640,10 @@
         null,
         "Состояние"
     ],
+    "State Inspector": [
+        null,
+        "Инспектор состояния"
+    ],
     "Static Client Groups": [
         null,
         "Настроенные клиентские группы"
@@ -5418,6 +5664,10 @@
         null,
         "Опрос статуса интерфейса"
     ],
+    "Status only": [
+        null,
+        "Только статусы"
+    ],
     "Step to": [
         null,
         "Шагнуть в"
@@ -5429,6 +5679,10 @@
     "Stop Polling": [
         null,
         "Остановить опрос"
+    ],
+    "Storage": [
+        null,
+        "Хранилище"
     ],
     "Stored": [
         null,
@@ -5473,6 +5727,10 @@
     "Subject/Class": [
         null,
         "Тема/Класс"
+    ],
+    "Submit": [
+        null,
+        "Отправить"
     ],
     "Subscriber": [
         null,
@@ -5569,6 +5827,10 @@
     "Switch to tree view": [
         null,
         "Переключиться на отображение дерева"
+    ],
+    "Symmetric Check": [
+        null,
+        "Проверять с обеих сторон"
     ],
     "Symptoms": [
         null,
@@ -5806,6 +6068,10 @@
         null,
         "По серийный номер"
     ],
+    "To State": [
+        null,
+        "В состояние"
+    ],
     "To VRF": [
         null,
         "В VRF"
@@ -5882,9 +6148,17 @@
         null,
         "Переход"
     ],
+    "Transition Inspector": [
+        null,
+        "Инспектор перехода"
+    ],
     "Transition started": [
         null,
         "Начат переход"
+    ],
+    "Translation": [
+        null,
+        "Трансляции Вланов"
     ],
     "Translation Rule": [
         null,
@@ -5937,6 +6211,10 @@
     "Unlink interface": [
         null,
         "Отсоединить интерфейс"
+    ],
+    "Unsaved data": [
+        null,
+        "Не сохранённые данные"
     ],
     "Unselect All": [
         null,
@@ -6254,6 +6532,10 @@
         null,
         "Процесс"
     ],
+    "Workflow Inspector": [
+        null,
+        "Инспектор процесса"
+    ],
     "Would you like remove interface ": [
         null,
         "Вы желаете удалить интерфейс?"
@@ -6265,6 +6547,10 @@
     "Yes/No": [
         null,
         "Да/Нет"
+    ],
+    "You have unsaved changes in inspector. Save or cancel the changes.": [
+        null,
+        "В редакторе есть не сохранённые изменения. Сохранить или отменить изменения."
     ],
     "Your must select maintenance!": [
         null,

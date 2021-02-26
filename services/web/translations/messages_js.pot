@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-02-25 10:24+0300\n"
+"POT-Creation-Date: 2021-02-25 17:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -406,6 +406,7 @@ msgstr ""
 #: ui/web/main/customfieldenumgroup/Application.js:50
 #: ui/web/main/extstorage/Application.js:64 ui/web/main/font/Application.js:66
 #: ui/web/main/handler/Application.js:53
+#: ui/web/main/messageroute/Application.js:38
 #: ui/web/main/messageroute/Application.js:62
 #: ui/web/main/notificationgroup/Application.js:28
 #: ui/web/main/notificationgroup/Application.js:43
@@ -2472,21 +2473,14 @@ msgid "Alarms"
 msgstr ""
 
 #: ui/web/fm/alarm/view/form/Alarm.js:181
-#: ui/web/fm/alarm/view/grids/GridViewTable.js:83
-#: ui/web/fm/alarm/view/grids/Sidebar.js:203 ui/web/fm/event/Application.js:90
-#: ui/web/fm/event/Application.js:226 ui/web/inv/coverage/Application.js:79
-#: ui/web/inv/interface/LinkForm.js:41
-#: ui/web/inv/inv/plugins/log/LogPanel.js:58
-#: ui/web/inv/unknownmodel/Application.js:30
-#: ui/web/inv/unknownmodel/Application.js:60
-#: ui/web/main/audittrail/Application.js:39
-#: ui/web/main/audittrail/Application.js:73
-#: ui/web/main/remotesystem/Application.js:109
-#: ui/web/maintenance/maintenance/Application.js:273
-#: ui/web/sa/managedobject/LinkForm.js:57
-#: ui/web/sa/managedobject/RepoPreview.js:22
-#: ui/web/sa/managedobject/RepoPreview.js:68 ui/web/vc/vpn/Application.js:144
-msgid "Object"
+#: ui/web/fm/eventclass/Application.js:250
+#: ui/web/inv/inv/plugins/managedobject/ManagedObjectPanel.js:11
+#: ui/web/inv/macdb/Application.js:65 ui/web/inv/macdb/MACLogForm.js:54
+#: ui/web/ip/ipam/AddressPanel.js:122
+#: ui/web/main/remotesystem/Application.js:89
+#: ui/web/sa/service/Application.js:135 ui/web/sla/slaprobe/Application.js:25
+#: ui/web/sla/slaprobe/Application.js:73
+msgid "Managed Object"
 msgstr ""
 
 #: ui/web/fm/alarm/view/form/Alarm.js:220
@@ -2758,6 +2752,23 @@ msgstr ""
 #: ui/web/sa/administrativedomain/Application.js:42
 #: ui/web/sa/managedobjectprofile/Application.js:163
 msgid "Objects"
+msgstr ""
+
+#: ui/web/fm/alarm/view/grids/GridViewTable.js:83
+#: ui/web/fm/alarm/view/grids/Sidebar.js:203 ui/web/fm/event/Application.js:90
+#: ui/web/fm/event/Application.js:226 ui/web/inv/coverage/Application.js:79
+#: ui/web/inv/interface/LinkForm.js:41
+#: ui/web/inv/inv/plugins/log/LogPanel.js:58
+#: ui/web/inv/unknownmodel/Application.js:30
+#: ui/web/inv/unknownmodel/Application.js:60
+#: ui/web/main/audittrail/Application.js:39
+#: ui/web/main/audittrail/Application.js:73
+#: ui/web/main/remotesystem/Application.js:109
+#: ui/web/maintenance/maintenance/Application.js:273
+#: ui/web/sa/managedobject/LinkForm.js:57
+#: ui/web/sa/managedobject/RepoPreview.js:22
+#: ui/web/sa/managedobject/RepoPreview.js:68 ui/web/vc/vpn/Application.js:144
+msgid "Object"
 msgstr ""
 
 #: ui/web/fm/alarm/view/grids/GridViewTable.js:89
@@ -3648,16 +3659,6 @@ msgstr ""
 msgid "Alarm"
 msgstr ""
 
-#: ui/web/fm/eventclass/Application.js:250
-#: ui/web/inv/inv/plugins/managedobject/ManagedObjectPanel.js:11
-#: ui/web/inv/macdb/Application.js:65 ui/web/inv/macdb/MACLogForm.js:54
-#: ui/web/ip/ipam/AddressPanel.js:122
-#: ui/web/main/remotesystem/Application.js:89
-#: ui/web/sa/service/Application.js:135 ui/web/sla/slaprobe/Application.js:25
-#: ui/web/sla/slaprobe/Application.js:73
-msgid "Managed Object"
-msgstr ""
-
 #: ui/web/fm/eventclass/Application.js:256
 msgid "Var.  Map."
 msgstr ""
@@ -4438,7 +4439,7 @@ msgstr ""
 
 #: ui/web/inv/ifdescpatterns/Application.js:53
 msgid ""
-"If checked discvoery try find port by object_id (Hostname, Address, Name)"
+"If checked discоvery try find port by object_id (Hostname, Address, Name)"
 " contains in description"
 msgstr ""
 
@@ -7284,10 +7285,6 @@ msgstr ""
 #: ui/web/main/language/Application.js:22
 #: ui/web/main/language/Application.js:42
 msgid "Native Name"
-msgstr ""
-
-#: ui/web/main/messageroute/Application.js:38
-msgid "Descriprion"
 msgstr ""
 
 #: ui/web/main/messageroute/Application.js:114
