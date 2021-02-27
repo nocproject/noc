@@ -12,6 +12,7 @@ import os
 from collections import defaultdict
 import datetime
 import operator
+import csv
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -33,6 +34,13 @@ class Command(BaseCommand):
         parser.add_argument("--profile", default="Generic.Host", help="Object profile")
         parser.add_argument("--format", default="syslog", help="Input format")
         parser.add_argument(
+            "--report",
+            type=argparse.FileType("w", encoding="UTF-8"),
+            required=False,
+            metavar="FILE",
+            help="Path output file identified data",
+        )
+        parser.add_argument(
             "--reject",
             type=argparse.FileType("w", encoding="UTF-8"),
             required=False,
@@ -41,9 +49,16 @@ class Command(BaseCommand):
         )
         parser.add_argument("--progress", action="store_true", help="Display progress")
 
-    def handle(self, paths, profile, format, reject=None, progress=False, *args, **options):
-        assert profile_loader.has_profile(profile), "Invalid profile: %s" % profile
+    def handle(
+        self, paths, profile, format, report=None, reject=None, progress=False, *args, **options
+    ):
         connect()
+        assert profile_loader.has_profile(profile), "Invalid profile: %s" % profile
+        if report:
+            report_writer = csv.writer(
+                report, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
+            report_writer.writerow(["message", "event class", "rule name", "vars"])
         t0 = time.time()
         ruleset = RuleSet()
         ruleset.load()
@@ -65,6 +80,10 @@ class Command(BaseCommand):
                     if event.source == "SNMP Trap":
                         e_vars.update(MIB.resolve_vars(event.raw_vars))
                     rule, r_vars = ruleset.find_rule(event, e_vars)
+                    if report:
+                        report_writer.writerow(
+                            [event.raw_vars["message"], rule.event_class.name, rule.name, r_vars]
+                        )
                     if reject and rule.is_unknown:
                         reject.write(f'{event.raw_vars["message"]}\n')
                     stats[rule.event_class.name] += 1
