@@ -9,21 +9,22 @@
 # Python modules
 from time import perf_counter
 import asyncio
+from typing import AsyncIterable
 
 # Third-party modules
 from typing import Dict
 
 # NOC modules
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.core.http.client import fetch
 from noc.config import config
 from noc.core.perf import metrics
 from noc.services.chwriter.channel import Channel
-from noc.core.comp import smart_text
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
 
 
-class CHWriterService(TornadoService):
+class CHWriterService(FastAPIService):
     name = "chwriter"
 
     CH_SUSPEND_ERRORS = {598, 599}
@@ -37,74 +38,132 @@ class CHWriterService(TornadoService):
         self.last_columns = 0
         self.is_sharded = False
         self.stopping = False
+        self.restore_timeout = None
+        # Get clickhouse address
         if config.clickhouse.cluster and config.chwriter.write_to:
             # Distributed configuration
             self.ch_address = config.chwriter.write_to
         else:
             # Standalone configuration
             self.ch_address = config.clickhouse.rw_addresses[0]
-        self.restore_timeout = None
+        # Queue of channels to flush
+        self.flush_queue = asyncio.Queue()
 
     async def on_activate(self):
         report_callback = PeriodicCallback(self.report, 10000)
         report_callback.start()
         check_callback = PeriodicCallback(self.check_channels, config.chwriter.batch_delay_ms)
         check_callback.start()
-        await self.subscribe(
-            config.chwriter.topic,
-            "chwriter",
-            self.on_data,
-            raw=True,
-            max_backoff_duration=3,
-            max_in_flight=config.chwriter.max_in_flight,
-        )
-        self.logger.info("Sending records to %s" % self.ch_address)
+        self.logger.info("Sending records to %s", self.ch_address)
+        asyncio.create_task(self.subscribe_ch_streams())
+        asyncio.create_task(self.flush_data())
 
-    def get_channel(self, table):
-        if table not in self.channels:
-            self.channels[table] = Channel(table, self.ch_address, config.clickhouse.db)
-            metrics["channels_active"] += 1
-        return self.channels[table]
+    async def iter_ch_streams(self) -> AsyncIterable[str]:
+        """
+        Yields CH stream names
+        :return:
+        """
+        async with LiftBridgeClient() as client:
+            while True:
+                meta = await client.fetch_metadata()
+                if meta.metadata:
+                    for stream_meta in meta.metadata:
+                        if stream_meta.name.startswith("ch."):
+                            yield stream_meta.name
+                    break
+                # Cluster election in progress or cluster is misconfigured
+                self.logger.info("Cluster has no active partitions. Waiting")
+                await asyncio.sleep(1)
 
-    def on_data(self, message, records, *args, **kwargs):
+    async def subscribe_ch_streams(self) -> None:
         """
-        Called on new dispose message
-        Message format
-        <table>.<field1>. .. .<fieldN>\n
-        <v1>\t...\t<vN>\n
-        ...
-        <v1>\t...\t<vN>\n
+        Subscribe to all CH streams
+        :return:
         """
-        if self.stopping:
-            self.logger.info("Message received during stopping, requeueing message")
-            return False
-        if self.restore_timeout:
-            self.logger.info("ClickHouse is not available, requeueing message")
-            return False
-        if metrics["records_buffered"].value > config.chwriter.records_buffer:
-            self.logger.info(
-                "Input buffer is full (%s/%s). Deferring message",
-                metrics["records_buffered"].value,
-                config.chwriter.records_buffer,
-            )
-            metrics["deferred_messages"] += 1
-            return False
-        if b"\n" not in records:
-            self.logger.error("Malformed message dropped: %s", records)
-            metrics["dropped_malformed_messages"] += 1
-            return True  # Trash
-        b_table, data = records.split(b"\n", 1)
-        table = smart_text(b_table)
-        self.logger.debug("Receiving %s", table)
-        if "." in table or "|" in table:
-            self.logger.error("Message in legacy format dropped: %s" % table)
-            metrics["dropped_legacy_messages"] += 1
-            return True
-        channel = self.get_channel(table)
-        n = channel.feed(data)
-        metrics["records_received"] += n
-        metrics["records_buffered"] += n
-        return True
+        async for stream in self.iter_ch_streams():
+            asyncio.create_task(self.process_stream(stream))
+            await asyncio.sleep(0.25)  # Shift subscriptions in time
+
+    async def process_stream(self, stream: str) -> None:
+        self.logger.info("[%s] Subscribing", stream)
+        table = stream[3:]
+        channel = Channel(self, table)
+        self.channels[table] = channel
+        cursor_id = f"chwriter-{config.chwriter.replica_id}"
+        async with LiftBridgeClient() as client:
+            async for msg in client.subscribe(
+                stream=stream,
+                partition=config.chwriter.shard_id,
+                start_position=StartPosition.RESUME,
+                cursor_id=cursor_id,
+            ):
+                offset = await channel.feed(msg)
+                if offset:
+                    # Data has been flushed, save cursor
+                    await client.set_cursor(
+                        stream,
+                        partition=config.chwriter.shard_id,
+                        cursor_id=cursor_id,
+                        offset=offset,
+                    )
+
+    async def flush_data(self):
+        """
+        Flush data
+        :return:
+        """
+        while not self.stopping:
+            ch = await self.flush_queue.get()
+            n_records = ch.records
+            while True:
+                try:
+                    self.logger.info("[%s] Sending %d records", ch.table, n_records)
+                    t0 = perf_counter()
+                    url = (
+                        f"http://{self.ch_address}/?"
+                        f"user={config.clickhouse.rw_user}&"
+                        f"password={config.clickhouse.rw_password or ''}&"
+                        f"database={config.clickhouse.db}&"
+                        f"query={ch.q_sql}"
+                    )
+                    code, headers, body = await fetch(
+                        url,
+                        method="POST",
+                        body=ch.get_data(),
+                        user=config.clickhouse.rw_user,
+                        password=config.clickhouse.rw_password or "",
+                        content_encoding=config.clickhouse.encoding,
+                    )
+                    if code == 200:
+                        self.logger.info(
+                            "[%s] %d records sent in %.2fms",
+                            ch.table,
+                            n_records,
+                            (perf_counter() - t0) * 1000,
+                        )
+                        metrics["records_written"] += n_records
+                        break
+                    elif code in self.CH_SUSPEND_ERRORS:
+                        self.logger.info("[%s] Timed out: %s", ch.table, body)
+                        metrics["error", ("type", "records_spool_timeouts")] += 1
+                        await asyncio.sleep(1)
+                        continue
+                    else:
+                        self.logger.info(
+                            "[%s] Failed to write records: %s %s", ch.table, code, body
+                        )
+                        metrics["error", ("type", "records_spool_failed")] += 1
+                        break
+                except Exception as e:
+                    self.logger.error(
+                        "[%s] Failed to spool %d records due to unknown error: %s",
+                        ch.table,
+                        n_records,
+                        e,
+                    )
+                    await asyncio.sleep(1)
+                    continue
+            ch.flush_complete()
 
     async def report(self):
         nm = metrics["records_written"].value
@@ -121,149 +180,15 @@ class CHWriterService(TornadoService):
         self.last_ts = t
 
     async def check_channels(self):
-        expired = [c for c in self.channels if self.channels[c].is_expired()]
-        for x in expired:
-            self.logger.info("Closing expired channel %s", x)
-            del self.channels[x]
-            metrics["channels_active"].value = len(self.channels)
-        self.logger.debug(
-            "Active channels: %s", ", ".join(self.channels[c].name for c in self.channels)
-        )
-        for c in list(self.channels):
-            if self.restore_timeout:
-                break
-            channel = self.channels.get(c)
-            if channel:
-                self.logger.debug(
-                    "Channel %s: ready=%s flushing=%s",
-                    channel.name,
-                    channel.is_ready(),
-                    channel.flushing,
-                )
-            if channel and channel.is_ready():
-                await self.flush_channel(channel)
-
-    async def flush_channel(self, channel: Channel):
-        if not channel.n:
-            return
-        channel.start_flushing()
-        n = channel.n
-        data = channel.get_data()
-        t0 = perf_counter()
-        self.logger.debug("[%s] Sending %s records", channel.name, n)
-        written = False
-        suspended = False
-        try:
-            code, headers, body = await fetch(
-                channel.url,
-                method="POST",
-                body=data,
-                user=config.clickhouse.rw_user,
-                password=config.clickhouse.rw_password or "",
-                content_encoding=config.clickhouse.encoding,
-            )
-            if code == 200:
-                self.logger.info(
-                    "[%s] %d records sent in %.2fms", channel.name, n, (perf_counter() - t0) * 1000
-                )
-                metrics["records_written"] += n
-                metrics["records_buffered"] -= n
-                written = True
-            elif code in self.CH_SUSPEND_ERRORS:
-                self.logger.info("[%s] Timed out: %s", channel.name, body)
-                metrics["error", ("type", "records_spool_timeouts")] += 1
-                suspended = True
-            else:
-                self.logger.info("[%s] Failed to write records: %s %s", channel.name, code, body)
-                metrics["error", ("type", "records_spool_failed")] += 1
-        except Exception as e:
-            self.logger.error(
-                "[%s] Failed to spool %d records due to unknown error: %s", channel.name, n, e
-            )
-        channel.stop_flushing()
-        if not written:
-            # Return data back to channel
-            channel.feed(data)
-            if suspended:
-                self.suspend()
-            else:
-                self.requeue_channel(channel)
-
-    def requeue_channel(self, channel: Channel):
-        channel.start_flushing()
-        data = channel.get_data().splitlines()
-        if not data:
-            channel.stop_flushing()
-            return
-        self.logger.info("Requeueing %d records to topic %s", len(data), config.chwriter.topic)
-        while data:
-            chunk, data = data[: config.nsqd.ch_chunk_size], data[config.nsqd.ch_chunk_size :]
-            cl = len(chunk)
-            self.pub(
-                config.chwriter.topic,
-                "%s\n%s\n" % (channel.name, "\n".join(smart_text(x) for x in chunk)),
-                raw=True,
-            )
-            metrics["records_requeued"] += cl
-            metrics["records_buffered"] -= cl
-        channel.stop_flushing()
-
-    def suspend(self):
-        if self.restore_timeout:
-            return
-        self.logger.info("Suspending")
-        self.restore_timeout = self.loop.create_task(self.check_restore())
-        metrics["suspends"] += 1
-        self.suspend_subscription(self.on_data)
-        # Return data to channels
-        self.requeue_channels()
-
-    def requeue_channels(self):
-        """
-        Return buffered data back to queue
-        :return:
-        """
-        for c in list(self.channels):
-            channel = self.channels.get(c)
-            self.requeue_channel(channel)
-
-    def resume(self):
-        if self.stopping:
-            self.logger.info("Trying to restore during stopping. Ignoring")
-            return
-        self.logger.info("Resuming")
-        self.restore_timeout = None
-        metrics["resumes"] += 1
-        self.resume_subscription(self.on_data)
-
-    async def check_restore(self):
-        while not self.stopping:
-            # Wait
-            await asyncio.sleep(float(config.chwriter.suspend_timeout_ms) / 1000.0)
-            #
-            if self.stopping:
-                self.logger.info("Checking restore during stopping. Ignoring")
-                return
-            code, headers, body = await fetch(
-                "http://%s/?user=%s&password=%s&database=%s&query=%s"
-                % (
-                    self.ch_address,
-                    config.clickhouse.rw_user,
-                    config.clickhouse.rw_password,
-                    config.clickhouse.db,
-                    "SELECT%20dummy%20FROM%20system.one",
-                )
-            )
-            if code == 200:
-                self.resume()
-                return
+        ts = perf_counter()
+        expired = [c for c in self.channels.values() if c.is_expired(ts)]
+        for ch in expired:
+            self.logger.debug("[%s] Flushing due to timeout", ch.table)
+            await ch.schedule_flush()
 
     def stop(self):
+        # Stop consuming new messages
         self.stopping = True
-        # Stop consuming messages
-        self.suspend_subscription(self.on_data)
-        # Return messages back to queue
-        self.requeue_channels()
         # .stop() will wait until queued data will be really published
         super().stop()
 

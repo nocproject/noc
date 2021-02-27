@@ -10,10 +10,12 @@ import os
 import datetime
 import gzip
 import time
-from pymongo.errors import OperationFailure
+import random
+from typing import List
+from functools import partial
 
 # Third-party modules
-import orjson
+from pymongo.errors import OperationFailure
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -22,8 +24,9 @@ from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
 from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.liftbridge.base import LiftBridgeClient
 from noc.config import config
-from noc.core.clickhouse.shard import Sharder
+from noc.core.ioloop.util import run_sync
 
 
 class Command(BaseCommand):
@@ -170,17 +173,27 @@ class Command(BaseCommand):
             e.clean(force=force)
 
     def handle_load(self):
+        async def upload(table: str, data: List[bytes]):
+            CHUNK = 1000
+            n_parts = len(config.clickhouse.cluster_topology.split(","))
+            async with LiftBridgeClient() as client:
+                while data:
+                    chunk, data = data[:CHUNK], data[CHUNK:]
+                    await client.publish(
+                        b"\n".join(chunk),
+                        stream=f"ch.{table}",
+                        partition=random.randint(0, n_parts - 1),
+                    )
+
         for fn in sorted(os.listdir(self.data_prefix)):
             if not fn.endswith(".jsonl.gz"):
                 continue
             path = os.path.join(self.data_prefix, fn)
             # Read data
             with gzip.open(path, "rb") as f:
-                data = [orjson.loads(line) for line in f.read().splitlines() if line]
+                data = f.read().splitlines()
             table = fn.split("-", 1)[0]
-            sharder = Sharder(table)
-            sharder.feed(data)
-            sharder.pub()
+            run_sync(partial(upload, table, data))
             os.unlink(path)
 
 

@@ -7,82 +7,93 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import asyncio
 from time import perf_counter
 from urllib.parse import quote as urllib_quote
 
 # Third-party modules
-from typing import List
+from typing import Optional, List
 
 # NOC modules
 from noc.config import config
+from noc.core.liftbridge.message import Message
 
 
 class Channel(object):
-    def __init__(self, table: str, address: str, db: str):
+    def __init__(self, service, table: str):
+        self.service = service
+        self.table = table
+        self.last_offset: int = 0
+        self.data: List[bytes] = []
+        self.size: int = 0
+        self.records: int = 0
+        self.expired: Optional[float] = None
+        self.q_sql = urllib_quote(f"INSERT INTO raw_{table} FORMAT JSONEachRow".encode("utf-8"))
+        self.feed_ready = asyncio.Event()
+        self.feed_ready.set()
+        self.ttl = float(config.chwriter.batch_delay_ms) / 1_000.0
+
+    async def feed(self, msg: Message) -> Optional[int]:
         """
-        :param table: ClickHouse table name
-        :param address: ClickHouse address
-        :param db: ClickHouse database
+        Feed the message. Returns optional offset of last saved message.
+        :param msg:
+        :return:
+        """
+        # Wait until feed became possible
+        await self.feed_ready.wait()
+        # Append data
+        self.data.append(msg.value)
+        self.size += len(msg.value)
+        self.records += msg.value.count(b"\n") + (0 if msg.value.endswith(b"\n") else 1)
+        self.last_offset = msg.offset
+        #
+        if not self.expired:
+            self.expired = perf_counter() + self.ttl
+        #
+        if self.is_ready_to_flush():
+            await self.schedule_flush()
+            await self.feed_ready.wait()
+            return self.last_offset
+        return None
+
+    def is_expired(self, ts: float) -> bool:
+        """
+        Check if channel is expired to given timestamp
+        :param ts:
+        :return:
+        """
+        return self.expired and self.expired < ts
+
+    def is_ready_to_flush(self) -> bool:
+        """
+        Check if channel is ready to flush
+        """
+        if not self.size:
+            return False
+        return self.records >= config.chwriter.batch_size
+
+    async def schedule_flush(self):
+        if not self.feed_ready.is_set():
+            return  # Already scheduled
+        self.expired = None
+        self.feed_ready.clear()
+        await self.service.flush_queue.put(self)
+
+    def flush_complete(self):
+        """
+        Called when data are safely flushed
+        :return:
+        """
+        self.data = []
+        self.size = 0
+        self.records = 0
+        self.expired = None
+        self.feed_ready.set()
+
+    def get_data(self) -> bytes:
+        """
+        Get chunk of spooled data
 
         :return:
         """
-        self.name = table
-        self.address = address
-        self.db = db
-        self.sql = "INSERT INTO %s FORMAT JSONEachRow" % table
-        self.encoded_sql = urllib_quote(self.sql.encode("utf8"))
-        self.n = 0
-        self.data: List[bytes] = []
-        self.last_updated = perf_counter()
-        self.last_flushed = perf_counter()
-        self.flushing = False
-        self.url = "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
-            address,
-            config.clickhouse.rw_user,
-            config.clickhouse.rw_password or "",
-            db,
-            self.encoded_sql,
-        )
-
-    def feed(self, data: bytes):
-        n = data.count(b"\n")
-        if data[-1] != b"\n":
-            n += 1
-        self.n += n
-        self.data += [data]
-        return n
-
-    def is_expired(self):
-        if self.n:
-            return False
-        t = perf_counter()
-        if self.data or self.flushing:
-            return False
-        return t - self.last_updated > config.chwriter.channel_expire_interval
-
-    def is_ready(self):
-        if not self.data or self.flushing:
-            return False
-        if self.n >= config.chwriter.batch_size:
-            return True
-        t = perf_counter()
-        return (t - self.last_flushed) * 1000 >= config.chwriter.batch_delay_ms
-
-    def get_data(self) -> bytes:
-        self.n = 0
-        data = b"\n".join(self.data)
-        self.data = []
-        return data
-
-    def start_flushing(self):
-        self.flushing = True
-
-    def stop_flushing(self):
-        self.flushing = False
-        self.last_flushed = perf_counter()
-
-    def get_insert_sql(self):
-        return self.sql
-
-    def get_encoded_insert_sql(self):
-        return self.encoded_sql
+        return b"\n".join(self.data)

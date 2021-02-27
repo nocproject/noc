@@ -9,11 +9,15 @@
 import argparse
 import gzip
 import os
+import random
+from typing import List
+from functools import partial
 
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
-from noc.core.clickhouse.shard import Sharder
+from noc.core.liftbridge.base import LiftBridgeClient
+from noc.core.ioloop.util import run_sync
 
 
 class Command(BaseCommand):
@@ -34,7 +38,18 @@ class Command(BaseCommand):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_load(self, fields, input, chunk, rm, *args, **kwargs):
-        sharder = Sharder(fields, chunk=chunk)
+        async def upload(table: str, data: List[bytes]):
+            CHUNK = 1000
+            n_parts = len(config.clickhouse.cluster_topology.split(","))
+            async with LiftBridgeClient() as client:
+                while data:
+                    chunk, data = data[:CHUNK], data[CHUNK:]
+                    await client.publish(
+                        b"\n".join(chunk),
+                        stream=f"ch.{table}",
+                        partition=random.randint(0, n_parts - 1),
+                    )
+
         for fn in input:
             # Read data
             self.print("Reading file %s" % fn)
@@ -44,9 +59,8 @@ class Command(BaseCommand):
             else:
                 with open(fn) as f:
                     records = f.read().replace("\r", "").splitlines()
-            sharder.feed(records)
-            self.print("    Publishing %d records" % len(records))
-            sharder.pub()
+            table = fn.split("-", 1)[0]
+            run_sync(partial(upload, table, records))
             if rm:
                 os.unlink(fn)
 

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,19 +12,29 @@ import logging
 import signal
 import uuid
 import argparse
-from collections import defaultdict
-import time
 import threading
 from time import perf_counter
 import asyncio
-from typing import Optional, Dict, Tuple, Callable, Any, TypeVar, NoReturn, Awaitable
+import random
+from typing import (
+    Optional,
+    Dict,
+    List,
+    Tuple,
+    Callable,
+    Any,
+    TypeVar,
+    NoReturn,
+    Awaitable,
+    Iterable,
+)
 
 # Third-party modules
 import setproctitle
 import orjson
 
 # NOC modules
-from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
+from noc.config import config
 from noc.core.debug import excepthook, error_report, ErrorReport
 from noc.core.log import ErrorFormatter
 from noc.core.perf import metrics, apply_metrics
@@ -42,12 +52,10 @@ from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
 from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
 from noc.core.liftbridge.message import Message
-from noc.core.clickhouse.shard import ShardingFunction
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from .rpc import RPCProxy
 from .loader import set_service
-from noc.core.comp import smart_text
 
 T = TypeVar("T")
 
@@ -141,17 +149,6 @@ class BaseService(object):
         self.is_active = False
         # Can be initialized in subclasses
         self.scheduler = None
-        # Depends on config
-        topo = config.get_ch_topology_type()
-        if topo == CH_UNCLUSTERED:
-            self.register_metrics = self._register_unclustered_metrics
-        elif topo == CH_REPLICATED:
-            self.register_metrics = self._register_replicated_metrics
-        elif topo == CH_SHARDED:
-            self.register_metrics = self._register_sharded_metrics
-            self.get_shards = ShardingFunction()
-        else:
-            self.die("Invalid ClickHouse cluster topology")
         # NSQ Topics
         # name -> TopicQueue()
         self.topic_queues: Dict[str, TopicQueue] = {}
@@ -162,6 +159,8 @@ class BaseService(object):
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
+        # Metrics partitions
+        self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
 
     def create_parser(self) -> argparse.ArgumentParser:
         """
@@ -290,7 +289,7 @@ class BaseService(object):
         """
         Run main server loop
         """
-        self.startup_ts = time.time()
+        self.startup_ts = perf_counter()
         parser = self.create_parser()
         self.add_arguments(parser)
         options = parser.parse_args(sys.argv[1:])
@@ -881,35 +880,29 @@ class BaseService(object):
         executor = self.get_executor(name)
         return executor.submit(fn, *args, **kwargs)
 
-    def register_metrics(self, table, metrics):
-        """
-        Register metrics
-
-        :param table: Table name
-        :param metrics: List of dicts containing metrics records
-        :return:
-        """
-        raise NotImplementedError()
-
     @staticmethod
-    def _iter_metrics_raw_chunks(table, metrics):
-        start = 0
-        while start < len(metrics):
-            limit = config.nsqd.mpub_size - 8
-            r = [table]
-            limit -= len(table) + 1
-            for m in metrics[start:]:
-                jm = smart_text(orjson.dumps(m))
-                js = len(jm) + 1
-                if limit < js:
-                    break
-                r += [jm]
-                limit -= js
-                start += 1
-            yield "\n".join(r)
+    def _iter_metrics_raw_chunks(metrics: List[Dict[str, Any]]) -> Iterable[bytes]:
+        r: List[bytes] = []
+        size = 0
+        for mi in metrics:
+            jm = orjson.dumps(mi)
+            ljm = len(jm)
+            if size + ljm + 1 >= config.liftbridge.max_message_size:
+                yield b"\n".join(r)
+                r = []
+                size = 0
+            r.append(jm)
+            if size:
+                size += 1 + ljm
+            else:
+                size += ljm
+        if r:
+            yield b"\n".join(r)
 
-    def _register_unclustered_metrics(self, table, metrics):
+    def register_metrics(self, table: str, metrics: List[Dict[str, Any]]):
         """
+        Send collected metrics to `table`
+
         Register metrics to send in non-clustered configuration.
         Must be used via register_metrics only
 
@@ -917,46 +910,12 @@ class BaseService(object):
         :param metrics: List of dicts containing metrics records
         :return:
         """
-        for chunk in self._iter_metrics_raw_chunks(table, metrics):
-            self.pub("chwriter", chunk, raw=True)
-
-    def _register_replicated_metrics(self, table, metrics):
-        """
-        Register metrics to send in non-sharded replicated configuration.
-        Must be used via register_metrics only
-
-        :param fields: Table name
-        :param metrics: List of dicts containing metrics records
-        :return:
-        """
-        # Change table name to raw_*
-        table = "raw_%s" % table
-        # Split and publish parts
-        replicas = config.ch_cluster_topology[0].replicas
-        for chunk in self._iter_metrics_raw_chunks(table, metrics):
-            for nr in range(replicas):
-                self.pub("chwriter-1-%s" % (nr + 1), chunk, raw=True)
-
-    def _register_sharded_metrics(self, table, metrics):
-        """
-        Register metrics to send in sharded replicated configuration
-        Must be used via register_metrics only
-
-        :param table: Table name
-        :param metrics: List of dicts containing metrics records
-        :return:
-        """
-        # Distribute data to shards
-        data = defaultdict(list)
-        for m in metrics:
-            for ch in self.get_shards(table, m):
-                data[ch] += [m]
-        # Change table name to raw_*
-        table = "raw_%s" % table
-        # Publish metrics
-        for ch in data:
-            for chunk in self._iter_metrics_raw_chunks(table, data[ch]):
-                self.pub(ch, chunk, raw=True)
+        for chunk in self._iter_metrics_raw_chunks(metrics):
+            self.publish(
+                chunk,
+                stream=f"ch.{table}",
+                partition=random.randint(0, self.n_metrics_partitions - 1),
+            )
 
     def start_telemetry_callback(self) -> None:
         """
@@ -979,8 +938,7 @@ class BaseService(object):
     def get_leader_lock_name(self):
         if self.leader_lock_name:
             return self.leader_lock_name % {"pool": config.pool}
-        else:
-            return None
+        return None
 
     def get_backend_weight(self):
         """
@@ -1006,14 +964,11 @@ class BaseService(object):
         :param service_id:
         :return:
         """
-        if (
+        return not (
             self.dcs
             and self.dcs.health_check_service_id
             and self.dcs.health_check_service_id != service_id
-        ):
-            return False
-        else:
-            return True
+        )
 
     def get_health_status(self):
         """
@@ -1023,13 +978,12 @@ class BaseService(object):
         if self.dcs and self.require_dcs_health:
             # DCS is initialized
             return self.dcs.get_status()
-        else:
-            return 200, "OK"
+        return 200, "OK"
 
     def uptime(self):
         if not self.startup_ts:
             return 0
-        return time.time() - self.startup_ts
+        return perf_counter() - self.startup_ts
 
     async def get_stream_partitions(self, stream: str) -> int:
         """

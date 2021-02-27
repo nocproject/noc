@@ -67,7 +67,7 @@ class ClickhouseClient(object):
         return [smart_text(row).split("\t") for row in body.splitlines()]
 
     def ensure_db(self):
-        self.execute(post="CREATE DATABASE IF NOT EXISTS %s;" % config.clickhouse.db, nodb=True)
+        self.execute(post=f"CREATE DATABASE IF NOT EXISTS {config.clickhouse.db};", nodb=True)
 
     def has_table(self, name):
         r = self.execute(
@@ -81,6 +81,15 @@ class ClickhouseClient(object):
             [config.clickhouse.db, name],
         )
         return r and r[0][0] == "1"
+
+    def rename_table(self, from_table: str, to_table: str):
+        """
+        Rename table `from_table` to `to_table`
+        :param from_table:
+        :param to_table:
+        :return:
+        """
+        self.execute(post=f"RENAME TABLE {from_table} TO {to_table};")
 
 
 def connection(host=None, port=None, read_only=True):

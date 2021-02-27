@@ -13,9 +13,11 @@ import functools
 from noc.core.management.base import BaseCommand
 from noc.core.liftbridge.base import LiftBridgeClient, Metadata, StreamMetadata, StartPosition
 from noc.main.models.pool import Pool
+from noc.pm.models.metricscope import MetricScope
 from noc.core.mongo.connection import connect
 from noc.core.service.loader import get_dcs
 from noc.core.ioloop.util import run_sync
+from noc.core.clickhouse.loader import loader as bi_loader
 from noc.config import config
 
 
@@ -81,6 +83,16 @@ class Command(BaseCommand):
             n_partitions = run_sync(get_slot_limits)
             if n_partitions:
                 yield stream_name, n_partitions
+        # Metric scopes
+        n_ch_shards = len(config.clickhouse.cluster_topology.split(","))
+        for scope in MetricScope.objects.all():
+            yield f"ch.{scope.table_name}", n_ch_shards
+        # BI models
+        for name in bi_loader:
+            bi_model = bi_loader[name]
+            if not bi_model:
+                continue
+            yield f"ch.{bi_model._meta.db_table}", n_ch_shards
 
     def apply_stream_settings(self, meta: Metadata, stream: str, partitions: int, rf: int) -> bool:
         def delete_stream(name: str):

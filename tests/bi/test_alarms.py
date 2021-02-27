@@ -54,7 +54,7 @@ FIELDS = [
     ("ack_ts", "DateTime"),
 ]
 
-SQL = """CREATE TABLE IF NOT EXISTS alarms (
+SQL = """CREATE TABLE IF NOT EXISTS raw_alarms (
 date Date,
 ts DateTime,
 close_ts DateTime,
@@ -115,4 +115,4 @@ def test_get_create_sql():
 
 
 def test_create_distributed_sql():
-    assert MODEL.get_create_distributed_sql()
+    assert MODEL.cget_create_distributed_sql()
