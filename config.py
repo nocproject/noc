@@ -341,6 +341,7 @@ class Config(BaseConfig):
         publish_async_ack_timeout = IntParameter(default=10)
         compression_threshold = IntParameter(default=524288)
         compression_method = StringParameter(choices=["", "zlib", "lzma"], default="zlib")
+        enable_http_proxy = BooleanParameter(default=False)
         #  mx, kafkasender, events, dispose
         stream_events_retention_max_age = SecondsParameter(
             default="24h",

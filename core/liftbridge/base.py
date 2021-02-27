@@ -118,6 +118,7 @@ class GRPCChannel(object):
             options=[
                 ("grpc.max_send_message_length", config.liftbridge.max_message_size),
                 ("grpc.max_receive_message_length", config.liftbridge.max_message_size),
+                ("grpc.enable_http_proxy", config.liftbridge.enable_http_proxy),
             ],
         )
         while True:
