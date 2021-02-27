@@ -30,6 +30,7 @@ nav:
               - Handler: user/reference/concepts/handler/index.md
               - Interface: user/reference/concepts/interface/index.md
               - Interface Profile: user/reference/concepts/interface-profile/index.md
+              - Label: user/reference/concepts/label/index.md
               - Managed Object: user/reference/concepts/managed-object/index.md
               - Managed Object Profile: user/reference/concepts/managed-object-profile/index.md
               - Network Segment: user/reference/concepts/network-segment/index.md
