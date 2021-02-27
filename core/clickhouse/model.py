@@ -90,9 +90,11 @@ class Model(object, metaclass=ModelBase):
 
     @classmethod
     def _get_raw_db_table(cls):
-        if config.clickhouse.cluster:
-            return "raw_%s" % cls._meta.db_table
-        return cls._meta.db_table
+        return f"raw_{cls._meta.db_table}"
+
+    @classmethod
+    def _get_distributed_db_table(cls):
+        return f"d_{cls._meta.db_table}"
 
     @classmethod
     def wrap_table(cls, table_name):
@@ -139,30 +141,31 @@ class Model(object, metaclass=ModelBase):
     def get_create_sql(cls):
         return "\n".join(
             [
-                "CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table(),
+                f"CREATE TABLE IF NOT EXISTS {cls._get_raw_db_table()} (",
                 cls.get_create_fields_sql(),
-                ") ENGINE = %s;" % cls._meta.engine.get_create_sql(),
+                f") ENGINE = {cls._meta.engine.get_create_sql()};",
             ]
         )
 
     @classmethod
-    def get_create_distributed_sql(cls):
+    def cget_create_distributed_sql(cls):
         """
         Get CREATE TABLE for Distributed engine
         :return:
         """
         return (
-            "CREATE TABLE IF NOT EXISTS %s "
-            "AS %s "
-            "ENGINE = Distributed('%s', '%s', '%s')"
-            % (
-                cls._meta.db_table,
-                cls._get_raw_db_table(),
-                config.clickhouse.cluster,
-                config.clickhouse.db,
-                cls._get_raw_db_table(),
-            )
+            f"CREATE TABLE IF NOT EXISTS {cls._get_distributed_db_table()} "
+            f"ENGINE = Distributed('{config.clickhouse.cluster}', '{config.clickhouse.db}', '{cls._get_raw_db_table()}')"
         )
+
+    @classmethod
+    def get_create_view_sql(cls):
+        view = cls._get_db_table()
+        if config.clickhouse.cluster:
+            src = cls._get_distributed_db_table()
+        else:
+            src = cls._get_raw_db_table()
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT * FROM {src}"
 
     @classmethod
     def to_json(cls, **kwargs):
@@ -244,22 +247,35 @@ class Model(object, metaclass=ModelBase):
             return False
         changed = False
         ch = connect or connection()
-        if not ch.has_table(cls._get_raw_db_table()):
+        is_cluster = bool(config.clickhouse.cluster)
+        table = cls._get_db_table()
+        raw_table = cls._get_raw_db_table()
+        dist_table = cls._get_distributed_db_table()
+        # Legacy migration
+        if ch.has_table(table) and not ch.has_table(raw_table):
+            # Legacy scheme, data for non-clustered installations has been written
+            # to table itself. Move to raw_*
+            ch.rename_table(table, raw_table)
+            changed = True
+        # Ensure raw_* table
+        if ch.has_table(raw_table):
+            # raw_* table exists, check columns
+            changed |= cls.ensure_columns(ch, raw_table)
+        else:
             # Create new table
             ch.execute(post=cls.get_create_sql())
-            if config.clickhouse.cluster:
-                # Create distributed
-                ch.execute(post=cls.get_create_sql())
             changed = True
-        else:
-            changed |= cls.ensure_columns(ch, cls._get_raw_db_table())
-        # Check for distributed table
-        if config.clickhouse.cluster:
-            if not ch.has_table(cls._meta.db_table):
-                ch.execute(post=cls.get_create_distributed_sql())
-                changed = True
+        # For cluster mode check d_* distributed table
+        if is_cluster:
+            if ch.has_table(dist_table):
+                changed |= cls.ensure_columns(ch, dist_table)
             else:
-                changed |= cls.ensure_columns(ch, cls._meta.db_table)
+                ch.execute(post=cls.cget_create_distributed_sql())
+                changed = True
+        # Synchronize view
+        if changed or not ch.has_table(table):
+            ch.execute(post=cls.get_create_view_sql())
+            changed = True
         return changed
 
     @classmethod

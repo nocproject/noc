@@ -2219,6 +2219,7 @@ nav:
           - Inventory Protocols: dev/reference/inventory-protocols.md
           - Streams:
               - Overview: dev/reference/streams/index.md
+              - ch.TABLE: dev/reference/streams/ch.md
               - dispose.POOL: dev/reference/streams/dispose.md
               - events.POOL: dev/reference/streams/events.md
               - kafkasender: dev/reference/streams/kafkasender.md

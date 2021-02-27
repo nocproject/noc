@@ -32,7 +32,7 @@ FIELDS = [
     ("y", "Float64"),
 ]
 
-SQL = """CREATE TABLE IF NOT EXISTS reboots (
+SQL = """CREATE TABLE IF NOT EXISTS raw_reboots (
 date Date,
 ts DateTime,
 managed_object UInt64,
@@ -71,4 +71,4 @@ def test_get_create_sql():
 
 
 def test_create_distributed_sql():
-    assert MODEL.get_create_distributed_sql()
+    assert MODEL.cget_create_distributed_sql()

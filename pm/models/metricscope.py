@@ -173,11 +173,22 @@ class MetricScope(Document):
             )
         )
 
-    def _get_raw_db_table(self):
+    def get_create_view_sql(cls):
+        view = cls._get_db_table()
         if config.clickhouse.cluster:
-            return "raw_%s" % self.table_name
+            src = cls._get_distributed_db_table()
         else:
-            return self.table_name
+            src = cls._get_raw_db_table()
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT * FROM {src}"
+
+    def _get_db_table(self):
+        return self.table_name
+
+    def _get_raw_db_table(self):
+        return f"raw_{self.table_name}"
+
+    def _get_distributed_db_table(self):
+        return f"d_{self.table_name}"
 
     def ensure_table(self, connect=None):
         """
@@ -219,17 +230,33 @@ class MetricScope(Document):
 
         changed = False
         ch = connect or connection(read_only=False)
-        if not ch.has_table(self._get_raw_db_table()):
+        is_cluster = bool(config.clickhouse.cluster)
+        table = self._get_db_table()
+        raw_table = self._get_raw_db_table()
+        dist_table = self._get_distributed_db_table()
+        # Legacy migration
+        if ch.has_table(table) and not ch.has_table(raw_table):
+            # Legacy scheme, data for non-clustered installations has been written
+            # to table itself. Move to raw_*
+            ch.rename_table(table, raw_table)
+            changed = True
+        # Ensure raw_* table
+        if ch.has_table(raw_table):
+            # raw_* table exists, check columns
+            changed |= ensure_columns(raw_table)
+        else:
             # Create new table
             ch.execute(post=self.get_create_sql())
             changed = True
-        else:
-            changed |= ensure_columns(self._get_raw_db_table())
-        # Check for distributed table
-        if config.clickhouse.cluster:
-            if not ch.has_table(self.table_name):
+        # For cluster mode check d_* distributed table
+        if is_cluster:
+            if ch.has_table(dist_table):
+                changed |= ensure_columns(dist_table)
+            else:
                 ch.execute(post=self.get_create_distributed_sql())
                 changed = True
-            else:
-                changed |= ensure_columns(self.table_name)
+        # Synchronize view
+        if changed or not ch.has_table(table):
+            ch.execute(post=self.get_create_view_sql())
+            changed = True
         return changed
