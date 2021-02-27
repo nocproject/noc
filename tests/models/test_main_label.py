@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # main.Label test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -38,3 +38,33 @@ from noc.main.models.label import Label
 )
 def test_merge_labels(labels: Tuple[List[str]], expected: List[str]):
     assert Label.merge_labels(*labels) == expected
+
+
+@pytest.mark.parametrize(
+    "label,expected",
+    [
+        ("mylabel", False),
+        ("*", False),
+        ("myscope::mylabel", False),
+        ("myscope::*", True),
+        ("myscope::mysubscope::mylabel", False),
+        ("myscope::mysubscope::*", True),
+    ],
+)
+def test_is_wildcard(label: str, expected: bool):
+    instance = Label(name=label)
+    assert instance.is_wildcard is expected
+
+
+@pytest.mark.parametrize(
+    "label,expected",
+    [
+        ("mylabel", []),
+        ("myscope::mylabel", ["myscope"]),
+        ("myscope::mysubscope::mylabel", ["myscope", "myscope::mysubscope"]),
+    ],
+)
+def test_iter_scopes(label: str, expected: List[str]):
+    instance = Label(name=label)
+    scopes = list(instance.iter_scopes())
+    assert scopes == expected

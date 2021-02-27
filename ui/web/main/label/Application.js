@@ -35,6 +35,12 @@ Ext.define("NOC.main.label.Application", {
           }
         },
         {
+          text: __("Protected"),
+          dataIndex: "is_protected",
+          width: 50,
+          renderer: NOC.render.Bool
+        },
+        {
           text: __("Allow"),
           dataIndex: "enable_agent",
           flex: 1,
@@ -69,6 +75,18 @@ Ext.define("NOC.main.label.Application", {
           fieldLabel: __("Label"),
           uiStyle: "medium",
           allowBlank: false
+        },
+        {
+          name: "description",
+          xtype: "textarea",
+          fieldLabel: __("Description"),
+          allowBlank: true
+        },
+        {
+          name: "is_protected",
+          xtype: "checkbox",
+          boxLabel: __("Protected"),
+          allowBlank: true
         },
         {
           xtype: "fieldset",
