@@ -44,7 +44,7 @@ class BaseGeocoder(object):
         except StopIteration:
             return None
 
-    def iter_query(self, query: str, bounds) -> Iterator[GeoCoderResult]:
+    def iter_query(self, query: str, bounds=None) -> Iterator[GeoCoderResult]:
         """
         Get list of probable address candidates
         :param query:
@@ -53,7 +53,7 @@ class BaseGeocoder(object):
         """
         raise NotImplementedError()
 
-    def iter_recursive_query(self, query: str, bounds) -> Iterator[GeoCoderResult]:
+    def iter_recursive_query(self, query: str, bounds=None) -> Iterator[GeoCoderResult]:
         """
         Get list of all addresses within the query
         :param query:
