@@ -35,11 +35,14 @@ class ObjectLoader(BaseLoader):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # @todo check None model
         self.clean_map["model"] = ObjectModel.get_by_name
         self.l_f_m = ObjectModel.objects.get(uuid=LOST_AND_FOUND_UUID)
 
     def merge_data(self, o: ObjectM, data: List[Dict[str, Any]]):
+        # @todo add test to merge_data
         r = {(attr.interface, attr.attr, attr.scope): attr.value for attr in o.data if attr.scope}
+        self.logger.debug("Merge data object: %s, Data: %s", o.data, data)
         for d in data:
             k = (d["interface"], d["attr"], d["scope"])
             if k in r and d["value"] == r[k]:
@@ -81,8 +84,14 @@ class ObjectLoader(BaseLoader):
         if (not o.container and v.get("container")) or (
             v.get("container") and v["container"] != str(o.container.id)
         ):
-            o.container = self.model.get_by_id(v["container"])
-        if not (o.data and v["data"]):
+            o.container = v["container"]
+        if "data" not in v or not v["data"]:
+            # reset only RemoteSystem Scope
+            # o.data = []
+            for item in o.data:
+                if item.scope == self.system.name:
+                    o.reset_data(interface=item.interface, key=item.attr, scope=self.system.name)
+        elif v["data"]:
             self.merge_data(o, v["data"])
         o.save()
         return o
