@@ -7,6 +7,9 @@
 
 # Python modules
 import argparse
+import os
+import datetime
+import time
 
 # Third-party modules
 import yaml
@@ -17,6 +20,8 @@ from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.etl.loader.chain import LoaderChain
+
+CLEANUP_SAFE_FILES_COUNT = 3
 
 
 class Command(BaseCommand):
@@ -65,6 +70,17 @@ class Command(BaseCommand):
             "quiet", action="store_true", default=False, help="Remote system name"
         )
         extract_parser.add_argument(
+            "extractors", nargs=argparse.REMAINDER, help="List of extractor names"
+        )
+        # clean command
+        clean_parser = subparsers.add_parser("clean")
+        clean_parser.add_argument("--files", type=int, help="Files count")
+        clean_parser.add_argument("--ttl", type=int, help="TTL by days")
+        clean_parser.add_argument(
+            "--approve", dest="dry_run", action="store_false", help="Apply changes"
+        )
+        clean_parser.add_argument("system", help="Remote system name")
+        clean_parser.add_argument(
             "extractors", nargs=argparse.REMAINDER, help="List of extractor names"
         )
 
@@ -188,6 +204,66 @@ class Command(BaseCommand):
                     o.dict(include=include_fields),
                     n.dict(include=include_fields),
                 )
+
+    def handle_clean(self, files=None, ttl=None, dry_run=True, *args, **options):
+        remote_system = RemoteSystem.get_by_name(options["system"])
+        if not remote_system:
+            self.die("Invalid remote system: %s" % options["system"])
+        if files and files < CLEANUP_SAFE_FILES_COUNT:
+            self.die("3 is minimal value to save file")
+
+        deadline = None
+        if ttl:
+            today = datetime.datetime.now()
+            deadline = today - datetime.timedelta(days=ttl)
+            self.print("Cleaned files before: %s" % deadline)
+
+        if not files and not deadline:
+            self.die("Set one of policy setting (ttl or files")
+
+        clean_paths = []
+
+        extractors = set(options.get("extractors", []))
+        chain = remote_system.get_loader_chain()
+        for ldr in chain:
+            if extractors and ldr.name not in extractors:
+                continue
+            if os.path.isdir(ldr.archive_dir):
+                fn = list(
+                    reversed(
+                        sorted(f for f in os.listdir(ldr.archive_dir) if ldr.rx_archive.match(f))
+                    )
+                )
+            else:
+                self.die("No archived dir")
+            clean_files = []
+            if files:
+                # Protect last 3 files
+                files = max(files, CLEANUP_SAFE_FILES_COUNT)
+                clean_files = fn[files:]
+            elif deadline:
+                for f in fn:
+                    if (
+                        datetime.datetime.strptime(f.split(".", 1)[0], "import-%Y-%m-%d-%H-%M-%S")
+                        > deadline
+                    ):
+                        continue
+                    clean_files += [f]
+                clean_files = list(reversed(sorted(clean_files)))[CLEANUP_SAFE_FILES_COUNT:]
+            if not clean_files:
+                self.print("Nothing to remove. Continue...")
+            else:
+                clean_paths += [os.path.join(ldr.archive_dir, f) for f in clean_files]
+            self.print("Cleanup files (%d):\n %s " % (len(clean_files), "\n".join(clean_files)))
+        if not dry_run:
+            self.print("Claimed data will be Loss..\n")
+            for i in reversed(range(1, 10)):
+                self.print("%d\n" % i)
+                time.sleep(1)
+            for path in list(clean_paths):
+                self.print("Clean %s" % path)
+                os.unlink(path)
+            self.print("# Done.")
 
 
 if __name__ == "__main__":
