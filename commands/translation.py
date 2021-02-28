@@ -25,7 +25,7 @@ class Command(BaseCommand):
         # "bi": {
         #    "messages": ["services/bi/**.py", "services/bi/**.html.j2", "bi/models/**.py"],
         #    "messages_js": ["ui/bi2/bi.js"],
-        #},
+        # },
         "card": {
             "messages": ["services/card/**.py", "services/card/**.html.j2"],
             "messages_js": ["ui/card/**.js"],
