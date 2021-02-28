@@ -37,7 +37,8 @@ class JunOSNormalizer(BaseNormalizer):
 
     @match("vlans", ANY, "vlan-id", ANY)
     def normalize_vlan_name(self, tokens):
-        yield self.make_vlan_name(vlan_id=tokens[3], name=tokens[1])
+        if tokens[3] != "none":
+            yield self.make_vlan_name(vlan_id=tokens[3], name=tokens[1])
 
     # @match("vlans", ANY, "description", REST)
     # def normalize_vlan_description(self, tokens):
