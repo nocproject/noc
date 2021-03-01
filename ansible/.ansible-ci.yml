@@ -89,14 +89,6 @@ build_debian10:
     - cloud
     - docker
 
-build_ubuntu16:
-   extends: .base_builder
-   variables:
-     SCENARIO_NAME: ubuntu16
-   tags:
-     - cloud
-     - docker
-
 build_ubuntu18:
    extends: .base_builder
    variables:
