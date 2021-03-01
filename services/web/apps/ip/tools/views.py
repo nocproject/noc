@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
 from noc.config import config
+from noc.core.comp import smart_text, smart_bytes
 from noc.core.translation import ugettext as _
 
 
@@ -171,7 +172,7 @@ class ToolsAppplication(Application):
                 ).stdout
                 data = pipe.read()
                 pipe.close()
-                count = upload_axfr(data.split("\n"))
+                count = upload_axfr(smart_text(smart_bytes(data)).split("\n"))
                 self.message_user(
                     request,
                     _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
