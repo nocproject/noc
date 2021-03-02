@@ -4,16 +4,17 @@
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.ip.ipam.RebasePanel");
+console.debug("Defining NOC.ip.ipam.view.forms.prefix.RebasePanel");
 
-Ext.define("NOC.ip.ipam.RebasePanel", {
+Ext.define("NOC.ip.ipam.view.forms.prefix.RebasePanel", {
     extend: "NOC.core.FormPanel",
+    alias: "widget.ip.ipam.form.rebase",
     requires: [
         "NOC.ip.vrf.LookupField"
     ],
     prefixUrl: "/ip/prefix/",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         Ext.apply(me, {
@@ -36,7 +37,7 @@ Ext.define("NOC.ip.ipam.RebasePanel", {
         me.callParent()
     },
 
-    preview: function (record, backItem) {
+    preview: function(record) {
         var me = this;
         me.currentPrefixId = record.id;
         me.setValues(record);
@@ -45,7 +46,7 @@ Ext.define("NOC.ip.ipam.RebasePanel", {
 
     onClose: function() {
         var me = this;
-        me.app.showCurrentPrefix()
+        me.fireEvent("ipIPAMRebaseCloseForm");
     },
 
     save: function(data) {
@@ -63,15 +64,14 @@ Ext.define("NOC.ip.ipam.RebasePanel", {
                 var d = Ext.decode(response.responseText);
                 me.unmask();
                 NOC.msg.complete(__("Rebased"));
-                me.app.showPrefix(d.vrf, d.afi, d.prefix)
+                me.fireEvent("ipIPAMRebaseCloseForm");
             },
             failure: function(response) {
                 var message = "Error during rebase";
                 if(response.responseText) {
                     try {
                         message = Ext.decode(response.responseText).message
-                    }
-                    catch(err) {
+                    } catch(err) {
                         console.log(response.responseText)
                     }
                 }

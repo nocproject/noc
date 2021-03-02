@@ -562,3 +562,36 @@ table {
 .x-item-disabled, .x-item-disabled * {
   pointer-events: unset !important;
 }
+.pointer-cursor {
+    cursor: pointer;
+}
+
+.ipam {
+    width: 100%;
+    font-size: 12px;
+}
+
+.ipam th {
+    text-align: left;
+    border-bottom: 1px solid #7d7d7d;
+}
+
+.ipam td {
+    border-bottom: 1px solid #ddd;
+}
+
+.ipam tr:hover {
+    background-color: #f5f5f5;
+}
+
+.ipam-nav {
+    padding-right: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ipam-range {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
