@@ -10,8 +10,8 @@ from fastapi import APIRouter, Depends
 
 # NOC modules
 from noc.aaa.models.user import User
+from noc.core.service.deps.user import get_current_user
 from ..models.me import MeResponse, GroupItem
-from ..deps.user import get_current_user
 
 router = APIRouter()
 
