@@ -22,12 +22,16 @@ from noc.config import config
 
 
 class Command(BaseCommand):
-    STREAMS = [
+    # List of single-partitioned streams
+    STREAMS = []
+    # Streams, depending on slots
+    SLOT_STREAMS = [
         # slot name, stream name
         ("mx", "message"),
         ("kafkasender", "kafkasender"),
     ]
-    POOLED_STREAMS = [
+    # Pool-basend streams, depending on slots
+    POOLED_SLOT_STREAMS = [
         # slot name, stream name
         ("classifier-%s", "events.%s"),
         ("correlator-%s", "dispose.%s"),
@@ -65,12 +69,12 @@ class Command(BaseCommand):
 
     def iter_slot_streams(self) -> Tuple[str, str]:
         # Common streams
-        for slot_name, stream_name in self.STREAMS:
+        for slot_name, stream_name in self.SLOT_STREAMS:
             yield slot_name, stream_name
         # Pooled streams
         connect()
         for pool in Pool.objects.all():
-            for slot_mask, stream_mask in self.POOLED_STREAMS:
+            for slot_mask, stream_mask in self.POOLED_SLOT_STREAMS:
                 yield slot_mask % pool.name, stream_mask % pool.name
 
     def iter_limits(self) -> Tuple[str, int]:
@@ -79,6 +83,10 @@ class Command(BaseCommand):
             return await dcs.get_slot_limit(slot_name)
 
         dcs = get_dcs()
+        # Plain streams
+        for stream_name in self.STREAMS:
+            yield stream_name, 1
+        # Slot-based streams
         for slot_name, stream_name in self.iter_slot_streams():
             n_partitions = run_sync(get_slot_limits)
             if n_partitions:
