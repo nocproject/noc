@@ -14,7 +14,7 @@ import time
 import shutil
 import functools
 from io import StringIO, TextIOWrapper
-from typing import Any, Optional, Iterable, Tuple, List, Dict
+from typing import Any, Optional, Iterable, Tuple, List, Dict, Set
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -198,7 +198,7 @@ class BaseLoader(object):
             yield dm.parse_raw(line.replace("\\r", ""))
 
     def diff(
-        self, old: Iterable[BaseModel], new: Iterable[BaseModel]
+        self, old: Iterable[BaseModel], new: Iterable[BaseModel], include_fields: Set = None
     ) -> Iterable[Tuple[Optional[BaseModel], Optional[BaseModel]]]:
         """
         Compare old and new CSV files and yield pair of matches
@@ -227,7 +227,7 @@ class BaseLoader(object):
             else:
                 if n.id == o.id:
                     # Changed
-                    if n != o:
+                    if n.dict(include=include_fields) != o.dict(include=include_fields):
                         yield o, n
                     n = getnext(new)
                     o = getnext(old)
