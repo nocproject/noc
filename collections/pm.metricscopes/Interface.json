@@ -28,6 +28,14 @@
         {
             "is_required": false,
             "name": "unit"
+        },
+        {
+            "is_required": false,
+            "name": "queue"
+        },
+        {
+            "is_required": false,
+            "name": "traffic_class"
         }
     ],
     "enable_timedelta": true
