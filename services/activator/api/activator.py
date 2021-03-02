@@ -114,6 +114,9 @@ class ActivatorAPI(API):
             metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
+        except Exception as e:
+            result = None
+            self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oid, e)
         return result
 
     @staticmethod
@@ -144,6 +147,9 @@ class ActivatorAPI(API):
             metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
+        except Exception as e:
+            result = None
+            self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oid, e)
         return result
 
     @staticmethod
