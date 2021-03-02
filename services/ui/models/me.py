@@ -28,3 +28,4 @@ class MeResponse(BaseModel):
     last_name: Optional[str]
     email: Optional[str]
     groups: List[GroupItem]
+    language: str
