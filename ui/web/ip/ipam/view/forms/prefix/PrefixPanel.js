@@ -1,34 +1,35 @@
 //---------------------------------------------------------------------
 // ip.ipam Prefix panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.ip.ipam.PrefixPanel");
+console.debug("Defining NOC.ip.ipam.view.forms.prefix.PrefixPanel");
 
-Ext.define("NOC.ip.ipam.PrefixPanel", {
+Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
     extend: "NOC.core.FormPanel",
+    alias: "widget.ip.ipam.form.prefix",
     requires: [
-        "NOC.core.TagsField",
-        "NOC.core.StateField",
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.peer.as.LookupField",
         "NOC.vc.vc.LookupField",
-        "NOC.project.project.LookupField"
+        "NOC.project.project.LookupField",
+        "NOC.aaa.user.LookupField",
+        "NOC.aaa.group.LookupField"
     ],
     currentPrefixId: null,
     restUrl: "/ip/prefix/",
-
     viewModel: {
         data: {
             isNew: false
         }
     },
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
+        me.app = me.up("[itemId=ip-ipam]");
         me.rebaseButton = Ext.create("Ext.button.Button", {
             text: __("Rebase"),
             glyph: NOC.glyph.truck,
@@ -43,6 +44,11 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
 
         Ext.apply(me, {
             fields: [
+                {
+                    name: "id",
+                    xtype: "displayfield",
+                    hidden: true
+                },
                 {
                     name: "vrf",
                     xtype: "ip.vrf.LookupField",
@@ -157,7 +163,41 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     ],
                     labelWidth: 180,
                     uiStyle: "medium"
-                }
+                },
+                // {
+                //     name: "direct_permissions",
+                //     xtype: "gridfield",
+                //     fieldLabel: __("Permissions"),
+                //     columns: [
+                //         {
+                //             text: __("User"),
+                //             dataIndex: "user",
+                //             editor: "main.user.LookupField",
+                //             renderer: NOC.render.Lookup("user"),
+                //             width: 100
+                //         },
+                //         {
+                //             text: __("Group"),
+                //             dataIndex: "group",
+                //             editor: "main.group.LookupField",
+                //             renderer: NOC.render.Lookup("group"),
+                //             width: 150
+                //         },
+                //         {
+                //             text: __("Permission"),
+                //             dataIndex: "permission",
+                //             editor: {
+                //                 xtype: "combobox",
+                //                 store: [
+                //                     ["can_view", "can_view"],
+                //                     ["can_change", "can_change"],
+                //                     ["can_create", "can_create"]
+                //                 ]
+                //             },
+                //             width: 150
+                //         }
+                //     ]
+                // }
             ],
             formToolbar: [
                 me.rebaseButton
@@ -165,19 +205,31 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
         });
         me.callParent()
     },
-
-    preview: function (record, backItem) {
-        var me = this;
-        if(record.id) {
-            me.loadPrefix(record.id)
-        } else {
-            me.newPrefix(record.parentId, record.prefix)
-        }
-    },
-
     onClose: function() {
-        var me = this;
-        me.app.showCurrentPrefix()
+        this.close();
+    },
+    //
+    onRebase: function() {
+        var me = this,
+            values = me.getFormData(),
+            vrfField = me.getField("vrf"),
+            app = me.up("[itemId=ip-ipam]");
+        app.getViewModel().set("activeItem", "ipam-prefix-rebase");
+        app.down("[itemId=ipam-prefix-rebase]").preview({
+            id: me.currentPrefixId,
+            to_vrf: values.vrf,
+            to_vrf__label: vrfField.getRawValue(),
+            to_prefix: values.prefix
+        });
+    },
+    //
+    close: function() {
+        var me = this,
+            prefixId = me.getFormData().id;
+        if(me.getViewModel().get("isNew")) {
+            prefixId = me.up("[itemId=ip-ipam]").getViewModel().get("prefix.id");
+        }
+        me.fireEvent("ipIPAMPrefixFormClose", {id: prefixId});
     },
     //
     save: function(data) {
@@ -188,19 +240,17 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             method: me.currentPrefixId ? "PUT" : "POST",
             scope: me,
             jsonData: data,
-            success: function(response) {
-                var d = Ext.decode(response.responseText);
+            success: function() {
                 me.unmask();
                 NOC.msg.complete(__("Saved"));
-                me.app.showPrefix(d.vrf, d.afi, d.prefix)
+                me.close();
             },
             failure: function(response) {
                 var message = "Error saving record";
                 if(response.responseText) {
                     try {
                         message = Ext.decode(response.responseText).message
-                    }
-                    catch(err) {
+                    } catch(err) {
                         console.log(response.responseText)
                     }
                 }
@@ -208,6 +258,15 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                 NOC.error(message)
             }
         });
+    },
+    //
+    preview: function(record, backItem) {
+        var me = this;
+        if(record.id) {
+            me.loadPrefix(record.id)
+        } else {
+            me.newPrefix(record.parentId, record.prefix)
+        }
     },
     //
     // Load prefix to form
@@ -247,14 +306,12 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     values = {
                         "vrf": data.vrf,
                         "vrf__label": data.vrf__label,
-                        "afi": data.afi,
-                        "prefix_discovery_policy": "P",
-                        "address_discovery_policy": "P"
+                        "afi": data.afi
                     };
                 if(prefix) {
                     values.prefix = prefix
                 } else {
-                    values.prefix = me.app.getCommonPrefixPart(data.afi, data.prefix)
+                    values.prefix = me.getCommonPrefixPart(data.afi, data.prefix)
                 }
                 me.getViewModel().set("isNew", true);
                 me.setValues(values);
@@ -271,7 +328,9 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                prefixField.setStore(data.map(function(v) {return v.prefix}))
+                prefixField.setStore(data.map(function(v) {
+                    return v.prefix
+                }))
             }
         })
     },
@@ -286,18 +345,25 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
         console.log("setAFI", afi)
     },
     //
-    onRebase: function() {
-        var me = this,
-            values = me.getFormData(),
-            vrfField = me.getField("vrf");
-        me.app.previewItem(
-            me.app.ITEM_REBASE_FORM,
-            {
-                id: me.currentPrefixId,
-                to_vrf: values.vrf,
-                to_vrf__label: vrfField.getRawValue(),
-                to_prefix: values.prefix
+    getCommonPrefixPart: function(afi, prefix) {
+        var parts = prefix.split("/"),
+            net = parts[0],
+            mask = parseInt(parts[1]);
+
+        if(afi === "4") {
+            // IPv4
+            // Align to 8-bit border
+            var v = net.split(".").slice(0, Math.floor(mask / 8)).join(".");
+            if(v !== "") {
+                v = v + "."
             }
-        )
+            return v
+        } else {
+            // if p.mask < 16:
+            //     return ""
+            // # Align to 16-bit border
+            // p.mask = (p.mask // 16) * 16
+            // p = self.rx_ipv6_prefix_rest.sub("", p.normalized.prefix)
+        }
     }
 });

@@ -1,19 +1,22 @@
 //---------------------------------------------------------------------
 // ip.ipam Address panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2019 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.ip.ipam.AddressPanel");
+console.debug("Defining NOC.ip.ipam.view.forms.prefix.AddressPanel");
 
-Ext.define("NOC.ip.ipam.AddressPanel", {
+Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
     extend: "NOC.core.FormPanel",
+    alias: "widget.ip.ipam.address.form",
     requires: [
         "NOC.core.TagsField",
         "NOC.core.StateField",
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.sa.managedobject.LookupField"
+        "NOC.sa.managedobject.LookupField",
+        "NOC.aaa.user.LookupField",
+        "NOC.aaa.group.LookupField"
     ],
     currentAddressId: null,
     restUrl: "/ip/address/",
@@ -26,11 +29,16 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
         }
     },
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         Ext.apply(me, {
             fields: [
+                {
+                    name: "prefix",
+                    xtype: "displayfield",
+                    hidden: true
+                },
                 {
                     name: "vrf",
                     xtype: "ip.vrf.LookupField",
@@ -133,13 +141,47 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "displayfield",
                     fieldLabel: __("Source"),
                     allowBlank: true
-                }
+                },
+                // {
+                //     name: "direct_permissions",
+                //     xtype: "gridfield",
+                //     fieldLabel: __("Permissions"),
+                //     columns: [
+                //         {
+                //             text: __("User"),
+                //             dataIndex: "user",
+                //             editor: "main.user.LookupField",
+                //             renderer: NOC.render.Lookup("user"),
+                //             width: 100
+                //         },
+                //         {
+                //             text: __("Group"),
+                //             dataIndex: "group",
+                //             editor: "main.group.LookupField",
+                //             renderer: NOC.render.Lookup("group"),
+                //             width: 150
+                //         },
+                //         {
+                //             text: __("Permission"),
+                //             dataIndex: "permission",
+                //             editor: {
+                //                 xtype: "combobox",
+                //                 store: [
+                //                     ["can_view", "can_view"],
+                //                     ["can_change", "can_change"],
+                //                     ["can_create", "can_create"]
+                //                 ]
+                //             },
+                //             width: 150
+                //         }
+                //     ]
+                // }
             ]
         });
         me.callParent()
     },
-
-    preview: function (record, backItem) {
+    //
+    preview: function(record, backItem) {
         var me = this;
         if(record.id) {
             me.loadAddress(record.id)
@@ -147,10 +189,9 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
             me.newAddress(record.prefixId, record.address)
         }
     },
-
+    //
     onClose: function() {
-        var me = this;
-        me.app.showCurrentPrefix()
+        this.close();
     },
     //
     save: function(data) {
@@ -162,21 +203,16 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
             scope: me,
             jsonData: data,
             success: function(response) {
-                var d = Ext.decode(response.responseText),
-                    // Get prefix from prefix__label
-                    pparts = d.prefix__label.split(": "),
-                    prefix = pparts[pparts.length - 1];
                 me.unmask();
                 NOC.msg.complete(__("Saved"));
-                me.app.showPrefix(d.vrf, d.afi, prefix)
+                me.close();
             },
             failure: function(response) {
                 var message = "Error saving record";
                 if(response.responseText) {
                     try {
                         message = Ext.decode(response.responseText).message
-                    }
-                    catch(err) {
+                    } catch(err) {
                         console.log(response.responseText)
                     }
                 }
@@ -184,6 +220,14 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                 NOC.error(message)
             }
         });
+    },
+    close: function() {
+        var me = this,
+            prefixId = me.getFormData().prefix;
+        if(me.getViewModel().get("isNew")) {
+            prefixId = me.up("[itemId=ip-ipam]").getViewModel().get("prefix.id");
+        }
+        me.fireEvent("ipIPAMAddressCloseForm", {id: prefixId});
     },
     //
     // Load address to form

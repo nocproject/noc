@@ -521,6 +521,7 @@ NOC.glyph = {
     "html5": 0xf13b,
     "i-cursor": 0xf246,
     "i_cursor": 0xf246,
+    "id_card_o": 0xf2c3,
     "ils": 0xf20b,
     "image": 0xf03e,
     "inbox": 0xf01c,
