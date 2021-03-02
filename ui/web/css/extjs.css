@@ -402,10 +402,9 @@ table {
 
 .x-form-trigger.fa {
   display: table-cell;
-  background-image: none !important;
-  padding-top: 2px;
+  background: 0 0 transparent url(images/form/trigger-tpl.gif) no-repeat;
+  padding-top: 4px;
   border: 1px solid #b5b8c8;
-  background-color: #d7dbed;
 }
 
 .noc-wc-state-base-body {

@@ -140,6 +140,13 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
             scope: this,
             success: function(response) {
                 var value = Ext.decode(response.responseText);
+                if(value.hasOwnProperty("state")){
+                    value.state = {
+                        value: value.state,
+                        label: value.state__label,
+                        itemId: value.id
+                    };
+                }
                 this.getViewModel().set(variable, value);
                 if(Ext.String.endsWith(hash, "//")) { // change vrf_id on prefix_id
                     hash = "contents/" + value.id;
