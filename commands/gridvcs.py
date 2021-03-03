@@ -52,7 +52,17 @@ class Command(BaseCommand):
         # compress command
         subparsers.add_parser("compress", help="Apply compression")
         # stats command
-        subparsers.add_parser("stats", help="Show stats")
+        stat_parser = subparsers.add_parser("stats", help="Show stats")
+        stat_parser.add_argument("--top", default=0, type=int, help="Top device by size")
+        #
+        bucket_parser = subparsers.add_parser("bucket", help="Show stats by backets")
+        bucket_parser.add_argument("--backets", default=5, help="Bucket count")
+        bucket_parser.add_argument(
+            "--min-size", default=128000, type=int, help="Top device by size"
+        )
+        bucket_parser.add_argument(
+            "--detail", default=False, action="store_true", help="Show bucket elements"
+        )
         # mirror command
         sp_mirr = subparsers.add_parser("mirror", help="Mirror repo")
         sp_mirr.add_argument(
@@ -103,7 +113,7 @@ class Command(BaseCommand):
             if cfg:
                 self.vcs.put(obj, cfg, rev.ts)
 
-    def handle_stats(self, *args, **options):
+    def handle_stats(self, *args, top=25, **options):
         files = self.vcs.fs._GridFS__files
         chunks = self.vcs.fs._GridFS__chunks
         db = files.database
@@ -113,11 +123,59 @@ class Command(BaseCommand):
         fstats = db.command("collstats", files.name)
         cstats = db.command("collstats", chunks.name)
         ssize = fstats["storageSize"] + cstats["storageSize"]
-        self.print("%s repo summary:" % self.repo)
-        self.print("Objects  : %d" % obj_count)
-        self.print("Revisions: %d (%.2f rev/object)" % (rev_count, float(rev_count) / obj_count))
-        self.print("Chunks   : %d" % chunks_count)
-        self.print("Size     : %d (%d bytes/object)" % (ssize, int(ssize / obj_count)))
+        self.print(f"%s repo summary:" % self.repo)
+        self.print(f"Objects  : {obj_count}")
+        self.print(f"Revisions: {rev_count} (%.2f rev/object)" % (float(rev_count) / obj_count))
+        self.print(f"Chunks   : {chunks_count}")
+        self.print(f"Size     : {ssize} (%d bytes/object)" % int(ssize / obj_count))
+        if top:
+            self.print(f"Top {top}")
+            for t in files.aggregate(
+                [
+                    {"$group": {"_id": "$object", "size": {"$sum": "$length"}}},
+                    {"$sort": {"size": -1}},
+                    {"$limit": top},
+                ]
+            ):
+                o = self.clean_id(t["_id"])
+                if self.repo == "config":
+                    from noc.sa.models.managedobject import ManagedObject
+
+                    o = ManagedObject.objects.get(id=o)
+                self.print("Object '%s' : %d kbytes)" % (o, int(t["size"] / 1024)))
+
+    def handle_bucket(self, min_size=128000, buckets=5, detail=False, *args, **options):
+        r = self.get_bucket(buckets=buckets, min_size=min_size)
+        for num, bucket in enumerate(r):
+            self.print("\n", "=" * 80)
+            self.print(
+                f"Bucket {num}:    Count: %d; Size %d kb - %d kb"
+                % (bucket["count"], bucket["_id"]["min"] / 1024, bucket["_id"]["max"] / 1024)
+            )
+            if detail:
+                for o in bucket["objects"]:
+                    if self.repo == "config":
+                        from noc.sa.models.managedobject import ManagedObject
+
+                        o = ManagedObject.objects.get(id=o)
+                    self.print(f"Object:  {o}")
+            else:
+                self.print("Ids: ".join(bucket["objects"]))
+
+    def get_bucket(self, min_size=None, buckets=5):
+        return self.vcs.fs._GridFS__files.aggregate(
+            [
+                {"$group": {"_id": "$object", "size": {"$sum": "$length"}}},
+                {"$match": {"size": {"$gte": min_size}}},
+                {
+                    "$bucketAuto": {
+                        "groupBy": "$size",
+                        "buckets": buckets,
+                        "output": {"count": {"$sum": 1}, "objects": {"$push": "$_id"}},
+                    }
+                },
+            ]
+        )
 
     def handle_mirror(self, split=False, path=None, *args, **options):
         from noc.sa.models.managedobject import ManagedObject
