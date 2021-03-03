@@ -94,6 +94,10 @@ class Script(BaseScript):
                 else:
                     # CISCO-ENTITY-MIB::entPhysicalModelName
                     p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1])
+                    if not p:
+                        # Found in WS-C650X-E
+                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 2])
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 2])
                     # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
                     if p is None or p.strip() in ["", "MIDPLANE"]:
                         # Found in WS-C4500X-32 and WS-C4900M
@@ -103,8 +107,12 @@ class Script(BaseScript):
                             # Found on C2600 series
                             p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1])
                             s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
-                    else:
+                    elif not s:
                         s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
+                    if p in ["Catalyst 37xx Switch Stack", "Catalyst C29xx Switch Stack"]:
+                        # Found on 37xx and C29xx
+                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 2001])
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 2001])
                     if p:
                         p = p.strip()  # Cisco 3845 return 'CISCO3845         '
                         if p.startswith("CISCO"):
