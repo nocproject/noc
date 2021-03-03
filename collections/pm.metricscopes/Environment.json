@@ -8,22 +8,35 @@
         "field_name": "managed_object",
         "model": "sa.ManagedObject"
     }],
-    "path": [
+    "enable_timedelta": false,
+    "labels": [
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "chassis"
+            "label": "noc::chassis::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "slot"
+            "label": "noc::slot::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "module"
+            "label": "noc::module::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "name"
+            "label": "noc::name::*"
         }
     ]
 }

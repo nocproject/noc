@@ -8,19 +8,28 @@
         "field_name": "managed_object",
         "model": "sa.ManagedObject"
     }],
-    "path": [
+    "enable_timedelta": true,
+    "labels": [
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "instance"
+            "label": "noc::instance::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "local_endpoint"
+            "label": "noc::local_endpoint::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "remote_endpoint"
+            "label": "noc::remote_endpoint::*"
         }
-    ],
-    "enable_timedelta": true
+    ]
 }

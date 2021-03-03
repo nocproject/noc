@@ -8,27 +8,56 @@
         "field_name": "managed_object",
         "model": "sa.ManagedObject"
     }],
-    "path": [
+    "enable_timedelta": false,
+    "labels": [
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "chassis"
+            "label": "noc::chassis::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "slot"
+            "label": "noc::slot::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "module"
+            "label": "noc::module::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "port"
+            "label": "noc::port::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "unit"
+            "label": "noc::unit::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::queue::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::traffic_class::*"
         }
-    ],
-    "enable_timedelta": true
+    ]
 }

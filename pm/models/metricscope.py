@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MetricScope model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,20 +45,42 @@ class KeyField(EmbeddedDocument):
         return "UInt64"
 
 
-class PathItem(EmbeddedDocument):
-    name = StringField()
-    is_required = BooleanField()
-    # Default value, when empty
-    default_value = StringField()
+class LabelItem(EmbeddedDocument):
+    # Wildcard label, noc::<scope>::* is preferable
+    label = StringField()
+    is_required = BooleanField(default=False)
+    # Store data in separate table column `store_field`, if not empty
+    # store in `labels` field otherwise
+    store_column = StringField()
+    # Create separate view column `view_column`, if not empty.
+    # Otherwise, create separate view column `store_column` if set.
+    # Do not create view column otherwise.
+    view_column = StringField()
+    # Part of primary key, implies `store_column` if set
+    is_primary_key = BooleanField(default=False)
+    # Part of order key
+    is_order_key = BooleanField(default=False)
+    # Legacy path component, for transition period
+    # Path position is determined by item position.
+    # Do not set for newly created scopes
+    is_path = BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.label
 
     def to_json(self):
-        v = {"name": self.name, "is_required": bool(self.is_required)}
-        if self.default_value:
-            v["default_value"] = self.default_value
-        return v
+        r = {
+            "label": self.label,
+            "is_required": self.is_required,
+            "is_primary_key": self.is_primary_key,
+            "is_order_key": self.is_order_key,
+            "is_path": self.is_path,
+        }
+        if self.store_column:
+            r["store_column"] = self.store_column
+        if self.view_column:
+            r["view_column"] = self.view_column
+        return r
 
 
 @on_delete_check(check=[("pm.MetricType", "scope")])
@@ -77,7 +99,7 @@ class MetricScope(Document):
     table_name = StringField()
     description = StringField(required=False)
     key_fields = ListField(EmbeddedDocumentField(KeyField))
-    path = ListField(EmbeddedDocumentField(PathItem))
+    labels = ListField(EmbeddedDocumentField(LabelItem))
     enable_timedelta = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -99,7 +121,7 @@ class MetricScope(Document):
             "table_name": self.table_name,
             "description": self.description,
             "key_fields": [kf.to_json() for kf in self.key_fields],
-            "path": [p.to_json() for p in self.path],
+            "labels": [p.to_json() for p in self.labels],
             "enable_timedelta": self.enable_timedelta,
         }
         return r
@@ -119,7 +141,7 @@ class MetricScope(Document):
         )
 
     def get_json_path(self):
-        return "%s.json" % self.name
+        return f"{self.name}.json"
 
     def iter_fields(self):
         """
@@ -173,12 +195,12 @@ class MetricScope(Document):
             )
         )
 
-    def get_create_view_sql(cls):
-        view = cls._get_db_table()
+    def get_create_view_sql(self):
+        view = self._get_db_table()
         if config.clickhouse.cluster:
-            src = cls._get_distributed_db_table()
+            src = self._get_distributed_db_table()
         else:
-            src = cls._get_raw_db_table()
+            src = self._get_raw_db_table()
         return f"CREATE OR REPLACE VIEW {view} AS SELECT * FROM {src}"
 
     def _get_db_table(self):
@@ -215,17 +237,12 @@ class MetricScope(Document):
             after = None
             for f, t in self.iter_fields():
                 if f not in existing:
-                    ch.execute(
-                        post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (table_name, f, t, after)
-                    )
+                    ch.execute(post=f"ALTER TABLE {table_name} ADD COLUMN {f} {t} AFTER {after}")
                     c = True
                 after = f
                 if f in existing and existing[f] != t:
-                    print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], t))
-                    print(
-                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
-                        % (table_name, f, t)
-                    )
+                    print(f"Warning! Type mismatch for column {f}: {existing[f]} <> {t}")
+                    print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
             return c
 
         changed = False

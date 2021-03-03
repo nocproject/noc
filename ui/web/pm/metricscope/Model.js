@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // pm.metricscope Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.pm.metricscope.Model");
@@ -32,7 +32,7 @@ Ext.define("NOC.pm.metricscope.Model", {
             type: "string"
         },
         {
-            name: "path",
+            name: "labels",
             type: "auto"
         },
         {

@@ -8,14 +8,21 @@
         "field_name": "managed_object",
         "model": "sa.ManagedObject"
     }],
-    "path": [
+    "enable_timedelta": false,
+    "labels": [
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "vr"
+            "label": "noc::vr::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "instance"
+            "label": "noc::instance::*"
         }
     ]
 }
