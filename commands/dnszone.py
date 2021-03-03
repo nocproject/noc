@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # Import DNS Zone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import argparse
 import re
+import subprocess
 from itertools import zip_longest
 
 # NOC modules
@@ -21,8 +22,9 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
 from noc.core.validators import is_int
 from noc.core.dns.rr import RR
+from noc.config import config
 from noc.core.text import split_alnum
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, smart_bytes
 
 
 class Command(BaseCommand):
@@ -54,6 +56,27 @@ class Command(BaseCommand):
             help="Forcefully update FQDN for A records",
         ),
         import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to zone files")
+        import_parser.add_argument(
+            "--axfr",
+            action="store_true",
+            help="Upload list of allocated IP addresses from existing DNS servers via AXFR request",
+        )
+        import_parser.add_argument(
+            "--nameserver",
+            dest="nameserver",
+            action="store",
+            help="Name server IP address. NS must have zone transfer enabled for NOC host",
+        ),
+        import_parser.add_argument(
+            "--transfer-zone",
+            dest="transfer_zone",
+            action="store",
+            help="DNS Zone name to transfer",
+        ),
+        import_parser.add_argument(
+            "--source", dest="source", action="store", help="Source address to issue zone transfer"
+        )
+        self.print((import_parser.print_help()))
 
     RR_TYPES = [
         "A",
@@ -98,61 +121,179 @@ class Command(BaseCommand):
     def handle_import(
         self,
         paths,
+        axfr=False,
         force=False,
         clean=False,
         dry_run=False,
         zone_profile=None,
         address_profile=None,
+        source=None,
+        transfer_zone=None,
+        nameserver=None,
     ):
-        if not zone_profile:
+        if not axfr and not zone_profile:
             self.die("--zone-profile is not set")
         if not address_profile:
             self.die("--address-profile is not set")
         zp = DNSZoneProfile.get_by_name(zone_profile)
-        if not zp:
+        if not axfr and not zp:
             self.die("Invalid zone profile '%s'" % zone_profile)
         ap = AddressProfile.get_by_name(address_profile)
         if not ap:
             self.die("Invalid address profile '%s'" % address_profile)
-        for path in paths:
+        if paths:
+            for path in paths:
+                self.import_zone(
+                    path=path,
+                    force=force,
+                    clean=clean,
+                    dry_run=dry_run,
+                    zone_profile=zp,
+                    address_profile=ap,
+                )
+        if axfr:
+            if not source:
+                self.die("--source is not set")
+            if not transfer_zone:
+                self.die("--transfer_zone is not set")
+            if not nameserver:
+                self.die("--nameserver is not set")
             self.import_zone(
-                path, force=force, clean=clean, dry_run=dry_run, zone_profile=zp, address_profile=ap
+                axfr=axfr,
+                force=force,
+                clean=clean,
+                dry_run=dry_run,
+                zone_profile=zp,
+                address_profile=ap,
+                transfer_zone=transfer_zone,
+                nameserver=nameserver,
+                source_address=source,
             )
 
+    def load_axfr(self, nameserver, transfer_zone, source_address):
+        opts = []
+        opts += ["-b", source_address]
+        pipe = subprocess.Popen(
+            [config.path.dig] + opts + ["axfr", "@%s" % nameserver, transfer_zone],
+            shell=False,
+            stdout=subprocess.PIPE,
+        ).stdout
+        data = pipe.read()
+        pipe.close()
+        return smart_text(smart_bytes(data)).split("\n")
+
+    def dns_zone(self, zone, zone_profile, dry_run=False, clean=False):
+        z = DNSZone.get_by_name(zone)
+        if z:
+            self.print("Using existing zone '%s'" % zone)
+        else:
+            self.print("Creating zone '%s'" % zone)
+            z = DNSZone(name=zone, profile=zone_profile)
+            clean = False  # Nothing to clean
+        if z.profile.id != zone_profile.id:
+            self.print("Setting profile to '%s'" % zone_profile.name)
+            z.profile = zone_profile
+        # Apply changes
+        if dry_run:
+            z.clean()  # Set type
+        else:
+            z.save()
+        #  Clean zone when necessary
+        if clean:
+            self.print("Cleaning zone")
+            for rr in DNSZoneRecord.objects.filter(zone=z):
+                self.print("Removing %s %s" % (rr.type, rr.name))
+                if not dry_run:
+                    rr.delete()
+        return z
+
     def import_zone(
-        self, path, zone_profile, address_profile, dry_run=False, force=False, clean=False
+        self,
+        path=None,
+        axfr=False,
+        zone_profile=None,
+        address_profile=None,
+        transfer_zone=None,
+        nameserver=None,
+        source_address=None,
+        dry_run=False,
+        force=False,
+        clean=False,
     ):
         self.print("Loading zone file '%s'" % path)
         self.print("Parsing zone file using BIND parser")
-        with open(path) as f:
-            rrs = self.iter_bind_zone_rr(f)
-            try:
-                soa = next(rrs)
-            except StopIteration:
-                raise CommandError("Unable to parse zone file from %s" % path)
-            zone = self.from_idna(soa.zone)
-            z = DNSZone.get_by_name(zone)
-            if z:
-                self.print("Using existing zone '%s'" % zone)
-            else:
-                self.print("Creating zone '%s'" % zone)
-                z = DNSZone(name=zone, profile=zone_profile)
-                clean = False  # Nothing to clean
-            if z.profile.id != zone_profile.id:
-                self.print("Setting profile to '%s'" % zone_profile.name)
-                z.profile = zone_profile
-            # Apply changes
-            if dry_run:
-                z.clean()  # Set type
-            else:
-                z.save()
-            #  Clean zone when necessary
-            if clean:
-                self.print("Cleaning zone")
-                for rr in DNSZoneRecord.objects.filter(zone=z):
-                    self.print("Removing %s %s" % (rr.type, rr.name))
-                    if not dry_run:
-                        rr.delete()
+        if path:
+            with open(path) as f:
+                rrs = self.iter_bind_zone_rr(f)
+                try:
+                    soa = next(rrs)
+                except StopIteration:
+                    raise CommandError("Unable to parse zone file from %s" % path)
+                zone = self.from_idna(soa.zone)
+                z = self.dns_zone(zone, zone_profile, dry_run, clean)
+                # Populate zone
+                vrf = VRF.get_global()
+                zz = zone + "."
+                lz = len(zz)
+                if z.is_forward:
+                    zp = None
+                elif z.is_reverse_ipv4:
+                    # Calculate prefix for reverse zone
+                    zp = ".".join(reversed(zone[:-13].split("."))) + "."
+                elif z.is_reverse_ipv6:
+                    raise CommandError("IPv6 reverse import is not implemented")
+                else:
+                    raise CommandError("Unknown zone type")
+                for rr in rrs:
+                    name = rr.name
+                    if name.endswith(zz):
+                        name = name[:-lz]
+                    if name.endswith("."):
+                        name = name[:-1]
+                    # rr = None
+                    # Skip zone NS
+                    if rr.type == "NS" and not name:
+                        continue
+                    if rr.type in ("A", "AAAA"):
+                        self.create_address(
+                            zone,
+                            vrf,
+                            rr.rdata,
+                            "%s.%s" % (name, zone) if name else zone,
+                            address_profile,
+                            dry_run=dry_run,
+                            force=force,
+                        )
+                    elif rr.type == "PTR":
+                        if "." in name:
+                            address = zp + ".".join(reversed(name.split(".")))
+                        else:
+                            address = zp + name
+                        self.create_address(
+                            zone,
+                            vrf,
+                            address,
+                            rr.rdata,
+                            address_profile,
+                            dry_run=dry_run,
+                            force=force,
+                        )
+                    else:
+                        zrr = DNSZoneRecord(
+                            zone=z,
+                            name=name,
+                            type=rr.type,
+                            ttl=rr.ttl,
+                            priority=rr.priority,
+                            content=rr.rdata,
+                        )
+                        self.print("Creating %s %s" % (rr.type, rr.name))
+                        if not dry_run:
+                            zrr.save()
+        if axfr:
+            data = self.load_axfr(nameserver, transfer_zone, source_address)
+            zone = self.from_idna(transfer_zone)
+            z = self.dns_zone(zone, zone_profile, dry_run, clean)
             # Populate zone
             vrf = VRF.get_global()
             zz = zone + "."
@@ -166,59 +307,59 @@ class Command(BaseCommand):
                 raise CommandError("IPv6 reverse import is not implemented")
             else:
                 raise CommandError("Unknown zone type")
-            for rr in rrs:
-                name = rr.name
-                if name.endswith(zz):
-                    name = name[:-lz]
-                if name.endswith("."):
-                    name = name[:-1]
-                # rr = None
-                # Skip zone NS
-                if rr.type == "NS" and not name:
+            for row in data:
+                row = row.strip()
+                if row == "" or row.startswith(";"):
                     continue
-                if rr.type in ("A", "AAAA"):
+                row = row.split()
+
+                if len(row) != 5 or row[2] != "IN" or row[3] not in ("A", "AAAA", "PTR"):
+                    continue
+                if row[3] in ("A", "AAAA"):
+                    name = row[0]
+                    if name.endswith(zz):
+                        name = name[:-lz]
+                    if name.endswith("."):
+                        name = name[:-1]
                     self.create_address(
                         zone,
                         vrf,
-                        rr.rdata,
+                        row[4],
                         "%s.%s" % (name, zone) if name else zone,
                         address_profile,
                         dry_run=dry_run,
                         force=force,
                     )
-                elif rr.type == "PTR":
-                    if "." in name:
-                        address = zp + ".".join(reversed(name.split(".")))
+                if row[3] == "PTR":
+                    name = row[4]
+                    if name.endswith(zz):
+                        name = name[:-lz]
+                    if name.endswith("."):
+                        name = name[:-1]
+                    # @todo: IPv6
+                    if "." in row[0]:
+                        address = ".".join(reversed(row[0].split(".")[:-3]))
                     else:
                         address = zp + name
+                    fqdn = row[4]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
                     self.create_address(
-                        zone, vrf, address, rr.rdata, address_profile, dry_run=dry_run, force=force
+                        zone, vrf, address, fqdn, address_profile, dry_run=dry_run, force=force
                     )
-                else:
-                    zrr = DNSZoneRecord(
-                        zone=z,
-                        name=name,
-                        type=rr.type,
-                        ttl=rr.ttl,
-                        priority=rr.priority,
-                        content=rr.rdata,
-                    )
-                    self.print("Creating %s %s" % (rr.type, rr.name))
-                    if not dry_run:
-                        zrr.save()
 
     def create_address(self, zone, vrf, address, fqdn, address_profile, dry_run=False, force=False):
         """
         Create IPAM record
         """
         afi = "6" if ":" in address else "4"
-        a = Address.objects.filter(vrf=vrf, afi=afi, address=address)[:1]
+        a = Address.objects.filter(vrf=vrf, afi=afi, address=address).first()
         if a:
-            a = a[0]
             if force:
                 if a.fqdn != fqdn:
                     self.print("Updating FQDN %s (%s)" % (a.address, a.fqdn))
                     a.fqdn = fqdn
+                    a.name = fqdn
                     if not dry_run:
                         a.save()
             else:
@@ -233,6 +374,7 @@ class Command(BaseCommand):
                 address=address,
                 profile=address_profile,
                 fqdn=fqdn,
+                name=fqdn,
                 description="Imported from %s zone" % zone,
             )
             self.print("Creating address %s (%s)" % (a.address, a.fqdn))
@@ -348,16 +490,16 @@ class Command(BaseCommand):
         zone = None
         ttl = None
         seen_soa = False
-        for l in self.iter_zone_lines(data):
-            if l.startswith("$TTL "):
-                ttl = self.parse_ttl(l[5:])
+        for line in self.iter_zone_lines(data):
+            if line.startswith("$TTL "):
+                ttl = self.parse_ttl(line[5:])
                 continue
-            if l.startswith("$ORIGIN "):
-                zone = l[8:].strip()
+            if line.startswith("$ORIGIN "):
+                zone = line[8:].strip()
                 continue
             if not seen_soa:
                 # Wait for SOA
-                match = self.rx_soa.match(l)
+                match = self.rx_soa.match(line)
                 if match:
                     z = match.group("zone")
                     if z and z != "@":
@@ -374,7 +516,7 @@ class Command(BaseCommand):
                     )
                     seen_soa = True
             else:
-                parts = l.split()
+                parts = line.split()
                 if parts[0] == "IN" or parts[0] in self.RR_TYPES:
                     # missed name
                     parts = [""] + parts
