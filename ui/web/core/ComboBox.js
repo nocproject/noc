@@ -25,7 +25,6 @@ Ext.define("NOC.core.ComboBox", {
     stateful: false,
     autoSelect: false,
     pageSize: true,
-    labelAlign: "top",
     width: "100%",
     listConfig: {
         minWidth: 240

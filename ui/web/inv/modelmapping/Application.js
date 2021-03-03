@@ -81,6 +81,7 @@ Ext.define("NOC.inv.modelmapping.Application", {
             name: "model",
             xtype: "inv.objectmodel.LookupField",
             fieldLabel: __("Model"),
+            uiStyle: "large",
             allowBlank: false
         },
         {

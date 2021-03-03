@@ -9,5 +9,5 @@ console.debug("Defining NOC.main.chpolicy.LookupField");
 Ext.define("NOC.main.chpolicy.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.main.chpolicy.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

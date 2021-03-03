@@ -9,5 +9,5 @@ console.debug("Defining NOC.main.timepattern.LookupField");
 Ext.define("NOC.main.timepattern.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.main.timepattern.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

@@ -9,5 +9,5 @@ console.debug("Defining NOC.phone.numbercategory.LookupField");
 Ext.define("NOC.phone.numbercategory.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.phone.numbercategory.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

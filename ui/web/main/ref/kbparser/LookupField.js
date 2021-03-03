@@ -9,6 +9,6 @@ console.debug("Defining NOC.main.ref.kbparser.LookupField");
 Ext.define("NOC.main.ref.kbparser.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.kbparser.LookupField",
-    uiStyle: "medium",
+    uiStyle: "medium-combo",
     askPermission: false
 });

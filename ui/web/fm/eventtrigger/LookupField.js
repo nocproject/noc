@@ -9,5 +9,5 @@ console.debug("Defining NOC.fm.eventtrigger.LookupField");
 Ext.define("NOC.fm.eventtrigger.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.fm.eventtrigger.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

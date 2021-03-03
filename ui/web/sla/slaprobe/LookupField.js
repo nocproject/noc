@@ -9,5 +9,5 @@ console.debug("Defining NOC.sla.slaprobe.LookupField");
 Ext.define("NOC.sla.slaprobe.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.sla.slaprobe.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

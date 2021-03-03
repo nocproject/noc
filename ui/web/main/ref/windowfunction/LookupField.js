@@ -9,6 +9,6 @@ console.debug("Defining NOC.main.ref.windowfunction.LookupField");
 Ext.define("NOC.main.ref.windowfunction.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.windowfunction.LookupField",
-    uiStyle: "medium",
+    uiStyle: "medium-combo",
     askPermission: false
 });

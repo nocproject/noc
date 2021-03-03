@@ -74,6 +74,7 @@ Ext.define("NOC.main.messageroute.Application", {
                     name: "type",
                     xtype: "main.ref.messagetype.LookupField",
                     fieldLabel: __("Type"),
+                    labelAlign: "left",
                     allowBlank: false
                 },
                 {

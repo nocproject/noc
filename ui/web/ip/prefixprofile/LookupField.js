@@ -9,5 +9,5 @@ console.debug("Defining NOC.ip.prefixprofile.LookupField");
 Ext.define("NOC.ip.prefixprofile.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.ip.prefixprofile.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });
