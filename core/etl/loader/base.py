@@ -207,38 +207,32 @@ class BaseLoader(object):
         * None, new -- when added
         """
 
-        def getnext(g):
-            try:
-                return next(g)
-            except StopIteration:
-                return None
-
-        o = getnext(old)
-        n = getnext(new)
+        o = next(old, None)
+        n = next(new, None)
         while o or n:
             if not o:
                 # New
                 yield None, n
-                n = getnext(new)
+                n = next(new, None)
             elif not n:
                 # Removed
                 yield o, None
-                o = getnext(old)
+                o = next(old, None)
             else:
                 if n.id == o.id:
                     # Changed
                     if n.dict(include=include_fields) != o.dict(include=include_fields):
                         yield o, n
-                    n = getnext(new)
-                    o = getnext(old)
+                    n = next(new, None)
+                    o = next(old, None)
                 elif n.id < o.id:
                     # Added
                     yield None, n
-                    n = getnext(new)
+                    n = next(new, None)
                 else:
                     # Removed
                     yield o, None
-                    o = getnext(old)
+                    o = next(old, None)
 
     def load(self):
         """
