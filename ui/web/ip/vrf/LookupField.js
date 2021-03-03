@@ -9,5 +9,5 @@ console.debug("Defining NOC.ip.vrf.LookupField");
 Ext.define("NOC.ip.vrf.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.ip.vrf.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

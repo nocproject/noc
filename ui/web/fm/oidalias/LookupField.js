@@ -9,5 +9,5 @@ console.debug("Defining NOC.fm.oidalias.LookupField");
 Ext.define("NOC.fm.oidalias.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.fm.oidalias.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

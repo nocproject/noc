@@ -9,5 +9,5 @@ console.debug("Defining NOC.pm.metrictype.LookupField");
 Ext.define("NOC.pm.metrictype.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.pm.metrictype.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

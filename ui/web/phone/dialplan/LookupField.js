@@ -9,5 +9,5 @@ console.debug("Defining NOC.phone.dialplan.LookupField");
 Ext.define("NOC.phone.dialplan.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.phone.dialplan.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

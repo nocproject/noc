@@ -9,5 +9,5 @@ console.debug("Defining NOC.main.pyrule.LookupField");
 Ext.define("NOC.main.ref.interface.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.interface.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

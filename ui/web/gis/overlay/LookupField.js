@@ -9,5 +9,5 @@ console.debug("Defining NOC.gis.overlay.LookupField");
 Ext.define("NOC.gis.overlay.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.gis.overlay.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

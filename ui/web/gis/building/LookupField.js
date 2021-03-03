@@ -9,5 +9,5 @@ console.debug("Defining NOC.gis.building.LookupField");
 Ext.define("NOC.gis.building.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.gis.building.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

@@ -9,5 +9,5 @@ console.debug("Defining NOC.cm.objectvalidationpolicy.LookupField");
 Ext.define("NOC.cm.objectvalidationpolicy.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.cm.objectvalidationpolicy.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

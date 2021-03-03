@@ -9,5 +9,5 @@ console.debug("Defining NOC.inv.connectionrule.LookupField");
 Ext.define("NOC.inv.connectionrule.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.inv.connectionrule.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });

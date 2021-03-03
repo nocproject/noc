@@ -9,5 +9,5 @@ console.debug("Defining NOC.inv.interfaceprofile.LookupField");
 Ext.define("NOC.inv.interfaceprofile.LookupField", {
     extend: "NOC.core.ComboBox",
     alias: "widget.inv.interfaceprofile.LookupField",
-    uiStyle: "medium"
+    uiStyle: "medium-combo"
 });
