@@ -138,6 +138,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
         Ext.Ajax.request({
             url: me.getViewModel().get("alarmUrl") + cmd,
             method: "POST",
+            headers: {"Content-Type": "application/json;"},
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
