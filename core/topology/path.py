@@ -18,6 +18,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 from .goal.base import BaseGoal
+from .goal.managedobject import ManagedObjectGoal
 from .constraint.base import BaseConstraint
 
 MAX_PATH_LENGTH = 0xFFFFFFFF
@@ -35,16 +36,15 @@ def get_shortest_path(start: ManagedObject, goal: ManagedObject) -> List[Managed
     :param goal: Ending managed object's id
     :return:
     """
-    finder = KSPFinder(start, goal)
-    for path in finder.find_shortest_path():  # type: PathInfo
-        r: List[ManagedObject] = []
-        pi = None
-        for pi in path:
-            r += [pi.start]
-        if pi:
-            r += [pi.end]
-        return r
-    raise ValueError("Path not found")
+    finder = KSPFinder(start, ManagedObjectGoal(goal))
+    r: List[ManagedObject] = []
+    path = finder.find_shortest_path()
+    if not path:
+        raise ValueError("Path not found")
+    for pi in path:  # type: PathInfo
+        r += [pi.start]
+    r += [pi.end]
+    return r
 
 
 class KSPFinder(object):
@@ -212,9 +212,9 @@ class KSPFinder(object):
             # Get neighbors of current and their distances
             seen_neighbors = set()  # type: Set[int]
             dist = {}  # type: Dict[int, int]
-            for l in iter_links(current):
+            for ll in iter_links(current):
                 new_neighbors = (
-                    set(l.linked_objects) - closed_set
+                    set(ll.linked_objects) - closed_set
                 )  # Current is already in closed set
                 seen_neighbors |= new_neighbors
                 for mo in new_neighbors:
