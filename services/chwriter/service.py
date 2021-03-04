@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # chwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -84,12 +84,15 @@ class CHWriterService(FastAPIService):
             asyncio.create_task(self.process_stream(stream))
             await asyncio.sleep(0.25)  # Shift subscriptions in time
 
+    def get_cursor_id(self) -> str:
+        return f"chwriter-{config.chwriter.replica_id}"
+
     async def process_stream(self, stream: str) -> None:
         self.logger.info("[%s] Subscribing", stream)
         table = stream[3:]
         channel = Channel(self, table)
         self.channels[table] = channel
-        cursor_id = f"chwriter-{config.chwriter.replica_id}"
+        cursor_id = self.get_cursor_id()
         async with LiftBridgeClient() as client:
             async for msg in client.subscribe(
                 stream=stream,
@@ -97,73 +100,76 @@ class CHWriterService(FastAPIService):
                 start_position=StartPosition.RESUME,
                 cursor_id=cursor_id,
             ):
-                offset = await channel.feed(msg)
-                if offset:
-                    # Data has been flushed, save cursor
-                    await client.set_cursor(
-                        stream,
-                        partition=config.chwriter.shard_id,
-                        cursor_id=cursor_id,
-                        offset=offset,
-                    )
+                await channel.feed(msg)
 
     async def flush_data(self):
         """
         Flush data
         :return:
         """
-        while not self.stopping:
-            ch = await self.flush_queue.get()
-            n_records = ch.records
-            while True:
-                try:
-                    self.logger.info("[%s] Sending %d records", ch.table, n_records)
-                    t0 = perf_counter()
-                    url = (
-                        f"http://{self.ch_address}/?"
-                        f"user={config.clickhouse.rw_user}&"
-                        f"password={config.clickhouse.rw_password or ''}&"
-                        f"database={config.clickhouse.db}&"
-                        f"query={ch.q_sql}"
-                    )
-                    code, headers, body = await fetch(
-                        url,
-                        method="POST",
-                        body=ch.get_data(),
-                        user=config.clickhouse.rw_user,
-                        password=config.clickhouse.rw_password or "",
-                        content_encoding=config.clickhouse.encoding,
-                    )
-                    if code == 200:
-                        self.logger.info(
-                            "[%s] %d records sent in %.2fms",
+        async with LiftBridgeClient() as client:
+            cursor_id = self.get_cursor_id()
+            partition_id = config.chwriter.shard_id
+            while not self.stopping:
+                ch = await self.flush_queue.get()
+                n_records = ch.records
+                while True:
+                    try:
+                        self.logger.info("[%s] Sending %d records", ch.table, n_records)
+                        t0 = perf_counter()
+                        url = (
+                            f"http://{self.ch_address}/?"
+                            f"user={config.clickhouse.rw_user}&"
+                            f"password={config.clickhouse.rw_password or ''}&"
+                            f"database={config.clickhouse.db}&"
+                            f"query={ch.q_sql}"
+                        )
+                        code, headers, body = await fetch(
+                            url,
+                            method="POST",
+                            body=ch.get_data(),
+                            user=config.clickhouse.rw_user,
+                            password=config.clickhouse.rw_password or "",
+                            content_encoding=config.clickhouse.encoding,
+                        )
+                        if code == 200:
+                            self.logger.info(
+                                "[%s] %d records sent in %.2fms",
+                                ch.table,
+                                n_records,
+                                (perf_counter() - t0) * 1000,
+                            )
+                            metrics["records_written"] += n_records
+                            break
+                        elif code in self.CH_SUSPEND_ERRORS:
+                            self.logger.info("[%s] Timed out: %s", ch.table, body)
+                            metrics["error", ("type", "records_spool_timeouts")] += 1
+                            await asyncio.sleep(1)
+                            continue
+                        else:
+                            self.logger.info(
+                                "[%s] Failed to write records: %s %s", ch.table, code, body
+                            )
+                            metrics["error", ("type", "records_spool_failed")] += 1
+                            break
+                    except Exception as e:
+                        self.logger.error(
+                            "[%s] Failed to spool %d records due to unknown error: %s",
                             ch.table,
                             n_records,
-                            (perf_counter() - t0) * 1000,
+                            e,
                         )
-                        metrics["records_written"] += n_records
-                        break
-                    elif code in self.CH_SUSPEND_ERRORS:
-                        self.logger.info("[%s] Timed out: %s", ch.table, body)
-                        metrics["error", ("type", "records_spool_timeouts")] += 1
                         await asyncio.sleep(1)
                         continue
-                    else:
-                        self.logger.info(
-                            "[%s] Failed to write records: %s %s", ch.table, code, body
-                        )
-                        metrics["error", ("type", "records_spool_failed")] += 1
-                        break
-                except Exception as e:
-                    self.logger.error(
-                        "[%s] Failed to spool %d records due to unknown error: %s",
-                        ch.table,
-                        n_records,
-                        e,
-                    )
-                    await asyncio.sleep(1)
-                    continue
-            ch.flush_complete()
+                # Set cursor
+                await client.set_cursor(
+                    ch.stream,
+                    partition=partition_id,
+                    cursor_id=cursor_id,
+                    offset=ch.last_offset,
+                )
+                # Unfreeze channel
+                ch.flush_complete()
 
     async def report(self):
         nm = metrics["records_written"].value
