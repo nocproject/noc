@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW8200.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,12 +34,12 @@ class Script(BaseScript):
         r"^ChassisId:\s+(?P<chassis_id>\S+)\s*\n"
         r"^PortIdSubtype:\s+(?P<port_subtype>\S+)\s*\n"
         r"^PortId:\s+(?P<port_id>\S+)\s*\n"
-        r"^PortDesc:(?P<port_descr>.*)\n"
-        r"^SysName:(?P<system_name>.*)\n"
-        r"^SysDesc:(?P<system_descr>.*)\n"
-        r"^SysCapSupported:.*\n"
-        r"^SysCapEnabled:(?P<caps>.*)\n",
-        re.MULTILINE,
+        r"^PortDesc:(?P<port_descr>.*?)\n"
+        r"^SysName:(?P<system_name>.*?)\n"
+        r"^SysDesc:(?P<system_descr>.*?)\n"
+        r"^SysCapSupported:.*?\n"
+        r"^SysCapEnabled:(?P<caps>.*?)\n",
+        re.MULTILINE | re.DOTALL,
     )
     CHASSIS_TYPE = {
         "macAddress": LLDP_CHASSIS_SUBTYPE_MAC,
@@ -76,10 +76,12 @@ class Script(BaseScript):
                 r["neighbors"][0]["remote_system_name"] = system_name
             system_descr = match.group("system_descr").strip()
             if system_descr and system_descr != "N/A":
-                r["neighbors"][0]["remote_system_description"] = system_descr
+                r["neighbors"][0]["remote_system_description"] = re.sub(
+                    r"\n\s{10,}", "", system_descr
+                )
             port_descr = match.group("port_descr").strip()
             if port_descr and port_descr != "N/A":
-                r["neighbors"][0]["remote_port_description"] = system_descr
+                r["neighbors"][0]["remote_port_description"] = re.sub(r"\n\s{10,}", "", port_descr)
             cap = 0
             caps = match.group("caps").strip()
             if caps and caps != "N/A":
