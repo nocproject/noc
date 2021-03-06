@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Write channel service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ class Channel(object):
     def __init__(self, service, table: str):
         self.service = service
         self.table = table
+        self.stream = f"ch.{table}"
         self.last_offset: int = 0
         self.data: List[bytes] = []
         self.size: int = 0
@@ -33,7 +34,7 @@ class Channel(object):
         self.feed_ready.set()
         self.ttl = float(config.chwriter.batch_delay_ms) / 1_000.0
 
-    async def feed(self, msg: Message) -> Optional[int]:
+    async def feed(self, msg: Message):
         """
         Feed the message. Returns optional offset of last saved message.
         :param msg:
@@ -53,8 +54,6 @@ class Channel(object):
         if self.is_ready_to_flush():
             await self.schedule_flush()
             await self.feed_ready.wait()
-            return self.last_offset
-        return None
 
     def is_expired(self, ts: float) -> bool:
         """
