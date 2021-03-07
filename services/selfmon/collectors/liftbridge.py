@@ -12,6 +12,7 @@ import functools
 from .base import BaseCollector
 from noc.core.ioloop.util import run_sync
 from noc.core.liftbridge.base import LiftBridgeClient, Metadata, PartitionMetadata
+from noc.config import config
 
 
 class LiftbridgeStreamCollector(BaseCollector):
@@ -36,6 +37,20 @@ class LiftbridgeStreamCollector(BaseCollector):
         async with LiftBridgeClient() as client:
             return await client.fetch_cursor(stream=stream, partition=partition, cursor_id=name)
 
+    def iter_ch_cursors(self, stream, partition):
+        # Parse
+        cluster = config.clickhouse.cluster_topology.split(",")
+        for replica in range(0, int(cluster[partition])):
+            cursor = run_sync(
+                functools.partial(self.fetch_cursor, stream, partition, f"chwriter-{replica}")
+            )
+            yield (
+                "stream_cursor_offset",
+                ("name", stream),
+                ("partition", partition),
+                ("cursor_id", f"chwriter-{replica}"),
+            ), cursor
+
     def iter_metrics(self):
         meta: Metadata = run_sync(self.get_meta)
 
@@ -44,7 +59,11 @@ class LiftbridgeStreamCollector(BaseCollector):
                 if stream.name.startswith("_"):
                     continue
                 name, pool, cursor = stream.name, None, -1
-                if "." in name:
+                if name.startswith("ch"):
+                    # Chwriter streams
+                    for r in self.iter_ch_cursors(name, p):
+                        yield r
+                elif "." in name:
                     name, pool = name.split(".", 1)
                 if name in self.CURSOR_STREAM:
                     cursor = run_sync(
