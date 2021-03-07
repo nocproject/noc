@@ -113,6 +113,12 @@ class Command(BaseCommand):
 
         def create_stream(name: str, n_partitions: int, replication_factor: int):
             base_name = name.split(".")[0]
+            minisr = 0
+            if base_name == "ch":
+                replication_factor = min(
+                    config.liftbridge.stream_ch_replication_factor, replication_factor
+                )
+                minisr = min(2, replication_factor)
 
             async def wrapper():
                 async with LiftBridgeClient() as client:
@@ -120,6 +126,7 @@ class Command(BaseCommand):
                         subject=name,
                         name=name,
                         partitions=n_partitions,
+                        minisr=minisr,
                         replication_factor=replication_factor,
                         retention_max_bytes=getattr(
                             config.liftbridge, f"stream_{base_name}_retention_max_age", 0
