@@ -174,7 +174,7 @@ class Command(BaseCommand):
 
     def handle_load(self):
         async def upload(table: str, data: List[bytes]):
-            CHUNK = 1000
+            CHUNK = 500
             n_parts = len(config.clickhouse.cluster_topology.split(","))
             async with LiftBridgeClient() as client:
                 while data:
@@ -183,6 +183,7 @@ class Command(BaseCommand):
                         b"\n".join(chunk),
                         stream=f"ch.{table}",
                         partition=random.randint(0, n_parts - 1),
+                        auto_compress=bool(config.liftbridge.compression_method),
                     )
 
         for fn in sorted(os.listdir(self.data_prefix)):
