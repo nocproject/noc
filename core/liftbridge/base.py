@@ -38,7 +38,7 @@ from .api_pb2 import (
     StartPosition as _StartPosition,
     Ack,
 )
-from .error import rpc_error, ErrorNotFound, ErrorChannelClosed, ErrorUnavailable
+from .error import rpc_error, ErrorNotFound, ErrorChannelClosed, ErrorUnavailable, LiftbridgeError
 from .message import Message
 
 logger = logging.getLogger(__name__)
@@ -224,12 +224,12 @@ class LiftBridgeClient(object):
             self.open_brokers = list(self.channels)
         return channel
 
-    async def _sleep_on_error(self):
+    async def _sleep_on_error(self, delay: float = 1.0, deviation: float = 1.0):
         """
         Wait random time on error
         :return:
         """
-        await asyncio.sleep(1.0 + random.random())
+        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
     async def get_leader(self, stream: str, partition: int) -> str:
         """
@@ -559,11 +559,15 @@ class LiftBridgeClient(object):
             logger.debug("Resuming from offset %d", req.startOffset)
         else:
             req.startPosition = start_position
+        to_recover: bool = False  # Recover flag. Set if clint from LiftbridgeError recover
         last_offset: Optional[int] = None
         while True:
             try:
                 async for msg in self._subscribe(
-                    req, restore_position=to_restore_position, cursor_id=cursor_id
+                    req,
+                    restore_position=to_restore_position,
+                    cursor_id=cursor_id,
+                    to_recover=to_recover,
                 ):
                     yield msg
                     last_offset = msg.offset
@@ -576,9 +580,25 @@ class LiftBridgeClient(object):
                     # Continue from last seen position
                     req.startPosition = StartPosition.OFFSET
                     req.startOffset = last_offset + 1
+                    to_restore_position = False
+            except LiftbridgeError as e:
+                logger.error("Subscriber channel was unknown error: %s", e)
+                logger.info("Try to continue from last offset")
+                if not to_restore_position and last_offset is not None:
+                    # Continue from last seen position
+                    req.startPosition = StartPosition.OFFSET
+                    req.startOffset = last_offset + 1
+                    to_restore_position = False
+                    to_recover = True
+                # For cluster problem recommended 30 second wait
+                await self._sleep_on_error(delay=30, deviation=10)
 
     async def _subscribe(
-        self, req: SubscribeRequest, restore_position: bool = False, cursor_id: Optional[str] = None
+        self,
+        req: SubscribeRequest,
+        restore_position: bool = False,
+        cursor_id: Optional[str] = None,
+        to_recover: bool = False,
     ) -> AsyncIterable[Message]:
         allow_isr = bool(req.readISRReplica)
         with rpc_error():
@@ -613,6 +633,7 @@ class LiftBridgeClient(object):
                 logger.debug("[%s] Stream is ready, waiting for messages", broker)
                 # Next, process all other messages
                 msg = await call._read()
+                to_recover = False  # clean if message successful get
                 while msg:
                     value = msg.value
                     headers = msg.headers
@@ -631,8 +652,11 @@ class LiftBridgeClient(object):
                     msg = await call._read()
                 # Get core message to explain the result
                 code = await call.code()
+                detail = await call.debug_error_string()
                 if code in self.GRPC_RESTARTABLE_CODES:
                     raise ErrorUnavailable()
+                if code == StatusCode.UNKNOWN and not to_recover:
+                    raise LiftbridgeError(str(detail))
                 raise ErrorChannelClosed(str(code))
 
     async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:
