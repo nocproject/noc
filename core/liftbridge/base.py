@@ -385,6 +385,7 @@ class LiftBridgeClient(object):
         name: str,
         group: Optional[str] = None,
         replication_factor: int = 1,
+        minisr: int = 0,
         partitions: int = 1,
         enable_compact: bool = False,
         retention_max_age: int = 0,
@@ -406,13 +407,15 @@ class LiftBridgeClient(object):
                 req.compactEnabled.value = True
             else:
                 req.compactEnabled.value = False
+            if minisr:
+                req.minIsr.value = minisr
             # Retention settings
             if retention_max_age:
                 # in ms
                 req.retentionMaxAge.value = retention_max_age * 1000
             if retention_max_bytes:
                 req.retentionMaxBytes.value = retention_max_bytes
-            # Segment settiongs
+            # Segment settings
             if segment_max_bytes:
                 req.segmentMaxBytes.value = segment_max_bytes
             if segment_max_age:

@@ -393,6 +393,9 @@ class Config(BaseConfig):
         stream_ch_segment_max_bytes = BytesParameter(default="50M")
         stream_ch_auto_pause_time = SecondsParameter(default=0)
         stream_ch_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_ch_replication_factor = IntParameter(
+            default=1, help="Replicaton factor for clickhouse streams"
+        )
 
     listen = StringParameter(default="auto:0")
 
