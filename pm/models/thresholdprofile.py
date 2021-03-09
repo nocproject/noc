@@ -129,7 +129,7 @@ class ThresholdProfile(Document):
     uuid = UUIDField(binary=True, unique=True)
     description = StringField()
     # Handler to filter and modify umbrella alarms
-    umbrella_filter_handler = StringField()
+    umbrella_filter_handler = PlainReferenceField(Handler)
     # Window function settings
     # Window depth
     window_type = StringField(max_length=1, choices=[("m", "Measurements"), ("t", "Time")])
@@ -145,7 +145,7 @@ class ThresholdProfile(Document):
     # Window function configuration
     window_config = StringField()
     # Window preprocessor
-    value_handler = StringField()
+    value_handler = PlainReferenceField(Handler)
     # thresholds config
     thresholds = ListField(EmbeddedDocumentField(ThresholdConfig))
 
