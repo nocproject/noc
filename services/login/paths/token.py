@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # /api/login/token handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,14 +11,17 @@ from typing import Optional, Dict
 import codecs
 
 # Third-party modules
-from fastapi import APIRouter, Request, Header
+from fastapi import APIRouter, Request, Header, Depends
 from starlette.responses import JSONResponse
+from pydantic import ValidationError, parse_obj_as
 
 # NOC modules
 from noc.config import config
 from noc.core.comp import smart_text, smart_bytes
+from noc.core.service.deps.service import get_service
 from ..models.token import TokenRequest, TokenResponse
 from ..auth import authenticate, get_jwt_token, get_user_from_jwt, revoke_token, is_revoked
+from ..service import LoginService
 
 router = APIRouter()
 
@@ -26,9 +29,38 @@ router = APIRouter()
 @router.post("/api/login/token", response_model=TokenResponse, tags=["login"])
 async def token(
     request: Request,
-    req: TokenRequest,
+    # @todo: Find the way to pass req to openapi schema
+    # req: TokenRequest,
     authorization: Optional[str] = Header(None, alias="Authorization"),
+    svc: LoginService = Depends(get_service),
 ):
+    # NB: Some testing tools are dumb enough to support only application/x-www-form-urlencoded
+    # kind of request. So we need this kind of
+    # MADNESS BELOW -->
+    content_type = request.headers.get("Content-Type")
+    try:
+        # Content-Type := type "/" subtype *[";" parameter]
+        content_type = content_type.split(";")[0]
+        if content_type in ("application/json", "text/json"):
+            req = parse_obj_as(TokenRequest, await request.json())
+        elif content_type == "application/x-www-form-urlencoded":
+            req = parse_obj_as(TokenRequest, await request.form())
+        else:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "invalid_request",
+                    "error_description": [
+                        {
+                            "loc": ["__root__", "content_type"],
+                            "msg": f"Invalid content type {content_type}",
+                        }
+                    ],
+                },
+            )
+    except ValidationError as e:
+        return await svc.request_validation_error_handler(request, e)
+    # <-- MADNESS ABOVE
     auth_req: Optional[Dict[str, str]]
     if req.grant_type == "refresh_token":
         # Refresh token
