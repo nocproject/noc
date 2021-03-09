@@ -108,13 +108,13 @@ def csv_export(model, queryset=None, first_row_only=False):
                 "effective_client_groups",
             }:
                 row += [",".join(v)]
-            elif f in {"vendor"} and v.code:
+            elif f in {"vendor"} and getattr(v, "code", None):
                 row += v.code
             elif rel is None or not v:
                 row += [v]
             else:
                 row += [getattr(v, rf)]
-        row = [smart_text(f).encode("utf-8") for f in row]
+        row = [smart_text(f) for f in row]
         writer.writerow(row)
         # Return result
     return io.getvalue()
