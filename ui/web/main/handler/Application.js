@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.handler application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.handler.Application");
@@ -45,7 +45,7 @@ Ext.define("NOC.main.handler.Application", {
                     fieldLabel: __("Handler"),
                     allowBlank: false,
                     vtype: "handler",
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "description",
@@ -54,54 +54,130 @@ Ext.define("NOC.main.handler.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "allow_config_filter",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow Config Filter")
+                    xtype: "fieldset",
+                    title: __("Config handler"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_config_filter",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Config Filter")
+                        },
+                        {
+                            name: "allow_config_validation",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Config Validation")
+                        },
+                        {
+                            name: "allow_config_diff",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Config Diff")
+                        },
+                        {
+                            name: "allow_config_diff_filter",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Config Diff Filter")
+                        }
+                    ]
                 },
                 {
-                    name: "allow_config_validation",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow Config Validation")
+                    xtype: "fieldset",
+                    title: __("Managed Object Profile handlers"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_housekeeping",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow housekeeping")
+                        },
+                        {
+                            name: "allow_resolver",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Resolver")
+                        }
+                    ]
                 },
                 {
-                    name: "allow_config_diff",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow Config Diff")
+                    xtype: "fieldset",
+                    title: __("Threshold Profiles Handlers"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_threshold",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Threshold Alarm")
+                        },
+                        {
+                            name: "allow_threshold_handler",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Threshold Handler")
+                        },
+                        {
+                            name: "allow_threshold_value_handler",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Threshold Value Handler")
+                        }
+                    ]
                 },
                 {
-                    name: "allow_config_diff_filter",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow Config Diff Filter")
+                    xtype: "fieldset",
+                    title: __("Topology handlers"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_ifdesc",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow IfDesc")
+                        }
+                    ]
                 },
                 {
-                    name: "allow_housekeeping",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow housekeeping")
+                    xtype: "fieldset",
+                    title: __("DataStream handlers"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_ds_filter",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow DataStream filter")
+                        }
+                    ]
                 },
                 {
-                    name: "allow_resolver",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow Resolver")
-                },
-                {
-                    name: "allow_threshold",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow Threshold")
-                },
-                {
-                    name: "allow_ds_filter",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow DataStream filter")
-                },
-                {
-                    name: "allow_ifdesc",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow IfDesc")
-                },
-                {
-                    name: "allow_mx_transmutation",
-                    xtype: "checkbox",
-                    boxLabel: __("Allow MX Transmutation")
+                    xtype: "fieldset",
+                    title: __("MX handlers"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_mx_transmutation",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow MX Transmutation")
+                        }
+                    ]
                 }
             ]
         });

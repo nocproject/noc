@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Approved handlers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,6 +30,10 @@ id_lock = Lock()
         ("sa.ManagedObject", "config_diff_filter_handler"),
         ("sa.ManagedObject", "config_validation_handler"),
         ("inv.InterfaceProfile", "ifdesc_handler"),
+        ("pm.ThresholdProfile", "umbrella_filter_handler"),
+        ("pm.ThresholdProfile", "value_handler"),
+        ("pm.ThresholdConfig", "open_handler"),
+        ("pm.ThresholdConfig", "close_handler"),
     ]
 )
 class Handler(Document):
@@ -45,6 +49,8 @@ class Handler(Document):
     allow_housekeeping = BooleanField()
     allow_resolver = BooleanField()
     allow_threshold = BooleanField()
+    allow_threshold_handler = BooleanField()
+    allow_threshold_value_handler = BooleanField()
     allow_ds_filter = BooleanField()
     allow_ifdesc = BooleanField()
     allow_mx_transmutation = BooleanField()
