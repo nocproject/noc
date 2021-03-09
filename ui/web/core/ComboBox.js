@@ -29,33 +29,6 @@ Ext.define("NOC.core.ComboBox", {
     listConfig: {
         minWidth: 240
     },
-    store: {
-        fields: ["id", "label"],
-        pageSize: 25,
-        // remoteSort: true,
-        // sorters: [
-        //     {
-        //         property: "label"
-        //     }
-        // ],
-        // sorters: "label",
-        proxy: {
-            type: "rest",
-            pageParam: "__page",
-            startParam: "__start",
-            limitParam: "__limit",
-            sortParam: "__sort",
-            extraParams: {
-                "__format": "ext"
-            },
-            reader: {
-                type: "json",
-                rootProperty: "data",
-                totalProperty: "total",
-                successProperty: "success"
-            }
-        }
-    },
     triggers: {
         clear: {
             cls: "x-form-clean-trigger",
@@ -90,9 +63,11 @@ Ext.define("NOC.core.ComboBox", {
     isLookupField: true,
     restUrl: null,
     askPermission: true,
+    query: {},
 
     initComponent: function() {
         var tokens,
+            extraParams = {"__format": "ext"},
             me = this;
 
         // Calculate restUrl
@@ -106,7 +81,6 @@ Ext.define("NOC.core.ComboBox", {
         }
 
         if(this.restUrl) {
-            this.store.proxy.url = this.restUrl;
             tokens = this.restUrl.split("/");
             this.app = tokens[1] + "." + tokens[2];
         }
@@ -114,6 +88,30 @@ Ext.define("NOC.core.ComboBox", {
         this.pickerId = this.getId() + '_picker';
         // end
         me.showTriggers(null);
+        if(!Ext.Object.isEmpty(me.query)) {
+            Ext.apply(extraParams, me.query);
+        }
+        Ext.apply(me, {
+            store: {
+                fields: ["id", "label"],
+                pageSize: 25,
+                proxy: {
+                    type: "rest",
+                    url: this.restUrl,
+                    pageParam: "__page",
+                    startParam: "__start",
+                    limitParam: "__limit",
+                    sortParam: "__sort",
+                    extraParams: extraParams,
+                    reader: {
+                        type: "json",
+                        rootProperty: "data",
+                        totalProperty: "total",
+                        successProperty: "success"
+                    }
+                }
+            }
+        });
         this.callParent();
     },
 

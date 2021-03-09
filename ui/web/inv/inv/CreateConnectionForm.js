@@ -49,7 +49,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             plugins: ["spriteevents"]
         });
         me.cableCombo = Ext.create({
-            xtype: "core.combo",
+            xtype: "combo",
             fieldLabel: __("Cable"),
             labelAlign: "right",
             labelWidth: 50,
@@ -301,7 +301,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         return pin.sprite.attr.pinName;
     },
     beforeDestroy: function() {
-        console.log("beforeDestroy");
         var me = this,
             target = me.formPanelDropTarget;
         if(target) {
@@ -332,7 +331,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         }
         if(pin.sprite.labelAlign === "left") {
             mainPanel.getViewModel().set("leftSelectedPin", mainPanel.deSelectPin(pin, mainPanel.getViewModel().get("leftSelectedPin"), "left"));
-            console.log(mainPanel.getViewModel().get("leftSelectedPin"));
         }
         if(pin.sprite.labelAlign === "right") {
             mainPanel.getViewModel().set("rightSelectedPin", mainPanel.deSelectPin(pin, mainPanel.getViewModel().get("rightSelectedPin"), "right"));
@@ -373,7 +371,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         if(cable) {
             param.cable = cable;
         }
-        console.log("connect :", param);
         Ext.Ajax.request({
             url: "/inv/inv/connect/",
             method: "POST",
@@ -381,7 +378,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                console.log(data);
                 NOC.msg.complete(__("Objects was successfully connected"));
             },
             failure: function(response) {
