@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # User model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import datetime
 from threading import Lock
 import operator
+from typing import Optional
 
 # Third-party modules
 import cachetools
@@ -108,15 +109,15 @@ class User(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["User"]:
         return User.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_username(cls, name):
+    def get_by_username(cls, name) -> Optional["User"]:
         return User.objects.filter(username=name).first()
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         """
         Always return True. This is a way to tell if the user has been
         authenticated in templates.
