@@ -16,7 +16,7 @@ from noc.main.models.label import Label
 
 
 @pytest.mark.parametrize(
-    "labels,expected",
+    "iter_labels,expected",
     [
         (tuple(), []),
         (([],), []),
@@ -36,8 +36,8 @@ from noc.main.models.label import Label
         ((["x", "scope1::scope2::x", "scope1::scope2::x"],), ["x", "scope1::scope2::x"]),
     ],
 )
-def test_merge_labels(labels: Tuple[List[str]], expected: List[str]):
-    assert Label.merge_labels(*labels) == expected
+def test_merge_labels(iter_labels: Tuple[List[str]], expected: List[str]):
+    assert Label.merge_labels(iter_labels) == expected
 
 
 @pytest.mark.parametrize(
