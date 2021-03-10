@@ -136,6 +136,10 @@ Ext.define("NOC.sa.service.Model", {
         {
             name: "caps",
             type: "auto"
+        },
+        {
+            name: "labels",
+            type: "auto"
         }
     ]
 });
