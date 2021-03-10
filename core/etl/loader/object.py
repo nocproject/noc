@@ -17,6 +17,13 @@ from noc.inv.models.objectmodel import ObjectModel
 LOST_AND_FOUND_UUID = "b0fae773-b214-4edf-be35-3468b53b03f2"
 
 
+def clean_model(name):
+    r = ObjectModel.get_by_name(name)
+    if not r:
+        raise ValueError(f"Model {name} not found")
+    return r
+
+
 class ObjectLoader(BaseLoader):
     """
     Inventory object loader
@@ -36,7 +43,7 @@ class ObjectLoader(BaseLoader):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # @todo check None model
-        self.clean_map["model"] = ObjectModel.get_by_name
+        self.clean_map["model"] = clean_model
         self.l_f_m = ObjectModel.objects.get(uuid=LOST_AND_FOUND_UUID)
 
     def merge_data(self, o: ObjectM, data: List[Dict[str, Any]]):
@@ -79,8 +86,11 @@ class ObjectLoader(BaseLoader):
             return None
         if "name" in v and v["name"] != o.name:
             o.name = v["name"]
-        if "model" in v and v["model"] != o.model.name:
-            o.model = ObjectModel.get_by_name(v["model"])
+        if "model" in v and isinstance(v["model"], str):
+            # Fix if model is name?
+            v["model"] = ObjectModel.get_by_name(v["model"])
+        if "model" in v and v["model"].name != o.model.name:
+            o.model = v["model"]
         if (not o.container and v.get("container")) or (
             v.get("container") and v["container"] != str(o.container.id)
         ):
