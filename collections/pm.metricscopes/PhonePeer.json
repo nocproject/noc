@@ -4,19 +4,31 @@
     "uuid": "77d6efee-a07d-4c85-a7e6-06e831e2196a",
     "table_name": "phonepeer",
     "description": "Scope for Pphone Peer protocols metrics (SIP Trunk, E1 Serial, etc.) . Explain:\ntrunk as interface\nchannel as subinterface",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
-    "path": [
+    "key_fields": [
         {
-            "is_required": false,
-            "name": "trunk"
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
         },
         {
-            "is_required": false,
-            "name": "channel"
+            "field_name": "object",
+            "model": "inv.Object"
         }
     ],
-    "enable_timedelta": false
+    "enable_timedelta": false,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::trunk::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::channel::*"
+        }
+    ]
 }

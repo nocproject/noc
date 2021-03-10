@@ -124,25 +124,56 @@ class Label(Document):
             r.append(p)
             yield "::".join(r)
 
+    @classmethod
+    def ensure_label(
+        cls,
+        name,
+        description=None,
+        is_protected=False,
+        bg_color1=0xFFFFFF,
+        fg_color1=0x000000,
+        bg_color2=0xFFFFFF,
+        fg_color2=0x000000,
+    ) -> None:
+        """
+        Ensure label is exists, create when necessary
+        :param name:
+        :param description:
+        :param is_protected:
+        :param bg_color1:
+        :param fg_color1:
+        :param bg_color2:
+        :param fg_color2:
+        :return:
+        """
+        if Label.objects.filter(name=name).first():  # Do not use get_by_name. Cached None !
+            return  # Exists
+        Label(
+            name=name,
+            description=description or "Auto-created",
+            is_protected=is_protected,
+            bg_color1=bg_color1,
+            fg_color1=fg_color1,
+            bg_color2=bg_color2,
+            fg_color2=fg_color2,
+        ).save()
+
     def _ensure_wildcards(self):
         """
         Create all necessary wildcards for a scoped labels
         :return:
         """
         for scope in self.iter_scopes():
-            wildcard = f"{scope}::*"
-            if Label.get_by_name(wildcard):
-                continue  # Exists
-            # Create wildcard
-            Label(
-                name=wildcard,
+            # Ensure wildcard
+            Label.ensure_label(
+                f"{scope}::*",
                 description=f"Wildcard label for scope {scope}",
                 is_protected=True,
                 bg_color1=self.bg_color1,
                 fg_color1=self.fg_color1,
                 bg_color2=self.bg_color2,
                 fg_color2=self.fg_color2,
-            ).save()
+            )
 
     def get_matched_labels(self) -> List[str]:
         """
