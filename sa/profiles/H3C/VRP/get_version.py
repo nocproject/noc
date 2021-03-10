@@ -28,6 +28,10 @@ class Script(BaseScript):
         r"(Release)?(?P<release>\w+(\s)?\w+).*(H3C ).*?(?P<platform>[a-zA-Z0-9\-]+) uptime is",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
+    rx_ver2 = re.compile(
+        r"Version\s(?P<version>.+?), Release (?P<release>\S+)\n"
+        r"[\S\s]+Quidway(?: Series Router)?\s(?P<platform>[a-zA-Z0-9\-]+) uptime is"
+    )
     rx_hw = re.compile(r"Hardware Version is (?P<hardware>\S+)")
     rx_boot = re.compile(r"Bootrom Version is (?P<bootprom>\S+)")
 
@@ -41,7 +45,12 @@ class Script(BaseScript):
         )
         match = self.rx_ver.search(v)
         if not match:
-            match = self.rx_ver1.search(v)
+            match_re_list = [self.rx_ver1, self.rx_ver2]
+            try:
+                rx = self.find_re(match_re_list, v)
+            except self.UnexpectedResultError:
+                raise NotImplementedError
+            match = rx.search(v)
             r = {
                 "vendor": "H3C",
                 "platform": match.group("platform"),
