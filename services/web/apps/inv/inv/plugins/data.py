@@ -6,7 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, List, Optional
+from collections import defaultdict
 
 # NOC modules
 from noc.inv.models.object import Object
@@ -48,12 +49,18 @@ class DataPlugin(InvPlugin):
 
     def get_data(self, request, o: Object):
         data = []
-        for k, v, d, is_const in [
+        common = [
             ("Name", " | ".join(o.get_name_path()), "Inventory name", False),
             ("Vendor", o.model.vendor.name, "Hardware vendor", True),
             ("Model", o.model.name, "Inventory model", True),
             ("ID", str(o.id), "Internal ID", True),
-        ]:
+        ]
+        if o.remote_system:
+            common += [
+                ("Remote System", o.remote_system.name, "Remote System Name", True),
+                ("RemoteID", o.remote_id, "Remote System ID", True),
+            ]
+        for k, v, d, is_const in common:
             r = {
                 "interface": "Common",
                 "name": k,
@@ -75,31 +82,31 @@ class DataPlugin(InvPlugin):
                         break
             data += [r]
         # Build result
-        mi_values: Dict[str, Dict[str, Tuple[Optional[str], str]]] = {}
+        mi_values: Dict[str, Dict[str, List[Tuple[Optional[str], str]]]] = {}
         for item in o.get_effective_data():
             if item.interface not in mi_values:
-                mi_values[item.interface] = {}
-            mi_values[item.interface][item.attr] = (item.value, item.scope)
+                mi_values[item.interface] = defaultdict(list)
+            mi_values[item.interface][item.attr] += [(item.value, item.scope)]
         for i in mi_values:
             mi = ModelInterface.get_by_name(i)
             if not mi:
                 continue
             for a in mi.attrs:
-                value, scope = mi_values[i].get(a.name, (None, ""))
-                if value is None and a.is_const:
-                    continue
-                data += [
-                    {
-                        "interface": i,
-                        "name": a.name,
-                        "scope": scope,
-                        "value": value,
-                        "type": a.type,
-                        "description": a.description,
-                        "required": a.required,
-                        "is_const": a.is_const,
-                    }
-                ]
+                for value, scope in mi_values[i].get(a.name, [(None, "")]):
+                    if value is None and a.is_const:
+                        continue
+                    data += [
+                        {
+                            "interface": i,
+                            "name": a.name,
+                            "scope": scope,
+                            "value": value,
+                            "type": a.type,
+                            "description": a.description,
+                            "required": a.required,
+                            "is_const": a.is_const,
+                        }
+                    ]
         return {"id": str(o.id), "name": o.name, "model": o.model.name, "data": data}
 
     def api_save_data(self, request, id, interface=None, key=None, value=None):
