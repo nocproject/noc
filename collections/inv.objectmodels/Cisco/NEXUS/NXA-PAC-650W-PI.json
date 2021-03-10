@@ -1,0 +1,30 @@
+{
+    "name": "Cisco | NEXUS | NXA-PAC-650W-PI",
+    "$collection": "inv.objectmodels",
+    "uuid": "acfb448b-8367-468b-b100-c50a1052eb9e",
+    "vendor__code": "CISCO",
+    "description": "Nexus9000 Front-to-Back Airflow module spare, A/C, 100-240V, 650W",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "PSU connect to switch",
+            "direction": "o",
+            "gender": "m",
+            "group": "0",
+            "name": "in",
+            "type__name": "Cisco | Nexus 9k | 9300-EX PSU"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["NXA-PAC-650W-PI"]
+        }
+    }
+}
