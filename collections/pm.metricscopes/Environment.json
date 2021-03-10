@@ -4,26 +4,45 @@
     "uuid": "832bb31b-1441-477f-ac69-0b21d2761f06",
     "table_name": "environment",
     "description": "Environment-related metrics",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
-    "path": [
+    "key_fields": [
         {
-            "is_required": false,
-            "name": "chassis"
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
         },
         {
+            "field_name": "object",
+            "model": "inv.Object"
+        }
+    ],
+    "enable_timedelta": false,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "slot"
+            "label": "noc::chassis::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "module"
+            "label": "noc::slot::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "name"
+            "label": "noc::module::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::name::*"
         }
     ]
 }

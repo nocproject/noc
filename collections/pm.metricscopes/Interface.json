@@ -4,39 +4,66 @@
     "uuid": "a02a3a86-ee0e-4acc-b55f-026295d4db8e",
     "table_name": "interface",
     "description": "Interface-related metrics",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
-    "path": [
+    "key_fields": [
         {
-            "is_required": false,
-            "name": "chassis"
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
         },
         {
-            "is_required": false,
-            "name": "slot"
-        },
-        {
-            "is_required": false,
-            "name": "module"
-        },
-        {
-            "is_required": false,
-            "name": "port"
-        },
-        {
-            "is_required": false,
-            "name": "unit"
-        },
-        {
-            "is_required": false,
-            "name": "queue"
-        },
-        {
-            "is_required": false,
-            "name": "traffic_class"
+            "field_name": "object",
+            "model": "inv.Object"
         }
     ],
-    "enable_timedelta": true
+    "enable_timedelta": false,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::chassis::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::slot::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::module::*"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::port::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::unit::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::queue::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::traffic_class::*"
+        }
+    ]
 }

@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # MetricScope model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -22,8 +23,10 @@ import cachetools
 
 # NOC Modules
 from noc.config import config
+from noc.core.model.decorator import on_save
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.label import Label
 
 id_lock = Lock()
 
@@ -45,23 +48,57 @@ class KeyField(EmbeddedDocument):
         return "UInt64"
 
 
-class PathItem(EmbeddedDocument):
-    name = StringField()
-    is_required = BooleanField()
-    # Default value, when empty
-    default_value = StringField()
+class LabelItem(EmbeddedDocument):
+    # Wildcard label, noc::<scope>::* is preferable
+    label = StringField()
+    is_required = BooleanField(default=False)
+    # Store data in separate table column `store_field`, if not empty
+    # store in `labels` field otherwise
+    store_column = StringField()
+    # Create separate view column `view_column`, if not empty.
+    # Otherwise, create separate view column `store_column` if set.
+    # Do not create view column otherwise.
+    view_column = StringField()
+    # Part of primary key, implies `store_column` if set
+    is_primary_key = BooleanField(default=False)
+    # Part of order key
+    is_order_key = BooleanField(default=False)
+    # Legacy path component, for transition period
+    # Path position is determined by item position.
+    # Do not set for newly created scopes
+    is_path = BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.label
+
+    @property
+    def field_name(self):
+        name = self.label[:-3]  # Strip ::*
+        if name.startswith("noc::"):
+            return name[5:]
+        return name
+
+    @property
+    def label_prefix(self):
+        return self.label[:-1]  # skip trailing *
 
     def to_json(self):
-        v = {"name": self.name, "is_required": bool(self.is_required)}
-        if self.default_value:
-            v["default_value"] = self.default_value
-        return v
+        r = {
+            "label": self.label,
+            "is_required": self.is_required,
+            "is_primary_key": self.is_primary_key,
+            "is_order_key": self.is_order_key,
+            "is_path": self.is_path,
+        }
+        if self.store_column:
+            r["store_column"] = self.store_column
+        if self.view_column:
+            r["view_column"] = self.view_column
+        return r
 
 
 @on_delete_check(check=[("pm.MetricType", "scope")])
+@on_save
 class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",
@@ -77,7 +114,7 @@ class MetricScope(Document):
     table_name = StringField()
     description = StringField(required=False)
     key_fields = ListField(EmbeddedDocumentField(KeyField))
-    path = ListField(EmbeddedDocumentField(PathItem))
+    labels = ListField(EmbeddedDocumentField(LabelItem))
     enable_timedelta = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -87,8 +124,14 @@ class MetricScope(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["MetricScope"]:
         return MetricScope.objects.filter(id=id).first()
+
+    def on_save(self):
+        for label in self.labels:
+            Label.ensure_label(
+                label.label, description="Auto-created for PM scope", is_protected=True
+            )
 
     @property
     def json_data(self):
@@ -99,7 +142,7 @@ class MetricScope(Document):
             "table_name": self.table_name,
             "description": self.description,
             "key_fields": [kf.to_json() for kf in self.key_fields],
-            "path": [p.to_json() for p in self.path],
+            "labels": [p.to_json() for p in self.labels],
             "enable_timedelta": self.enable_timedelta,
         }
         return r
@@ -119,7 +162,7 @@ class MetricScope(Document):
         )
 
     def get_json_path(self):
-        return "%s.json" % self.name
+        return f"{self.name}.json"
 
     def iter_fields(self):
         """
@@ -130,10 +173,10 @@ class MetricScope(Document):
 
         yield "date", "Date"
         yield "ts", "DateTime"
+        yield "metric_type", "String"
         for f in self.key_fields:
             yield f.field_name, f.field_type
-        if self.path:
-            yield "path", "Array(String)"
+        yield "labels", "Array(LowCardinality(String))"
         if self.enable_timedelta:
             yield "time_delta", "UInt16"
         for t in MetricType.objects.filter(scope=self.id).order_by("id"):
@@ -144,14 +187,21 @@ class MetricScope(Document):
         Get CREATE TABLE SQL statement
         :return:
         """
-        pk = [f.field_name for f in self.key_fields]
-        if self.path:
-            pk += ["path"]
-        pk += ["ts"]
+        # Key Fields
+        kf = [f.field_name for f in self.key_fields]
+        kf += ["date"]
+        pk, ok = kf[:], kf[:]
+        for label in self.labels:
+            if label.is_order_key or label.is_primary_key:
+                # Primary Key must be a prefix of the sorting key
+                ok += [f"arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels)"]
+            if label.is_primary_key:
+                pk += [f"arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels)"]
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self._get_raw_db_table(),
             ",\n".join("  %s %s" % (n, t) for n, t in self.iter_fields()),
-            ") ENGINE = MergeTree(date, (%s), 8192)" % ", ".join(pk),
+            f") ENGINE = MergeTree() ORDER BY ({', '.join(ok)})\n",
+            f"PARTITION BY toYYYYMM(date) PRIMARY KEY ({', '.join(pk)})",
         ]
         return "\n".join(r)
 
@@ -173,13 +223,29 @@ class MetricScope(Document):
             )
         )
 
-    def get_create_view_sql(cls):
-        view = cls._get_db_table()
+    def get_create_view_sql(self):
+        view = self._get_db_table()
         if config.clickhouse.cluster:
-            src = cls._get_distributed_db_table()
+            src = self._get_distributed_db_table()
         else:
-            src = cls._get_raw_db_table()
-        return f"CREATE OR REPLACE VIEW {view} AS SELECT * FROM {src}"
+            src = self._get_raw_db_table()
+        # path emulation
+        v_path = ""
+        path = [label.label_prefix for label in self.labels if label.is_path]
+        if path:
+            l_exp = ", ".join(f"arrayFirst(x -> startsWith(x, '{pn}'), labels)" for pn in path)
+            v_path = f"[{l_exp}] AS path, "
+        # view columns
+        vc_expr = ""
+        view_columns = [
+            label for label in self.labels if label.view_column and not label.store_column
+        ]
+        if view_columns:
+            vc_expr = ", ".join(
+                f"arrayFirst(x -> startsWith(x, '{x.field_name}'), labels) AS {x.view_column}, "
+                for x in view_columns
+            )
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}* FROM {src}"
 
     def _get_db_table(self):
         return self.table_name
@@ -196,6 +262,26 @@ class MetricScope(Document):
         :return: True, if table has been changed
         """
         from noc.core.clickhouse.connect import connection
+
+        def ensure_column(table_name, column):
+            """
+            If path not exists on column - new schema
+            :param table_name:
+            :return:
+            """
+            return bool(
+                ch.execute(
+                    """
+                SELECT 1
+                FROM system.columns
+                WHERE
+                  database=%s
+                  AND table=%s
+                  AND name=%s
+                """,
+                    [config.clickhouse.db, table_name, column],
+                )
+            )
 
         def ensure_columns(table_name):
             c = False
@@ -215,17 +301,12 @@ class MetricScope(Document):
             after = None
             for f, t in self.iter_fields():
                 if f not in existing:
-                    ch.execute(
-                        post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (table_name, f, t, after)
-                    )
+                    ch.execute(post=f"ALTER TABLE {table_name} ADD COLUMN {f} {t} AFTER {after}")
                     c = True
                 after = f
                 if f in existing and existing[f] != t:
-                    print("Warning! Type mismatch for column %s: %s <> %s" % (f, existing[f], t))
-                    print(
-                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
-                        % (table_name, f, t)
-                    )
+                    print(f"Warning! Type mismatch for column {f}: {existing[f]} <> {t}")
+                    print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
             return c
 
         changed = False
@@ -240,6 +321,11 @@ class MetricScope(Document):
             # to table itself. Move to raw_*
             ch.rename_table(table, raw_table)
             changed = True
+        # Old schema
+        if ensure_column(raw_table, "path"):
+            # Old schema, data table will be rename to old_ for save data.
+            ch.rename_table(raw_table, f"old_{self.table_name}")
+            pass
         # Ensure raw_* table
         if ch.has_table(raw_table):
             # raw_* table exists, check columns
