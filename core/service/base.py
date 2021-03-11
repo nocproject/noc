@@ -551,7 +551,15 @@ class BaseService(object):
             yield float(t)
 
     async def subscribe_stream(
-        self, stream: str, partition: int, handler: Callable[[Message], Awaitable[None]]
+        self,
+        stream: str,
+        partition: int,
+        handler: Callable[
+            [Message],
+            Awaitable[None],
+        ],
+        start_timestamp: Optional[float] = None,
+        start_position: StartPosition = StartPosition.RESUME,
     ) -> None:
         # @todo: Restart on failure
         self.logger.info("Subscribing %s:%s", stream, partition)
@@ -561,8 +569,9 @@ class BaseService(object):
                 async for msg in client.subscribe(
                     stream=stream,
                     partition=partition,
-                    start_position=StartPosition.RESUME,
+                    start_position=start_position,
                     cursor_id=self.name,
+                    start_timestamp=start_timestamp,
                 ):
                     try:
                         await handler(msg)
