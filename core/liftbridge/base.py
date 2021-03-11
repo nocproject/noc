@@ -558,7 +558,7 @@ class LiftBridgeClient(object):
         partition: Optional[int] = None,
         start_position: StartPosition = StartPosition.NEW_ONLY,
         start_offset: Optional[int] = None,
-        start_timestamp: Optional[int] = None,
+        start_timestamp: Optional[float] = None,
         resume: bool = False,
         cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
@@ -578,7 +578,7 @@ class LiftBridgeClient(object):
             req.startOffset = start_offset
         elif start_timestamp is not None:
             req.startPosition = StartPosition.TIMESTAMP
-            req.startTimestamp = start_timestamp
+            req.startTimestamp = int(start_timestamp * 1_000_000_000.0)
         elif start_position == StartPosition.RESUME:
             if not cursor_id:
                 raise ValueError("cursor_id must be set for StartPosition.RESUME")
