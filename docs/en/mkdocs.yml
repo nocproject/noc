@@ -1316,6 +1316,7 @@ nav:
               - tgsender: admin/reference/services/tgsender.md
               - trapcollector: admin/reference/services/trapcollector.md
               - web: admin/reference/services/web.md
+              - ui: admin/reference/services/ui.md
           - Configuration:
               - Configuration System Overview: admin/reference/config/index.md
               - Date and Time Formats: admin/reference/datetime-format.md
@@ -1383,6 +1384,7 @@ nav:
               - "[threadpool] section": admin/reference/config/threadpool.md
               - "[traceback] section": admin/reference/config/traceback.md
               - "[trapcollector] section": admin/reference/config/trapcollector.md
+              - "[ui] section": admin/reference/config/ui.md
               - "[web] section": admin/reference/config/web.md
           - Discovery:
               - Box Discovery:
