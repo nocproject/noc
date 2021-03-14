@@ -61,8 +61,8 @@ class Script(BaseScript):
     )
     rx_ver_snmp5 = re.compile(
         r"Huawei Versatile Routing Platform.*?"
-        r"Version (?P<version>\S+) .*?"
-        r"\s*(?:Quidway|Huawei) (?P<platform>[A-Z0-9]+)\s",
+        r"Version (?P<version>\d+\.\d+).*?"
+        r"\s*(?:Quidway|Huawei) (?:Router )?(?P<platform>[A-Z0-9-]+)\.?\s?",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ver_snmp6 = re.compile(
