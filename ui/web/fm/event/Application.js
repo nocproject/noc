@@ -201,7 +201,7 @@ Ext.define("NOC.fm.event.Application", {
                     },
                     items: [
                         {
-                            xtype: "core.combo",
+                            xtype: "combo",
                             fieldLabel: __("State"),
                             editable: false,
                             queryMode: "local",
@@ -222,7 +222,7 @@ Ext.define("NOC.fm.event.Application", {
                         },
                         {
                             xtype: "core.combo",
-                            url: "/sa/managedobject/lookup/",
+                            restUrl: "/sa/managedobject/lookup/",
                             fieldLabel: __("Object"),
                             name: "managed_object",
                             bind: {
@@ -240,7 +240,7 @@ Ext.define("NOC.fm.event.Application", {
                         },
                         {
                             xtype: "core.combo",
-                            url: "/sa/managedobjectselector/lookup/",
+                            restUrl: "/sa/managedobjectselector/lookup/",
                             fieldLabel: __("Selector"),
                             name: "managedobjectselector",
                             bind: {
@@ -249,7 +249,7 @@ Ext.define("NOC.fm.event.Application", {
                         },
                         {
                             xtype: "core.combo",
-                            url: "/fm/eventclass/lookup/",
+                            restUrl: "/fm/eventclass/lookup/",
                             fieldLabel: __("Event Class"),
                             name: "event_class",
                             bind: {
