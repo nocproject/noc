@@ -12,4 +12,4 @@ uuid: b3c92337-a0d7-4cab-ba30-94f664a48015
 
 ## Supported Scripts
 
-{{ supported_scripts("ltex.LTE") }}
+{{ supported_scripts("Eltex.LTE") }}
