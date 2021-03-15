@@ -9,11 +9,29 @@
 import os
 from collections import defaultdict
 import json
+import glob
 
 
 def define_env(env):
+    YES = ":material-check:"
+    NO = ":material-close:"
+
+    def load_scripts() -> None:
+        nonlocal scripts
+
+        if scripts:
+            return
+        # Load list of all scripts
+        scripts = list(
+            sorted(
+                x[:-3]
+                for x in os.listdir(os.path.join(doc_root, "dev", "scripts"))
+                if x.endswith(".md") and not x.startswith(".")
+            )
+        )
+
     @env.macro
-    def mr(iid: int):
+    def mr(iid: int) -> str:
         """
         Link to Merge Request. Usage:
 
@@ -24,18 +42,10 @@ def define_env(env):
         return f"[MR{iid}](https://code.getnoc.com/noc/noc/merge_requests/{iid})"
 
     @env.macro
-    def supported_scripts(profile: str):
+    def supported_scripts(profile: str) -> str:
         nonlocal scripts
         r = ["Script | Support", "--- | ---"]
-        if not scripts:
-            # Load list of all scripts
-            scripts = list(
-                sorted(
-                    x[:-3]
-                    for x in os.listdir(os.path.join(doc_root, "dev", "reference", "scripts"))
-                    if x.endswith(".md") and not x.startswith(".")
-                )
-            )
+        load_scripts()
         # Get profile scripts
         vendor, name = profile.split(".")
         supported = {
@@ -46,15 +56,15 @@ def define_env(env):
         # Render
         for script in scripts:
             if script in supported:
-                mark = ":material-check:"
+                mark = YES
             else:
-                mark = ":material-close:"
+                mark = NO
             r += [f"[{script}](../../../../dev/reference/scripts/{script}.md) | {mark}"]
         r += [""]
         return "\n".join(r)
 
     @env.macro
-    def supported_platforms(vendor: str):
+    def supported_platforms(vendor: str) -> str:
         nonlocal platforms
 
         if not platforms:
@@ -80,6 +90,42 @@ def define_env(env):
             ]
         return "\n".join(r)
 
+    @env.macro
+    def supported_profiles(script: str) -> str:
+        nonlocal script_profiles, scripts
+
+        load_scripts()
+        if not script_profiles:
+            s_set = set(scripts)
+            for m in glob.glob("sa/profiles/*/*/*.py"):
+                parts = m.split("/")
+                sn = parts[-1][:-3]
+                if sn not in s_set:
+                    continue
+                script_profiles[sn].add(f"{parts[2]}.{parts[3]}")
+        r = []
+        s_profiles = [
+            (profile.split(".")[0], profile) for profile in sorted(script_profiles[script])
+        ]
+        if s_profiles:
+            r += [
+                "| Profile |",
+                "| --- |",
+            ]
+            r += [
+                f"| [{profile}](../../reference/profiles/{vendor}/{profile}.md) |"
+                for vendor, profile in s_profiles
+            ]
+            r += [""]
+        else:
+            r += [
+                "!!! todo",
+                "    Script is not supported yet",
+                "",
+            ]
+        return "\n".join(r)
+
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
+    script_profiles = defaultdict(set)  # script -> {profile}
     doc_root = "docs/en/docs"

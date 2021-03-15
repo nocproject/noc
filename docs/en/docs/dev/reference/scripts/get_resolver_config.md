@@ -7,17 +7,14 @@
 
     Describe get_resolver_config script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_resolver_config") }}
+
+## Used in

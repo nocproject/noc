@@ -7,17 +7,16 @@
 
     Describe get_lacp_neighbors script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
+{{ supported_profiles("get_lacp_neighbors") }}
+
+## Used in
 -------
+* [Discovery Box LACP](../../../admin/reference/discovery/box/lacp.md)

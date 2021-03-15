@@ -10,3 +10,6 @@ uuid: 4e00881d-fc04-4d6c-890d-3113db7df5ce
 !!! todo
     Describe *APC.AOS* profile
 
+## Supported Scripts
+
+{{ supported_scripts("APC.AOS") }}

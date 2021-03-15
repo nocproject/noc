@@ -7,17 +7,19 @@
 
     Describe get_uptime script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
+{{ supported_profiles("get_uptime") }}
+
+## Used in
 -------
+* [Discovery Periodic Uptime](../../../admin/reference/discovery/periodic/uptime.md)
+
+Implemented as *Generic Script*, applicable to all profiles
+with SNMP support

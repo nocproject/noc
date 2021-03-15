@@ -15,22 +15,17 @@
     ignore_cli_errors = BooleanParameter(default=False)
     returns = StringListParameter()
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Notes
------
+## Supported Profiles
+
+{{ supported_profiles("get_interfaces") }}
+
+## Used in
+
 Implemented as *Generic Script*, applicable to all profiles
 with CLI support
-
-Supported Profiles
-------------------
-
-Used in
--------

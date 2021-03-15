@@ -10,3 +10,6 @@ uuid: bfdca9a0-2d22-4754-8dda-a9b7648afba5
 !!! todo
     Describe *MikroTik.RouterOS* profile
 
+## Supported Scripts
+
+{{ supported_scripts("MikroTik.RouterOS") }}

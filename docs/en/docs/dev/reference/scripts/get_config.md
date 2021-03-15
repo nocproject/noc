@@ -7,17 +7,16 @@
 
     Describe get_config script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_config") }}
+
+## Used in
+----
+* [Discovery Box Config](../../../admin/reference/discovery/box/config.md)

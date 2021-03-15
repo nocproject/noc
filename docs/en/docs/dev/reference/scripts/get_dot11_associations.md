@@ -7,17 +7,14 @@
 
     Describe get_dot11_associations script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_dot11_associations") }}
+
+## Used in
