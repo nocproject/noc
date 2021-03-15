@@ -1,0 +1,32 @@
+{
+    "name": "MikroTik | Transceiver | 10G | S+RJ10",
+    "$collection": "inv.objectmodels",
+    "uuid": "f366d627-84f7-4dd8-8ae0-302bcbd17a75",
+    "vendor__code": "MIKROTIK",
+    "description": "10G BASE-T, SFP+, Copper, RJ45 Connector, up to 30 meter reach",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["10GBASET"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["S+RJ10"]
+        }
+    }
+}
