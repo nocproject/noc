@@ -12,4 +12,4 @@ uuid: 1a9a4bc3-bf28-4cab-b040-faee96cb90ac
 
 ## Supported Scripts
 
-{{ supported_scripts("ltex.TAU") }}
+{{ supported_scripts("Eltex.TAU") }}
