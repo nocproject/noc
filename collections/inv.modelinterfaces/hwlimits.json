@@ -1,0 +1,36 @@
+{
+    "name": "hwlimits",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "e1fea597-5f0e-45cf-bc3d-8770c58712c8",
+    "description": "Device nonconfigurable (hardware) limits",
+    "attrs": [
+        {
+            "name": "macs",
+            "type": "int",
+            "description": "Limit for MAC addresses",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "queues",
+            "type": "int",
+            "description": "Limit for QoS queues",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "ipv4_prefixes",
+            "type": "int",
+            "description": "Limit for IPv4 prefixes",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "ipv6_prefixes",
+            "type": "int",
+            "description": "Limit for IPv6 prefixes",
+            "required": false,
+            "is_const": true
+        }
+    ]
+}
