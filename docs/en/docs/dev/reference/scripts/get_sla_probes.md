@@ -7,17 +7,16 @@
 
     Describe get_sla_probes script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
+{{ supported_profiles("get_sla_probes") }}
+
+## Used in
 -------
+* [Discovery Box SLA](../../../admin/reference/discovery/box/sla.md)

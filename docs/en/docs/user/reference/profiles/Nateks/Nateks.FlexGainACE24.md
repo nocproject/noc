@@ -10,3 +10,6 @@ uuid: 5dbbfeca-8ad7-42ec-9743-5412fdcdbc22
 !!! todo
     Describe *Nateks.FlexGainACE24* profile
 
+## Supported Scripts
+
+{{ supported_scripts("Nateks.FlexGainACE24") }}

@@ -7,17 +7,16 @@
 
     Describe get_fqdn script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_fqdn") }}
+
+## Used in
+----
+* [Discovery Box ID](../../../admin/reference/discovery/box/id.md)

@@ -7,17 +7,16 @@
 
     Describe get_portchannel script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
+{{ supported_profiles("get_portchannel") }}
+
+## Used in
 -------
+* [Discovery Box Interface](../../../admin/reference/discovery/box/interface.md)

@@ -1,27 +1,20 @@
-
-
 # get_interfaces
-
 
 <!-- prettier-ignore -->
 !!! todo
 
     Describe get_interfaces script
 
+## Input Arguments
 
-Input Arguments
----------------
+## Result
 
-Result
-------
+## Examples
 
-Examples
---------
+## Supported Profiles
 
-Supported Profiles
-------------------
+{{ supported_profiles("get_interfaces") }}
 
-.. include:: ../include/auto/supported-profiles-get_interfaces.rst
-
-Used in
+## Used in
 -------
+* [Discovery Box Interface](../../../admin/reference/discovery/box/interface.md)

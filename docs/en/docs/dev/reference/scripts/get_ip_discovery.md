@@ -7,17 +7,15 @@
 
     Describe get_ip_discovery script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_ip_discovery") }}
+
+## Used in
+

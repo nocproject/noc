@@ -10,3 +10,7 @@ uuid: 33fb39dc-c82f-4cb7-b579-8654f73be002
 !!! todo
     Describe *Alcatel.7302* profile
 
+
+## Supported Scripts
+
+{{ supported_scripts("Alcatel.7302") }}
