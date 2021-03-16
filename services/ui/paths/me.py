@@ -27,4 +27,6 @@ def get_me(user: User = Depends(get_current_user)):
         email=user.email or None,
         groups=[GroupItem(id=str(g.id), name=g.name) for g in user.groups.all()],
         language=user.preferred_language or config.language,
+        avatar_url=user.avatar_url,
+        avatar_label=user.avatar_label,
     )

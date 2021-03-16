@@ -647,6 +647,9 @@ class Config(BaseConfig):
         macdb_window = IntParameter(default=4 * 86400)
         enable_remote_system_last_extract_info = BooleanParameter(default=False)
 
+    class ui(ConfigSection):
+        max_avatar_size = BytesParameter(default="256K")
+
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)
         max_threads = IntParameter(default=10)
