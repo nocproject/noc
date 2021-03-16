@@ -11,7 +11,7 @@ import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from noc.core.span import Span
-from noc.core.datastream.change import bulk_datastream_changes
+from noc.core.datastream.change import change_tracker
 from ..box.resolver import ResolverCheck
 from .uptime import UptimeCheck
 from .interfacestatus import InterfaceStatusCheck
@@ -32,7 +32,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     default_contexts = ("counters", "metric_windows", "active_thresholds")
 
     def handler(self, **kwargs):
-        with Span(sample=self.object.periodic_telemetry_sample), bulk_datastream_changes():
+        with Span(sample=self.object.periodic_telemetry_sample), change_tracker.bulk_changes():
             if self.object.auth_profile and self.object.auth_profile.type == "S":
                 self.logger.info("Invalid credentials. Stopping")
                 return

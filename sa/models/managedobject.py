@@ -76,7 +76,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
 from noc.core.datastream.decorator import datastream
-from noc.core.datastream.change import register_changes
+from noc.core.datastream.change import change_tracker
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
@@ -1087,7 +1087,7 @@ class ManagedObject(NOCModel):
         self.mirror_config(data, changed)
         # Rebuild datastream if necessary
         if changed:
-            register_changes([("managedobject", self.id)])
+            change_tracker.register([("managedobject", self.id)])
         return changed
 
     def notify_config_changes(self, is_new, data, diff):
