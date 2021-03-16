@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # DataStream change notification
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import threading
 import contextlib
 from collections import defaultdict
+from typing import Optional, Any, Tuple, Set, List
 
 # NOC modules
 from noc.core.defer import call_later
@@ -17,53 +18,131 @@ from noc.core.datastream.loader import loader
 tls = threading.local()
 
 
-def register_changes(data):
+class ChangeTracker(object):
     """
-    Register single change
-    :param data: List of (datasource name, object id)
-    :return:
+    Thread-local datastream change tracker.
     """
-    if hasattr(tls, "_datastream_changes"):
-        # Within bulk_datastream_changes context
-        tls._datastream_changes.update(data)
-    else:
-        apply_changes(data)
+
+    @staticmethod
+    def get_policy() -> "BaseChangeTrackerPolicy":
+        policy = getattr(tls, "_ct_policy", None)
+        if not policy:
+            policy = SimpleChangeTrackerPolicy()
+            tls._ct_policy = policy
+        return policy
+
+    def register(self, changes: List[Tuple[str, Any]]) -> None:
+        """
+        Register datastream change
+        :param changes: List of (datastream, object id)
+        :return:
+        """
+        self.get_policy().register(changes)
+
+    @staticmethod
+    def push_policy(policy: "BaseChangeTrackerPolicy") -> None:
+        """
+        Push new effective policy for the current thread,
+        store current one in the stack
+        :param policy:
+        :return:
+        """
+        # Store previous policy
+        prev_policy = getattr(tls, "_ct_policy", None)
+        if prev_policy:
+            # Something to store
+            stack = getattr(tls, "_ct_policy_stack", None) or []
+            stack.append(prev_policy)
+            tls._ct_policy_stack = stack
+        # Store current policy
+        tls._ct_policy = policy
+
+    @staticmethod
+    def pop_policy() -> Optional["BaseChangeTrackerPolicy"]:
+        """
+        Pop current effective policy from stack and restore previous one
+        :return: Current effective policy
+        """
+        # Get current policy
+        policy = getattr(tls, "_ct_policy", None)
+        stack = getattr(tls, "_ct_policy_stack", None)
+        if stack:
+            # Install previous policy
+            prev_policy = stack.pop(-1)
+            tls._ct_policy = prev_policy
+            if not stack:
+                del tls._ct_policy_stack
+        return policy
+
+    @contextlib.contextmanager
+    def bulk_changes(self):
+        """
+        Apply all datastream changes at once
+        :return:
+        """
+        # Store current effective policy
+        prev_policy = getattr(tls, "_ct_policy", None)
+        # Install bulk change policy as
+        policy = BulkChangeTrackerPolicy()
+        tls._ct_policy = policy
+        yield
+        policy.apply()
+        if prev_policy:
+            tls._ct_policy = prev_policy
+        else:
+            del tls._ct_policy
 
 
-@contextlib.contextmanager
-def bulk_datastream_changes():
+change_tracker = ChangeTracker()
+
+
+class BaseChangeTrackerPolicy(object):
     """
-    Buffer and deduplicate pending datastream changes
-
-    Usage:
-
-    with bulk_datastream_changes:
-         ....
-
-    :return:
+    Base class for change tracker policies
     """
-    # Save previous state
-    last_changes = getattr(tls, "_datastream_changes", None)
-    # Create new context
-    tls._datastream_changes = set()
-    # Perform decorated computations
-    yield
-    # Apply changes
-    apply_changes(list(set(tls._datastream_changes)))
-    # Restore previous context
-    if last_changes is not None:
-        tls._datastream_changes = last_changes
-    else:
-        del tls._datastream_changes
+
+    def __init__(self):
+        ...
+
+    def register(self, changes: List[Tuple[str, Any]]) -> None:
+        ...
+
+    def apply(self):
+        """
+        Apply collected changes
+        :return:
+        """
+
+    def apply_changes(self, changes: List[Tuple[str, Any]]):
+        if changes:
+            call_later("noc.core.datastream.change.do_changes", changes=changes)
 
 
-def apply_changes(changes):
+class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
     """
-    :param changes: List of (datastream name, object id)
-    :return:
+    Drop all changes
     """
-    if changes:
-        call_later("noc.core.datastream.change.do_changes", changes=changes)
+
+
+class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
+    """
+    Simple policy, applies every registered change
+    """
+
+    def register(self, changes: List[Tuple[str, Any]]) -> None:
+        self.apply_changes(changes)
+
+
+class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
+    def __init__(self):
+        super().__init__()
+        self.changes: Set[Tuple[str, Any]] = set()
+
+    def register(self, changes: List[Tuple[str, Any]]) -> None:
+        self.changes.update(changes)
+
+    def apply(self):
+        self.apply_changes(list(self.changes))
 
 
 def do_changes(changes):

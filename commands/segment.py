@@ -21,7 +21,7 @@ from noc.inv.models.biosegtrial import BioSegTrial
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.bioseg.moderator.base import moderate_trial
-from noc.core.datastream.change import bulk_datastream_changes
+from noc.core.datastream.change import change_tracker
 from noc.core.text import alnum_key
 from noc.core.clickhouse.connect import connection
 from noc.inv.models.discoveryid import DiscoveryID
@@ -217,7 +217,7 @@ class Command(BaseCommand):
             trials = list(BioSegTrial.objects.filter(processed=False, id__in=ids).order_by("id"))
         else:
             trials = list(BioSegTrial.objects.filter(processed=False).order_by("id"))
-        with bulk_datastream_changes():
+        with change_tracker.bulk_changes():
             for trial in trials:
                 self.print("@@@ Processing trial %s" % trial.id)
                 moderate_trial(trial)

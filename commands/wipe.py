@@ -14,7 +14,7 @@ from contextlib import contextmanager
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
 from noc.core.validators import is_int
-from noc.core.datastream.change import bulk_datastream_changes
+from noc.core.datastream.change import change_tracker
 from noc.core.comp import smart_text
 
 
@@ -49,7 +49,7 @@ class Command(BaseCommand):
         # Wipe objects
         from noc.core.debug import error_report
 
-        with bulk_datastream_changes():
+        with change_tracker.bulk_changes():
             for o in objects:
                 with self.log("Wiping '%s':" % smart_text(o), True):
                     try:
