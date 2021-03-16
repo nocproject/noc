@@ -1,5 +1,5 @@
 # Base layer containing system packages and requirements
-FROM python:3.8.5-slim-buster AS code
+FROM python:3.8.8-slim-buster AS code
 ENV\
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
