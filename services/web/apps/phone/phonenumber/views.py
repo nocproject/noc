@@ -7,12 +7,14 @@
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.lib.app.decorators.state import state_handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.phone.models.phonenumber import PhoneNumber
 from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class PhoneNumberApplication(ExtDocApplication):
     """
     PhoneNumber application
