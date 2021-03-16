@@ -12,10 +12,12 @@ from mongoengine.queryset import Q
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.phone.models.phonerange import PhoneRange
+from noc.lib.app.decorators.state import state_handler
 from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class PhoneRangeApplication(ExtDocApplication):
     """
     PhoneRange application
