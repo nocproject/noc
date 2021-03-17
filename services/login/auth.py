@@ -115,6 +115,27 @@ def get_user_from_jwt(token: str, audience: Optional[str] = None) -> str:
         raise ValueError(str(e))
 
 
+def get_exp_from_jwt(token: str) -> datetime:
+    """
+    Check JWT token and return exp.
+    Raise ValueError if failed
+    :param token:
+    :return:
+    """
+    try:
+        token = jwt.decode(token, jwt_key, algorithms=[config.login.jwt_algorithm], audience="auth")
+        exp = None
+        if isinstance(token, dict):
+            exp = token.get("exp")
+        if not exp:
+            raise ValueError("Malformed token")
+        return exp
+    except jwt.ExpiredSignatureError:
+        raise ValueError("Expired token")
+    except jwt.JWTError as e:
+        raise ValueError(str(e))
+
+
 def set_jwt_cookie(response: Response, user: str) -> None:
     """
     Generate JWT token and append as cookie to response
