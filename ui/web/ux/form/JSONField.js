@@ -9,7 +9,10 @@ Ext.define('Ext.ux.form.JSONField', {
     },
 
     getValue: function() {
-        var me = this;
-        return Ext.decode(me.callParent());
+        var me = this,
+            value = me.callParent();
+        if(!Ext.isEmpty(value)) {
+                return Ext.decode(value, true);
+        }
     }
 });

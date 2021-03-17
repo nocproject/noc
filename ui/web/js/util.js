@@ -297,7 +297,9 @@ Ext.apply(NOC.render, {
     },
 
     JSON: function(v) {
-        return Ext.encode(v);
+        if(!Ext.isEmpty(v)) {
+            return Ext.encode(v);
+        }
     },
 
     Badge: function(v) {
