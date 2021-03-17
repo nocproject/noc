@@ -39,7 +39,7 @@ async def auth(
     """
     Authenticate request. Called via nginx's auth_proxy
     """
-    if original_uri and original_uri in PINHOLE_PATHS:
+    if original_uri and is_pinhole(original_uri):
         # Pinholes to endpoints without authorization
         return ORJSONResponse({"status": True}, status_code=200)
     if jwt_cookie:
@@ -163,3 +163,16 @@ async def auth_authorization_bearer(request: Request, data: str) -> ORJSONRespon
         )
         return ORJSONResponse({"status": False}, status_code=401)
     return ORJSONResponse({"status": True}, status_code=200, headers={"Remote-User": user})
+
+
+def is_pinhole(path: str) -> bool:
+    """
+    Check if path should be pinholed (allowed unconditionaly)
+    :param path:
+    :return:
+    """
+    if path in PINHOLE_PATHS:
+        return True
+    if path.startswith("/api/") and path.endswith("/openapi.json") and path.count("/") == 3:
+        return True
+    return False
