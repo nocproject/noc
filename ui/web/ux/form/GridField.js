@@ -123,7 +123,7 @@ Ext.define("Ext.ux.form.GridField", {
     getSubmitData: function() {
         var me = this,
             data = null;
-        if (!me.disabled && me.submitValue) {
+        if(!me.disabled && me.submitValue) {
             data = {};
             data[me.getName()] = me.getValue();
         }
@@ -136,6 +136,9 @@ Ext.define("Ext.ux.form.GridField", {
         me.store.each(function(r) {
             var d = {};
             Ext.each(me.fields, function(f) {
+                if(Ext.isObject(f) && f.hasOwnProperty("persist") && f.persist === false) {
+                    return true;
+                }
                 d[f] = r.get(f);
             });
             records.push(d);
