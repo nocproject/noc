@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends
 from noc.config import config
 from noc.aaa.models.user import User
 from noc.core.service.deps.user import get_current_user
+from noc.core.palette import get_avatar_bg_color
 from ..models.me import MeResponse, GroupItem
 
 router = APIRouter()
@@ -29,4 +30,5 @@ def get_me(user: User = Depends(get_current_user)):
         language=user.preferred_language or config.language,
         avatar_url=user.avatar_url,
         avatar_label=user.avatar_label,
+        avatar_label_bg=get_avatar_bg_color(user.id),
     )
