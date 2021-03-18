@@ -560,9 +560,12 @@ class BaseService(object):
         ],
         start_timestamp: Optional[float] = None,
         start_position: StartPosition = StartPosition.RESUME,
+        cursor_id: Optional[str] = None,
+        auto_set_cursor: bool = True,
     ) -> None:
         # @todo: Restart on failure
         self.logger.info("Subscribing %s:%s", stream, partition)
+        cursor_id = cursor_id or self.name
         try:
             async with LiftBridgeClient() as client:
                 self.active_subscribers += 1
@@ -577,9 +580,13 @@ class BaseService(object):
                         await handler(msg)
                     except Exception as e:
                         self.logger.error("Failed to process message: %s", e)
-                    await client.set_cursor(
-                        stream=stream, partition=partition, cursor_id=self.name, offset=msg.offset
-                    )
+                    if auto_set_cursor and cursor_id:
+                        await client.set_cursor(
+                            stream=stream,
+                            partition=partition,
+                            cursor_id=cursor_id,
+                            offset=msg.offset,
+                        )
                     if self.subscriber_shutdown_waiter:
                         break
         finally:
