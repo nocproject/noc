@@ -115,15 +115,18 @@ def get_user_from_jwt(token: str, audience: Optional[str] = None) -> str:
         raise ValueError(str(e))
 
 
-def get_exp_from_jwt(token: str) -> datetime:
+def get_exp_from_jwt(token: str, audience: Optional[str] = None) -> datetime:
     """
     Check JWT token and return exp.
     Raise ValueError if failed
     :param token:
+    :param audience:
     :return:
     """
     try:
-        token = jwt.decode(token, jwt_key, algorithms=[config.login.jwt_algorithm], audience="auth")
+        token = jwt.decode(
+            token, jwt_key, algorithms=[config.login.jwt_algorithm], audience=audience
+        )
         exp = None
         if isinstance(token, dict):
             exp = token.get("exp")

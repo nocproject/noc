@@ -20,7 +20,7 @@ from noc.config import config
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.service.deps.service import get_service
 from ..models.token import TokenRequest, TokenResponse
-from ..auth import authenticate, get_jwt_token, get_user_from_jwt, revoke_token, is_revoked
+from ..auth import authenticate, get_jwt_token, get_user_from_jwt
 from ..service import LoginService
 
 router = APIRouter()
@@ -64,7 +64,7 @@ async def token(
     auth_req: Optional[Dict[str, str]]
     if req.grant_type == "refresh_token":
         # Refresh token
-        if is_revoked(req.refresh_token):
+        if svc.is_revoked(req.refresh_token):
             return JSONResponse(
                 content={"error": "invalid_grant", "error_description": "Token is expired"},
                 status_code=HTTPStatus.FORBIDDEN,
@@ -79,7 +79,7 @@ async def token(
                 },
                 status_code=HTTPStatus.FORBIDDEN,
             )
-        revoke_token(req.refresh_token)
+        await svc.revoke_token(req.refresh_token, "refresh")
         return get_token_response(user)
     elif req.grant_type == "password":
         # ROPCGrantRequest
