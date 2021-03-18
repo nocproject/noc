@@ -178,20 +178,3 @@ def change_credentials(credentials: Dict[str, Any]):
         except backend.LoginError as e:
             logger.error("Failed to change credentials for %s: %s", c, e)
     return False
-
-
-def revoke_token(token: str) -> None:
-    """
-    Mark token as revoked. Any futher use will be prohibited
-    :param token:
-    :return:
-    """
-
-
-def is_revoked(token: str) -> bool:
-    """
-    Check if token is revoked
-    :param token: encoded JWT token to check
-    :return: True if token is revoked
-    """
-    return False
