@@ -4,18 +4,30 @@
     "uuid": "bd64ffb4-7352-42fd-8096-e6e1a4adea39",
     "table_name": "multicast",
     "description": "Scope for Multicast protocols metrics",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
-    "path": [
+    "key_fields": [
         {
-            "is_required": false,
-            "name": "group"
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
         },
         {
+            "field_name": "object",
+            "model": "inv.Object"
+        }
+    ],
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "channel"
+            "label": "noc::group::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::channel::*"
         }
     ],
     "enable_timedelta": false

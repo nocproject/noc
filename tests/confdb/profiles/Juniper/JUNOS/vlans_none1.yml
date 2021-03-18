@@ -1,0 +1,20 @@
+config: |
+  vlans {
+    v22 {
+        description MPLS_Managment;
+        vlan-id 22;
+        l3-interface irb.22;
+    }
+    v998 {
+        vlan-id none;
+        interface xe-0/0/2.4034;
+        l3-interface irb.998;
+        forwarding-options {
+            filter {
+                output OUTPUT-ACCESS_FILTER;
+            }
+        }
+    }
+  }
+result:
+  - ["virtual-router", "default", "forwarding-instance", "default", "vlans", 22, "name", "v22", {'replace': True}]

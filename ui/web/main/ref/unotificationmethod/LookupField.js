@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.unotificationmethod.LookupField");
 
 Ext.define("NOC.main.ref.unotificationmethod.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.unotificationmethod.LookupField",
-    restUrl: "/main/ref/unotificationmethod/lookup/"
+    uiStyle: "medium-combo"
 });

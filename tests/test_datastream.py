@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # noc.core.datastream test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ import bson
 
 # NOC modules
 from noc.core.datastream.base import DataStream
+from noc.core.datastream.change import change_tracker, SimpleChangeTrackerPolicy
 from noc.core.perf import metrics
 from noc.core.datastream.loader import loader
 
@@ -364,3 +365,17 @@ def test_compile_filters():
         assert DataStream.compile_filters(["id(1)", 1])
     with pytest.raises(ValueError):
         DataStream.compile_filters(["unknown(1)"])
+
+
+def test_change_tracker_stack():
+    p1 = SimpleChangeTrackerPolicy()
+    assert change_tracker.get_policy() is not p1
+    change_tracker.push_policy(p1)
+    assert change_tracker.get_policy() is p1
+    p2 = SimpleChangeTrackerPolicy()
+    assert change_tracker.get_policy() is not p2
+    change_tracker.push_policy(p2)
+    assert change_tracker.get_policy() is not p1
+    assert change_tracker.get_policy() is p2
+    assert change_tracker.pop_policy() is p2
+    assert change_tracker.pop_policy() is p1

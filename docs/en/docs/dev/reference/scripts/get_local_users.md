@@ -7,17 +7,14 @@
 
     Describe get_local_users script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_local_users") }}
+
+## Used in

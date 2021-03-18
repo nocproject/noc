@@ -49,6 +49,7 @@ from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
 from noc.core.middleware.tls import get_user
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
+from noc.main.models.label import Label
 from noc.core.collection.base import Collection
 from noc.core.comp import smart_text
 from noc.models import get_model_id
@@ -326,6 +327,21 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
+                elif isinstance(f, ListField) and f.name == "labels":
+                    v = [
+                        {
+                            "id": ll.name,
+                            "is_protected": ll.is_protected,
+                            "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
+                            "name": ll.name,
+                            "value": ll.name.split("::")[-1],
+                            "bg_color1": "#%x" % ll.bg_color1,
+                            "fg_color1": "#%x" % ll.fg_color1,
+                            "bg_color2": "#%x" % ll.bg_color2,
+                            "fg_color2": "#%x" % ll.fg_color2,
+                        }
+                        for ll in Label.objects.filter(name__in=v)
+                    ]
                 elif isinstance(f, ListField):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]

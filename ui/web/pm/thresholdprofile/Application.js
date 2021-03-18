@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // pm.thresholdprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.pm.thresholdprofile.Application");
@@ -63,11 +63,14 @@ Ext.define("NOC.pm.thresholdprofile.Application", {
                 },
                 {
                     name: "umbrella_filter_handler",
-                    xtype: "textfield",
+                    xtype: "main.handler.LookupField",
                     fieldLabel: __("Umbrella Filter Handler"),
                     allowBlank: true,
-                    uiStyle: "large"
-                    // vtype: "handler"
+                    groupEdit: true,
+                    uiStyle: "large",
+                    query: {
+                        allow_threshold_handler: true
+                    }
                 },
                 {
                     xtype: "fieldset",
@@ -110,9 +113,13 @@ Ext.define("NOC.pm.thresholdprofile.Application", {
                         },
                         {
                             name: "value_handler",
-                            xtype: "textfield",
+                            xtype: "main.handler.LookupField",
                             fieldLabel: __("Value Handler"),
-                            allowBlank: true
+                            allowBlank: true,
+                            groupEdit: true,
+                            query: {
+                                allow_threshold_value_handler: true
+                            }
                         }
                     ]
                 },

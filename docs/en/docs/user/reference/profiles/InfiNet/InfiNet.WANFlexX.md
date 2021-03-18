@@ -10,3 +10,6 @@ uuid: 40e6e658-45f8-486a-a8d4-9cf5dafcaa92
 !!! todo
     Describe *InfiNet.WANFlexX* profile
 
+## Supported Scripts
+
+{{ supported_scripts("InfiNet.WANFlexX") }}

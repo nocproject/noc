@@ -33,6 +33,7 @@ Ext.define("NOC.inv.map.SelectIconForm", {
                             fieldLabel: __("Shape"),
                             labelWidth: 40,
                             minWidth: 300,
+                            labelAlign: "left",
                             allowBlank: false
                         }
                     ]

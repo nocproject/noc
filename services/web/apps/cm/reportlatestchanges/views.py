@@ -25,7 +25,9 @@ from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
-    repo = forms.ChoiceField(label=_("Type"), choices=[("config", "config"), ("dnszone", "DNS")])
+    repo = forms.ChoiceField(
+        label=_("Report Type"), choices=[("config", "config"), ("dnszone", "DNS")]
+    )
     days = forms.IntegerField(label=_("In Days"), min_value=1)
     adm_domain = forms.ModelChoiceField(
         label=_("Managed Objects Administrative Domain (for config only)"),

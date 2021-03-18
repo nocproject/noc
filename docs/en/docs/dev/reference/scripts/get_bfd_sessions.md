@@ -26,17 +26,16 @@
         "detect_time": IntParameter()
     })
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
+{{ supported_profiles("get_bfd_sessions") }}
+
+## Used in
 -------
+* [Discovery Box BFD](../../../admin/reference/discovery/box/bfd.md)

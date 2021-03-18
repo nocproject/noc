@@ -7,6 +7,7 @@
 console.debug("Defining NOC.sa.authprofile.LookupField");
 
 Ext.define("NOC.sa.authprofile.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.sa.authprofile.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.sa.authprofile.LookupField",
+    uiStyle: "medium-combo"
 });

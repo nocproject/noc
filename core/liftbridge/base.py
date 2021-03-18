@@ -38,7 +38,7 @@ from .api_pb2 import (
     StartPosition as _StartPosition,
     Ack,
 )
-from .error import rpc_error, ErrorNotFound, ErrorChannelClosed, ErrorUnavailable
+from .error import rpc_error, ErrorNotFound, ErrorChannelClosed, ErrorUnavailable, LiftbridgeError
 from .message import Message
 
 logger = logging.getLogger(__name__)
@@ -118,6 +118,7 @@ class GRPCChannel(object):
             options=[
                 ("grpc.max_send_message_length", config.liftbridge.max_message_size),
                 ("grpc.max_receive_message_length", config.liftbridge.max_message_size),
+                ("grpc.enable_http_proxy", config.liftbridge.enable_http_proxy),
             ],
         )
         while True:
@@ -224,12 +225,12 @@ class LiftBridgeClient(object):
             self.open_brokers = list(self.channels)
         return channel
 
-    async def _sleep_on_error(self):
+    async def _sleep_on_error(self, delay: float = 1.0, deviation: float = 1.0):
         """
         Wait random time on error
         :return:
         """
-        await asyncio.sleep(1.0 + random.random())
+        await asyncio.sleep(delay - deviation + 2 * deviation * random.random())
 
     async def get_leader(self, stream: str, partition: int) -> str:
         """
@@ -384,8 +385,15 @@ class LiftBridgeClient(object):
         name: str,
         group: Optional[str] = None,
         replication_factor: int = 1,
+        minisr: int = 0,
         partitions: int = 1,
         enable_compact: bool = False,
+        retention_max_age: int = 0,
+        retention_max_bytes: int = 0,
+        segment_max_age: int = 0,
+        segment_max_bytes: int = 0,
+        auto_pause_time: int = 0,
+        auto_pause_disable_if_subscribers: bool = False,
     ):
         with rpc_error():
             req = CreateStreamRequest(
@@ -396,7 +404,27 @@ class LiftBridgeClient(object):
                 partitions=partitions,
             )
             if enable_compact:
-                req.CompactEnabled.value = True
+                req.compactEnabled.value = True
+            else:
+                req.compactEnabled.value = False
+            if minisr:
+                req.minIsr.value = minisr
+            # Retention settings
+            if retention_max_age:
+                # in ms
+                req.retentionMaxAge.value = retention_max_age * 1000
+            if retention_max_bytes:
+                req.retentionMaxBytes.value = retention_max_bytes
+            # Segment settings
+            if segment_max_bytes:
+                req.segmentMaxBytes.value = segment_max_bytes
+            if segment_max_age:
+                # in ms
+                req.segmentMaxAge.value = segment_max_age * 1000
+            if auto_pause_time:
+                req.autoPauseTime.value = auto_pause_time * 1000
+                if auto_pause_disable_if_subscribers:
+                    req.autoPauseDisableIfSubscribers.value = True
             channel = await self.get_channel()
             await channel.CreateStream(req)
 
@@ -530,7 +558,7 @@ class LiftBridgeClient(object):
         partition: Optional[int] = None,
         start_position: StartPosition = StartPosition.NEW_ONLY,
         start_offset: Optional[int] = None,
-        start_timestamp: Optional[int] = None,
+        start_timestamp: Optional[float] = None,
         resume: bool = False,
         cursor_id: Optional[str] = None,
         timeout: Optional[int] = None,
@@ -550,7 +578,7 @@ class LiftBridgeClient(object):
             req.startOffset = start_offset
         elif start_timestamp is not None:
             req.startPosition = StartPosition.TIMESTAMP
-            req.startTimestamp = start_timestamp
+            req.startTimestamp = int(start_timestamp * 1_000_000_000.0)
         elif start_position == StartPosition.RESUME:
             if not cursor_id:
                 raise ValueError("cursor_id must be set for StartPosition.RESUME")
@@ -559,11 +587,15 @@ class LiftBridgeClient(object):
             logger.debug("Resuming from offset %d", req.startOffset)
         else:
             req.startPosition = start_position
+        to_recover: bool = False  # Recover flag. Set if clint from LiftbridgeError recover
         last_offset: Optional[int] = None
         while True:
             try:
                 async for msg in self._subscribe(
-                    req, restore_position=to_restore_position, cursor_id=cursor_id
+                    req,
+                    restore_position=to_restore_position,
+                    cursor_id=cursor_id,
+                    to_recover=to_recover,
                 ):
                     yield msg
                     last_offset = msg.offset
@@ -576,9 +608,25 @@ class LiftBridgeClient(object):
                     # Continue from last seen position
                     req.startPosition = StartPosition.OFFSET
                     req.startOffset = last_offset + 1
+                    to_restore_position = False
+            except LiftbridgeError as e:
+                logger.error("Subscriber channel was unknown error: %s", e)
+                logger.info("Try to continue from last offset")
+                if not to_restore_position and last_offset is not None:
+                    # Continue from last seen position
+                    req.startPosition = StartPosition.OFFSET
+                    req.startOffset = last_offset + 1
+                    to_restore_position = False
+                    to_recover = True
+                # For cluster problem recommended 30 second wait
+                await self._sleep_on_error(delay=30, deviation=10)
 
     async def _subscribe(
-        self, req: SubscribeRequest, restore_position: bool = False, cursor_id: Optional[str] = None
+        self,
+        req: SubscribeRequest,
+        restore_position: bool = False,
+        cursor_id: Optional[str] = None,
+        to_recover: bool = False,
     ) -> AsyncIterable[Message]:
         allow_isr = bool(req.readISRReplica)
         with rpc_error():
@@ -613,6 +661,7 @@ class LiftBridgeClient(object):
                 logger.debug("[%s] Stream is ready, waiting for messages", broker)
                 # Next, process all other messages
                 msg = await call._read()
+                to_recover = False  # clean if message successful get
                 while msg:
                     value = msg.value
                     headers = msg.headers
@@ -631,8 +680,11 @@ class LiftBridgeClient(object):
                     msg = await call._read()
                 # Get core message to explain the result
                 code = await call.code()
+                detail = await call.debug_error_string()
                 if code in self.GRPC_RESTARTABLE_CODES:
                     raise ErrorUnavailable()
+                if code == StatusCode.UNKNOWN and not to_recover:
+                    raise LiftbridgeError(str(detail))
                 raise ErrorChannelClosed(str(code))
 
     async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:

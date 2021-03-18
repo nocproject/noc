@@ -7,17 +7,14 @@
 
     Describe get_mpls_vpn script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_mpls_vpn") }}
+
+## Used in

@@ -7,17 +7,14 @@
 
     Describe sync_vlans script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("sync_vlans") }}
+
+## Used in

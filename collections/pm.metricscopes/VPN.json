@@ -4,23 +4,38 @@
     "uuid": "3e164372-199a-45c7-bda4-177b6b5c853a",
     "table_name": "vpns",
     "description": "Metrics for L2/L3 vpn tunnels.\nInstance - VPN ID: use it for L2 VPN name\nlocal_endpoint and remote_endpoint: For IPSEC it contains local IP and remote IP, for other type some string\n",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
-    "path": [
+    "key_fields": [
         {
-            "is_required": false,
-            "name": "instance"
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
         },
         {
-            "is_required": false,
-            "name": "local_endpoint"
-        },
-        {
-            "is_required": false,
-            "name": "remote_endpoint"
+            "field_name": "object",
+            "model": "inv.Object"
         }
     ],
-    "enable_timedelta": true
+    "enable_timedelta": true,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::instance::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::local_endpoint::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::remote_endpoint::*"
+        }
+    ]
 }

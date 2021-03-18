@@ -7,17 +7,16 @@
 
     Describe get_capabilities script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_capabilities") }}
+
+## Used in
+----
+* [Discovery Box Capabilities](../../../admin/reference/discovery/box/caps.md)

@@ -14,7 +14,7 @@ from .base import BaseModel
 from .typing import Reference
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
-from .container import Container
+from .object import Object
 from .managedobjectprofile import ManagedObjectProfile
 from .networksegment import NetworkSegment
 from .resourcegroup import ResourceGroup
@@ -26,7 +26,7 @@ class ManagedObject(BaseModel):
     id: str
     name: str
     is_managed: bool
-    container: Optional[Reference["Container"]]
+    container: Optional[Reference["Object"]]
     administrative_domain: Reference["AdministrativeDomain"]
     pool: str
     fm_pool: Optional[str]

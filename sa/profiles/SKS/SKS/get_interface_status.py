@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,7 +23,9 @@ class Script(BaseScript):
         r"(?P<oper_status>Up|Down|Not Present)",
         re.MULTILINE | re.IGNORECASE,
     )
-    rx_port2 = re.compile(r"^(?P<port>[fgt]\d\S*).*?(?P<oper_status>up|down).*\n", re.MULTILINE)
+    rx_port2 = re.compile(
+        r"^(?P<port>[fgt]\d\S*).*?\n?.*?(?P<oper_status>up|down).*\n", re.MULTILINE
+    )
 
     def execute_cli(self, interface=None):
         r = []

@@ -7,9 +7,8 @@
 console.debug("Defining NOC.main.ref.validator.LookupField");
 
 Ext.define("NOC.main.ref.validator.LookupField", {
-    extend: "NOC.core.LookupField",
+    extend: "NOC.core.ComboBox",
     alias: "widget.main.ref.validator.LookupField",
-    restUrl: "/main/ref/validator/lookup/",
     tpl: [
         '<tpl for=".">',
             '<div class="x-boundlist-item">',

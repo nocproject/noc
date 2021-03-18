@@ -1,0 +1,40 @@
+{
+    "name": "UPNET | Transceiver | 10G | SFP+ 10G-DA-2",
+    "$collection": "inv.objectmodels",
+    "uuid": "29a49ffd-211e-44ea-9034-5a0050b49336",
+    "vendor__code": "UPNET",
+    "description": "UPNET SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 2m",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP+-10G-DA-2"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

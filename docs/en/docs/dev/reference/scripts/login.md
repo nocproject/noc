@@ -7,17 +7,17 @@
 
     Describe login script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_interfaces") }}
+
+## Used in
+
+Implemented as *Generic Script*, applicable to all profiles
+with CLI support

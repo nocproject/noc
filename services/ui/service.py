@@ -1,3 +1,4 @@
+#!./bin/python
 # ----------------------------------------------------------------------
 # <describe module here>
 # ----------------------------------------------------------------------
@@ -15,6 +16,7 @@ class UIService(FastAPIService):
     if config.features.traefik:
         traefik_backend = "ui"
         traefik_frontend_rule = "PathPrefix:/api/ui"
+    use_mongo = True
 
 
 if __name__ == "__main__":

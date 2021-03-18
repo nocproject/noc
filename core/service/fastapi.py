@@ -101,7 +101,9 @@ class FastAPIService(BaseService):
         addr, port = self.get_service_address()
         # Initialize uvicorn server
         # Reproduce Service.run/.serve method
-        uvi_config = uvicorn.Config(self.app, host=addr, port=port, lifespan="on", access_log=False)
+        uvi_config = uvicorn.Config(
+            self.app, host=addr, port=port, lifespan="on", access_log=False, loop="none"
+        )
         self.server = uvicorn.Server(config=uvi_config)
         uvi_config.setup_event_loop()
         uvi_config.load()

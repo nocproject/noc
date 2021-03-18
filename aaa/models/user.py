@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # User model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import datetime
 from threading import Lock
 import operator
+from typing import Optional
 
 # Third-party modules
 import cachetools
@@ -22,6 +23,7 @@ from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
 from noc.settings import LANGUAGES
+from noc.main.models.avatar import Avatar
 from .group import Group
 
 id_lock = Lock()
@@ -108,15 +110,15 @@ class User(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["User"]:
         return User.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_username(cls, name):
+    def get_by_username(cls, name) -> Optional["User"]:
         return User.objects.filter(username=name).first()
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         """
         Always return True. This is a way to tell if the user has been
         authenticated in templates.
@@ -180,3 +182,28 @@ class User(NOCModel):
         ts = ts or datetime.datetime.now()
         self.last_login = ts
         self.save(update_fields=["last_login"])
+
+    @property
+    def avatar_url(self) -> Optional[str]:
+        """
+        Get user's avatar URL
+        :return:
+        """
+        if not Avatar.objects.filter(user_id=str(self.id)).only("user_id").first():
+            return None
+        return f"/api/ui/avatar/{self.id}"
+
+    @property
+    def avatar_label(self) -> Optional[str]:
+        """
+        Get avatar's textual label
+        :return:
+        """
+        r = []
+        if self.first_name:
+            r += [self.first_name[0].upper()]
+        if self.last_name:
+            r += [self.last_name[0].upper()]
+        if not r:
+            r += [self.username[:1].upper()]
+        return "".join(r)

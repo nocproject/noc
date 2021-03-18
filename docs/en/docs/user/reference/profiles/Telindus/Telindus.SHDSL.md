@@ -10,3 +10,6 @@ uuid: a132460c-2f09-4172-806d-ca0502064b53
 !!! todo
     Describe *Telindus.SHDSL* profile
 
+## Supported Scripts
+
+{{ supported_scripts("Telindus.SHDSL") }}

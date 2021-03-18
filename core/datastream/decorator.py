@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # @datastream decorator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from mongoengine import signals as mongo_signals
 
 # NOC modules
 from noc.core.model.decorator import is_document
-from .change import register_changes
+from .change import change_tracker
 
 
 def datastream(cls):
@@ -56,4 +56,4 @@ def _on_document_change(sender, document, *args, **kwargs):
 def _on_change(obj, changed_fields=None):
     r = list(obj.iter_changed_datastream(changed_fields=changed_fields))
     if r:
-        register_changes(r)
+        change_tracker.register(r)

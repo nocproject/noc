@@ -7,6 +7,7 @@
 console.debug("Defining NOC.crm.subscriber.LookupField");
 
 Ext.define("NOC.crm.subscriber.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.crm.subscriber.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.crm.subscriber.LookupField",
+    uiStyle: "medium-combo"
 });

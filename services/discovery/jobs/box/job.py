@@ -14,7 +14,7 @@ from noc.services.discovery.jobs.base import MODiscoveryJob
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 from noc.core.span import Span
-from noc.core.datastream.change import bulk_datastream_changes
+from noc.core.datastream.change import change_tracker
 from .resolver import ResolverCheck
 from .suggestsnmp import SuggestSNMPCheck
 from .profile import ProfileCheck
@@ -83,7 +83,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
     default_contexts = ("counters", "metric_windows", "active_thresholds")
 
     def handler(self, **kwargs):
-        with Span(sample=self.object.box_telemetry_sample), bulk_datastream_changes():
+        with Span(sample=self.object.box_telemetry_sample), change_tracker.bulk_changes():
             has_cli = "C" in self.object.get_access_preference()
             ResolverCheck(self).run()
             if self.object.auth_profile and self.object.auth_profile.enable_suggest:

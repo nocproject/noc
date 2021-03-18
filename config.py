@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@ import logging
 import os
 import socket
 import sys
-from collections import namedtuple
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
@@ -22,6 +21,7 @@ from noc.core.config.params import (
     BooleanParameter,
     HandlerParameter,
     SecondsParameter,
+    BytesParameter,
     FloatParameter,
     ServiceParameter,
     SecretParameter,
@@ -114,22 +114,15 @@ class Config(BaseConfig):
         alarmheat_tooltip_limit = IntParameter(default=5)
 
     class chwriter(ConfigSection):
-        batch_size = IntParameter(default=50000, help="Size of one portion from queue")
-        records_buffer = IntParameter(default=1000000, help="Own buffer of messages from queue")
-        batch_delay_ms = IntParameter(default=10000, help="Send every period time")
-        channel_expire_interval = SecondsParameter(
-            default="5M", help="Close channel when no messages in this time"
-        )
-        suspend_timeout_ms = IntParameter(
-            default=3000, help="How much time to sleep before continue"
-        )
-        # Topic to listen
-        topic = StringParameter(default="chwriter", help="Topic in queue to listen to")
+        # LiftBridge partition (CH shard id)
+        shard_id = IntParameter(help="CH Shard Id", default=0)
+        # Unique replica number within shard
+        replica_id = IntParameter(help="CH Partition Replica Id", default=0)
         # <address:port> of ClickHouse server to write
         write_to = StringParameter()
-        max_in_flight = IntParameter(
-            default=10, help="How many parts read simultaneously from queue"
-        )
+        #
+        batch_size = IntParameter(default=50000, help="Size of one portion from queue")
+        batch_delay_ms = IntParameter(default=10000, help="Send every period time")
 
     class classifier(ConfigSection):
         lookup_handler = HandlerParameter(default="noc.services.classifier.rulelookup.RuleLookup")
@@ -336,10 +329,73 @@ class Config(BaseConfig):
 
     class liftbridge(ConfigSection):
         addresses = ServiceParameter(service="liftbridge", wait=True, near=True, full_result=False)
-        max_message_size = IntParameter(default=-1, help="Max message size for GRPC client")
+        max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
         publish_async_ack_timeout = IntParameter(default=10)
         compression_threshold = IntParameter(default=524288)
         compression_method = StringParameter(choices=["", "zlib", "lzma"], default="zlib")
+        enable_http_proxy = BooleanParameter(default=False)
+        #  mx, kafkasender, events, dispose
+        stream_events_retention_max_age = SecondsParameter(
+            default="24h",
+            help="FM events stream retention interval. If 0 use Liftbrdige setting value",
+        )
+        stream_events_retention_max_bytes = BytesParameter(
+            default=0,
+            help="FM events stream retention size (in bytes). If 0 use Liftbrdige setting value",
+        )
+        stream_events_segment_max_age = SecondsParameter(
+            default="1h",
+            help="FM events stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
+        )
+        stream_events_segment_max_bytes = BytesParameter(
+            default=0,
+            help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
+        )
+        stream_events_auto_pause_time = SecondsParameter(
+            default=0, help="FM events stream pause time. If 0 use Liftbrdige setting value"
+        )
+        stream_events_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_dispose_retention_max_age = SecondsParameter(
+            default="24h",
+            help="FM alarms stream retention interval. If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_retention_max_bytes = BytesParameter(
+            default=0,
+            help="FM alarms stream retention size (in bytes). If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_segment_max_age = SecondsParameter(
+            default="1h",
+            help="FM alarms stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_segment_max_bytes = BytesParameter(
+            default=0,
+            help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
+        )
+        stream_dispose_auto_pause_time = SecondsParameter(
+            default=0, help="FM alarms stream pause time. If 0 use Liftbrdige setting value"
+        )
+        stream_dispose_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_message_retention_max_age = SecondsParameter(default="1h")
+        stream_message_retention_max_bytes = BytesParameter(default=0)
+        stream_message_segment_max_age = SecondsParameter(default="30M")
+        stream_message_segment_max_bytes = BytesParameter(default=0)
+        stream_message_auto_pause_time = SecondsParameter(default=0)
+        stream_message_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_kafkasender_retention_max_age = SecondsParameter(default="1h")
+        stream_kafkasender_retention_max_bytes = BytesParameter(default=0)
+        stream_kafkasender_segment_max_age = SecondsParameter(default="30M")
+        stream_kafkasender_segment_max_bytes = BytesParameter(default=0)
+        stream_kafkasender_auto_pause_time = SecondsParameter(default=0)
+        stream_kafkasender_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_ch_retention_max_age = SecondsParameter(default="1h")
+        stream_ch_retention_max_bytes = BytesParameter(default="100M")
+        stream_ch_segment_max_age = SecondsParameter(default="30M")
+        stream_ch_segment_max_bytes = BytesParameter(default="50M")
+        stream_ch_auto_pause_time = SecondsParameter(default=0)
+        stream_ch_auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        stream_ch_replication_factor = IntParameter(
+            default=1, help="Replicaton factor for clickhouse streams"
+        )
 
     listen = StringParameter(default="auto:0")
 
@@ -591,6 +647,9 @@ class Config(BaseConfig):
         macdb_window = IntParameter(default=4 * 86400)
         enable_remote_system_last_extract_info = BooleanParameter(default=False)
 
+    class ui(ConfigSection):
+        max_avatar_size = BytesParameter(default="256K")
+
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)
         max_threads = IntParameter(default=10)
@@ -823,37 +882,6 @@ class Config(BaseConfig):
             logging.basicConfig(stream=sys.stdout, format=self.log_format, level=loglevel)
         logging.captureWarnings(True)
 
-    @property
-    def ch_cluster_topology(self):
-        if not hasattr(self, "_ch_cluster_topology"):
-            shards = []
-            for s in self.clickhouse.cluster_topology.split(","):
-                s = s.strip()
-                if ":" in s:
-                    weight, replicas = s.split(":")
-                else:
-                    weight, replicas = 1, s
-                shards += [CHClusterShard(int(replicas), int(weight))]
-            self._ch_cluster_topology = shards
-        return self._ch_cluster_topology
-
-    def get_ch_topology_type(self):
-        """
-        Detect ClickHouse topology type
-        :return: Any of
-          * CH_UNCLUSTERED
-          * CH_REPLICATED
-          * CH_SHARDED
-        """
-        topo = self.ch_cluster_topology
-        if len(topo) == 1:
-            if topo[0].replicas == 1:
-                return CH_UNCLUSTERED
-            else:
-                return CH_REPLICATED
-        else:
-            return CH_SHARDED
-
     def get_customized_paths(self, *args, **kwargs):
         """
         Check for customized path for given repo path.
@@ -900,11 +928,6 @@ class Config(BaseConfig):
         # Check quantiles is enabled
         return getattr(self.metrics, "enable_%s_quantiles" % name, False)
 
-
-CHClusterShard = namedtuple("CHClusterShard", ["replicas", "weight"])
-CH_UNCLUSTERED = 0
-CH_REPLICATED = 1
-CH_SHARDED = 2
 
 config = Config()
 config.load()

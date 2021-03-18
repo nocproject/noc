@@ -92,12 +92,14 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                     name: "selector",
                     xtype: "sa.managedobjectselector.LookupField",
                     fieldLabel: __("Selector"),
+                    uiStyle: "large",
                     allowBlank: false
                 },
                 {
                     name: "profile",
                     xtype: "inv.interfaceprofile.LookupField",
                     fieldLabel: __("Interface Profile"),
+                    uiStyle: "large",
                     allowBlank: false
                 },
                 {

@@ -1,14 +1,16 @@
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8100.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -17,7 +19,8 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_plat = re.compile(
-        r"^Base\s+(?P<platform>AT-81\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n", re.MULTILINE
+        r"^Base\s+(?P<platform>AT-\d\d\S+)( V\d)?\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n",
+        re.MULTILINE,
     )
     rx_boot = re.compile(r"^Bootloader version\s+:\s+(?P<bootprom>\S+)\s*\n", re.MULTILINE)
     rx_version = re.compile(r"^Software version\s+:\s+(?P<version>\S+)\s*\n", re.MULTILINE)

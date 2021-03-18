@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,9 +27,11 @@ class Script(BaseScript):
     rx_ipif1 = re.compile(
         r"(?:Interface Name|IP Interface)\s+:\s+(?P<ifname>\S+)\s*\n"
         r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(\S+\)\s*\n"
+        r"(Secondary\s+: (?P<secondary>\S+)\s*\n)?"
         r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"
         r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
         r"(?:Interface )?Admin.? State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
+        r"(Proxy ARP\s+: \S+\s*\n)?"
         r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
         r"Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n"
         r"Member Ports\s+:\s*\S*\s*\n"
@@ -551,7 +553,12 @@ class Script(BaseScript):
                             i["subinterfaces"][0]["mac"] = f["mac"]
                             break
                     break
-            interfaces += [i]
+            if match.group("secondary") and match.group("secondary") == "TRUE":
+                interfaces[-1]["subinterfaces"][0]["ipv4_addresses"] += i["subinterfaces"][0][
+                    "ipv4_addresses"
+                ]
+            else:
+                interfaces += [i]
             ipif_found = True
 
         for match in self.rx_ipif2.finditer(ipif):

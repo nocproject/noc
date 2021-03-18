@@ -7,17 +7,14 @@
 
     Describe get_ipv6_neighbor script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_ipv6_neighbors") }}
+
+## Used in

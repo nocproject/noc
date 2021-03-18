@@ -5,18 +5,16 @@
 
     Describe get_inventory script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
+{{ supported_profiles("get_inventory") }}
+
+## Used in
 -------
 * [Discovery Box Asset](../../../admin/reference/discovery/box/asset.md)

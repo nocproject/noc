@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // pm.metricscope application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.pm.metricscope.Application");
@@ -84,14 +84,14 @@ Ext.define("NOC.pm.metricscope.Application", {
                     ]
                 },
                 {
-                    name: "path",
+                    name: "labels",
                     xtype: "gridfield",
-                    fieldLabel: __("Path"),
+                    fieldLabel: __("Labels"),
                     allowBlank: true,
                     columns: [
                         {
-                            dataIndex: "name",
-                            text: __("Name"),
+                            dataIndex: "label",
+                            text: __("Label"),
                             width: 150,
                             editor: "textfield"
                         },
@@ -103,8 +103,35 @@ Ext.define("NOC.pm.metricscope.Application", {
                             renderer: NOC.render.Bool
                         },
                         {
-                            dataIndex: "default_value",
-                            text: __("Default"),
+                            dataIndex: "is_primary_key",
+                            text: __("Primary Key"),
+                            width: 50,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            dataIndex: "is_order_key",
+                            text: __("Order Key"),
+                            width: 50,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            dataIndex: "is_path",
+                            text: __("Path"),
+                            width: 50,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            dataIndex: "store_column",
+                            text: __("Store Column"),
+                            flex: 1,
+                            editor: "textfield"
+                        },
+                        {
+                            dataIndex: "view_column",
+                            text: __("View Column"),
                             flex: 1,
                             editor: "textfield"
                         }

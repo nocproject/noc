@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Nexus 9k | 9300-EX FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "cc42dcb7-e6ff-4666-a378-bcd42560786b",
+    "description": "Cisco Nexus NXA fan tray connection",
+    "c_group": [],
+    "genders": "mf"
+}

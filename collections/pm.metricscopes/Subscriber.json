@@ -4,26 +4,38 @@
     "uuid": "7e8c2273-5c24-4692-ae07-0b996d709eec",
     "table_name": "subscriber",
     "description": "Subscriber-related metrics",
-    "key_fields": [{
-        "field_name": "managed_object",
-        "model": "sa.ManagedObject"
-    }],
-    "path": [
+    "key_fields": [
         {
-            "is_required": false,
-            "name": "chassis"
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
         },
         {
+            "field_name": "object",
+            "model": "inv.Object"
+        }
+    ],
+    "enable_timedelta": false,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "slot"
+            "label": "noc::chassis::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "module"
+            "label": "noc::slot::*"
         },
         {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
             "is_required": false,
-            "name": "port"
+            "label": "noc::module::*"
         }
     ]
 }

@@ -7,6 +7,7 @@
 console.debug("Defining NOC.main.sync.LookupField");
 
 Ext.define("NOC.main.sync.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.main.sync.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.main.sync.LookupField",
+    uiStyle: "medium-combo"
 });

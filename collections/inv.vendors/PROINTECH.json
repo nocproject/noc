@@ -1,0 +1,8 @@
+{
+    "name": "Prointech",
+    "uuid": "e1f56ffa-31e7-4309-9c65-2321ddf63e03",
+    "full_name": "ООО «ПРОИНТЕХ»",
+    "code": ["UPNET"],
+    "site": "http://www.prointech.ru",
+    "$collection": "inv.vendors"
+}

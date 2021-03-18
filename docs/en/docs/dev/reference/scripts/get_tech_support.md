@@ -7,17 +7,14 @@
 
     Describe get_tech_support script
 
-Input Arguments
----------------
+## Input Arguments
 
-Result
-------
+## Result
 
-Examples
---------
+## Examples
 
-Supported Profiles
-------------------
+## Supported Profiles
 
-Used in
--------
+{{ supported_profiles("get_tech_support") }}
+
+## Used in

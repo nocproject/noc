@@ -17,7 +17,7 @@ Ext.define("NOC.fm.event.Application", {
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.event.EventPanel",
         "NOC.core.combotree.ComboTree",
-        "NOC.fm.alarm.view.grids.Lookup",
+        "NOC.core.ComboBox",
         "NOC.fm.event.ApplicationModel",
         "NOC.fm.event.ApplicationController",
     ],
@@ -201,7 +201,7 @@ Ext.define("NOC.fm.event.Application", {
                     },
                     items: [
                         {
-                            xtype: "fm.alarm.lookup",
+                            xtype: "combo",
                             fieldLabel: __("State"),
                             editable: false,
                             queryMode: "local",
@@ -221,8 +221,8 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "fm.alarm.lookup",
-                            url: "/sa/managedobject/lookup/",
+                            xtype: "core.combo",
+                            restUrl: "/sa/managedobject/lookup/",
                             fieldLabel: __("Object"),
                             name: "managed_object",
                             bind: {
@@ -239,8 +239,8 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "fm.alarm.lookup",
-                            url: "/sa/managedobjectselector/lookup/",
+                            xtype: "core.combo",
+                            restUrl: "/sa/managedobjectselector/lookup/",
                             fieldLabel: __("Selector"),
                             name: "managedobjectselector",
                             bind: {
@@ -248,8 +248,8 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "fm.alarm.lookup",
-                            url: "/fm/eventclass/lookup/",
+                            xtype: "core.combo",
+                            restUrl: "/fm/eventclass/lookup/",
                             fieldLabel: __("Event Class"),
                             name: "event_class",
                             bind: {

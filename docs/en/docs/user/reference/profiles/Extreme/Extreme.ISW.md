@@ -5,5 +5,8 @@
 
 <!-- prettier-ignore -->
 !!! todo
-    Describe *EExtreme.ISW* profile
+    Describe *Extreme.ISW* profile
 
+## Supported Scripts
+
+{{ supported_scripts("Extreme.ISW") }}

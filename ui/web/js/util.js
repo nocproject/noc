@@ -297,7 +297,9 @@ Ext.apply(NOC.render, {
     },
 
     JSON: function(v) {
-        return Ext.encode(v);
+        if(!Ext.isEmpty(v)) {
+            return Ext.encode(v);
+        }
     },
 
     Badge: function(v) {
@@ -688,6 +690,12 @@ NOC.uiStyles = function(style) {
             // 20 letters
             return {
                 width: Ext.create("NOC.core.modelfilter.Base").width - 25,
+                anchor: null
+            };
+        }
+        case "medium-combo": {
+            return {
+                width: Ext.create("NOC.core.modelfilter.Base").width - 100,
                 anchor: null
             };
         }

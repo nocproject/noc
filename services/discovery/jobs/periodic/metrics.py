@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Metric collector
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,7 +31,6 @@ from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
 from noc.pm.models.thresholdprofile import ThresholdProfile
-from noc.core.handler import get_handler
 from noc.core.hash import hash_str
 
 
@@ -578,17 +577,20 @@ class MetricsCheck(DiscoveryCheck):
         states = self.job.context["metric_windows"]
         value = m.abs_value
         if cfg.threshold_profile.value_handler:
-            vh = get_handler(cfg.threshold_profile.value_handler)
-            if vh:
-                ctx = self.id_ctx.get(m.id) or {}
-                try:
-                    value = vh(value, **ctx)
-                except Exception as e:
-                    self.logger.error(
-                        "Failed to execute value handler %s: %s",
-                        cfg.threshold_profile.value_handler,
-                        e,
-                    )
+            if cfg.threshold_profile.value_handler.allow_threshold_value_handler:
+                vh = cfg.threshold_profile.value_handler.get_handler()
+                if vh:
+                    ctx = self.id_ctx.get(m.id) or {}
+                    try:
+                        value = vh(value, **ctx)
+                    except Exception as e:
+                        self.logger.error(
+                            "Failed to execute value handler %s: %s",
+                            cfg.threshold_profile.value_handler,
+                            e,
+                        )
+            else:
+                self.logger.warning("Value Handler is not allowed for Thresholds")
         ts = m.ts // 1000000000
         # Do not store single-value windows
         window_type = cfg.threshold_profile.window_type
@@ -745,6 +747,8 @@ class MetricsCheck(DiscoveryCheck):
                     # Remain umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
             elif threshold:
+                if w_value is None:
+                    w_value = m.abs_value
                 if w_value and threshold.is_clear_match(w_value):
                     # Close Event
                     active = None  # Reset threshold
@@ -768,9 +772,9 @@ class MetricsCheck(DiscoveryCheck):
                                     self.logger.error("Exception when calling close handler: %s", e)
                         else:
                             self.logger.warning("Handler is not allowed for Thresholds")
-                elif threshold.alarm_class:
-                    # Remain umbrella alarm
-                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
+                    if threshold.alarm_class:
+                        # Remain umbrella alarm
+                        alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
             else:
                 # Threshold has been reconfigured or deleted
                 if active.get("close_event_class"):
@@ -780,14 +784,14 @@ class MetricsCheck(DiscoveryCheck):
                         active["threshold"],
                         active["close_event_class"].name,
                         path,
-                        w_value,
+                        m.abs_value,
                     )
                 if active.get("close_handler"):
                     if active["close_handler"].allow_threshold:
                         handler = active["close_handler"].get_handler()
                         if handler:
                             try:
-                                handler(self, cfg, active["threshold"], w_value)
+                                handler(self, cfg, active["threshold"], m.abs_value)
                             except Exception as e:
                                 self.logger.error("Exception when calling close handler: %s", e)
                     else:
@@ -856,14 +860,17 @@ class MetricsCheck(DiscoveryCheck):
             },
         }
         if metric_config.threshold_profile.umbrella_filter_handler:
-            try:
-                handler = get_handler(metric_config.threshold_profile.umbrella_filter_handler)
-                if handler:
-                    alarm_cfg = handler(self, alarm_cfg)
-                    if not alarm_cfg:
-                        return []
-            except Exception as e:
-                self.logger.error("Exception when loading handler %s", e)
+            if metric_config.threshold_profile.umbrella_filter_handler.allow_threshold_handler:
+                try:
+                    handler = metric_config.threshold_profile.umbrella_filter_handler.get_handler()
+                    if handler:
+                        alarm_cfg = handler(self, alarm_cfg)
+                        if not alarm_cfg:
+                            return []
+                except Exception as e:
+                    self.logger.error("Exception when loading handler %s", e)
+            else:
+                self.logger.warning("Umbrella filter Handler is not allowed for Thresholds")
         return [alarm_cfg]
 
     def get_event_cfg(self, metric_config, threshold_profile, threshold, event_class, path, value):
@@ -891,14 +898,17 @@ class MetricsCheck(DiscoveryCheck):
             "window_function": threshold_profile.window_function,
         }
         if threshold_profile.umbrella_filter_handler:
-            try:
-                handler = get_handler(threshold_profile.umbrella_filter_handler)
-                if handler:
-                    raw_vars = handler(self, raw_vars)
-                    if not raw_vars:
-                        return []
-            except Exception as e:
-                self.logger.error("Exception when loading handler %s", e)
+            if threshold_profile.umbrella_filter_handler.allow_threshold_handler:
+                try:
+                    handler = threshold_profile.umbrella_filter_handler.get_handler()
+                    if handler:
+                        raw_vars = handler(self, raw_vars)
+                        if not raw_vars:
+                            return []
+                except Exception as e:
+                    self.logger.error("Exception when loading handler %s", e)
+            else:
+                self.logger.warning("Umbrella filter Handler is not allowed for Thresholds")
         try:
             self.raise_event(event_class, raw_vars)
             result = True

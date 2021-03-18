@@ -44,6 +44,7 @@ class ExtApplication(Application):
     start_param = "__start"
     limit_param = "__limit"
     sort_param = "__sort"
+    group_param = "__group"
     format_param = "__format"  # List output format
     query_param = "__query"
     only_param = "__only"
@@ -179,6 +180,13 @@ class ExtApplication(Application):
                     ordering += ["-%s" % r["property"]]
                 else:
                     ordering += [r["property"]]
+        grouping = None
+        if request.is_extjs and self.group_param in q:
+            r = self.deserialize(q[self.group_param])
+            if r["direction"] == "DESC":
+                grouping = "-%s" % r["property"]
+            else:
+                grouping = r["property"]
         fs = None
         fav_items = None
         if self.fav_status in q:
@@ -224,6 +232,11 @@ class ExtApplication(Application):
         ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
+        if grouping:
+            ordering.insert(0, grouping)
+        # Apply row limit if necessary
+        if self.row_limit:
+            limit = min(limit or self.row_limit, self.row_limit + 1)
         # Apply paging
         if limit:
             data = data[start : start + limit]

@@ -115,6 +115,30 @@ def get_user_from_jwt(token: str, audience: Optional[str] = None) -> str:
         raise ValueError(str(e))
 
 
+def get_exp_from_jwt(token: str, audience: Optional[str] = None) -> datetime:
+    """
+    Check JWT token and return exp.
+    Raise ValueError if failed
+    :param token:
+    :param audience:
+    :return:
+    """
+    try:
+        token = jwt.decode(
+            token, jwt_key, algorithms=[config.login.jwt_algorithm], audience=audience
+        )
+        exp = None
+        if isinstance(token, dict):
+            exp = token.get("exp")
+        if not exp:
+            raise ValueError("Malformed token")
+        return exp
+    except jwt.ExpiredSignatureError:
+        raise ValueError("Expired token")
+    except jwt.JWTError as e:
+        raise ValueError(str(e))
+
+
 def set_jwt_cookie(response: Response, user: str) -> None:
     """
     Generate JWT token and append as cookie to response
@@ -153,21 +177,4 @@ def change_credentials(credentials: Dict[str, Any]):
             continue
         except backend.LoginError as e:
             logger.error("Failed to change credentials for %s: %s", c, e)
-    return False
-
-
-def revoke_token(token: str) -> None:
-    """
-    Mark token as revoked. Any futher use will be prohibited
-    :param token:
-    :return:
-    """
-
-
-def is_revoked(token: str) -> bool:
-    """
-    Check if token is revoked
-    :param token: encoded JWT token to check
-    :return: True if token is revoked
-    """
     return False

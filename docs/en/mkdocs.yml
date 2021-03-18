@@ -30,6 +30,7 @@ nav:
               - Handler: user/reference/concepts/handler/index.md
               - Interface: user/reference/concepts/interface/index.md
               - Interface Profile: user/reference/concepts/interface-profile/index.md
+              - Label: user/reference/concepts/label/index.md
               - Managed Object: user/reference/concepts/managed-object/index.md
               - Managed Object Profile: user/reference/concepts/managed-object-profile/index.md
               - Network Segment: user/reference/concepts/network-segment/index.md
@@ -1315,6 +1316,7 @@ nav:
               - tgsender: admin/reference/services/tgsender.md
               - trapcollector: admin/reference/services/trapcollector.md
               - web: admin/reference/services/web.md
+              - ui: admin/reference/services/ui.md
           - Configuration:
               - Configuration System Overview: admin/reference/config/index.md
               - Date and Time Formats: admin/reference/datetime-format.md
@@ -1382,6 +1384,7 @@ nav:
               - "[threadpool] section": admin/reference/config/threadpool.md
               - "[traceback] section": admin/reference/config/traceback.md
               - "[trapcollector] section": admin/reference/config/trapcollector.md
+              - "[ui] section": admin/reference/config/ui.md
               - "[web] section": admin/reference/config/web.md
           - Discovery:
               - Box Discovery:
@@ -2219,6 +2222,7 @@ nav:
           - Inventory Protocols: dev/reference/inventory-protocols.md
           - Streams:
               - Overview: dev/reference/streams/index.md
+              - ch.TABLE: dev/reference/streams/ch.md
               - dispose.POOL: dev/reference/streams/dispose.md
               - events.POOL: dev/reference/streams/events.md
               - kafkasender: dev/reference/streams/kafkasender.md
@@ -2246,6 +2250,7 @@ nav:
               - NOC 20.4.1: about/releases/20.4.1.md
               - NOC 20.4.2: about/releases/20.4.2.md
               - NOC 20.4.3: about/releases/20.4.3.md
+              - NOC 20.4.4: about/releases/20.4.4.md
           - NOC 20.3 Generation:
               - NOC 20.3: about/releases/20.3.md
               - NOC 20.3.1: about/releases/20.3.1.md

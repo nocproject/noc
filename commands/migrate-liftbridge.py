@@ -13,18 +13,27 @@ import functools
 from noc.core.management.base import BaseCommand
 from noc.core.liftbridge.base import LiftBridgeClient, Metadata, StreamMetadata, StartPosition
 from noc.main.models.pool import Pool
+from noc.pm.models.metricscope import MetricScope
 from noc.core.mongo.connection import connect
 from noc.core.service.loader import get_dcs
 from noc.core.ioloop.util import run_sync
+from noc.core.clickhouse.loader import loader as bi_loader
+from noc.config import config
 
 
 class Command(BaseCommand):
+    # List of single-partitioned streams
     STREAMS = [
+        "revokedtokens",
+    ]
+    # Streams, depending on slots
+    SLOT_STREAMS = [
         # slot name, stream name
         ("mx", "message"),
         ("kafkasender", "kafkasender"),
     ]
-    POOLED_STREAMS = [
+    # Pool-basend streams, depending on slots
+    POOLED_SLOT_STREAMS = [
         # slot name, stream name
         ("classifier-%s", "events.%s"),
         ("correlator-%s", "dispose.%s"),
@@ -62,12 +71,12 @@ class Command(BaseCommand):
 
     def iter_slot_streams(self) -> Tuple[str, str]:
         # Common streams
-        for slot_name, stream_name in self.STREAMS:
+        for slot_name, stream_name in self.SLOT_STREAMS:
             yield slot_name, stream_name
         # Pooled streams
         connect()
         for pool in Pool.objects.all():
-            for slot_mask, stream_mask in self.POOLED_STREAMS:
+            for slot_mask, stream_mask in self.POOLED_SLOT_STREAMS:
                 yield slot_mask % pool.name, stream_mask % pool.name
 
     def iter_limits(self) -> Tuple[str, int]:
@@ -76,10 +85,24 @@ class Command(BaseCommand):
             return await dcs.get_slot_limit(slot_name)
 
         dcs = get_dcs()
+        # Plain streams
+        for stream_name in self.STREAMS:
+            yield stream_name, 1
+        # Slot-based streams
         for slot_name, stream_name in self.iter_slot_streams():
             n_partitions = run_sync(get_slot_limits)
             if n_partitions:
                 yield stream_name, n_partitions
+        # Metric scopes
+        n_ch_shards = len(config.clickhouse.cluster_topology.split(","))
+        for scope in MetricScope.objects.all():
+            yield f"ch.{scope.table_name}", n_ch_shards
+        # BI models
+        for name in bi_loader:
+            bi_model = bi_loader[name]
+            if not bi_model:
+                continue
+            yield f"ch.{bi_model._meta.db_table}", n_ch_shards
 
     def apply_stream_settings(self, meta: Metadata, stream: str, partitions: int, rf: int) -> bool:
         def delete_stream(name: str):
@@ -91,13 +114,42 @@ class Command(BaseCommand):
             run_sync(wrapper)
 
         def create_stream(name: str, n_partitions: int, replication_factor: int):
+            base_name = name.split(".")[0]
+            minisr = 0
+            if base_name == "ch":
+                replication_factor = min(
+                    config.liftbridge.stream_ch_replication_factor, replication_factor
+                )
+                minisr = min(2, replication_factor)
+
             async def wrapper():
                 async with LiftBridgeClient() as client:
                     await client.create_stream(
                         subject=name,
                         name=name,
                         partitions=n_partitions,
+                        minisr=minisr,
                         replication_factor=replication_factor,
+                        retention_max_bytes=getattr(
+                            config.liftbridge, f"stream_{base_name}_retention_max_age", 0
+                        ),
+                        retention_max_age=getattr(
+                            config.liftbridge, f"stream_{base_name}_retention_max_bytes", 0
+                        ),
+                        segment_max_bytes=getattr(
+                            config.liftbridge, f"stream_{base_name}_segment_max_bytes", 0
+                        ),
+                        segment_max_age=getattr(
+                            config.liftbridge, f"stream_{base_name}_segment_max_age", 0
+                        ),
+                        auto_pause_time=getattr(
+                            config.liftbridge, f"stream_{base_name}_auto_pause_time", 0
+                        ),
+                        auto_pause_disable_if_subscribers=getattr(
+                            config.liftbridge,
+                            f"stream_{base_name}_auto_pause_disable_if_subscribers",
+                            False,
+                        ),
                     )
 
             run_sync(wrapper)

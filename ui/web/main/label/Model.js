@@ -42,6 +42,10 @@ Ext.define("NOC.main.label.Model", {
             defaultValue: 16777215
         },
         {
+            name: "is_protected",
+            type: "boolean"
+        },
+        {
             name: "enable_agent",
             type: "boolean"
         },

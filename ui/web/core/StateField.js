@@ -134,7 +134,9 @@ Ext.define("NOC.core.StateField", {
         v = v || {};
         me.stateField.setValue(v.label || "");
         me.itemId = v.itemId || null;
-        me.restUrl = v.restUrl || null;
+        if(v.restUrl) {
+            me.restUrl = v.restUrl;
+        }
         me.hideTransitions();
     },
 

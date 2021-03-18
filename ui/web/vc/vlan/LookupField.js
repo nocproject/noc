@@ -7,6 +7,7 @@
 console.debug("Defining NOC.vc.vlan.LookupField");
 
 Ext.define("NOC.vc.vlan.LookupField", {
-    extend: "NOC.core.LookupField",
-    alias: "widget.vc.vlan.LookupField"
+    extend: "NOC.core.ComboBox",
+    alias: "widget.vc.vlan.LookupField",
+    uiStyle: "medium-combo"
 });
