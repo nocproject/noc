@@ -107,6 +107,7 @@ class LoginService(FastAPIService):
             # Disable on Liftbridge Bug for subscribe by timestamp
             # start_timestamp=start_timestamp,
             # start_position=StartPosition.TIMESTAMP,
+            auto_set_cursor=False,
         )
 
 
