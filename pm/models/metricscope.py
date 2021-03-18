@@ -166,21 +166,24 @@ class MetricScope(Document):
 
     def iter_fields(self):
         """
-        Yield (field_name, field_type) tuples
+        Yield (field_name, field_type, materialized_expr, default_expr) tuples
         :return:
         """
         from .metrictype import MetricType
 
-        yield "date", "Date"
-        yield "ts", "DateTime"
-        yield "metric_type", "String"
+        yield "date", "Date", "", ""
+        yield "ts", "DateTime", "", ""
+        yield "metric_type", "String", "", ""
         for f in self.key_fields:
-            yield f.field_name, f.field_type
-        yield "labels", "Array(LowCardinality(String))"
+            yield f.field_name, f.field_type, "", ""
+        yield "labels", "Array(LowCardinality(String))", "", ""
         if self.enable_timedelta:
-            yield "time_delta", "UInt16"
+            yield "time_delta", "UInt16", "", ""
+        for label in self.labels:
+            if label.store_column:
+                yield label.store_column, "LowCardinality(String)", f"MATERIALIZED splitByString('::', arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels))[-1]", ""
         for t in MetricType.objects.filter(scope=self.id).order_by("id"):
-            yield t.field_name, t.field_type
+            yield t.field_name, t.field_type, "", ""
 
     def get_create_sql(self):
         """
@@ -199,7 +202,7 @@ class MetricScope(Document):
                 pk += [f"arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels)"]
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self._get_raw_db_table(),
-            ",\n".join("  %s %s" % (n, t) for n, t in self.iter_fields()),
+            ",\n".join(f"  {n} {t} {me} {de}" for n, t, me, de in self.iter_fields()),
             f") ENGINE = MergeTree() ORDER BY ({', '.join(ok)})\n",
             f"PARTITION BY toYYYYMM(date) PRIMARY KEY ({', '.join(pk)})",
         ]
@@ -233,18 +236,20 @@ class MetricScope(Document):
         v_path = ""
         path = [label.label_prefix for label in self.labels if label.is_path]
         if path:
-            l_exp = ", ".join(f"arrayFirst(x -> startsWith(x, '{pn}'), labels)" for pn in path)
+            l_exp = ", ".join(
+                f"splitByString('::', arrayFirst(x -> startsWith(x, '{pn}'), labels))[-1]"
+                for pn in path
+            )
             v_path = f"[{l_exp}] AS path, "
         # view columns
         vc_expr = ""
-        view_columns = [
-            label for label in self.labels if label.view_column and not label.store_column
-        ]
+        view_columns = [label for label in self.labels if label.view_column]
         if view_columns:
             vc_expr = ", ".join(
-                f"arrayFirst(x -> startsWith(x, '{x.field_name}'), labels) AS {x.view_column}, "
+                f"splitByString('::', arrayFirst(x -> startsWith(x, '{x.field_name}'), labels))[-1] AS {x.view_column} "
                 for x in view_columns
             )
+            vc_expr += ", "
         return f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}* FROM {src}"
 
     def _get_db_table(self):
@@ -299,9 +304,11 @@ class MetricScope(Document):
             ):
                 existing[name] = type
             after = None
-            for f, t in self.iter_fields():
+            for f, t, me, de in self.iter_fields():
                 if f not in existing:
-                    ch.execute(post=f"ALTER TABLE {table_name} ADD COLUMN {f} {t} AFTER {after}")
+                    ch.execute(
+                        post=f"ALTER TABLE {table_name} ADD COLUMN {f} {t} {me} {de} AFTER {after}"
+                    )
                     c = True
                 after = f
                 if f in existing and existing[f] != t:
