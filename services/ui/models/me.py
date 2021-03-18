@@ -9,7 +9,7 @@
 from typing import Optional, List
 
 # Third-party modules
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class MeRequest(BaseModel):
@@ -30,4 +30,10 @@ class MeResponse(BaseModel):
     groups: List[GroupItem]
     language: str
     avatar_url: Optional[str]
-    avatar_label: str
+    avatar_label: str = Field(
+        title="Avatar Label", description="Letters to be used when avatar is missed or empty"
+    )
+    avatar_label_bg: str = Field(
+        title="Avatar Label Background",
+        description="CSS background to be used along with avatar_label",
+    )
