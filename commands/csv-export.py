@@ -32,7 +32,14 @@ class Command(BaseCommand):
             default=False,
             help="dump only header row",
         ),
-        parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
+        parser.add_argument("args", nargs="+", help="List of extractor names")
+        parser.add_argument(
+            "--outfile",
+            type=argparse.FileType("w", encoding="UTF-8"),
+            required=False,
+            metavar="FILE",
+            help="Path output file",
+        )
 
     def _usage(self):
         print("Usage:")
@@ -67,11 +74,14 @@ class Command(BaseCommand):
         m = apps.get_model(app, model)
         if not m:
             return self._usage()
-        print(
-            csv_export(
-                m, queryset=self.get_queryset(m, args[1:]), first_row_only=options.get("template")
-            )
+        result = csv_export(
+            m, queryset=self.get_queryset(m, args[1:]), first_row_only=options.get("template")
         )
+        outfile = options.get("outfile")
+        if outfile:
+            outfile.write(result)
+        else:
+            print(result)
 
 
 if __name__ == "__main__":
