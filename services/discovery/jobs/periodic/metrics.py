@@ -512,7 +512,7 @@ class MetricsCheck(DiscoveryCheck):
         if n_metrics:
             self.logger.info("Spooling %d metrics", n_metrics)
             for table in data:
-                self.service.register_metrics(table, list(data[table].values()))
+                self.service.register_metrics(table, list(data[table].values()), key=self.object.id)
         # Set up threshold alarms
         self.logger.info("%d alarms detected", len(alarms))
         if events:
