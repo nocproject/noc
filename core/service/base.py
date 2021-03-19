@@ -15,7 +15,6 @@ import argparse
 import threading
 from time import perf_counter
 import asyncio
-import random
 from typing import (
     Optional,
     Dict,
@@ -161,6 +160,9 @@ class BaseService(object):
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
         # Metrics partitions
         self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
+        #
+        self.metrics_key_lock = threading.Lock()
+        self.metrics_key_seq: int = 0
 
     def create_parser(self) -> argparse.ArgumentParser:
         """
@@ -915,7 +917,9 @@ class BaseService(object):
         if r:
             yield b"\n".join(r)
 
-    def register_metrics(self, table: str, metrics: List[Dict[str, Any]]):
+    def register_metrics(
+        self, table: str, metrics: List[Dict[str, Any]], key: Optional[int] = None
+    ):
         """
         Send collected metrics to `table`
 
@@ -924,13 +928,18 @@ class BaseService(object):
 
         :param fields: Table name
         :param metrics: List of dicts containing metrics records
+        :param key: Sharding key, None for round-robin distribution
         :return:
         """
+        if key is None:
+            with self.metrics_key_lock:
+                key = self.metrics_key_seq
+                self.metrics_key_seq += 1
         for chunk in self._iter_metrics_raw_chunks(metrics):
             self.publish(
                 chunk,
                 stream=f"ch.{table}",
-                partition=random.randint(0, self.n_metrics_partitions - 1),
+                partition=key % self.n_metrics_partitions,
             )
 
     def start_telemetry_callback(self) -> None:
