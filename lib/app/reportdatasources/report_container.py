@@ -23,16 +23,68 @@ class ReportContainer(BaseReportColumn):
     builtin_sorted = True
 
     def extract(self):
-        match = {"data.management.managed_object": {"$exists": True}}
+        match = {"data.interface": "management"}
         if self.sync_ids:
-            match = {"data.management.managed_object": {"$in": self.sync_ids}}
+            match = {
+                "data": {"$elemMatch": {"interface": "management", "value": {"$in": self.sync_ids}}}
+            }
         value = (
             get_db()["noc.objects"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .aggregate(
                 [
                     {"$match": match},
-                    {"$sort": {"data.management.managed_object": 1}},
+                    {
+                        "$project": {
+                            "serial": {
+                                "$filter": {
+                                    "input": "$data",
+                                    "as": "d1",
+                                    "cond": {
+                                        "$and": [
+                                            {"$eq": ["$$d1.interface", "asset"]},
+                                            {"$eq": ["$$d1.scope", ""]},
+                                            {"$eq": ["$$d1.attr", "serial"]},
+                                        ]
+                                    },
+                                }
+                            },
+                            "managed_object": {
+                                "$filter": {
+                                    "input": "$data",
+                                    "as": "d1",
+                                    "cond": {
+                                        "$and": [
+                                            {"$eq": ["$$d1.interface", "management"]},
+                                            {"$eq": ["$$d1.scope", ""]},
+                                            {"$eq": ["$$d1.attr", "managed_object"]},
+                                        ]
+                                    },
+                                }
+                            },
+                            "address": {
+                                "$filter": {
+                                    "input": "$data",
+                                    "as": "d1",
+                                    "cond": {
+                                        "$and": [
+                                            {"$eq": ["$$d1.interface", "address"]},
+                                            {"$eq": ["$$d1.scope", ""]},
+                                            {"$eq": ["$$d1.attr", "text"]},
+                                        ]
+                                    },
+                                }
+                            },
+                        },
+                    },
+                    {
+                        "$project": {
+                            "serial": {"$arrayElemAt": ["$serial.value", 0]},
+                            "managed_object": {"$arrayElemAt": ["$managed_object.value", 0]},
+                            "address": {"$arrayElemAt": ["$address.value", 0]},
+                        },
+                    },
+                    {"$sort": {"managed_object": 1}},
                     {
                         "$lookup": {
                             "from": "noc.objects",
@@ -41,21 +93,19 @@ class ReportContainer(BaseReportColumn):
                             "as": "cont",
                         }
                     },
-                    {"$project": {"data": 1, "cont.data": 1}},
                 ]
             )
         )
 
         for v in value:
             r = {}
-            if "asset" in v["data"]:
+            if "serial" in v:
                 # r[v["data"]["management"]["managed_object"]].update(v["data"]["asset"])
-                r.update(v["data"]["asset"])
-            if v["cont"]:
-                if "data" in v["cont"][0]:
-                    # r[v["data"]["management"]["managed_object"]].update(v["cont"][0]["data"].get("address", {}))
-                    r.update(v["cont"][0]["data"].get("address", {}))
-            yield v["data"]["management"]["managed_object"], r
+                r["serial"] = v["serial"]
+            if v["cont"] and "address" in v["cont"]:
+                # r[v["data"]["management"]["managed_object"]].update(v["cont"][0]["data"].get("address", {}))
+                r["address"] = v["cont"]["address"]
+            yield v["managed_object"], r
 
 
 class ReportContainerData(BaseReportColumn):
@@ -67,7 +117,7 @@ class ReportContainerData(BaseReportColumn):
     builtin_sorted = False
 
     def extract(self):
-        match = {"data.address.text": {"$exists": True}}
+        match = {"data.interface": "address"}
         # if self.sync_ids:
         #     containers = dict(ManagedObject.objects.filter(id__in=self.sync_ids).values_list("id", "container"))
         #     match = {"_id": {"$in": list(containers)}}
@@ -79,14 +129,25 @@ class ReportContainerData(BaseReportColumn):
             .aggregate(
                 [
                     {"$match": match},
-                    # {"$sort": {"_id": 1}},
                     {
                         "$project": {
-                            "parent_address": "$data.address.text",
-                            "parent_name": 1,
-                            "_id": 1,
+                            "data": {
+                                "$filter": {
+                                    "input": "$data",
+                                    "as": "d1",
+                                    "cond": {
+                                        "$and": [
+                                            {"$eq": ["$$d1.interface", "address"]},
+                                            {"$eq": ["$$d1.scope", ""]},
+                                            {"$eq": ["$$d1.attr", "text"]},
+                                        ]
+                                    },
+                                }
+                            }
                         }
                     },
+                    {"$project": {"data": {"$arrayElemAt": ["$data.value", 0]}}},
+                    # {"$project": {"parent_address": "$data.value"}},
                     {
                         "$lookup": {
                             "from": "noc.objects",
@@ -111,10 +172,10 @@ class ReportContainerData(BaseReportColumn):
         r = {}
         for v in value:
             cid = str(v["_id"])
-            if "child_cont" in v:
+            if "child_cont" in v and "parent_address" in v:
                 # ccid = str(v["child_cont"]["_id"])
                 r[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
-            if cid not in r:
+            if cid not in r and "parent_address" in v:
                 r[cid] = v["parent_address"].strip()
         for mo_id, container in (
             ManagedObject.objects.filter(id__in=self.sync_ids)
