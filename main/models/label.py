@@ -43,8 +43,15 @@ class Label(Document):
     # Label scope
     enable_agent = BooleanField()
     enable_service = BooleanField()
+    enable_serviceprofile = BooleanField()
+    enable_managedobject = BooleanField()
+    enable_managedobjectprofile = BooleanField()
+    enable_administrativedomain = BooleanField()
+    enable_authprofile = BooleanField()
+    enable_commandsnippet = BooleanField()
     # Exposition scope
     expose_metric = BooleanField()
+    expose_managedobject = BooleanField()
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)

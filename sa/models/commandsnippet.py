@@ -11,16 +11,18 @@ import shlex
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.template import Template, Context
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.permission import Permission
-from noc.core.model.fields import TagsField
+from noc.main.models.label import Label
 from .managedobjectselector import ManagedObjectSelector
 
 
+@Label.model
 class CommandSnippet(NOCModel):
     """
     Command snippet
@@ -49,7 +51,10 @@ class CommandSnippet(NOCModel):
     permission_name = models.CharField(_("Permission Name"), max_length=64, null=True, blank=True)
     display_in_menu = models.BooleanField(_("Show in menu"), default=False)
     #
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     def __str__(self):
         return self.name
@@ -104,3 +109,13 @@ class CommandSnippet(NOCModel):
                 Permission.objects.get(name=self.effective_permission_name)
             except Permission.DoesNotExist:
                 Permission(name=self.effective_permission_name).save()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_commandsnippet:
+            return True
+        return False
+
+    @classmethod
+    def can_expose_label(cls, label):
+        return False

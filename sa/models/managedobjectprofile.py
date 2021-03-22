@@ -12,6 +12,7 @@ from itertools import chain
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
 from typing import Optional
@@ -21,12 +22,13 @@ from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
-from noc.core.model.fields import TagsField, PickledField, DocumentReferenceField
+from noc.core.model.fields import PickledField, DocumentReferenceField
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
+from noc.main.models.label import Label
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from noc.sa.interfaces.base import DictListParameter, ObjectIdParameter, BooleanParameter
@@ -58,6 +60,7 @@ m_valid = DictListParameter(
 id_lock = Lock()
 
 
+@Label.model
 @on_init
 @on_save
 @bi_sync
@@ -591,7 +594,10 @@ class ManagedObjectProfile(NOCModel):
     #
     metrics = PickledField(blank=True)
     #
-    tags = TagsField("Tags", null=True, blank=True)
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -761,6 +767,16 @@ class ManagedObjectProfile(NOCModel):
                 if m["enable_periodic"]:
                     r.add(mop.periodic_discovery_interval)
         return max(r) if r else 0
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_managedobjectprofile:
+            return True
+        return False
+
+    @classmethod
+    def can_expose_label(cls, label):
+        return False
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

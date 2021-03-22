@@ -30,10 +30,12 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.inv.models.capsitem import CapsItem
+from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
 
 
+@Label.model
 @bi_sync
 @on_save
 @on_delete
@@ -97,8 +99,9 @@ class Service(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     def __str__(self):
         return str(self.id) if self.id else "new service"
@@ -136,3 +139,13 @@ class Service(Document):
 
     def get_caps(self) -> Dict[str, Any]:
         return CapsItem.get_caps(self.caps, self.profile.caps)
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_service:
+            return True
+        return False
+
+    @classmethod
+    def can_expose_label(cls, label):
+        return False

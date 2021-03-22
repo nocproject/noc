@@ -71,7 +71,7 @@ Ext.define("NOC.sa.commandsnippet.Model", {
             defaultValue: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "string"
         }
     ]

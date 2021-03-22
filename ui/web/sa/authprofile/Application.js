@@ -10,7 +10,7 @@ Ext.define("NOC.sa.authprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.PasswordField",
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.sa.authprofile.Model",
         "NOC.main.remotesystem.LookupField"
     ],
@@ -134,11 +134,14 @@ Ext.define("NOC.sa.authprofile.Application", {
             ]
         },
         {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: __("Tags"),
+            name: "labels",
+            xtype: "labelfield",
+            fieldLabel: __("Labels"),
             allowBlank: true,
-            uiStyle: "extra"
+            uiStyle: "extra",
+            query: {
+                "enable_authprofile": true
+            }
         }
     ],
     inlines: [

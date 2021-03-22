@@ -15,7 +15,8 @@ Ext.define("NOC.sa.service.Application", {
         "NOC.crm.subscriber.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.sa.managedobject.LookupField",
-        "NOC.inv.capability.LookupField"
+        "NOC.inv.capability.LookupField",
+        "NOC.core.LabelField"
     ],
     model: "NOC.sa.service.Model",
     search: true,
@@ -88,6 +89,14 @@ Ext.define("NOC.sa.service.Application", {
                         ["U", "Unknown"]
                     ],
                     uiStyle: "medium"
+                },
+                {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    query: {
+                        "enable_serice": true
+                    },
                 },
                 {
                     name: "parent",

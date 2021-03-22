@@ -30,10 +30,12 @@ from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later
 from noc.inv.models.capsitem import CapsItem
+from noc.main.models.label import Label
 
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
 @on_save
 class ServiceProfile(Document):
@@ -63,8 +65,9 @@ class ServiceProfile(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    # Tags
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -83,6 +86,16 @@ class ServiceProfile(Document):
                 sp_id=self.id,
                 ip_id=self.interface_profile.id if self.interface_profile else None,
             )
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_serviceprofile:
+            return True
+        return False
+
+    @classmethod
+    def can_expose_label(cls, label):
+        return False
 
 
 def refresh_interface_profiles(sp_id, ip_id):

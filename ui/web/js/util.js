@@ -47,6 +47,20 @@ Ext.apply(NOC.render, {
         }
     },
 
+    //
+    // NOC.render.LabelField(v)
+    //      Grid field renderer for labels
+    //
+    LabelField: function(v) {
+        if(v) {
+            return v.map(function(x) {
+                return "<span class='x-display-tag'>" + x.name + "</span>";
+            }).join(" ");
+        } else {
+            return "";
+        }
+    },
+
     Lookup: function(name) {
         var l = name + "__label";
         return function(value, meta, record) {
