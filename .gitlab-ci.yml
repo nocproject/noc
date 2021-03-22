@@ -69,16 +69,7 @@ black:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
-    - set -x
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep ".py$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        black --check --diff $FLIST;
-      else
-        echo "No files to lint"
-        true;
-      fi
+    - black --check --diff --color .
   only:
     refs:
       - merge_requests
