@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.serviceprofile.Application");
 Ext.define("NOC.sa.serviceprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.sa.serviceprofile.Model",
         "NOC.main.ref.glyph.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -155,11 +155,14 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
                     allowBlank: true,
-                    uiStyle: "extra"
+                    uiStyle: "extra",
+                    query: {
+                        "enable_serviceprofile": true
+                    }
                 },
                 {
                     name: "caps",

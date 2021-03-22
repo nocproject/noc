@@ -76,7 +76,7 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.administrativedomain.Application");
 Ext.define("NOC.sa.administrativedomain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.combotree.ComboTree",
         "NOC.sa.administrativedomain.Model",
         "NOC.main.pool.LookupField",
@@ -133,11 +133,14 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             ]
         },
         {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: __("Tags"),
+            name: "labels",
+            xtype: "labelfield",
+            fieldLabel: __("Labels"),
             allowBlank: true,
-            uiStyle: "extra"
+            uiStyle: "extra",
+            query: {
+                "enable_administrativedomain": true
+            }
         }
     ],
 

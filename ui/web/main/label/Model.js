@@ -54,7 +54,35 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_serviceprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_managedobject",
+            type: "boolean"
+        },
+        {
+            name: "enable_managedobjectprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_administrativedomain",
+            type: "boolean"
+        },
+        {
+            name: "enable_authprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_commandsnippet",
+            type: "boolean"
+        },
+        {
             name: "expose_metric",
+            type: "boolean"
+        },
+        {
+            name: "expose_managedobject",
             type: "boolean"
         },
         {

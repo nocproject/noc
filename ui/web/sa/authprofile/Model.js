@@ -66,7 +66,7 @@ Ext.define("NOC.sa.authprofile.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]

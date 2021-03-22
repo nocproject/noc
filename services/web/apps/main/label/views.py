@@ -30,11 +30,15 @@ class LabelApplication(ExtDocApplication):
         :return:
         """
         query = request.GET.get("__query")
+        labels_filter = {
+            str(k): True if v[0] == "true" else False
+            for k, v in request.GET.lists()
+            if k.startswith("enable_")
+        }
         if query:
-            labels = Label.objects.filter(tag__icontains=query).order_by("id")
-        else:
-            # If not query - return all
-            labels = Label.objects.filter().order_by("id")
+            labels_filter["name__icontains"] = query
+        # If not query - return all
+        labels = Label.objects.filter(**labels_filter).order_by("id")
         labels = [
             {
                 "id": ll.name,

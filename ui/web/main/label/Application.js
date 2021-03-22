@@ -52,6 +52,24 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_service) {
               r.push(__("Service"));
             }
+            if (item.data.enable_serviceprofile) {
+              r.push(__("Service Profile"));
+            }
+            if (item.data.enable_managedobject) {
+              r.push(__("Managed Object"));
+            }
+            if (item.data.enable_managedobjectprofile) {
+              r.push(__("Managed Object Profile"));
+            }
+            if (item.data.enable_administrativedomain) {
+              r.push(__("Administrative Domain"));
+            }
+            if (item.data.enable_authprofile) {
+              r.push(__("Auth Profile"));
+            }
+            if (item.data.enable_commandsnippet) {
+              r.push(__("Command Snippet"));
+            }
             return r.join(", ");
           }
         },
@@ -63,6 +81,9 @@ Ext.define("NOC.main.label.Application", {
             let r = [];
             if (item.data.expose_metric) {
               r.push(__("Metric"));
+            }
+            if (item.data.expose_managedobject) {
+              r.push(__("Managed Object"));
             }
             return r.join(", ");
           }
@@ -156,7 +177,37 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_service",
               xtype: "checkbox",
               boxLabel: __("Service")
-            }
+            },
+            {
+              name: "enable_serviceprofile",
+              xtype: "checkbox",
+              boxLabel: __("Service Profile")
+            },
+            {
+              name: "enable_managedobject",
+              xtype: "checkbox",
+              boxLabel: __("Managed Object")
+            },
+            {
+              name: "enable_managedobjectprofile",
+              xtype: "checkbox",
+              boxLabel: __("Managed Object Profile")
+            },
+            {
+              name: "enable_administrativedomain",
+              xtype: "checkbox",
+              boxLabel: __("Administrative Domain")
+            },
+            {
+              name: "enable_authprofile",
+              xtype: "checkbox",
+              boxLabel: __("Auth Profile")
+            },
+            {
+              name: "enable_commandsnippet",
+              xtype: "checkbox",
+              boxLabel: __("Command Snippet")
+            },
           ]
         },
         {
@@ -172,6 +223,11 @@ Ext.define("NOC.main.label.Application", {
               name: "expose_metric",
               xtype: "checkbox",
               boxLabel: __("Metrics")
+            },
+            {
+              name: "expose_managedobject",
+              xtype: "checkbox",
+              boxLabel: __("Managed Object")
             }
           ]
         },

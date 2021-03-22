@@ -10,21 +10,24 @@ import operator
 from threading import Lock
 
 # Third-party modules
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 from noc.core.model.decorator import on_delete_check
-from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.core.model.fields import DocumentReferenceField
 from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
+@Label.model
 @on_save
 @bi_sync
 @on_delete_check(
@@ -69,7 +72,10 @@ class AuthProfile(NOCModel):
     # Object id in BI
     bi_id = models.BigIntegerField(unique=True)
 
-    tags = TagsField("Tags", null=True, blank=True)
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -114,6 +120,16 @@ class AuthProfile(NOCModel):
         if self.enable_suggest:
             for s in self.authprofilesuggestcli_set.all():
                 yield s.user, s.password, s.super_password
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_authprofile:
+            return True
+        return False
+
+    @classmethod
+    def can_expose_label(cls, label):
+        return False
 
 
 class AuthProfileSuggestSNMP(NOCModel):

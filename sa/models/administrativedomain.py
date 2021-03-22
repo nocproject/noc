@@ -12,6 +12,7 @@ from typing import Optional, TYPE_CHECKING
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
 
@@ -21,7 +22,8 @@ from noc.core.model.base import NOCModel
 from noc.main.models.pool import Pool
 from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.main.models.label import Label
+from noc.core.model.fields import DocumentReferenceField
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.core.bi.decorator import bi_sync
 from noc.core.datastream.decorator import datastream
@@ -30,6 +32,7 @@ id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
+@Label.model
 @on_init
 @bi_sync
 @datastream
@@ -80,7 +83,10 @@ class AdministrativeDomain(NOCModel):
     # Object id in BI
     bi_id = models.BigIntegerField(unique=True)
 
-    tags = TagsField("Tags", null=True, blank=True)
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -177,6 +183,16 @@ class AdministrativeDomain(NOCModel):
         if self.parent:
             return self.parent.get_bioseg_floating_parent_segment()
         return None
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_administrativedomain:
+            return True
+        return False
+
+    @classmethod
+    def can_expose_label(cls, label):
+        return False
 
 
 if TYPE_CHECKING:

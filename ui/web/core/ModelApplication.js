@@ -22,6 +22,7 @@ Ext.define("NOC.core.ModelApplication", {
         "NOC.core.modelfilter.AFI",
         "NOC.core.modelfilter.VC",
         "NOC.core.modelfilter.Tag",
+        "NOC.core.modelfilter.Label",
         "NOC.core.modelfilter.Favorites",
         "NOC.core.modelfilter.Tree",
         "Ext.ux.grid.column.GlyphAction"
@@ -255,6 +256,7 @@ Ext.define("NOC.core.ModelApplication", {
                         afi: "NOC.core.modelfilter.AFI",
                         vc: "NOC.core.modelfilter.VC",
                         tag: "NOC.core.modelfilter.Tag",
+                        label: "NOC.core.modelfilter.Label",
                         favorites: "NOC.core.modelfilter.Favorites",
                         tree: "NOC.core.modelfilter.Tree",
                         geoaddress: "NOC.core.modelfilter.GeoAddress"

@@ -320,7 +320,7 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

@@ -327,7 +327,12 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
-                elif isinstance(f, ListField) and f.name == "labels":
+                elif (
+                    f.name == "labels"
+                    and isinstance(f, ListField)
+                    and isinstance(f.field, StringField)
+                ):
+                    # isinstance(f.field, StringField) for exclude pm.scope labels
                     v = [
                         {
                             "id": ll.name,
@@ -335,10 +340,10 @@ class ExtDocApplication(ExtApplication):
                             "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
                             "name": ll.name,
                             "value": ll.name.split("::")[-1],
-                            "bg_color1": "#%x" % ll.bg_color1,
-                            "fg_color1": "#%x" % ll.fg_color1,
-                            "bg_color2": "#%x" % ll.bg_color2,
-                            "fg_color2": "#%x" % ll.fg_color2,
+                            "bg_color1": f"#{ll.bg_color1:06x}",
+                            "fg_color1": f"#{ll.fg_color1:06x}",
+                            "bg_color2": f"#{ll.bg_color2:06x}",
+                            "fg_color2": f"#{ll.fg_color2:06x}",
                         }
                         for ll in Label.objects.filter(name__in=v)
                     ]

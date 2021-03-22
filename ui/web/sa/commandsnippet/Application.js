@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.commandsnippet.Application");
 Ext.define("NOC.sa.commandsnippet.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.sa.commandsnippet.Model",
         "NOC.sa.managedobjectselector.LookupField"
     ],
@@ -130,10 +130,13 @@ Ext.define("NOC.sa.commandsnippet.Application", {
             boxLabel: __("Show in menu")
         },
         {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: __("Tags"),
-            allowBlank: true
+            name: "labels",
+            xtype: "labelfield",
+            fieldLabel: __("Labels"),
+            allowBlank: true,
+            query: {
+                "enable_commandsnippet": true
+            }
         }
     ],
     filters: [

@@ -44,7 +44,7 @@ class ManagedObject(BaseModel):
     snmp_ro: Optional[str]
     description: Optional[str]
     auth_profile: Optional[Reference["AuthProfile"]]
-    tags: List[str]
+    labels: Optional[List[str]]
     tt_system: Optional[Reference["TTSystem"]]
     tt_queue: Optional[str]
     tt_system_id: Optional[str]
