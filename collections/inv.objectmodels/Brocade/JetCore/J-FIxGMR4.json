@@ -6,7 +6,7 @@
     "description": "J-FIxGMR4 - 4 gen FastIron mgmt",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "sfp port 1",

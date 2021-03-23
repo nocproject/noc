@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "2x10G/4x1G Uplink module for EX4200",
     "cr_context": "PIC",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

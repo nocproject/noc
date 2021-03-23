@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "The XP2 module provides two 10 Gbps XFP optical ports.",
     "cr_context": "LSB",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

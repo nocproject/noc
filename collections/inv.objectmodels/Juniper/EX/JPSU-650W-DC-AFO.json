@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "DC Power Supply, 650W at 220V",
     "cr_context": "PEM",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

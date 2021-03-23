@@ -6,7 +6,7 @@
     "description": "IES-1000 enclosure with two slide-in slots for DSL modules",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Linecard 1 slot",

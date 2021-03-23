@@ -6,7 +6,7 @@
     "description": "48 10/100/1000BASE-T PoE-plus, 4 1000/10GBaseX unpopulated SFP+ ports, Rear VIM Slot (unpopulated), Rear Timing Slot (unpopulated), 2 unpopulated PSU slots, fan module slot (unpopulated)",
     "connection_rule__name": "Extreme | XOS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Console port",

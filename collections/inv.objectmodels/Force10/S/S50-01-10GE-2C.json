@@ -4,7 +4,7 @@
     "uuid": "c4fd87c0-9fe6-4d4d-9ecb-ed2dfcfc8803",
     "vendor__code": "FORCE10",
     "description": "2-port 10 GbE CX4 module",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

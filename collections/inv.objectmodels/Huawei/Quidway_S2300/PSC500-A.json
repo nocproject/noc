@@ -4,7 +4,7 @@
     "uuid": "5bcad96d-57cd-446a-a45f-2577e6c85418",
     "vendor__code": "HUAWEI",
     "description": "Quidway S2300 AC/DC power module--25degC-55degC-90V-264V-12V/10A,-53.5V/7.1A",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU slot",

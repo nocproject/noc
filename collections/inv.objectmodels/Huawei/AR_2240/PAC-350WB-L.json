@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "AC-DC Power,-25degC,60degC,90V,290V,12V/29.2A",
     "cr_context": "POWER",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power input",

@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "265 Watt DC PSU for Cisco Catalyst 3650E / 3750E Series switches",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "DC A input Positive contact",

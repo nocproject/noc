@@ -6,7 +6,7 @@
     "description": "Multifunction Gigabit Managed Switch for IP-video surveillance systems, PoE+ 802.3at, IP66",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "1",

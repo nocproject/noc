@@ -5,7 +5,7 @@
     "vendor__code": "HG GENUINE",
     "description": "10GBASE-LR, SFP+, SMF, 1310nm, 10km",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP+ Connector",

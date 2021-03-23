@@ -5,7 +5,7 @@
     "vendor__code": "ALU",
     "description": "Alcatel 7450, 7750 20 port 1-Gigabit Ethernet",
     "cr_context": "MDA",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "MDA slot connection",

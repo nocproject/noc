@@ -4,7 +4,7 @@
     "uuid": "1427fb8d-973a-4a7c-bd8c-373901e1ebac",
     "vendor__code": "HUAWEI",
     "description": "MA5600T,H802X2CS,2-port 10GE Uplink Interface",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": null,

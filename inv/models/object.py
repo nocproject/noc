@@ -38,6 +38,7 @@ from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.datastream.decorator import datastream
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
 from .objectmodel import ObjectModel
@@ -73,6 +74,7 @@ class ObjectAttr(EmbeddedDocument):
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
 
+@Label.model
 @bi_sync
 @on_save
 @datastream
@@ -111,8 +113,9 @@ class Object(Document):
     point = PointField(auto_index=True)
     # Additional connection data
     connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -878,6 +881,11 @@ class Object(Document):
             q["value"] = address
         yield from cls.objects.filter(data__match=q)
 
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_object:
+            return True
+        return False
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)

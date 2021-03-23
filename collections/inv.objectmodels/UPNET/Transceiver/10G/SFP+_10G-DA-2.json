@@ -5,7 +5,7 @@
     "vendor__code": "UPNET",
     "description": "UPNET SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 2m",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "cross": "in2",

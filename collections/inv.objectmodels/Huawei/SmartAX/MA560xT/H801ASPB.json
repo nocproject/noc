@@ -6,7 +6,7 @@
     "description": "The H801ASPB board is a 64-port VOIP subscriber board, providing 64 channels of VoIP POTS access services.",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["lc", "dsp"],
+    "labels": ["noc::inv::lc", "noc::inv::dsp"],
     "connections": [
         {
             "description": "Chassis connection",

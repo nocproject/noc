@@ -5,7 +5,7 @@
     "vendor__code": "ISKRATEL",
     "description": "Универсальная плата ADSL2+/VDSL2, 64 порта, готовность к векторингу, поверх POTS и ISDN -SGT для MEC и МЕА",
     "cr_context": "BOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

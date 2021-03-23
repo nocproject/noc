@@ -6,7 +6,7 @@
     "description": "24 SFP/SFP+ ports and 4 10/100/1000 Gigabit Ethernet ports",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "fixed gigabit",

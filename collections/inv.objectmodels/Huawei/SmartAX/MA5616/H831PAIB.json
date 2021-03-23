@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5616  is an AC power board (with power backup)",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "",

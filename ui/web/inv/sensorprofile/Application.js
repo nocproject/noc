@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.sensorprofile.Application");
 Ext.define("NOC.inv.sensorprofile.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.TagsField",
+    "NOC.core.LabelField",
     "NOC.inv.sensorprofile.Model",
     "NOC.wf.workflow.LookupField",
     "NOC.main.style.LookupField"
@@ -28,9 +28,9 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           flex: 1
         },
         {
-          text: __("Tags"),
-          dataIndex: "tags",
-          renderer: NOC.render.Tags,
+          text: __("Labels"),
+          dataIndex: "labels",
+          renderer: NOC.render.LabelField,
           width: 100
         }
       ],
@@ -76,10 +76,13 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           uiStyle: "medium"
         },
         {
-          name: "tags",
-          fieldLabel: __("Tags"),
-          xtype: "tagsfield",
-          allowBlank: true
+          name: "labels",
+          xtype: "labelfield",
+          fieldLabel: __("Labels"),
+          allowBlank: true,
+          query: {
+            "enable_sensorprofile": true
+          },
         }
       ]
     });

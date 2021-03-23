@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5605 Control board",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

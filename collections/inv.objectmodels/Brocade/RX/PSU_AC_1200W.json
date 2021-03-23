@@ -6,7 +6,7 @@
     "description": "PSU for RX8 chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU connector",

@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "MX480 1200W Power Entry Module AC",
     "cr_context": "PEM",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Internal power slot",

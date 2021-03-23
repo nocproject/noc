@@ -6,7 +6,7 @@
     "description": "Quidway S5320-32C-HI-24S Bundle(24 Gig SFP,8 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,with 2 interface slots,with 350W DC power supply)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "PSU slot #1",

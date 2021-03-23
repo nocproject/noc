@@ -6,7 +6,7 @@
     "description": "GPON OLT MA4000-PX",
     "connection_rule__name": "Eltex | MA4000",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Linecard 0 slot",

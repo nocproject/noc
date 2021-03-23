@@ -6,7 +6,7 @@
     "description": "20x10/100/1000BASE-T, 4x10GBASE-R (SFP+)/1000BASE-X (SFP), 4x10/100/1000BASE-T/1000BASE-X/100BASE-FXCombo",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console port",

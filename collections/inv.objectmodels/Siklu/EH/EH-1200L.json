@@ -5,7 +5,7 @@
     "vendor__code": "SIKLU",
     "description": "Siklu EH 1200L, 2 SFP slots, 71-76Ghz, TDD, Antenna 1ft 42dBi",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "RF Board 71-76Ghz TDD",

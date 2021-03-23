@@ -5,7 +5,7 @@
     "vendor__code": "TFORTIS",
     "description": "TFortis SFP WDM 10km transceiver 1550 without ddm",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

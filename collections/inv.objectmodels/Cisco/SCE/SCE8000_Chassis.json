@@ -6,7 +6,7 @@
     "description": "Cisco SCE 8000 Service Control Engine",
     "connection_rule__name": "Cisco | SCE",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Fan slot 1",

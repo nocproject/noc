@@ -6,7 +6,7 @@
     "description": "CX600,CX67NPUI20,Network Processing Unit Integrated with 2-Port 10GBase LAN/WAN-XFP",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "NPU",
-    "tags": ["lc", "fabric", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

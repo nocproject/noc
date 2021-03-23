@@ -5,7 +5,7 @@
     "vendor__code": "EXTREME",
     "description": "715W AC PoE Power Supply Module for X460-G2 and X450-G2 series switches with Front-to-Back airflow",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "",

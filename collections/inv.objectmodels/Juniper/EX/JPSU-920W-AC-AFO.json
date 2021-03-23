@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "AC Power Supply, 920W at 220V",
     "cr_context": "PEM",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power inlet",

@@ -6,7 +6,7 @@
     "description": "32-port 1000BASE/10000BASE-F",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console port",

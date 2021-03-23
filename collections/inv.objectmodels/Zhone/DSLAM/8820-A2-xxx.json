@@ -6,7 +6,7 @@
     "description": "8820 Broadband Access Concentrator",
     "connection_rule__name": "Zhone | GranDSLAM",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Linecard 1 slot",

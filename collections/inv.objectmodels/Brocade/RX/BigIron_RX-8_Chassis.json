@@ -6,7 +6,7 @@
     "description": "BigIron RX-8 AC 8 slot chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "pwr1",

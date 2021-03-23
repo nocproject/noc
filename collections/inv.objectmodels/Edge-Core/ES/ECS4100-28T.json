@@ -4,7 +4,7 @@
     "uuid": "16b5fa4a-4559-480e-b7f1-6a3b641c48de",
     "vendor__code": "EDGECORE",
     "description": "ECS4100-28T L2 Switch with 24 10/100/1000Base-TX Ports + 4 SFP Uplink Ports",
-    "tags": ["chassis", "sup", "psu", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Ethernet1/1 interface",

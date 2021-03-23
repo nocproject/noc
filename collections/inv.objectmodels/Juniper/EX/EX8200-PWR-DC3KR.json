@@ -4,7 +4,7 @@
     "uuid": "601927c9-9bb2-4df5-a3c0-05a6e5513985",
     "vendor__code": "JUNIPER",
     "description": "DC Power Supply with dual redundant inputs, 3000W at -48V",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

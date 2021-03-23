@@ -6,7 +6,7 @@
     "description": "MA5616 DC Vector-supporting secondary High-power Board",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "",

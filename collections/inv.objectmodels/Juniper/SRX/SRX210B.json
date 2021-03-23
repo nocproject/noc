@@ -4,7 +4,7 @@
     "uuid": "e71f6e4c-c1f3-467f-b1af-5e2f6b700873",
     "vendor__code": "JUNIPER",
     "description": "SRX services gateway 210 with 2xGE + 6xFE ports, 1xMini-PIM slot, 1xExpressCard slot, and base memory (512MB RAM, 1GB FLASH)",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console",

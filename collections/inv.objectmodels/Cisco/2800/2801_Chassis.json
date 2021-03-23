@@ -6,7 +6,7 @@
     "description": "Cisco 2800 Series Integrated Services Routers with AC power",
     "connection_rule__name": "Cisco | 2800",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "2801 Motherboard",

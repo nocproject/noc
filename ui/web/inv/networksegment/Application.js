@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.networksegment.Application");
 Ext.define("NOC.inv.networksegment.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.inv.allocationgroup.LookupField",
         "NOC.inv.networksegment.Model",
         "NOC.inv.networksegment.TreeCombo",
@@ -75,10 +75,10 @@ Ext.define("NOC.inv.networksegment.Application", {
                     flex: 1
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
+                    text: __("Labels"),
+                    dataIndex: "labels",
                     width: 100,
-                    renderer: NOC.render.Tags
+                    renderer: NOC.render.LabelField
                 },
                 {
                     text: __("Selector"),
@@ -280,10 +280,13 @@ Ext.define("NOC.inv.networksegment.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_networksegment": true
+                    },
                 }
             ],
 

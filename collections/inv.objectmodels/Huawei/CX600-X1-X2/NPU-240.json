@@ -6,7 +6,7 @@
     "description": "CX600,CR51NPU2400,Network Processing Unit (NPU-240)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "NPU",
-    "tags": ["lc", "fabric", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

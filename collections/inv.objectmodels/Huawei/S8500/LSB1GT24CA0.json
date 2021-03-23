@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "The GT24 module provides 24 × 1000 Mbps Ethernet electrical ports.",
     "cr_context": "LSB",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

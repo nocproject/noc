@@ -6,7 +6,7 @@
     "description": "The H802ADQD,64-port ADSL2+ over ISDN Service Board,With Line",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["lc"],
+    "labels": ["noc::inv::lc"],
     "connections": [
         {
             "description": "Chassis connection",

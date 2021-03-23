@@ -6,7 +6,7 @@
     "description": "24-Port 100/1000BASE-X and 2-Port 10GBASE-X Interface Card(EC,SFP/XFP),128K MAC,1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "LPU",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

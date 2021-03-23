@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "Huawei ADCE H523ADCE0 16-channel ADSL2+ board for Huawei MA5605 MA5105 MA5615 ",
     "cr_context": "BOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

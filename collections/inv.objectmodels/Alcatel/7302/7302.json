@@ -6,7 +6,7 @@
     "description": "supporting 18 slots for DSL, P2P fiber, splitters, and voice line cards, and serving up to 3,456 subscribers",
     "connection_rule__name": "Alcatel | 7302",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Linecard slot",

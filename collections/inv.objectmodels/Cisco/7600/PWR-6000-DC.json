@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "6000 Watt DC Power Supply for Cisco 7600",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "DC 1 input Positive contact",

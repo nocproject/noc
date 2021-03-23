@@ -6,7 +6,7 @@
     "description": "RX-BI-SFM3 Switch Fabric Module",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "SFM connector",

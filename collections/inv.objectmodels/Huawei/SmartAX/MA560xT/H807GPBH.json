@@ -6,7 +6,7 @@
     "description": "8-port GPON OLT interface board (4-level HQoS Supported)",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

@@ -4,7 +4,7 @@
     "uuid": "367c1a2a-5f9c-4bdd-815e-38a476708c57",
     "vendor__code": "ARISTA",
     "description": "7000 / 7100 Series Front-Rear Fan Module",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Chassis connection",

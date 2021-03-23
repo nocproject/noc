@@ -6,7 +6,7 @@
     "description": "CX600,CX6D0MPUD470,Main Processing Unit D4",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "MPU",
-    "tags": ["lc", "sup"],
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

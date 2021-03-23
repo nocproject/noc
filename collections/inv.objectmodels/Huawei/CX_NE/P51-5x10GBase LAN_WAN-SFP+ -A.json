@@ -6,7 +6,7 @@
     "description": "CX600,CR57L5XFB0,5-Port 10GBase LAN/WAN-SFP+ Flexible Card A(P51-A, Occupy two slots)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "FPIC",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

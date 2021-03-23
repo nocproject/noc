@@ -6,7 +6,7 @@
     "description": "management switch card 2 x 10G Ethernet uplink ports, 6 Gigabit Ethernet uplink & subtending ports",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "LINECARD",
-    "tags": ["lc", "sup", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::sup", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

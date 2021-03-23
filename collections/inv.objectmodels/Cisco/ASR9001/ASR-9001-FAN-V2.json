@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "ASR-9001 FAN tray Version 2",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "",

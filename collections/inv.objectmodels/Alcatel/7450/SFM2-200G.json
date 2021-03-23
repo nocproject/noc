@@ -5,7 +5,7 @@
     "vendor__code": "ALU",
     "description": "Alcatel 7450 Control Forwarding Module (CFM)",
     "connection_rule__name": "Alcatel | 7450",
-    "tags": ["chassis", "sup"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup"],
     "cr_context": "CFM",
     "connections": [
         {

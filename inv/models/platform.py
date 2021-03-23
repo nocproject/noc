@@ -26,11 +26,13 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync, new_bi_id
 from noc.core.prettyjson import to_json
 from noc.models import get_model
+from noc.main.models.label import Label
 from .vendor import Vendor
 
 id_lock = threading.Lock()
 
 
+@Label.model
 @bi_sync
 @on_delete_check(
     check=[
@@ -68,8 +70,9 @@ class Platform(Document):
     uuid = UUIDField(binary=True)
     # Platform aliases
     aliases = ListField(StringField())
-    # Tags
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Object id in BI
     bi_id = LongField(unique=True)
 
@@ -124,8 +127,8 @@ class Platform(Document):
             r["end_of_support"] = self.end_of_support.strftime("%Y-%m-%d")
         if self.snmp_sysobjectid:
             r["snmp_sysobjectid"] = self.snmp_sysobjectid
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["labels"] = self.labels
         return to_json(
             r,
             order=[
@@ -139,7 +142,7 @@ class Platform(Document):
                 "end_of_sale",
                 "end_of_support",
                 "snmp_sysobjectid",
-                "tags",
+                "labels",
             ],
         )
 
@@ -149,16 +152,16 @@ class Platform(Document):
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_ensure_cache"),
-        key=lambda v, n, strict=False, tags=None: "%s-%s" % (v.id, n),
+        key=lambda v, n, strict=False, labels=None: "%s-%s" % (v.id, n),
         lock=lambda _: id_lock,
     )
-    def ensure_platform(cls, vendor, name, strict=False, tags=None):
+    def ensure_platform(cls, vendor, name, strict=False, labels=None):
         """
         Get or create platform by vendor and code
         :param vendor:
         :param name:
         :param strict: Return None if platform is not found
-        :param tags: List of platform tags
+        :param labels: List of platform labels
         :return:
         """
         # Try to find platform
@@ -167,7 +170,7 @@ class Platform(Document):
         if platform or strict:
             return platform
         # Try to create
-        tags = tags or []
+        labels = labels or []
         pu = uuid.uuid4()
         d = Platform._get_collection().find_one_and_update(
             {"vendor": vendor.id, "name": name},
@@ -177,7 +180,7 @@ class Platform(Document):
                     "full_name": "%s %s" % (vendor.name, name),
                     "bi_id": Int64(new_bi_id()),
                     "aliases": [],
-                    "tags": tags,
+                    "labels": labels,
                 }
             },
             upsert=True,
@@ -233,3 +236,9 @@ class Platform(Document):
                 obj.save()
         # Finally delete aliases platform
         ap.delete()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_platform:
+            return True
+        return False

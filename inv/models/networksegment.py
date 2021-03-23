@@ -98,7 +98,7 @@ class NetworkSegment(Document):
     multicast_vlan = IntField(required=False, min_value=1, max_value=4095)
 
     settings = DictField(default=lambda: {}.copy())
-    tags = ListField(StringField())
+    labels = ListField(StringField())
     # Selectors for fake segments
     # Transition only, should not be used
     selector = ForeignKeyField(ManagedObjectSelector)

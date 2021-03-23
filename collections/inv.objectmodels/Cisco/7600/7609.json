@@ -6,7 +6,7 @@
     "description": "Cisco 7600 9-slot Chassis",
     "connection_rule__name": "Cisco | 7600",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "CLK module slot 1",

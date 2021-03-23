@@ -6,7 +6,7 @@
     "description": "SOHO router with 5-port 10/100/1000BASE-T switch and 5-port 10/100BASE-T switch",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "ether1",

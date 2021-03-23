@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco ME3600X / ME3800X Series AC power supply and fan module",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connection",

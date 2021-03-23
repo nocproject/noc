@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5605 It is system control and FE subtending/uplink interface board, providing 2×100Base-TX interfaces (uplink and subtending), with reach of 100 m.",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

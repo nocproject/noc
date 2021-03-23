@@ -4,7 +4,7 @@
     "uuid": "86582c66-af50-4005-a284-d2231c265811",
     "vendor__code": "JUNIPER",
     "description": "40-port 1GbE/10GbE SFP/SFP+ line card",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "xe-X/0/0 port",

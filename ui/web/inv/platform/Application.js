@@ -10,7 +10,7 @@ Ext.define("NOC.inv.platform.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.JSONPreview",
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.inv.platform.Model",
         "NOC.inv.vendor.LookupField"
     ],
@@ -86,10 +86,10 @@ Ext.define("NOC.inv.platform.Application", {
                     width: 150
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
+                    text: __("Labels"),
+                    dataIndex: "labels",
                     width: 100,
-                    renderer: NOC.render.Tags
+                    renderer: NOC.render.LabelField
                 }
             ],
 
@@ -182,12 +182,13 @@ Ext.define("NOC.inv.platform.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    store: {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_platform": true
                     },
-                    allowBlank: true
                 }
             ],
 

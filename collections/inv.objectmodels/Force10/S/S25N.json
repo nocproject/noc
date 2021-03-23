@@ -4,7 +4,7 @@
     "uuid": "439beb5a-b5b1-4295-8e69-62751143a2b7",
     "vendor__code": "FORCE10",
     "description": "24-port 10/100/1000Base-T chassis with 4 SFP ports, 2 modular slots, 2 AC power supplies, FTOS software",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Gi X/1 port",

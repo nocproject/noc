@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5600   SHEB board ,supported by MA5600,supports ATM/PTM SHDSL.BIS access and adopts the GE bus. The board is hot swappable.",
     "cr_context": "BOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

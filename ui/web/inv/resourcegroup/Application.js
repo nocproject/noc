@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.resourcegroup.Application");
 Ext.define("NOC.inv.resourcegroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.inv.resourcegroup.Model",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.inv.technology.LookupField",
@@ -114,11 +114,14 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
                     allowBlank: true,
-                    uiStyle: "extra"
+                    uiStyle: "extra",
+                    query: {
+                        "enable_resourcegroup": true
+                    },
                 }
             ],
             formToolbar: [

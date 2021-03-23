@@ -4,7 +4,7 @@
     "uuid": "a2a3e2bc-edc1-4b42-a914-868d80a5968d",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5300,LS5MPSD17,170W DC power module",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

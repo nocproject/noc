@@ -6,7 +6,7 @@
     "description": "48x10GBASE-R(SFP+)/1000BASE-X (SFP), 4х40GBASE-SR4/LR4(QSFP)",
     "connection_rule__name": "Eltex | MES5448",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "USB Port",

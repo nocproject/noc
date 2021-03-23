@@ -6,7 +6,7 @@
     "description": "Huawei MA5616 centralized control unit board integrated with 2-port GE/EPON/GPON optical uplink",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connection",

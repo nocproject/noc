@@ -4,7 +4,7 @@
     "uuid": "85b4d311-2bd3-4eab-8405-bbd85c1cce0f",
     "vendor__code": "JUNIPER",
     "description": "48-port 10/100/1000BASE-T RJ-45 line card",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "ge-X/0/0",

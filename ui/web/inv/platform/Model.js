@@ -78,7 +78,7 @@ Ext.define("NOC.inv.platform.Model", {
             type: "auto"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]

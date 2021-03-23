@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "Quidway S9300,LE0E1FBX, Fan Box",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Chassis connector",

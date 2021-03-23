@@ -6,7 +6,7 @@
     "description": "5-Port 10GBase LAN/WAN-SFP+ Integrated Line Processing Unit E(LPUI-51-E,Enhanced HQos)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "LPU",
-    "tags": ["lc", "fabric", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

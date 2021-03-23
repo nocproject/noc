@@ -5,7 +5,7 @@
     "vendor__code": "OPTOSTAR",
     "description": "Optostar SFP LX transceiver",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

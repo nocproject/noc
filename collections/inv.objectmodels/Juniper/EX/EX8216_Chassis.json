@@ -6,7 +6,7 @@
     "description": "EX8216 system configuration: 16-slot chassis with passive midplane",
     "connection_rule__name": "Juniper | EX8200",
     "cr_context": "CHASSIS",
-    "tags": ["chasis"],
+    "labels": ["chasis"],
     "connections": [
         {
             "description": "Front Panel Display",

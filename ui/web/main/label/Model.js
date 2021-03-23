@@ -78,6 +78,34 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_allocationgroup",
+            type: "boolean"
+        },
+        {
+            name: "enable_networksegment",
+            type: "boolean"
+        },
+        {
+            name: "enable_object",
+            type: "boolean"
+        },
+        {
+            name: "enable_objectmodel",
+            type: "boolean"
+        },
+        {
+            name: "enable_platform",
+            type: "boolean"
+        },
+        {
+            name: "enable_resourcegroup",
+            type: "boolean"
+        },
+        {
+            name: "enable_sensorprofile",
+            type: "boolean"
+        },
+        {
             name: "expose_metric",
             type: "boolean"
         },

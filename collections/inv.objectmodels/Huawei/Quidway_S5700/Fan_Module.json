@@ -4,7 +4,7 @@
     "uuid": "eecf180f-3ffe-4cdc-982a-20d23d825504",
     "vendor__code": "HUAWEI",
     "description": "Huawei Quidway S5700 Fan Module",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Fan Slot",

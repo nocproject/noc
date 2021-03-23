@@ -6,7 +6,7 @@
     "description": "8-Port L2 Managed Fast Ethernet Switch with 2 100Base-FX Ports (SEP Module)",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "1",

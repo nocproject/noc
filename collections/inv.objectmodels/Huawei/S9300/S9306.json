@@ -6,7 +6,7 @@
     "description": "S9306 Chassis backplane",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": null,

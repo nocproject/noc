@@ -6,7 +6,7 @@
     "description": "The P40-20xGE/FE-SFP occupies one 1/2-width flexible card slot, is compatible with LPUF-40-A, but is not hot-swappable.",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "FPIC",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

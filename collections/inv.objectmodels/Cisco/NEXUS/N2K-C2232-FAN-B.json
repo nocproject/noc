@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 2232PP and 2232TM FEX Fan Module, Back-to-front airflow (Reversed airflow, port side intake)",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "FAN connection to switch",

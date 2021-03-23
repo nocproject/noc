@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "MX80 DC Power Supply",
     "cr_context": "PEM",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

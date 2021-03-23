@@ -5,7 +5,7 @@
     "vendor__code": "ELTEX",
     "description": "PM160-220/12 (220V AC, 160W) Power Supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power input",

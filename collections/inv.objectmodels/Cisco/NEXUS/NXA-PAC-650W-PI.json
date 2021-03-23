@@ -4,7 +4,7 @@
     "uuid": "acfb448b-8367-468b-b100-c50a1052eb9e",
     "vendor__code": "CISCO",
     "description": "Nexus9000 Front-to-Back Airflow module spare, A/C, 100-240V, 650W",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU connect to switch",

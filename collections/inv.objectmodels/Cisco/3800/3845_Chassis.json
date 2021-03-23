@@ -6,7 +6,7 @@
     "description": "Cisco 3800 Series Integrated Services Routers with 4 NME slots",
     "connection_rule__name": "Cisco | 3800",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "3845 Motherboard",

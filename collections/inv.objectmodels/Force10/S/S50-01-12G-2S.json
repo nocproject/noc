@@ -4,7 +4,7 @@
     "uuid": "377926e1-b158-429d-90ea-e0de574dccfe",
     "vendor__code": "FORCE10",
     "description": "2-port 12 Gbps stacking module",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",
