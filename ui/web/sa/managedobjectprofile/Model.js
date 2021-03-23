@@ -895,6 +895,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "abduct_detection_threshold",
             type: "integer",
             defaultValue: 0
-        }
+        },
+        {
+            name: "labels",
+            type: "auto"
+        },
     ]
 });

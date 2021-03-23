@@ -46,7 +46,6 @@ class ManagedObjectLoader(BaseLoader):
                 obj = self.model.objects.get(pk=self.mappings[r_id])
                 obj.is_managed = False
                 obj.container = None
-                obj.tags += ["remote:deleted"]
                 obj.save()
             except self.model.DoesNotExist:
                 pass  # Already deleted

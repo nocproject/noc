@@ -28,7 +28,7 @@ class Migration(BaseMigration):
     ]
     TAG_COLLETIONS = [
         ("noc.services", "service"),
-        ("noc.serviceprofiles", "serviceprofiles"),
+        ("noc.serviceprofiles", "serviceprofile"),
     ]
 
     def migrate(self):
