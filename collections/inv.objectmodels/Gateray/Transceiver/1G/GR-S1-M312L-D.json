@@ -5,7 +5,7 @@
     "vendor__code": "GATERAY",
     "description": "Gateray SFP, MMF, 1310nm, LC, 2km",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

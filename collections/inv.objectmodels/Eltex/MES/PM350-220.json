@@ -5,7 +5,7 @@
     "vendor__code": "ELTEX",
     "description": "PM350-220/12 (220V AC, 350W) Power Supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power input",

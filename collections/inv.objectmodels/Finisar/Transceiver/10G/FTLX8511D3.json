@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "FTLX8511D3, XFP, 10GBase-SR, LC, 850nm, 300m",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "TX",

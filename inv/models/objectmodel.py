@@ -170,7 +170,8 @@ class ObjectModel(Document):
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
     sensors = ListField(EmbeddedDocumentField(ObjectModelSensor))
     plugins = ListField(StringField(), required=False)
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -328,8 +329,8 @@ class ObjectModel(Document):
             r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["labels"] = self.labels
         return r
 
     def to_json(self):
@@ -344,7 +345,7 @@ class ObjectModel(Document):
                 "connection_rule__name",
                 "cr_context",
                 "plugins",
-                "tags",
+                "labels",
             ],
         )
 
@@ -365,6 +366,12 @@ class ObjectModel(Document):
                 if isinstance(vendor, str):
                     vendor = Vendor.get_by_id(vendor)
                 UnknownModel.clear_unknown(vendor.code, part_no)
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_objectmodel:
+            return True
+        return False
 
 
 class ModelConnectionsCache(Document):

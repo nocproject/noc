@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "Finisar QSFP+ 40 Gigabit Ethernet Active Optical Cable (AOC) 1m",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "cross": "in2",

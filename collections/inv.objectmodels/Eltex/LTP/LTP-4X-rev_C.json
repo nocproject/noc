@@ -6,7 +6,7 @@
     "description": "Оптический станционный терминал LTP-4X",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "0",

@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "ASR9001 750 Watt DC power supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power input",

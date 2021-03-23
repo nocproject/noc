@@ -4,7 +4,7 @@
     "uuid": "4917f8bd-04b1-4246-bfc3-3087aa6f9329",
     "vendor__code": "JUNIPER",
     "description": "DC Power Supply with dual redundant inputs, 2000W at -48V",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

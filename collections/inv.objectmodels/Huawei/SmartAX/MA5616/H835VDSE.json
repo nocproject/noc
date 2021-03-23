@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5616 H835VDSE,24-port VDSL2 over POTS Service Board(with 600 ohm Impedance Splitter)-1*1",
     "cr_context": "BOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

@@ -49,6 +49,14 @@ class Label(Document):
     enable_administrativedomain = BooleanField()
     enable_authprofile = BooleanField()
     enable_commandsnippet = BooleanField()
+    #
+    enable_allocationgroup = BooleanField()
+    enable_networksegment = BooleanField()
+    enable_object = BooleanField()
+    enable_objectmodel = BooleanField()
+    enable_platform = BooleanField()
+    enable_resourcegroup = BooleanField()
+    enable_sensorprofile = BooleanField()
     # Exposition scope
     expose_metric = BooleanField()
     expose_managedobject = BooleanField()

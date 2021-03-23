@@ -6,7 +6,7 @@
     "description": "Huawei MA5600T/MA5603T super control unit board integrated with 4 SFP GE port",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connection",

@@ -4,7 +4,7 @@
     "uuid": "21ea98f7-7258-4830-a158-870f243b6fde",
     "vendor__code": "HUAWEI",
     "description": "S9300,LE02CMUA,Centralized Monitoring Board,1*1",
-    "tags": ["soft"],
+    "labels": ["noc::inv::soft"],
     "connections": [
         {
             "description": "Chassis connector",

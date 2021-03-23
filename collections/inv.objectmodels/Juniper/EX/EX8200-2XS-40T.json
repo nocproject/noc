@@ -4,7 +4,7 @@
     "uuid": "26efceec-891a-4568-8e4d-8a377a82a364",
     "vendor__code": "JUNIPER",
     "description": "40-port 10/100/1000BASE-T RJ-45, 4 port SFP, 2 port SFP+ line card",
-    "tags": ["lc", "fabric", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "ge-X/0/0",

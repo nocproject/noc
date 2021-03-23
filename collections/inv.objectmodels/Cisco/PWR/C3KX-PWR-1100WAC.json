@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "1100 Watt AC PSU for Cisco Catalyst 3750-X, 3560-X Series switches",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": null,

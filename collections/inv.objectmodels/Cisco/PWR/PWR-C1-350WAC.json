@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "350 Watt AC PSU for Cisco Catalyst 3850 Series switches",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": null,

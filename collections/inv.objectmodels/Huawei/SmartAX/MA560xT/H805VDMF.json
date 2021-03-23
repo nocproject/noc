@@ -6,7 +6,7 @@
     "description": "The H801ASPB board is a 48-port VDSL2 over POTS service board",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["lc"],
+    "labels": ["noc::inv::lc"],
     "connections": [
         {
             "description": "Chassis connection",

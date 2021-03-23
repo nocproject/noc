@@ -4,7 +4,7 @@
     "uuid": "d977fd07-9c51-4254-8373-eb9936936f82",
     "vendor__code": "JUNIPER",
     "description": "Switch Fabric for EX9200",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "Chassis connection",

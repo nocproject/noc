@@ -4,7 +4,7 @@
     "uuid": "28f3c0d8-9cb8-4a78-a533-f40500002144",
     "vendor__code": "EDGECORE",
     "description": "ES3510MA",
-    "tags": ["chassis", "sup", "psu", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Power input",

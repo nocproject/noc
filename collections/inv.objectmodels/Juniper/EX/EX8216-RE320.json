@@ -4,7 +4,7 @@
     "uuid": "7fc9f054-ce83-43e4-8107-9b1457c47ff4",
     "vendor__code": "JUNIPER",
     "description": "Routing Engine for EX8216",
-    "tags": ["lc", "sup"],
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
             "description": "Managemen Ethernet",

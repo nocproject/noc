@@ -6,7 +6,7 @@
     "description": "L3 switch with 24 10/100 Base-TX ports, 4 100/1000 Base-X SFP ports",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Power outlet",

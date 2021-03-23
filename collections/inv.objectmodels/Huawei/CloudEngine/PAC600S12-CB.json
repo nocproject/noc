@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "Huawei CloudEngine AC Power Supply Unit PAC600S12-CB",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU slot",

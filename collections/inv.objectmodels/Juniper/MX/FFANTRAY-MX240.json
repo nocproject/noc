@@ -6,7 +6,7 @@
     "description": "MX240 Enhanced Fan Tray",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Chassis connection",

@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "8-Port,Channelized E1,TDM,DB68,120ohm,Interface Card,1*1",
     "cr_context": "SIC",
-    "tags": ["lc", "dsp"],
+    "labels": ["noc::inv::lc", "noc::inv::dsp"],
     "connections": [
         {
             "description": null,

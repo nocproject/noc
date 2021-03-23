@@ -6,7 +6,7 @@
     "description": "Eltex MA4000 модуль PLC8",
     "connection_rule__name": "Eltex | MA4000",
     "cr_context": "LINECARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

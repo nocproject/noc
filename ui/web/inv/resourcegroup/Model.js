@@ -58,6 +58,10 @@ Ext.define("NOC.inv.resourcegroup.Model", {
         {
             name: "remote_id",
             type: "string"
+        },
+        {
+            name: "labels",
+            type: "auto"
         }
     ]
 });

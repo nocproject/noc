@@ -6,7 +6,7 @@
     "description": "DGS-1100-06/ME Gigabit Ethernet Switch",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "1",

@@ -6,7 +6,7 @@
     "description": "SX-FI-24HF 25 SFP 100/1000M Linecard",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "sfp port",

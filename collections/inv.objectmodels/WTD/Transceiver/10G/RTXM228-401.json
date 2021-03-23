@@ -5,7 +5,7 @@
     "vendor__code": "WTD",
     "description": "Wavelength:1310 nm VCSEL; RX sensitivity:<-14.5 dBm; TX power: -9~0.5 dBm; Distance: 10 km; DDMI; RoHS; Bitrate: 10G, LC",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

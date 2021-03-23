@@ -6,7 +6,7 @@
     "description": "The LE0MFSUA is an optional subcard that enhances service features such as operation, administration and maintenance (OAM), bidirectional forwarding detection (BFD), and security.",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "SC",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

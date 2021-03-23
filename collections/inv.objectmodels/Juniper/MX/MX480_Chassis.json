@@ -6,7 +6,7 @@
     "description": "Juniper MX480 chassis",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Front Panel Display",

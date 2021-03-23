@@ -5,7 +5,7 @@
     "vendor__code": "MLAXLINK",
     "description": "MlaxLink SFP WDM transceiver, 1310 tx, 1550 rx, SC, 20km without dom",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "RxTx SC Port",

@@ -6,7 +6,7 @@
     "description": "L2 Managed Switch with 8 x 10/100/1000BASE-T ports and 24 x 100/1000 sfp ports and 8 SFP+",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "g1",

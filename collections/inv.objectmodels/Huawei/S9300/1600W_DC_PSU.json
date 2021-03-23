@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "S9300 1600 W DC Power Module",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connector",

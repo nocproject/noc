@@ -36,7 +36,7 @@ Ext.define("NOC.inv.sensorprofile.Model", {
             type: "boolean"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

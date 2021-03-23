@@ -6,7 +6,7 @@
     "description": "ZYXEL VLC1348G-51 48-Port VDSL2 over ISDN Line Card with ADSL2+",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "LINECARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

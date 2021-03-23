@@ -6,7 +6,7 @@
     "description": "Cisco Systems Cisco 6500 4-slot Chassis System",
     "connection_rule__name": "Cisco | 6500-E",
 	"cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
 		{
 			"description": "Fan module slot",

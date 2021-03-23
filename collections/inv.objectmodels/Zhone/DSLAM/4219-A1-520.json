@@ -6,7 +6,7 @@
     "description": "GranDSLAM 4200 (24-Port) ReachDSL without POTS Splitter\n",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "USER 1-24",

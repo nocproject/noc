@@ -6,7 +6,7 @@
     "description": "Switch and Route Processing Unit A4",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "SRU",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

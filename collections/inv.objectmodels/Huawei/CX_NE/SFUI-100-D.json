@@ -6,7 +6,7 @@
     "description": "100Gbps Switch Fabric Unit D(SFUI-100-D)",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "SFU",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "Chassis connector",

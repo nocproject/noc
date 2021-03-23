@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "OC-3/STM-1 IR-1, Small Form-factor Pluggable (SFP), 1310nm, LC, DDM, 15km ",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

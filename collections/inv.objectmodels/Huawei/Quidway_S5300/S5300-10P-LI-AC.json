@@ -6,7 +6,7 @@
     "description": "Quidway S5300-10P-LI-AC,S5300-10P-LI-AC,S5300-10P-LI-AC Mainframe(8 GE RJ45,2 GE SFP,AC 110/220V)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "fan", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],
     "connections": [
         {
             "description": "Power outlet",

@@ -10,7 +10,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.JSONPreview",
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
@@ -151,25 +151,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    store: {
-                        fields: ["id", "label"],
-                        data: [
-                            {id: "chassis", label: "Chassis (equipment body)"},
-                            {id: "lc", label: "Linecard, optional replaceable module (except for fans and PSU)"},
-                            {id: "xcvr", label: "Transceiver"},
-                            {id: "psu", label: "Power supply unit"},
-                            {id: "sup", label: "Supervisor or control module (control plane)"},
-                            {id: "fabric", label: "Commutation fabric (data plane)"},
-                            {id: "fan", label: "Fan"},
-                            {id: "soft", label: "Software component"},
-                            {id: "port", label: "Contains ports acceptable for client connection either directly or via transceiver"},
-                            {id: "dsp", label: "Digital signal processor for voice/video processing"}
-                        ]
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_objectmodel": true
                     },
-                    allowBlank: true
                 },
                 {
                     name: "data",

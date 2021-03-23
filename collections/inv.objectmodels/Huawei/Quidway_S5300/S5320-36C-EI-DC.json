@@ -6,7 +6,7 @@
     "description": "Quidway S5320-36C-EI-DC(28 Ethernet 10/100/1000 ports,4 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+, 1 interface slot,with 150W DC)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "fan", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],
     "connections": [
         {
             "description": "PSU Slot #1",

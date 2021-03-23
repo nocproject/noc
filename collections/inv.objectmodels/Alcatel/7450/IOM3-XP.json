@@ -4,7 +4,7 @@
     "uuid": "ba875cf8-7e91-4cc8-a6f1-1f939ca72db7",
     "vendor__code": "ALU",
     "description": "Alcatel 7450 Input/Output Module (IOM)",
-    "tags": ["chassis", "fabric"],
+    "labels": ["noc::inv::chassis", "noc::inv::fabric"],
     "cr_context": "IOM",
     "connections": [
         {

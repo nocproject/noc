@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "PS 1000W AC FORWARD AIR FLOW CONTROL",
     "cr_context": "PEM",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power inlet",

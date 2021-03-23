@@ -21,11 +21,13 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.datastream.decorator import datastream
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from .technology import Technology
 
 id_lock = threading.Lock()
 
 
+@Label.model
 @bi_sync
 @datastream
 @on_delete_check(
@@ -73,8 +75,9 @@ class ResourceGroup(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    # Tags
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -99,3 +102,9 @@ class ResourceGroup(Document):
     @property
     def has_children(self):
         return bool(ResourceGroup.objects.filter(parent=self.id).only("id").first())
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_resourcegroup:
+            return True
+        return False

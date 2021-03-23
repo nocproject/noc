@@ -4,7 +4,7 @@
     "uuid": "c64dee88-674b-4fd0-8df7-7746ac11033b",
     "vendor__code": "HUAWEI",
     "description": "Huawei Quidway S5300 DC Power Supply Unit",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

@@ -69,7 +69,7 @@ Ext.define("NOC.inv.networksegment.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

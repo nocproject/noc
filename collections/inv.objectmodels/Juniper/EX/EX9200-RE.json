@@ -4,7 +4,7 @@
     "uuid": "d12d0acf-33b1-45b4-9119-4e451ef83eef",
     "vendor__code": "JUNIPER",
     "description": "Routing Engine for EX9200",
-    "tags": ["lc", "sup"],
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
             "description": "Managemen Ethernet",

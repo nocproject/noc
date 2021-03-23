@@ -6,7 +6,7 @@
     "description": "DGS-36210-26G L3 Managed Switch witch 24 1000M SFP ports and 12 multiplexing 10/100/1000M RJ-45 ports, 2 10G extention slots ",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "GigabitEthernet 0/1 SFP port",

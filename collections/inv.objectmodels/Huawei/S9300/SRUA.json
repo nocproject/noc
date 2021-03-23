@@ -6,7 +6,7 @@
     "description": "Quidway S9306/S9312 Main Control Unit A,1*1 (256G Switch Capacity)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "SRU",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

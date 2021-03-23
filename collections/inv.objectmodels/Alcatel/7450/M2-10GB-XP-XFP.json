@@ -4,7 +4,7 @@
     "uuid": "231088b8-598c-4bda-b29d-217efdce56b4",
     "vendor__code": "ALU",
     "description": "Alcatel 7450, 7750 2 port 10-Gigabit Ethernet",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "cr_context": "MDA",
     "connections": [
         {

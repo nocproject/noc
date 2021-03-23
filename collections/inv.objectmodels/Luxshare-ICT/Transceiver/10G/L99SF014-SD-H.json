@@ -4,7 +4,7 @@
     "uuid": "7fdc6f54-c1ff-4f95-8238-ea0edf694bfe",
     "vendor__code": "LUXSHARE-ICT",
     "description": "10G SFP+ DAC 3m",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "cross": "in2",

@@ -6,7 +6,7 @@
     "description": "Cisco 7206VXR, 6-slot chassis",
     "connection_rule__name": "Cisco | 7200",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Supervisor slot",

@@ -6,7 +6,7 @@
     "description": "Cisco 1841 Series Integrated Services Routers",
     "connection_rule__name": "Cisco | 2800",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "1841 Motherboard",

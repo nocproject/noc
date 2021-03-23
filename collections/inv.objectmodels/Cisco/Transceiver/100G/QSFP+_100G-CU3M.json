@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco QSFP+ 100 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "cross": "in2",

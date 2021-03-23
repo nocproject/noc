@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Catalyst 4500-X 750W AC Front-to-Back Cooling Power Supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": null,

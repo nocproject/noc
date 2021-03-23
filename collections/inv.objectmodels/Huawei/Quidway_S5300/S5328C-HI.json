@@ -6,7 +6,7 @@
     "description": "Quidway S5328C-HI, LS5ZD28CM0, S5328C-HI Mainframe (24 10/100/1000Base-T, Chassis, Dual Slots of power, Without Flexible Card and Power Module)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Extension slot",

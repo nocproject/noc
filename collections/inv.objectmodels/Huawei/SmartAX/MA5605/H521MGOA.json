@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5605 It is system control and GE Uplink Optical Interface Board, providing 2×SFP 1G interfaces (uplink and subtending).",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 6001 Fan Module, Front-to-Back Airflow",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "FAN connection to switch",

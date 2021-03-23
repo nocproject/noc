@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "1000BASE-ZX 2Gb/s Fibre Channel Long-Wavelength SFP Transceiver 80 km.\n",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

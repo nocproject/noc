@@ -6,7 +6,7 @@
     "description": "Huawei MA5600 super control unit board integrated with 2-port GE uplink port, RS-232 serial port",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connection",

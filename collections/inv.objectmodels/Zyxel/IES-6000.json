@@ -6,7 +6,7 @@
     "description": "Модульный IP xDSL-коммутатор\n17 slots for management and  line termination cards ",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Linecard 1 slot",

@@ -4,7 +4,7 @@
     "uuid": "465d2efe-4110-4d90-946a-b1a24045b7a7",
     "vendor__code": "HUAWEI",
     "description": "MA5600T,H801GICE,GE Electrical Interface Card",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Board connector",

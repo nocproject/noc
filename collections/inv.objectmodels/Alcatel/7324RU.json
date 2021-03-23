@@ -4,7 +4,7 @@
     "uuid": "457eece4-4d51-41d2-bf60-c12d40ec841f",
     "vendor__code": "ALU",
     "description": "Alcatel 7324 RU IP-based DSLAM",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "ADLS User ports 1-24",

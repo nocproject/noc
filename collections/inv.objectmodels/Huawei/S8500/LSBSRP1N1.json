@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": null,
     "cr_context": "LSB",
-    "tags": ["lc", "sup"],
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

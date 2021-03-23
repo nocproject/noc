@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.allocationgroup.Application");
 Ext.define("NOC.inv.allocationgroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.inv.allocationgroup.Model",
         "NOC.main.remotesystem.LookupField"
     ],
@@ -74,10 +74,13 @@ Ext.define("NOC.inv.allocationgroup.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_allocationgroup": true
+                    },
                 }
             ]
         });

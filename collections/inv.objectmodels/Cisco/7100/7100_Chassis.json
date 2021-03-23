@@ -6,7 +6,7 @@
     "description": "Cisco 7100 Series Integrated Services Routers",
     "connection_rule__name": "Cisco | 7100",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "7100 Motherboard",

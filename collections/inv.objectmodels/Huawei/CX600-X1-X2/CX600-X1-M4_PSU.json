@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "CX600-X1-M4 psu module CX6M01FBX70",
     "cr_context": "FAN",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connector",

@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "PWR-3900-AC AC Power Supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Power input",

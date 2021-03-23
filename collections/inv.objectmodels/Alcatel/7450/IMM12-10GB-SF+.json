@@ -5,7 +5,7 @@
     "vendor__code": "ALU",
     "description": "Alcatel 7750 Integrated Media Module (IMM)",
     "cr_context": "IOM",
-    "tags": ["chassis", "fabric"],
+    "labels": ["noc::inv::chassis", "noc::inv::fabric"],
     "connections": [
         {
             "description": "Chassis connection",

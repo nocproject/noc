@@ -6,7 +6,7 @@
     "description": "CX600-X1-M4 Integrated Chassis Components",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "NPU Slot #1",

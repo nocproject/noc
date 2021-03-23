@@ -6,7 +6,7 @@
     "description": "7450 ESS-7 7 ports commutator",
     "connection_rule__name": "Alcatel | 7450",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "IO slot 1",

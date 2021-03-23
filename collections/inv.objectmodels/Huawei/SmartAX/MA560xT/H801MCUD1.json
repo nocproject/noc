@@ -6,7 +6,7 @@
     "description": "Huawei MA5608T main control board integrated with 2-port GE and 2-port GE/10GE optical uplink",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connection",

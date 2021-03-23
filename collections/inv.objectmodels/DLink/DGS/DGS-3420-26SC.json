@@ -6,7 +6,7 @@
     "description": "DGS-3420-26SC L2+ Stackable Managed Switch with 20 SFP ports, 4 Combo 1000BASE-T/SFP ports and 2 x 10 Gbps SFP+ ports",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "SD card slot",

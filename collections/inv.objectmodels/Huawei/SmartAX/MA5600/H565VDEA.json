@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5600,H565VDEA,32-port VDSL2 Service Board(with 600 ohm Impedance Splitter)",
     "cr_context": "BOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

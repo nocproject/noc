@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5616  DC Power board",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "",

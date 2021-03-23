@@ -5,7 +5,7 @@
     "vendor__code": "OPTICIN",
     "description": "SFP (mini-GBIC) transceiver module - GigE, Fibre Channel, 1610nm, DDM, LC",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

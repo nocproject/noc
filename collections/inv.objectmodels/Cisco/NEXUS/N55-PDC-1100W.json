@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco Nexus 5596UP/5596T PSU Front-to-Back Airflow module spare, D/C, - 40 to -72VDC, 1100W",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU connect to switch",

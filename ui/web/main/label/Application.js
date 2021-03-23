@@ -70,6 +70,27 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_commandsnippet) {
               r.push(__("Command Snippet"));
             }
+            if (item.data.enable_allocationgroup) {
+              r.push(__("Allocation Group"));
+            }
+            if (item.data.enable_networksegment) {
+              r.push(__("Network Segment"));
+            }
+            if (item.data.enable_object) {
+              r.push(__("Object"));
+            }
+            if (item.data.enable_objectmodel) {
+              r.push(__("Object Model"));
+            }
+            if (item.data.enable_platform) {
+              r.push(__("Platfrom"));
+            }
+            if (item.data.enable_resourcegroup) {
+              r.push(__("Resource Group"));
+            }
+            if (item.data.enable_sensorprofile) {
+              r.push(__("Sensor Profile"));
+            }
             return r.join(", ");
           }
         },
@@ -207,6 +228,41 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_commandsnippet",
               xtype: "checkbox",
               boxLabel: __("Command Snippet")
+            },
+            {
+              name: "enable_allocationgroup",
+              xtype: "checkbox",
+              boxLabel: __("Allocation Group")
+            },
+            {
+              name: "enable_networksegment",
+              xtype: "checkbox",
+              boxLabel: __("Network Segment")
+            },
+            {
+              name: "enable_object",
+              xtype: "checkbox",
+              boxLabel: __("Object")
+            },
+            {
+              name: "enable_objectmodel",
+              xtype: "checkbox",
+              boxLabel: __("Object Model")
+            },
+            {
+              name: "enable_platform",
+              xtype: "checkbox",
+              boxLabel: __("Platform")
+            },
+            {
+              name: "enable_resourcegroup",
+              xtype: "checkbox",
+              boxLabel: __("Resource Group")
+            },
+            {
+              name: "enable_sensorprofile",
+              xtype: "checkbox",
+              boxLabel: __("Sensor Profile")
             },
           ]
         },

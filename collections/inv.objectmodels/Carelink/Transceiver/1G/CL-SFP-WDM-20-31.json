@@ -5,7 +5,7 @@
     "vendor__code": "CARELINK",
     "description": "Carelink TX-1310/RX-1550 nm Single-mode Bi-directional, 20km, SC",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

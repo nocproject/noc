@@ -5,7 +5,7 @@
     "vendor__code": "SOPTO",
     "description": "1.25Gbps SFP Bi-Directional Transceiver, 20km Reach 1310nm TX / 1550 nm RX",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

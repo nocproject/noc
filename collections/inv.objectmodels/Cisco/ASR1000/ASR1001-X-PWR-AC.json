@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco ASR1001-X AC Power Supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connection",

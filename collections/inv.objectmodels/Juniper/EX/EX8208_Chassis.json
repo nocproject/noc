@@ -6,7 +6,7 @@
     "description": "Base EX8208 system configuration:  8-slot chassis with passive backplane",
     "connection_rule__name": "Juniper | EX8200",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Front Panel Display",

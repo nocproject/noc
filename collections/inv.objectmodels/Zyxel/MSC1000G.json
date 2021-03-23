@@ -6,7 +6,7 @@
     "description": "management switch card Two 1000M interface modules (SFP + copper) ,  Two 1000Base SX/LX/EX/ZX (mini-GBIC, SFP)",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "LINECARD",
-    "tags": ["lc", "sup", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::sup", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",
