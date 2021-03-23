@@ -55,6 +55,9 @@ class ManagedObject(BaseModel):
         IPvAnyAddress().validate(v)
         return str(v)
 
+    class Config:
+        fields = {"labels": "tags"}
+
     _csv_fields = [
         "id",
         "name",
@@ -77,7 +80,7 @@ class ManagedObject(BaseModel):
         "snmp_ro",
         "description",
         "auth_profile",
-        "tags",
+        "labels",
         "tt_system",
         "tt_queue",
         "tt_system_id",

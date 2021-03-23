@@ -30,6 +30,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.glyph.LookupField",
         "NOC.main.ref.soposition.LookupField",
         "NOC.main.ref.soform.LookupField",
+        "NOC.core.LabelField",
         "Ext.ux.form.MultiIntervalField",
         "Ext.ux.form.GridField"
     ],
@@ -219,6 +220,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Level"),
                                     allowBlank: false,
                                     uiStyle: "small"
+                                },
+                                {
+                                    name: "labels",
+                                    xtype: "labelfield",
+                                    fieldLabel: __("Labels"),
+                                    allowBlank: true,
+                                    query: {
+                                        "enable_managedobjectprofile": true
+                                    },
                                 },
                                 {
                                     name: "style",
