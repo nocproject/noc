@@ -173,7 +173,7 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
             persist: false
         },
         {
-            name: "filter_tags",
+            name: "filter_labels",
             type: "auto"
         },
         {

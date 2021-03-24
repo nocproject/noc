@@ -5,7 +5,7 @@
     "vendor__code": "NONAME",
     "description": "10Gbase-SR SFP+, 850nm, LC, 300m, SR transceiver",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP+ Connector",

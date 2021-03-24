@@ -69,9 +69,9 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                     flex: 1
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
-                    renderer: NOC.render.Tags,
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
                     width: 150
                 }
             ],
