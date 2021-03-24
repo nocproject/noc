@@ -17,6 +17,7 @@ import cachetools
 # NOC modules
 from .subscriberprofile import SubscriberProfile
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.wf.models.state import State
 from noc.project.models.project import Project
@@ -27,6 +28,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
 @on_delete_check(check=[("sa.Service", "subscriber")])
 @workflow
@@ -48,7 +50,9 @@ class Subscriber(Document):
     tech_contact_person = StringField()
     tech_contact_phone = StringField()
     project = ForeignKeyField(Project)
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -66,3 +70,9 @@ class Subscriber(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Subscriber.objects.filter(id=id).first()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_subscriber:
+            return True
+        return False

@@ -9,7 +9,7 @@ console.debug("Defining NOC.crm.subscriber.Application");
 Ext.define("NOC.crm.subscriber.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.StateField",
         "NOC.crm.subscriber.Model",
         "NOC.crm.subscriberprofile.LookupField",
@@ -136,10 +136,13 @@ Ext.define("NOC.crm.subscriber.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_subscriber": true
+                    },
                 }
             ]
         });

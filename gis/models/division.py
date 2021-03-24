@@ -17,11 +17,13 @@ from mongoengine.fields import (
 )
 
 # NOC modules
+from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete_check
 
 
+@Label.model
 @on_delete_check(
     check=[("gis.Street", "parent"), ("gis.Division", "parent"), ("gis.Building", "adm_division")]
 )
@@ -50,8 +52,9 @@ class Division(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     def __str__(self):
         if self.short_name:
@@ -95,3 +98,9 @@ class Division(Document):
             r = [smart_text(p)] + r
             p = p.parent
         return " | ".join(r)
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_division:
+            return True
+        return False

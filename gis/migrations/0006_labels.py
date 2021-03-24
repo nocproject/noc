@@ -13,71 +13,15 @@ from pymongo import InsertOne, UpdateMany, UpdateOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from django.contrib.postgres.fields import ArrayField
-from django.db.models import CharField
 
 
 class Migration(BaseMigration):
+    depends_on = [("dns", "0042_labels")]
 
-    TAG_MODELS = [
-        ("sa_managedobject", "managedobject"),
-        ("sa_managedobjectprofile", "managedobjectprofile"),
-        ("sa_administrativedomain", "administrativedomain"),
-        ("sa_authprofile", "authprofile"),
-        ("sa_commandsnippet", "commandsnippet"),
-    ]
-    TAG_COLLETIONS = [
-        ("noc.services", "service"),
-        ("noc.serviceprofiles", "serviceprofile"),
-    ]
+    TAG_COLLETIONS = [("noc.divisions", "division")]
 
     def migrate(self):
         labels = defaultdict(set)  # label: settings
-        # Create labels fields
-        for table, setting in self.TAG_MODELS:
-            self.db.add_column(
-                table,
-                "labels",
-                ArrayField(CharField(max_length=250), null=True, blank=True, default=lambda: "{}"),
-            )
-            self.db.add_column(
-                table,
-                "effective_labels",
-                ArrayField(CharField(max_length=250), null=True, blank=True, default=lambda: "{}"),
-            )
-        # Migrate data
-        for table, setting in self.TAG_MODELS:
-            self.db.execute(
-                """
-                UPDATE %s
-                SET labels = tags
-                WHERE tags is not NULL and tags <> '{}'
-                """
-                % table
-            )
-            # Fill labels
-            for (ll,) in self.db.execute(
-                """
-                SELECT DISTINCT labels
-                FROM %s
-                WHERE labels <> '{}'
-                """
-                % table
-            ):
-                for name in ll:
-                    labels[name].add(f"enable_{setting}")
-        # Delete tags
-        for table, setting in self.TAG_MODELS:
-            self.db.delete_column(
-                table,
-                "tags",
-            )
-        # Create indexes
-        for table, setting in self.TAG_MODELS:
-            self.db.execute(f'CREATE INDEX x_{table}_labels ON "{table}" USING GIN("labels")')
-            self.db.execute(
-                f'CREATE INDEX x_{table}_effective_labels ON "{table}" USING GIN("effective_labels")'
-            )
         # Mongo models
         for collection, setting in self.TAG_COLLETIONS:
             coll = self.mongo_db[collection]
@@ -102,7 +46,6 @@ class Migration(BaseMigration):
             coll.bulk_write([UpdateMany({}, {"$unset": {"tags": 1}})])
         # Add labels
         self.sync_labels(labels)
-        # Migrate selector
 
     def sync_labels(self, labels):
         # Create labels
@@ -134,6 +77,23 @@ class Migration(BaseMigration):
                     "enable_administrativedomain": False,
                     "enable_authprofile": False,
                     "enable_commandsnippet": False,
+                    #
+                    "enable_allocationgroup": False,
+                    "enable_networksegment": False,
+                    "enable_object": False,
+                    "enable_objectmodel": False,
+                    "enable_platform": False,
+                    "enable_resourcegroup": False,
+                    "enable_sensorprofile": False,
+                    # CRM
+                    "enable_subscriber": False,
+                    "enable_subscriberprofile": False,
+                    "enable_supplier": False,
+                    "enable_supplierprofile": False,
+                    # DNS
+                    "enable_dnszone": False,
+                    # GIS
+                    "enable_division": False,
                     # Exposition scope
                     "expose_metric": False,
                     "expose_managedobject": False,

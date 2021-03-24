@@ -91,6 +91,30 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_sensorprofile) {
               r.push(__("Sensor Profile"));
             }
+            if (item.data.enable_subscriber) {
+              r.push(__("Subscriber"));
+            }
+            if (item.data.enable_subscriberprofile) {
+              r.push(__("Subscriber Profile"));
+            }
+            if (item.data.enable_supplier) {
+              r.push(__("Supplier"));
+            }
+            if (item.data.enable_supplierprofile) {
+              r.push(__("Supplier Profile"));
+            }
+            if (item.data.enable_dnszone) {
+              r.push(__("DNS Zone"));
+            }
+            if (item.data.enable_dnszonerecord) {
+              r.push(__("DNS Zone Record"));
+            }
+            if (item.data.enable_division) {
+              r.push(__("GIS Division"));
+            }
+            if (item.data.enable_kbentry) {
+              r.push(__("KB Entry"));
+            }
             return r.join(", ");
           }
         },
@@ -264,6 +288,46 @@ Ext.define("NOC.main.label.Application", {
               xtype: "checkbox",
               boxLabel: __("Sensor Profile")
             },
+            {
+              name: "enable_subscriber",
+              xtype: "checkbox",
+              boxLabel: __("Subscriber")
+            },
+            {
+              name: "enable_subscriberprofile",
+              xtype: "checkbox",
+              boxLabel: __("Subscriber Profile")
+            },
+            {
+              name: "enable_supplier",
+              xtype: "checkbox",
+              boxLabel: __("Supplier")
+            },
+            {
+              name: "enable_supplierprofile",
+              xtype: "checkbox",
+              boxLabel: __("Supplier Profile")
+            },
+            {
+              name: "enable_dnszone",
+              xtype: "checkbox",
+              boxLabel: __("DNS Zone")
+            },
+            {
+              name: "enable_dnszonerecord",
+              xtype: "checkbox",
+              boxLabel: __("DNS Zone")
+            },
+            {
+              name: "enable_division",
+              xtype: "checkbox",
+              boxLabel: __("GIS Division")
+            },
+            {
+              name: "enable_kbentry",
+              xtype: "checkbox",
+              boxLabel: __("KB Entry")
+            }
           ]
         },
         {

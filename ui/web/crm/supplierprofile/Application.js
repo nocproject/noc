@@ -9,7 +9,7 @@ console.debug("Defining NOC.crm.supplierprofile.Application");
 Ext.define("NOC.crm.supplierprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.crm.supplierprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.wf.workflow.LookupField",
@@ -35,10 +35,10 @@ Ext.define("NOC.crm.supplierprofile.Application", {
                     renderer: NOC.render.Lookup("workflow")
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
+                    text: __("Labels"),
+                    dataIndex: "labels",
                     width: 150,
-                    render: NOC.render.Tags
+                    render: NOC.render.LabelField
                 }
             ],
 
@@ -101,10 +101,13 @@ Ext.define("NOC.crm.supplierprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_supplierprofile": true
+                    },
                 }
             ]
         });

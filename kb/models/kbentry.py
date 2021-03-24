@@ -11,15 +11,17 @@ import difflib
 
 # Third-party modules
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.core.model.fields import TagsField
 from noc.main.models.language import Language
+from noc.main.models.label import Label
 from noc.services.web.apps.kb.parsers.loader import loader
 from noc.core.model.decorator import on_delete_check
 
 
+@Label.model
 @on_delete_check(
     delete=[
         ("kb.KBUserBookmark", "kb_entry"),
@@ -52,7 +54,11 @@ class KBEntry(NOCModel):
     markup_language = models.CharField(
         "Markup Language", max_length=16, choices=[(x, x) for x in loader]
     )
-    tags = TagsField("Tags", null=True, blank=True)
+    #
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     def __str__(self):
         if self.id:
@@ -181,6 +187,12 @@ class KBEntry(NOCModel):
     @property
     def has_visible_attachments(self):
         return self.kbentryattachment_set.filter(is_hidden=False).exists()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_kbentry:
+            return True
+        return False
 
 
 # No delete, fixed 'KBEntry' object has no attribute 'kbentryattachment_set'

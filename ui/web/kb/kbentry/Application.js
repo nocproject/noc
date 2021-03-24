@@ -11,7 +11,7 @@ Ext.define("NOC.kb.kbentry.Application", {
     layout: "card",
     requires: [
         "NOC.core.ListFormField",
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.kb.kbentry.Model",
         "NOC.kb.kbentry.HistoryPanel",
         "NOC.main.language.LookupField",
@@ -105,9 +105,9 @@ Ext.define("NOC.kb.kbentry.Application", {
                     renderer: NOC.render.Lookup("language")
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
-                    renderer: NOC.render.Tags
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField
                 }
             ],
             fields: [
@@ -139,10 +139,13 @@ Ext.define("NOC.kb.kbentry.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_kbentry": true
+                    },
                 },
                 me.listForm
             ],
@@ -168,7 +171,7 @@ Ext.define("NOC.kb.kbentry.Application", {
         data.append("body", me.down("[name=body]").getValue());
         data.append("language", me.down("[name=language]").getValue());
         data.append("markup_language", me.down("[name=markup_language]").getValue());
-        data.append("tags", me.down("[name=tags]").getValue());
+        data.append("labels", me.down("[name=labels]").getValue());
         Ext.each(me.query("[name=attachments] > form > form"), function(form, indx) {
             var file = form.down("[name=file]");
             if(file.getValue()) {

@@ -28,7 +28,7 @@ Ext.define("NOC.crm.supplierprofile.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {
