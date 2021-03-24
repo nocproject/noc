@@ -1,15 +1,14 @@
 // ---------------------------------------------------------------------
-// DNS collector
+// dns collector implementation
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use crate::collectors::base::{Collectable, Collector, Status};
+use super::super::{Collectable, Collector, Status};
+use super::DNSConfig;
 use crate::timing::Timing;
-use crate::zk::Configurable;
 use async_trait::async_trait;
-use serde::Deserialize;
 use std::error::Error;
 use std::str::FromStr;
 use std::time::Duration;
@@ -17,19 +16,6 @@ use std::time::Instant;
 use trust_dns_proto::rr::record_type::RecordType;
 use trust_dns_proto::xfer::dns_request::DnsRequestOptions;
 use trust_dns_resolver::TokioAsyncResolver;
-
-#[derive(Deserialize, Debug)]
-pub struct DNSConfig {
-    query: String,
-    #[serde(default = "default_type_a")]
-    query_type: String,
-    #[serde(default = "default_one")]
-    n: usize,
-    #[serde(default = "default_one")]
-    min_success: usize,
-}
-
-impl Configurable<DNSConfig> for DNSConfig {}
 
 pub type DNSCollector = Collector<DNSConfig>;
 
@@ -82,12 +68,4 @@ impl Collectable for DNSCollector {
         );
         Ok(Status::Ok)
     }
-}
-
-fn default_type_a() -> String {
-    "A".into()
-}
-
-fn default_one() -> usize {
-    1
 }

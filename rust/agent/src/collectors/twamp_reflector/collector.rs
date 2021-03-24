@@ -1,37 +1,27 @@
 // ---------------------------------------------------------------------
-// TWAMP Reflector
+// twamp_reflector collector implementation
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use crate::collectors::base::{Collector, Runnable};
+use super::super::{Collector, Runnable};
+use super::TWAMPReflectorConfig;
 use crate::proto::connection::Connection;
 use crate::proto::twamp::{
     AcceptSession, RequestTWSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, DEFAULT_COUNT, MODE_UNAUTHENTICATED,
 };
 use crate::proto::udp::UDPConnection;
-use crate::zk::Configurable;
 use async_trait::async_trait;
 use bytes::Bytes;
 use chrono::Utc;
 use rand::Rng;
-use serde::Deserialize;
 use std::{error::Error, net::SocketAddr, time::Duration};
 use tokio::{
     net::{TcpListener, TcpStream},
     sync::oneshot,
     time::timeout,
 };
-
-#[derive(Deserialize, Debug)]
-pub struct TWAMPReflectorConfig {
-    pub listen: String,
-    #[serde(default = "default_862")]
-    pub port: u16,
-}
-
-impl Configurable<TWAMPReflectorConfig> for TWAMPReflectorConfig {}
 
 pub type TWAMPReflectorCollector = Collector<TWAMPReflectorConfig>;
 
@@ -271,8 +261,4 @@ impl ClientSession {
         log::debug!("[{}] Stopping reflector", id);
         Ok(())
     }
-}
-
-fn default_862() -> u16 {
-    862
 }

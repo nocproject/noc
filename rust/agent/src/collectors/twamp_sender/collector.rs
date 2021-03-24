@@ -1,26 +1,24 @@
 // ---------------------------------------------------------------------
-// TWAMP Sender
+// twamp_sender collector implementation
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use crate::collectors::base::{Collectable, Collector, Status};
+
+use super::super::{Collectable, Collector, Status};
+use super::TWAMPSenderConfig;
 use crate::proto::connection::Connection;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use crate::proto::pktmodel::ModelConfig;
-use crate::proto::tos::dscp_to_tos;
 use crate::proto::twamp::{
     AcceptSession, RequestTWSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, UTCDateTime, ACCEPT_OK, MODE_REFUSED,
     MODE_UNAUTHENTICATED,
 };
 use crate::timing::Timing;
-use crate::zk::Configurable;
 use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};
 use chrono::Utc;
-use serde::Deserialize;
-use std::collections::HashMap;
 use std::error::Error;
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -29,35 +27,6 @@ use tokio::{
     net::{TcpStream, UdpSocket},
     time::timeout,
 };
-
-#[derive(Deserialize, Debug)]
-pub struct TWAMPSenderConfig {
-    server: String,
-    #[serde(default = "default_862")]
-    port: u16,
-    #[serde(default = "default_be")]
-    dscp: String,
-    n_packets: usize,
-    // test_timeout: u64,
-    // Model config
-    #[serde(flatten)]
-    model: ModelConfig,
-    // Internal fields
-    #[serde(skip)]
-    tos: u8,
-}
-
-impl Configurable<TWAMPSenderConfig> for TWAMPSenderConfig {
-    fn get_config(
-        cfg: &HashMap<String, serde_json::Value>,
-    ) -> Result<TWAMPSenderConfig, Box<dyn Error>> {
-        let c_value = serde_json::to_value(&cfg)?;
-        let mut config = serde_json::from_value::<TWAMPSenderConfig>(c_value)?;
-        // Fill internal fields
-        config.tos = dscp_to_tos(config.dscp.to_lowercase()).ok_or("invalid dscp")?;
-        Ok(config)
-    }
-}
 
 pub type TWAMPSenderCollector = Collector<TWAMPSenderConfig>;
 
@@ -603,14 +572,6 @@ struct ReceiverStats {
     out_max_hops: u8,
     // Octets
     in_octets: usize,
-}
-
-fn default_862() -> u16 {
-    862
-}
-
-fn default_be() -> String {
-    "be".into()
 }
 
 // Defaults
