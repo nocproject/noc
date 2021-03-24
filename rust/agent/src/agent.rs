@@ -6,11 +6,11 @@
  * ---------------------------------------------------------------------
  */
 use crate::cmd::CmdArgs;
-use crate::collectors::base::Runnable;
+use crate::collectors::{Collectors, Runnable};
 use crate::nvram::NVRAM;
-use crate::registry::get_collector;
 use crate::zk::{ZkConfig, ZkConfigCollector};
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::error::Error;
 use std::fs;
 use std::str;
@@ -24,7 +24,7 @@ pub struct Agent {
     zeroconf_url: Option<String>,
     resolver: Option<TokioAsyncResolver>,
     config_interval: u64,
-    collectors: HashMap<String, Arc<Box<dyn Runnable + Send + Sync>>>,
+    collectors: HashMap<String, Arc<Collectors>>,
 }
 
 const CLEAN_CONFIG_FETCH_INTERVAL: u64 = 10;
@@ -187,7 +187,7 @@ impl Agent {
     }
     async fn spawn_collector(&mut self, config: &ZkConfigCollector) -> Result<(), Box<dyn Error>> {
         log::debug!("Starting collector: {}", &config.id);
-        let collector = Arc::new(get_collector(config)?);
+        let collector = Arc::new(Collectors::try_from(config)?);
         self.collectors
             .insert(config.id.clone(), Arc::clone(&collector));
         let collector = Arc::clone(&collector);
@@ -202,7 +202,7 @@ impl Agent {
     }
     async fn fetch_config(&self, url: &str) -> Result<ZkConfig, Box<dyn Error>> {
         let data = self.fetch_url(url).await?;
-        ZkConfig::new_from(data)
+        ZkConfig::try_from(data)
     }
     async fn fetch_url(&self, url: &str) -> Result<Vec<u8>, Box<dyn Error>> {
         match url.find(':') {

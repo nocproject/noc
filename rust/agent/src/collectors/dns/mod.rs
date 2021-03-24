@@ -1,14 +1,19 @@
 // ---------------------------------------------------------------------
-// agent library
+// dns collector
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-pub mod agent;
-pub mod cmd;
-pub mod collectors;
-pub mod nvram;
-pub mod proto;
-pub mod timing;
-pub mod zk;
+mod config;
+pub use config::DNSConfig;
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "dns")] {
+        mod collector;
+        pub use collector::DNSCollector;
+    } else {
+        use super::StubCollector;
+        pub type DNSCollector = StubCollector<DNSConfig>;
+    }
+}
