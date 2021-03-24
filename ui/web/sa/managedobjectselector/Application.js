@@ -22,6 +22,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.main.prefixtable.LookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.ip.vrf.LookupField",
+        "NOC.core.LabelField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.fm.ttsystem.LookupField",
@@ -261,12 +262,15 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     labelWidth: 170
                 },
                 {
-                    name: "filter_tags",
-                    xtype: "textfield",
+                    name: "filter_labels",
+                    xtype: "labelfield",
                     fieldLabel: __("Filter By Tags"),
                     allowBlank: true,
+                    labelWidth: 170,
                     uiStyle: "large",
-                    labelWidth: 170
+                    query: {
+                        "enable_managedobject": true
+                    },
                 },
                 {
                     name: "source_combine_method",

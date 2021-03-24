@@ -411,7 +411,7 @@ class AlarmApplication(ExtApplication):
                 d["address_path"] = None
             else:
                 d["address_path"] = ", ".join(self.location(mo.container.id))
-        d["tags"] = mo.tags
+        d["tags"] = mo.labels
         # Log
         if alarm.log:
             d["log"] = [

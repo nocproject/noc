@@ -12,6 +12,7 @@ from threading import Lock
 # Third-party modules
 from noc.core.translation import ugettext as _
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.db.models import Q
 import cachetools
 from psycopg2.extensions import adapt
@@ -25,7 +26,6 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
-from noc.core.model.fields import TagsField
 from noc.core.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.core.model.sql import SQL
 from noc.core.model.decorator import on_delete, on_save, on_delete_check
@@ -141,7 +141,9 @@ class ManagedObjectSelector(NOCModel):
         blank=True,
         validators=[check_re],
     )
-    filter_tags = TagsField(_("Filter By Tags"), null=True, blank=True)
+    filter_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     source_combine_method = models.CharField(
         _("Source Combine Method"), max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")]
     )
@@ -258,9 +260,9 @@ class ManagedObjectSelector(NOCModel):
         # Filter by description
         if self.filter_description:
             q &= Q(description__regex=self.filter_description)
-        # Restrict to tags when necessary
-        if self.filter_tags:
-            q &= Q(tags__contains=self.filter_tags)
+        # Restrict to labels when necessary
+        if self.filter_labels:
+            q &= Q(labels__contains=self.filter_labels)
         # Restrict to attributes when necessary
         for s in self.managedobjectselectorbyattribute_set.all():
             q &= SQL(
@@ -309,7 +311,7 @@ class ManagedObjectSelector(NOCModel):
         ["filter_user", "user", "=="],
         ["filter_remote_path", "remote_path", "~"],
         ["filter_description", "description", "~"],
-        ["filter_tags", "tags", "CONTAINS"],
+        ["filter_labels", "labels", "CONTAINS"],
     ]
 
     @property
@@ -489,10 +491,10 @@ class ManagedObjectSelector(NOCModel):
                 "Match('meta', 'description', description) and Re('%s', description)"
                 % self.filter_description
             ]
-        if self.filter_tags:
+        if self.filter_labels:
             query += [
                 "( %s )"
-                % " and ".join("Match%r" % (("meta", "tags", t),) for t in self.filter_tags)
+                % " and ".join("Match%r" % (("meta", "labels", t),) for t in self.filter_labels)
             ]
         return " and ".join(query)
 

@@ -87,7 +87,7 @@ class TextIndex(Document):
                     "title": data.get("title"),
                     "content": data.get("content"),
                     "card": data.get("card"),
-                    "tags": data.get("tags"),
+                    "tags": data.get("labels"),
                     "language": "english",
                     "changed": datetime.datetime.now(),
                 }

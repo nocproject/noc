@@ -139,8 +139,10 @@ class ManagedObjectDataStream(DataStream):
             "enable_box": mo.object_profile.enable_box_discovery,
             "enable_periodic": mo.object_profile.enable_periodic_discovery,
         }
-        if mo.object_profile.tags:
-            r["object_profile"]["tags"] = [str(x) for x in mo.object_profile.tags]
+        if mo.object_profile.labels:
+            r["object_profile"]["labels"] = [str(x) for x in mo.object_profile.labels]
+            # Alias for compat
+            r["object_profile"]["tags"] = [str(x) for x in mo.object_profile.labels]
         if mo.object_profile.remote_system and mo.object_profile.remote_id:
             r["object_profile"]["remote_system"] = {
                 "id": str(mo.object_profile.remote_system.id),
@@ -390,7 +392,9 @@ class ManagedObjectDataStream(DataStream):
                 "id": str(o.model.id),
                 "name": str(o.model.name),
                 "vendor": {"id": str(o.model.vendor.id), "name": str(o.model.vendor.name)},
-                "tags": [str(t) for t in o.model.tags or []],
+                "labels": [str(t) for t in o.model.labels or []],
+                # Alias
+                "tags": [str(t) for t in o.model.labels or []],
             },
             "serial": o.get_data("asset", "serial") or "",
             "revision": rev,

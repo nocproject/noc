@@ -838,7 +838,7 @@ class ManagedObject(NOCModel):
                 content += [config[:10000000]]
             else:
                 content += [config]
-        r = {"title": self.name, "content": "\n".join(content), "card": card, "tags": self.tags}
+        r = {"title": self.name, "content": "\n".join(content), "card": card, "tags": self.labels}
         return r
 
     @classmethod

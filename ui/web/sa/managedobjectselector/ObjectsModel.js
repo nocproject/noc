@@ -43,7 +43,7 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsModel", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]
