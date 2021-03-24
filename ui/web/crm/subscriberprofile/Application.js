@@ -9,7 +9,7 @@ console.debug("Defining NOC.crm.subscriberprofile.Application");
 Ext.define("NOC.crm.subscriberprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.crm.subscriberprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.ref.glyph.LookupField",
@@ -50,10 +50,10 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     renderer: NOC.render.Lookup("workflow")
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
+                    text: __("Labels"),
+                    dataIndex: "labels",
                     width: 150,
-                    render: NOC.render.Tags
+                    render: NOC.render.LabelField
                 }
             ],
 
@@ -144,10 +144,13 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_subscriberprofile": true
+                    },
                 }
             ]
         });

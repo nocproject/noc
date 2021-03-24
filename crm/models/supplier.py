@@ -17,6 +17,7 @@ import cachetools
 # NOC modules
 from .supplierprofile import SupplierProfile
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.wf.models.state import State
 from noc.project.models.project import Project
@@ -27,6 +28,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
 @workflow
 @on_delete_check(check=[("phone.PhoneRange", "supplier")])
@@ -51,8 +53,9 @@ class Supplier(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -63,3 +66,9 @@ class Supplier(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Supplier.objects.filter(id=id).first()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_supplier:
+            return True
+        return False

@@ -28,7 +28,7 @@ Ext.define("NOC.crm.subscriberprofile.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

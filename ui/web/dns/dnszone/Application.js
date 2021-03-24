@@ -9,7 +9,7 @@ console.debug("Defining NOC.dns.dnszone.Application");
 Ext.define("NOC.dns.dnszone.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.dns.dnszone.Model",
         "NOC.dns.dnszone.RecordsModel",
         "NOC.dns.dnszone.RRTypeField",
@@ -84,9 +84,9 @@ Ext.define("NOC.dns.dnszone.Application", {
                     flex: 1
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
-                    renderer: NOC.render.Tags
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField
                 }
             ],
             fields: [
@@ -140,10 +140,13 @@ Ext.define("NOC.dns.dnszone.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_dnszone": true
+                    },
                 }
             ],
             inlines: [
@@ -193,10 +196,10 @@ Ext.define("NOC.dns.dnszone.Application", {
                             }
                         },
                         {
-                            text: __("Tags"),
-                            dataIndex: "tags",
+                            text: __("Labels"),
+                            dataIndex: "labels",
                             width: 100,
-                            editor: "tagsfield"
+                            editor: "labelsfield"
                         }
                     ]
                 }
@@ -244,9 +247,9 @@ Ext.define("NOC.dns.dnszone.Application", {
             lookup: "main.notificationgroup"
         },
         {
-            title: __("By Tags"),
-            name: "tags",
-            ftype: "tag"
+            title: __("By Labels"),
+            name: "labels",
+            ftype: "label"
         }
     ],
     preview: {

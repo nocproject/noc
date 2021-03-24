@@ -102,6 +102,7 @@ def csv_export(model, queryset=None, first_row_only=False):
                 v = ""
             if f in {
                 "tags",
+                "labels",
                 "static_service_groups",
                 "effective_service_groups",
                 "static_client_groups",
@@ -218,6 +219,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                         raise ValueError("Invalid integer: %s" % e)
                 elif h in {
                     "tags",
+                    "labels",
                     "static_service_groups",
                     "effective_service_groups",
                     "static_client_groups",

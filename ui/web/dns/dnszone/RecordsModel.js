@@ -39,7 +39,7 @@ Ext.define("NOC.dns.dnszone.RecordsModel", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]
