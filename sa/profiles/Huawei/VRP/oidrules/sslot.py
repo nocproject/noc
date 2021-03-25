@@ -28,11 +28,11 @@ class SSlotRule(OIDRule):
         for si, cp in r:
             if self.is_complex:
                 gen = [mib[self.expand(o, {"hwSlotIndex": r[(si, cp)]})] for o in self.oid]
-                path = ["0", si, cp]
+                labels = ["noc::chassis::0", f"noc::slot::{si}", f"noc::module::{cp}"]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, path
+                    yield tuple(gen), self.type, self.scale, labels
             else:
                 oid = mib[self.expand(self.oid, {"hwSlotIndex": r[(si, cp)]})]
-                path = ["0", si, cp]
+                labels = ["noc::chassis::0", f"noc::slot::{si}", f"noc::module::{cp}"]
                 if oid:
-                    yield oid, self.type, self.scale, path
+                    yield oid, self.type, self.scale, labels

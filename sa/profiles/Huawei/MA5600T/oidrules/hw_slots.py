@@ -26,11 +26,19 @@ class HWSlots(OIDRule):
         for slot in slots:
             if self.is_complex:
                 gen = [mib[self.expand(o, {"item": slot})] for o in self.oid]
-                path = ["0", slot, "", "Temperature Sensor (%s)" % slot_names[slot]]
+                labels = [
+                    "noc::chassis::0",
+                    f"noc::slot::{slot}",
+                    "noc::name::Temperature Sensor (%s)" % slot_names[slot],
+                ]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, path
+                    yield tuple(gen), self.type, self.scale, labels
             else:
                 oid = mib[self.expand(self.oid, {"item": slot})]
-                path = ["0", slot, "", "Temperature Sensor (%s)" % slot_names[slot]]
+                labels = [
+                    "noc::chassis::0",
+                    f"noc::slot::{slot}",
+                    "noc::name::Temperature Sensor (%s)" % slot_names[slot],
+                ]
                 if oid:
-                    yield oid, self.type, self.scale, path
+                    yield oid, self.type, self.scale, labels

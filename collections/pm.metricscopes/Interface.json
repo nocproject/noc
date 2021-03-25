@@ -42,7 +42,7 @@
             "is_path": true,
             "is_primary_key": false,
             "is_required": true,
-            "label": "noc::port::*"
+            "label": "noc::interface::*"
         },
         {
             "is_order_key": false,

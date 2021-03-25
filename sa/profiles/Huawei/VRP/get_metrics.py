@@ -26,7 +26,7 @@ class Script(GetMetricsScript):
     )
     def get_duplex_interface_metrics(self, metrics):
         if_map = {
-            m.ifindex: m.path
+            m.ifindex: m.labels
             for m in metrics
             if m.ifindex and m.metric == "Interface | Status | Duplex"
         }

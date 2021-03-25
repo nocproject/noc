@@ -158,7 +158,7 @@ class ServiceStub(object):
         self.pub = pub
         self.publish = publish
 
-    def register_metrics(self, table, data):
+    def register_metrics(self, table, data, key=None):
         self.metrics[table] += data
 
 

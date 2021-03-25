@@ -29,7 +29,7 @@ class Script(GetMetricsScript):
                 v = 0
             self.set_metric(
                 id=("Environment | Sensor Status", None),
-                path=("", "", "", "State_%s" % sname),
+                labels=("noc::name::State_%s" % sname),
                 value=int(v),
                 multi=True,
             )
@@ -45,7 +45,7 @@ class Script(GetMetricsScript):
                 value = self.snmp.get("1.3.6.1.2.1.99.1.1.1.4.%s" % sindex)
                 self.set_metric(
                     id=("Environment | Temperature", None),
-                    path=("", "", "", sname),
+                    labels=(f"noc::name::{sname}"),
                     value=int(value),
                     multi=True,
                 )
