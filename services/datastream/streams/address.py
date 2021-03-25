@@ -35,8 +35,10 @@ class AddressDataStream(DataStream):
         }
         if address.description:
             r["description"] = str(address.description)
-        if address.tags:
-            r["tags"] = [qs(x) for x in address.tags]
+        if address.labels:
+            r["labels"] = [qs(x) for x in address.labels]
+            # Alias for compat
+            r["tags"] = [qs(x) for x in address.labels]
         if address.fqdn:
             r["fqdn"] = qs(address.fqdn)
         if address.mac:

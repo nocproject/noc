@@ -9,7 +9,7 @@ console.debug("Defining NOC.vc.vpnprofile.Application");
 Ext.define("NOC.vc.vpnprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.vc.vpnprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
@@ -150,11 +150,14 @@ Ext.define("NOC.vc.vpnprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
-                }
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_vpnprofile": true
+                    }
+                },
             ]
         });
         me.callParent();

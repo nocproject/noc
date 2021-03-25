@@ -29,6 +29,7 @@ from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.inv.models.networksegment import NetworkSegment
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
@@ -38,6 +39,7 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
+@Label.model
 @bi_sync
 @on_delete_check(check=[("vc.VLAN", "parent")])
 @workflow
@@ -74,8 +76,9 @@ class VLAN(Document):
     parent = PlainReferenceField("self")
     # Automatically apply segment translation rule
     apply_translation = BooleanField(default=True)
-    # List of tags
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -143,3 +146,9 @@ class VLAN(Document):
 
     def on_save(self):
         self.refresh_translation()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_vlan:
+            return True
+        return False

@@ -20,7 +20,7 @@ report_types = [
     ("profile", _("By Profile")),
     ("domain", _("By Administrative Domain")),
     ("domain-profile", _("By Administrative Domain and Profile")),
-    ("tag", _("By Tags")),
+    ("label", _("By Labels")),
     ("platform", _("By Platform")),
     ("version", _("By Version")),
 ]
@@ -43,7 +43,7 @@ class ReportObjectsSummary(SimpleReport):
         "domain-profile": PredefinedReport(
             _("Managed Objects Summary (domain-profile)"), {"report_type": "domain-profile"}
         ),
-        "tag": PredefinedReport(_("Managed Objects Summary (tag)"), {"report_type": "tag"}),
+        "label": PredefinedReport(_("Managed Objects Summary (label)"), {"report_type": "label"}),
         "platform": PredefinedReport(
             _("Managed Objects Summary (platform)"), {"report_type": "platform"}
         ),
@@ -108,19 +108,19 @@ class ReportObjectsSummary(SimpleReport):
                     """
                 % wr
             )
-        # By tags
-        elif report_type == "tag":
-            columns = [_("Tag")]
+        # By Labels
+        elif report_type == "label":
+            columns = [_("Label")]
             query = (
                 """
-              SELECT t.tag, COUNT(*)
+              SELECT t.label, COUNT(*)
               FROM (
-                SELECT unnest(tags) AS tag
+                SELECT unnest(labels) AS label
                 FROM sa_managedobject
                 WHERE
-                  tags IS NOT NULL
+                  labels IS NOT NULL
                   %s%s
-                  AND array_length(tags, 1) > 0
+                  AND array_length(labels, 1) > 0
                 ) t
               GROUP BY 1
               ORDER BY 2 DESC;

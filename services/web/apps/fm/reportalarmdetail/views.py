@@ -90,7 +90,7 @@ class ReportAlarmObjects(object):
     def load(mos_id):
         query = "select sa.id, sa.name, sa.address, sa.is_managed, "
         query += "profile, op.name as object_profile, sa.container, "
-        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';'), "
+        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.labels, ';'), "
         query += "platform, version "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         if mos_id:

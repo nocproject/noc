@@ -8,19 +8,22 @@
 # Third-party modules
 from noc.core.translation import ugettext as _
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.template import Template, Context
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
-from noc.core.model.fields import TagsField, CIDRField
+from noc.core.model.fields import CIDRField
 from noc.core.ip import IP
 from noc.core.validators import check_ipv4, check_ipv6
 from noc.core.datastream.decorator import datastream
+from noc.main.models.label import Label
 from .afi import AFI_CHOICES
 from .vrf import VRF
 
 
+@Label.model
 @datastream
 class AddressRange(NOCModel):
     class Meta(object):
@@ -68,7 +71,11 @@ class AddressRange(NOCModel):
             "'Action' set to 'Partial reverse zone delegation"
         ),
     )
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    # Labels
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     tt = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
     allocated_till = models.DateField(
         _("Allocated till"),
@@ -251,6 +258,12 @@ class AddressRange(NOCModel):
             from_address__lte=address,
             to_address__gte=address,
         ).exists()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_ipaddressrange:
+            return True
+        return False
 
 
 # Avoid circular references

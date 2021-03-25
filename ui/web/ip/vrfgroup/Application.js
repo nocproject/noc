@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.vrfgroup.Application");
 Ext.define("NOC.ip.vrfgroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.ip.vrfgroup.Model"
     ],
     model: "NOC.ip.vrfgroup.Model",
@@ -79,10 +79,13 @@ Ext.define("NOC.ip.vrfgroup.Application", {
             allowBlank: true
         },
         {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: __("Tags"),
-            allowBlank: true
+            name: "labels",
+            xtype: "labelfield",
+            fieldLabel: __("Labels"),
+            allowBlank: true,
+            query: {
+                "enable_vrfgroup": true
+            },
         }
     ]
 });

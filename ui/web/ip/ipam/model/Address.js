@@ -42,7 +42,7 @@ Ext.define("NOC.ip.ipam.model.Address", {
             type: "int"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

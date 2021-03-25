@@ -20,6 +20,7 @@ from .vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
@@ -41,6 +42,7 @@ class RouteTargetItem(EmbeddedDocument):
     target = StringField()
 
 
+@Label.model
 @bi_sync
 @on_delete_check(check=[("vc.VPN", "parent"), ("vc.VLAN", "vpn")])
 @workflow
@@ -55,7 +57,9 @@ class VPN(Document):
     parent = PlainReferenceField("self")
     project = ForeignKeyField(Project)
     route_target = ListField(EmbeddedDocumentField(RouteTargetItem))
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -99,4 +103,10 @@ class VPN(Document):
             if p.id == self.id:
                 return True
             p = p.parent
+        return False
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_vpn:
+            return True
         return False

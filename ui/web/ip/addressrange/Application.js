@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.addressrange.Application");
 Ext.define("NOC.ip.addressrange.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.ip.addressrange.Model",
         "NOC.ip.vrf.LookupField"
     ],
@@ -69,9 +69,9 @@ Ext.define("NOC.ip.addressrange.Application", {
             dataIndex: "description"
         },
         {
-            text: __("Tags"),
-            dataIndex: "tags",
-            renderer: NOC.render.Tags
+            text: __("Labels"),
+            dataIndex: "labels",
+            renderer: NOC.render.LabelField
         }
     ],
     fields: [
@@ -151,10 +151,13 @@ Ext.define("NOC.ip.addressrange.Application", {
             fieldLabel: __("Reverse NSes")
         },
         {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: __("Tags"),
-            allowBlank: true
+            name: "labels",
+            xtype: "labelfield",
+            fieldLabel: __("Labels"),
+            allowBlank: true,
+            query: {
+                "enable_ipaddressrange": true
+            },
         },
         {
             name: "tt",

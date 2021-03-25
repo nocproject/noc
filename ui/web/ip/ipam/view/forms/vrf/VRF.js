@@ -153,14 +153,17 @@ Ext.define("NOC.ip.ipam.view.forms.vrf.VRF", {
             }
         },
         {
-            name: "tags",
-            xtype: "tagsfield",
+            name: "labels",
+            xtype: "labelfield",
             width: "100%",
-            fieldLabel: __("Tags"),
+            fieldLabel: __("Labels"),
             columnWidth: 1,
             allowBlank: true,
+            query: {
+                "enable_vrf": true
+            },
             bind: {
-                value: "{vrf.tags}"
+                value: "{vrf.labels}"
             }
         }
     ],

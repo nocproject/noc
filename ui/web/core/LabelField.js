@@ -266,7 +266,7 @@ Ext.define("NOC.core.LabelField", {
                         valueRecord = me.findRecord(valueField, record);
                         if(!valueRecord) {
                             valueRecord = {};
-                            valueRecord[me.valueField] = record.id;
+                            valueRecord[me.valueField] = record.id || record;
                             valueRecord[me.displayField] = record;
 
                             cls = me.valueStore.getModel();

@@ -8,14 +8,16 @@
 # Third-party modules
 from noc.core.translation import ugettext as _
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.core.model.fields import TagsField
 from noc.core.model.decorator import on_delete_check
 from noc.core.comp import smart_text
+from noc.main.models.label import Label
 
 
+@Label.model
 @on_delete_check(check=[("ip.VRF", "vrf_group")])
 class VRFGroup(NOCModel):
     """
@@ -42,7 +44,17 @@ class VRFGroup(NOCModel):
         default="V",
     )
     description = models.TextField(_("Description"), blank=True, null=True)
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    # Labels
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     def __str__(self):
         return smart_text(self.name)
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_vrfgroup:
+            return True
+        return False

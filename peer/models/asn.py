@@ -11,14 +11,15 @@ import operator
 
 # Third-party modules
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 import cachetools
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
+from noc.main.models.label import Label
 from noc.config import config
 from noc.core.rpsl import rpsl_format
-from noc.core.model.fields import TagsField
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.fields import DocumentReferenceField
@@ -31,6 +32,7 @@ from .asprofile import ASProfile
 id_lock = Lock()
 
 
+@Label.model
 @on_delete_check(
     check=[("peer.Peer", "local_asn"), ("peer.PeeringPoint", "local_as"), ("ip.Prefix", "asn")]
 )
@@ -84,7 +86,11 @@ class AS(NOCModel):
     # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR", on_delete=models.CASCADE)
-    tags = TagsField("Tags", null=True, blank=True)
+    #
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     rpsl = GridVCSField("rpsl_as")
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -253,3 +259,9 @@ class AS(NOCModel):
 
     def update_rir_db(self):
         return self.rir.update_rir_db(self.rpsl, self.maintainers.all()[0])
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_asn:
+            return True
+        return False

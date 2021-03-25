@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.prefixprofile.Application");
 Ext.define("NOC.ip.prefixprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.ip.prefixprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
@@ -175,10 +175,13 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_prefixprofile": true
+                    },
                 }
             ]
         });

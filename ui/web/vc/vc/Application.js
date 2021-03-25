@@ -9,7 +9,7 @@ console.debug("Defining NOC.vc.vc.Application");
 Ext.define("NOC.vc.vc.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.vc.vc.Model",
         "NOC.vc.vc.AddFirstFreeForm",
@@ -47,9 +47,9 @@ Ext.define("NOC.vc.vc.Application", {
             ftype: "vcfilter"
         },
         {
-            title: __("By Tags"),
-            name: "tags",
-            ftype: "tag"
+            title: __("By Labels"),
+            name: "labels",
+            ftype: "label"
         },
         {
             title: __("By Style"),
@@ -124,9 +124,9 @@ Ext.define("NOC.vc.vc.Application", {
                     flex: 1
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
-                    renderer: NOC.render.Tags
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField
                 }
             ],
             fields: [
@@ -180,11 +180,14 @@ Ext.define("NOC.vc.vc.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
-                }
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_vc": true
+                    },
+                },
             ],
 
             gridToolbar: [

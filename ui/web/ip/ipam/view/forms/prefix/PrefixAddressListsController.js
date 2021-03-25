@@ -48,8 +48,13 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixAddressListsController", {
         this.fireViewEvent("ipIPAMVRFListOpen");
     },
     onNavigationClick: function(event, el) {
-        var id = el.className.replace("breadcrumb nav-", "");
-        this.fireViewEvent("ipIPAMViewPrefixContents", {id: id});
+        var id, cls = el.className.match(/nav-\d+/);
+        if(!Ext.isEmpty(cls)) {
+            id = cls[0].replace("nav-", "");
+            this.fireViewEvent("ipIPAMViewPrefixContents", {id: id});
+        } else {
+            console.error(el.className + " not match 'nav-\d+'");
+        }
     },
     onSelectBookmark: function(combo, record) {
         this.fireViewEvent("ipIPAMViewPrefixContents", {id: record.id});

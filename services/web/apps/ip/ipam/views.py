@@ -281,7 +281,7 @@ class IPAMApplication(ExtApplication):
                     "tt": p.tt,
                     "usage": p.usage_percent,
                     "address_usage": p.address_usage_percent,
-                    "tags": p.tags,
+                    "labels": p.labels,
                     "state": p.state.name,
                     "state_desc": p.state.description,
                     "isFree": False,
@@ -314,7 +314,7 @@ class IPAMApplication(ExtApplication):
                             "n": "Neighbor",
                         }.get(a.source, "-"),
                         "tt": a.tt,
-                        "tags": a.tags,
+                        "labels": a.labels,
                         "isFree": False,
                     }
                     for a in addresses

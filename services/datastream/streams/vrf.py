@@ -37,8 +37,10 @@ class VRFGroupDataStream(DataStream):
             r["description"] = str(vrf.description)
         if vrf.rd:
             r["rd"] = str(vrf.rd)
-        if vrf.tags:
-            r["tags"] = [qs(x) for x in vrf.tags]
+        if vrf.labels:
+            r["labels"] = [qs(x) for x in vrf.labels]
+            # Alias for compat
+            r["tags"] = [qs(x) for x in vrf.labels]
         cls._apply_state(vrf, r)
         cls._apply_profile(vrf, r)
         cls._apply_project(vrf, r)

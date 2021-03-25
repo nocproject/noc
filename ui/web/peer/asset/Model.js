@@ -36,7 +36,7 @@ Ext.define("NOC.peer.asset.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "string"
         }
     ]

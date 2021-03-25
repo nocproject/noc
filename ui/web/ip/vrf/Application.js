@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.vrf.Application");
 Ext.define("NOC.ip.vrf.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.StateField",
         "NOC.ip.vrf.Model",
         "NOC.ip.vrfgroup.LookupField",
@@ -85,9 +85,9 @@ Ext.define("NOC.ip.vrf.Application", {
                     flex: 1
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
-                    renderer: NOC.render.Tags
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField
                 }
             ],
             fields: [
@@ -163,10 +163,13 @@ Ext.define("NOC.ip.vrf.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_vrf": true
+                    },
                 },
                 {
                     name: "allocated_till",

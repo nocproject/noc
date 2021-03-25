@@ -26,7 +26,7 @@ Ext.define("NOC.ip.ipam.model.Prefix", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

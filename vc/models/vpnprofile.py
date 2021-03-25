@@ -18,6 +18,7 @@ import cachetools
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
+from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 from noc.main.models.template import Template
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -27,6 +28,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
 @on_delete_check(
     check=[
@@ -63,8 +65,9 @@ class VPNProfile(Document):
     # For vrf type -- default prefix profile
     # Used to create AFI root prefixes
     default_prefix_profile = PlainReferenceField("ip.PrefixProfile")
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -92,3 +95,9 @@ class VPNProfile(Document):
     def clean(self):
         if self.type == "vrf" and not self.default_prefix_profile:
             raise ValidationError("default_prefix_profile must be set for vrf type")
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_vpnprofile:
+            return True
+        return False

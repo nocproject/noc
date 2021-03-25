@@ -69,6 +69,24 @@ class Label(Document):
     enable_division = BooleanField()
     #
     enable_kbentry = BooleanField()
+    # IP
+    enable_ipaddress = BooleanField()
+    enable_addressprofile = BooleanField()
+    enable_ipaddressrange = BooleanField()
+    enable_ipprefix = BooleanField()
+    enable_prefixprofile = BooleanField()
+    enable_vrf = BooleanField()
+    enable_vrfgroup = BooleanField()
+    # Peer
+    enable_asn = BooleanField()
+    enable_assetpeer = BooleanField()
+    enable_peer = BooleanField()
+    # VC
+    enable_vc = BooleanField()
+    enable_vlan = BooleanField()
+    enable_vlanprofile = BooleanField()
+    enable_vpn = BooleanField()
+    enable_vpnprofile = BooleanField()
     # Exposition scope
     expose_metric = BooleanField()
     expose_managedobject = BooleanField()
@@ -243,7 +261,7 @@ class Label(Document):
         """
 
         def default_iter_effective_labels(instance) -> Iterable[List[str]]:
-            yield instance.labels
+            yield instance.labels or []
 
         def on_pre_save(sender, instance=None, document=None, *args, **kwargs):
             instance = instance or document

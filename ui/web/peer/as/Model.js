@@ -84,7 +84,7 @@ Ext.define("NOC.peer.as.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         // CSS

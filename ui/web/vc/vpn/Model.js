@@ -42,7 +42,7 @@ Ext.define("NOC.vc.vpn.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

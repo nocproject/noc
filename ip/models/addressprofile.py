@@ -17,6 +17,7 @@ import cachetools
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
+from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 from noc.main.models.template import Template
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -26,6 +27,7 @@ from noc.core.model.decorator import on_delete_check
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
 @on_delete_check(
     check=[
@@ -51,8 +53,9 @@ class AddressProfile(Document):
     fqdn_template = ForeignKeyField(Template)
     # Send seen event to prefix
     seen_propagation_policy = StringField(choices=[("E", "Enable"), ("D", "Disable")], default="D")
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -82,3 +85,9 @@ class AddressProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return AddressProfile.objects.filter(bi_id=id).first()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_addressprofile:
+            return True
+        return False

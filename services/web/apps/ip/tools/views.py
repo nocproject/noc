@@ -87,7 +87,7 @@ class ToolsAppplication(Application):
         writer = csv.writer(out)
         writer.writerow(["address", "fqdn", "mac", "description", "tt", "tags"])
         for a in prefix.nested_address_set.order_by("address"):
-            writer.writerow([a.address, a.fqdn, a.mac, to_utf8(a.description), a.tt, a.tags])
+            writer.writerow([a.address, a.fqdn, a.mac, to_utf8(a.description), a.tt, a.labels])
         return self.render_response(out.getvalue(), content_type="text/csv")
 
     class AXFRForm(NOCForm):

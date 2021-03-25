@@ -55,7 +55,7 @@ Ext.define("NOC.ip.vrf.Model", {
             type: "int"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

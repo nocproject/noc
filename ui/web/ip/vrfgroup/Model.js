@@ -29,7 +29,7 @@ Ext.define("NOC.ip.vrfgroup.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {
