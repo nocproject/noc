@@ -12,6 +12,7 @@ from threading import Lock
 
 # Third-party modules
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from mongoengine.queryset import Q as MEQ
 import cachetools
 
@@ -19,8 +20,8 @@ import cachetools
 from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
+from noc.main.models.label import Label
 from noc.project.models.project import Project
-from noc.core.model.fields import TagsField
 from noc.main.models.textindex import full_text_search
 from noc.core.cache.decorator import cachedmethod
 from noc.core.model.decorator import on_delete_check
@@ -34,6 +35,7 @@ rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 id_lock = Lock()
 
 
+@Label.model
 @on_delete_check(check=[("ip.Prefix", "vc")])
 @full_text_search
 class VC(NOCModel):
@@ -71,7 +73,11 @@ class VC(NOCModel):
     style = models.ForeignKey(
         Style, verbose_name="Style", blank=True, null=True, on_delete=models.CASCADE
     )
-    tags = TagsField("Tags", null=True, blank=True)
+    # Labels
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
@@ -133,8 +139,8 @@ class VC(NOCModel):
             "content": "\n".join(content),
             "card": card,
         }
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["tags"] = self.labels
         return r
 
     @classmethod
@@ -164,3 +170,9 @@ class VC(NOCModel):
             ):
                 r += [si]
         return r
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_vc:
+            return True
+        return False

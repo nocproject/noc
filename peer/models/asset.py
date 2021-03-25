@@ -7,16 +7,18 @@
 
 # Third-party modules
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # NOC module
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
-from noc.core.model.fields import TagsField
+from noc.main.models.label import Label
 from noc.core.rpsl import rpsl_format
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.decorator import on_save
 
 
+@Label.model
 @on_save
 class ASSet(NOCModel):
     class Meta(object):
@@ -38,7 +40,11 @@ class ASSet(NOCModel):
     members = models.TextField("Members", null=True, blank=True)
     rpsl_header = models.TextField("RPSL Header", null=True, blank=True)
     rpsl_footer = models.TextField("RPSL Footer", null=True, blank=True)
-    tags = TagsField("Tags", null=True, blank=True)
+    #
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     rpsl = GridVCSField("rpsl_asset")
 
     def __str__(self):
@@ -75,3 +81,9 @@ class ASSet(NOCModel):
 
     def on_save(self):
         self.touch_rpsl()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_assetpeer:
+            return True
+        return False

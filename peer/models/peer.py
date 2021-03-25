@@ -7,11 +7,13 @@
 
 # Third-party modules
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
-from noc.core.model.fields import INETField, TagsField
+from noc.main.models.label import Label
+from noc.core.model.fields import INETField
 from noc.config import config
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
@@ -20,6 +22,7 @@ from .peergroup import PeerGroup
 from .peeringpoint import PeeringPoint
 
 
+@Label.model
 @on_save
 class Peer(NOCModel):
     """
@@ -78,7 +81,11 @@ class Peer(NOCModel):
     export_filter_name = models.CharField(
         "Export Filter Name", max_length=64, blank=True, null=True
     )
-    tags = TagsField("Tags", null=True, blank=True)
+    #
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     rpsl = GridVCSField("rpsl_peer")
 
@@ -195,3 +202,9 @@ class Peer(NOCModel):
 
     def on_save(self):
         self.touch_rpsl()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_peer:
+            return True
+        return False

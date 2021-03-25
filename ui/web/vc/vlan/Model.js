@@ -47,7 +47,7 @@ Ext.define("NOC.vc.vlan.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

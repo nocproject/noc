@@ -12,7 +12,7 @@ Ext.define("NOC.vc.vlan.Application", {
         "NOC.vc.vlan.Model",
         "NOC.vc.vlanprofile.LookupField",
         "NOC.core.combotree.ComboTree",
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.core.StateField",
         "NOC.project.project.LookupField",
@@ -228,10 +228,13 @@ Ext.define("NOC.vc.vlan.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_vlan": true
+                    },
                 }
             ],
             formToolbar: [

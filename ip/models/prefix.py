@@ -12,6 +12,7 @@ from collections import defaultdict
 
 # Third-party modules
 from django.db import models, connection
+from django.contrib.postgres.fields import ArrayField
 import cachetools
 
 # NOC modules
@@ -21,10 +22,11 @@ from noc.aaa.models.user import User
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
-from noc.core.model.fields import TagsField, CIDRField, DocumentReferenceField, CachedForeignKey
+from noc.core.model.fields import CIDRField, DocumentReferenceField, CachedForeignKey
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
+from noc.main.models.label import Label
 from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
@@ -37,6 +39,7 @@ from .prefixprofile import PrefixProfile
 id_lock = Lock()
 
 
+@Label.model
 @full_text_search
 @workflow
 @datastream
@@ -100,7 +103,11 @@ class Prefix(NOCModel):
         help_text=_("VC bound to prefix"),
     )
     description = models.TextField(_("Description"), blank=True, null=True)
-    tags = TagsField("Tags", null=True, blank=True)
+    # Labels
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     tt = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
     state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
@@ -444,8 +451,8 @@ class Prefix(NOCModel):
             "content": "\n".join(content),
             "card": card,
         }
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["tags"] = self.labels
         return r
 
     @classmethod
@@ -720,6 +727,12 @@ class Prefix(NOCModel):
         if not self.parent:
             return None
         return self.parent.get_effective_as()
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_ipprefix:
+            return True
+        return False
 
 
 # Avoid circular references

@@ -10,7 +10,7 @@ Ext.define("NOC.peer.peer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.RepoPreview",
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
@@ -93,10 +93,10 @@ Ext.define("NOC.peer.peer.Application", {
             dataIndex: "communities"
         }, 
         {
-            text: __("Tags"),
+            text: __("Labels"),
             flex: 1,
-            dataIndex: "tags",
-            renderer: "NOC.render.Tags"
+            dataIndex: "labels",
+            renderer: NOC.render.LabelField
         }
     ],
     fields: [
@@ -321,7 +321,7 @@ Ext.define("NOC.peer.peer.Application", {
         },
         {
             xtype: "fieldset",
-            title: "Tags",
+            title: "Labels",
             collapsible: false,
             defaults: {
                 labelWidth: 100,
@@ -338,11 +338,14 @@ Ext.define("NOC.peer.peer.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
                     width: 400,
-                    allowBlank: true
+                    query: {
+                        "enable_peer": true
+                    },
                 }
             ]
         }

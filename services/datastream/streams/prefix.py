@@ -35,8 +35,10 @@ class PrefixDataStream(DataStream):
         }
         if prefix.description:
             r["description"] = str(prefix.description)
-        if prefix.tags:
-            r["tags"] = [qs(x) for x in prefix.tags]
+        if prefix.labels:
+            r["labels"] = [qs(x) for x in prefix.labels]
+            # Alias for compat
+            r["tags"] = [qs(x) for x in prefix.labels]
         cls._apply_state(prefix, r)
         cls._apply_profile(prefix, r)
         cls._apply_vrf(prefix, r)

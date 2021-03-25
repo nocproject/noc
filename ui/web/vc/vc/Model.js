@@ -41,7 +41,7 @@ Ext.define("NOC.vc.vc.Model", {
             type: "int"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         // Foreign keys

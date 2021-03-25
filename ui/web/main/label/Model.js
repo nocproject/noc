@@ -138,6 +138,66 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_ipaddress",
+            type: "boolean"
+        },
+        {
+            name: "enable_addressprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_ipaddressrange",
+            type: "boolean"
+        },
+        {
+            name: "enable_ipprefix",
+            type: "boolean"
+        },
+        {
+            name: "enable_prefixprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_vrf",
+            type: "boolean"
+        },
+        {
+            name: "enable_vrfgroup",
+            type: "boolean"
+        },
+        {
+            name: "enable_asn",
+            type: "boolean"
+        },
+        {
+            name: "enable_assetpeer",
+            type: "boolean"
+        },
+        {
+            name: "enable_peer",
+            type: "boolean"
+        },
+        {
+            name: "enable_vc",
+            type: "boolean"
+        },
+        {
+            name: "enable_vlan",
+            type: "boolean"
+        },
+        {
+            name: "enable_vlanprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_vpn",
+            type: "boolean"
+        },
+        {
+            name: "enable_vpnprofile",
+            type: "boolean"
+        },
+        {
             name: "expose_metric",
             type: "boolean"
         },

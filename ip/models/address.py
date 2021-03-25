@@ -8,6 +8,7 @@
 # Third-party modules
 from noc.core.translation import ugettext as _
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.config import config
@@ -15,9 +16,10 @@ from noc.core.model.decorator import on_init
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.model.fields import TagsField, INETField, MACField
+from noc.core.model.fields import INETField, MACField
 from noc.core.validators import ValidationError, check_fqdn, check_ipv4, check_ipv6
 from noc.main.models.textindex import full_text_search
+from noc.main.models.label import Label
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
@@ -28,6 +30,7 @@ from .vrf import VRF
 from .addressprofile import AddressProfile
 
 
+@Label.model
 @on_init
 @datastream
 @full_text_search
@@ -80,7 +83,11 @@ class Address(NOCModel):
     )
     subinterface = models.CharField("SubInterface", max_length=128, null=True, blank=True)
     description = models.TextField(_("Description"), blank=True, null=True)
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    # Labels
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     tt = models.IntegerField(_("TT"), blank=True, null=True, help_text=_("Ticket #"))
     state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
@@ -224,8 +231,8 @@ class Address(NOCModel):
             "content": "\n".join(content),
             "card": card,
         }
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["tags"] = self.labels
         return r
 
     @classmethod
@@ -239,6 +246,12 @@ class Address(NOCModel):
     @property
     def is_ipv6(self):
         return self.afi == "6"
+
+    @classmethod
+    def can_set_label(cls, label):
+        if label.enable_ipaddress:
+            return True
+        return False
 
 
 # Avoid django's validation failure

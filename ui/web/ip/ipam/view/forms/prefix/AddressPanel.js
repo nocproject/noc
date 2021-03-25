@@ -10,7 +10,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
     extend: "NOC.core.FormPanel",
     alias: "widget.ip.ipam.address.form",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.core.StateField",
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
@@ -98,10 +98,13 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_ipaddress": true
+                    },
                 },
                 {
                     name: "tt",

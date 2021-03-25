@@ -69,7 +69,7 @@ Ext.define("NOC.ip.addressrange.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "string"
         },
         {

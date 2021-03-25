@@ -105,10 +105,13 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_ipprefix": true
+                    }
                 },
                 {
                     name: "tt",

@@ -74,7 +74,7 @@ class MetaApplicator(BaseApplicator):
                 else:
                     yield "meta", "service-groups", group.name, "id", str(group.id)
                     yield "meta", "service-groups", group.name, "technology", group.technology.name
-        # meta tags
+        # meta labels
         if self.object.labels:
             for label in self.object.labels:
                 yield "meta", "labels", label

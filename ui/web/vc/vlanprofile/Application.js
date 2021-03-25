@@ -9,7 +9,7 @@ console.debug("Defining NOC.vc.vlanprofile.Application");
 Ext.define("NOC.vc.vlanprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.vc.vlanprofile.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",
@@ -128,10 +128,13 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_vlanprofile": true
+                    },
                 }
             ]
         });

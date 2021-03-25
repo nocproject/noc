@@ -115,6 +115,51 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_kbentry) {
               r.push(__("KB Entry"));
             }
+            if (item.data.enable_ipaddress) {
+              r.push(__("IP Address"));
+            }
+            if (item.data.enable_addressprofile) {
+              r.push(__("IP Address Profile"));
+            }
+            if (item.data.enable_ipaddressrange) {
+              r.push(__("IP Address Range"));
+            }
+            if (item.data.enable_ipprefix) {
+              r.push(__("IP Prefix"));
+            }
+            if (item.data.enable_prefixprofile) {
+              r.push(__("Prefix Profile"));
+            }
+            if (item.data.enable_vrf) {
+              r.push(__("VRF"));
+            }
+            if (item.data.enable_vrfgroup) {
+              r.push(__("VRF Group"));
+            }
+            if (item.data.enable_asn) {
+              r.push(__("AS"));
+            }
+            if (item.data.enable_assetpeer) {
+              r.push(__("Asset Peer"));
+            }
+            if (item.data.enable_peer) {
+              r.push(__("Peer"));
+            }
+            if (item.data.enable_vc) {
+              r.push(__("VC"));
+            }
+            if (item.data.enable_vlan) {
+              r.push(__("VLAN"));
+            }
+            if (item.data.enable_vlanprofile) {
+              r.push(__("VLAN Profile"));
+            }
+            if (item.data.enable_vpn) {
+              r.push(__("VPN"));
+            }
+            if (item.data.enable_vpnprofile) {
+              r.push(__("VPN Profile"));
+            }
             return r.join(", ");
           }
         },
@@ -327,6 +372,81 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_kbentry",
               xtype: "checkbox",
               boxLabel: __("KB Entry")
+            },
+            {
+              name: "enable_ipaddress",
+              xtype: "checkbox",
+              boxLabel: __("IP Address")
+            },
+            {
+              name: "enable_addressprofile",
+              xtype: "checkbox",
+              boxLabel: __("IP Address Profile")
+            },
+            {
+              name: "enable_ipaddressrange",
+              xtype: "checkbox",
+              boxLabel: __("IP Address Range")
+            },
+            {
+              name: "enable_ipprefix",
+              xtype: "checkbox",
+              boxLabel: __("IP Prefix")
+            },
+            {
+              name: "enable_prefixprofile",
+              xtype: "checkbox",
+              boxLabel: __("Prefix Profile")
+            },
+            {
+              name: "enable_vrf",
+              xtype: "checkbox",
+              boxLabel: __("VRF")
+            },
+            {
+              name: "enable_vrfgroup",
+              xtype: "checkbox",
+              boxLabel: __("VRF Group")
+            },
+              {
+              name: "enable_asn",
+              xtype: "checkbox",
+              boxLabel: __("AS")
+            },
+              {
+              name: "enable_assetpeer",
+              xtype: "checkbox",
+              boxLabel: __("Asset Peer")
+            },
+              {
+              name: "enable_peer",
+              xtype: "checkbox",
+              boxLabel: __("Peer")
+            },
+            {
+              name: "enable_vc",
+              xtype: "checkbox",
+              boxLabel: __("VC")
+            },
+            {
+              name: "enable_vlan",
+              xtype: "checkbox",
+              boxLabel: __("VLAN")
+            },
+            {
+              name: "enable_vlanprofile",
+              xtype: "checkbox",
+              boxLabel: __("VLAN Profile")
+            },
+            {
+              name: "enable_vpn",
+              xtype: "checkbox",
+              boxLabel: __("VPN")
+            },
+            {
+              name: "enable_vpnprofile",
+              xtype: "checkbox",
+              boxLabel: __("VPN Profile")
             }
           ]
         },
