@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Set, List
+from typing import Set, List, Tuple
 import re
 
 # Third-party modules
@@ -18,8 +18,11 @@ from noc.core.palette import (
     COLOR_PALETTES,
     TONE_PALETTES,
     BW,
+    FG,
     AVATAR_COLORS,
     get_avatar_bg_color,
+    split_rgb,
+    get_fg_color,
 )
 
 ALL_COLORS: Set[str] = set()
@@ -62,3 +65,21 @@ def test_get_avatar_bg_color():
     # Check repeatability
     round1r = [get_avatar_bg_color(i) for i in range(1, n + 1)]
     assert round1 == round1r
+
+
+@pytest.mark.parametrize("color", ALL_COLORS)
+def test_split_rgb(color: str):
+    r, g, b = split_rgb(color)
+    assert color[0] == "#"
+    assert color[1:3] == "%02X" % r
+    assert color[3:5] == "%02X" % g
+    assert color[5:] == "%02X" % b
+
+
+@pytest.mark.parametrize("color", [c for c in ALL_COLORS if c not in FG])
+def test_get_fg_color(color: str):
+    def distance(c1: Tuple[int, int, int], c2: Tuple[int, int, int]):
+        return abs(c1[0] - c2[0]) + abs(c1[1] - c2[1]) + abs(c1[2] - c2[2])
+
+    fg = get_fg_color(color)
+    assert distance(split_rgb(color), split_rgb(fg)) >= 3 * 128
