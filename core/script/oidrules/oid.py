@@ -25,12 +25,12 @@ class OIDRule(object):
 
     _scale_locals = {}
 
-    def __init__(self, oid, type=None, scale=1, path=None):
+    def __init__(self, oid, type=None, scale=1, labels=None):
         self.oid = oid
         self.is_complex = not isinstance(oid, str)
         self.type = type or self.default_type
         self.scale = self._convert_scale(scale)
-        self.path = path or []
+        self.labels = labels or []
 
     def _convert_scale(self, scale):
         """
@@ -50,9 +50,9 @@ class OIDRule(object):
         :return:
         """
         if self.is_complex:
-            yield tuple(self.oid), self.type, self.scale, self.path
+            yield tuple(self.oid), self.type, self.scale, self.labels
         else:
-            yield self.oid, self.type, self.scale, self.path
+            yield self.oid, self.type, self.scale, self.labels
 
     @classmethod
     def from_json(cls, data):

@@ -28,9 +28,11 @@ class Script(GetMetricsScript):
         m = self.get_iface_metrics()
         for bv in metrics:
             if bv.metric in self.ALL_IFACE_METRICS:
-                id = tuple(bv.path + [bv.metric])
+                id = tuple(bv.labels + [bv.metric])
                 if id in m:
-                    self.set_metric(id=bv.id, metric=bv.metric, value=m[id], ts=ts, path=bv.path)
+                    self.set_metric(
+                        id=bv.id, metric=bv.metric, value=m[id], ts=ts, labels=bv.labels
+                    )
 
     def get_iface_metrics(self):
         r = {}
@@ -44,7 +46,7 @@ class Script(GetMetricsScript):
             for m in metric_map:
                 if m not in v[iface]:
                     continue
-                r[("", "", "", self.profile.convert_interface_name(iface), metric_map[m])] = int(
-                    v[iface][m]
-                )
+                r[
+                    (f"noc::interface::{self.profile.convert_interface_name(iface)}", metric_map[m])
+                ] = int(v[iface][m])
         return r

@@ -53,7 +53,7 @@ class Script(GetMetricsScript):
                 metric=mc.metric,
                 value=float(result[r]),
                 ts=ts,
-                path=mc.path,
+                labels=mc.labels,
                 type="gauge",
                 scale=1,
             )
@@ -72,7 +72,7 @@ class Script(GetMetricsScript):
                     metric=mc.metric,
                     value=float(results[r]),
                     ts=ts,
-                    path=mc.path,
+                    labels=mc.labels,
                     type="gauge",
                     scale=1000000,
                 )

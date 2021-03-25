@@ -50,7 +50,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Check | Result", None),
                     metric="Check | Result",
-                    path=("ping", ip),
+                    labels=("noc::check_name::ping", f"noc::check_id::{ip}"),
                     value=bool(result["success"]),
                     multi=True,
                 )
@@ -58,7 +58,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Check | RTT", None),
                         metric="Check | RTT",
-                        path=("ping", ip),
+                        labels=("noc::check_name::ping", f"noc::check_id::{ip}"),
                         value=bool(result["avg"]),
                     )
 
@@ -132,7 +132,7 @@ class Script(GetMetricsScript):
             for field, metric in iface_metric_map.items():
                 if data.get(field) is not None:
                     self.set_metric(
-                        id=(metric, ["", "", "", iface]),
+                        id=(metric, [f"noc::interface::{iface}"]),
                         value=data[field],
                         type="counter",
                         scale=8 if metric in self.scale_x8 else 1,
@@ -140,12 +140,12 @@ class Script(GetMetricsScript):
             # LifeHack. Set Radio interface metrics to SSID
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
-                    id=("Radio | TxPower", ["", "", "", iface]),
+                    id=("Radio | TxPower", [f"noc::interface::{iface}"]),
                     value=radio_metrics[data["radio"]]["tx-power"],
                 )
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
-                    id=("Radio | Channel | Util", ["", "", "", iface]),
+                    id=("Radio | Channel | Util", [f"noc::interface::{iface}"]),
                     value=radio_metrics[data["radio"]]["channel-util"],
                 )
 
@@ -175,14 +175,15 @@ class Script(GetMetricsScript):
             iface = data["name"].strip()
             if data.get("tx-power") is not None:
                 self.set_metric(
-                    id=("Radio | TxPower", ["", "", "", iface]),
+                    id=("Radio | TxPower", [f"noc::interface::{iface}"]),
                     # Max TxPower 27dBm, convert % -> dBm
                     value=(27 / 100) * int(data["tx-power"].strip()),
                 )
                 r_metrics[iface]["tx-power"] = (27 / 100) * int(data["tx-power"].strip())
             if data.get("channel-util") is not None:
                 self.set_metric(
-                    id=("Radio | Channel | Util", ["", "", "", iface]), value=data["channel-util"]
+                    id=("Radio | Channel | Util", [f"noc::interface::{iface}"]),
+                    value=data["channel-util"],
                 )
                 r_metrics[iface]["channel-util"] = (27 / 100) * int(data["channel-util"].strip())
         return r_metrics

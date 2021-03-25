@@ -56,7 +56,7 @@ class Script(GetMetricsScript):
             for m in metric_map:
                 if m not in v[iface]:
                     continue
-                self.set_metric(id=(metric_map[m], ["", "", "", "0/0"]), value=int(v[iface][m]))
+                self.set_metric(id=(metric_map[m], ["noc::interface::0/0"]), value=int(v[iface][m]))
 
     @metrics(
         [
@@ -87,7 +87,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Temperature", None),
                         metric="Environment | Temperature",
-                        path=["", "", "", "Temperature_%s" % module],
+                        labels=["noc::name::Temperature_%s" % module],
                         value=float(v.split()[0]),
                         multi=True,
                     )
@@ -95,7 +95,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Voltage", None),
                         metric="Environment | Voltage",
-                        path=["", "", "", "Voltage_%s" % module],
+                        labels=["noc::name::Voltage_%s" % module],
                         value=float(v.split()[0]),
                         multi=True,
                     )
@@ -103,7 +103,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Electric current", None),
                         metric="Environment | Electric current",
-                        path=["", "", "", "ElectricCurrent_%s" % module],
+                        labels=["noc::name::ElectricCurrent_%s" % module],
                         value=float(v.split()[0]) * 1000.0,
                         multi=True,
                     )
@@ -111,7 +111,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Sensor Status", None),
                         metric="Environment | Sensor Status",
-                        path=["", "", "", "State_Door"],
+                        labels=["noc::name::State_Door"],
                         value=bool("Open" in v),
                         multi=True,
                     )
@@ -119,7 +119,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Sensor Status", None),
                         metric="Environment | Sensor Status",
-                        path=["", "", "", "State_Batteries"],
+                        labels=["noc::name::State_Batteries"],
                         value=bool("On" in v),
                         multi=True,
                     )

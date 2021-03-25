@@ -51,7 +51,7 @@ class Script(GetMetricsScript):
         :return:
         """
         setup_metrics = {
-            tuple(m.path): m.id for m in metrics if m.metric in {"SLA | JITTER", "SLA | UDP RTT"}
+            tuple(m.labels): m.id for m in metrics if m.metric in {"SLA | JITTER", "SLA | UDP RTT"}
         }
         v = self.cli("show ip sla statistics")
         metric_map = {
@@ -67,14 +67,14 @@ class Script(GetMetricsScript):
 
         for probe_id, data in zip(r_v[1::2], r_v[2::2]):
             p = parse_kv(metric_map, data)
-            if ("", str(probe_id)) not in setup_metrics:
+            if (f"noc::sla::name::{probe_id}",) not in setup_metrics:
                 continue
             if "rtt" in p:
                 # Latest RTT: 697 milliseconds
                 rtt = p["rtt"].split()[0]
                 try:
                     self.set_metric(
-                        id=("SLA | UDP RTT", ("", probe_id)),
+                        id=("SLA | UDP RTT", (f"noc::sla::name::{probe_id}",)),
                         metric="SLA | UDP RTT",
                         value=float(rtt) * 1000,
                         multi=True,
@@ -86,7 +86,7 @@ class Script(GetMetricsScript):
                 # Source to Destination Jitter Min/Avg/Max: 0/8/106 milliseconds
                 jitter = p["sd_jitter"].split()[0].split("/")[1]
                 self.set_metric(
-                    id=("SLA | JITTER", ("", probe_id)),
+                    id=("SLA | JITTER", (f"noc::sla::name::{probe_id}",)),
                     metric="SLA | JITTER",
                     value=float(jitter) * 1000,
                     multi=True,
@@ -107,7 +107,7 @@ class Script(GetMetricsScript):
         :return:
         """
         setup_metrics = {
-            tuple(m.path): m.id
+            tuple(m.labels): m.id
             for m in metrics
             if m.metric == "SLA | ICMP RTT" and m.sla_type == "icmp-echo"
         }
@@ -123,16 +123,16 @@ class Script(GetMetricsScript):
 
         for probe_id, data in zip(r_v[1::2], r_v[2::2]):
             p = parse_kv(metric_map, data)
-            if ("", str(probe_id)) not in setup_metrics:
+            if (f"noc::sla::name::{probe_id}",) not in setup_metrics:
                 continue
             if "rtt" in p:
                 # Latest RTT: 697 milliseconds
                 rtt = p["rtt"].split()[0]
                 try:
                     self.set_metric(
-                        id=setup_metrics[("", str(probe_id))],
+                        id=setup_metrics[(f"noc::sla::name::{probe_id}",)],
                         metric="SLA | ICMP RTT",
-                        path=("", probe_id),
+                        label=(f"noc::sla::name::{probe_id}",),
                         value=float(rtt) * 1000,
                         multi=True,
                     )
@@ -154,7 +154,7 @@ class Script(GetMetricsScript):
         :return:
         """
         setup_metrics = {
-            tuple(m.path): m.id
+            tuple(m.labels): m.id
             for m in metrics
             if m.metric in {"SLA | Jitter | Ingress", "SLA | Jitter | Egress", "SLA | Jitter | Rtt"}
         }
@@ -168,29 +168,29 @@ class Script(GetMetricsScript):
             bulk=False,
         ):
             sla_probe_index, m_timestamp = sla_index.split(".")
-            if ("", str(sla_probe_index)) not in setup_metrics:
+            if (f"noc::sla::name::{sla_probe_index}",) not in setup_metrics:
                 continue
             if sla_rtt_sum:
                 self.set_metric(
-                    id=setup_metrics[("", str(sla_probe_index))],
+                    id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
                     metric="SLA | Jitter | Rtt",
-                    path=("", sla_probe_index),
+                    label=(f"noc::sla::name::{sla_probe_index}",),
                     value=float(sla_rtt_sum) * 1000.0,
                     multi=True,
                 )
             if sla_egress:
                 self.set_metric(
-                    id=setup_metrics[("", str(sla_probe_index))],
+                    id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
                     metric="SLA | Jitter | Egress",
-                    path=("", sla_probe_index),
+                    label=(f"noc::sla::name::{sla_probe_index}",),
                     value=float(sla_egress) * 1000.0,
                     multi=True,
                 )
             if sla_ingress:
                 self.set_metric(
-                    id=setup_metrics[("", str(sla_probe_index))],
+                    id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
                     metric="SLA | Jitter | Ingress",
-                    path=("", sla_probe_index),
+                    label=(f"noc::sla::name::{sla_probe_index}",),
                     value=float(sla_ingress) * 1000.0,
                     multi=True,
                 )

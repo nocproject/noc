@@ -31,7 +31,7 @@ class Script(GetMetricsScript):
             slot += str(oid2[1])
             self.set_metric(
                 id=("Subscribers | Summary", None),
-                path=("0", slot, "", ""),
+                labels=("noc::chassis::0", f"noc::slot::{slot}"),
                 value=int(v),
                 multi=True,
             )
@@ -41,14 +41,14 @@ class Script(GetMetricsScript):
             port = names[int(oid2[1])]
             self.set_metric(
                 id=("Subscribers | Summary", None),
-                path=("0", "", "", port),
+                labels=("noc::chassis::0", f"noc::interface::{str(port)}"),
                 value=int(v),
                 multi=True,
             )
         metric = self.snmp.get("1.3.6.1.4.1.6527.3.1.2.33.5.9.1.2.1")
         self.set_metric(
             id=("Subscribers | Summary", None),
-            path=("0", "", "", ""),
+            labels=("noc::chassis::0",),
             value=int(metric),
             multi=True,
         )

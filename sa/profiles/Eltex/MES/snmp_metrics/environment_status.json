@@ -24,44 +24,44 @@
       "oids": [
       {
       "oid": "1.3.6.1.4.1.89.53.15.1.2.1",
-      "path": ["","","", "State_MainPS"],
+      "labels": ["noc::name::State_MainPS"],
       "$type": "oid",
       "type": "gauge",
       "scale": 1
       },{
         "$type": "oid",
         "oid": "1.3.6.1.4.1.89.53.15.1.3.1",
-        "path": ["","","", "State_RedundantPS"],
+        "labels": ["noc::name::State_RedundantPS"],
         "type": "gauge",
         "scale": 1
       },{
       "oid": "1.3.6.1.4.1.89.53.15.1.4.1",
-      "path": ["","","", "State_Fan1"],
+      "labels": ["noc::name::State_Fan1"],
       "$type": "oid",
       "type": "gauge",
       "scale": 1
       },{
         "$type": "oid",
         "oid": "1.3.6.1.4.1.89.53.15.1.5.1",
-        "path": ["","","", "State_Fan2"],
+        "labels": ["noc::name::State_Fan2"],
         "type": "gauge",
         "scale": 1
       },{
         "$type": "oid",
         "oid": "1.3.6.1.4.1.89.53.15.1.6.1",
-        "path": ["","","", "State_Fan3"],
+        "labels": ["noc::name::State_Fan3"],
         "type": "gauge",
         "scale": 1
       },{
         "$type": "oid",
         "oid": "1.3.6.1.4.1.89.53.15.1.7.1",
-        "path": ["","","", "State_Fan4"],
+        "labels": ["noc::name::State_Fan4"],
         "type": "gauge",
         "scale": 1
       },{
         "$type": "oid",
         "oid": "1.3.6.1.4.1.89.53.15.1.10.1",
-        "path": ["","","", "State_TempSensor"],
+        "labels": ["noc::name::State_TempSensor"],
         "type": "gauge",
         "scale": 1
       }]
@@ -71,44 +71,44 @@
       "oids": [
       {
           "oid": "1.3.6.1.4.1.89.53.15.1.2.1",
-          "path": ["", "", "", "State_MainPS"],
+          "labels": ["noc::name::State_MainPS"],
           "$type": "oid",
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.3.1",
-          "path": ["", "", "", "State_RedundantPS"],
+          "labels": ["noc::name::State_RedundantPS"],
           "type": "gauge",
           "scale": 1
       },{
           "oid": "1.3.6.1.4.1.89.53.15.1.4.1",
-          "path": ["", "", "", "State_Fan1"],
+          "labels": ["noc::name::State_Fan1"],
           "$type": "oid",
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.5.1",
-          "path": ["", "", "", "State_Fan2"],
+          "labels": ["noc::name::State_Fan2"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.6.1",
-          "path": ["", "", "", "State_Fan3"],
+          "labels": ["noc::name::State_Fan3"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.7.1",
-          "path": ["", "", "", "State_Fan4"],
+          "labels": ["noc::name::State_Fan4"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.11.1",
-          "path": ["", "", "", "State_TempSensor"],
+          "labels": ["noc::name::State_TempSensor"],
           "type": "gauge",
           "scale": 1
       }]
@@ -118,69 +118,69 @@
       "oids": [
       {
           "oid": "1.3.6.1.4.1.89.53.15.1.2.1",
-          "path": ["", "", "", "State_MainPS"],
+          "labels": ["noc::name::State_MainPS"],
           "$type": "oid",
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.3.1",
-          "path": ["", "", "", "State_RedundantPS"],
+          "labels": ["noc::name::State_RedundantPS"],
           "type": "gauge",
           "scale": 1
       },{
           "oid": "1.3.6.1.4.1.89.53.15.1.4.1",
-          "path": ["", "", "", "State_Fan1"],
+          "labels": ["noc::name::State_Fan1"],
           "$type": "oid",
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.5.1",
-          "path": ["", "", "", "State_Fan2"],
+          "labels": ["noc::name::State_Fan2"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.6.1",
-          "path": ["", "", "", "State_Fan3"],
+          "labels": ["noc::name::State_Fan3"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.53.15.1.7.1",
-          "path": ["", "", "", "State_Fan4"],
+          "labels": ["noc::name::State_Fan4"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.83.2.1.1.1.5.68420481",
-          "path": ["", "", "", "State_TempSensor1"],
+          "labels": ["noc::name::State_TempSensor1"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.83.2.1.1.1.5.68420482",
-          "path": ["", "", "", "State_TempSensor2"],
+          "labels": ["noc::name::State_TempSensor2"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.83.2.1.1.1.5.68420483",
-          "path": ["", "", "", "State_TempSensor3"],
+          "labels": ["noc::name::State_TempSensor3"],
           "type": "gauge",
           "scale": 1
       },{
           "$type": "oid",
           "oid": "1.3.6.1.4.1.89.83.2.1.1.1.5.68420484",
-          "path": ["", "", "", "State_TempSensor4"],
+          "labels": ["", "", "", "State_TempSensor4"],
           "type": "gauge",
           "scale": 1
       }]
   },{
     "$type": "oid",
     "oid": "1.3.6.1.4.1.89.53.15.1.11.1",
-    "path": ["","","", "State_TempSensor"],
+    "labels": ["","","", "State_TempSensor"],
     "type": "gauge",
     "scale": 1
   }]

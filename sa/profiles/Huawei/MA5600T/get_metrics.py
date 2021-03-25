@@ -73,7 +73,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | Temperature", mpath),
                     metric="Interface | DOM | Temperature",
-                    path=ipath,
+                    labels=ipath,
                     value=float(m["temp_c"]),
                     multi=True,
                 )
@@ -81,7 +81,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | Voltage", mpath),
                     metric="Interface | DOM | Voltage",
-                    path=ipath,
+                    labels=ipath,
                     value=float(m["voltage_v"]),
                     multi=True,
                 )
@@ -89,7 +89,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | RxPower", mpath),
                     metric="Interface | DOM | RxPower",
-                    path=ipath,
+                    labels=ipath,
                     value=float(m["optical_rx_dbm"]),
                     multi=True,
                 )
@@ -97,7 +97,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | RxPower", mpath),
                     metric="Interface | DOM | RxPower",
-                    path=["", "", "", cc["interface"], cc["id"]],
+                    labels=["", "", "", cc["interface"], cc["id"]],
                     value=float(
                         m["optical_rx_dbm_cpe"]
                         if "," not in m["optical_rx_dbm_cpe"]
@@ -109,7 +109,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | Bias Current", mpath),
                     metric="Interface | DOM | Bias Current",
-                    path=ipath,
+                    labels=ipath,
                     value=float(m["current_ma"]),
                     multi=True,
                 )
@@ -117,7 +117,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | TxPower", mpath),
                     metric="Interface | DOM | TxPower",
-                    path=ipath,
+                    labels=ipath,
                     value=float(m["optical_tx_dbm"]),
                     multi=True,
                 )
@@ -127,7 +127,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | Errors | BIP | Out", mpath),
                     metric="Interface | Errors | BIP | Out",
-                    path=ipath,
+                    labels=ipath,
                     value=int(m["optical_errors_bip_out"]),
                     multi=True,
                 )
@@ -135,7 +135,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | Errors | BIP | In", mpath),
                     metric="Interface | Errors | BIP | In",
-                    path=ipath,
+                    labels=ipath,
                     value=int(m["optical_errors_bip_in"]),
                     multi=True,
                 )
@@ -195,7 +195,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | Temperature", mpath),
                     metric="Interface | DOM | Temperature",
-                    path=ipath,
+                    labels=ipath,
                     value=float(ont_temp_c),
                     multi=True,
                 )
@@ -203,7 +203,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | Bias Current", mpath),
                     metric="Interface | DOM | Bias Current",
-                    path=ipath,
+                    labels=ipath,
                     value=float(ont_current_ma),
                     multi=True,
                 )
@@ -211,7 +211,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | Voltage", mpath),
                     metric="Interface | DOM | Voltage",
-                    path=ipath,
+                    labels=ipath,
                     value=float(ont_voltage_v),
                     multi=True,
                 )
@@ -219,7 +219,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | TxPower", mpath),
                     metric="Interface | DOM | TxPower",
-                    path=ipath,
+                    labels=ipath,
                     value=float(ont_optical_tx_dbm) / 100.0,
                     multi=True,
                 )
@@ -227,7 +227,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | RxPower", mpath),
                     metric="Interface | DOM | RxPower",
-                    path=ipath,
+                    labels=ipath,
                     value=float(ont_optical_rx_dbm) / 100.0,
                     multi=True,
                 )
@@ -235,7 +235,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | RxPower", mpath),
                     metric="Interface | DOM | RxPower",
-                    path=["", "", "", names[int(ifindex)], ont_id],
+                    labels=["", "", "", names[int(ifindex)], ont_id],
                     value=float(optical_rx_dbm_cpe) / 100.0,
                     multi=True,
                 )
@@ -257,7 +257,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | Errors | BIP | Out", mpath),
                     metric="Interface | Errors | BIP | Out",
-                    path=ipath,
+                    labels=ipath,
                     value=int(ont_optical_errors_bip_out),
                     multi=True,
                 )
@@ -265,7 +265,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | Errors | BIP | In", mpath),
                     metric="Interface | Errors | BIP | In",
-                    path=ipath,
+                    labels=ipath,
                     value=int(ont_optical_errors_bip_in),
                     multi=True,
                 )

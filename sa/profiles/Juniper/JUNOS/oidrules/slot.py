@@ -34,15 +34,15 @@ class SlotRule(OIDRule):
                 if "CPU" in metric.metric or "Environment" in metric.metric:
                     if "Temperature" in metric.metric and "Environment" in metric.metric:
                         desc = "Temperature " + desc
-                    path = [
-                        int(slotid.split(".")[1]) - 1,
-                        int(slotid.split(".")[2]) - 1,
-                        int(slotid.split(".")[3]),
-                        desc,
+                    labels = [
+                        f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
+                        f"noc::slot::{int(slotid.split('.')[2]) - 1}",
+                        f"noc::module::{slotid.split('.')[3]}",
+                        f"noc::name::{desc}",
                     ]
                 else:
-                    path = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
-                yield oid, self.type, self.scale, path
+                    labels = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
+                yield oid, self.type, self.scale, labels
             elif desc.startswith("MIC:"):
                 # Only MS modules return values in this slot
                 continue
@@ -50,26 +50,36 @@ class SlotRule(OIDRule):
                 if "CPU" in metric.metric or "Environment" in metric.metric:
                     if "Temperature" in metric.metric and "Environment" in metric.metric:
                         desc = "Temperature " + desc
-                    path = [
-                        int(slotid.split(".")[1]) - 1,
-                        slotid.split(".")[2],
-                        slotid.split(".")[3],
-                        desc,
+                    labels = [
+                        f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
+                        f"noc::slot::{slotid.split('.')[2]}",
+                        f"noc::module::{slotid.split('.')[3]}",
+                        f"noc::name::{desc}",
                     ]
                 else:
-                    path = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], desc]
-                yield oid, self.type, self.scale, path
+                    labels = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], desc]
+                yield oid, self.type, self.scale, labels
             elif "Routing Engine" in desc:
                 if "CPU" in metric.metric or "Environment" in metric.metric:
                     if "Temperature" in metric.metric and "Environment" in metric.metric:
                         desc = "Temperature " + desc
-                    path = [slotid.split(".")[1], slotid.split(".")[2], slotid.split(".")[3], desc]
+                    labels = [
+                        f"noc::chassis::{slotid.split('.')[1]}",
+                        f"noc::slot::{slotid.split('.')[2]}",
+                        f"noc::module::{slotid.split('.')[3]}",
+                        f"noc::name::{desc}",
+                    ]
                 else:
-                    path = [int(slotid.split(".")[1]), int(slotid.split(".")[2]), desc]
-                yield oid, self.type, self.scale, path
+                    labels = [int(slotid.split(".")[1]), int(slotid.split(".")[2]), desc]
+                yield oid, self.type, self.scale, labels
             else:
                 if "Environment" in metric.metric:
                     if "Temperature" in metric.metric:
                         desc = "Temperature " + desc
-                    path = [slotid.split(".")[1], slotid.split(".")[2], slotid.split(".")[3], desc]
-                    yield oid, self.type, self.scale, path
+                    labels = [
+                        f"noc::chassis::{slotid.split('.')[1]}",
+                        f"noc::slot::{slotid.split('.')[2]}",
+                        f"noc::module::{slotid.split('.')[3]}",
+                        f"noc::name::{desc}",
+                    ]
+                    yield oid, self.type, self.scale, labels

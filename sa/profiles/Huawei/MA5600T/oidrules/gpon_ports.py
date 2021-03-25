@@ -40,4 +40,4 @@ class GponPortsRule(OIDRule):
                 )
             ]
         if oid:
-            yield oid, self.type, self.scale, metric.path
+            yield oid, self.type, self.scale, metric.labels

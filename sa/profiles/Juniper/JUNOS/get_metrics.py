@@ -31,14 +31,14 @@ class Script(GetMetricsScript):
                     port += chr(int(x))
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    path=("0", "", "", str(port)),
+                    labels=("noc::chassis::0", f"noc::interface::{str(port)}"),
                     value=int(v),
                     multi=True,
                 )
         metric = self.snmp.get("1.3.6.1.4.1.2636.3.64.1.1.1.2.0")
         self.set_metric(
             id=("Subscribers | Summary", None),
-            path=("0", "", "", ""),
+            labels=("noc::chassis::0",),
             value=int(metric),
             multi=True,
         )

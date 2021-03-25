@@ -33,13 +33,27 @@ class SlotRule(OIDRule):
                 # nt-a card - 3 sensors
                 for s_i in range(1, 5):
                     # r["nt-a_s%d" % s_i] = "%d.%d" % (ms, s_i)
-                    r[("1", "1", "0", "Temperature_nt-a_s%d" % s_i)] = "%d.%d" % (ms, s_i)
+                    r[
+                        (
+                            "noc::chassis::1",
+                            "noc::slot::1",
+                            "noc::module::0",
+                            "noc::name::Temperature_nt-a_s%d" % s_i,
+                        )
+                    ] = "%d.%d" % (ms, s_i)
                 continue
             # r[str(i)] = {"healthModuleSlot": ms}
             for s_i in range(1, 3):
                 # Two sensors on cards
                 # r["lt:1/1/%d_s%d" % (ms, s_i)] = "%d.%d" % (i + ms - 2 if ms not in [2, 3] else i + 8 + ms, s_i)
-                r[("1", "1", str(ms), "Temperature_lt_s%d" % s_i)] = "%d.%d" % (
+                r[
+                    (
+                        "noc::chassis::1",
+                        "noc::slot::1",
+                        f"noc::module::{str(ms)}",
+                        "noc::name::Temperature_lt_s%d" % s_i,
+                    )
+                ] = "%d.%d" % (
                     i + ms - 2 if ms not in [2, 3] else i + 8 + ms,
                     s_i,
                 )
