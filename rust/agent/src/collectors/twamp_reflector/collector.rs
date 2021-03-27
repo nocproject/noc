@@ -4,18 +4,20 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collector, Runnable};
-use super::TWAMPReflectorConfig;
+use super::super::{CollectorConfig, Id, Runnable};
 use crate::proto::connection::Connection;
 use crate::proto::twamp::{
     AcceptSession, RequestTWSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, DEFAULT_COUNT, MODE_UNAUTHENTICATED,
 };
 use crate::proto::udp::UDPConnection;
+use crate::zk::ZkConfigCollector;
+use agent_derive::Id;
 use async_trait::async_trait;
 use bytes::Bytes;
 use chrono::Utc;
 use rand::Rng;
+use std::convert::TryFrom;
 use std::{error::Error, net::SocketAddr, time::Duration};
 use tokio::{
     net::{TcpListener, TcpStream},
@@ -23,7 +25,27 @@ use tokio::{
     time::timeout,
 };
 
-pub type TWAMPReflectorCollector = Collector<TWAMPReflectorConfig>;
+#[derive(Id)]
+pub struct TWAMPReflectorCollector {
+    pub id: String,
+    pub listen: String,
+    pub port: u16,
+}
+
+impl TryFrom<&ZkConfigCollector> for TWAMPReflectorCollector {
+    type Error = Box<dyn Error>;
+
+    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
+        match &value.config {
+            CollectorConfig::TWAMPReflector(config) => Ok(Self {
+                id: value.id.clone(),
+                listen: config.listen.clone(),
+                port: config.port,
+            }),
+            _ => Err("invalid config".into()),
+        }
+    }
+}
 
 #[derive(Debug)]
 struct ClientSession {
@@ -38,24 +60,19 @@ struct ClientSession {
 impl Runnable for TWAMPReflectorCollector {
     async fn run(&self) {
         log::debug!("[{}] Starting collector", self.id);
-        let r = TcpListener::bind(format!("{}:{}", self.config.listen, self.config.port)).await;
+        let r = TcpListener::bind(format!("{}:{}", self.listen, self.port)).await;
         if let Err(e) = r {
             log::error!(
                 "[{}] Failed to create listener {}:{}: {}",
                 self.id,
-                self.config.listen,
-                self.config.port,
+                self.listen,
+                self.port,
                 e
             );
             return;
         }
         let listener = r.unwrap();
-        log::info!(
-            "[{}] Listening {}:{}",
-            self.id,
-            self.config.listen,
-            self.config.port
-        );
+        log::info!("[{}] Listening {}:{}", self.id, self.listen, self.port);
         loop {
             match listener.accept().await {
                 Ok((stream, addr)) => {

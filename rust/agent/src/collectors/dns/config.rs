@@ -5,7 +5,6 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::super::Configurable;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
@@ -18,8 +17,6 @@ pub struct DNSConfig {
     #[serde(default = "default_one")]
     pub min_success: usize,
 }
-
-impl Configurable for DNSConfig {}
 
 fn default_type_a() -> String {
     "A".into()

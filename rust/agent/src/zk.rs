@@ -33,8 +33,6 @@ pub struct ZkConfigConfigZeroconf {
 #[derive(Deserialize, Debug)]
 pub struct ZkConfigCollector {
     pub id: String,
-    // #[serde(rename = "type")]
-    // pub collector_type: String,
     pub interval: u64,
     #[serde(default)]
     pub disabled: bool,

@@ -1,0 +1,13 @@
+[package]
+name = "agent-derive"
+version = "0.1.0"
+authors = ["The NOC Project"]
+edition = "2018"
+description = "Derive macroses for agent"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "1.0"
+quote = "1.0"
