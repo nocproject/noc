@@ -52,10 +52,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT t,  groupArray((sensor, Temp)) AS groupArr FROM ( SELECT $timeSeries as t,  path[3] as sensor, argMax(temperature, t) as Temp FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{ sensor.name }}') and path[3]!='' and $timeFilter GROUP BY path[3], t ORDER BY t) GROUP BY t  ORDER BY t ASC",
+      "query": "SELECT t,  groupArray((module, Temp)) AS groupArr FROM ( SELECT $timeSeries as t,  module, argMax(temperature, t) as Temp FROM $table WHERE managed_object = $bi_id and sensor = toString('{{ sensor.name }}') and arrayExists(x -> startsWith(x, 'noc::module'), labels) and $timeFilter GROUP BY module, t ORDER BY t) GROUP BY t  ORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "environment",
       "dateLoading": false,

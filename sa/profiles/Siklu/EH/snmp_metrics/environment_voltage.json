@@ -1,6 +1,6 @@
 {
   "$metric": "Environment | Voltage",
   "$type": "oid",
-  "labels": ["noc::name::Voltage"],
+  "labels": ["noc::sensor::Voltage"],
   "oid": "1.3.6.1.4.1.31926.1.1.0"
 }

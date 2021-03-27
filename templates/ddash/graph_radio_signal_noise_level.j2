@@ -47,10 +47,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(signal_level) as `Signal Level`,avg(noise_level) as `Noise Level` FROM $table WHERE managed_object = $bi_id and path[4]=toString(${{interface.type}}) and $timeFilter and (tx_power != -32555 and rx_power != -32555) GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(signal_level) as `Signal Level`,avg(noise_level) as `Noise Level` FROM $table WHERE managed_object = $bi_id and interface=toString(${{interface.type}}) and $timeFilter and (tx_power != -32555 and rx_power != -32555) GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,

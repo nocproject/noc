@@ -62,10 +62,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(packets_in) as Input, avg(broadcast_in) as `Broadcast Input`, avg(multicast_in) as `Multicast Input`, avg(packets_out) as Output, avg(broadcast_out) as `Broadcast Output`, avg(multicast_out) as `Multicast Output` FROM $table WHERE managed_object = $bi_id and path[4]=toString(${{interface.type}}) and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(packets_in) as Input, avg(broadcast_in) as `Broadcast Input`, avg(multicast_in) as `Multicast Input`, avg(packets_out) as Output, avg(broadcast_out) as `Broadcast Output`, avg(multicast_out) as `Multicast Output` FROM $table WHERE managed_object = $bi_id and interface=toString(${{interface.type}}) and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,

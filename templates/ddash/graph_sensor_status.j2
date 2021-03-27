@@ -10,9 +10,9 @@
         {{ comma() }}
         {
           "intervalFactor": 1,
-          "query": "SELECT $timeSeries as t, argMax(sensor_status, t) as \"{{ sensor }}\" FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{sensor}}') and $timeFilter GROUP BY t ORDER BY t",
+          "query": "SELECT $timeSeries as t, argMax(sensor_status, t) as \"{{ sensor }}\" FROM $table WHERE managed_object = $bi_id and sensor=toString('{{sensor}}') and $timeFilter GROUP BY t ORDER BY t",
           "resultFormat": "time_series",
-          "database": "noc",
+          "database": "{{ noc_db_metrics }}",
           "tableLoading": false,
           "table": "environment",
           "dateLoading": false,

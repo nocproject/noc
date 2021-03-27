@@ -245,12 +245,18 @@ class MetricScope(Document):
             v_path = f"[{l_exp}] AS path, "
         # view columns
         vc_expr = ""
-        view_columns = [label for label in self.labels if label.view_column]
+        view_columns = []
+        for label in self.labels:
+            if label.view_column and label.store_column:
+                view_columns += [f"{label.store_column} AS {label.view_column}"]
+            elif label.store_column:
+                view_columns += [f"{label.store_column}"]
+            elif label.view_column:
+                view_columns += [
+                    f"splitByString('::', arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels))[-1] AS {label.view_column} "
+                ]
         if view_columns:
-            vc_expr = ", ".join(
-                f"splitByString('::', arrayFirst(x -> startsWith(x, '{x.field_name}'), labels))[-1] AS {x.view_column} "
-                for x in view_columns
-            )
+            vc_expr = ", ".join(view_columns)
             vc_expr += ", "
         return f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}* FROM {src}"
 
@@ -351,6 +357,7 @@ class MetricScope(Document):
                 ch.execute(post=self.get_create_distributed_sql())
                 changed = True
         # Synchronize view
+        # @todo drop view if changed
         if changed or not ch.has_table(table):
             ch.execute(post=self.get_create_view_sql())
             changed = True

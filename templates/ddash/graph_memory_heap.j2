@@ -38,14 +38,14 @@
     {
       "dateTimeColDataType": "ts",
       "datetimeLoading": false,
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "dateLoading": false,
       "tableLoading": false,
       "dateColDataType": "date",
       "intervalFactor": 1,
       "table": "memory",
       "policy": "default",
-      "query": "SELECT \n    t, \n    groupArray((slot, MemoryHeap)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'/') as slot, \n        avg(heap) as `MemoryHeap` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY arrayStringConcat(path,'/'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t, \n    groupArray((slot, MemoryHeap)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(labels,'/') as slot, \n        avg(heap) as `MemoryHeap` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY labels, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
       "interval": "$discovery_interval"

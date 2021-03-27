@@ -43,7 +43,7 @@
       "resultFormat": "time_series",
       "intervalFactor": 1,
       "query": "SELECT \n  $timeSeries as t, \n  avg(disk_problem) as `Disk | Problem`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "disk",
       "dateLoading": false,

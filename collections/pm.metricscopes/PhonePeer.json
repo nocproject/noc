@@ -3,7 +3,7 @@
     "$collection": "pm.metricscopes",
     "uuid": "77d6efee-a07d-4c85-a7e6-06e831e2196a",
     "table_name": "phonepeer",
-    "description": "Scope for Pphone Peer protocols metrics (SIP Trunk, E1 Serial, etc.) . Explain:\ntrunk as interface\nchannel as subinterface",
+    "description": "Scope for Phone Peer protocols metrics (SIP Trunk, E1 Serial, etc.) . Explain:\ntrunk as interface\nchannel as subinterface",
     "key_fields": [
         {
             "field_name": "managed_object",
@@ -17,18 +17,20 @@
     "enable_timedelta": false,
     "labels": [
         {
-            "is_order_key": false,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::trunk::*"
+            "label": "noc::phone::trunk::*",
+            "view_column": "trunk"
         },
         {
-            "is_order_key": false,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::channel::*"
+            "label": "noc::phone::channel::*",
+            "view_column": "channel"
         }
     ]
 }

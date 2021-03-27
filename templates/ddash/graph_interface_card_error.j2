@@ -48,10 +48,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT \n\t$timeSeries as t,\n\tavg(errors_in) as `Error In` \nFROM \n\t$table \nWHERE \n\tmanaged_object = $bi_id \n\tand path[4]=toString('{{interface.port.name}}') \n\tand $timeFilter \nGROUP BY t ORDER BY t",
+      "query": "SELECT \n\t$timeSeries as t,\n\tavg(errors_in) as `Error In` \nFROM \n\t$table \nWHERE \n\tmanaged_object = $bi_id \n\tand interface=toString('{{interface.port.name}}') \n\tand $timeFilter \nGROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,
@@ -63,10 +63,10 @@
     },
     {
       "intervalFactor": 1,
-      "query": "SELECT \n\t$timeSeries as t,\n\tavg(errors_out) as `Error Out` \nFROM \n\t$table \nWHERE \n\tmanaged_object = $bi_id \n\tand path[4]=toString('{{interface.port.name}}') \n\tand $timeFilter \nGROUP BY t ORDER BY t",
+      "query": "SELECT \n\t$timeSeries as t,\n\tavg(errors_out) as `Error Out` \nFROM \n\t$table \nWHERE \n\tmanaged_object = $bi_id \n\tand interface=toString('{{interface.port.name}}') \n\tand $timeFilter \nGROUP BY t ORDER BY t",
       "refId": "B",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,
