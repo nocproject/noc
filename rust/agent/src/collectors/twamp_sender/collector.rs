@@ -5,20 +5,23 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::super::{Collectable, Collector, Status};
-use super::TWAMPSenderConfig;
+use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
 use crate::proto::connection::Connection;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use crate::proto::pktmodel::ModelConfig;
+use crate::proto::tos::dscp_to_tos;
 use crate::proto::twamp::{
     AcceptSession, RequestTWSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, UTCDateTime, ACCEPT_OK, MODE_REFUSED,
     MODE_UNAUTHENTICATED,
 };
 use crate::timing::Timing;
+use crate::zk::ZkConfigCollector;
+use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};
 use chrono::Utc;
+use std::convert::TryFrom;
 use std::error::Error;
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -28,25 +31,47 @@ use tokio::{
     time::timeout,
 };
 
-pub type TWAMPSenderCollector = Collector<TWAMPSenderConfig>;
+#[derive(Id, Repeatable)]
+pub struct TWAMPSenderCollector {
+    pub id: String,
+    pub interval: u64,
+    pub server: String,
+    pub port: u16,
+    pub n_packets: usize,
+    pub model: ModelConfig,
+    pub tos: u8,
+}
+
+impl TryFrom<&ZkConfigCollector> for TWAMPSenderCollector {
+    type Error = Box<dyn Error>;
+
+    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
+        match &value.config {
+            CollectorConfig::TWAMPSender(config) => Ok(Self {
+                id: value.id.clone(),
+                interval: value.interval,
+                server: config.server.clone(),
+                port: config.port,
+                n_packets: config.n_packets,
+                model: config.model,
+                tos: dscp_to_tos(config.dscp.to_lowercase()).ok_or("invalid dscp")?,
+            }),
+            _ => Err("invalid config".into()),
+        }
+    }
+}
 
 #[async_trait]
 impl Collectable for TWAMPSenderCollector {
     async fn collect(&self) -> Result<Status, Box<dyn Error>> {
         //
-        log::debug!(
-            "[{}] Connecting {}:{}",
-            self.id,
-            self.config.server,
-            self.config.port
-        );
-        let stream =
-            TcpStream::connect(format!("{}:{}", self.config.server, self.config.port)).await?;
-        TestSession::new(stream, self.config.model)
+        log::debug!("[{}] Connecting {}:{}", self.id, self.server, self.port);
+        let stream = TcpStream::connect(format!("{}:{}", self.server, self.port)).await?;
+        TestSession::new(stream, self.model)
             .with_id(self.id.clone())
-            .with_tos(self.config.tos)
-            .with_reflector_addr(self.config.server.clone())
-            .with_n_packets(self.config.n_packets)
+            .with_tos(self.tos)
+            .with_reflector_addr(self.server.clone())
+            .with_n_packets(self.n_packets)
             .run()
             .await?;
         Ok(Status::Ok)

@@ -319,7 +319,7 @@ build:web:
 
 build:rust:
   stage: Build
-  image: rust:1.50
+  image: rust:1.51
   script:
     - set -x
     - cd rust/

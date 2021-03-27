@@ -15,43 +15,48 @@ use serde::Deserialize;
 use std::convert::TryFrom;
 use std::error::Error;
 
+/// Collector config variants.
+/// Each collector must have own variant.
+/// Use
+/// #[serde(rename = "<name>")]
+/// To bind particular collector with `type` field of configuration JSON
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 pub enum CollectorConfig {
     #[serde(rename = "dns")]
-    DNSCollector(DNSConfig),
+    DNS(DNSConfig),
     #[serde(rename = "test")]
-    TestCollector(TestConfig),
+    Test(TestConfig),
     #[serde(rename = "twamp_reflector")]
-    TWAMPReflectorCollector(TWAMPReflectorConfig),
+    TWAMPReflector(TWAMPReflectorConfig),
     #[serde(rename = "twamp_sender")]
-    TWAMPSenderCollector(TWAMPSenderConfig),
+    TWAMPSender(TWAMPSenderConfig),
 }
 
+/// Enumeration of collectors. Each collector must be added as separate member of enum.
+/// Each collector must implement Runnable trait.
 #[enum_dispatch]
 pub enum Collectors {
-    DNSCollector(DNSCollector),
-    TestCollector(TestCollector),
-    TWAMPReflectorCollector(TWAMPReflectorCollector),
-    TWAMPSenderCollector(TWAMPSenderCollector),
+    DNS(DNSCollector),
+    Test(TestCollector),
+    TWAMPReflector(TWAMPReflectorCollector),
+    TWAMPSender(TWAMPSenderCollector),
 }
 
+/// Config to collector conversion.
+/// Add ::try_from for every new collector.
 impl TryFrom<&ZkConfigCollector> for Collectors {
     type Error = Box<dyn Error>;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
-        Ok(match value.config.clone() {
-            CollectorConfig::DNSCollector(c) => {
-                Collectors::DNSCollector(DNSCollector::new_from(value, c)?)
+        Ok(match value.config {
+            CollectorConfig::DNS(_) => Collectors::DNS(DNSCollector::try_from(value)?),
+            CollectorConfig::Test(_) => Collectors::Test(TestCollector::try_from(value)?),
+            CollectorConfig::TWAMPReflector(_) => {
+                Collectors::TWAMPReflector(TWAMPReflectorCollector::try_from(value)?)
             }
-            CollectorConfig::TestCollector(c) => {
-                Collectors::TestCollector(TestCollector::new_from(value, c)?)
-            }
-            CollectorConfig::TWAMPReflectorCollector(c) => {
-                Collectors::TWAMPReflectorCollector(TWAMPReflectorCollector::new_from(value, c)?)
-            }
-            CollectorConfig::TWAMPSenderCollector(c) => {
-                Collectors::TWAMPSenderCollector(TWAMPSenderCollector::new_from(value, c)?)
+            CollectorConfig::TWAMPSender(_) => {
+                Collectors::TWAMPSender(TWAMPSenderCollector::try_from(value)?)
             }
         })
     }

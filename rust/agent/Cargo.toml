@@ -39,6 +39,8 @@ lazy_static = "1.4"
 chrono = "0.4"
 # Optional dependencies
 trust-dns-proto = {version = "0.20", optional = true}
+# Subcrates
+agent-derive = {path = "libs/agent-derive"}
 
 [dev-dependencies]
 criterion = "0.3"
