@@ -29,7 +29,7 @@ class HWSlots(OIDRule):
                 labels = [
                     "noc::chassis::0",
                     f"noc::slot::{slot}",
-                    "noc::name::Temperature Sensor (%s)" % slot_names[slot],
+                    "noc::sensor::Temperature Sensor (%s)" % slot_names[slot],
                 ]
                 if gen:
                     yield tuple(gen), self.type, self.scale, labels
@@ -38,7 +38,7 @@ class HWSlots(OIDRule):
                 labels = [
                     "noc::chassis::0",
                     f"noc::slot::{slot}",
-                    "noc::name::Temperature Sensor (%s)" % slot_names[slot],
+                    "noc::sensor::Temperature Sensor (%s)" % slot_names[slot],
                 ]
                 if oid:
                     yield oid, self.type, self.scale, labels

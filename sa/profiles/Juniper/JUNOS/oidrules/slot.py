@@ -38,7 +38,9 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
                         f"noc::slot::{int(slotid.split('.')[2]) - 1}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::name::{desc}",
+                        f"noc::sensor::{desc}"
+                        if "Environment" in metric.metric
+                        else f"noc::cpu::{desc}",
                     ]
                 else:
                     labels = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
@@ -54,7 +56,9 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{int(slotid.split('.')[1]) - 1}",
                         f"noc::slot::{slotid.split('.')[2]}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::name::{desc}",
+                        f"noc::sensor::{desc}"
+                        if "Environment" in metric.metric
+                        else f"noc::cpu::{desc}",
                     ]
                 else:
                     labels = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], desc]
@@ -67,7 +71,9 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{slotid.split('.')[1]}",
                         f"noc::slot::{slotid.split('.')[2]}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::name::{desc}",
+                        f"noc::sensor::{desc}"
+                        if "Environment" in metric.metric
+                        else f"noc::cpu::{desc}",
                     ]
                 else:
                     labels = [int(slotid.split(".")[1]), int(slotid.split(".")[2]), desc]
@@ -80,6 +86,8 @@ class SlotRule(OIDRule):
                         f"noc::chassis::{slotid.split('.')[1]}",
                         f"noc::slot::{slotid.split('.')[2]}",
                         f"noc::module::{slotid.split('.')[3]}",
-                        f"noc::name::{desc}",
+                        f"noc::sensor::{desc}"
+                        if "Environment" in metric.metric
+                        else f"noc::cpu::{desc}",
                     ]
                     yield oid, self.type, self.scale, labels

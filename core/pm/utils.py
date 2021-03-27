@@ -13,7 +13,6 @@ import itertools
 import ast
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
@@ -51,11 +50,11 @@ def get_objects_metrics(
         mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map))
     )
     msd: Dict[str, str] = {}  # Map ScopeID -> TableName
-    path_table = set()
+    labels_table = set()
     for ms in MetricScope.objects.filter():
         msd[ms.id] = ms.table_name
-        if ms.path:
-            path_table.add(ms.table_name)
+        if ms.labels:
+            labels_table.add(ms.table_name)
     mts: Dict[str, Tuple[str, str, str]] = {
         str(mt.id): (msd[mt.scope.id], mt.field_name, mt.name) for mt in MetricType.objects.all()
     }  # Map Metric Type ID -> table_name, column_name, MetricType Name
@@ -89,30 +88,34 @@ def get_objects_metrics(
             from_date.isoformat(sep=" "),
             ", ".join(bi_map),
         )
-        if table in path_table:
-            SQL = SQL % ("arrayStringConcat(path, '|') as path,", ", path")
+        if table in labels_table:
+            # SQL = SQL % ("arrayStringConcat(labels, '|') as ll,", ", labels")
+            SQL = SQL % (
+                "arrayStringConcat(arrayMap(x -> splitByString('::', x)[-1], labels), '|') as labels,",
+                ", labels",
+            )
         else:
             SQL = SQL % ("", "")
         try:
             for result in ch.execute(post=SQL):
-                if table in path_table:
-                    mo_bi_id, ts, path = result[:3]
+                if table in labels_table:
+                    mo_bi_id, ts, labels = result[:3]
                     result = result[3:]
                 else:
                     mo_bi_id, ts = result[:2]
-                    path, result = "", result[2:]
+                    labels, result = "", result[2:]
                 mo = bi_map.get(mo_bi_id)
                 i = 0
                 for r in result:
                     f_name = fields[i][2]
-                    mtable += [[mo, ts, path, r]]
+                    mtable += [[mo, ts, labels, r]]
                     if mo not in metric_map:
                         metric_map[mo] = defaultdict(dict)
-                    metric_map[mo][path][f_name] = r
+                    metric_map[mo][labels][f_name] = r
                     last_ts[mo] = max(ts, last_ts.get(mo, ts))
                     i += 1
-        except ClickhouseError:
-            pass
+        except ClickhouseError as e:
+            print(e)
     return metric_map, last_ts
 
 
@@ -153,13 +156,14 @@ def get_interface_metrics(
     )
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=max(query_interval, 3600))
     from_date = from_date.replace(microsecond=0)
-    SQL = """SELECT managed_object, argMax(ts, ts), path as iface, %s
+    SQL = """SELECT managed_object, argMax(ts, ts),  splitByString('::', arrayFirst(x -> startsWith(x, 'noc::interface::'), labels))[-1] as iface, labels, %s
             FROM %s
             WHERE
               date >= toDate('%s')
               AND ts >= toDateTime('%s')
               AND managed_object IN (%s)
-            GROUP BY managed_object, path
+              AND NOT arrayExists(x -> startsWith(x, 'noc::unit::'), labels)
+            GROUP BY managed_object, labels
             """ % (
         ", ".join(["argMax(%s, ts) as %s" % (f, f) for f in meric_map["map"].keys()]),
         meric_map["table_name"],
@@ -175,12 +179,12 @@ def get_interface_metrics(
     metric_fields = list(meric_map["map"].keys())
     try:
         for result in ch.execute(post=SQL):
-            mo_bi_id, ts, path = result[:3]
-            path = ast.literal_eval(path)
-            t_iface, iface = path[2], path[3]
-            res = dict(zip(metric_fields, result[3:]))
+            mo_bi_id, ts, iface, labels = result[:4]
+            labels = ast.literal_eval(labels)
+            res = dict(zip(metric_fields, result[4:]))
             mo = bi_map.get(mo_bi_id)
-            if not t_iface and metric_map[mo].get(iface):
+            if len(labels) == 1 and metric_map[mo].get(iface):
+                # If only interface metric
                 continue
             metric_map[mo][iface] = defaultdict(dict)
             for field, value in res.items():
@@ -191,3 +195,7 @@ def get_interface_metrics(
     except ClickhouseError:
         pass
     return metric_map, last_ts
+
+
+#
+from noc.sa.models.managedobject import ManagedObject

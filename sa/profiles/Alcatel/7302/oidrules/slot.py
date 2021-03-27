@@ -38,7 +38,7 @@ class SlotRule(OIDRule):
                             "noc::chassis::1",
                             "noc::slot::1",
                             "noc::module::0",
-                            "noc::name::Temperature_nt-a_s%d" % s_i,
+                            f"noc::sensor::Temperature_nt-a_s{s_i}",
                         )
                     ] = "%d.%d" % (ms, s_i)
                 continue
@@ -51,7 +51,7 @@ class SlotRule(OIDRule):
                         "noc::chassis::1",
                         "noc::slot::1",
                         f"noc::module::{str(ms)}",
-                        "noc::name::Temperature_lt_s%d" % s_i,
+                        f"noc::sensor::Temperature_lt_s{s_i,}",
                     )
                 ] = "%d.%d" % (
                     i + ms - 2 if ms not in [2, 3] else i + 8 + ms,

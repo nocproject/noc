@@ -150,7 +150,7 @@ class Script(GetMetricsScript):
             self.set_metric(
                 id=("Multicast | Group | Status", [f"noc::interface::{channel}/{mname}"]),
                 labels=(
-                    [f"noc::multicast::name::{mname}", f"noc::multicast::channel::1/1.{channel}"]
+                    [f"noc::multicast::group::{mname}", f"noc::multicast::channel::1/1.{channel}"]
                 ),
                 value=m_ostatus,
                 type="gauge",
@@ -179,7 +179,7 @@ class Script(GetMetricsScript):
             self.set_metric(
                 id=("Multicast | Group | Bitrate | In", [f"noc::interface::{channel}/{mname}"]),
                 labels=(
-                    [f"noc::multicast::name::{mname}", f"noc::multicast::channel::1/1.{channel}"]
+                    [f"noc::multicast::group::{mname}", f"noc::multicast::channel::1/1.{channel}"]
                 ),
                 value=input,
                 type="gauge",
@@ -208,7 +208,7 @@ class Script(GetMetricsScript):
             self.set_metric(
                 id=("Multicast | Group | Bitrate | Out", [f"noc::interface::{channel}/{mname}"]),
                 labels=(
-                    [f"noc::multicast::name::{mname}", f"noc::multicast::channel::1/1.{channel}"]
+                    [f"noc::multicast::group::{mname}", f"noc::multicast::channel::1/1.{channel}"]
                 ),
                 value=input,
                 type="gauge",

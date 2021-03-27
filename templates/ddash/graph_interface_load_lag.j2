@@ -54,9 +54,9 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, sum(load_in) as `Agg_Input {{ interface.name }}`,  sum(load_out) as `Agg_Output {{ interface.name }}` FROM $table WHERE managed_object = $bi_id and path[4] in ({%for port in interface.ports %}{{ comma() }}'{{port}}'{%endfor%}) and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, sum(load_in) as `Agg_Input {{ interface.name }}`,  sum(load_out) as `Agg_Output {{ interface.name }}` FROM $table WHERE managed_object = $bi_id and interface in ({%for port in interface.ports %}{{ comma() }}'{{port}}'{%endfor%}) and $timeFilter GROUP BY t ORDER BY t",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,
@@ -69,9 +69,9 @@
         {{ comma() }}
           {
           "intervalFactor": 1,
-          "query": "SELECT $timeSeries as t, argMax(load_in, t) as `Input {{ port }}`,  argMax(load_out, t) as `Output {{ port }}` FROM $table WHERE managed_object = $bi_id and path[4] = toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
+          "query": "SELECT $timeSeries as t, argMax(load_in, t) as `Input {{ port }}`,  argMax(load_out, t) as `Output {{ port }}` FROM $table WHERE managed_object = $bi_id and interface = toString('{{port}}') and $timeFilter GROUP BY t ORDER BY t",
           "resultFormat": "time_series",
-          "database": "noc",
+          "database": "{{ noc_db_metrics }}",
           "tableLoading": false,
           "table": "interface",
           "dateLoading": false,

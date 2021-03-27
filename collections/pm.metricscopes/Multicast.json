@@ -14,21 +14,23 @@
             "model": "inv.Object"
         }
     ],
+    "enable_timedelta": false,
     "labels": [
         {
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::group::*"
+            "label": "noc::multicast::group::*",
+            "view_column": "group"
         },
         {
-            "is_order_key": false,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::channel::*"
+            "label": "noc::multicast::channel::*",
+            "view_column": "channel"
         }
-    ],
-    "enable_timedelta": false
+    ]
 }

@@ -58,10 +58,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(load_in) as Input, avg(load_out) as Output FROM $table WHERE managed_object = $bi_id and path[5]=toString($SubInterfaces) and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(load_in) as Input, avg(load_out) as Output FROM $table WHERE managed_object = $bi_id and has(labels, concat('noc::unit::', toString($SubInterfaces)) and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,

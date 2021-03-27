@@ -58,7 +58,7 @@ class Script(GetMetricsScript):
                 )
                 self.set_metric(
                     id=("Environment | Temperature", metric.labels),
-                    labels=[f"noc::module::{port}", f"noc::name::{port}"],
+                    labels=[f"noc::module::{port}", f"noc::sensor::{port}"],
                     value=value,
                     multi=True,
                 )
@@ -67,7 +67,7 @@ class Script(GetMetricsScript):
                     value = self.snmp.get("1.3.6.1.4.1.27514.103.0.26.0")
                     self.set_metric(
                         id=("Environment | Temperature", metric.labels),
-                        labels=["noc::module::battery", f"noc::name::{port}"],
+                        labels=["noc::module::battery", f"noc::sensor::{port}"],
                         value=value,
                         scale=scale(0.1, 2),
                         multi=True,
@@ -81,7 +81,7 @@ class Script(GetMetricsScript):
                 port = metric.labels[0].rsplit("::", 1)[-1]
                 self.set_metric(
                     id=("Environment | Voltage", metric.labels),
-                    labels=["noc::module::battery", f"noc::name::{port}"],
+                    labels=["noc::module::battery", f"noc::sensor::{port}"],
                     value=value,
                     scale=scale(0.1, 2),
                     multi=True,

@@ -42,7 +42,12 @@ class SlotRule(OIDRule):
                 labels = (
                     ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
                     if "CPU" in metric.metric
-                    else ["noc::chassis::0", f"noc::slot::{i}", "noc::module::0"]
+                    else [
+                        "noc::chassis::0",
+                        f"noc::slot::{i}",
+                        "noc::module::0",
+                        f"noc::cpu::CPU Slot {i}",
+                    ]
                 )
                 gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
                 if gen:
@@ -52,7 +57,12 @@ class SlotRule(OIDRule):
                 labels = (
                     ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
                     if "CPU" in metric.metric
-                    else ["noc::chassis::0", f"noc::slot::{i}", "noc::module::0"]
+                    else [
+                        "noc::chassis::0",
+                        f"noc::slot::{i}",
+                        "noc::module::0",
+                        f"noc::cpu::CPU Slot {i}",
+                    ]
                 )
                 if oid:
                     yield oid, self.type, self.scale, labels

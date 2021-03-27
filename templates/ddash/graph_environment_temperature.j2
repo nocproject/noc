@@ -11,13 +11,13 @@
     {
       "dateTimeColDataType": "ts",
       "datetimeLoading": false,
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "dateLoading": false,
       "tableLoading": false,
       "dateColDataType": "date",
       "table": "environment",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((sensor, Temperature)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(temperature) as `Temperature` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        and like(path[4],'Temperature%')\n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t, \n    groupArray((sensor, Temperature)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        sensor, \n        avg(temperature) as `Temperature` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        and like(sensor,'Temperature%')\n    GROUP BY sensor, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series"
     }

@@ -14,28 +14,31 @@
             "model": "inv.Object"
         }
     ],
-    "enable_timedelta": true,
+    "enable_timedelta": false,
     "labels": [
         {
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::instance::*"
+            "label": "noc::instance::*",
+            "view_column": "instance"
         },
         {
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::local_endpoint::*"
+            "label": "noc::local_endpoint::*",
+            "view_column": "local_endpoint"
         },
         {
-            "is_order_key": false,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::remote_endpoint::*"
+            "label": "noc::remote_endpoint::*",
+            "view_column": "remote_endpoint"
         }
     ]
 }

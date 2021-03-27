@@ -17,11 +17,12 @@
     "enable_timedelta": false,
     "labels": [
         {
-            "is_order_key": false,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::path::*"
+            "label": "noc::device::*",
+            "store_column": "device"
         }
     ]
 }
