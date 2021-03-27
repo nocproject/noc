@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="0" y1="0" x2="200" y2="0"/>
+    <g>
+      <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="0" y1="0" x2="0" y2="200"/>
+      <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="200" y1="0" x2="200" y2="200"/>
+      <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="0" y1="200" x2="50" y2="200"/>
+      <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="200" y1="200" x2="150" y2="200"/>
+      <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="50" y1="200" x2="50" y2="75"/>
+      <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="150" y1="75" x2="150" y2="200"/>
+      <line style="paint-order: fill; stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="50" y1="75" x2="150" y2="75"/>
+    </g>
+    <line style="stroke: rgb(233, 235, 252);" x1="50" y1="50" x2="150" y2="50"/>
+    <line style="stroke: rgb(233, 235, 252);" x1="50" y1="50" x2="50" y2="75"/>
+  </g>
+  <g>
+    <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="60" y1="200" x2="60" y2="80"/>
+    <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="60" y1="200" x2="140" y2="200"/>
+    <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="140" y1="80" x2="140" y2="200"/>
+    <line style="stroke-width: 2px; stroke: rgb(233, 235, 252);" x1="60" y1="80" x2="140" y2="80"/>
+    <line style="stroke: rgb(233, 235, 252);" x1="60" y1="100" x2="140" y2="100"/>
+  </g>
+  <line style="stroke: rgb(233, 235, 252);" x1="150" y1="50" x2="150" y2="75"/>
+  <g>
+    <text style="fill: rgb(233, 235, 252); font-family: Roboto; font-size: 12px; white-space: pre;" x="71.633" y="66.515">Direction: i</text>
+    <text style="fill: rgb(233, 235, 252); font-family: Roboto; font-size: 12px; white-space: pre;" x="70.151" y="97.021">Direction: o</text>
+    <text style="fill: rgb(233, 235, 252); font-family: Roboto; font-size: 12px; white-space: pre;"><tspan x="65.338" y="30.413" style="text-decoration: underline solid rgba(0, 0, 0, 0.8);">Outer  Object</tspan></text>
+    <text style="fill: rgb(233, 235, 252); font-family: Roboto; font-size: 12px; white-space: pre;"><tspan x="66.947" y="151.785" style="text-decoration: underline solid rgba(0, 0, 0, 0.8);">Inner Object</tspan></text>
+  </g>
+</svg>
