@@ -14,7 +14,7 @@
             "model": "inv.Object"
         }
     ],
-    "enable_timedelta": false,
+    "enable_timedelta": true,
     "labels": [
         {
             "is_order_key": false,
