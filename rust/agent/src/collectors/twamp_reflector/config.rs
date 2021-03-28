@@ -8,7 +8,7 @@
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct TWAMPReflectorConfig {
+pub struct TwampReflectorConfig {
     pub listen: String,
     #[serde(default = "default_862")]
     pub port: u16,

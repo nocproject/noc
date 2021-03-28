@@ -11,12 +11,12 @@ use std::fs;
 const NVRAM_PATH: &str = ".nvram";
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct NVRAM {
+pub struct Nvram {
     pub zeroconf_url: Option<String>,
     pub default_zeroconf_url: Option<String>,
 }
 
-impl NVRAM {
+impl Nvram {
     pub fn new() -> Self {
         Self {
             zeroconf_url: None,
@@ -26,7 +26,7 @@ impl NVRAM {
     pub fn load(&mut self) -> Result<(), Box<dyn Error>> {
         log::debug!("Loading NVRAM from {}", NVRAM_PATH);
         let raw_data = fs::read(NVRAM_PATH)?;
-        let v: NVRAM = serde_json::from_slice(&raw_data)?;
+        let v: Nvram = serde_json::from_slice(&raw_data)?;
         self.zeroconf_url = v.zeroconf_url;
         self.default_zeroconf_url = v.default_zeroconf_url;
         Ok(())
@@ -47,7 +47,7 @@ impl NVRAM {
     }
 }
 
-impl Default for NVRAM {
+impl Default for Nvram {
     fn default() -> Self {
         Self::new()
     }

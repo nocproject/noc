@@ -5,7 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::{NTPTimeStamp, UTCDateTime, MBZ};
+use super::{NtpTimeStamp, UtcDateTime, MBZ};
 use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
@@ -36,7 +36,7 @@ use bytes::{Buf, BufMut, Bytes, BytesMut};
 pub struct ServerStart {
     pub accept: u8,
     pub server_iv: Bytes,
-    pub start_time: UTCDateTime,
+    pub start_time: UtcDateTime,
 }
 
 impl FrameReader for ServerStart {
@@ -51,7 +51,7 @@ impl FrameReader for ServerStart {
         // Server-IV, 16 octets
         let server_iv = s.copy_to_bytes(16);
         // Start-Time, 8 octets
-        let ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // MBZ, 8 octets
         s.advance(8);
         //
@@ -80,7 +80,7 @@ impl FrameWriter for ServerStart {
         }
         s.put(&*self.server_iv);
         // Start-Time, 8 octets
-        let ts: NTPTimeStamp = self.start_time.into();
+        let ts: NtpTimeStamp = self.start_time.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // MBZ, 8 octets

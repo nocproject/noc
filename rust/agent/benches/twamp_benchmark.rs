@@ -5,7 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 use agent::proto::frame::{FrameReader, FrameWriter};
-use agent::proto::twamp::{NTPTimeStamp, TestRequest, TestResponse, UTCDateTime};
+use agent::proto::twamp::{NtpTimeStamp, TestRequest, TestResponse, UtcDateTime};
 use bytes::BytesMut;
 use chrono::{TimeZone, Utc};
 use criterion::{criterion_group, criterion_main, Criterion};
@@ -17,17 +17,17 @@ fn utc_now() {
 
 #[inline]
 fn ntp_timestamp_new(secs: u32, fracs: u32) {
-    NTPTimeStamp::new(secs, fracs);
+    NtpTimeStamp::new(secs, fracs);
 }
 
 #[inline]
-fn ntp_to_utc(ntp_ts: NTPTimeStamp) {
-    let _: UTCDateTime = ntp_ts.into();
+fn ntp_to_utc(ntp_ts: NtpTimeStamp) {
+    let _: UtcDateTime = ntp_ts.into();
 }
 
 #[inline]
-fn utc_to_ntp(utc_ts: UTCDateTime) {
-    let _: NTPTimeStamp = utc_ts.into();
+fn utc_to_ntp(utc_ts: UtcDateTime) {
+    let _: NtpTimeStamp = utc_ts.into();
 }
 
 static TEST_REQUEST: &[u8] = &[
@@ -73,7 +73,7 @@ fn twamp_benchmark(c: &mut Criterion) {
         b.iter(|| ntp_timestamp_new(3822112800, 2147483647))
     });
     c.bench_function("ntp_to_utc", |b| {
-        let ts = NTPTimeStamp::new(3822112800, 2147483647);
+        let ts = NtpTimeStamp::new(3822112800, 2147483647);
         b.iter(|| ntp_to_utc(ts))
     });
     c.bench_function("utc_to_ntp", |b| {

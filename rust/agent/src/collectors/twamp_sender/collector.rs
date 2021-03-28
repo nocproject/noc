@@ -11,8 +11,8 @@ use crate::proto::frame::{FrameReader, FrameWriter};
 use crate::proto::pktmodel::ModelConfig;
 use crate::proto::tos::dscp_to_tos;
 use crate::proto::twamp::{
-    AcceptSession, RequestTWSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
-    StartSessions, StopSessions, TestRequest, TestResponse, UTCDateTime, ACCEPT_OK, MODE_REFUSED,
+    AcceptSession, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
+    StartSessions, StopSessions, TestRequest, TestResponse, UtcDateTime, ACCEPT_OK, MODE_REFUSED,
     MODE_UNAUTHENTICATED,
 };
 use crate::timing::Timing;
@@ -32,7 +32,7 @@ use tokio::{
 };
 
 #[derive(Id, Repeatable)]
-pub struct TWAMPSenderCollector {
+pub struct TwampSenderCollector {
     pub id: String,
     pub interval: u64,
     pub server: String,
@@ -42,12 +42,12 @@ pub struct TWAMPSenderCollector {
     pub tos: u8,
 }
 
-impl TryFrom<&ZkConfigCollector> for TWAMPSenderCollector {
+impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
     type Error = Box<dyn Error>;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
-            CollectorConfig::TWAMPSender(config) => Ok(Self {
+            CollectorConfig::TwampSender(config) => Ok(Self {
                 id: value.id.clone(),
                 interval: value.interval,
                 server: config.server.clone(),
@@ -62,7 +62,7 @@ impl TryFrom<&ZkConfigCollector> for TWAMPSenderCollector {
 }
 
 #[async_trait]
-impl Collectable for TWAMPSenderCollector {
+impl Collectable for TwampSenderCollector {
     async fn collect(&self) -> Result<Status, Box<dyn Error>> {
         //
         log::debug!("[{}] Connecting {}:{}", self.id, self.server, self.port);
@@ -176,7 +176,7 @@ impl TestSession {
     }
     async fn send_request_tw_session(&mut self) -> Result<(), Box<dyn Error>> {
         log::debug!("[{}] Sending Request-TW-Session", self.id);
-        let srq = RequestTWSession {
+        let srq = RequestTwSession {
             ipvn: 4,
             padding_length: 0,
             start_time: Utc::now(),
@@ -379,7 +379,7 @@ impl TestSession {
         let mut buf = BytesMut::with_capacity(16384);
         let t0 = Instant::now();
         'main: for count in 0..n_packets {
-            let mut ts: UTCDateTime;
+            let mut ts: UtcDateTime;
             let n: usize;
             // Try to read response,
             // @todo: Replace with UDPConnection

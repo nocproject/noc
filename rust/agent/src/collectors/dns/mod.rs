@@ -6,12 +6,12 @@
 // ---------------------------------------------------------------------
 
 mod config;
-pub use config::DNSConfig;
+pub use config::DnsConfig;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "dns")] {
         mod collector;
-        pub use collector::DNSCollector;
+        pub use collector::DnsCollector;
     } else {
         use super::StubCollector;
         pub type DNSCollector = StubCollector<DNSConfig>;

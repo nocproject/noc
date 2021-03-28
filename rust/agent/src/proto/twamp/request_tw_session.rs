@@ -5,7 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::{NTPTimeStamp, UTCDateTime, CMD_REQUEST_TW_SESSION, MBZ};
+use super::{NtpTimeStamp, UtcDateTime, CMD_REQUEST_TW_SESSION, MBZ};
 use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
@@ -69,7 +69,7 @@ use bytes::{Buf, BufMut, BytesMut};
 /// Test session utilizes same addresses as the control one. So following fields are ignored:
 /// Sender port, Sender address, Receiver port, Receiver address.
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct RequestTWSession {
+pub struct RequestTwSession {
     pub ipvn: u8,
     // Test session utilizes same addresses as the control one
     // Ignored
@@ -78,17 +78,17 @@ pub struct RequestTWSession {
     // sender_address: Bytes,
     // receiver_address: Bytes,
     pub padding_length: u32,
-    pub start_time: UTCDateTime,
+    pub start_time: UtcDateTime,
     pub timeout: u64,
     pub type_p: u32,
     // hmac: bytes,
 }
 
-impl FrameReader for RequestTWSession {
+impl FrameReader for RequestTwSession {
     fn min_size() -> usize {
         112
     }
-    fn parse(s: &mut BytesMut) -> Result<RequestTWSession, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<RequestTwSession, FrameError> {
         // Command, 1 octet
         let cmd = s.get_u8();
         if cmd != CMD_REQUEST_TW_SESSION {
@@ -125,7 +125,7 @@ impl FrameReader for RequestTWSession {
         // Padding length, 4 octets
         let padding_length = s.get_u32();
         // Start-Time, 8 octets
-        let ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // Timeout, 8 octets
         let timeout = s.get_u64();
         // Type-P, 4 octets
@@ -134,7 +134,7 @@ impl FrameReader for RequestTWSession {
         s.advance(8);
         // HMAC 16 octets
         s.advance(16);
-        Ok(RequestTWSession {
+        Ok(RequestTwSession {
             ipvn,
             padding_length,
             start_time: ts.into(),
@@ -144,7 +144,7 @@ impl FrameReader for RequestTWSession {
     }
 }
 
-impl FrameWriter for RequestTWSession {
+impl FrameWriter for RequestTwSession {
     /// Get size of serialized frame
     fn size(&self) -> usize {
         112
@@ -169,7 +169,7 @@ impl FrameWriter for RequestTWSession {
         // Padding length, 4 octets
         s.put_u32(self.padding_length);
         // Start time, 8 octets
-        let ts: NTPTimeStamp = self.start_time.into();
+        let ts: NtpTimeStamp = self.start_time.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // Timeout, 8 octets
@@ -186,7 +186,7 @@ impl FrameWriter for RequestTWSession {
 
 #[cfg(test)]
 mod tests {
-    use super::RequestTWSession;
+    use super::RequestTwSession;
     use crate::proto::frame::{FrameReader, FrameWriter};
     use bytes::{Buf, BytesMut};
     use chrono::{TimeZone, Utc};
@@ -215,8 +215,8 @@ mod tests {
         0x00, // HMAC, 16 octets
     ];
 
-    fn get_request_tw_session() -> RequestTWSession {
-        RequestTWSession {
+    fn get_request_tw_session() -> RequestTwSession {
+        RequestTwSession {
             ipvn: 4,
             padding_length: 0,
             start_time: Utc.ymd(2021, 2, 12).and_hms(10, 0, 0),
@@ -227,14 +227,14 @@ mod tests {
 
     #[test]
     fn test_request_tw_session_min_size() {
-        assert_eq!(RequestTWSession::min_size(), 112);
+        assert_eq!(RequestTwSession::min_size(), 112);
     }
 
     #[test]
     fn test_request_tw_session_parse() {
         let mut buf = BytesMut::from(REQUEST_TW_SESSION1);
         let expected = get_request_tw_session();
-        let res = RequestTWSession::parse(&mut buf);
+        let res = RequestTwSession::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
         assert_eq!(res, Ok(expected))
     }

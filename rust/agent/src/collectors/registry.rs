@@ -4,10 +4,10 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::dns::{DNSCollector, DNSConfig};
+use super::dns::{DnsCollector, DnsConfig};
 use super::test::{TestCollector, TestConfig};
-use super::twamp_reflector::{TWAMPReflectorCollector, TWAMPReflectorConfig};
-use super::twamp_sender::{TWAMPSenderCollector, TWAMPSenderConfig};
+use super::twamp_reflector::{TwampReflectorCollector, TwampReflectorConfig};
+use super::twamp_sender::{TwampSenderCollector, TwampSenderConfig};
 use super::Runnable;
 use crate::zk::ZkConfigCollector;
 use enum_dispatch::enum_dispatch;
@@ -24,23 +24,23 @@ use std::error::Error;
 #[serde(tag = "type")]
 pub enum CollectorConfig {
     #[serde(rename = "dns")]
-    DNS(DNSConfig),
+    Dns(DnsConfig),
     #[serde(rename = "test")]
     Test(TestConfig),
     #[serde(rename = "twamp_reflector")]
-    TWAMPReflector(TWAMPReflectorConfig),
+    TwampReflector(TwampReflectorConfig),
     #[serde(rename = "twamp_sender")]
-    TWAMPSender(TWAMPSenderConfig),
+    TwampSender(TwampSenderConfig),
 }
 
 /// Enumeration of collectors. Each collector must be added as separate member of enum.
 /// Each collector must implement Runnable trait.
 #[enum_dispatch]
 pub enum Collectors {
-    DNS(DNSCollector),
+    Dns(DnsCollector),
     Test(TestCollector),
-    TWAMPReflector(TWAMPReflectorCollector),
-    TWAMPSender(TWAMPSenderCollector),
+    TwampReflector(TwampReflectorCollector),
+    TwampSender(TwampSenderCollector),
 }
 
 /// Config to collector conversion.
@@ -50,13 +50,13 @@ impl TryFrom<&ZkConfigCollector> for Collectors {
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         Ok(match value.config {
-            CollectorConfig::DNS(_) => Collectors::DNS(DNSCollector::try_from(value)?),
+            CollectorConfig::Dns(_) => Collectors::Dns(DnsCollector::try_from(value)?),
             CollectorConfig::Test(_) => Collectors::Test(TestCollector::try_from(value)?),
-            CollectorConfig::TWAMPReflector(_) => {
-                Collectors::TWAMPReflector(TWAMPReflectorCollector::try_from(value)?)
+            CollectorConfig::TwampReflector(_) => {
+                Collectors::TwampReflector(TwampReflectorCollector::try_from(value)?)
             }
-            CollectorConfig::TWAMPSender(_) => {
-                Collectors::TWAMPSender(TWAMPSenderCollector::try_from(value)?)
+            CollectorConfig::TwampSender(_) => {
+                Collectors::TwampSender(TwampSenderCollector::try_from(value)?)
             }
         })
     }

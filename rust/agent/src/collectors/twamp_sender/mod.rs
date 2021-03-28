@@ -6,12 +6,12 @@
 // ---------------------------------------------------------------------
 
 mod config;
-pub use config::TWAMPSenderConfig;
+pub use config::TwampSenderConfig;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "twamp-sender")] {
         mod collector;
-        pub use collector::TWAMPSenderCollector;
+        pub use collector::TwampSenderCollector;
     } else {
         use super::StubCollector;
         pub type TWAMPSenderCollector = StubCollector<TWAMPSenderConfig>;

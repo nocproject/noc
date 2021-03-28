@@ -28,7 +28,7 @@ pub enum ModelConfig {
     G729,
     /// Constant bitrate session model
     /// Sends packets of `size` at pps `rate`
-    CBR {
+    Cbr {
         #[serde(rename = "model_bandwidth")]
         bandwidth: usize,
         #[serde(rename = "model_size")]
@@ -36,7 +36,7 @@ pub enum ModelConfig {
     },
     /// IMix model
     /// Send packets of variable size utilizing `bandwidth` (bits/s)
-    IMIX {
+    Imix {
         #[serde(rename = "model_bandwidth")]
         bandwidth: usize,
     },
@@ -84,8 +84,8 @@ impl ModelConfig {
         match self {
             Self::G711 => get_pps_model(20 + 8 + 12 + 160, 50),
             Self::G729 => get_pps_model(20 + 8 + 12 + 20, 50),
-            Self::CBR { bandwidth, size } => get_pps_model(size, bandwidth / (size * 8)),
-            Self::IMIX { bandwidth } => get_imix_model(bandwidth),
+            Self::Cbr { bandwidth, size } => get_pps_model(size, bandwidth / (size * 8)),
+            Self::Imix { bandwidth } => get_imix_model(bandwidth),
         }
     }
 }
@@ -118,7 +118,7 @@ mod tests {
     }
     #[test]
     fn test_cbr_model() {
-        let get_packet = ModelConfig::CBR {
+        let get_packet = ModelConfig::Cbr {
             bandwidth: 8_000_000,
             size: 100,
         }
@@ -133,7 +133,7 @@ mod tests {
     }
     #[test]
     fn test_imix_model() {
-        let get_packet = ModelConfig::IMIX {
+        let get_packet = ModelConfig::Imix {
             bandwidth: 12_252_000,
         }
         .get_model();

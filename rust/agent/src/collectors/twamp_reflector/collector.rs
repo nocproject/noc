@@ -7,10 +7,10 @@
 use super::super::{CollectorConfig, Id, Runnable};
 use crate::proto::connection::Connection;
 use crate::proto::twamp::{
-    AcceptSession, RequestTWSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
+    AcceptSession, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, DEFAULT_COUNT, MODE_UNAUTHENTICATED,
 };
-use crate::proto::udp::UDPConnection;
+use crate::proto::udp::UdpConnection;
 use crate::zk::ZkConfigCollector;
 use agent_derive::Id;
 use async_trait::async_trait;
@@ -26,18 +26,18 @@ use tokio::{
 };
 
 #[derive(Id)]
-pub struct TWAMPReflectorCollector {
+pub struct TwampReflectorCollector {
     pub id: String,
     pub listen: String,
     pub port: u16,
 }
 
-impl TryFrom<&ZkConfigCollector> for TWAMPReflectorCollector {
+impl TryFrom<&ZkConfigCollector> for TwampReflectorCollector {
     type Error = Box<dyn Error>;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
-            CollectorConfig::TWAMPReflector(config) => Ok(Self {
+            CollectorConfig::TwampReflector(config) => Ok(Self {
                 id: value.id.clone(),
                 listen: config.listen.clone(),
                 port: config.port,
@@ -57,7 +57,7 @@ struct ClientSession {
 }
 
 #[async_trait]
-impl Runnable for TWAMPReflectorCollector {
+impl Runnable for TwampReflectorCollector {
     async fn run(&self) {
         log::debug!("[{}] Starting collector", self.id);
         let r = TcpListener::bind(format!("{}:{}", self.listen, self.port)).await;
@@ -174,7 +174,7 @@ impl ClientSession {
     }
     async fn recv_request_tw_session(&mut self, t: Duration) -> Result<(), Box<dyn Error>> {
         log::debug!("[{}] Waiting for Request-TW-Session", self.id);
-        let req: RequestTWSession = timeout(t, self.connection.read_frame()).await??;
+        let req: RequestTwSession = timeout(t, self.connection.read_frame()).await??;
         log::debug!(
             "[{}] Received Request-TW-Session. Client timestamp={:?}, Type-P={}",
             self.id,
@@ -239,7 +239,7 @@ impl ClientSession {
         // Timeout
         let recv_timeout = Duration::from_nanos(3_000_000_000);
         // Reflector socket
-        let mut socket = UDPConnection::bind("0.0.0.0:0").await?;
+        let mut socket = UdpConnection::bind("0.0.0.0:0").await?;
         // Reflector TTL must be set to 255
         socket.set_ttl(255)?;
         // Send back allocated port to session
