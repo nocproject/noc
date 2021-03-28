@@ -12,17 +12,17 @@ use std::net::SocketAddr;
 use tokio::net::{ToSocketAddrs, UdpSocket};
 
 #[derive(Debug)]
-pub struct UDPConnection {
+pub struct UdpConnection {
     socket: UdpSocket,
     buffer: BytesMut,
 }
 
 const UDP_BUFF_CAPACITY: usize = 16384;
 
-impl UDPConnection {
-    pub async fn bind<A: ToSocketAddrs>(addr: A) -> std::io::Result<UDPConnection> {
+impl UdpConnection {
+    pub async fn bind<A: ToSocketAddrs>(addr: A) -> std::io::Result<UdpConnection> {
         let socket = UdpSocket::bind(addr).await?;
-        Ok(UDPConnection {
+        Ok(UdpConnection {
             socket,
             buffer: BytesMut::with_capacity(UDP_BUFF_CAPACITY),
         })

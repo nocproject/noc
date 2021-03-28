@@ -7,7 +7,7 @@
  */
 use crate::cmd::CmdArgs;
 use crate::collectors::{Collectors, Runnable};
-use crate::nvram::NVRAM;
+use crate::nvram::Nvram;
 use crate::zk::{ZkConfig, ZkConfigCollector};
 use std::collections::HashMap;
 use std::convert::TryFrom;
@@ -20,7 +20,7 @@ use tokio::time::{interval, sleep, Duration, Interval};
 use trust_dns_resolver::TokioAsyncResolver;
 
 pub struct Agent {
-    nvram: NVRAM,
+    nvram: Nvram,
     zeroconf_url: Option<String>,
     resolver: Option<TokioAsyncResolver>,
     config_interval: u64,
@@ -33,7 +33,7 @@ const CONFIG_RETRY_INTERVAL: u64 = 10;
 impl Agent {
     pub fn new_from(_args: CmdArgs) -> Self {
         Self {
-            nvram: NVRAM::new(),
+            nvram: Nvram::new(),
             zeroconf_url: None,
             resolver: None,
             config_interval: CLEAN_CONFIG_FETCH_INTERVAL,

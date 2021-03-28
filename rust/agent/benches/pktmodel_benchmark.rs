@@ -17,7 +17,7 @@ fn pktmodel_benchmark(c: &mut Criterion) {
         b.iter(|| get_packet(0));
     });
     c.bench_function("cbr_get_packet", |b| {
-        let get_packet = ModelConfig::CBR {
+        let get_packet = ModelConfig::Cbr {
             bandwidth: 10_000_000,
             size: 100,
         }
@@ -25,7 +25,7 @@ fn pktmodel_benchmark(c: &mut Criterion) {
         b.iter(|| get_packet(0));
     });
     c.bench_function("imix_get_packet", |b| {
-        let get_packet = ModelConfig::IMIX {
+        let get_packet = ModelConfig::Imix {
             bandwidth: 10_000_000,
         }
         .get_model();

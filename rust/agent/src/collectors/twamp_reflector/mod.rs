@@ -6,12 +6,12 @@
 // ---------------------------------------------------------------------
 
 mod config;
-pub use config::TWAMPReflectorConfig;
+pub use config::TwampReflectorConfig;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "twamp-reflector")] {
         mod collector;
-        pub use collector::TWAMPReflectorCollector;
+        pub use collector::TwampReflectorCollector;
     } else {
         use super::StubCollector;
         pub type TWAMPReflectorCollector = StubCollector<TWAMPReflectorConfig>;

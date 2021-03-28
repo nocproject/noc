@@ -8,7 +8,7 @@
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct DNSConfig {
+pub struct DnsConfig {
     pub query: String,
     #[serde(default = "default_type_a")]
     pub query_type: String,

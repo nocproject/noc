@@ -9,7 +9,7 @@ use crate::proto::pktmodel::ModelConfig;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct TWAMPSenderConfig {
+pub struct TwampSenderConfig {
     pub server: String,
     #[serde(default = "default_862")]
     pub port: u16,

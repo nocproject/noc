@@ -20,7 +20,7 @@ use trust_dns_proto::xfer::dns_request::DnsRequestOptions;
 use trust_dns_resolver::TokioAsyncResolver;
 
 #[derive(Id, Repeatable)]
-pub struct DNSCollector {
+pub struct DnsCollector {
     pub id: String,
     pub interval: u64,
     pub query: String,
@@ -30,12 +30,12 @@ pub struct DNSCollector {
     pub min_success: usize,
 }
 
-impl TryFrom<&ZkConfigCollector> for DNSCollector {
+impl TryFrom<&ZkConfigCollector> for DnsCollector {
     type Error = Box<dyn Error>;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
-            CollectorConfig::DNS(config) => Ok(Self {
+            CollectorConfig::Dns(config) => Ok(Self {
                 id: value.id.clone(),
                 interval: value.interval,
                 query: config.query.clone(),
@@ -50,7 +50,7 @@ impl TryFrom<&ZkConfigCollector> for DNSCollector {
 }
 
 #[async_trait]
-impl Collectable for DNSCollector {
+impl Collectable for DnsCollector {
     async fn collect(&self) -> Result<Status, Box<dyn Error>> {
         let resolver = TokioAsyncResolver::tokio_from_system_conf()?;
         let mut success: usize = 0;

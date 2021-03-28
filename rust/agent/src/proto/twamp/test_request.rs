@@ -5,7 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::{NTPTimeStamp, UTCDateTime};
+use super::{NtpTimeStamp, UtcDateTime};
 use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
@@ -33,7 +33,7 @@ use bytes::{Buf, BufMut, BytesMut};
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TestRequest {
     pub seq: u32,
-    pub timestamp: UTCDateTime,
+    pub timestamp: UtcDateTime,
     pub err_estimate: u16,
     // Padding to size, excluding IP + UDP
     pub pad_to: usize,
@@ -48,7 +48,7 @@ impl FrameReader for TestRequest {
         // Sequence number, 4 octets
         let seq = s.get_u32();
         // Timestamp, 8 octets
-        let ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // Err estimate, 2 octets
         let err_estimate = s.get_u16();
         // Skip padding
@@ -74,7 +74,7 @@ impl FrameWriter for TestRequest {
         // Sequence number, 4 octets
         s.put_u32(self.seq);
         // Timestamp, 8 octets
-        let ts: NTPTimeStamp = self.timestamp.into();
+        let ts: NtpTimeStamp = self.timestamp.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // Err estimate, 2 octets
