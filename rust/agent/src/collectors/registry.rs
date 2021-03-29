@@ -18,7 +18,7 @@ use std::error::Error;
 /// Collector config variants.
 /// Each collector must have own variant.
 /// Use
-/// #[serde(rename = "<name>")]
+/// `#[serde(rename = "<name>")]`
 /// To bind particular collector with `type` field of configuration JSON
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
