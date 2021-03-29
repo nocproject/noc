@@ -8,7 +8,7 @@
 use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
 use crate::proto::connection::Connection;
 use crate::proto::frame::{FrameReader, FrameWriter};
-use crate::proto::pktmodel::ModelConfig;
+use crate::proto::pktmodel::{GetPacket, PacketModels};
 use crate::proto::tos::dscp_to_tos;
 use crate::proto::twamp::{
     AcceptSession, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
@@ -38,7 +38,7 @@ pub struct TwampSenderCollector {
     pub server: String,
     pub port: u16,
     pub n_packets: usize,
-    pub model: ModelConfig,
+    pub model: PacketModels,
     pub tos: u8,
 }
 
@@ -53,7 +53,7 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
                 server: config.server.clone(),
                 port: config.port,
                 n_packets: config.n_packets,
-                model: config.model,
+                model: PacketModels::try_from(config.model.clone())?,
                 tos: dscp_to_tos(config.dscp.to_lowercase()).ok_or("invalid dscp")?,
             }),
             _ => Err("invalid config".into()),
@@ -85,11 +85,11 @@ struct TestSession {
     reflector_addr: String,
     reflector_port: u16,
     n_packets: usize,
-    model: ModelConfig,
+    model: PacketModels,
 }
 
 impl TestSession {
-    pub fn new(stream: TcpStream, model: ModelConfig) -> Self {
+    pub fn new(stream: TcpStream, model: PacketModels) -> Self {
         TestSession {
             id: String::new(),
             connection: Connection::new(stream),
@@ -262,7 +262,7 @@ impl TestSession {
         id: String,
         socket: Arc<UdpSocket>,
         addr: &SocketAddr,
-        model: ModelConfig,
+        model: PacketModels,
         n_packets: usize,
         udp_overhead: usize,
     ) -> Result<SenderStats, &'static str> {
@@ -292,7 +292,7 @@ impl TestSession {
     async fn test_sender(
         socket: Arc<UdpSocket>,
         addr: &SocketAddr,
-        model: ModelConfig,
+        model: PacketModels,
         n_packets: usize,
         udp_overhead: usize,
     ) -> Result<SenderStats, Box<dyn Error>> {
@@ -300,12 +300,11 @@ impl TestSession {
         let mut out_octets = 0usize;
         let t0 = Instant::now();
         let mut pkt_sent = 0usize;
-        let get_packet = model.get_model();
         let mut seq = 0usize;
         let mut now = tokio::time::Instant::now();
         let mut err_ns = 0u64;
         loop {
-            let pkt = get_packet(seq);
+            let pkt = model.get_packet(seq);
             let req = TestRequest {
                 seq: pkt.seq as u32,
                 timestamp: Utc::now(),
