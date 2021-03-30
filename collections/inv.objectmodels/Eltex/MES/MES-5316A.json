@@ -1,0 +1,213 @@
+{
+    "name": "Eltex | MES | MES-5316A",
+    "$collection": "inv.objectmodels",
+    "uuid": "cf292d96-a7b5-235c-95ed-1f8d13f4b57f",
+    "vendor__code": "ELTEX",
+    "description": "1x10/100/1000BASE-T (ООВ), 16x10GBASE-R (SFP+)/1000BASE-X (SFP)",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "connections": [
+        {
+            "description": "USB Port",
+            "direction": "i",
+            "gender": "f",
+            "name": "usb",
+            "protocols": [">USB10", ">USB11", ">USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "tengigabitethernet 1/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te1_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te2_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te3_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te4_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/5 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te5_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/6 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te6_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/7 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te7_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/8 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te8_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/9 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te9_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/10 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te10_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/11 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te11_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/12 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te12_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/13 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te13_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/14 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te14_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/15 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te15_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/16 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "te16_sfp+",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Power slot main",
+            "direction": "i",
+            "gender": "f",
+            "name": "Main_psu",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "Power slot Redundant",
+            "direction": "i",
+            "gender": "f",
+            "name": "Redundant_psu",
+            "type__name": "Eltex | MES | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES-5316A"]
+        },
+        "dimensions": {
+            "depth": 275,
+            "height": 44,
+            "width": 430
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 57.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.6
+        }
+    }
+}

@@ -1,0 +1,162 @@
+{
+    "name": "Eltex | MES24xx | MES2408CP",
+    "$collection": "inv.objectmodels",
+    "uuid": "6ad54c7c-5284-43ef-bf82-790c8680cf13",
+    "vendor__code": "ELTEX",
+    "description": "8 х 10/100/1000BASE-T (PoE/PoE+) + 2 x 1000BASE-X(SFP) Combo Ports",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi9_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/9 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Gi9_sfp",
+            "name": "Gi9_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabiteEthernet 0/9 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "GigabiteEthernet 0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi10_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabiteEthernet 0/10 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Gi10_sfp",
+            "name": "Gi10_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabiteEthernet 0/10 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "Gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES2408CP"]
+        },
+        "dimensions": {
+            "depth": 177,
+            "height": 44,
+            "width": 310
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 160.0
+        },
+        "rackmount": {
+            "units": 1.0,
+            "weight": 2.16
+        }
+    }
+}
