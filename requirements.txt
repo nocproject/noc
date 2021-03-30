@@ -24,7 +24,7 @@ Django==3.1.7
 FastAPI==0.63.0
 Jinja2==2.8
 PyYAML==5.3.1
-Pygments==2.2.0
+Pygments==2.7.4
 XlsxWriter==0.9.3
 atomicl==0.1.1
 blinker==1.4
