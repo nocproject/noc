@@ -81,7 +81,7 @@ def test_set_power():
 
 
 def test_consume_objects():
-    profile = segment = NetworkSegmentProfile(name="mock", is_persistent=False)
+    profile = NetworkSegmentProfile(name="mock", is_persistent=False)
     attacker = Opponent(segment=NetworkSegment(id=ns_id1, name="attacker", profile=profile))
     target = Opponent(segment=NetworkSegment(id=ns_id2, name="target", profile=profile))
     policy = MockBioSegPolicy(attacker, target)
