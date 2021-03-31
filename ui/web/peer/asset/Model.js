@@ -37,7 +37,7 @@ Ext.define("NOC.peer.asset.Model", {
         },
         {
             name: "labels",
-            type: "string"
+            type: "auto"
         }
     ]
 });
