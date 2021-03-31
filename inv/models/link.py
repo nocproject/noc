@@ -209,7 +209,9 @@ class Link(Document):
             ManagedObject.update_links(self.linked_objects)
         mo = self.interfaces[0].managed_object
         for ri in self.interfaces[1:]:
-            BioSegTrial.schedule_trial(mo.segment, ri.managed_object.segment, mo, ri.managed_object, reason="link")
+            BioSegTrial.schedule_trial(
+                mo.segment, ri.managed_object.segment, mo, ri.managed_object, reason="link"
+            )
 
     def on_delete(self):
         from noc.sa.models.managedobject import ManagedObject
