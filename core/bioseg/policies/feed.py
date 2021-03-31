@@ -32,5 +32,8 @@ class FeedBioSegPolicy(BaseBioSegPolicy):
 
     def trial(self) -> str:
         self.logger.info("Applying %s policy", self.name)
-        self.consume_objects(self.attacker, self.target)
+        if self.attacker.segment.profile.is_persistent and self.attacker.object:
+            self.consume_object(self.attacker.object, self.target.segment)
+        else:
+            self.consume_objects(self.attacker.segment, self.target.segment)
         return "feed"

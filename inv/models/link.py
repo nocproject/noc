@@ -196,6 +196,7 @@ class Link(Document):
 
     def on_save(self):
         from noc.sa.models.managedobject import ManagedObject
+        from noc.inv.models.biosegtrial import BioSegTrial
 
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
             self.update_topology()
@@ -206,6 +207,9 @@ class Link(Document):
                 "sa.ManagedObject", ["noc::is_linked::="], filter_ids=self.linked_objects
             )
             ManagedObject.update_links(self.linked_objects)
+        mo = self.interfaces[0].managed_object
+        for ri in self.interfaces[1:]:
+            BioSegTrial.schedule_trial(mo.segment, ri.managed_object.segment, mo, ri.managed_object, reason="link")
 
     def on_delete(self):
         from noc.sa.models.managedobject import ManagedObject

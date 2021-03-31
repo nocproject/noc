@@ -32,5 +32,8 @@ class EatBioSegPolicy(BaseBioSegPolicy):
 
     def trial(self) -> str:
         self.logger.info("Applying %s policy", self.name)
-        self.consume_objects(self.target, self.attacker)
+        if self.target.segment.profile.is_persistent and self.target.object:
+            self.consume_object(self.target.object, self.attacker.segment)
+        else:
+            self.consume_objects(self.target.segment, self.attacker.segment)
         return "eat"

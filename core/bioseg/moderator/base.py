@@ -14,6 +14,7 @@ from noc.inv.models.biosegtrial import BioSegTrial
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.networksegmentprofile import BioCollisionPolicy
 from noc.sa.models.managedobject import ManagedObject
+from ..policies.base import Opponent
 from ..policies.loader import loader
 
 logger = logging.getLogger(__name__)
@@ -156,8 +157,8 @@ def moderate(
     logger.info("Effective settings is: %s:%s", cp, power_funcs)
     # Do trial
     outcome = effective_policy(
-        attacker,
-        target,
+        Opponent(attacker, attacker_object),
+        Opponent(target, target_object),
         logger=logger,
         calcified_profile=cp,
         segment_power_function=power_funcs,

@@ -51,12 +51,12 @@ class MergeBioSegPolicy(BaseBioSegPolicy):
         Calculate effective policy
         :return:
         """
-        attacker_power = self.get_power(self.attacker)
-        target_power = self.get_power(self.target)
+        attacker_power = self.get_power(self.attacker.segment)
+        target_power = self.get_power(self.target.segment)
         if attacker_power > target_power:
             return EatBioSegPolicy
         if attacker_power < target_power:
             return FeedBioSegPolicy
-        if self.attacker.id < self.target.id:
+        if self.attacker.segment.id < self.target.segment.id:
             return EatBioSegPolicy
         return FeedBioSegPolicy

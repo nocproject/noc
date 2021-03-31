@@ -65,10 +65,14 @@ class BioSegTrial(Document):
         reason="manual",
     ) -> Optional["BioSegTrial"]:
         if target.id == attacker.id:
-            # Not trial same
-            return None
-        elif attacker.profile.is_persistent and attacker.parent != target.parent:
-            # Persistent segment can trial only it has one parent (ring)
+            # Trial same only if persistent
+            if not (attacker.profile.is_persistent or attacker.profile.is_persistent):
+                return None
+        # elif attacker.profile.is_persistent and attacker.parent != target.parent:
+        #     # Persistent segment can trial only it has one parent (ring)
+        #     return None
+        # If policy is empty - skip
+        if not (attacker.profile.bio_collision_policy or target.profile.bio_collision_policy):
             return None
         trial = BioSegTrial(
             reason=reason, attacker_id=attacker.id, target_id=target.id, processed=False

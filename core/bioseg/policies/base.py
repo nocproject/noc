@@ -7,6 +7,7 @@
 
 # Python modules
 import logging
+from dataclasses import dataclass
 from typing import Optional, List, Dict
 from django.db import connection
 
@@ -16,6 +17,12 @@ from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.topology.segment import update_uplinks
+
+
+@dataclass
+class Opponent(object):
+    segment: NetworkSegment
+    object: Optional[ManagedObject] = None
 
 
 class BaseBioSegPolicy(object):
@@ -28,8 +35,8 @@ class BaseBioSegPolicy(object):
 
     def __init__(
         self,
-        attacker: NetworkSegment,
-        target: NetworkSegment,
+        attacker: Opponent,
+        target: Opponent,
         logger: Optional[logging.Logger] = None,
         calcified_profile: Optional[NetworkSegmentProfile] = None,
         segment_power_function: Optional[str] = None,
@@ -76,6 +83,24 @@ class BaseBioSegPolicy(object):
 
     def set_power(self, seg: NetworkSegment, power: int) -> None:
         self._powers[seg] = power
+
+    def consume_object(self, src: ManagedObject, dst: NetworkSegment) -> None:
+        """
+        Move one object dst segment
+        :param src:
+        :param dst:
+        :return:
+        """
+        self.logger.info("Moving %s from %s to %s", src.name, src.segment.name, dst.name)
+        dp = 0
+        dst_pwr = self.get_power(dst)
+        src.segment = dst
+        src.save()
+        src._reset_caches()
+        dp += src.object_profile.level
+        self.set_power(dst, dst_pwr + dp)
+        if dst.profile.is_persistent:
+            self.refresh_topology(dst)
 
     def get_objects(self, seg: NetworkSegment) -> List[ManagedObject]:
         return list(ManagedObject.objects.filter(segment=seg.id))
