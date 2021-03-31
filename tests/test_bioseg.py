@@ -50,7 +50,9 @@ class MockBioSegPolicy(BaseBioSegPolicy):
             profile = ManagedObjectProfile(name="mock", level=self.LEVEL)
             self._objects = [
                 patch_model(
-                    ManagedObject(name="%d" % (i + 1), segment=self.target, object_profile=profile)
+                    ManagedObject(
+                        name="%d" % (i + 1), segment=self.target.segment, object_profile=profile
+                    )
                 )
                 for i in range(self.N)
             ]
@@ -128,8 +130,8 @@ def test_merge_policy(a_power, a_id, t_power, t_id, expected):
     target = Opponent(segment=NetworkSegment(id=t_id, name="target"))
     policy = MergeBioSegPolicy(attacker, target)
     # Mock powers
-    policy.set_power(attacker, a_power)
-    policy.set_power(target, t_power)
+    policy.set_power(attacker.segment, a_power)
+    policy.set_power(target.segment, t_power)
     effective_policy = policy.get_effective_policy()
     assert effective_policy
     assert effective_policy.name == expected
