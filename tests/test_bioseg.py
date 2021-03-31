@@ -17,6 +17,7 @@ from noc.core.bioseg.policies.loader import loader
 from noc.core.bioseg.policies.base import BaseBioSegPolicy
 from noc.core.bioseg.policies.keep import KeepBioSegPolicy
 from noc.core.bioseg.policies.merge import MergeBioSegPolicy
+from noc.core.bioseg.policies.base import Opponent
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile, BioCollisionPolicy
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
@@ -67,43 +68,43 @@ def test_loader(name):
 
 
 def test_set_power():
-    attacker = NetworkSegment(id=ns_id1, name="attacker")
-    target = NetworkSegment(id=ns_id2, name="target")
+    attacker = Opponent(segment=NetworkSegment(id=ns_id1, name="attacker"))
+    target = Opponent(segment=NetworkSegment(id=ns_id2, name="target"))
     policy = BaseBioSegPolicy(attacker, target)
     assert not policy._powers
-    policy.set_power(attacker, 10)
-    assert policy.get_power(attacker) == 10
-    policy.set_power(target, 20)
-    assert policy.get_power(target) == 20
-    policy.set_power(attacker, 30)
-    assert policy.get_power(attacker) == 30
+    policy.set_power(attacker.segment, 10)
+    assert policy.get_power(attacker.segment) == 10
+    policy.set_power(target.segment, 20)
+    assert policy.get_power(target.segment) == 20
+    policy.set_power(attacker.segment, 30)
+    assert policy.get_power(attacker.segment) == 30
 
 
 def test_consume_objects():
-    profile = NetworkSegmentProfile(name="mock", is_persistent=False)
-    attacker = NetworkSegment(id=ns_id1, name="attacker", profile=profile)
-    target = NetworkSegment(id=ns_id2, name="target", profile=profile)
+    profile = segment = NetworkSegmentProfile(name="mock", is_persistent=False)
+    attacker = Opponent(segment=NetworkSegment(id=ns_id1, name="attacker", profile=profile))
+    target = Opponent(segment=NetworkSegment(id=ns_id2, name="target", profile=profile))
     policy = MockBioSegPolicy(attacker, target)
-    assert len(policy.get_objects(attacker)) == 0
-    assert len(policy.get_objects(target)) == policy.N
-    policy.consume_objects(target, attacker)
-    assert len(policy.get_objects(attacker)) == policy.N
-    assert len(policy.get_objects(target)) == 0
-    assert policy.get_power(attacker) == policy.N * policy.LEVEL
-    assert policy.get_power(target) == 0
+    assert len(policy.get_objects(attacker.segment)) == 0
+    assert len(policy.get_objects(target.segment)) == policy.N
+    policy.consume_objects(target.segment, attacker.segment)
+    assert len(policy.get_objects(attacker.segment)) == policy.N
+    assert len(policy.get_objects(target.segment)) == 0
+    assert policy.get_power(attacker.segment) == policy.N * policy.LEVEL
+    assert policy.get_power(target.segment) == 0
 
 
 def test_base_trial():
-    attacker = NetworkSegment(name="attacker")
-    target = NetworkSegment(name="target")
+    attacker = Opponent(segment=NetworkSegment(name="attacker"))
+    target = Opponent(segment=NetworkSegment(name="target"))
     policy = BaseBioSegPolicy(attacker, target)
     with pytest.raises(NotImplementedError):
         policy.trial()
 
 
 def test_keep_trial():
-    attacker = NetworkSegment(name="attacker")
-    target = NetworkSegment(name="target")
+    attacker = Opponent(segment=NetworkSegment(name="attacker"))
+    target = Opponent(segment=NetworkSegment(name="target"))
     policy = KeepBioSegPolicy(attacker, target)
     assert policy.trial() == "keep"
 
@@ -123,8 +124,8 @@ def test_merge_policy(a_power, a_id, t_power, t_id, expected):
     :return:
     """
     # Mock segments
-    attacker = NetworkSegment(id=a_id, name="attacker")
-    target = NetworkSegment(id=t_id, name="target")
+    attacker = Opponent(segment=NetworkSegment(id=a_id, name="attacker"))
+    target = Opponent(segment=NetworkSegment(id=t_id, name="target"))
     policy = MergeBioSegPolicy(attacker, target)
     # Mock powers
     policy.set_power(attacker, a_power)
