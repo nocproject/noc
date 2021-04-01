@@ -42,7 +42,7 @@ from noc.sa.interfaces.base import (
     StringParameter,
     StringListParameter,
 )
-from noc.maintenance.models.maintenance import Maintenance
+from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
@@ -803,22 +803,17 @@ class AlarmApplication(ExtApplication):
             for x in data:
                 x["isInMaintenance"] = x["managed_object"] in mtc
         else:
-            mos = [x["managed_object"] for x in data]
-            pipeline = [
-                {"$match": {"affected_objects.object": {"$in": mos}}},
-                {"$unwind": "$affected_objects"},
-                {
-                    "$project": {
-                        "_id": 0,
-                        "managed_object": "$affected_objects.object",
-                        "interval": ["$start", "$stop"],
-                    }
-                },
-                {"$group": {"_id": "$managed_object", "intervals": {"$push": "$interval"}}},
-            ]
-            mtc = {
-                x["_id"]: x["intervals"] for x in Maintenance._get_collection().aggregate(pipeline)
-            }
+            mos = set([x["managed_object"] for x in data])
+            mtc = {}
+            for mo in list(mos):
+                interval = []
+                for ao in AffectedObjects._get_collection().find(
+                    {"affected_objects.object": {"$eq": mo}}, {"_id": 0, "maintenance": 1}
+                ):
+                    m = Maintenance.get_by_id(ao["maintenance"])
+                    interval += [(m.start, m.stop)]
+                if interval:
+                    mtc[mo] = interval
             for x in data:
                 if x["managed_object"] in mtc:
                     left, right = list(zip(*mtc[x["managed_object"]]))
