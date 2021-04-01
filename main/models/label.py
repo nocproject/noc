@@ -9,6 +9,7 @@
 from typing import Optional, List, Set, Iterable
 from threading import Lock
 import operator
+from itertools import accumulate
 
 # Third-party modules
 from mongoengine.document import Document
@@ -89,7 +90,7 @@ class Label(Document):
     enable_vpnprofile = BooleanField()
     # Exposition scope
     expose_metric = BooleanField()
-    expose_managedobject = BooleanField()
+    expose_datastream = BooleanField()
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -118,6 +119,52 @@ class Label(Document):
     def on_delete(self):
         if self.is_wildcard and any(Label.objects.filter(name__startswith=self.name[:-1])):
             raise ValueError("Cannot delete wildcard label with matched labels")
+        if self.is_builtin:
+            raise ValueError("Cannot delete builtin label with matched labels")
+
+    @staticmethod
+    def get_wildcards(label: str) -> List[str]:
+        return [label] + [
+            f"{ll}::*" for ll in accumulate(label.split("::")[:-1], lambda acc, x: f"{acc}::{x}")
+        ]
+
+    @classmethod
+    def get_effective_setting(cls, label: str, setting: str) -> bool:
+        wildcards = cls.get_wildcards(label)
+        coll = cls._get_collection()
+        r = next(
+            coll.aggregate(
+                [
+                    {"$match": {"name": {"$in": wildcards}}},
+                    {"$group": {"_id": None, setting: {"$max": f"${setting}"}}},
+                ]
+            ),
+            {},
+        )
+        return bool(r.get(setting))
+
+    @property
+    def effective_settings(self):
+        """
+        Returns dict with effective settings
+        """
+        es = {ff: False for ff in self._fields if ff.startswith("enable")}
+        wildcards = self.get_wildcards(self.name)
+        coll = self._get_collection()
+        group = {setting: {"$max": f"${setting}"} for setting in es}
+        group["_id"] = None
+        r = next(
+            coll.aggregate(
+                [
+                    {"$match": {"name": {"$in": wildcards}}},
+                    {"$group": group},
+                    {"$project": {"_id": -1}},
+                ]
+            ),
+            {},
+        )
+        es.update(r)
+        return es
 
     @classmethod
     def merge_labels(cls, iter_labels: Iterable[List[str]]) -> List[str]:
@@ -158,6 +205,14 @@ class Label(Document):
         :return:
         """
         return self.name.endswith("::*")
+
+    @property
+    def is_builtin(self) -> bool:
+        """
+        Returns True if the label is protected
+        :return:
+        """
+        return self.name.startswith("noc::")
 
     def iter_scopes(self) -> Iterable[str]:
         """
@@ -268,24 +323,17 @@ class Label(Document):
             # Clean up labels
             labels = Label.merge_labels(default_iter_effective_labels(instance))
             instance.labels = labels
-            # Build and clean up effective labels
-            can_expose_label = getattr(sender, "can_expose_label", lambda x: True)
-            labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
-            instance.effective_labels = [
-                ll.name
-                for ll in Label.objects.filter(name__in=Label.merge_labels(labels_iter(instance)))
-                if can_expose_label(ll)
-            ]
-            # Validate all labels
-            all_labels = set(instance.labels) | set(instance.effective_labels)
+            # Validate instance labels
             can_set_label = getattr(sender, "can_set_label", lambda x: True)
-            for label in Label.objects.filter(name__in=list(all_labels)):
+            for label in set(instance.labels):
                 if not can_set_label(label):
                     # Check can_set_label method
                     raise ValueError(f"Invalid label: {label.name}")
-                all_labels.discard(label.name)
-            if all_labels:
-                raise ValueError(f"Invalid labels: {', '.join(all_labels)}")
+            # Build and clean up effective labels. Filter can_set_labels
+            labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
+            instance.effective_labels = [
+                ll.name for ll in Label.merge_labels(labels_iter(instance)) if can_set_label(ll)
+            ]
 
         # Install handlers
         if is_document(m_cls):
