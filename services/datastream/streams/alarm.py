@@ -39,7 +39,7 @@ class AlarmDataStream(DataStream):
             "labels": [],
             "tags": [],  # Alias for compat
         }
-        for label in alarm.effective_labels:
+        for label in alarm.labels:
             if Label.get_effective_setting(label=label, setting="expose_datastream"):
                 r["labels"].append(label)
                 r["tags"].append(label)

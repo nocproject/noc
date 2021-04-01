@@ -154,7 +154,7 @@ class Model(object, metaclass=ModelBase):
         :return:
         """
         return (
-            f"CREATE TABLE IF NOT EXISTS {cls._get_distributed_db_table()} "
+            f"CREATE TABLE IF NOT EXISTS {cls._get_distributed_db_table()} AS {cls._get_raw_db_table()} "
             f"ENGINE = Distributed('{config.clickhouse.cluster}', '{config.clickhouse.db}', '{cls._get_raw_db_table()}')"
         )
 
