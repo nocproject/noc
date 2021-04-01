@@ -234,7 +234,7 @@ class PingService(TornadoService):
                 data["rtt"] = int(rtt * 1000000)
             if ps.report_attempts:
                 data["attempts"] = attempts
-            self.register_metrics("ping", [data], key=ps.id)
+            self.register_metrics("ping", [data], key=ps.bi_id)
 
 
 if __name__ == "__main__":
