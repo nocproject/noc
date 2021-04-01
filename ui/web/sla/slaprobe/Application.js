@@ -9,7 +9,7 @@ console.debug("Defining NOC.sla.slaprobe.Application");
 Ext.define("NOC.sla.slaprobe.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.LabelField",
         "NOC.sla.slaprobe.Model",
         "NOC.sa.managedobject.LookupField",
         "NOC.sla.slaprofile.LookupField"
@@ -59,9 +59,9 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     flex: 1
                 },
                 {
-                    text: __("Tags"),
-                    dataIndex: "tags",
-                    renderer: NOC.render.Tags,
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
                     width: 100
                 }
             ],
@@ -130,11 +130,14 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
                     allowBlank: true,
-                    uiStyle: "extra"
+                    uiStyle: "extra",
+                    query: {
+                        "enable_slaprobe": true
+                    },
                 }
             ],
             openDashboard: {

@@ -632,7 +632,7 @@ class ManagedObjectProfile(NOCModel):
                 "enable_box_discovery",
                 "enable_periodic_discovery",
                 "enable_ping",
-                "tags",
+                "labels",
             }
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
@@ -770,13 +770,7 @@ class ManagedObjectProfile(NOCModel):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_managedobjectprofile:
-            return True
-        return False
-
-    @classmethod
-    def can_expose_label(cls, label):
-        return False
+        return Label.get_effective_setting(label, setting="enable_managedobjectprofile")
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

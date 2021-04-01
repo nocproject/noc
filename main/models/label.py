@@ -88,6 +88,10 @@ class Label(Document):
     enable_vlanprofile = BooleanField()
     enable_vpn = BooleanField()
     enable_vpnprofile = BooleanField()
+    # SLA
+    enable_slaprobe = BooleanField()
+    # FM
+    enable_alarm = BooleanField()
     # Exposition scope
     expose_metric = BooleanField()
     expose_datastream = BooleanField()
@@ -234,6 +238,8 @@ class Label(Document):
         fg_color1=0x000000,
         bg_color2=0xFFFFFF,
         fg_color2=0x000000,
+        expose_metric=False,
+        expose_datastream=False,
     ) -> None:
         """
         Ensure label is exists, create when necessary
@@ -256,6 +262,8 @@ class Label(Document):
             fg_color1=fg_color1,
             bg_color2=bg_color2,
             fg_color2=fg_color2,
+            expose_metric=expose_metric,
+            expose_datastream=expose_datastream,
         ).save()
 
     def _ensure_wildcards(self):
@@ -332,7 +340,7 @@ class Label(Document):
             # Build and clean up effective labels. Filter can_set_labels
             labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
             instance.effective_labels = [
-                ll.name for ll in Label.merge_labels(labels_iter(instance)) if can_set_label(ll)
+                ll for ll in Label.merge_labels(labels_iter(instance)) if can_set_label(ll)
             ]
 
         # Install handlers

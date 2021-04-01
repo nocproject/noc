@@ -883,9 +883,8 @@ class Object(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_object:
-            return True
-        return False
+        return Label.get_effective_setting(label, setting="enable_object")
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)

@@ -132,7 +132,10 @@ class MetricScope(Document):
     def on_save(self):
         for label in self.labels:
             Label.ensure_label(
-                label.label, description="Auto-created for PM scope", is_protected=True
+                label.label,
+                description="Auto-created for PM scope",
+                is_protected=True,
+                expose_metric=True,
             )
 
     @property

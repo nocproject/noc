@@ -65,7 +65,7 @@ class SLACheck(DiscoveryCheck):
                     "type": new_data["type"],
                     "target": new_data["target"],
                     "hw_timestamp": new_data.get("hw_timestamp", False),
-                    "tags": new_data.get("tags", []),
+                    "labels": new_data.get("tags", []),
                 },
             )
             del new_probes[group, p.name]
@@ -81,6 +81,6 @@ class SLACheck(DiscoveryCheck):
                 type=new_data["type"],
                 target=new_data["target"],
                 hw_timestamp=new_data.get("hw_timestamp", False),
-                tags=new_data.get("tags", []),
+                labels=new_data.get("tags", []),
             )
             probe.save()

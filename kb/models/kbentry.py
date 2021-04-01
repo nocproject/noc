@@ -190,9 +190,7 @@ class KBEntry(NOCModel):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_kbentry:
-            return True
-        return False
+        return Label.get_effective_setting(label, setting="enable_kbentry")
 
 
 # No delete, fixed 'KBEntry' object has no attribute 'kbentryattachment_set'

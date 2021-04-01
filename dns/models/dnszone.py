@@ -413,6 +413,4 @@ class DNSZone(NOCModel):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_dnszone:
-            return True
-        return False
+        return Label.get_effective_setting(label, setting="enable_dnszone")

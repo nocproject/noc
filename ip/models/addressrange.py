@@ -261,9 +261,7 @@ class AddressRange(NOCModel):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_ipaddressrange:
-            return True
-        return False
+        return Label.get_effective_setting(label, setting="enable_ipaddressrange")
 
 
 # Avoid circular references

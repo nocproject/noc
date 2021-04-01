@@ -98,6 +98,4 @@ class VPNProfile(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_vpnprofile:
-            return True
-        return False
+        return Label.get_effective_setting(label, "enable_vpnprofile")

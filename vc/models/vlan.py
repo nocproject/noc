@@ -149,6 +149,4 @@ class VLAN(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_vlan:
-            return True
-        return False
+        return Label.get_effective_setting(label, "enable_vlan")
