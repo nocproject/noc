@@ -13,8 +13,6 @@ from pymongo import InsertOne, UpdateMany, UpdateOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from django.contrib.postgres.fields import ArrayField
-from django.db.models import CharField
 
 
 class Migration(BaseMigration):
@@ -180,7 +178,7 @@ class Migration(BaseMigration):
                         "enable_sensorprofile": False,
                         # Exposition scope
                         "expose_metric": False,
-                        "expose_managedobject": False,
+                        "expose_datastream": False,
                     }
                 },
                 upsert=True,
@@ -215,7 +213,7 @@ class Migration(BaseMigration):
                         "enable_sensorprofile": False,
                         # Exposition scope
                         "expose_metric": False,
-                        "expose_managedobject": False,
+                        "expose_datastream": False,
                     }
                 )
             ]

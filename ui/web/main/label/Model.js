@@ -198,11 +198,15 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_slaprobe",
+            type: "boolean"
+        },
+        {
             name: "expose_metric",
             type: "boolean"
         },
         {
-            name: "expose_managedobject",
+            name: "expose_datastream",
             type: "boolean"
         },
         {

@@ -36,9 +36,7 @@ class VersionCheck(DiscoveryCheck):
             changed = True
         # Sync platform
         strict_platform = self.object.object_profile.new_platform_creation_policy != "C"
-        platform = Platform.ensure_platform(
-            vendor, result["platform"], strict=strict_platform, labels=[self.object.profile.name]
-        )
+        platform = Platform.ensure_platform(vendor, result["platform"], strict=strict_platform)
         if strict_platform and platform is None:
             # Denied to create platform, stop
             if self.object.object_profile.new_platform_creation_policy == "A":

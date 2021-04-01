@@ -112,10 +112,4 @@ class CommandSnippet(NOCModel):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_commandsnippet:
-            return True
-        return False
-
-    @classmethod
-    def can_expose_label(cls, label):
-        return False
+        return Label.get_effective_setting(label, setting="enable_commandsnippet")

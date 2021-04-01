@@ -97,7 +97,7 @@ class Migration(BaseMigration):
                     "enable_supplierprofile": False,
                     # Exposition scope
                     "expose_metric": False,
-                    "expose_managedobject": False,
+                    "expose_datastream": False,
                 }
                 for setting in labels[label]:
                     doc[setting] = True

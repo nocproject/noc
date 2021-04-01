@@ -17,6 +17,7 @@ import cachetools
 # NOC modules
 from .slaprofile import SLAProfile
 from noc.sa.models.managedobject import ManagedObject
+from noc.main.models.label import Label
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 
@@ -27,6 +28,7 @@ id_lock = Lock()
 _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
+@Label.model
 class SLAProbe(Document):
     meta = {
         "collection": "noc.sla_probes",
@@ -51,7 +53,7 @@ class SLAProbe(Document):
     # Hardware timestamps
     hw_timestamp = BooleanField(default=False)
     # Optional tags
-    tags = ListField(StringField())
+    labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -69,3 +71,7 @@ class SLAProbe(Document):
         if mo:
             return mo[0]
         return None
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, "enable_slaprobe")

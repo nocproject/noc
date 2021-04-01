@@ -59,7 +59,7 @@ Ext.define("NOC.sla.slaprobe.Model", {
             defaultValue:false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

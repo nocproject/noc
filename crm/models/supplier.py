@@ -69,6 +69,4 @@ class Supplier(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        if label.enable_supplier:
-            return True
-        return False
+        return Label.get_effective_setting(label, setting="enable_supplier")

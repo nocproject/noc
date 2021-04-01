@@ -103,7 +103,7 @@ class MaintenanceApplication(ExtDocApplication):
         if data:
             for mo in (
                 ManagedObject.objects.filter(is_managed=True, id__in=data[0].get("objects"))
-                .values("id", "name", "is_managed", "profile", "address", "description", "tags")
+                .values("id", "name", "is_managed", "profile", "address", "description", "labels")
                 .distinct()
             ):
                 r += [
@@ -114,7 +114,7 @@ class MaintenanceApplication(ExtDocApplication):
                         "profile": Profile.get_by_id(mo["profile"]).name,
                         "address": mo["address"],
                         "description": mo["description"],
-                        "tags": mo["tags"],
+                        "labels": mo["labels"],
                     }
                 ]
                 out = {"total": len(r), "success": True, "data": r}

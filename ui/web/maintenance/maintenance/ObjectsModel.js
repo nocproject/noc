@@ -35,7 +35,7 @@ Ext.define("NOC.maintenance.maintenance.ObjectsModel", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]

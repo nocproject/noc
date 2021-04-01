@@ -104,8 +104,8 @@ class ArchivedAlarm(Document):
     rca_neighbors = ListField(IntField())
     # RCA_* enums
     rca_type = IntField(default=RCA_NONE)
-    # tags
-    tags = ListField(StringField())
+    # labels
+    labels = ListField(StringField())
 
     def __str__(self):
         return "%s" % self.id
