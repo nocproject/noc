@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Maintenance card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,9 @@ import jinja2
 
 # NOC modules
 from .base import BaseCard
-from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.platform import Platform
+from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
 from noc.sa.models.servicesummary import ServiceSummary
 
 
@@ -42,21 +44,43 @@ class MaintenanceCard(BaseCard):
         # Calculate affected objects
         affected = []
         summary = {"service": {}, "subscriber": {}}
-        for ao in self.object.affected_objects:
-            mo = ao.object
-            ss = ServiceSummary.get_object_summary(mo)
-            affected += [
-                {
-                    "id": mo.id,
-                    "object": mo,
-                    "name": mo.name,
-                    "address": mo.address,
-                    "platform": mo.platform,
+        # Maintenance
+        data = [
+            d
+            for d in AffectedObjects._get_collection().aggregate(
+                [
+                    {"$match": {"maintenance": self.object.id}},
+                    {
+                        "$project": {"objects": "$affected_objects.object"},
+                    },
+                ]
+            )
+        ]
+        hide = False
+        if data:
+            if len(data[0].get("objects")) > 100:
+                hide = True
+            for mo in (
+                ManagedObject.objects.filter(is_managed=True, id__in=data[0].get("objects"))
+                .values("id", "name", "platform", "address", "container")
+                .distinct()
+            ):
+                ss, object = {}, None
+                if not hide:
+                    ss = ServiceSummary.get_object_summary(mo["id"])
+                    object = ManagedObject.get_by_id(mo["id"])
+                    update_dict(summary["service"], ss.get("service", {}))
+                    update_dict(summary["subscriber"], ss.get("subscriber", {}))
+                ao = {
+                    "id": mo["id"],
+                    "name": mo["name"],
+                    "address": mo["address"],
+                    "platform": Platform.get_by_id(mo["platform"]).name if mo["platform"] else "",
                     "summary": ss,
                 }
-            ]
-            update_dict(summary["service"], ss.get("service", {}))
-            update_dict(summary["subscriber"], ss.get("subscriber", {}))
+                if object:
+                    ao["object"] = object
+                affected += [ao]
         #
         return {
             "title": jinja2.Template(stpl).render({"object": self.object}),

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -291,12 +291,10 @@ class ExtDocApplication(ExtApplication):
     def has_field_editable(self, field):
         return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
-    def instance_to_dict(self, o, fields=None, exclude_fields=None, nocustom=False):
+    def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
         for n, f in o._fields.items():
             if fields and n not in fields:
-                continue
-            if exclude_fields and n in exclude_fields:
                 continue
             v = getattr(o, n)
             if v is not None:
@@ -452,9 +450,11 @@ class ExtDocApplication(ExtApplication):
         """
         Returns dict with object's fields and values
         """
-        try:
-            o = self.queryset(request).get(**{self.pk: id})
-        except self.model.DoesNotExist:
+        qs = self.queryset(request).filter(**{self.pk: id})
+        if self.exclude_fields:
+            qs = qs.exclude(*self.exclude_fields)
+        o = qs.first()
+        if not o:
             return HttpResponse("", status=self.NOT_FOUND)
         only = request.GET.get(self.only_param)
         if only:
@@ -473,9 +473,11 @@ class ExtDocApplication(ExtApplication):
         except ValueError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.response(str(e), status=self.BAD_REQUEST)
-        try:
-            o = self.queryset(request).get(**{self.pk: id})
-        except self.model.DoesNotExist:
+        qs = self.queryset(request).filter(**{self.pk: id})
+        if self.exclude_fields:
+            qs = qs.exclude(*self.exclude_fields)
+        o = qs.first()
+        if not o:
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()

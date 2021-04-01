@@ -62,7 +62,8 @@ Ext.define("NOC.maintenance.maintenance.Model", {
         },
         {
             name: "auto_confirm",
-            type: "boolean"
+            type: "boolean",
+            defaultValue: true
         },
         {
             name: "template",

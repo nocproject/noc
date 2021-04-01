@@ -29,8 +29,8 @@ from .maintenancetype import MaintenanceType
 from mongoengine.errors import ValidationError
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
-from noc.core.mongo.fields import ForeignKeyField
-from noc.core.model.decorator import on_save
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.model.decorator import on_save, on_delete_check
 from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -50,12 +50,15 @@ class MaintenanceSegment(EmbeddedDocument):
 
 
 @on_save
+@on_delete_check(
+    clean=[("maintenance.AffectedObjects", "maintenance")],
+)
 class Maintenance(Document):
     meta = {
         "collection": "noc.maintenance",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["affected_objects.object", ("start", "is_completed"), "administrative_domain"],
+        "indexes": [("start", "is_completed"), "administrative_domain"],
         "legacy_collections": ["noc.maintainance"],
     }
 
@@ -65,7 +68,7 @@ class Maintenance(Document):
     start = DateTimeField()
     stop = DateTimeField()
     is_completed = BooleanField(default=False)
-    auto_confirm = BooleanField(default=False)
+    auto_confirm = BooleanField(default=True)
     template = ForeignKeyField(Template)
     contacts = StringField()
     suppress_alarms = BooleanField()
@@ -78,8 +81,6 @@ class Maintenance(Document):
     direct_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
     # Segments declared to be affected by maintenance
     direct_segments = ListField(EmbeddedDocumentField(MaintenanceSegment))
-    # All objects affected by maintenance
-    affected_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
     # All Administrative Domain for all affected objects
     administrative_domain = ListField(ForeignKeyField(AdministrativeDomain))
     # Escalated TT ID in form
@@ -139,8 +140,11 @@ class Maintenance(Document):
             if not self.is_completed and self.auto_confirm:
                 self.auto_confirm_maintenance()
 
+        if hasattr(self, "_changed_fields") and "is_completed" in self._changed_fields:
+            AffectedObjects._get_collection().remove({"maintenance": self.id})
+
         if self.escalate_managed_object:
-            if not self.is_completed:
+            if not self.is_completed and self.auto_confirm:
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
                     delay=max(
@@ -153,7 +157,20 @@ class Maintenance(Document):
                     pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id,
                 )
-            else:
+                if self.auto_confirm:
+                    call_later(
+                        "noc.services.escalator.maintenance.close_maintenance",
+                        delay=max(
+                            (
+                                dateutil.parser.parse(self.stop) - datetime.datetime.now()
+                            ).total_seconds(),
+                            60,
+                        ),
+                        scheduler="escalator",
+                        pool=self.escalate_managed_object.escalator_shard,
+                        maintenance_id=self.id,
+                    )
+            if self.is_completed and not self.auto_confirm:
                 call_later(
                     "noc.services.escalator.maintenance.close_maintenance",
                     scheduler="escalator",
@@ -169,15 +186,22 @@ class Maintenance(Document):
         affected = set()
         now = datetime.datetime.now()
         for d in cls._get_collection().find(
-            {"start": {"$lte": now}, "is_completed": False},
-            {"_id": 0, "affected_objects": 1, "time_pattern": 1},
+            {"start": {"$lte": now}, "stop": {"$gte": now}, "is_completed": False},
+            {"_id": 1, "time_pattern": 1},
         ):
             if d.get("time_pattern"):
                 # Restrict to time pattern
                 tp = TimePattern.get_by_id(d["time_pattern"])
                 if tp and not tp.match(now):
                     continue
-            affected.update([x["object"] for x in d["affected_objects"]])
+            data = [
+                {"$match": {"maintenance": d["_id"]}},
+                {
+                    "$project": {"_id": 0, "objects": "$affected_objects.object"},
+                },
+            ]
+            for x in AffectedObjects._get_collection().aggregate(data):
+                affected.update(x["objects"])
         return list(affected)
 
     @classmethod
@@ -189,17 +213,23 @@ class Maintenance(Document):
         """
         r = []
         now = datetime.datetime.now()
-        for m in (
-            Maintenance.objects.filter(
-                start__lte=now, is_completed=False, affected_objects__object=mo.id
-            )
-            .exclude("affected_objects")
-            .order_by("start")
-        ):
+        for m in Maintenance.objects.filter(start__lte=now, is_completed=False).order_by("start"):
             if m.time_pattern and not m.time_pattern.match(now):
                 continue
-            r += [m]
+            if AffectedObjects.objects.filter(maintenance=m, affected_objects__object=mo.id):
+                r += [m]
         return r
+
+
+class AffectedObjects(Document):
+    meta = {
+        "collection": "noc.affectedobjects",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": ["affected_objects.object"],
+    }
+    maintenance = PlainReferenceField(Maintenance)
+    affected_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
 
 
 def update_affected_objects(maintenance_id):
@@ -254,11 +284,14 @@ def update_affected_objects(maintenance_id):
 
     # @todo: Calculate affected objects considering topology
     affected = [{"object": o} for o in sorted(affected)]
-
-    Maintenance._get_collection().update(
-        {"_id": maintenance_id},
-        {"$set": {"affected_objects": affected, "administrative_domain": affected_ad}},
-    )
+    if affected:
+        Maintenance._get_collection().update(
+            {"_id": maintenance_id},
+            {"$set": {"administrative_domain": affected_ad}},
+        )
+        AffectedObjects._get_collection().update(
+            {"maintenance": maintenance_id}, {"$set": {"affected_objects": affected}}, upsert=True
+        )
 
 
 def stop(maintenance_id):
@@ -277,3 +310,4 @@ def stop(maintenance_id):
             for mail in contacts:
                 pub("mailsender", {"address": mail, "subject": subject, "body": body})
     Maintenance._get_collection().update({"_id": maintenance_id}, {"$set": {"is_completed": True}})
+    AffectedObjects._get_collection().remove({"maintenance": maintenance_id})
