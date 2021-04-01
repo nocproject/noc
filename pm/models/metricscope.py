@@ -223,7 +223,7 @@ class MetricScope(Document):
             "AS %s "
             "ENGINE = Distributed(%s, %s, %s)"
             % (
-                self.table_name,
+                self._get_distributed_db_table(),
                 self._get_raw_db_table(),
                 config.clickhouse.cluster,
                 config.clickhouse.db,
