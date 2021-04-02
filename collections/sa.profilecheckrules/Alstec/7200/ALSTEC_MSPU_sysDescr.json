@@ -2,12 +2,12 @@
     "name": "Alstec | 7200 | ALSTEC MSPU sysDescr.0",
     "$collection": "sa.profilecheckrules",
     "uuid": "7f9c38c1-3afd-4259-8e87-9fe016dc7a08",
-    "description": "",
+    "description": null,
     "preference": 15,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysDescr.0",
-    "match_method": "contains",
-    "value": "ALSTEC MSPU System",
+    "match_method": "re",
+    "value": "^(ALSTEC DSLAM|ALSTEC MSK|ALSTEC MSPU)",
     "action": "match",
-    "profile__name": "Alstec.7200"
+    "profile__name": "Alstec.MSPU"
 }
