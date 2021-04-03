@@ -66,8 +66,10 @@ class ClickhouseClient(object):
             raise ClickhouseError("%s: %s" % (code, body))
         return [smart_text(row).split("\t") for row in body.splitlines()]
 
-    def ensure_db(self):
-        self.execute(post=f"CREATE DATABASE IF NOT EXISTS {config.clickhouse.db};", nodb=True)
+    def ensure_db(self, db_name=None):
+        self.execute(
+            post=f"CREATE DATABASE IF NOT EXISTS {db_name or config.clickhouse.db};", nodb=True
+        )
 
     def has_table(self, name):
         r = self.execute(
