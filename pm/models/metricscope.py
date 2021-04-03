@@ -32,6 +32,8 @@ id_lock = Lock()
 to_path_code = {}
 code_lock = Lock()
 
+OLD_PM_SCHEMA_TABLE = "noc_old"
+
 
 class KeyField(EmbeddedDocument):
     # Table field name
@@ -341,9 +343,9 @@ class MetricScope(Document):
             changed = True
         # Old schema
         if ensure_column(raw_table, "path"):
-            # Old schema, data table will be rename to old_ for save data.
-            ch.rename_table(raw_table, f"old_{self.table_name}")
-            pass
+            # Old schema, data table will be move to old_noc db for save data.
+            ch.ensure_db(OLD_PM_SCHEMA_TABLE)
+            ch.rename_table(raw_table, f"{OLD_PM_SCHEMA_TABLE}.{raw_table}")
         # Ensure raw_* table
         if ch.has_table(raw_table):
             # raw_* table exists, check columns
@@ -360,10 +362,7 @@ class MetricScope(Document):
                 ch.execute(post=self.get_create_distributed_sql())
                 changed = True
         # Synchronize view
-        # @todo drop view if changed
-        if changed or not ch.has_table(table):
-            ch.execute(post=self.get_create_view_sql())
-            changed = True
+        ch.execute(post=self.get_create_view_sql())
         return changed
 
     def _get_to_path_code(self) -> str:
