@@ -142,6 +142,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_project",
                             xtype: "checkbox",
                             boxLabel: __("Project")
+                        },
+                        {
+                            name: "enable_label",
+                            xtype: "checkbox",
+                            boxLabel: __("Labels")
                         }
                     ]
                 },

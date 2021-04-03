@@ -254,14 +254,33 @@ Ext.define("NOC.main.label.Application", {
         },
         {
           xtype: "fieldset",
-          layout: "hbox",
+          layout: "vbox",
           title: __("Enable"),
           defaults: {
             padding: 4,
             labelAlign: "right"
           },
           items: [
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("ManagedObject"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right"
+          },
+          items: [
             {
+              name: "enable_managedobject",
+              xtype: "checkbox",
+              boxLabel: __("Managed Object")
+            },
+            {
+              name: "enable_managedobjectprofile",
+              xtype: "checkbox",
+              boxLabel: __("Managed Object Profile")
+            },
+              {
               name: "enable_agent",
               xtype: "checkbox",
               boxLabel: __("Agent")
@@ -277,105 +296,21 @@ Ext.define("NOC.main.label.Application", {
               boxLabel: __("Service Profile")
             },
             {
-              name: "enable_managedobject",
+              name: "enable_slaprobe",
               xtype: "checkbox",
-              boxLabel: __("Managed Object")
-            },
-            {
-              name: "enable_managedobjectprofile",
-              xtype: "checkbox",
-              boxLabel: __("Managed Object Profile")
-            },
-            {
-              name: "enable_administrativedomain",
-              xtype: "checkbox",
-              boxLabel: __("Administrative Domain")
-            },
-            {
-              name: "enable_authprofile",
-              xtype: "checkbox",
-              boxLabel: __("Auth Profile")
-            },
-            {
-              name: "enable_commandsnippet",
-              xtype: "checkbox",
-              boxLabel: __("Command Snippet")
-            },
-            {
-              name: "enable_allocationgroup",
-              xtype: "checkbox",
-              boxLabel: __("Allocation Group")
-            },
-            {
-              name: "enable_networksegment",
-              xtype: "checkbox",
-              boxLabel: __("Network Segment")
-            },
-            {
-              name: "enable_object",
-              xtype: "checkbox",
-              boxLabel: __("Object")
-            },
-            {
-              name: "enable_objectmodel",
-              xtype: "checkbox",
-              boxLabel: __("Object Model")
-            },
-            {
-              name: "enable_platform",
-              xtype: "checkbox",
-              boxLabel: __("Platform")
-            },
-            {
-              name: "enable_resourcegroup",
-              xtype: "checkbox",
-              boxLabel: __("Resource Group")
-            },
-            {
-              name: "enable_sensorprofile",
-              xtype: "checkbox",
-              boxLabel: __("Sensor Profile")
-            },
-            {
-              name: "enable_subscriber",
-              xtype: "checkbox",
-              boxLabel: __("Subscriber")
-            },
-            {
-              name: "enable_subscriberprofile",
-              xtype: "checkbox",
-              boxLabel: __("Subscriber Profile")
-            },
-            {
-              name: "enable_supplier",
-              xtype: "checkbox",
-              boxLabel: __("Supplier")
-            },
-            {
-              name: "enable_supplierprofile",
-              xtype: "checkbox",
-              boxLabel: __("Supplier Profile")
-            },
-            {
-              name: "enable_dnszone",
-              xtype: "checkbox",
-              boxLabel: __("DNS Zone")
-            },
-            {
-              name: "enable_dnszonerecord",
-              xtype: "checkbox",
-              boxLabel: __("DNS Zone")
-            },
-            {
-              name: "enable_division",
-              xtype: "checkbox",
-              boxLabel: __("GIS Division")
-            },
-            {
-              name: "enable_kbentry",
-              xtype: "checkbox",
-              boxLabel: __("KB Entry")
-            },
+              boxLabel: __("SLA Probe")
+            }
+            ]
+        },
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("IP / DNS"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right"
+          },
+          items: [
             {
               name: "enable_ipaddress",
               xtype: "checkbox",
@@ -416,7 +351,7 @@ Ext.define("NOC.main.label.Application", {
               xtype: "checkbox",
               boxLabel: __("AS")
             },
-              {
+            {
               name: "enable_assetpeer",
               xtype: "checkbox",
               boxLabel: __("Asset Peer")
@@ -426,6 +361,78 @@ Ext.define("NOC.main.label.Application", {
               xtype: "checkbox",
               boxLabel: __("Peer")
             },
+            {
+              name: "enable_dnszone",
+              xtype: "checkbox",
+              boxLabel: __("DNS Zone")
+            },
+            {
+              name: "enable_dnszonerecord",
+              xtype: "checkbox",
+              boxLabel: __("DNS Zone")
+            },
+            ]
+        },
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Inventory"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right"
+          },
+          items: [
+            {
+              name: "enable_allocationgroup",
+              xtype: "checkbox",
+              boxLabel: __("Allocation Group")
+            },
+            {
+              name: "enable_networksegment",
+              xtype: "checkbox",
+              boxLabel: __("Network Segment")
+            },
+            {
+              name: "enable_object",
+              xtype: "checkbox",
+              boxLabel: __("Object")
+            },
+            {
+              name: "enable_objectmodel",
+              xtype: "checkbox",
+              boxLabel: __("Object Model")
+            },
+            {
+              name: "enable_platform",
+              xtype: "checkbox",
+              boxLabel: __("Platform")
+            },
+            {
+              name: "enable_resourcegroup",
+              xtype: "checkbox",
+              boxLabel: __("Resource Group")
+            },
+            {
+              name: "enable_sensorprofile",
+              xtype: "checkbox",
+              boxLabel: __("Sensor Profile")
+            },
+            {
+              name: "enable_division",
+              xtype: "checkbox",
+              boxLabel: __("GIS Division")
+            },
+          ]
+        },
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("VC"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right"
+          },
+          items: [
             {
               name: "enable_vc",
               xtype: "checkbox",
@@ -450,14 +457,61 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_vpnprofile",
               xtype: "checkbox",
               boxLabel: __("VPN Profile")
+            }
+           ]
+        },
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Other"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right"
+          },
+          items: [
+            {
+              name: "enable_administrativedomain",
+              xtype: "checkbox",
+              boxLabel: __("Administrative Domain")
             },
             {
-              name: "enable_slaprobe",
+              name: "enable_authprofile",
               xtype: "checkbox",
-              boxLabel: __("SLA Probe")
+              boxLabel: __("Auth Profile")
+            },
+            {
+              name: "enable_commandsnippet",
+              xtype: "checkbox",
+              boxLabel: __("Command Snippet")
+            },
+            {
+              name: "enable_subscriber",
+              xtype: "checkbox",
+              boxLabel: __("Subscriber")
+            },
+            {
+              name: "enable_subscriberprofile",
+              xtype: "checkbox",
+              boxLabel: __("Subscriber Profile")
+            },
+            {
+              name: "enable_supplier",
+              xtype: "checkbox",
+              boxLabel: __("Supplier")
+            },
+            {
+              name: "enable_supplierprofile",
+              xtype: "checkbox",
+              boxLabel: __("Supplier Profile")
+            },
+            {
+              name: "enable_kbentry",
+              xtype: "checkbox",
+              boxLabel: __("KB Entry")
             }
           ]
-        },
+          }
+        ]},
         {
           xtype: "fieldset",
           layout: "hbox",

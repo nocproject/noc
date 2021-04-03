@@ -99,6 +99,10 @@ Ext.define("NOC.main.remotesystem.Model", {
         {
             name: "enable_project",
             type: "boolean"
+        },
+        {
+            name: "enable_label",
+            type: "boolean"
         }
     ]
 });

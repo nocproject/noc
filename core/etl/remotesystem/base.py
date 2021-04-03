@@ -18,6 +18,7 @@ class BaseRemoteSystem(object):
     extractors = {}
 
     extractors_order = [
+        "label",
         "admdiv",
         "networksegmentprofile",
         "networksegment",

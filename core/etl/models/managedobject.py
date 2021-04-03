@@ -57,6 +57,7 @@ class ManagedObject(BaseModel):
 
     class Config:
         fields = {"labels": "tags"}
+        allow_population_by_field_name = True
 
     _csv_fields = [
         "id",

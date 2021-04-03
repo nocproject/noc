@@ -293,6 +293,7 @@ class ActiveAlarm(Document):
             rca_neighbors=self.rca_neighbors,
             rca_type=self.rca_type,
             labels=self.labels,
+            effective_labels=self.effective_labels,
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:

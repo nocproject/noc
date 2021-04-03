@@ -100,6 +100,7 @@ class RemoteSystem(Document):
     enable_resourcegroup = BooleanField()
     enable_ttsystem = BooleanField()
     enable_project = BooleanField()
+    enable_label = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
