@@ -517,7 +517,7 @@ class BaseLoader(object):
         return value
 
     def clean_bool(self, value: str) -> Optional[bool]:
-        if value == "":
+        if value == "" or value is None:
             return None
         try:
             return int(value) != 0

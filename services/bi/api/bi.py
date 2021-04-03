@@ -118,11 +118,11 @@ class BIAPI(API):
                                 "model": k.model,
                             }
                         ]
-            if ms.path:
+            if ms.labels:
                 r["fields"] += [
                     {
-                        "name": "path",
-                        "description": "Metric path",
+                        "name": "labels",
+                        "description": "Metric labels",
                         "type": "Array(String)",
                         "dict": None,
                     }

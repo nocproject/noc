@@ -106,6 +106,7 @@ class ArchivedAlarm(Document):
     rca_type = IntField(default=RCA_NONE)
     # labels
     labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     def __str__(self):
         return "%s" % self.id
