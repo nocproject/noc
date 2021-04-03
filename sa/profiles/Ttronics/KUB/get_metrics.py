@@ -20,6 +20,7 @@ class Script(GetMetricsScript):
                 continue
             value = 1
             status = self.snmp.get("1.3.6.1.4.1.51315.1.%s.0" % metric.ifindex)
+            port = metric.labels[0].rsplit("::", 1)[-1]
             if metric.ifindex == 1:
                 if status != -128:
                     value = 0
@@ -36,6 +37,7 @@ class Script(GetMetricsScript):
                 value = status
             self.set_metric(
                 id=("Environment | Sensor Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )
 
@@ -70,6 +72,7 @@ class Script(GetMetricsScript):
     def get_power_input_status(self, metrics):
         for metric in metrics:
             value = 1
+            port = metric.labels[0].rsplit("::", 1)[-1]
             if metric.ifindex == 29:
                 status = self.snmp.get("1.3.6.1.4.1.51315.1.%s.0" % metric.ifindex)
                 if status != 1:
@@ -81,6 +84,7 @@ class Script(GetMetricsScript):
                     value = 0
             self.set_metric(
                 id=("Environment | Power | Input | Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )
 
@@ -89,15 +93,22 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if metric.ifindex == 3:
                 value = self.snmp.get("1.3.6.1.4.1.51315.1.19")
-                self.set_metric(id=("Environment | Electric Current", metric.labels), value=value)
+                port = metric.labels[0].rsplit("::", 1)[-1]
+                self.set_metric(
+                    id=("Environment | Electric Current", metric.labels),
+                    labels=[f"noc::sensor::{port}"],
+                    value=value,
+                )
 
     @metrics(["Environment | Energy Consumption"], volatile=False, access="S")  # SNMP version
     def get_energy_cons(self, metrics):
         for metric in metrics:
             if metric.ifindex == 26:
                 value = self.snmp.get("1.3.6.1.4.1.51315.1.25.0")
+                port = metric.labels[0].rsplit("::", 1)[-1]
                 self.set_metric(
                     id=("Environment | Energy Consumption", metric.labels),
+                    labels=[f"noc::sensor::{port}"],
                     value=value,
                 )
 
@@ -112,8 +123,10 @@ class Script(GetMetricsScript):
                     value = self.snmp.get("1.3.6.1.4.1.51315.1.41.0")
                 else:
                     value = self.snmp.get("1.3.6.1.4.1.51315.1.28.0")
+                port = metric.labels[0].rsplit("::", 1)[-1]
                 self.set_metric(
                     id=("Environment | Battery | Capacity | Level", metric.labels),
+                    labels=[f"noc::sensor::{port}"],
                     value=value,
                 )
 
