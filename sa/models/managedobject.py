@@ -18,6 +18,7 @@ from typing import Tuple
 
 # Third-party modules
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import JSONField
 from django.db.models import (
     Q,
     CharField,
@@ -179,6 +180,7 @@ class ManagedObject(NOCModel):
     )
     scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
     address = CharField("Address", max_length=64)
+    addresses = JSONField("Addresses", default=[])
     port = IntegerField("Port", blank=True, null=True)
     user = CharField("User", max_length=32, blank=True, null=True)
     password = CharField("Password", max_length=32, blank=True, null=True)
