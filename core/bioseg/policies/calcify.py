@@ -56,7 +56,7 @@ class CalcifyBioSegPolicy(BaseBioSegPolicy):
             self.logger.info("Changed name to '%s'", name)
             self.attacker.segment.name = name
         # Attach to target as child
-        self.attacker.segment.parent = self.target
+        self.attacker.segment.parent = self.target.segment
         self.attacker.segment.save()
         # Schedule uplink rebuilding
         self.refresh_topology(self.attacker.segment)
