@@ -132,7 +132,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=setup_metrics[(f"noc::sla::name::{probe_id}",)],
                         metric="SLA | ICMP RTT",
-                        label=(f"noc::sla::name::{probe_id}",),
+                        labels=(f"noc::sla::name::{probe_id}",),
                         value=float(rtt) * 1000,
                         multi=True,
                     )
@@ -174,7 +174,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
                     metric="SLA | Jitter | Rtt",
-                    label=(f"noc::sla::name::{sla_probe_index}",),
+                    labels=(f"noc::sla::name::{sla_probe_index}",),
                     value=float(sla_rtt_sum) * 1000.0,
                     multi=True,
                 )
@@ -182,7 +182,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
                     metric="SLA | Jitter | Egress",
-                    label=(f"noc::sla::name::{sla_probe_index}",),
+                    labels=(f"noc::sla::name::{sla_probe_index}",),
                     value=float(sla_egress) * 1000.0,
                     multi=True,
                 )
@@ -190,7 +190,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
                     metric="SLA | Jitter | Ingress",
-                    label=(f"noc::sla::name::{sla_probe_index}",),
+                    labels=(f"noc::sla::name::{sla_probe_index}",),
                     value=float(sla_ingress) * 1000.0,
                     multi=True,
                 )

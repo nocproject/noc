@@ -23,11 +23,11 @@ class EnterpriseRule(OIDRule):
                     ]
                     for o in self.oid
                 ]
-                labels = ["noc::name::Usage"]
+                labels = ["noc::cpu::"]
                 if gen:
                     yield tuple(gen), self.type, self.scale, labels
             else:
-                labels = ["noc::name::Usage"]
+                labels = ["noc::cpu::"]
                 gen = mib[
                     self.expand(
                         self.oid, {"enterprise": script.capabilities["SNMP | OID | EnterpriseID"]}

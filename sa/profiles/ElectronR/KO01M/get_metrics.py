@@ -30,8 +30,10 @@ class Script(GetMetricsScript):
                 res = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex)
                 if res == 1:
                     value = 0
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
                 id=("Environment | Sensor Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )
 
@@ -76,7 +78,9 @@ class Script(GetMetricsScript):
     def get_power_input_status(self, metrics):
         for metric in metrics:
             value = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % metric.ifindex, cached=True)
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
                 id=("Environment | Power | Input | Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=0 if value == 1 else 1,
             )

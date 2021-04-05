@@ -66,9 +66,10 @@ class Script(GetMetricsScript):
                 else:
                     if status > 0:
                         value = 0
-
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
                 id=("Environment | Sensor Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )
 
@@ -131,7 +132,9 @@ class Script(GetMetricsScript):
                     value = 0
                 elif invert == 1 and status == 1:
                     value = 0
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
                 id=("Environment | Power | Input | Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )
