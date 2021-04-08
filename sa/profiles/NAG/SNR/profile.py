@@ -23,6 +23,7 @@ class Profile(BaseProfile):
     password_submit = "\r"
     command_submit = "\r"
     # command_disable_pager = "terminal length 200"
+    command_super = "enable"
     command_exit = "exit"
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}
