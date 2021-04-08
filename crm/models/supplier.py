@@ -31,7 +31,7 @@ id_lock = Lock()
 @Label.model
 @bi_sync
 @workflow
-@on_delete_check(check=[("phone.PhoneRange", "supplier")])
+@on_delete_check(check=[("phone.PhoneRange", "supplier"), ("sa.Service", "supplier")])
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",

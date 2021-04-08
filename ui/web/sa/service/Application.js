@@ -13,10 +13,13 @@ Ext.define("NOC.sa.service.Application", {
         "NOC.sa.service.LookupField",
         "NOC.sa.serviceprofile.LookupField",
         "NOC.crm.subscriber.LookupField",
+        "NOC.crm.supplier.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.capability.LookupField",
-        "NOC.core.LabelField"
+        "NOC.inv.resourcegroup.LookupField",
+        "NOC.core.LabelField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.service.Model",
     search: true,
@@ -108,7 +111,13 @@ Ext.define("NOC.sa.service.Application", {
                     name: "subscriber",
                     xtype: "crm.subscriber.LookupField",
                     fieldLabel: __("Subscriber"),
-                    allowBlank: false
+                    allowBlank: true
+                },
+                {
+                    name: "supplier",
+                    xtype: "crm.supplier.LookupField",
+                    fieldLabel: __("Supplier"),
+                    allowBlank: true
                 },
                 {
                     name: "description",
@@ -175,6 +184,81 @@ Ext.define("NOC.sa.service.Application", {
                             fieldLabel: __("MAC"),
                             allowBlank: true,
                             uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Resource Groups"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: {
+                        columnWidth: 0.5,
+                        padding: 10
+                    },
+                    collapsible: true,
+                    collapsed: false,
+                    items: [
+                        {
+                            name: "static_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "static_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
                         }
                     ]
                 },
@@ -253,6 +337,12 @@ Ext.define("NOC.sa.service.Application", {
             name: "subscriber",
             ftype: "lookup",
             lookup: "crm.subscriber"
+        },
+        {
+            title: __("By Supplier"),
+            name: "supplier",
+            ftype: "lookup",
+            lookup: "crm.supplier"
         },
         {
             title: __("By State"),

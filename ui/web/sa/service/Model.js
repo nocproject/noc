@@ -72,6 +72,15 @@ Ext.define("NOC.sa.service.Model", {
             persist: false
         },
         {
+            name: "supplier",
+            type: "string"
+        },
+        {
+            name: "supplier__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "profile",
             type: "string"
         },
@@ -136,6 +145,24 @@ Ext.define("NOC.sa.service.Model", {
         {
             name: "caps",
             type: "auto"
+        },
+        {
+            name: "static_service_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_service_groups",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "static_client_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_client_groups",
+            type: "auto",
+            persist: false
         },
         {
             name: "labels",
