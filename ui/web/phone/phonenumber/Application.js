@@ -123,7 +123,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     name: "profile",
                     xtype: "phone.phonenumberprofile.LookupField",
                     fieldLabel: __("Profile"),
-                    allowBlank: true
+                    allowBlank: false
                 },
                 {
                     name: "state",

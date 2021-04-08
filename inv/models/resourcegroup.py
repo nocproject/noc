@@ -51,6 +51,11 @@ id_lock = threading.Lock()
         ("phone.PhoneNumber", "effective_service_groups"),
         ("phone.PhoneNumber", "static_client_groups"),
         ("phone.PhoneNumber", "effective_client_groups"),
+        # sa.Service
+        ("sa.Service", "static_service_groups"),
+        ("sa.Service", "effective_service_groups"),
+        ("sa.Service", "static_client_groups"),
+        ("sa.Service", "effective_client_groups"),
     ]
 )
 class ResourceGroup(Document):
