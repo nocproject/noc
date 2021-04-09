@@ -220,7 +220,7 @@ py:test:
       junit: ./build/reports/py-test-junit.xml
     expire_in: 7 days
 
-build:Docs:
+build:Docs:en:
   stage: Test
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
@@ -240,7 +240,27 @@ build:Docs:
       - "docs/en/*"
       - "docs/en/**/*"
 
-build:Master Docs:
+build:Docs:ru:
+  stage: Test
+  environment: docs
+  image: registry.getnoc.com/infrastructure/mkdocs:master
+  script:
+    - set -x
+    - mkdocs build --config-file=docs/ru/mkdocs.yml
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/ru
+    expire_in: 2 hours
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - "docs/ru/*"
+      - "docs/ru/**/*"
+
+build:Master Docs:en:
   stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
@@ -252,6 +272,24 @@ build:Master Docs:
   artifacts:
     paths:
       - build/docs/en
+    expire_in: 2 hours
+  only:
+    refs:
+      - master
+      - /^release-\d+\.\d+/
+
+build:Master Docs:ru:
+  stage: Build
+  environment: docs
+  image: registry.getnoc.com/infrastructure/mkdocs:master
+  script:
+    - set -x
+    - mkdocs build --config-file=docs/ru/mkdocs.yml
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/ru
     expire_in: 2 hours
   only:
     refs:
