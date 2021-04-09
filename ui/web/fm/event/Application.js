@@ -202,26 +202,6 @@ Ext.define("NOC.fm.event.Application", {
                     items: [
                         {
                             xtype: "fm.alarm.lookup",
-                            fieldLabel: __("State"),
-                            editable: false,
-                            queryMode: "local",
-                            displayField: "name",
-                            valueField: "id",
-                            store: {
-                                fields: ["id", "name"],
-                                data: [
-                                    {id: "A", name: "Active"},
-                                    {id: "S", name: "Archived"},
-                                    {id: "F", name: "Failed"}
-                                ]
-                            },
-                            name: "status",
-                            bind: {
-                                value: "{filter.status}"
-                            }
-                        },
-                        {
-                            xtype: "fm.alarm.lookup",
                             url: "/sa/managedobject/lookup/",
                             fieldLabel: __("Object"),
                             name: "managed_object",
