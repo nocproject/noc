@@ -1,0 +1,7 @@
+{
+    "vendor__code": "ELTEX",
+    "name": "ESR-100",
+    "$collection": "inv.platforms",
+    "uuid": "c5e6a992-da99-4d25-ade3-9a876cae3cc2",
+    "snmp_sysobjectid": "1.3.6.1.4.1.35265.1.71"
+}
