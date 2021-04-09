@@ -29,7 +29,6 @@ class Script(GetMetricsScript):
             except ValueError:
                 pass
 
-
     @metrics(
         ["Memory | Usage"],
         volatile=False,
