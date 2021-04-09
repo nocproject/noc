@@ -55,7 +55,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 1"],
+                labels=["noc::sensor::Temperature 1"],
                 value=v,
                 multi=True,
             )
@@ -63,7 +63,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 2"],
+                labels=["noc::sensor::Temperature 2"],
                 value=v,
                 multi=True,
             )
@@ -71,7 +71,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 3"],
+                labels=["noc::sensor::Temperature 3"],
                 value=v,
                 multi=True,
             )
@@ -79,7 +79,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 4"],
+                labels=["noc::sensor::Temperature 4"],
                 value=v,
                 multi=True,
             )
