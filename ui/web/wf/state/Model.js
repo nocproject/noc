@@ -70,7 +70,8 @@ Ext.define("NOC.wf.state.Model", {
         },
         {
             name: "bi_id",
-            type: "int"
+            type: "int",
+            persist: false
         },
         {
             name: "name",

@@ -113,7 +113,7 @@ class WorkflowApplication(ExtDocApplication):
                     "from_state": StringParameter(),
                     "to_state": StringParameter(),
                     "is_active": BooleanParameter(default=False),
-                    "event": StringParameter(),
+                    "event": StringParameter(required=False),
                     "label": StringParameter(),
                     "description": StringParameter(default=""),
                     "enable_manual": BooleanParameter(),
