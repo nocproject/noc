@@ -150,6 +150,14 @@ class Script(BaseScript):
                 pass
         return r
 
+    @false_on_cli_error
+    def has_bras(self):
+        r = []
+        v = self.snmp.get("1.3.6.1.4.1.2011.5.2.1.14.1.2.0")
+        if v:
+            r += ["BRAS | PPPoE"]
+        return r
+
     def get_modules(self):
         modules = set()
         if self.has_snmp():
@@ -184,6 +192,8 @@ class Script(BaseScript):
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
         for m in self.has_mibs():
             caps[m] = True
+        for m in self.has_bras():
+            caps[m] = True
 
     def execute_platform_snmp(self, caps):
         sl = self.has_slot()
@@ -195,4 +205,6 @@ class Script(BaseScript):
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
         hm = self.has_mibs()
         for m in hm:
+            caps[m] = True
+        for m in self.has_bras():
             caps[m] = True

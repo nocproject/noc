@@ -37,7 +37,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n    t,\n    groupArray((slot, Subscribers)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n       slot, \n        argMax(summary, t) as `Subscribers` \n    FROM \n        $table \n    WHERE \n(slot != '' and interface = '')\n        and        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY slot, t ORDER BY t, slot) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t,\n    groupArray((slot, Subscribers)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n       concat(slot, '.', module) as slot, \n        argMax(summary, t) as `Subscribers` \n    FROM \n        $table \n    WHERE \n(slot != '' and interface = '')\n        and        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY slot, modult, t ORDER BY t, slot) \nGROUP BY t \nORDER BY t ASC",
       "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "subscriber",

@@ -24,7 +24,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
 
-    def execute_cli(self):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         if not self.is_iscom2624g:
             v = self.cli("show mac-address-table l2-address")
         else:

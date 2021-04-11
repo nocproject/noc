@@ -36,6 +36,34 @@ class Script(GetMetricsScript):
                 continue
             self.set_metric(id=("Interface | Status | Duplex", if_map[int(ifindex)]), value=duplex)
 
+    @metrics(
+        ["Subscribers | Summary"],
+        has_capability="BRAS | PPPoE",
+        volatile=False,
+        access="S",  # not CLI version
+    )
+    def get_subscribers_metrics(self, metrics):
+        if "Slot | Member Ids" in self.capabilities:
+            hwSlotIndex = self.capabilities["Slot | Member Ids"].split(" | ")
+            for si in hwSlotIndex:
+                for mi in [0, 1]:
+                    v = self.snmp.get(f"1.3.6.1.4.1.2011.5.2.1.33.1.8.{si}.{mi}")
+                    if v:
+                        self.set_metric(
+                            id=("Subscribers | Summary", None),
+                            labels=("noc::chassis::0", f"noc::slot::{si}", f"noc::module::{mi}"),
+                            value=int(v),
+                            multi=True,
+                        )
+        v = self.snmp.get("1.3.6.1.4.1.2011.5.2.1.14.1.2.0")
+        if v:
+            self.set_metric(
+                id=("Subscribers | Summary", None),
+                labels=[],
+                value=int(v),
+                multi=True,
+            )
+
     # @metrics(
     #     ["Interface | Errors | CRC", "Interface | Errors | Frame"],
     #     has_capability="DB | Interfaces",
