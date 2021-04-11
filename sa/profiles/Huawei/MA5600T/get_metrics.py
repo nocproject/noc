@@ -63,8 +63,8 @@ class Script(GetMetricsScript):
                     self.cli("quit")
                 iface = (frame, slot)
                 self.cli("interface gpon %s/%s" % iface)  # Fix from cpes
-            ipath = [cc["global_id"], "", "", "0"]
-            mpath = ["", "", "", "/".join([frame, slot, port])]
+            ipath = [f'noc::chassis::{cc["global_id"]}', "noc::interface::0"]
+            mpath = [f'noc::interface::{"/".join([frame, slot, port])}']
             v = self.cli("display ont optical-info %s %s" % (port, cpe_id))
             m = parse_kv(self.kv_map, v)
 
@@ -189,8 +189,8 @@ class Script(GetMetricsScript):
         ):
             ifindex, ont_id = ont_index.split(".")
             ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
-            ipath = [global_id_map[ont_index], "", "", "0"]
-            mpath = ["", "", "", names[int(ifindex)]]
+            ipath = [f"noc::chassis::{global_id_map[ont_index]}", "noc::interface::0"]
+            mpath = [f"noc::interface::{names[int(ifindex)]}"]
             if ont_temp_c != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
                     id=("Interface | DOM | Temperature", mpath),
@@ -251,8 +251,8 @@ class Script(GetMetricsScript):
             bulk=False,
         ):
             ifindex, ont_id = ont_index.split(".")
-            ipath = [global_id_map[ont_index], "", "", "0"]
-            mpath = ["", "", "", names[int(ifindex)]]
+            ipath = [f"noc::chassis::{global_id_map[ont_index]}", "noc::interface::0"]
+            mpath = [f"noc::interface::{names[int(ifindex)]}"]
             if ont_optical_errors_bip_out != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
                     id=("Interface | Errors | BIP | Out", mpath),
