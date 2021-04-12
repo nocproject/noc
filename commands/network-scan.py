@@ -280,7 +280,7 @@ class Command(BaseCommand):
             self.hosts_enable.add(mm.address)
             self.mo[mm.address] = {
                 "name": mm.name,
-                "tags": mm.tags,
+                "tags": mm.labels,
                 "is_managed": mm.is_managed,
                 "snmp_ro": mm.auth_profile.snmp_ro if mm.auth_profile else mm.snmp_ro,
             }
@@ -335,7 +335,7 @@ class Command(BaseCommand):
                         segment=NetworkSegment.objects.get(name=segment),
                         scheme=1,
                         address=ipx,
-                        tags=tags,
+                        labels=tags,
                         pool=Pool.objects.get(name=pool),
                     )
                     m.save()
