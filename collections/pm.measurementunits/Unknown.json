@@ -1,0 +1,9 @@
+{
+    "name": "Unknown",
+    "$collection": "pm.measurementunits",
+    "uuid": "396b65a3-4ebf-49b0-912e-ce3ee53883f1",
+    "description": "Unknown",
+    "label": "none",
+    "dashboard_label": "short",
+    "scale_type": "d"
+}

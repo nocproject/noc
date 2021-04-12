@@ -25,6 +25,9 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
+from noc.inv.models.sensor import Sensor
+from noc.inv.models.sensorprofile import SensorProfile
+from noc.pm.models.measurementunits import MeasurementUnits, DEFAULT_UNITS_NAME
 from noc.core.text import str_dict
 from noc.core.comp import smart_bytes, smart_text
 
@@ -48,6 +51,9 @@ class AssetCheck(DiscoveryCheck):
         self.objects: List[
             Tuple[str, Union[Object, str], Dict[str, Union[int, str]], Optional[str]]
         ] = []  # [(type, object, context, serial)]
+        self.sensors: Dict[
+            Tuple[Optional[Object], str] : Dict[str, Any]
+        ] = {}  # object, sensor -> sensor data
         self.to_disconnect: Set[
             Tuple[Object, str, Object, str]
         ] = set()  # Save processed connection. [(in_connection, object, out_connection), ... ]
@@ -78,6 +84,7 @@ class AssetCheck(DiscoveryCheck):
                 serial=o.get("serial"),
                 mfg_date=o.get("mfg_date"),
                 description=o.get("description"),
+                sensors=o.get("sensors"),
             )
         # Assign stack members
         self.submit_stack_members()
@@ -87,6 +94,8 @@ class AssetCheck(DiscoveryCheck):
         self.check_management()
         #
         self.disconnect_connections()
+        #
+        self.sync_sensors()
 
     def submit(
         self,
@@ -99,6 +108,7 @@ class AssetCheck(DiscoveryCheck):
         serial: Optional[str] = None,
         mfg_date: Optional[str] = None,
         description: Optional[str] = None,
+        sensors: List[Dict[str, Any]] = None,
     ):
         # Check the vendor and the serial are sane
         # OEM transceivers return binary trash often
@@ -266,6 +276,10 @@ class AssetCheck(DiscoveryCheck):
             if o.id in self.managed:
                 self.managed.remove(o.id)
         self.objects += [(type, o, self.ctx.copy(), serial)]
+        # Collect sensors
+        if sensors:
+            for s in sensors:
+                self.sensors[(o, s["name"])] = s
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
@@ -433,6 +447,112 @@ class AssetCheck(DiscoveryCheck):
         c = free_connections[0]
         self.logger.info("Using twinax connection '%s' instead of '%s'", c, c1)
         self.connect_p2p(o1, c, o2, c2)
+
+    def sync_sensors(self):
+        obj_sensors: Dict[Tuple[Optional[Object], str], Sensor] = {
+            (s.object, s.local_id): s
+            for s in Sensor.objects.filter(object__in=[s[0] for s in self.sensors])
+        }
+        for obj, sn in obj_sensors:
+            si = obj_sensors[(obj, sn)]
+            # @todo rename sensors, need sensor_num for deduplicate
+            sf = self.sensors.get((obj, sn))
+            if sf:
+                # Exist
+                self.update_sensor(
+                    si,
+                    status=sf["status"],
+                    units=sf["measurement"],
+                    label=sf.get("description"),
+                    snmp_oid=sf.get("snmp_oid"),
+                    ipmi_id=sf.get("ipmi_id"),
+                )
+                del self.sensors[(obj, sn)]
+            else:
+                # Missed sensors
+                si.unseen(source="asset")
+        # Create new sensors
+        for obj, sn in self.sensors:
+            si = self.sensors[(obj, sn)]
+            self.submit_sensor(
+                obj=obj,
+                name=sn,
+                status=si["status"],
+                units=si["measurement"],
+                label=si.get("description"),
+                snmp_oid=si.get("snmp_oid"),
+                ipmi_id=si.get("ipmi_id"),
+            )
+
+    def submit_sensor(
+        self,
+        obj: Object,
+        name: str,
+        status: bool = True,
+        units: Optional[str] = "Unknown",
+        label: Optional[str] = None,
+        snmp_oid: Optional[str] = None,
+        ipmi_id: Optional[str] = None,
+    ):
+        self.logger.info("[%s|%s] Creating new sensor '%s'", obj.name if obj else "-", "-", name)
+        s = Sensor(
+            profile=SensorProfile.get_default_profile(),
+            object=obj,
+            managed_object=None if obj else self.object,
+            label=label,
+            local_id=name,
+            units=self.normalize_sensor_units(units),
+        )
+        # Get sensor protocol
+        if snmp_oid:
+            s.protocol = "snmp"
+            s.snmp_oid = snmp_oid
+        elif ipmi_id:
+            s.protocol = "ipmi"
+            s.ipmi_id = ipmi_id
+        else:
+            self.logger.info(
+                "[%s|%s] Unknown sensor protocol '%s'",
+                obj.name if obj else "-",
+                "-",
+                name,
+            )
+        s.save()
+        s.seen(source="asset")
+
+    def update_sensor(
+        self,
+        sensor: Sensor,
+        status: bool = True,
+        units: Optional[str] = "Unknown",
+        label: Optional[str] = None,
+        snmp_oid: Optional[str] = None,
+        ipmi_id: Optional[str] = None,
+    ):
+        sensor.seen(source="asset")
+        if not status:
+            sensor.fire_event("down")
+        else:
+            sensor.fire_event("up")
+        units = self.normalize_sensor_units(units)
+        if sensor.units != units:
+            sensor.units = units
+        if label and sensor.label != label:
+            sensor.label = label
+        # Get sensor protocol
+        if snmp_oid and snmp_oid != sensor.snmp_oid:
+            sensor.protocol = "snmp"
+            sensor.snmp_oid = snmp_oid
+        elif ipmi_id and sensor.ipmi_id != ipmi_id:
+            sensor.protocol = "ipmi"
+            sensor.ipmi_id = ipmi_id
+        sensor.save()
+
+    def normalize_sensor_units(self, units: str) -> MeasurementUnits:
+        units = MeasurementUnits.get_by_name(units)
+        if not units:
+            units = MeasurementUnits.get_by_name(DEFAULT_UNITS_NAME)
+        return units
 
     def submit_stack_members(self):
         if len(self.stack_member) < 2:
