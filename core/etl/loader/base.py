@@ -73,6 +73,8 @@ class BaseLoader(object):
     discard_deferred = False
     # Ignore auto-generated unique fields
     ignore_unique = {"bi_id"}
+    # Array fields need merge values
+    incremental_change = {"labels", "static_client_groups", "static_service_groups"}
 
     REPORT_INTERVAL = 1000
 
@@ -328,11 +330,6 @@ class BaseLoader(object):
         data structures
         """
         self.logger.debug("Create object")
-        for k, nv in v.items():
-            if k == "tags":
-                # Merge tags
-                nv = sorted("%s:%s" % (self.system.name, x) for x in nv)
-                v[k] = nv
         o = self.model(**v)
         try:
             o.save()
@@ -350,7 +347,9 @@ class BaseLoader(object):
             o.save()
         return o
 
-    def change_object(self, object_id: str, v: Dict[str, Any]):
+    def change_object(
+        self, object_id: str, v: Dict[str, Any], inc_changes: Dict[str, Dict[str, List]] = None
+    ):
         """
         Change object with attributes
         """
@@ -362,17 +361,9 @@ class BaseLoader(object):
             self.logger.error("Cannot change %s:%s: Does not exists", self.name, object_id)
             return None
         for k, nv in v.items():
-            if k == "tags":
-                # Merge tags
-                ov = o.tags or []
-                nv = sorted(
-                    [
-                        x
-                        for x in ov
-                        if not (x.startswith(self.system.name + ":") or x == "remote:deleted")
-                    ]
-                    + ["%s:%s" % (self.system.name, x) for x in nv]
-                )
+            if inc_changes and k in inc_changes:
+                ov = getattr(o, k, [])
+                nv = list(set(ov).union(set(inc_changes[k]["add"])) - set(inc_changes[k]["remove"]))
             setattr(o, k, nv)
         o.save()
         return o
@@ -411,6 +402,7 @@ class BaseLoader(object):
         self.c_change += 1
         nv = self.clean(n)
         changes = {"remote_system": nv["remote_system"], "remote_id": nv["remote_id"]}
+        incremental_changes = {}
         ov = self.clean(o)
         for fn in self.data_model.__fields__:
             if fn == "id":
@@ -418,8 +410,13 @@ class BaseLoader(object):
             if ov[fn] != nv[fn]:
                 self.logger.debug("   %s: %s -> %s", fn, ov[fn], nv[fn])
                 changes[fn] = nv[fn]
+                if fn in self.incremental_change:
+                    incremental_changes[fn] = {
+                        "add": list(set(nv[fn]) - set(ov[fn])),
+                        "remove": list(set(ov[fn]) - set(nv[fn])),
+                    }
         if n.id in self.mappings:
-            self.change_object(self.mappings[n.id], changes)
+            self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)
         else:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
 
