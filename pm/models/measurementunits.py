@@ -20,6 +20,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 
+DEFAULT_UNITS_NAME = "Unknown"
 
 id_lock = Lock()
 
@@ -97,6 +98,7 @@ class MeasurementUnits(Document):
     enum = ListField(EmbeddedDocumentField(EnumValue))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
@@ -105,6 +107,11 @@ class MeasurementUnits(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id) -> Optional["MeasurementUnits"]:
         return MeasurementUnits.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["RemoteSystem"]:
+        return MeasurementUnits.objects.filter(name=name).first()
 
     @property
     def json_data(self):

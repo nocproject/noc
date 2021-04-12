@@ -14,6 +14,7 @@ from .base import (
     FloatParameter,
     StringListParameter,
     REStringParameter,
+    OIDParameter,
 )
 
 
@@ -52,6 +53,30 @@ class IGetInventory(BaseInterface):
                     "out": StringParameter(),
                     # Power gain, in dB
                     "gain": FloatParameter(),
+                },
+                required=False,
+            ),
+            # Optional Sensors
+            "sensors": DictListParameter(
+                attrs={
+                    # Sensor number inside object, for deduplicate
+                    # "number": StringParameter(),
+                    # Sensor name. Must be unique
+                    "name": StringParameter(required=True),
+                    # Sensor operational status
+                    # True - ok (agent can obtain the sensor value)
+                    # False - nonoperational (agent believes the sensor is broken)
+                    "status": BooleanParameter(default=True),
+                    # Optional description
+                    "description": StringParameter(required=False),
+                    # MeasurementUnit Name
+                    "measurement": StringParameter(default="Unknown"),
+                    # Collected hints
+                    # OID for collecting by SNMP
+                    "snmp_oid": OIDParameter(required=False),
+                    # ID for IPMI collected
+                    "ipmi_id": StringParameter(required=False),
+                    # Optional internals Thresholds ?
                 },
                 required=False,
             ),

@@ -57,6 +57,7 @@ class Sensor(Document):
     protocol = StringField(choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi"])
     modbus_register = IntField()
     snmp_oid = StringField()
+    ipmi_id = StringField()
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -64,8 +65,10 @@ class Sensor(Document):
 
     def __str__(self):
         if self.object:
-            return "%s: %s" % (self.object, self.local_id)
-        return "%s: %s" % (self.units, self.local_id)
+            return f"{self.object}: {self.local_id}"
+        elif self.managed_object:
+            return f"{self.managed_object}: {self.local_id}"
+        return f"{self.units}: {self.local_id}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -83,9 +86,9 @@ class Sensor(Document):
         """
         if source and source in SOURCES:
             self.sources = list(set(self.sources or []).union(set([source])))
+            self._get_collection().update_one({"_id": self.id}, {"$addToSet": {"sources": source}})
         self.fire_event("seen")
         self.touch()  # Worflow expired
-        self.save()
 
     def unseen(self, source: Optional[str] = None):
         """
@@ -99,14 +102,20 @@ class Sensor(Document):
         )
         if source and source in SOURCES:
             self.sources = list(set(self.sources or []) - set([source]))
+            self._get_collection().update_one(
+                {"_id": self.id}, {"$pull": {"sources": source}}
+            )
         elif not source:
             # For empty source, clean sources
             self.sources = []
+            self._get_collection().update_one(
+                {"_id": self.id}, {"$set": {"sources": []}}
+            )
         if not self.sources:
             # source - None, set sensor to missed
             self.fire_event("missed")
             self.touch()
-        self.save()
+
 
     @classmethod
     def sync_object(cls, obj: Object) -> None:
@@ -127,6 +136,7 @@ class Sensor(Document):
         # Create new sensors
         for sensor in obj.model.sensors:
             if sensor.name in obj_sensors:
+                obj_sensors[sensor.name].seen("objectmodel")
                 del obj_sensors[sensor.name]
                 continue
             #
@@ -138,6 +148,7 @@ class Sensor(Document):
                 object=obj,
                 local_id=sensor.name,
                 units=sensor.units,
+                label=description,
             )
             # Get sensor protocol
             if sensor.modbus_register:
