@@ -22,7 +22,7 @@ class LinkLoader(BaseLoader):
 
     discard_deferred = True
 
-    def change_object(self, object_id, v):
+    def change_object(self, object_id, v, inc_changes=None):
         v["link"] = None
         v["error"] = None
         v["warn"] = None

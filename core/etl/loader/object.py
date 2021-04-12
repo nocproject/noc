@@ -76,7 +76,9 @@ class ObjectLoader(BaseLoader):
             self.logger.debug("[%s] Reset data: %s", o, d)
             o.reset_data(*d)
 
-    def change_object(self, object_id: str, v: Dict[str, Any]):
+    def change_object(
+        self, object_id: str, v: Dict[str, Any], inc_changes: Dict[str, Dict[str, List]] = None
+    ):
         self.logger.debug("Changed object: %s", v)
         # See: https://code.getnoc.com/noc/noc/merge_requests/49
         try:
