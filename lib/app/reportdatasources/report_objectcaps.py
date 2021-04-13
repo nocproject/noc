@@ -31,7 +31,7 @@ class ReportObjectCaps(BaseReportColumn):
     ATTRS = dict(
         [
             ("c_%s" % str(key), value)
-            for key, value in Capability.objects.filter().scalar("id", "name")
+            for key, value in Capability.objects.filter().order_by("name").scalar("id", "name")
         ]
     )
     unknown_value = ([""] * len(ATTRS),)
@@ -54,7 +54,7 @@ class ReportObjectCaps(BaseReportColumn):
                     [
                         {"$match": match},
                         {"$unwind": "$caps"},
-                        {"$match": {"caps.source": "caps"}},
+                        {"$match": {"caps.source": {"$in": ["caps", "manual"]}}},
                         {"$project": {"key": "$caps.capability", "value": "$caps.value"}},
                         {
                             "$group": {
@@ -68,8 +68,8 @@ class ReportObjectCaps(BaseReportColumn):
             )
             for v in value:
                 r = {
-                    "c_%s" % l["item"]: l["val"]
-                    for l in v["cap"]
-                    if "c_%s" % l["item"] in self.ATTRS
+                    f'c_{ll["item"]}': ll["val"]
+                    for ll in v["cap"]
+                    if f'c_{ll["item"]}' in self.ATTRS
                 }
                 yield v["_id"], Caps(**r)
