@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Full-text search index
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,9 @@ import re
 from django.db.models import signals as django_signals
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, DateTimeField
-from models import get_object, get_model_id
+
+# NOC modules
+from noc.models import get_object, get_model_id
 
 logger = logging.getLogger(__name__)
 
