@@ -107,6 +107,8 @@ class Script(BaseScript):
                 raise self.NotSupportedError(platform)
         elif "3510MA" in platform:
             platform = "ES3510MA"
+        elif "ECS3510-" in platform:
+            pass
         elif "3510" in platform:
             platform = "ES3510"
         elif "3552M" in platform:
