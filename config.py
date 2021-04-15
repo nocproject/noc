@@ -396,6 +396,7 @@ class Config(BaseConfig):
         stream_ch_replication_factor = IntParameter(
             default=1, help="Replicaton factor for clickhouse streams"
         )
+        metrics_send_delay = FloatParameter(default=0.25)
 
     listen = StringParameter(default="auto:0")
 
