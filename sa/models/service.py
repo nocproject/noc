@@ -27,11 +27,13 @@ from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.mongo.fields import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.resourcegroup.decorator import resourcegroup
+from noc.wf.models.state import State
+from noc.core.wf.decorator import workflow
 from noc.inv.models.capsitem import CapsItem
 from noc.main.models.label import Label
 
@@ -42,6 +44,7 @@ logger = logging.getLogger(__name__)
 @bi_sync
 @on_save
 @resourcegroup
+@workflow
 @on_delete
 @on_delete_check(clean=[("phone.PhoneNumber", "service"), ("inv.Interface", "service")])
 class Service(Document):
@@ -65,20 +68,9 @@ class Service(Document):
     # Creation timestamp
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
-    logical_status = StringField(
-        choices=[
-            ("P", "Planned"),
-            ("p", "Provisioning"),
-            ("T", "Testing"),
-            ("R", "Ready"),
-            ("S", "Suspended"),
-            ("r", "Removing"),
-            ("C", "Closed"),
-            ("U", "Unknown"),
-        ],
-        default="U",
-    )
-    logical_status_start = DateTimeField()
+    state = PlainReferenceField(State)
+    # Last state change
+    state_changed = DateTimeField()
     # Parent service
     parent = ReferenceField("self", required=False)
     # Subscriber information

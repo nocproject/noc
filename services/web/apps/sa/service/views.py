@@ -10,6 +10,7 @@ from mongoengine.queryset import Q
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.lib.app.decorators.state import state_handler
 from noc.sa.models.service import Service
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.translation import ugettext as _
@@ -17,6 +18,7 @@ from noc.core.validators import is_objectid
 from noc.core.comp import smart_text
 
 
+@state_handler
 class ServiceApplication(ExtDocApplication):
     """
     Service application

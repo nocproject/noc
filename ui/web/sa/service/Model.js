@@ -20,9 +20,8 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "logical_status",
-            type: "string",
-            defaultValue: "U"
+            name: "state",
+            type: "string"
         },
         {
             name: "ts",
@@ -126,7 +125,7 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "logical_status_start",
+            name: "state_changed",
             type: "auto"
         },
         {

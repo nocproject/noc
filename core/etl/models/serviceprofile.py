@@ -16,6 +16,7 @@ class ServiceProfile(BaseModel):
     id: str
     name: str
     description: Optional[str]
+    workflow: Optional[str]
     card_title_template: Optional[str]
 
     _csv_fields = ["id", "name", "description", "card_title_template"]

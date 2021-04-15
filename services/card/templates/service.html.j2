@@ -2,20 +2,20 @@
 <tbody>
 <tr>
     <th colspan="2" class="{{ {
-        "P": "info",
-        "p": "info",
-        "T": "info",
-        "R": "success",
-        "S": "warning",
-        "r": "danger",
-        "C": "danger",
-        "U": ""
-    }.get(service.logical_status, '') }}">
+        "Planned": "info",
+        "Provisioning": "info",
+        "Testing": "info",
+        "Ready": "success",
+        "Suspended": "warning",
+        "Removing": "danger",
+        "Closed": "danger",
+        "Unknown": ""
+    }.get(service.state.name, '') }}">
         {{ service | service_title }}
         <span style="float: right">
-            {{ service.logical_status | logical_status }}
+            {{ service.state.name }}
             {{ current_duration }}
-            ({{ service.logical_status_start | timestamp }})
+            ({{ service.state_changed | timestamp }})
         </span>
     </th>
 </tr>
@@ -86,7 +86,7 @@
                     <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * s._level) }}
                         <a href="/api/card/view/service/{{ s.id }}/">{{ s | service_title }}</a>
                     </td>
-                    <td>{{ s.logical_status | logical_status }}</td>
+                    <td>{{ s.state.name }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

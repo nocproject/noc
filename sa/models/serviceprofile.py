@@ -26,11 +26,13 @@ import cachetools
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later
 from noc.inv.models.capsitem import CapsItem
-from noc.main.models.label import Label
+from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
 
@@ -52,6 +54,7 @@ class ServiceProfile(Document):
     display_order = IntField(default=100)
     # Show in total summary
     show_in_summary = BooleanField(default=True)
+    workflow = PlainReferenceField(Workflow)
     # Auto-assign interface profile when service binds to interface
     interface_profile = ReferenceField(InterfaceProfile)
     # Alarm weight
