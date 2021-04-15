@@ -25,7 +25,6 @@ from typing import (
     TypeVar,
     NoReturn,
     Awaitable,
-    Iterable,
 )
 
 # Third-party modules
@@ -50,6 +49,7 @@ from noc.core.nsq.error import NSQPubError
 from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
 from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
+from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
@@ -155,6 +155,9 @@ class BaseService(object):
         # Liftbridge publisher
         self.publish_queue: Optional[LiftBridgeQueue] = None
         self.publisher_start_lock = threading.Lock()
+        # Metrics publisher buffer
+        self.metrics_queue: Optional[QBuffer] = None
+        self.metrics_start_lock = threading.Lock()
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
@@ -685,7 +688,9 @@ class BaseService(object):
             if self.publish_queue:
                 return  # Created in concurrent thread
             self.publish_queue = LiftBridgeQueue(self.loop)
+            self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
+            self.loop.create_task(self.publish_metrics())
 
     def publish(
         self,
@@ -715,13 +720,6 @@ class BaseService(object):
             auto_compress=bool(config.liftbridge.compression_method),
         )
         self.publish_queue.put(req)
-
-    async def publisher_guard(self):
-        while not self.publish_queue.to_shutdown:
-            try:
-                await self.publisher()
-            except Exception as e:
-                self.logger.error("Unhandled exception in liftbridge publisher: %s", e)
 
     async def publisher(self):
         async with LiftBridgeClient() as client:
@@ -898,35 +896,23 @@ class BaseService(object):
         executor = self.get_executor(name)
         return executor.submit(fn, *args, **kwargs)
 
-    @staticmethod
-    def _iter_metrics_raw_chunks(metrics: List[Dict[str, Any]]) -> Iterable[bytes]:
-        r: List[bytes] = []
-        size = 0
-        for mi in metrics:
-            jm = orjson.dumps(mi)
-            ljm = len(jm)
-            if size + ljm + 1 >= config.liftbridge.max_message_size:
-                yield b"\n".join(r)
-                r = []
-                size = 0
-            r.append(jm)
-            if size:
-                size += 1 + ljm
-            else:
-                size += ljm
-        if r:
-            yield b"\n".join(r)
+    async def publish_metrics(self):
+        while not (self.publish_queue.to_shutdown and self.metrics_queue.is_empty()):
+            t0 = perf_counter()
+            for stream, partititon, chunk in self.metrics_queue.iter_slice():
+                self.publish(chunk, stream=stream, partition=partititon)
+            if not self.publish_queue.to_shutdown:
+                to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
+                if to_sleep > 0:
+                    await asyncio.sleep(to_sleep)
 
     def register_metrics(
         self, table: str, metrics: List[Dict[str, Any]], key: Optional[int] = None
     ):
         """
-        Send collected metrics to `table`
+        Schedule metrics to be sent to the `table`.
 
-        Register metrics to send in non-clustered configuration.
-        Must be used via register_metrics only
-
-        :param fields: Table name
+        :param table: Table name
         :param metrics: List of dicts containing metrics records
         :param key: Sharding key, None for round-robin distribution
         :return:
@@ -935,12 +921,11 @@ class BaseService(object):
             with self.metrics_key_lock:
                 key = self.metrics_key_seq
                 self.metrics_key_seq += 1
-        for chunk in self._iter_metrics_raw_chunks(metrics):
-            self.publish(
-                chunk,
-                stream=f"ch.{table}",
-                partition=key % self.n_metrics_partitions,
-            )
+        if not self.publish_queue:
+            self._init_publisher()
+        self.metrics_queue.put(
+            stream=f"ch.{table}", partition=key % self.n_metrics_partitions, data=metrics
+        )
 
     def start_telemetry_callback(self) -> None:
         """
