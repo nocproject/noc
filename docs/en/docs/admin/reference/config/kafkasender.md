@@ -1,86 +1,74 @@
 # [kafkasender] section
+
 Kafkasender service configuration
 
 ## bootstrap_servers
 
-Default value
-:   
-
-YAML Path
-:   kafkasender.bootstrap_servers
-
-Key-Value Path
-:   kafkasender/bootstrap_servers
-
-Environment
-:   NOC_KAFKASENDER_BOOTSTRAP_SERVERS
+|                |                                     |
+| -------------- | ----------------------------------- |
+| Default value  | ``                                  |
+| YAML Path      | `kafkasender.bootstrap_servers`     |
+| Key-Value Path | `kafkasender/bootstrap_servers`     |
+| Environment    | `NOC_KAFKASENDER_BOOTSTRAP_SERVERS` |
 
 ## username
 
-Default value
-:   
-
-YAML Path
-:   kafkasender.username
-
-Key-Value Path
-:   kafkasender/username
-
-Environment
-:   NOC_KAFKASENDER_USERNAME
+|                |                            |
+| -------------- | -------------------------- |
+| Default value  | ``                         |
+| YAML Path      | `kafkasender.username`     |
+| Key-Value Path | `kafkasender/username`     |
+| Environment    | `NOC_KAFKASENDER_USERNAME` |
 
 ## password
 
-Default value
-:   None
-
-YAML Path
-:   kafkasender.password
-
-Key-Value Path
-:   kafkasender/password
-
-Environment
-:   NOC_KAFKASENDER_PASSWORD
+|                |                            |
+| -------------- | -------------------------- |
+| Default value  | `None`                     |
+| YAML Path      | `kafkasender.password`     |
+| Key-Value Path | `kafkasender/password`     |
+| Environment    | `NOC_KAFKASENDER_PASSWORD` |
 
 ## sasl_mechanism
 
 Default value
-:   PLAIN
+: PLAIN
 
 Possible values
 :
-* PLAIN
-* GSSAPI
-* SCRAM-SHA-256
-* SCRAM-SHA-512
+
+- PLAIN
+- GSSAPI
+- SCRAM-SHA-256
+- SCRAM-SHA-512
 
 YAML Path
-:   kafkasender.sasl_mechanism
+: kafkasender.sasl_mechanism
 
 Key-Value Path
-:   kafkasender/sasl_mechanism
+: kafkasender/sasl_mechanism
 
 Environment
-:   NOC_KAFKASENDER_SASL_MECHANISM
+: NOC_KAFKASENDER_SASL_MECHANISM
 
 ## security_protocol
 
 Default value
-:   PLAINTEXT
+: PLAINTEXT
 
 Possible values
 :
-* PLAINTEXT
-* SASL_PLAINTEXT
-* SSL
-* SASL_SSL
+
+- PLAINTEXT
+- SASL_PLAINTEXT
+- SSL
+- SASL_SSL
 
 YAML Path
-:   kafkasender.security_protocol
+: kafkasender.security_protocol
 
 Key-Value Path
-:   kafkasender/security_protocol
+: kafkasender/security_protocol
 
 Environment
-:   NOC_KAFKASENDER_SECURITY_PROTOCOL
+: NOC_KAFKASENDER_SECURITY_PROTOCOL

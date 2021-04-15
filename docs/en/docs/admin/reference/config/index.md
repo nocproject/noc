@@ -30,7 +30,7 @@ Which means:
 3. Apply NOC_xxx environment variables passed to process (See [env](#env) for details)
 
 Proposed approach allows to start with legacy config, if exists, override
-it with *Tower* config and, finally, apply per-process tweaks via
+it with _Tower_ config and, finally, apply per-process tweaks via
 environment variables.
 
 You can set own `NOC_CONFIG` environment variable passed to process
@@ -99,26 +99,27 @@ env:///NOC
 
 Then following environment will be processed as:
 
-Environment | Configuration
---- | ---
-NOC_FEATURE_UVLOOP=1 |feature.uvloop=True
-NOC_TIMEZONE=Europe/Moscow | timezone=Europe/Moscow
-NOC_FOOBAR | _ignored_
-MYVAR_FEATURE_UVLOOP=1 | _ignored_
+| Environment                | Configuration          |
+| -------------------------- | ---------------------- |
+| NOC_FEATURE_UVLOOP=1       | feature.uvloop=True    |
+| NOC_TIMEZONE=Europe/Moscow | timezone=Europe/Moscow |
+| NOC_FOOBAR                 | _ignored_              |
+| MYVAR_FEATURE_UVLOOP=1     | _ignored_              |
 
 If we'll change URL to:
+
 ```
 env:///MYVAR
 ```
 
 Then previous example will be processed as:
 
-Environment | Configuration
---- | ---
-NOC_FEATURE_UVLOOP=1 | _ignored_
-NOC_TIMEZONE=Europe/Moscow | _ignored_
-NOC_FOOBAR | _ignored_
-MYVAR_FEATURE_UVLOOP=1 | feature.uvloop=True
+| Environment                | Configuration       |
+| -------------------------- | ------------------- |
+| NOC_FEATURE_UVLOOP=1       | _ignored_           |
+| NOC_TIMEZONE=Europe/Moscow | _ignored_           |
+| NOC_FOOBAR                 | _ignored_           |
+| MYVAR_FEATURE_UVLOOP=1     | feature.uvloop=True |
 
 <!-- prettier-ignore -->
 !!! note
@@ -131,27 +132,29 @@ Load config from [Consul](https://www.consul.io/) distributed key-value
 storage.
 
 URL format:
+
 ```
 consul://<ip1>:<port>/<path>?token=<token>
 ```
 
 Where:
 
-* `<ip1>`: IP address or host name of `Consul` node
-* `<port>`: Consul port
-* `<path>`: Key-Value store prefix
-* `<token>`: Consul access `token`, if exists
+- `<ip1>`: IP address or host name of `Consul` node
+- `<port>`: Consul port
+- `<path>`: Key-Value store prefix
+- `<token>`: Consul access `token`, if exists
 
 Example:
+
 ```
 consul://consul:8500/noc
 ```
-    
 
 Single `Consul` cluster can be used for several `consul` sources
 using different `<path>`.
 
 Example:
+
 ```
 NOC_CONFIG=consul://consul:8500/noc/global,consul://consul:8500/noc/dc/DC1
 ```
@@ -160,12 +163,14 @@ Example suggest global configuration is stored in "noc/global" tree,
 datacenter-specific configurations are in "noc/dc" ("noc/dc/DC1" for "DC1").
 
 Get current value for `consul` key:
+
 ```
 $ consul kv get -recurse noc/language
 noc/language:ru
 ```
 
 Change `consul` key:
+
 ```
 $ consul kv put noc/language en
 Success! Data written to: noc/language

@@ -1,23 +1,25 @@
 # [etl] section
+
 Etl service configuration
 
 ## compression
 
 Default value
-:   gzip
+: gzip
 
 Possible values
 :
-* plain
-* gzip
-* bz2
-* lzma
+
+- plain
+- gzip
+- bz2
+- lzma
 
 YAML Path
-:   etl.compression
+: etl.compression
 
 Key-Value Path
-:   etl/compression
+: etl/compression
 
 Environment
-:   NOC_ETL_COMPRESSION
+: NOC_ETL_COMPRESSION
