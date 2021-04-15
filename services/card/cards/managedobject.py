@@ -509,7 +509,7 @@ class ManagedObjectCard(BaseCard):
         Returns a list of (service profile name, glyph)
         """
         r = []
-        if service.logical_status in ("T", "R", "S"):
+        if service.state.name in ("Testing", "Ready", "Suspended"):
             if service.profile.glyph:
                 r += [(service.profile.name, service.profile.glyph)]
             for svc in Service.objects.filter(parent=service):

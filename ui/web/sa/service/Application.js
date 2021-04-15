@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.service.Application");
 Ext.define("NOC.sa.service.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.StateField",
         "NOC.sa.service.Model",
         "NOC.sa.service.LookupField",
         "NOC.sa.serviceprofile.LookupField",
@@ -48,19 +49,10 @@ Ext.define("NOC.sa.service.Application", {
                     renderer: NOC.render.Lookup("subscriber")
                 },
                 {
-                    text: __("Logical Status"),
-                    dataIndex: "logical_status",
-                    width: 120,
-                    renderer: NOC.render.Choices({
-                        P: __("Planned"),
-                        p: __("Provisioning"),
-                        T: __("Testing"),
-                        R: __("Ready"),
-                        S: __("Suspended"),
-                        r: __("Removing"),
-                        C: __("Closed"),
-                        U: __("Unknown")
-                    })
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("state")
                 },
                 {
                     text: __("Parent"),
@@ -77,21 +69,10 @@ Ext.define("NOC.sa.service.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "logical_status",
-                    xtype: "combobox",
-                    fieldLabel: __("Logical Status"),
-                    allowBlank: false,
-                    store: [
-                        ["P", "Planned"],
-                        ["p", "Provisioning"],
-                        ["T", "Testing"],
-                        ["R", "Ready"],
-                        ["S", "Suspended"],
-                        ["r", "Removing"],
-                        ["C", "Closed"],
-                        ["U", "Unknown"]
-                    ],
-                    uiStyle: "medium"
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
                 },
                 {
                     name: "labels",
@@ -346,18 +327,9 @@ Ext.define("NOC.sa.service.Application", {
         },
         {
             title: __("By State"),
-            name: "logical_status",
-            ftype: "choices",
-            store: [
-                ["P", "Planned"],
-                ["p", "Provisioning"],
-                ["T", "Testing"],
-                ["R", "Ready"],
-                ["S", "Suspended"],
-                ["r", "Removing"],
-                ["C", "Closed"],
-                ["U", "Unknown"]
-            ]
+            name: "state",
+            ftype: "lookup",
+            lookup: "wf.state"
         }
     ],
 
