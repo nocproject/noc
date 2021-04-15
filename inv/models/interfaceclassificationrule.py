@@ -94,11 +94,12 @@ class InterfaceClassificationMatch(EmbeddedDocument):
                 ' ifname, "unit", ifname, "bridge", "switchport", "untagged", untagged)'
                 ' and HasVLAN("%s", untagged) and Del(vr, fi, untagged)' % self.vc_filter.expression
             ]
-        if self.field == "tagged" and self.op == "eq" and self.value:
+        if self.field == "tagged" and self.op == "eq" and (self.value or self.vc_filter):
             query += [
                 'Match("virtual-router", vr, "forwarding-instance", fi, "interfaces",'
                 ' ifname, "unit", ifname, "bridge", "switchport", "tagged", tagged)'
-                ' and MatchExactVLAN("%s", tagged) and Del(vr, fi, tagged)' % self.value
+                ' and MatchExactVLAN("%s", tagged) and Del(vr, fi, tagged)'
+                % (self.value or self.vc_filter.expression)
             ]
         elif self.field == "tagged" and self.op == "in" and self.vc_filter:
             query += [
