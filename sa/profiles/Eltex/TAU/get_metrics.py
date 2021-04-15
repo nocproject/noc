@@ -18,13 +18,16 @@ class Script(GetMetricsScript):
         access="S",
     )
     def get_cpu_usage(self, metrics):
-        cpu_usage = float(self.snmp.get("1.3.6.1.4.1.35265.1.9.8.0", cached=True))
+        cpu_usage = self.snmp.get("1.3.6.1.4.1.35265.1.9.8.0", cached=True)
         if cpu_usage:
-            self.set_metric(
-                id=("CPU | Usage", None),
-                value=int(cpu_usage),
-                multi=True,
-            )
+            try:
+                self.set_metric(
+                    id=("CPU | Usage", None),
+                    value=int(cpu_usage.split(".")[0]),
+                    multi=True,
+                )
+            except ValueError:
+                pass
 
     @metrics(
         ["Memory | Usage"],
