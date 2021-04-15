@@ -22,13 +22,13 @@ class Script(BaseScript):
     )
     rx_vrp5line = re.compile(
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)(?:\s+|/)\-\s+(?:\-\s+)?(?P<interfaces>\S+)\s+"
-        r"(?P<type>dynamic|static|security)(?:\s+\-)?"
+        r"(?P<type>dynamic|static|security|sticky)(?:\s+\-)?"
     )
     rx_vrp5_bd_line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)/\-/\-\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)"
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)/\-/\-\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security|sticky)"
     )
     rx_vrp53line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+"
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security|sticky)\s+"
     )
 
     def execute_snmp(self, **kwargs):
@@ -90,6 +90,7 @@ class Script(BaseScript):
                             "learned": "D",
                             "config static": "S",
                             "security": "S",
+                            "sticky": "S",
                         }[match.group("type").lower()],
                     }
                 ]
