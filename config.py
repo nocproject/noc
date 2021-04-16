@@ -642,6 +642,7 @@ class Config(BaseConfig):
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")
+        max_rest_limit = IntParameter(default=100)
 
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)
