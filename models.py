@@ -29,13 +29,12 @@ def get_model_id(object):
     """
     if is_document(object):
         # Document
-        return "%s.%s" % (object.__module__.split(".")[1], object._class_name)
+        app = object.__module__.split(".")[1]
+        model = object._class_name
     else:
-        # Model
-        return "%s.%s" % (
-            object._meta.app_label if object._meta.app_label != "auth" else "main",
-            object._meta.object_name,
-        )
+        app = object._meta.app_label if object._meta.app_label != "auth" else "main"
+        model = object._meta.object_name
+    return f"{app}.{model}"
 
 
 def get_model(model_id):

@@ -24,7 +24,7 @@ import cachetools
 
 # NOC modules
 from .error import ModelDataError
-from noc.lib.utils import deep_copy
+from noc.core.copy import deep_copy
 from noc.core.escape import json_escape as q
 from noc.sa.interfaces.base import (
     StringParameter,
