@@ -1369,7 +1369,6 @@ nav:
               - "[peer] section": admin/reference/config/peer.md
               - "[pg] section": admin/reference/config/pg.md
               - "[ping] section": admin/reference/config/ping.md
-              - "[pmwriter] section": admin/reference/config/pmwriter.md
               - "[proxy] section": admin/reference/config/proxy.md
               - "[redis] section": admin/reference/config/redis.md
               - "[rpc] section": admin/reference/config/rpc.md
