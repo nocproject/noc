@@ -1,0 +1,24 @@
+{
+    "name": "Juniper | EX | EX4500-LB",
+    "$collection": "inv.objectmodels",
+    "uuid": "997ceec1-eb49-4565-8334-f3f134b1c7bf",
+    "vendor__code": "JUNIPER",
+    "description": "EX4500-LB Intraconnect Module",
+    "cr_context": "PIC",
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 4500 VC/I"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX4500-LB"],
+            "part_no": ["711-035528"]
+        }
+    }
+}

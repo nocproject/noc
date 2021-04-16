@@ -430,7 +430,7 @@
         "asset": {
             "description": ["EX4500-40F"],
             "order_part_no": ["EX4500-40F-VC1-FB", "EX4500-40F-VC1-BF", "EX4500-40F-VC1-DC", "EX4500-40F-FB", "EX4500-40F-BF", "EX4500-40F-DC"],
-            "part_no": ["750-036562", "EX4500-40F"]
+            "part_no": ["750-036562", "750-036567", "EX4500-40F"]
         },
         "management": {
             "managed": true
