@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | EX | EX-UM-4X4SFP",
+    "name": "Juniper | EX | EX4500-UM-4XSFP",
     "$collection": "inv.objectmodels",
-    "uuid": "9dd8dff8-cbdf-42eb-b138-d987748c7b30",
+    "uuid": "ab1699b6-f15d-42a1-b0b4-a0657259728b",
     "vendor__code": "JUNIPER",
-    "description": "4x1/10G Uplink module for EX4300",
+    "description": "4x1/10G Uplink module for EX4500",
     "cr_context": "PIC",
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
@@ -50,8 +50,8 @@
     "data": {
         "asset": {
             "description": ["4x 1G/10G SFP/SFP+"],
-            "order_part_no": ["EX-UM-4X4SFP"],
-            "part_no": ["611-044925", "611-063980"]
+            "order_part_no": ["EX4500-UM-4XSFP"],
+            "part_no": ["711-028852"]
         }
     }
 }
