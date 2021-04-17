@@ -9,6 +9,7 @@
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sla.models.slaprobe import SLAProbe
 from noc.core.profile.loader import GENERIC_PROFILE
+from noc.main.models.label import Label
 
 
 class SLACheck(DiscoveryCheck):
@@ -23,6 +24,7 @@ class SLACheck(DiscoveryCheck):
         #
         "Cisco.IOS": {"Cisco | IP | SLA | Probes"},
         "Juniper.JUNOS": {"Juniper | RPM | Probes"},
+        "Huawei.NQA": {"Huawei | NQA | Probes"},
         "OneAccess.TDRE": {"OneAccess | IP | SLA | Probes"},
         # Fallback
         GENERIC_PROFILE: set(),
@@ -56,7 +58,7 @@ class SLACheck(DiscoveryCheck):
             if not new_data:
                 # Remove stale probe
                 self.logger.info("[%s|%s] Removing probe", group, p.name)
-                p.delete()
+                p.fire_event("missed")
                 continue
             self.update_if_changed(
                 p,
@@ -65,9 +67,19 @@ class SLACheck(DiscoveryCheck):
                     "type": new_data["type"],
                     "target": new_data["target"],
                     "hw_timestamp": new_data.get("hw_timestamp", False),
-                    "labels": new_data.get("tags", []),
+                    "labels": [
+                        ll
+                        for ll in new_data.get("tags", [])
+                        if Label.get_effective_setting(ll, "enable_slaprobe")
+                    ],
                 },
             )
+            p.fire_event("seen")
+            if not new_data["state"]:
+                p.fire_event("down")
+            else:
+                p.fire_event("up")
+            p.touch()
             del new_probes[group, p.name]
         # Add remaining probes
         for group, name in new_probes:
@@ -84,3 +96,5 @@ class SLACheck(DiscoveryCheck):
                 labels=new_data.get("tags", []),
             )
             probe.save()
+            if not new_data["state"]:
+                probe.fire_event("down")

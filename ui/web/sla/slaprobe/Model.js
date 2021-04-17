@@ -29,6 +29,10 @@ Ext.define("NOC.sla.slaprobe.Model", {
             type: "string"
         },
         {
+            name: "state",
+            type: "string"
+        },
+        {
             name: "managed_object",
             type: "int"
         },
@@ -66,6 +70,11 @@ Ext.define("NOC.sla.slaprobe.Model", {
             name: "target_id",
             type: "string",
             persist: false
+        },
+        {
+            name: "bi_id",
+            type: "int",
+            persist: true
         }
     ]
 });

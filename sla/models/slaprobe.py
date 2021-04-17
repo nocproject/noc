@@ -11,14 +11,17 @@ from threading import Lock
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ListField
+from mongoengine.fields import StringField, BooleanField, ListField, DateTimeField, LongField
 import cachetools
 
 # NOC modules
 from .slaprofile import SLAProfile
+from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.label import Label
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.bi.decorator import bi_sync
+from noc.core.wf.decorator import workflow
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 
 
@@ -29,6 +32,8 @@ _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 @Label.model
+@bi_sync
+@workflow
 class SLAProbe(Document):
     meta = {
         "collection": "noc.sla_probes",
@@ -42,18 +47,26 @@ class SLAProbe(Document):
     name = StringField()
     # Probe profile
     profile = PlainReferenceField(SLAProfile)
-    # Probe group
+    # Probe group (Owner)
     group = StringField()
     # Optional description
     description = StringField()
+    state = PlainReferenceField(State)
+    # Timestamp of last seen
+    last_seen = DateTimeField()
+    # Timestamp expired
+    expired = DateTimeField()
     # Probe type
     type = StringField(choices=[(x, x) for x in PROBE_TYPES])
     # IP address or URL, depending on type
     target = StringField()
     # Hardware timestamps
     hw_timestamp = BooleanField(default=False)
-    # Optional tags
+    # Object id in BI
+    bi_id = LongField(unique=True)
+    # Labels
     labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -71,6 +84,10 @@ class SLAProbe(Document):
         if mo:
             return mo[0]
         return None
+
+    @classmethod
+    def iter_effective_labels(self):
+        return self.profile.labels
 
     @classmethod
     def can_set_label(cls, label):

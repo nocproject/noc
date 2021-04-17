@@ -9,6 +9,7 @@ console.debug("Defining NOC.sla.slaprobe.Application");
 Ext.define("NOC.sla.slaprobe.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.StateField",
         "NOC.core.LabelField",
         "NOC.sla.slaprobe.Model",
         "NOC.sa.managedobject.LookupField",
@@ -36,6 +37,12 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     text: __("Name"),
                     dataIndex: "name",
                     width: 150
+                },
+                {
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("state")
                 },
                 {
                     text: __("Type"),
@@ -79,6 +86,12 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium"
+                },
+                {
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
                 },
                 {
                     name: "group",
@@ -138,6 +151,13 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     query: {
                         "enable_slaprobe": true
                     },
+                },
+                {
+                    name: "bi_id",
+                    xtype: "displayfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
                 }
             ],
             openDashboard: {

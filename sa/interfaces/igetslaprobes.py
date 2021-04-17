@@ -26,6 +26,10 @@ class IGetSLAProbes(BaseInterface):
             "group": StringParameter(required=True, default=""),
             "name": StringParameter(),
             "description": StringParameter(required=False),
+            # SLA Probe operational status
+            # True - Active
+            # False - NonOperational
+            "status": BooleanParameter(default=True),
             "type": StringParameter(
                 choices=[
                     "icmp-echo",
@@ -42,6 +46,7 @@ class IGetSLAProbes(BaseInterface):
             ),
             "target": StringParameter(),
             "hw_timestamp": BooleanParameter(default=False),
+            # Custom field
             "tags": StringListParameter(required=False),
         }
     )
