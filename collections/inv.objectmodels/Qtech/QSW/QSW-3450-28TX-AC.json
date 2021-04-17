@@ -19,225 +19,229 @@
             "description": "1",
             "direction": "s",
             "gender": "f",
-            "name": "1",
+            "name": "Ethernet1/0/1",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "2",
+            "description": "Ethernet1/0/2",
             "direction": "s",
             "gender": "f",
-            "name": "2",
+            "name": "Ethernet1/0/2",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "3",
+            "description": "Ethernet1/0/3",
             "direction": "s",
             "gender": "f",
-            "name": "3",
+            "name": "Ethernet1/0/3",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "4",
+            "description": "Ethernet1/0/4",
             "direction": "s",
             "gender": "f",
-            "name": "4",
+            "name": "Ethernet1/0/4",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "5",
+            "description": "Ethernet1/0/5",
             "direction": "s",
             "gender": "f",
-            "name": "5",
+            "name": "Ethernet1/0/5",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "6",
+            "description": "Ethernet1/0/6",
             "direction": "s",
             "gender": "f",
-            "name": "6",
+            "name": "Ethernet1/0/6",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "7",
+            "description": "Ethernet1/0/7",
             "direction": "s",
             "gender": "f",
-            "name": "7",
+            "name": "Ethernet1/0/7",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "8",
+            "description": "Ethernet1/0/8",
             "direction": "s",
             "gender": "f",
-            "name": "8",
+            "name": "Ethernet1/0/8",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "9",
+            "description": "Ethernet1/0/9",
             "direction": "s",
             "gender": "f",
-            "name": "9",
+            "name": "Ethernet1/0/9",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "10",
+            "description": "Ethernet1/0/10",
             "direction": "s",
             "gender": "f",
-            "name": "10",
+            "name": "Ethernet1/0/10",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "11",
+            "description": "Ethernet1/0/11",
             "direction": "s",
             "gender": "f",
-            "name": "11",
+            "name": "Ethernet1/0/11",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "12",
+            "description": "Ethernet1/0/12",
             "direction": "s",
             "gender": "f",
-            "name": "12",
+            "name": "Ethernet1/0/12",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "13",
+            "description": "Ethernet1/0/13",
             "direction": "s",
             "gender": "f",
-            "name": "13",
+            "name": "Ethernet1/0/13",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "14",
+            "description": "Ethernet1/0/14",
             "direction": "s",
             "gender": "f",
-            "name": "14",
+            "name": "Ethernet1/0/14",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "15",
+            "description": "Ethernet1/0/15",
             "direction": "s",
             "gender": "f",
-            "name": "15",
+            "name": "Ethernet1/0/15",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "16",
+            "description": "Ethernet1/0/16",
             "direction": "s",
             "gender": "f",
-            "name": "16",
+            "name": "Ethernet1/0/16",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "17",
+            "description": "Ethernet1/0/17",
             "direction": "s",
             "gender": "f",
-            "name": "17",
+            "name": "Ethernet1/0/17",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "18",
+            "description": "Ethernet1/0/18",
             "direction": "s",
             "gender": "f",
-            "name": "18",
+            "name": "Ethernet1/0/18",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "19",
+            "description": "Ethernet1/0/19",
             "direction": "s",
             "gender": "f",
-            "name": "19",
+            "name": "Ethernet1/0/19",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "20",
+            "description": "Ethernet1/0/20",
             "direction": "s",
             "gender": "f",
-            "name": "20",
+            "name": "Ethernet1/0/20",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "21",
+            "description": "Ethernet1/0/21",
             "direction": "s",
             "gender": "f",
-            "name": "21",
+            "name": "Ethernet1/0/21",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "22",
+            "description": "Ethernet1/0/22",
             "direction": "s",
             "gender": "f",
-            "name": "22",
+            "name": "Ethernet1/0/22",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "23",
+            "description": "Ethernet1/0/23",
             "direction": "s",
             "gender": "f",
-            "name": "23",
+            "name": "Ethernet1/0/23",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "24",
+            "description": "Ethernet1/0/24",
             "direction": "s",
             "gender": "f",
-            "name": "24",
+            "name": "Ethernet1/0/24",
             "protocols": ["10BASET", "100BASETX", "1000BASETX"],
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Fiber port 25",
+            "description": "Ethernet1/0/25 Fiber",
             "direction": "i",
             "gender": "f",
-            "name": "Te25_sfp+",
+            "internal_name": "Te25_sfp+",
+            "name": "Ethernet1/0/25",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
-            "description": "Fiber port 26",
+            "description": "Ethernet1/0/26 Fiber",
             "direction": "i",
             "gender": "f",
-            "name": "Te26_sfp+",
+            "internal_name": "Te26_sfp+",
+            "name": "Ethernet1/0/26",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
-            "description": "Fiber port 27",
+            "description": "Ethernet1/0/27 Fiber",
             "direction": "i",
             "gender": "f",
-            "name": "Te27_sfp+",
+            "internal_name": "Te27_sfp+",
+            "name": "Ethernet1/0/27",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
-            "description": "Fiber port 28",
+            "description": "Ethernet1/0/28 Fiber",
             "direction": "i",
             "gender": "f",
-            "name": "Te28_sfp+",
+            "internal_name": "Te28_sfp+",
+            "name": "Ethernet1/0/28",
             "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "description": "Console port",
@@ -250,7 +254,7 @@
         {
             "description": "Power outlet",
             "direction": "s",
-            "gender": "f",
+            "gender": "m",
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"
