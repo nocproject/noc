@@ -90,6 +90,7 @@ class Label(Document):
     enable_vpnprofile = BooleanField()
     # SLA
     enable_slaprobe = BooleanField()
+    enable_slaprofile = BooleanField()
     # FM
     enable_alarm = BooleanField()
     # Exposition scope

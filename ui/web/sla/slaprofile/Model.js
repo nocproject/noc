@@ -24,8 +24,16 @@ Ext.define("NOC.sla.slaprofile.Model", {
             type: "string"
         },
         {
+            name: "workflow",
+            type: "string"
+        },
+        {
             name: "name",
             type: "string"
+        },
+        {
+            name: "labels",
+            type: "auto"
         },
         {
             name: "style",
@@ -35,6 +43,11 @@ Ext.define("NOC.sla.slaprofile.Model", {
             name: "style__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "bi_id",
+            type: "int",
+            persist: true
         }
     ]
 });

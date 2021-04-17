@@ -163,6 +163,9 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_slaprobe) {
               r.push(__("SLA Probe"));
             }
+            if (item.data.enable_slaprofile) {
+              r.push(__("SLA Profile"));
+            }
             return r.join(", ");
           }
         },
@@ -299,6 +302,11 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_slaprobe",
               xtype: "checkbox",
               boxLabel: __("SLA Probe")
+            },
+            {
+              name: "enable_slaprofile",
+              xtype: "checkbox",
+              boxLabel: __("SLA Profile")
             }
             ]
         },
