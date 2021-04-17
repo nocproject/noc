@@ -1,0 +1,163 @@
+{
+    "name": "Qtech | QSW | QSW-3750-10T-POE-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "4bfa4657-f709-3629-8d40-839339fd667c",
+    "vendor__code": "QTECH",
+    "description": "Управляемый коммутатор уровня L2+ с поддержкой PoE 802.3af/at, 8 портов 10/100/1000BASE-T, 2 порта комбо 1000BASE-T\\SFP, 4K VLAN, 8K MAC адресов, консольный порт, встроенный БП разъем питания на задней панели, 100-240В AC, размеры ШхГхВ (330x230x44 мм)",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Ethernet1/0/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX", "<POE"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/9_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/9 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/0/9_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/0/9",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/0/9",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Ethernet1/0/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Ethernet1/0/10_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet1/0/10 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "name": "Ethernet1/0/10_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Ethernet1/0/10",
+            "direction": "s",
+            "gender": "s",
+            "name": "Ethernet1/0/10",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["QSW-3750-10T-POE-AC"]
+        },
+        "dimensions": {
+            "depth": 230,
+            "height": 44,
+            "width": 330
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 144.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 2.2
+        }
+    }
+}
+
