@@ -8,6 +8,7 @@
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sla.models.slaprobe import SLAProbe
+from noc.sla.models.slaprofile import SLAProfile
 from noc.core.profile.loader import GENERIC_PROFILE
 from noc.main.models.label import Label
 
@@ -24,7 +25,7 @@ class SLACheck(DiscoveryCheck):
         #
         "Cisco.IOS": {"Cisco | IP | SLA | Probes"},
         "Juniper.JUNOS": {"Juniper | RPM | Probes"},
-        "Huawei.NQA": {"Huawei | NQA | Probes"},
+        "Huawei.VRP": {"Huawei | NQA | Probes"},
         "OneAccess.TDRE": {"OneAccess | IP | SLA | Probes"},
         # Fallback
         GENERIC_PROFILE: set(),
@@ -75,7 +76,7 @@ class SLACheck(DiscoveryCheck):
                 },
             )
             p.fire_event("seen")
-            if not new_data["state"]:
+            if not new_data["status"]:
                 p.fire_event("down")
             else:
                 p.fire_event("up")
@@ -88,6 +89,7 @@ class SLACheck(DiscoveryCheck):
             probe = SLAProbe(
                 managed_object=self.object,
                 name=name,
+                profile=SLAProfile.get_default_profile(),
                 group=group,
                 description=new_data.get("description"),
                 type=new_data["type"],
@@ -96,5 +98,5 @@ class SLACheck(DiscoveryCheck):
                 labels=new_data.get("tags", []),
             )
             probe.save()
-            if not new_data["state"]:
+            if not new_data["status"]:
                 probe.fire_event("down")

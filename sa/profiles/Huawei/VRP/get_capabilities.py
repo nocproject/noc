@@ -10,7 +10,7 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.core.mib import mib
 
 
@@ -88,6 +88,16 @@ class Script(BaseScript):
         """
         r = self.cli("display mpls ldp")
         return "Global LDP is not enabled" not in r or "Instance Status         : Active " not in r
+
+    @false_on_snmp_error
+    def has_ip_sla_responder_snmp(self):
+        r = self.snmp.get(mib["NQA-MIB::nqaSupportServerType", 0])
+        return r != 2
+
+    @false_on_snmp_error
+    def get_ip_sla_probes_snmp(self):
+        r = self.snmp.count(mib["NQA-MIB::nqaNumOfCurrentCtrlEntry"])
+        return r
 
     @false_on_cli_error
     def has_stack(self):
@@ -194,6 +204,16 @@ class Script(BaseScript):
             caps[m] = True
         for m in self.has_bras():
             caps[m] = True
+        # Check IP SLA status
+        sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
+        if sla_v:
+            # IP SLA responder
+            if self.has_ip_sla_responder_snmp():
+                caps["Huawei | NQA | Responder"] = True
+            # IP SLA Probes
+            np = self.get_ip_sla_probes_snmp()
+            if np:
+                caps["Huawei | NQA | Probes"] = np
 
     def execute_platform_snmp(self, caps):
         sl = self.has_slot()
@@ -208,3 +228,13 @@ class Script(BaseScript):
             caps[m] = True
         for m in self.has_bras():
             caps[m] = True
+        # Check IP SLA status
+        sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
+        if sla_v:
+            # IP SLA responder
+            if self.has_ip_sla_responder_snmp():
+                caps["Huawei | NQA | Responder"] = True
+            # IP SLA Probes
+            np = self.get_ip_sla_probes_snmp()
+            if np:
+                caps["Huawei | NQA | Probes"] = np

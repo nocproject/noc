@@ -68,7 +68,14 @@ class SLAProfile(Document):
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
 
+    # Caches
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_PROFILE_NAME = "default"
+    DEFAULT_WORKFLOW_NAME = "SLAProbe Default"
 
     def __str__(self):
         return self.name
@@ -79,12 +86,29 @@ class SLAProfile(Document):
         return SLAProfile.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         try:
             return SLAProfile.objects.get(name=name)
         except SLAProfile.DoesNotExist:
             return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id) -> "SLAProfile":
+        return SLAProfile.objects.filter(bi_id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
+    def get_default_profile(cls) -> "SLAProfile":
+        sp = SLAProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+        if not sp:
+            sp = SLAProfile(
+                name=cls.DEFAULT_PROFILE_NAME,
+                workflow=Workflow.objects.filter(name=cls.DEFAULT_WORKFLOW_NAME).first(),
+            )
+            sp.save()
+        return sp
 
     @classmethod
     def can_set_label(cls, label):
