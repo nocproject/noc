@@ -115,7 +115,7 @@ class Script(BaseScript):
     )
 
     @false_on_cli_error
-    def has_ip_sla_responder(self):
+    def has_ip_sla_responder_cli(self):
         r = self.cli(self.SYNTAX_IP_SLA_RESPONDER[self.capabilities[self.CAP_SLA_SYNTAX]])
         match = self.rx_ip_sla_responder.search(r)
         if match:
@@ -123,12 +123,22 @@ class Script(BaseScript):
         else:
             return False
 
+    @false_on_snmp_error
+    def has_ip_sla_responder_snmp(self):
+        r = self.snmp.get(mib["CISCO-RTTMON-MIB::rttMonApplResponder", 0])
+        return r != 2
+
     rx_ip_sla_probe_entry = re.compile(r"Entry Number: \d+", re.IGNORECASE | re.MULTILINE)
 
     @false_on_cli_error
-    def get_ip_sla_probes(self):
+    def get_ip_sla_probes_cli(self):
         r = self.cli(self.SYNTAX_IP_SLA_CONFIGURATION[self.capabilities[self.CAP_SLA_SYNTAX]])
         return sum(1 for _ in self.rx_ip_sla_probe_entry.finditer(r))
+
+    @false_on_snmp_error
+    def get_ip_sla_probes_snmp(self):
+        r = self.snmp.count(mib["CISCO-RTTMON-MIB::rttMonCtrlAdminStatus"])
+        return r
 
     @false_on_cli_error
     def has_lacp_cli(self):
@@ -188,9 +198,21 @@ class Script(BaseScript):
             self.apply_capability(self.CAP_SLA_SYNTAX, sla_v)
             caps[self.CAP_SLA_SYNTAX] = sla_v
             # IP SLA responder
-            if self.has_ip_sla_responder():
+            if self.has_ip_sla_responder_cli():
                 caps["Cisco | IP | SLA | Responder"] = True
             # IP SLA Probes
-            np = self.get_ip_sla_probes()
+            np = self.get_ip_sla_probes_cli()
+            if np:
+                caps["Cisco | IP | SLA | Probes"] = np
+
+    def execute_platform_snmp(self, caps):
+        # Check IP SLA status
+        sla_v = self.snmp.get("1.3.6.1.4.1.9.9.42.1.1.10.0")
+        if sla_v:
+            # IP SLA responder
+            if self.has_ip_sla_responder_snmp():
+                caps["Cisco | IP | SLA | Responder"] = True
+            # IP SLA Probes
+            np = self.get_ip_sla_probes_snmp()
             if np:
                 caps["Cisco | IP | SLA | Probes"] = np

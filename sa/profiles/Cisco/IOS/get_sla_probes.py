@@ -7,10 +7,13 @@
 
 # Python modules
 import re
+from collections import defaultdict
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
+from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -49,7 +52,7 @@ class Script(BaseScript):
         "tcp-connect": "tcp-connect",
     }
 
-    def execute(self, **kwargs):
+    def execute_cli(self, **kwargs):
         if not self.has_capability(self.CAP_SLA_SYNTAX, allow_zero=True):
             return []
         cfg = self.cli(self.SYNTAX_SLA_CONFIG[self.capabilities[self.CAP_SLA_SYNTAX]])
@@ -80,3 +83,39 @@ class Script(BaseScript):
                 if tag:
                     r[-1]["description"] = tag
         return r
+
+    probes_snmp_type_map = {
+        1: "icmp-echo",
+    }
+
+    def execute_snmp(self, **kwargs):
+        probes = defaultdict(dict)
+        for index, owner, tag, rtt_type, status in self.snmp.get_tables(
+            [
+                mib["CISCO-RTTMON-MIB::rttMonCtrlAdminOwner"],
+                mib["CISCO-RTTMON-MIB::rttMonCtrlAdminTag"],
+                mib["CISCO-RTTMON-MIB::rttMonCtrlAdminRttType"],
+                mib["CISCO-RTTMON-MIB::rttMonCtrlAdminStatus"],
+                # mib["CISCO-RTTMON-MIB::rttMonCtrlAdminGroupName"],
+            ],
+            bulk=False,
+        ):
+            if rtt_type not in self.probes_snmp_type_map:
+                self.logger.info("Unknown Probe type: %s. Skipping...", rtt_type)
+                continue
+            index = str(index)
+            probes[index] = {
+                "name": index,
+                "group": owner,
+                "status": status,
+                "type": self.probes_snmp_type_map[rtt_type],
+            }
+            if tag:
+                probes[index]["tags"] = [f"noc::sla::tag::{tag}"]
+        for oid, target in self.snmp.getnext(
+            mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddress"],
+            display_hints={mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddressString"]: render_bin},
+        ):
+            probes[oid.rsplit(".", 1)[-1]]["target"] = target
+
+        return list(probes.values())

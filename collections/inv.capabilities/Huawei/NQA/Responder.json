@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | NQA | Responder",
+    "$collection": "inv.capabilities",
+    "uuid": "ae7d5dd3-6228-48aa-b135-c62ed1557775",
+    "description": "Configured IP NQA responder",
+    "type": "bool",
+    "card_template": null
+}

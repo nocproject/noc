@@ -7,6 +7,8 @@
 
 # Python modules
 import operator
+from typing import List
+import datetime
 from threading import Lock
 
 # Third-party modules
@@ -56,6 +58,8 @@ class SLAProbe(Document):
     last_seen = DateTimeField()
     # Timestamp expired
     expired = DateTimeField()
+    # Timestamp of first discovery
+    first_discovered = DateTimeField(default=datetime.datetime.now)
     # Probe type
     type = StringField(choices=[(x, x) for x in PROBE_TYPES])
     # IP address or URL, depending on type
@@ -69,6 +73,7 @@ class SLAProbe(Document):
     effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return "%s: %s" % (self.managed_object.name, self.name)
@@ -78,6 +83,11 @@ class SLAProbe(Document):
     def get_by_id(cls, id):
         return SLAProbe.objects.filter(id=id).first()
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return SLAProbe.objects.filter(bi_id=id).first()
+
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self):
         mo = ManagedObject.objects.filter(address=self.target)[:1]
@@ -86,8 +96,8 @@ class SLAProbe(Document):
         return None
 
     @classmethod
-    def iter_effective_labels(self):
-        return self.profile.labels
+    def iter_effective_labels(self, probe: "SLAProbe") -> List[str]:
+        return probe.labels + probe.profile.labels
 
     @classmethod
     def can_set_label(cls, label):

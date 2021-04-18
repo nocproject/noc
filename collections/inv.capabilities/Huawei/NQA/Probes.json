@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | NQA | Probes",
+    "$collection": "inv.capabilities",
+    "uuid": "13aaea89-89be-4744-8e1d-f00dd0ca8ebb",
+    "description": "Number of discovered NQA probes",
+    "type": "int",
+    "card_template": null
+}
