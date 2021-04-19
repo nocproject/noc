@@ -23,7 +23,7 @@ check labels:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA)
     - python ./scripts/check-labels.py --verbose --junit-report=build/reports/labels-junit.xml $FLIST
   only:
     - merge_requests
