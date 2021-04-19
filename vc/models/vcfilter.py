@@ -17,11 +17,13 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.label import Label
 
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
 id_lock = Lock()
 
 
+@Label.match_labels(category="vcfilter")
 @on_delete_check(
     check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")]
 )

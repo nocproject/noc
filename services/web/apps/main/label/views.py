@@ -52,7 +52,7 @@ class LabelApplication(ExtDocApplication):
                 "fg_color2": "#%x" % ll.fg_color2,
             }
             for ll in labels
-            if not ll.is_wildcard
+            if not (ll.is_wildcard or ll.is_matched)
         ]
         return {
             "data": labels,
