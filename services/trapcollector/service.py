@@ -27,7 +27,6 @@ from noc.core.ioloop.timers import PeriodicCallback
 
 class TrapCollectorService(TornadoService):
     name = "trapcollector"
-    leader_group_name = "trapcollector-%(dc)s-%(node)s"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
 

@@ -28,7 +28,6 @@ from noc.core.ioloop.timers import PeriodicCallback
 
 class SyslogCollectorService(TornadoService):
     name = "syslogcollector"
-    leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
