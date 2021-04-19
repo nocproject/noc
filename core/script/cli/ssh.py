@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # SSH CLI
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import threading
 import operator
 import logging
 import codecs
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 # Third-party modules modules
 import cachetools
@@ -81,24 +81,18 @@ class SSHStream(BaseStream):
             host_hash = smart_bytes(self.session.hostkey_hash(LIBSSH2_HOSTKEY_HASH_SHA1))
             hex_hash = smart_text(codecs.encode(host_hash, "hex"))
             self.logger.debug("Connected. Host fingerprint is %s", hex_hash)
+            # libssh2's userauth_list implementation tries to authenticate
+            # using `none` method internally. So calling `userauth_list`
+            # can bring session into authenticated state.
             auth_methods = self.session.userauth_list(user)
-            if not auth_methods:
+            if self.session.userauth_authenticated():
+                self.logger.info("Authenticated using 'none' method")
+                metrics["ssh_auth_success", ("method", "none")] += 1
+            elif auth_methods:
+                if not self.authenticate(user, auth_methods):
+                    raise CLIAuthFailed("Failed to log in")
+            else:
                 self.logger.info("No supported authentication methods. Failed to log in")
-                raise CLIAuthFailed("Failed to log in")
-            self.logger.debug("Supported authentication methods: %s", ", ".join(auth_methods))
-            # Try to authenticate
-            authenticated = False
-            for method in auth_methods:
-                ah = getattr(self, "auth_%s" % method.replace("-", ""), None)
-                if ah:
-                    metrics["ssh_auth", ("method", method)] += 1
-                    authenticated |= ah()
-                    if authenticated:
-                        metrics["ssh_auth_success", ("method", method)] += 1
-                        break
-                    metrics["ssh_auth_fail", ("method", method)] += 1
-            if not authenticated:
-                self.logger.error("Failed to authenticate user '%s'", user)
                 raise CLIAuthFailed("Failed to log in")
             self.logger.debug("User is authenticated")
             self.logger.debug("Open channel")
@@ -172,6 +166,27 @@ class SSHStream(BaseStream):
         Get current user's password
         """
         return self.script.credentials["password"] or ""
+
+    def authenticate(self, user: str, methods: List[str]) -> bool:
+        """
+        Try to authenticate. Return True on success
+        :param user: Username
+        :param methods: List of available authentication methods
+        :return:
+        """
+        self.logger.debug("Supported authentication methods: %s", ", ".join(methods))
+        for method in methods:
+            auth_handler = getattr(self, "auth_%s" % method.replace("-", ""), None)
+            if not auth_handler:
+                self.logger.debug("'%s' method is not supported, skipping", method)
+                continue
+            metrics["ssh_auth", ("method", method)] += 1
+            if auth_handler():
+                metrics["ssh_auth_success", ("method", method)] += 1
+                return True
+            metrics["ssh_auth_fail", ("method", method)] += 1
+        self.logger.error("Failed to authenticate user '%s'", user)
+        return False
 
     def auth_publickey(self) -> bool:
         """
