@@ -1,21 +1,23 @@
 # ---------------------------------------------------------------------
 # Gis-related utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import math
+from typing import Union, List, Tuple, Dict
 
 # Third-party modules
 import geojson
 from geopy.point import Point as GPoint
-from geopy.distance import vincenty, ELLIPSOIDS
+from geopy.distance import distance as _distance, ELLIPSOIDS
 
 # NOC settings
 from noc.config import config
 
+# Additional ellipsoids
 # major, minor, flattening=(major-minor)/major
 ELLIPSOIDS["Krass"] = (6378.245, 6356.863019, 1 / 298.3000031662238)
 ELLIPSOIDS["PZ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
@@ -23,13 +25,13 @@ ELLIPSOIDS["PZ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
 ELLIPSOID = config.gis.ellipsoid
 
 
-def _get_point(p):
+def _get_point(p: Union[GPoint, List[float], Tuple[float, float], geojson.Point, Dict]) -> GPoint:
     """
     Convert to geopy Point
     """
     if isinstance(p, GPoint):
         return p
-    elif isinstance(p, list):
+    elif isinstance(p, (list, tuple)):
         return GPoint(p[1], p[0])
     elif isinstance(p, geojson.Point):
         return GPoint(p.coordinates[1], p.coordinates[0])
@@ -37,15 +39,15 @@ def _get_point(p):
         return GPoint(p["coordinates"][1], p["coordinates"][0])
     elif isinstance(p, dict) and "geopoint" in p:
         return GPoint(p["geopoint"]["y"], p["geopoint"]["x"])
-    else:
-        return GPoint(p.y, p.x)
+    return GPoint(p.y, p.x)
 
 
-def distance(p1, p2, ellipsoid=ELLIPSOID):
+def distance(p1, p2, ellipsoid=ELLIPSOID) -> float:
     """
     Distance between two points in meters
     """
-    return vincenty(_get_point(p1), _get_point(p2), ellipsoid=ellipsoid).meters
+
+    return _distance(_get_point(p1), _get_point(p2), ellipsoid=ellipsoid).meters
 
 
 def bearing(p1, p2):
