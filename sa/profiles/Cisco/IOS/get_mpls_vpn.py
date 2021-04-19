@@ -296,7 +296,7 @@ class Script(BaseScript):
                 "status": vrf_oper,
                 "vpn_id": "",
                 "name": vrf_name,
-                "rd": vrf_rd,
+                "rd": vrf_rd or "0:0",
                 "rt_export": [],
                 "rt_import": [],
                 "description": vrf_descr,

@@ -82,8 +82,13 @@ Ext.define("NOC.sla.slaprofile.Application", {
                         {
                             text: __("Metric Type"),
                             dataIndex: "metric_type",
-                            flex: 1,
-                            editor: "pm.metrictype.LookupField",
+                            width: 200,
+                            editor: {
+                                xtype: "pm.metrictype.LookupField",
+                                query: {
+                                    "name__startswith": "SLA"
+                                }
+                            },
                             renderer: NOC.render.Lookup("metric_type")
                         },
                         {
