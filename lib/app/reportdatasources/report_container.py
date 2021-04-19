@@ -143,10 +143,17 @@ class ReportContainerData(BaseReportColumn):
                                         ]
                                     },
                                 }
-                            }
+                            },
+                            "parent_name": "$name",
                         }
                     },
-                    {"$project": {"data": {"$arrayElemAt": ["$data.value", 0]}}},
+                    {
+                        "$project": {
+                            "parent_address": {"$arrayElemAt": ["$data.value", 0]},
+                            "parent_name": 1,
+                            "_id": 1,
+                        }
+                    },
                     # {"$project": {"parent_address": "$data.value"}},
                     {
                         "$lookup": {
