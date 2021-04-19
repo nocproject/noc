@@ -1,0 +1,13 @@
+{
+    "name": "DLink | DxS_Smart | DGS-1210-20_C1 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "9d473a06-6d7c-4864-aef8-cbd66c722871",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.171.10.76.19.1",
+    "action": "match",
+    "profile__name": "DLink.DxS_Smart"
+}
