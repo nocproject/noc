@@ -14,8 +14,10 @@ from noc.core.model.base import NOCModel
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.label import Label
 
 
+@Label.match_labels(category="prefixfilter")
 @on_delete_check(
     check=[
         # ("inv.InterfaceClassificationMatch", "prefix_table"),
