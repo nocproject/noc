@@ -1,0 +1,10 @@
+{
+    "name": "Sensor | Value",
+    "$collection": "pm.metrictypes",
+    "uuid": "0d9686c1-84d7-4ad1-93d6-3053f6cce789",
+    "scope__name": "Sensor",
+    "field_name": "value",
+    "field_type": "Float32",
+    "description": "Numeric value of the sensor",
+    "measure": "c"
+}

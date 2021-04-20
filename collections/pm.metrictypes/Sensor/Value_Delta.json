@@ -1,0 +1,10 @@
+{
+    "name": "Sensor | Value Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "fddf6768-5dd5-4466-bcf5-bb0eaebf2713",
+    "scope__name": "Sensor",
+    "field_name": "value_delta",
+    "field_type": "Float32",
+    "description": "For counters, the difference between the current and previous values",
+    "measure": "c"
+}
