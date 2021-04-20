@@ -1,0 +1,13 @@
+{
+    "name": "EdgeCore | ES | ECS4660-28F sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "e9a1f399-a327-4c8f-b5f0-676edac4382f",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.259.10.1.10",
+    "action": "match",
+    "profile__name": "EdgeCore.ES"
+}
