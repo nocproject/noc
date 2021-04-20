@@ -1,0 +1,10 @@
+{
+    "name": "Sensor | Value Raw",
+    "$collection": "pm.metrictypes",
+    "uuid": "984fd95f-69c4-403f-b4e1-d233a7244961",
+    "scope__name": "Sensor",
+    "field_name": "value_raw",
+    "field_type": "Float32",
+    "description": "Numeric value of the sensor before normalization",
+    "measure": "c"
+}

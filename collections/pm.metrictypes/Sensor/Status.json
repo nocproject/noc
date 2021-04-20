@@ -1,0 +1,10 @@
+{
+    "name": "Sensor | Status",
+    "$collection": "pm.metrictypes",
+    "uuid": "67f65244-e75c-46a5-a579-5f961826730b",
+    "scope__name": "Sensor",
+    "field_name": "status",
+    "field_type": "UInt8",
+    "description": "Sensor status value",
+    "measure": "c"
+}

@@ -1,0 +1,56 @@
+{
+    "name": "Sensor",
+    "$collection": "pm.metricscopes",
+    "uuid": "3aac0310-3f32-4271-965c-9abab6773440",
+    "table_name": "sensor",
+    "description": "Sensor-related metrics",
+    "key_fields": [
+        {
+            "field_name": "sensor",
+            "model": "inv.Sensor"
+        },
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "object",
+            "model": "inv.Object"
+        }
+    ],
+    "enable_timedelta": true,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::chassis::*",
+            "view_column": "chassis"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::slot::*",
+            "view_column": "slot"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::module::*",
+            "view_column": "module"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::sensor::*",
+            "store_column": "name"
+        }
+    ]
+}
