@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Ping service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,9 +18,9 @@ from typing import Dict, Any
 import orjson
 
 # NOC modules
+from noc.core.service.fastapi import FastAPIService
 from noc.config import config
 from noc.core.error import NOCError
-from noc.core.service.tornado import TornadoService
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
 from noc.core.perf import metrics
@@ -28,7 +28,7 @@ from noc.services.ping.probesetting import ProbeSetting
 from noc.services.ping.datastream import PingDataStreamClient
 
 
-class PingService(TornadoService):
+class PingService(FastAPIService):
     name = "ping"
     #
     leader_group_name = "ping-%(pool)s"
