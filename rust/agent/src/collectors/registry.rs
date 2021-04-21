@@ -9,11 +9,11 @@ use super::test::{TestCollector, TestConfig};
 use super::twamp_reflector::{TwampReflectorCollector, TwampReflectorConfig};
 use super::twamp_sender::{TwampSenderCollector, TwampSenderConfig};
 use super::Runnable;
+use crate::error::AgentError;
 use crate::zk::ZkConfigCollector;
 use enum_dispatch::enum_dispatch;
 use serde::Deserialize;
 use std::convert::TryFrom;
-use std::error::Error;
 
 /// Collector config variants.
 /// Each collector must have own variant.
@@ -46,7 +46,7 @@ pub enum Collectors {
 /// Config to collector conversion.
 /// Add ::try_from for every new collector.
 impl TryFrom<&ZkConfigCollector> for Collectors {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         Ok(match value.config {

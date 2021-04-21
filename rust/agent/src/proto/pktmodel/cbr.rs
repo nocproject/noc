@@ -6,9 +6,9 @@
 // ---------------------------------------------------------------------
 
 use super::{GetPacket, Packet, NS};
+use crate::error::AgentError;
 use serde::Deserialize;
 use std::convert::TryFrom;
-use std::error::Error;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct CbrModelConfig {
@@ -25,7 +25,7 @@ pub struct CbrModel {
 }
 
 impl TryFrom<CbrModelConfig> for CbrModel {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: CbrModelConfig) -> Result<Self, Self::Error> {
         Ok(Self {

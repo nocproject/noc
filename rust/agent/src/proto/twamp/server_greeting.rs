@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::MBZ;
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 /// ## Server-Greeting structure
@@ -50,7 +51,7 @@ impl FrameReader for ServerGreeting {
     fn min_size() -> usize {
         64
     }
-    fn parse(s: &mut BytesMut) -> Result<ServerGreeting, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<ServerGreeting, AgentError> {
         // MBZ, 12 octets
         s.advance(12);
         // Modes, 4 octets
@@ -78,19 +79,21 @@ impl FrameWriter for ServerGreeting {
         64
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // MBZ, 12 octets
         s.put(&MBZ[..12]);
         // Modes, 4 octets
         s.put_u32(self.modes);
         // Challenge, 16 octets
         if self.challenge.len() != 16 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError(
+                "Challenge must be of 16 octets".into(),
+            ));
         }
         s.put(&*self.challenge);
         // Salt, 16 octets
         if self.salt.len() != 16 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Salt must be of 16 octets".into()));
         }
         s.put(&*self.salt);
         // Count, 4 octets
@@ -150,7 +153,8 @@ mod tests {
         let expected = get_server_greeting();
         let res = ServerGreeting::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

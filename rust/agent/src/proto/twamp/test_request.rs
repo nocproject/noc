@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::{NtpTimeStamp, UtcDateTime};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Test-Request structure
@@ -43,7 +44,7 @@ impl FrameReader for TestRequest {
     fn min_size() -> usize {
         14
     }
-    fn parse(s: &mut BytesMut) -> Result<TestRequest, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<TestRequest, AgentError> {
         let pad_to = s.len();
         // Sequence number, 4 octets
         let seq = s.get_u32();
@@ -70,7 +71,7 @@ impl FrameWriter for TestRequest {
         self.pad_to
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Sequence number, 4 octets
         s.put_u32(self.seq);
         // Timestamp, 8 octets
@@ -122,7 +123,8 @@ mod tests {
         let expected = get_test_request();
         let res = TestRequest::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected));
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

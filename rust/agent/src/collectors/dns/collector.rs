@@ -6,12 +6,12 @@
 // ---------------------------------------------------------------------
 
 use crate::collectors::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use crate::error::AgentError;
 use crate::timing::Timing;
 use crate::zk::ZkConfigCollector;
 use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use std::convert::TryFrom;
-use std::error::Error;
 use std::str::FromStr;
 use std::time::Duration;
 use std::time::Instant;
@@ -31,7 +31,7 @@ pub struct DnsCollector {
 }
 
 impl TryFrom<&ZkConfigCollector> for DnsCollector {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
@@ -40,19 +40,21 @@ impl TryFrom<&ZkConfigCollector> for DnsCollector {
                 interval: value.interval,
                 query: config.query.clone(),
                 query_type: config.query_type.clone(),
-                record_type: RecordType::from_str(config.query_type.as_ref())?,
+                record_type: RecordType::from_str(&config.query_type)
+                    .map_err(|_| AgentError::ConfigurationError("Invalid record type".into()))?,
                 n: config.n,
                 min_success: config.min_success,
             }),
-            _ => Err("invalid config".into()),
+            _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
     }
 }
 
 #[async_trait]
 impl Collectable for DnsCollector {
-    async fn collect(&self) -> Result<Status, Box<dyn Error>> {
-        let resolver = TokioAsyncResolver::tokio_from_system_conf()?;
+    async fn collect(&self) -> Result<Status, AgentError> {
+        let resolver = TokioAsyncResolver::tokio_from_system_conf()
+            .map_err(|e| AgentError::ConfigurationError(e.to_string()))?;
         let mut success: usize = 0;
         let mut timing = Timing::new();
         let total = self.n;

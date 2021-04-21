@@ -6,9 +6,9 @@
 // ---------------------------------------------------------------------
 
 use crate::collectors::CollectorConfig;
+use crate::error::AgentError;
 use serde::Deserialize;
 use std::convert::TryFrom;
-use std::error::Error;
 
 #[derive(Deserialize, Debug)]
 pub struct ZkConfig {
@@ -41,14 +41,14 @@ pub struct ZkConfigCollector {
 }
 
 impl TryFrom<Vec<u8>> for ZkConfig {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
         match serde_json::from_slice(value.as_slice()) {
             Ok(x) => Ok(x),
             Err(e) => {
                 log::error!("Cannot parse JSON: {}", e);
-                Err("Cannot parse JSON".into())
+                Err(AgentError::ParseError(e.to_string()))
             }
         }
     }

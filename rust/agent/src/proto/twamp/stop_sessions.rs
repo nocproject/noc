@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::{CMD_STOP_SESSIONS, MBZ};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Stop-Sessions structure
@@ -38,11 +39,11 @@ impl FrameReader for StopSessions {
     fn min_size() -> usize {
         32
     }
-    fn parse(s: &mut BytesMut) -> Result<StopSessions, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<StopSessions, AgentError> {
         // Command, 1 octet
         let cmd = s.get_u8();
         if cmd != CMD_STOP_SESSIONS {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Invalid command".into()));
         }
         // Accept, 1 octet
         let accept = s.get_u8();
@@ -66,7 +67,7 @@ impl FrameWriter for StopSessions {
         32
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Command, 1 octet
         s.put_u8(CMD_STOP_SESSIONS);
         // Accept, 1 octet
@@ -116,7 +117,8 @@ mod tests {
         let expected = get_stop_sessions();
         let res = StopSessions::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

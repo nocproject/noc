@@ -8,6 +8,7 @@
 pub mod agent;
 pub mod cmd;
 pub mod collectors;
+pub mod error;
 pub mod nvram;
 pub mod proto;
 pub mod timing;

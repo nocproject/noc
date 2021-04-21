@@ -1,6 +1,6 @@
 [package]
 name = "agent"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["The NOC Project"]
 edition = "2018"
 description = "NOC Agent"
@@ -37,6 +37,7 @@ enum_dispatch = "0.3"
 rand = "0.8"
 lazy_static = "1.4"
 chrono = "0.4"
+thiserror = "1.0"
 # Optional dependencies
 trust-dns-proto = {version = "0.20", optional = true}
 # Subcrates

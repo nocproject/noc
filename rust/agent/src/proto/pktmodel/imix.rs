@@ -6,9 +6,9 @@
 // ---------------------------------------------------------------------
 
 use super::{GetPacket, Packet, NS};
+use crate::error::AgentError;
 use serde::Deserialize;
 use std::convert::TryFrom;
-use std::error::Error;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ImixModelConfig {
@@ -22,7 +22,7 @@ pub struct ImixModel {
 }
 
 impl TryFrom<ImixModelConfig> for ImixModel {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: ImixModelConfig) -> Result<Self, Self::Error> {
         Ok(Self {

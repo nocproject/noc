@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::{CMD_START_SESSIONS, MBZ};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Start-Sessions structure
@@ -34,11 +35,11 @@ impl FrameReader for StartSessions {
     fn min_size() -> usize {
         32
     }
-    fn parse(s: &mut BytesMut) -> Result<StartSessions, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<StartSessions, AgentError> {
         // Command, 1 octet
         let cmd = s.get_u8();
         if cmd != CMD_START_SESSIONS {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Invalid command".into()));
         }
         // MBZ, 15 octets
         // HMAC, 16 octets
@@ -53,7 +54,7 @@ impl FrameWriter for StartSessions {
         32
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Command, 1 octet
         s.put_u8(CMD_START_SESSIONS);
         // MBZ, 15 octets
@@ -92,7 +93,8 @@ mod tests {
         let expected = get_start_sessions();
         let res = StartSessions::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

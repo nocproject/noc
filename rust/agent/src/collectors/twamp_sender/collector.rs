@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------
 
 use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use crate::error::AgentError;
 use crate::proto::connection::Connection;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use crate::proto::pktmodel::{GetPacket, PacketModels};
@@ -22,7 +23,6 @@ use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};
 use chrono::Utc;
 use std::convert::TryFrom;
-use std::error::Error;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
@@ -43,7 +43,7 @@ pub struct TwampSenderCollector {
 }
 
 impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
@@ -54,16 +54,17 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
                 port: config.port,
                 n_packets: config.n_packets,
                 model: PacketModels::try_from(config.model.clone())?,
-                tos: dscp_to_tos(config.dscp.to_lowercase()).ok_or("invalid dscp")?,
+                tos: dscp_to_tos(config.dscp.to_lowercase())
+                    .ok_or(AgentError::ConfigurationError("invalid dscp".into()))?,
             }),
-            _ => Err("invalid config".into()),
+            _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
     }
 }
 
 #[async_trait]
 impl Collectable for TwampSenderCollector {
-    async fn collect(&self) -> Result<Status, Box<dyn Error>> {
+    async fn collect(&self) -> Result<Status, AgentError> {
         //
         log::debug!("[{}] Connecting {}:{}", self.id, self.server, self.port);
         let stream = TcpStream::connect(format!("{}:{}", self.server, self.port)).await?;
@@ -120,7 +121,7 @@ impl TestSession {
         log::debug!("[{}] Setting reflector port to {}", self.id, port);
         self.reflector_port = port;
     }
-    pub async fn run(&mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn run(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Connected", self.id);
         // Control messages timeout, 3 seconds by default
         let ctl_timeout = Duration::from_nanos(3_000_000_000);
@@ -135,7 +136,7 @@ impl TestSession {
         self.send_stop_sessions().await?;
         Ok(())
     }
-    async fn recv_server_greeting(&mut self, t: Duration) -> Result<(), Box<dyn Error>> {
+    async fn recv_server_greeting(&mut self, t: Duration) -> Result<(), AgentError> {
         log::debug!("[{}] Waiting for Server-Greeting", self.id);
         let sg: ServerGreeting = timeout(t, self.connection.read_frame()).await??;
         log::debug!(
@@ -145,15 +146,15 @@ impl TestSession {
         );
         if sg.modes == MODE_REFUSED {
             log::info!("[{}] Server refused connection. Stopping", self.id);
-            return Err("session refused".into());
+            return Err(AgentError::NetworkError("session refused".into()));
         }
         if sg.modes & MODE_UNAUTHENTICATED == 0 {
             log::info!("[{}] Unsupported mode. Stopping", self.id);
-            return Err("unsupported mode".into());
+            return Err(AgentError::FrameError("unsupported mode".into()));
         }
         Ok(())
     }
-    async fn send_setup_reponse(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn send_setup_reponse(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Sending Setup-Response", self.id);
         let sr = SetupResponse {
             mode: MODE_UNAUTHENTICATED,
@@ -164,7 +165,7 @@ impl TestSession {
         self.connection.write_frame(&sr).await?;
         Ok(())
     }
-    async fn recv_server_start(&mut self, t: Duration) -> Result<(), Box<dyn Error>> {
+    async fn recv_server_start(&mut self, t: Duration) -> Result<(), AgentError> {
         log::debug!("[{}] Waiting fot Server-Start", self.id);
         let ss: ServerStart = timeout(t, self.connection.read_frame()).await??;
         log::debug!(
@@ -174,7 +175,7 @@ impl TestSession {
         );
         Ok(())
     }
-    async fn send_request_tw_session(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn send_request_tw_session(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Sending Request-TW-Session", self.id);
         let srq = RequestTwSession {
             ipvn: 4,
@@ -186,7 +187,7 @@ impl TestSession {
         self.connection.write_frame(&srq).await?;
         Ok(())
     }
-    async fn recv_accept_session(&mut self, t: Duration) -> Result<(), Box<dyn Error>> {
+    async fn recv_accept_session(&mut self, t: Duration) -> Result<(), AgentError> {
         log::debug!("[{}] Waiting for Accept-Session", self.id);
         let acc_s: AcceptSession = timeout(t, self.connection.read_frame()).await??;
         log::debug!(
@@ -197,13 +198,13 @@ impl TestSession {
         self.set_reflector_port(acc_s.port);
         Ok(())
     }
-    async fn send_start_sessions(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn send_start_sessions(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Sending Start-Sessions", self.id);
         let req = StartSessions {};
         self.connection.write_frame(&req).await?;
         Ok(())
     }
-    async fn recv_start_ack(&mut self, t: Duration) -> Result<(), Box<dyn Error>> {
+    async fn recv_start_ack(&mut self, t: Duration) -> Result<(), AgentError> {
         log::debug!("[{}] Waiting for Start-Ack", self.id);
         let resp: StartAck = timeout(t, self.connection.read_frame()).await??;
         if resp.accept != ACCEPT_OK {
@@ -212,12 +213,12 @@ impl TestSession {
                 self.id,
                 resp.accept
             );
-            return Err("failed to start session".into());
+            return Err(AgentError::NetworkError("failed to start session".into()));
         }
         log::debug!("[{}] Start-Ack Received. Accept: {}", self.id, resp.accept);
         Ok(())
     }
-    async fn send_stop_sessions(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn send_stop_sessions(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Sending Stop-Sessions", self.id);
         let req = StopSessions {
             accept: 0,
@@ -226,15 +227,16 @@ impl TestSession {
         self.connection.write_frame(&req).await?;
         Ok(())
     }
-    async fn run_test(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn run_test(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Running test", self.id);
         let socket = UdpSocket::bind("0.0.0.0:0").await?;
         // Test request TTL must be set to 255
         socket.set_ttl(255)?;
         // @todo: Set IP_TOS
         let shared_socket = Arc::new(socket);
-        let addr: SocketAddr =
-            format!("{}:{}", self.reflector_addr, self.reflector_port).parse()?;
+        let addr: SocketAddr = format!("{}:{}", self.reflector_addr, self.reflector_port)
+            .parse()
+            .map_err(|_| AgentError::ConfigurationError("Address parse error".into()))?;
         //
         let udp_overhead: usize = if addr.is_ipv4() { 20 + 8 } else { 40 + 8 };
         let (recv_result, sender_result) = tokio::join!(
@@ -295,7 +297,7 @@ impl TestSession {
         model: PacketModels,
         n_packets: usize,
         udp_overhead: usize,
-    ) -> Result<SenderStats, Box<dyn Error>> {
+    ) -> Result<SenderStats, AgentError> {
         let mut buf = BytesMut::with_capacity(16384);
         let mut out_octets = 0usize;
         let t0 = Instant::now();
@@ -353,7 +355,7 @@ impl TestSession {
         socket: Arc<UdpSocket>,
         n_packets: usize,
         udp_overhead: usize,
-    ) -> Result<ReceiverStats, Box<dyn Error>> {
+    ) -> Result<ReceiverStats, AgentError> {
         // Timeout
         let r_timeout = Duration::from_nanos(3_000_000_000);
         // Stats
@@ -399,7 +401,7 @@ impl TestSession {
                         continue;
                     }
                     Err(e) => {
-                        return Err(Box::new(e));
+                        return Err(AgentError::NetworkError(e.to_string()));
                     }
                 };
                 break;

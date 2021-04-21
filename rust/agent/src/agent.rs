@@ -7,11 +7,11 @@
  */
 use crate::cmd::CmdArgs;
 use crate::collectors::{Collectors, Runnable};
+use crate::error::AgentError;
 use crate::nvram::Nvram;
 use crate::zk::{ZkConfig, ZkConfigCollector};
 use std::collections::HashMap;
 use std::convert::TryFrom;
-use std::error::Error;
 use std::fs;
 use std::str;
 use std::sync::Arc;
@@ -40,7 +40,7 @@ impl Agent {
             collectors: HashMap::new(),
         }
     }
-    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
+    pub fn run(&mut self) -> Result<(), AgentError> {
         log::info!("Running agent");
         if let Err(e) = self.nvram.load() {
             log::info!("Cannot read NVRAM: {}", e);
@@ -51,14 +51,17 @@ impl Agent {
         log::info!("Stopping agent");
         Ok(())
     }
-    async fn agent_loop(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn agent_loop(&mut self) -> Result<(), AgentError> {
         // Initialize resolver
         log::debug!("Initializing resolver");
-        self.resolver = Some(TokioAsyncResolver::tokio_from_system_conf()?);
+        self.resolver = Some(
+            TokioAsyncResolver::tokio_from_system_conf()
+                .map_err(|e| AgentError::ConfigurationError(e.to_string()))?,
+        );
         // Resolve zeroconf url
         if self.zeroconf_url.is_none() {
             if let Err(e) = self.resolve_zeroconf_url().await {
-                log::error!("Failed to get zeroconf url: {}", e);
+                log::error!("Failed to get zeroconf url: {:?}", e);
                 return Err(e);
             }
         };
@@ -72,7 +75,7 @@ impl Agent {
             let prev_config_interval = self.config_interval;
             config_interval.tick().await;
             if let Err(e) = self.process_config().await {
-                log::info!("Cannot fetch config: {}", e);
+                log::info!("Cannot fetch config: {:?}", e);
                 sleep(Duration::from_secs(CONFIG_RETRY_INTERVAL)).await;
             }
             if self.config_interval != prev_config_interval {
@@ -88,7 +91,7 @@ impl Agent {
     fn get_config_interval(&self) -> Interval {
         interval(Duration::from_secs(self.config_interval))
     }
-    fn set_zeroconf_url(&mut self, url: &str) -> Result<(), Box<dyn Error>> {
+    fn set_zeroconf_url(&mut self, url: &str) -> Result<(), AgentError> {
         match &self.zeroconf_url {
             Some(x) => {
                 if x == url {
@@ -104,7 +107,7 @@ impl Agent {
             }
         }
     }
-    async fn resolve_zeroconf_url(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn resolve_zeroconf_url(&mut self) -> Result<(), AgentError> {
         // Check if agent is initialized
         if self.zeroconf_url.is_some() {
             return Ok(());
@@ -126,10 +129,10 @@ impl Agent {
                 log::debug!("Using zeroconf url from DNS: {}", &x);
                 self.set_zeroconf_url(&x)
             }
-            Err(e) => Err(e),
+            Err(e) => Err(AgentError::BootstrapError(e.to_string())),
         }
     }
-    async fn get_dns_zeroconf_url(&self) -> Result<String, Box<dyn Error>> {
+    async fn get_dns_zeroconf_url(&self) -> Result<String, AgentError> {
         log::debug!("Resolving zeroconf URL via DNS");
         let queries = vec!["_noc-zeroconf.", "_noc-zeroconf.getnoc.com."];
         for q in queries {
@@ -140,14 +143,20 @@ impl Agent {
                     return Ok(x);
                 }
                 Err(e) => {
-                    log::debug!("{} cannot be resolved: {}", q, e);
+                    log::debug!("{} cannot be resolved: {:?}", q, e);
                 }
             };
         }
-        Err("Failed to resolve".into())
+        Err(AgentError::NetworkError("Failed to resolve".into()))
     }
-    async fn dns_query_txt(&self, query: String) -> Result<String, Box<dyn Error>> {
-        let response = self.resolver.as_ref().unwrap().txt_lookup(query).await?;
+    async fn dns_query_txt(&self, query: String) -> Result<String, AgentError> {
+        let response = self
+            .resolver
+            .as_ref()
+            .unwrap()
+            .txt_lookup(query)
+            .await
+            .map_err(|e| AgentError::NetworkError(e.to_string()))?;
         for r in response.iter() {
             log::debug!("Response: {:?}", r);
             for resp in r.txt_data() {
@@ -157,9 +166,9 @@ impl Agent {
                 }
             }
         }
-        Err("Not implemented".into())
+        Err(AgentError::NotImplementedError)
     }
-    async fn process_config(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn process_config(&mut self) -> Result<(), AgentError> {
         let cfg = self
             .fetch_config(&self.zeroconf_url.as_ref().unwrap())
             .await?;
@@ -185,7 +194,7 @@ impl Agent {
         //
         Ok(())
     }
-    async fn spawn_collector(&mut self, config: &ZkConfigCollector) -> Result<(), Box<dyn Error>> {
+    async fn spawn_collector(&mut self, config: &ZkConfigCollector) -> Result<(), AgentError> {
         log::debug!("Starting collector: {}", &config.id);
         let collector = Arc::new(Collectors::try_from(config)?);
         self.collectors
@@ -194,17 +203,14 @@ impl Agent {
         tokio::spawn(async move { collector.run().await });
         Ok(())
     }
-    async fn update_collector(
-        &mut self,
-        _config: &ZkConfigCollector,
-    ) -> Result<(), Box<dyn Error>> {
+    async fn update_collector(&mut self, _config: &ZkConfigCollector) -> Result<(), AgentError> {
         return Ok(());
     }
-    async fn fetch_config(&self, url: &str) -> Result<ZkConfig, Box<dyn Error>> {
+    async fn fetch_config(&self, url: &str) -> Result<ZkConfig, AgentError> {
         let data = self.fetch_url(url).await?;
         ZkConfig::try_from(data)
     }
-    async fn fetch_url(&self, url: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+    async fn fetch_url(&self, url: &str) -> Result<Vec<u8>, AgentError> {
         match url.find(':') {
             Some(i) => {
                 let scheme = &url[0..i];
@@ -212,18 +218,18 @@ impl Agent {
                     "file" => Self::fetch_file(&url[i + 1..url.len()]).await,
                     "http" => self.fetch_http(url).await,
                     "https" => self.fetch_http(url).await,
-                    _ => Err("Unsupported scheme".into()),
+                    _ => Err(AgentError::FetchError("Unsupported scheme".into())),
                 }
             }
-            None => Err("Malformed URL".into()),
+            None => Err(AgentError::FetchError("Malformed URL".into())),
         }
     }
-    async fn fetch_file(path: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+    async fn fetch_file(path: &str) -> Result<Vec<u8>, AgentError> {
         log::debug!("fetch_file: {}", path);
         let data = fs::read(path)?;
         Ok(data)
     }
-    async fn fetch_http(&self, _url: &str) -> Result<Vec<u8>, Box<dyn Error>> {
-        Err("Not implemented".into())
+    async fn fetch_http(&self, _url: &str) -> Result<Vec<u8>, AgentError> {
+        Err(AgentError::NotImplementedError)
     }
 }
