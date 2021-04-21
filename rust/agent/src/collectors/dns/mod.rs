@@ -14,6 +14,6 @@ cfg_if::cfg_if! {
         pub use collector::DnsCollector;
     } else {
         use super::StubCollector;
-        pub type DNSCollector = StubCollector<DNSConfig>;
+        pub type DnsCollector = StubCollector<DnsConfig>;
     }
 }
