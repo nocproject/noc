@@ -60,7 +60,32 @@ class Script(BaseScript):
         # Get interfaces status
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
-        if self.is_platform_3510 or self.is_platform_4612 or self.is_platform_ecs4100:
+        if self.is_platform_4626:
+            cmd = self.cli("show interface switchport")
+            for block in cmd.split("\n\n"):
+                match = self.rx_interface_swport_4626.search(block)
+                name = match.group("interface")
+                swport = {
+                    "interface": name,
+                    "members": portchannel_members.get(name, ""),
+                    "802.1ad Tunnel": False,
+                    "802.1Q Enabled": False,
+                    "tagged": "",
+                    "status": interface_status.get(name, False),
+                }
+                if self.rx_agg_member.search(block):
+                    # skip portchannel members
+                    r += [swport]
+                    continue
+                if match.group("mode").lower() == "trunk":
+                    swport["802.1Q Enabled"] = "True"
+                swport["untagged"] = match.group("pvid")
+                tagged = []
+                p = self.rx_trunk.search(block)
+                if p:
+                    swport["tagged"] = self.expand_rangelist(p.group("tagged").replace(";", ","))
+                r += [swport]
+        elif self.is_platform_3510 or self.is_platform_46 or self.is_platform_ecs4100:
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
                 matchint = self.rx_interface_3526.search(block)
@@ -106,31 +131,6 @@ class Script(BaseScript):
                 if untagged:
                     swport["untagged"] = untagged
                 swport["tagged"] = tagged
-                r += [swport]
-        elif self.is_platform_4626:
-            cmd = self.cli("show interface switchport")
-            for block in cmd.split("\n\n"):
-                match = self.rx_interface_swport_4626.search(block)
-                name = match.group("interface")
-                swport = {
-                    "interface": name,
-                    "members": portchannel_members.get(name, ""),
-                    "802.1ad Tunnel": False,
-                    "802.1Q Enabled": False,
-                    "tagged": "",
-                    "status": interface_status.get(name, False),
-                }
-                if self.rx_agg_member.search(block):
-                    # skip portchannel members
-                    r += [swport]
-                    continue
-                if match.group("mode").lower() == "trunk":
-                    swport["802.1Q Enabled"] = "True"
-                swport["untagged"] = match.group("pvid")
-                tagged = []
-                p = self.rx_trunk.search(block)
-                if p:
-                    swport["tagged"] = self.expand_rangelist(p.group("tagged").replace(";", ","))
                 r += [swport]
         else:
             raise self.NotSupportedError()
