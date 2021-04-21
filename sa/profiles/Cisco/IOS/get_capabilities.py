@@ -24,6 +24,12 @@ class Script(BaseScript):
         "BRAS | PPTP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 3],
     }
 
+    CHECK_SNMP_GETNEXT = {
+        "Cisco | MIB | CISCO-CLASS-BASED-QOS-MIB": mib[
+            "CISCO-CLASS-BASED-QOS-MIB::cbQosIFPolicyIndex", 0
+        ]
+    }
+
     CAP_SLA_SYNTAX = "Cisco | IOS | Syntax | IP SLA"
 
     SYNTAX_IP_SLA_APPLICATION = ["show ip sla application", "show ip sla monitor application"]
@@ -206,8 +212,7 @@ class Script(BaseScript):
                 caps["Cisco | IP | SLA | Probes"] = np
 
     def execute_platform_snmp(self, caps):
-        # Check IP SLA status
-        sla_v = self.snmp.get("1.3.6.1.4.1.9.9.42.1.1.10.0")
+        sla_v = self.snmp.get(mib["CISCO-RTTMON-MIB::rttMonApplProbeCapacity", 0])
         if sla_v:
             # IP SLA responder
             if self.has_ip_sla_responder_snmp():
