@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | MIB | CISCO-CLASS-BASED-QOS-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "c7c5e228-9953-4c58-9654-7f803e39a147",
+    "description": "Cisco supported OIDs from CISCO-CLASS-BASED-QOS-MIB.",
+    "type": "bool",
+    "card_template": null
+}

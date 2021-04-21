@@ -64,6 +64,55 @@ class Script(GetMetricsScript):
                 multi=True,
             )
 
+    @metrics(
+        [
+            "Interface | CBQOS | Drops | In | Delta",
+            "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | In",
+            "Interface | CBQOS | Octets | In | Delta",
+            "Interface | CBQOS | Octets | Out",
+            "Interface | CBQOS | Octets | Out | Delta",
+        ],
+        volatile=False,
+        has_capability="Huawei | OID | hwCBQoSClassifierStatisticsTable",
+        access="S",  # CLI version
+    )
+    def get_interface_cbqos_metrics_snmp(self, metrics):
+        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        direction_map = {1: "In", 2: "Out"}
+        class_map = {}
+        for oid, name in self.snmp.getnext(mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierName"]):
+            class_map[oid.rsplit(".", 1)[-1]] = name
+        for index, packets, bytes, discards in self.snmp.get_tables(
+            [
+                mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierMatchedPackets"],
+                mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierMatchedBytes"],
+                mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierMatchedDropPackets"],
+            ]
+        ):
+            ifindex, direction, ifvlanid1, ifvlanid2, classifier = index.split(".")
+            if ifindex not in ifaces:
+                continue
+            ts = self.get_ts()
+            for metric, value in [
+                (f"Interface | CBQOS | Drops | {direction_map[direction]} | Delta", discards),
+                (f"Interface | CBQOS | Octets | {direction_map[direction]} | Delta", bytes),
+                (f"Interface | CBQOS | Octets | {direction_map[direction]}", bytes),
+                (f"Interface | CBQOS | Packets | {direction_map[direction]} | Delta", packets),
+                (f"Interface | CBQOS | Packets | {direction_map[direction]}", packets),
+            ]:
+                scale = 1
+                self.set_metric(
+                    id=(metric, ifaces[ifindex]),
+                    metric=metric,
+                    value=float(value),
+                    ts=ts,
+                    labels=ifaces[ifindex] + [f"noc::traffic_class::{class_map[classifier]}"],
+                    multi=True,
+                    type="delta" if metric.endswith("Delta") else "gauge",
+                    scale=scale,
+                )
+
     # @metrics(
     #     ["Interface | Errors | CRC", "Interface | Errors | Frame"],
     #     has_capability="DB | Interfaces",

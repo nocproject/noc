@@ -102,20 +102,15 @@ class Sensor(Document):
         )
         if source and source in SOURCES:
             self.sources = list(set(self.sources or []) - set([source]))
-            self._get_collection().update_one(
-                {"_id": self.id}, {"$pull": {"sources": source}}
-            )
+            self._get_collection().update_one({"_id": self.id}, {"$pull": {"sources": source}})
         elif not source:
             # For empty source, clean sources
             self.sources = []
-            self._get_collection().update_one(
-                {"_id": self.id}, {"$set": {"sources": []}}
-            )
+            self._get_collection().update_one({"_id": self.id}, {"$set": {"sources": []}})
         if not self.sources:
             # source - None, set sensor to missed
             self.fire_event("missed")
             self.touch()
-
 
     @classmethod
     def sync_object(cls, obj: Object) -> None:
@@ -148,7 +143,7 @@ class Sensor(Document):
                 object=obj,
                 local_id=sensor.name,
                 units=sensor.units,
-                label=description,
+                label=sensor.description,
             )
             # Get sensor protocol
             if sensor.modbus_register:

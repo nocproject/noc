@@ -11,10 +11,12 @@ import re
 # NOC modules
 from noc.core.text import parse_kv
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.core.mib import mib
 
 
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
+    always_prefer = "S"
 
     rx_ipsla_probe = re.compile(
         r"(?:IPSLA operation id:|Round Trip Time \(RTT\) for.+Index)\s+(\d+)", re.MULTILINE
@@ -194,3 +196,120 @@ class Script(GetMetricsScript):
                     value=float(sla_ingress) * 1000.0,
                     multi=True,
                 )
+
+    def get_cbqos_config_snmp(self):
+        class_map = {}
+        for oid, name in self.snmp.getnext(mib["CISCO-CLASS-BASED-QOS-MIB::cbQosCMName"]):
+            class_map[oid.rsplit(".", 1)[-1]] = name
+        policy_map = {}
+        for oid, iftype, direction, ifindex in self.snmp.get_tables(
+            [
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfType"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosPolicyDirection"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfIndex"],
+            ],
+            bulk=False,
+        ):
+            # direction 1 - input, 2 - output
+            policy_map[oid.rsplit(".", 1)[-1]] = {
+                "iftype": iftype,
+                "direction": {1: "In", 2: "Out"}[direction],
+                "ifindex": ifindex,
+            }
+        config_cmap = {}
+        for entry_index, config_index, object_type, parent in self.snmp.get_tables(
+            [
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosConfigIndex"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosObjectsType"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosParentObjectsIndex"],
+            ],
+            bulk=False,
+        ):
+            if object_type != 2:
+                # class-map only
+                continue
+            policy_index, object_index = entry_index.split(".")
+            config_cmap[object_index] = {
+                "pmap_index": policy_index,
+                "type": object_type,
+                "cmap_name": class_map[str(config_index)],
+                "cmap_index": config_index,
+            }
+            config_cmap[object_index].update(policy_map[policy_index])
+        return config_cmap
+
+    CBQOS_OIDS_MAP = {
+        # oid, type, scale
+        "In": {
+            "Interface | CBQOS | Drops | In | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMDropByte",
+                "delta",
+                1,
+            ),
+            "Interface | CBQOS | Octets | In | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMPostPolicyByte",
+                "delta",
+                1,
+            ),
+        },
+        "Out": {
+            "Interface | CBQOS | Drops | Out | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMDropByte",
+                "delta",
+                1,
+            ),
+            "Interface | CBQOS | Octets | Out | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMPostPolicyByte",
+                "delta",
+                1,
+            ),
+        },
+    }
+
+    @metrics(
+        [
+            "Interface | CBQOS | Drops | In | Delta",
+            "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | In | Delta",
+            "Interface | CBQOS | Octets | Out | Delta",
+        ],
+        volatile=False,
+        access="S",  # CLI version
+    )
+    def get_interface_cbqos_metrics_snmp(self, metrics):
+        print(metrics)
+        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        config = self.get_cbqos_config_snmp()
+        oids = {}
+        for c, item in config.items():
+            if item["ifindex"] in ifaces:
+                for metric, mc in self.CBQOS_OIDS_MAP[item["direction"]].items():
+                    oids[mib[mc[0], item["pmap_index"], c]] = [
+                        metric,
+                        mc,
+                        ifaces[item["ifindex"]],
+                        ifaces[item["ifindex"]] + [f'noc::traffic_class::{item["cmap_name"]}'],
+                    ]
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            # if not results[r]:
+            #     continue
+            metric, mc, mlabesl, labels = oids[r]
+            _, mtype, scale = mc
+            self.set_metric(
+                id=(metric, mlabesl),
+                metric=metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=labels,
+                multi=True,
+                type=mtype,
+                scale=scale,
+            )
+        # print(r)
+        # "noc::traffic_class::*", "noc::interface::*"
