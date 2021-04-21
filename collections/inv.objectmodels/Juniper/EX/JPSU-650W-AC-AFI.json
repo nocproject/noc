@@ -1,0 +1,36 @@
+{
+    "name": "Juniper | EX | JPSU-650W-AC-AFI",
+    "$collection": "inv.objectmodels",
+    "uuid": "2d02b421-e0f3-40fc-ad62-0ddc3573aee4",
+    "vendor__code": "JUNIPER",
+    "description": "AC Power Supply, 650W at 220V",
+    "cr_context": "PEM",
+    "labels": ["noc::inv::psu"],
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 4550 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["JPSU-650W-AC-AFI"],
+            "order_part_no": ["JPSU-650W-AC-AFI"],
+            "part_no": ["740-044332"]
+        },
+        "power": {
+            "power": 650.0
+        }
+    }
+}
