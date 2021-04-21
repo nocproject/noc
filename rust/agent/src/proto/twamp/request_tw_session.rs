@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::{NtpTimeStamp, UtcDateTime, CMD_REQUEST_TW_SESSION, MBZ};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Request-TW-Session structure
@@ -88,36 +89,36 @@ impl FrameReader for RequestTwSession {
     fn min_size() -> usize {
         112
     }
-    fn parse(s: &mut BytesMut) -> Result<RequestTwSession, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<RequestTwSession, AgentError> {
         // Command, 1 octet
         let cmd = s.get_u8();
         if cmd != CMD_REQUEST_TW_SESSION {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Invalid command code".into()));
         }
         // MBZ 4 bits + IPVN 4 bits
         let ipvn = s.get_u8();
         if ipvn != 4 && ipvn != 6 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Invalid IP version".into()));
         }
         // Conf-Sender, 2 octets, must be zero
         let conf_sender = s.get_u8();
         if conf_sender != 0 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Conf-Sender must be zero".into()));
         }
         // Conf-Receiver, 2 octets, must be zero
         let conf_receiver = s.get_u8();
         if conf_receiver != 0 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Conf-Receiver must be zero".into()));
         }
         // Number of Schedule Slots, 4 octets, must be zero
         let num_slots = s.get_u32();
         if num_slots != 0 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Num-Slots must be zero".into()));
         }
         // Number of Packets, 4 octets, must be zero
         let num_packets = s.get_u32();
         if num_packets != 0 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Num-Packets must be zero".into()));
         }
         // Sender and Receiver ports and addresses are ignored
         // Session identifier is ignored
@@ -150,7 +151,7 @@ impl FrameWriter for RequestTwSession {
         112
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Command, 1 octet
         s.put_u8(CMD_REQUEST_TW_SESSION);
         // MBZ 4 bits + IPVN 4 bits
@@ -236,7 +237,8 @@ mod tests {
         let expected = get_request_tw_session();
         let res = RequestTwSession::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

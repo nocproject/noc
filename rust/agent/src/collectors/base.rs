@@ -5,12 +5,12 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
+use crate::error::AgentError;
 use crate::zk::ZkConfigCollector;
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 use rand::Rng;
 use std::convert::TryFrom;
-use std::error::Error;
 use std::marker::PhantomData;
 use tokio::time::Duration;
 
@@ -36,7 +36,7 @@ pub trait Runnable {
 /// Must be used along with Id and Repeatable traits
 #[async_trait]
 pub trait Collectable {
-    async fn collect(&self) -> Result<Status, Box<dyn Error>>;
+    async fn collect(&self) -> Result<Status, AgentError>;
 }
 
 /// Helper trait for implicit collector implementation.
@@ -89,7 +89,7 @@ pub struct StubCollector<TCfg> {
 }
 
 impl<TCfg> TryFrom<&ZkConfigCollector> for StubCollector<TCfg> {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         Ok(Self {

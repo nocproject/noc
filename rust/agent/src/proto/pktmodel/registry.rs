@@ -9,10 +9,10 @@ pub use super::{
     CbrModel, CbrModelConfig, G711Model, G711ModelConfig, G729Model, G729ModelConfig, GetPacket,
     ImixModel, ImixModelConfig, Packet,
 };
+use crate::error::AgentError;
 use enum_dispatch::enum_dispatch;
 use serde::Deserialize;
 use std::convert::TryFrom;
-use std::error::Error;
 
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -34,7 +34,7 @@ pub enum PacketModels {
 }
 
 impl TryFrom<ModelConfig> for PacketModels {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(value: ModelConfig) -> Result<Self, Self::Error> {
         Ok(match value {

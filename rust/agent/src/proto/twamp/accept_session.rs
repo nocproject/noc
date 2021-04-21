@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::MBZ;
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Accept-Session structure
@@ -42,7 +43,7 @@ impl FrameReader for AcceptSession {
     fn min_size() -> usize {
         48
     }
-    fn parse(s: &mut BytesMut) -> Result<AcceptSession, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<AcceptSession, AgentError> {
         // Accept, 1 octet
         let accept = s.get_u8();
         // MBZ, 1 octet
@@ -64,7 +65,7 @@ impl FrameWriter for AcceptSession {
         48
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Accept, 1 octet
         s.put_u8(self.accept);
         // MBZ, 1 octet
@@ -116,7 +117,8 @@ mod tests {
         let expected = get_accept_session();
         let res = AcceptSession::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

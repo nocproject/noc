@@ -6,9 +6,9 @@
 // ---------------------------------------------------------------------
 
 use super::{GetPacket, Packet, NS};
+use crate::error::AgentError;
 use serde::Deserialize;
 use std::convert::TryFrom;
-use std::error::Error;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct G729ModelConfig {}
@@ -17,7 +17,7 @@ pub struct G729ModelConfig {}
 pub struct G729Model;
 
 impl TryFrom<G729ModelConfig> for G729Model {
-    type Error = Box<dyn Error>;
+    type Error = AgentError;
 
     fn try_from(_value: G729ModelConfig) -> Result<Self, Self::Error> {
         Ok(Self)

@@ -6,7 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::{NtpTimeStamp, UtcDateTime, MBZ};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 /// ## Server-Start structure
@@ -43,7 +44,7 @@ impl FrameReader for ServerStart {
     fn min_size() -> usize {
         48
     }
-    fn parse(s: &mut BytesMut) -> Result<ServerStart, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<ServerStart, AgentError> {
         // MBZ, 15 octets
         s.advance(15);
         // Accept, 1 octet
@@ -69,14 +70,16 @@ impl FrameWriter for ServerStart {
         48
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // MBZ, 15 octets
         s.put(&MBZ[..15]);
         // Accept, 1 octet
         s.put_u8(self.accept);
         // Server-IV, 16 octets
         if self.server_iv.len() != 16 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError(
+                "Server-IV must be of 16 octets".into(),
+            ));
         }
         s.put(&*self.server_iv);
         // Start-Time, 8 octets
@@ -130,7 +133,8 @@ mod tests {
         let expected = get_server_start();
         let res = ServerStart::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]
