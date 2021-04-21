@@ -10,9 +10,27 @@ name = "noc-agent"
 path = "src/main.rs"
 
 [features]
-default = ["dns", "test", "twamp-sender", "twamp-reflector"]
+default = [
+    "cpu",
+    "dns",
+    "fs",
+    "memory",
+    "network",
+    "test",
+    "twamp-sender",
+    "twamp-reflector",
+    "uptime"
+]
+# cpu collector
+cpu = ["systemstat"]
 # dns collector
 dns = ["trust-dns-proto"]
+# fs collector
+fs = ["systemstat"]
+# memory collector
+memory = ["systemstat"]
+# network collector
+network = ["systemstat"]
 # test collector
 test = []
 # modbus_serial collector
@@ -21,6 +39,8 @@ test = []
 twamp-sender = []
 # twamp-reflector collector
 twamp-reflector = []
+# uptime collector
+uptime = ["systemstat"]
 
 [dependencies]
 clap = "2.33"
@@ -40,7 +60,8 @@ chrono = "0.4"
 thiserror = "1.0"
 # Optional dependencies
 trust-dns-proto = {version = "0.20", optional = true}
-# Subcrates
+systemstat = {version = "0.1", optional = true}
+# Subcrates for procedural macroses
 agent-derive = {path = "libs/agent-derive"}
 
 [dev-dependencies]
