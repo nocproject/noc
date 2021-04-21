@@ -37,4 +37,7 @@ pub enum AgentError {
     //
     #[error("Timed out")]
     TimeOutError(#[from] Elapsed),
+    //
+    #[error("Internal error: {0}")]
+    InternalError(String),
 }
