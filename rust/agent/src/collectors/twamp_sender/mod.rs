@@ -14,6 +14,6 @@ cfg_if::cfg_if! {
         pub use collector::TwampSenderCollector;
     } else {
         use super::StubCollector;
-        pub type TWAMPSenderCollector = StubCollector<TWAMPSenderConfig>;
+        pub type TwampSenderCollector = StubCollector<TwampSenderConfig>;
     }
 }

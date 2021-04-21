@@ -14,6 +14,6 @@ cfg_if::cfg_if! {
         pub use collector::TwampReflectorCollector;
     } else {
         use super::StubCollector;
-        pub type TWAMPReflectorCollector = StubCollector<TWAMPReflectorConfig>;
+        pub type TwampReflectorCollector = StubCollector<TwampReflectorConfig>;
     }
 }
