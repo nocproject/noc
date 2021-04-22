@@ -35,7 +35,7 @@ csiphash==0.0.5
 demjson==2.2.4
 fs==2.4.13
 geojson==2.5.0
-geopy==0.97
+geopy==2.1.0
 grpcio==1.36
 http-parser==0.9.0
 manhole==1.6.0
