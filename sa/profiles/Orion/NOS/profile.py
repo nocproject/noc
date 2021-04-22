@@ -36,7 +36,7 @@ class Profile(BaseProfile):
         r"(^Support ipv6\s*:\s*(?P<ipv6_support>\S+)\s*\n)?"
         r"^Bootstrap\s+Version:? (?P<bootprom>(Bootstrap_\d+\.\d+\.\d+|UNKNOWN)).*\n"
         r"(^FPGA Version\s*\n)?"
-        r"^Hardware( \S+| \S+\s\S+|) Version( Rev.|\: ?|\s*)(?P<hardware>\S+)\s*\n"
+        r"^Hardware( \S+| \S+\s\S+|) Version( Rev.|\: ?|\s*)(?P<hardware>\S+)\s*(\nCPLD Version: 1.0)?\n*"
         r"\n"
         r"^System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
         r"^Serial number\s*:\s*(?P<serial>\S+)\s*\n",
