@@ -5,7 +5,7 @@
  * See LICENSE for details
  * ---------------------------------------------------------------------
  */
-use crate::cmd::CmdArgs;
+use crate::cli::CliArgs;
 use crate::collectors::{Collectors, Runnable};
 use crate::error::AgentError;
 use crate::nvram::Nvram;
@@ -30,16 +30,31 @@ pub struct Agent {
 const CLEAN_CONFIG_FETCH_INTERVAL: u64 = 10;
 const CONFIG_RETRY_INTERVAL: u64 = 10;
 
-impl Agent {
-    pub fn new_from(_args: CmdArgs) -> Self {
-        Self {
+impl TryFrom<CliArgs> for Agent {
+    type Error = AgentError;
+
+    fn try_from(args: CliArgs) -> Result<Self, Self::Error> {
+        // Init logging
+        env_logger::builder()
+            .format_timestamp_millis()
+            .filter_level(if args.verbose {
+                log::LevelFilter::Debug
+            } else {
+                log::LevelFilter::Info
+            })
+            .init();
+        // Build agent
+        Ok(Self {
             nvram: Nvram::new(),
             zeroconf_url: None,
             resolver: None,
             config_interval: CLEAN_CONFIG_FETCH_INTERVAL,
             collectors: HashMap::new(),
-        }
+        })
     }
+}
+
+impl Agent {
     pub fn run(&mut self) -> Result<(), AgentError> {
         log::info!("Running agent");
         if let Err(e) = self.nvram.load() {

@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------
 
 pub mod agent;
-pub mod cmd;
+pub mod cli;
 pub mod collectors;
 pub mod error;
 pub mod nvram;

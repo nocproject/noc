@@ -10,6 +10,9 @@ use tokio::time::error::Elapsed;
 
 #[derive(Error, Debug)]
 pub enum AgentError {
+    // Invalid command line
+    #[error("Invalid command line: {0}")]
+    CliError(String),
     // Feature is not implemented
     #[error("Not implemented")]
     NotImplementedError,
@@ -18,7 +21,7 @@ pub enum AgentError {
     BootstrapError(String),
     // Generic I/O Error
     #[error(transparent)]
-    IOError(#[from] std::io::Error),
+    IoError(#[from] std::io::Error),
     // Network error
     #[error("Network error: {0}")]
     NetworkError(String),
