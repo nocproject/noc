@@ -14,7 +14,6 @@ from noc.core.scheduler.scheduler import Scheduler
 
 class DiscoveryService(TornadoService):
     name = "discovery"
-    leader_group_name = "discovery-%(pool)s"
     pooled = True
     use_mongo = True
     process_name = "noc-%(name).10s-%(pool).5s"

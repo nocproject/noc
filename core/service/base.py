@@ -73,18 +73,9 @@ class BaseService(object):
     # at given moment
     # Config variables can be expanded as %(varname)s
     leader_lock_name = None
-
-    # Leader group name
-    # Only one service in leader group can be running at a time
-    # Config variables can be expanded as %(varname)s
-    # @todo: Deprecated, must be removed
-    leader_group_name = None
     # Pooled service are used to distribute load between services.
     # Pool name set in NOC_POOL parameter or --pool option.
-    # May be used in conjunction with leader_group_name
-    # to allow only one instance of services per node or datacenter
     pooled = False
-
     # Format string to set process name
     # config variables can be expanded as %(name)s
     process_name = "noc-%(name).10s"
@@ -115,15 +106,8 @@ class BaseService(object):
         "info": logging.INFO,
         "debug": logging.DEBUG,
     }
-
     DEFAULT_SHARDING_KEY = "managed_object"
-
     SHARDING_KEYS = {"span": "ctx"}
-
-    # Timeout to wait NSQ writer is to close
-    NSQ_WRITER_CLOSE_TRY_TIMEOUT = 0.25
-    # Times to try to close NSQ writer
-    NSQ_WRITER_CLOSE_RETRIES = 5
 
     class RegistrationError(Exception):
         pass

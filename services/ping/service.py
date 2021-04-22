@@ -30,8 +30,6 @@ from noc.services.ping.datastream import PingDataStreamClient
 
 class PingService(FastAPIService):
     name = "ping"
-    #
-    leader_group_name = "ping-%(pool)s"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
 

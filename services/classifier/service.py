@@ -102,7 +102,6 @@ class ClassifierService(TornadoService):
     """
 
     name = "classifier"
-    leader_group_name = "classifier-%(pool)s"
     pooled = True
     use_mongo = True
     process_name = "noc-%(name).10s-%(pool).5s"
