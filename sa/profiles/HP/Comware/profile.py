@@ -27,6 +27,10 @@ class Profile(BaseProfile):
 
     spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
+    matchers = {
+        "is_bad_release": {"version": {"$regex": r"2209P"}},
+    }
+
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)
         return config
