@@ -108,6 +108,16 @@ class Script(BaseScript):
             else:
                 yield b
 
+    def to_reuse_cli_session(self):
+        if self.is_bad_release:
+            return False
+        return self.reuse_cli_session
+
+    def to_keep_cli_session(self):
+        if self.is_bad_release:
+            return False
+        return self.keep_cli_session
+
     def execute_cli(self, **kwargs):
         isis = self.get_isis_interfaces()
 
