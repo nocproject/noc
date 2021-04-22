@@ -55,7 +55,7 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
                 n_packets: config.n_packets,
                 model: PacketModels::try_from(config.model.clone())?,
                 tos: dscp_to_tos(config.dscp.to_lowercase())
-                    .ok_or(AgentError::ConfigurationError("invalid dscp".into()))?,
+                    .ok_or_else(|| AgentError::ConfigurationError("invalid dscp".into()))?,
             }),
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
