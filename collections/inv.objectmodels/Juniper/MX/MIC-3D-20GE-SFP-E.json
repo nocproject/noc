@@ -1,7 +1,7 @@
 {
-    "name": "Juniper | MX | MIC-3D-20GE-SFP",
+    "name": "Juniper | MX | MIC-3D-20GE-SFP-E",
     "$collection": "inv.objectmodels",
-    "uuid": "2fc621a8-60b7-4995-8382-2106c7aa9fef",
+    "uuid": "8ea11db7-7428-4bdd-86cc-e0565831fe85",
     "vendor__code": "JUNIPER",
     "description": "20x10/100/1000 MIC for MX",
     "cr_context": "MIC",
@@ -176,8 +176,8 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["MIC-3D-20GE-SFP"],
-            "part_no": ["750-028392"]
+            "order_part_no": ["MIC-3D-20GE-SFP-E"],
+            "part_no": ["750-049846"]
         }
     }
 }
