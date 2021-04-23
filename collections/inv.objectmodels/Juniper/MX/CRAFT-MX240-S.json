@@ -1,0 +1,23 @@
+{
+    "name": "Juniper | MX | CRAFT-MX240-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "4b6314c9-676b-4765-8c35-1e2c2df68393",
+    "vendor__code": "JUNIPER",
+    "description": "MX240 Front Panel Display",
+    "cr_context": "FPC",
+    "connections": [
+        {
+            "description": "FPM connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | FPM"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["CRAFT-MX240-S"],
+            "part_no": ["760-021392"]
+        }
+    }
+}
