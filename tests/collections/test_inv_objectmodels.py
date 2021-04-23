@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test inv.objectmodels collection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -158,9 +158,41 @@ CONNECTION_CHECKLIST = {
         "directions": ["i", "o"],
         "protocols": ["TransEth1G", "TransEth10G"],
     },
+    "Transceiver | SFP28": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth10G", "TransEth25G"],
+    },
+    "Transceiver | SFP56": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth50G"],
+    },
+    "Transceiver | QSFP": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth1G", "TransEth4G"],
+    },
     "Transceiver | QSFP+": {
         "directions": ["i", "o"],
         "protocols": ["TransEth10G", "TransEth40G", "TransEth100G"],
+    },
+    "Transceiver | QSFP14": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth50G"],
+    },
+    "Transceiver | QSFP28": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth10G", "TransEth40G", "TransEth50G", "TransEth100G"],
+    },
+    "Transceiver | QSFP56": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth10G", "TransEth40G", "TransEth100G", "TransEth200G"],
+    },
+    "Transceiver | QSFP-DD": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth10G", "TransEth40G", "TransEth100G", "TransEth200G", "TransEth400G"],
+    },
+    "Transceiver | OSFP": {
+        "directions": ["i", "o"],
+        "protocols": ["TransEth400G", "TransEth800G"],
     },
     "Transceiver | XFP": {"directions": ["i", "o"], "protocols": ["TransEth10G", "OC192/STM64"]},
     "Transceiver | XFP | Cisco": {
@@ -175,7 +207,7 @@ CONNECTION_CHECKLIST = {
     },
     "Transceiver | CFP2": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth40G", "TransEth100G", "OC768/STM256"],
+        "protocols": ["TransEth40G", "TransEth100G", "TransEth200G", "OC768/STM256"],
     },
     "Transceiver | CFP4": {
         "directions": ["i", "o"],
@@ -183,6 +215,12 @@ CONNECTION_CHECKLIST = {
     },
     "Transceiver | CFP8": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth40G", "TransEth100G", "OC768/STM256"],
+        "protocols": [
+            "TransEth40G",
+            "TransEth100G",
+            "TransEth200G",
+            "TransEth400G",
+            "OC768/STM256",
+        ],
     },
 }
