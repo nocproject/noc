@@ -1,22 +1,20 @@
 # ----------------------------------------------------------------------
-# Pretty command
+# ping command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import argparse
-
-# Third-party modules
-from tornado.ioloop import IOLoop
-import tornado.queues
+import asyncio
+from typing import Optional, Iterable, List
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
 from noc.core.ioloop.ping import Ping
-from noc.core.ioloop.util import setup_asyncio
+from noc.core.ioloop.util import setup_asyncio, run_sync
 
 
 class Command(BaseCommand):
@@ -28,50 +26,45 @@ class Command(BaseCommand):
         parser.add_argument("addresses", nargs=argparse.REMAINDER, help="Object name")
 
     def handle(self, input, addresses, jobs, *args, **options):
-        self.addresses = set()
-        # Direct addresses
-        for a in addresses:
-            if is_ipv4(a):
-                self.addresses.add(a)
+        async def runner():
+            nonlocal lock
+            lock = asyncio.Lock()
+            tasks = [
+                asyncio.create_task(ping_worker(), name=f"ping-{i}")
+                for i in range(min(jobs, len(addr_list)))
+            ]
+            await asyncio.gather(*tasks)
+
+        async def ping_worker():
+            while True:
+                async with lock:
+                    if not addr_list:
+                        break  # Done
+                    addr = addr_list.pop(0)
+                    rtt, attempts = await ping.ping_check_rtt(addr, count=1, timeout=1000)
+                    if rtt:
+                        self.stdout.write(f"{addr} {rtt * 1000:.2f}ms\n")
+                    else:
+                        self.stdout.write(f"{addr} FAIL\n")
+
+        # Run ping
+        addr_list = self.get_addresses(addresses, input)
+        lock: Optional[asyncio.Lock] = None
+        ping = Ping()
+        setup_asyncio()
+        run_sync(runner)
+
+    def get_addresses(self, addresses: Iterable[str], input: Iterable[str]) -> List[str]:
+        addresses = {a for a in addresses if is_ipv4(a)}
         # Read addresses from files
         if input:
             for fn in input:
                 try:
                     with open(fn) as f:
-                        for line in f:
-                            line = line.strip()
-                            if is_ipv4(line):
-                                self.addresses.add(line)
+                        addresses.update(line.strip() for line in f if is_ipv4(line.strip()))
                 except OSError as e:
-                    self.die("Cannot read file %s: %s\n" % (fn, e))
-        # Ping
-        setup_asyncio()
-        self.ping = Ping()
-        self.jobs = jobs
-        self.queue = tornado.queues.Queue(self.jobs)
-        for i in range(self.jobs):
-            IOLoop.current().spawn_callback(self.ping_worker)
-        IOLoop.current().run_sync(self.ping_task)
-
-    async def ping_task(self):
-        for a in self.addresses:
-            await self.queue.put(a)
-        for i in range(self.jobs):
-            await self.queue.put(None)
-        await self.queue.join()
-
-    async def ping_worker(self):
-        while True:
-            a = await self.queue.get()
-            if a:
-                rtt, attempts = await self.ping.ping_check_rtt(a, count=1, timeout=1000)
-                if rtt:
-                    self.stdout.write("%s %.2fms\n" % (a, rtt * 1000))
-                else:
-                    self.stdout.write("%s FAIL\n" % a)
-            self.queue.task_done()
-            if not a:
-                break
+                    self.die(f"Cannot read file {fn}: {e}\n")
+        return list(sorted(addresses))
 
 
 if __name__ == "__main__":
