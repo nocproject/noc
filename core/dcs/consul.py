@@ -19,58 +19,11 @@ import consul.base
 
 # NOC modules
 from noc.config import config
-from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text
+from noc.core.consul import ConsulClient, ConsulRepeatableErrors
 from .base import DCSBase, ResolverBase
-
-ConsulRepearableCodes = {500, 598, 599}
-ConsulRepeatableErrors = consul.base.Timeout
-
-CONSUL_CONNECT_TIMEOUT = config.consul.connect_timeout
-CONSUL_REQUEST_TIMEOUT = config.consul.request_timeout
-CONSUL_NEAR_RETRY_TIMEOUT = config.consul.near_retry_timeout
-
-
-class ConsulHTTPClient(consul.base.HTTPClient):
-    """
-    asyncio version of consul http client
-    """
-
-    async def _request(self, callback, url, method="GET", body=None):
-        code, headers, body = await fetch(
-            url,
-            method=method,
-            body=body,
-            connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT,
-            validate_cert=self.verify,
-        )
-        if code in ConsulRepearableCodes:
-            raise consul.base.Timeout
-        return callback(consul.base.Response(code=code, headers=headers, body=body))
-
-    def get(self, callback, path, params=None):
-        url = self.uri(path, params)
-        return self._request(callback, url, method="GET")
-
-    def put(self, callback, path, params=None, data=""):
-        url = self.uri(path, params)
-        return self._request(callback, url, method="PUT", body="" if data is None else data)
-
-    def delete(self, callback, path, params=None):
-        url = self.uri(path, params)
-        return self._request(callback, url, method="DELETE")
-
-    def post(self, callback, path, params=None, data=""):
-        url = self.uri(path, params)
-        return self._request(callback, url, method="POST", body=data)
-
-
-class ConsulClient(consul.base.Consul):
-    def connect(self, host, port, scheme, verify=True, cert=None):
-        return ConsulHTTPClient(host, port, scheme, verify=verify)
 
 
 class ConsulResolver(ResolverBase):
@@ -511,7 +464,7 @@ class ConsulDCS(DCSBase):
                 if critical:
                     metrics["error", ("type", "dcs_consul_failed_resolve_critical_near")] += 1
                     self.set_faulty_status("Consul error: %s" % e)
-                time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
+                time.sleep(config.consul.near_retry_timeout)
                 continue
             if not services and wait:
                 metrics["error", ("type", "dcs_consul_no_active_service %s" % name)] += 1
@@ -521,7 +474,7 @@ class ConsulDCS(DCSBase):
                         "error", ("type", "dcs_consul_no_active_critical_service %s" % name)
                     ] += 1
                     self.set_faulty_status("No active service %s. Waiting" % name)
-                time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
+                time.sleep(config.consul.near_retry_timeout)
                 continue
             r = []
             for svc in services:
