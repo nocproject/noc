@@ -68,6 +68,7 @@ class BaseCommand(object):
             self.setup_logging(loglevel)
         enable_profiling = cmd_options.pop("enable_profiling", False)
         show_metrics = cmd_options.pop("show_metrics", False)
+        show_usage = cmd_options.pop("show_usage", False)
         self.no_progressbar = cmd_options.pop("no_progressbar", False)
         if enable_profiling:
             # Start profiler
@@ -75,6 +76,10 @@ class BaseCommand(object):
 
             yappi.start()
         try:
+            if show_usage:
+                import resource
+
+                start_usage = resource.getrusage(resource.RUSAGE_SELF)
             return self.handle(*args, **cmd_options) or 0
         except CommandError as e:
             self.print(str(e))
@@ -94,6 +99,9 @@ class BaseCommand(object):
             error_report()
             return 2
         finally:
+            if show_usage:
+                stop_usage = resource.getrusage(resource.RUSAGE_SELF)
+                self.show_usage(start_usage, stop_usage)
             if enable_profiling:
                 i = yappi.get_func_stats()
                 i.print_all(
@@ -149,6 +157,9 @@ class BaseCommand(object):
         )
         group.add_argument("--show-metrics", action="store_true", help="Dump internal metrics")
         group.add_argument("--no-progressbar", action="store_true", help="Disable progressbar")
+        group.add_argument(
+            "--show-usage", action="store_true", help="Dump resource usage statistics"
+        )
 
     def add_arguments(self, parser):
         """
@@ -198,3 +209,31 @@ class BaseCommand(object):
             import progressbar
 
             yield from progressbar.progressbar(iter, max_value=max_value)
+
+    def show_usage(self, start, stop):
+        """
+        Show resource usage
+        :param start:
+        :param stop:
+        :return:
+        """
+        r = [
+            "Resource usage:",
+            f"             User time   : {stop.ru_utime - start.ru_utime:.6f}",
+            f"             System time : {stop.ru_stime - start.ru_stime:.6f}",
+            f"             Max RSS     : {stop.ru_maxrss - start.ru_maxrss}k",
+            f"        Shared mem. size : {stop.ru_ixrss - start.ru_ixrss}k",
+            f"      Unshared mem. size : {stop.ru_idrss - start.ru_idrss}k",
+            f"     Unshared stack size : {stop.ru_isrss - start.ru_isrss}k",
+            f"    Page faults w/o. I/O : {stop.ru_minflt - start.ru_minflt}",
+            f"      Page faults w. I/O : {stop.ru_majflt - start.ru_majflt}",
+            f"               Swap outs : {stop.ru_nswap - start.ru_nswap}",
+            f"               In blocks : {stop.ru_inblock - start.ru_inblock}",
+            f"              Out blocks : {stop.ru_oublock - start.ru_oublock}",
+            f"           Messages sent : {stop.ru_msgsnd - start.ru_msgsnd}",
+            f"       Messages received : {stop.ru_msgrcv - start.ru_msgrcv}",
+            f"                 Signals : {stop.ru_nsignals - start.ru_nsignals}",
+            f"   Voluntary context sw. : {stop.ru_nvcsw - start.ru_nvcsw}",
+            f" Involuntary context sw. : {stop.ru_nivcsw - start.ru_nivcsw}",
+        ]
+        self.print("\n".join(r))
