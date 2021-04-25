@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+import shutil
 import subprocess
 import stat
 from noc.config import config
@@ -43,6 +44,22 @@ def main():
                 except OSError as e:
                     print("ERROR")
                     return
+    # Rust library
+    for f in os.listdir("rust/target/release"):
+        if not f.endswith(".so"):
+            continue
+        so_path = f"rust/target/release/{f}"
+        speedup_path = f"speedup/{f[3:]}"  # remove lib
+        if (
+                not os.path.exists(speedup_path) or
+                os.stat(pyx_path)[stat.ST_MTIME] > os.stat(so_path)[stat.ST_MTIME]
+        ):
+            try:
+                shutil.copyfile(so_path, speedup_path)
+                changed = True
+            except OSError as e:
+                print("ERROR")
+                return
     if changed:
         print("CHANGED")
     else:
