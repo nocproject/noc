@@ -13,7 +13,7 @@ pub enum AgentError {
     // Invalid command line
     #[error("Invalid command line: {0}")]
     CliError(String),
-    // Feature is not implemented
+    // Feature is not implemented still
     #[error("Not implemented")]
     NotImplementedError,
     // Failed to bootstrap
@@ -43,4 +43,7 @@ pub enum AgentError {
     //
     #[error("Internal error: {0}")]
     InternalError(String),
+    // Feature is disabled during compile time
+    #[error("Feature {0} is disabled")]
+    FeatureDisabledError(String),
 }
