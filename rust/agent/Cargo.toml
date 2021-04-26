@@ -26,6 +26,7 @@ default = [
     "config-zk",
     "config-file",
     "config-json",
+    "config-yaml",
 ]
 
 #
@@ -65,6 +66,8 @@ config-zk = ["trust-dns-proto"]
 config-file = []
 # JSON parser
 config-json = ["serde_json"]
+# YAML parser
+config-yaml = ["serde_yaml"]
 
 [dependencies]
 clap = { version = "2.33", default-features = false }
@@ -84,6 +87,7 @@ thiserror = "1.0"
 chrono = {version = "0.4", optional = true}
 trust-dns-proto = {version = "0.20", optional = true}
 serde_json = {version = "1.0", optional = true}
+serde_yaml = {version = "0.8", optional = true}
 systemstat = {version = "0.1", optional = true}
 # Subcrates for procedural macroses
 agent-derive = {path = "libs/agent-derive"}
