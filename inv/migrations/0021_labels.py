@@ -192,7 +192,9 @@ class Migration(BaseMigration):
                         "name": label,
                         "description": self.OBJECTMODEL_TAGS[label],
                         "bg_color1": 15965202,
+                        "fg_color1": 16777215,
                         "bg_color2": 2719929,
+                        "fg_color2": 16777215,
                         "is_protected": False,
                         # Label scope
                         "enable_agent": False,

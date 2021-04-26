@@ -14,12 +14,16 @@ import operator
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, LongField
 import cachetools
+
+# NOC Modules
+from noc.main.models.label import Label
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
 
 
+@Label.match_labels("pool", allowed_op={"="})
 @bi_sync
 @on_delete_check(
     check=[
@@ -28,7 +32,8 @@ id_lock = threading.Lock()
         ("sa.ManagedObject", "fm_pool"),
         ("sa.ManagedObjectSelector", "filter_pool")
         # ("fm.EscalationItem", "administrative_domain")
-    ]
+    ],
+    clean_lazy_labels="pool",
 )
 class Pool(Document):
     meta = {"collection": "noc.pools", "strict": False, "auto_create_index": False}
@@ -78,3 +83,7 @@ class Pool(Document):
                 delta = 0
             self.reschedule_ts[self.id] = t + dt
         return delta
+
+    @classmethod
+    def iter_lazy_labels(cls, pool: "Pool"):
+        yield f"noc::pool::{pool.name}::="

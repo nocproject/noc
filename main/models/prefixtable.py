@@ -22,7 +22,8 @@ from noc.main.models.label import Label
     check=[
         # ("inv.InterfaceClassificationMatch", "prefix_table"),
         ("sa.ManagedObjectSelector", "filter_prefix")
-    ]
+    ],
+    clean_lazy_labels="prefixfilter",
 )
 class PrefixTable(NOCModel):
     class Meta(object):
@@ -59,6 +60,16 @@ class PrefixTable(NOCModel):
         "prefix" in table
         """
         return self.match(other)
+
+    @classmethod
+    def iter_lazy_labels(cls, prefix: str):
+        p = IP.prefix(prefix)
+        for pt in PrefixTablePrefix.objects.filter(afi=p.afi).extra(
+            where=["%s <<= prefix"], params=[prefix]
+        ):
+            yield f"noc::prefixfilter::{pt.table.name}::<"
+            if prefix == pt.prefix:
+                yield f"noc::prefixfilter::{pt.table.name}::="
 
 
 class PrefixTablePrefix(NOCModel):

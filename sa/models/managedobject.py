@@ -14,7 +14,7 @@ import re
 import operator
 from threading import Lock
 import datetime
-from typing import Tuple
+from typing import Tuple, Iterable, List
 
 # Third-party modules
 from django.contrib.postgres.fields import ArrayField
@@ -1772,6 +1772,29 @@ class ManagedObject(NOCModel):
         return "events.%s" % pool, 0
 
     @classmethod
+    def iter_effective_labels(cls, intance: "ManagedObject") -> Iterable[List[str]]:
+        yield intance.labels or []
+        yield list(AdministrativeDomain.iter_lazy_labels(intance.administrative_domain))
+        yield list(Pool.iter_lazy_labels(intance.pool))
+        yield list(ManagedObjectProfile.iter_lazy_labels(intance.object_profile))
+        lazy_profile_labels = list(Profile.iter_lazy_labels(intance.profile))
+        yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
+        if intance.vendor:
+            lazy_vendor_labels = list(Vendor.iter_lazy_labels(intance.vendor))
+            yield Label.ensure_labels(lazy_vendor_labels, enable_managedobject=True)
+        if intance.platform:
+            lazy_platform_labels = list(Platform.iter_lazy_labels(intance.platform))
+            yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
+        if intance.address:
+            yield list(PrefixTable.iter_lazy_labels(intance.address))
+        if intance.vrf:
+            yield list(VRF.iter_lazy_labels(intance.vrf))
+        if intance.vc_domain:
+            yield list(VCDomain.iter_lazy_labels(intance.vc_domain))
+        if intance.tt_system:
+            yield list(TTSystem.iter_lazy_labels(intance.tt_system))
+
+    @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_managedobject")
 
@@ -1896,3 +1919,5 @@ from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
+from noc.main.models.prefixtable import PrefixTable
+from noc.ip.models.vrf import VRF
