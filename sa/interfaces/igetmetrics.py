@@ -13,6 +13,7 @@ from .base import (
     StringParameter,
     FloatParameter,
     StringListParameter,
+    OIDParameter,
 )
 
 
@@ -29,6 +30,8 @@ class IGetMetrics(BaseInterface):
             "metric": StringParameter(),
             # Optional path
             "labels": StringListParameter(required=False),
+            # oid hint
+            "oid": OIDParameter(required=False),
             # ifindex hint
             "ifindex": IntParameter(required=False),
             # SLA probe hint

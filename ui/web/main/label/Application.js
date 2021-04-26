@@ -91,6 +91,9 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_sensorprofile) {
               r.push(__("Sensor Profile"));
             }
+            if (item.data.enable_sensor) {
+              r.push(__("Sensor"));
+            }
             if (item.data.enable_subscriber) {
               r.push(__("Subscriber"));
             }
@@ -424,6 +427,11 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_sensorprofile",
               xtype: "checkbox",
               boxLabel: __("Sensor Profile")
+            },
+            {
+              name: "enable_sensor",
+              xtype: "checkbox",
+              boxLabel: __("Sensor")
             },
             {
               name: "enable_division",

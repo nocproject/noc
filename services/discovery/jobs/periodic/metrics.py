@@ -22,14 +22,18 @@ from bson import ObjectId
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.inv.models.object import Object
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.sensorprofile import SensorProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.sensor import Sensor
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
+from noc.wf.models.state import State
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.hash import hash_str
 
@@ -138,6 +142,8 @@ class MetricsCheck(DiscoveryCheck):
         self.id_count = itertools.count()
         self.id_metrics: Dict[str, MetricConfig] = {}
         self.id_ctx: Dict[str, Dict[str, Any]] = {}
+        # MetricID -> SensorId Map
+        self.sensors_metrics: Dict[str, int] = {}
 
     @staticmethod
     @cachetools.cached({})
@@ -341,7 +347,7 @@ class MetricsCheck(DiscoveryCheck):
                 self.logger.debug(
                     "Probe %s has profile '%s' with no configured metrics. " "Skipping",
                     p["name"],
-                    p.profile.name,
+                    p["profile"],
                 )
                 continue
             for metric in pm:
@@ -365,6 +371,43 @@ class MetricsCheck(DiscoveryCheck):
                 self.id_metrics[m_id] = pm[metric]
         if not metrics:
             self.logger.info("SLA metrics are not configured. Skipping")
+        return metrics
+
+    def get_sensor_metrics(self):
+        metrics = []
+        o = Object.get_managed(self.object).values_list("id")
+        for s in (
+            Sensor._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find(
+                {"object": {"$in": list(o)}, "snmp_oid": {"$exists": True}},
+                {"local_id": 1, "profile": 1, "state": 1, "snmp_oid": 1, "labels": 1, "bi_id": 1},
+            )
+        ):
+            if not s.get("profile"):
+                self.logger.debug("[%s] Sensor has no profile. Skipping", s["name"])
+                continue
+            pm: "SensorProfile" = SensorProfile.get_by_id(s["profile"])
+            if not pm.enable_collect:
+                continue
+            state = State.get_by_id(s["state"])
+            if not state.is_productive:
+                self.logger.debug("[%s] Sensor is not productive state. Skipping", s["name"])
+                continue
+            for mtype in ["Sensor | Value", "Sensor | Status"]:
+                m_id = next(self.id_count)
+                metric = MetricType.get_by_name(mtype)
+                labels = [f'noc::sensor::{s["local_id"]}'] + s.get("labels", [])
+                metrics += [
+                    {
+                        "id": m_id,
+                        "metric": metric.name,
+                        "labels": labels,
+                        "oid": s["snmp_oid"],
+                    }
+                ]
+                self.id_metrics[m_id] = MetricConfig(metric, False, True, True, None)
+                self.sensors_metrics[m_id] = int(s["bi_id"])
         return metrics
 
     def process_result(self, result: List[MData]):
@@ -473,6 +516,8 @@ class MetricsCheck(DiscoveryCheck):
                     record = {"date": tsc[0], "ts": tsc[1], "managed_object": mo_id}
                     if labels:
                         record["labels"] = labels
+                    if m.id in self.sensors_metrics:
+                        record["sensor"] = self.sensors_metrics[m.id]
                     data[cfg.metric_type.scope.table_name][item_hash] = record
                 field = cfg.metric_type.field_name
                 try:
@@ -511,6 +556,7 @@ class MetricsCheck(DiscoveryCheck):
         metrics = self.get_object_metrics()
         metrics += self.get_interface_metrics()
         metrics += self.get_sla_metrics()
+        metrics += self.get_sensor_metrics()
         if not metrics:
             self.logger.info("No metrics configured. Skipping")
             return
