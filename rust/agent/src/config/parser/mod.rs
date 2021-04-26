@@ -1,15 +1,12 @@
 // ---------------------------------------------------------------------
-// agent library
+// Config Parser
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-pub mod agent;
-pub mod cli;
-pub mod collectors;
-pub mod config;
-pub mod error;
-pub mod proto;
-pub mod timing;
-pub mod zk;
+pub mod base;
+pub mod json;
+
+pub use base::{ConfigParser, Parser};
+pub use json::JsonParser;

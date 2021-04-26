@@ -1,15 +1,12 @@
 // ---------------------------------------------------------------------
-// agent library
+// <describe module here>
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-pub mod agent;
-pub mod cli;
-pub mod collectors;
-pub mod config;
-pub mod error;
-pub mod proto;
-pub mod timing;
-pub mod zk;
+pub mod base;
+pub mod file;
+
+pub use base::{ConfigReader, Reader};
+pub use file::FileReader;
