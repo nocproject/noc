@@ -60,6 +60,7 @@ class Label(Document):
     enable_objectmodel = BooleanField()
     enable_platform = BooleanField()
     enable_resourcegroup = BooleanField()
+    enable_sensor = BooleanField()
     enable_sensorprofile = BooleanField()
     #
     enable_subscriber = BooleanField()

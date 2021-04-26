@@ -5,6 +5,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from collections import defaultdict
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.label import Label
@@ -59,3 +61,37 @@ class LabelApplication(ExtDocApplication):
             "total": len(labels),
             "success": True,
         }
+
+    @view(url="^lookup_tree/", method=["GET"], access=True)
+    def api_labels_lookup_tree(self, request):
+        leafs = defaultdict(list)
+        level = 1
+        labels_filter = {}
+        query = request.GET.get("__query")
+        if query:
+            labels_filter["name__icontains"] = query
+        # If not query - return all
+        for ll in Label.objects.filter(**labels_filter).order_by("id"):
+            if ll.is_wildcard:
+                # wildcards[ll.name] =
+                continue
+            path = ll.name.split("::")
+            if ll.is_matched:
+                parent = "::".join(path[: -level - 1])
+            else:
+                parent = "::".join(path[:-level])
+
+            leafs[parent].append(
+                {
+                    "text": ll.name,
+                    # "type": f.type,
+                    "parent": parent,
+                    "id": str(ll.name),
+                    "leaf": True,
+                    "checked": False,
+                }
+            )
+
+        return self.render_json(
+            {"text": "root", "children": [{"text": lf, "children": leafs[lf]} for lf in leafs]}
+        )

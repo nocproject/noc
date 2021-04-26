@@ -10,7 +10,7 @@ import logging
 from threading import Lock
 import operator
 import datetime
-from typing import Dict, Optional
+from typing import Dict, Optional, Iterable, List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -19,6 +19,7 @@ import cachetools
 
 # NOC modules
 from noc.wf.models.state import State
+from noc.main.models.label import Label
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -33,6 +34,7 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
+@Label.model
 @bi_sync
 @workflow
 class Sensor(Document):
@@ -59,6 +61,9 @@ class Sensor(Document):
     snmp_oid = StringField()
     ipmi_id = StringField()
     bi_id = LongField(unique=True)
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -167,3 +172,11 @@ class Sensor(Document):
         for s in sorted(obj_sensors):
             sensor = obj_sensors[s]
             sensor.unseen(source="objectmodel")
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_sensor")
+
+    @classmethod
+    def iter_effective_labels(cls, intance: "Sensor") -> Iterable[List[str]]:
+        yield intance.labels or [] + intance.profile.labels or []

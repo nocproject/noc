@@ -102,6 +102,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_sensor",
+            type: "boolean"
+        },
+        {
             name: "enable_sensorprofile",
             type: "boolean"
         },

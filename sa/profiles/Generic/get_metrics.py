@@ -32,6 +32,7 @@ from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
 from noc.config import config
 from noc.core.perf import metrics as noc_metrics
+from noc.core.mib import mib
 
 NS = 1000000000.0
 SNMP_OVERLOAD_VALUE = 18446744073709551615  # '0xffffffffffffffff' for 64-bit counter
@@ -39,12 +40,13 @@ PROFILES_PATH = os.path.join("sa", "profiles")
 
 
 class MetricConfig(object):
-    __slots__ = ("id", "metric", "labels", "ifindex", "sla_type")
+    __slots__ = ("id", "metric", "labels", "oid", "ifindex", "sla_type")
 
-    def __init__(self, id, metric, labels=None, ifindex=None, sla_type=None):
+    def __init__(self, id, metric, labels=None, oid=None, ifindex=None, sla_type=None):
         self.id = id
         self.metric = metric
         self.labels = labels
+        self.oid = oid
         self.ifindex = ifindex
         self.sla_type = sla_type
 
@@ -312,6 +314,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         * id -- Opaque id, must be returned back
         * metric -- Metric type
         * labels -- metric labels
+        * oid -- optional oid
         * ifindex - optional ifindex
         * sla_test - optional sla test inventory
         """
@@ -564,7 +567,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     )
     def get_interface_lastchange(self, metrics):
         uptime = self.snmp.get("1.3.6.1.2.1.1.3.0")
-        oids = {"1.3.6.1.2.1.2.2.1.9." + str(m.ifindex): m for m in metrics if m.ifindex}
+        oids = {mib["IF-MIB::ifLastChange", str(m.ifindex)]: m for m in metrics if m.ifindex}
         result = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -580,6 +583,22 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 ts=ts,
                 labels=mc.labels,
             )
+
+    @metrics(
+        ["Sensor | Value"],
+        access="S",
+        volatile=False,
+    )
+    def collect_sensor_metrics(self, metrics):
+        for m in metrics:
+            if m.oid:
+                value = self.snmp.get(m.oid)
+                self.set_metric(
+                    id=m.id,
+                    metric=m.metric,
+                    labels=m.labels,
+                    value=value,
+                )
 
     # @metrics(
     #     [
