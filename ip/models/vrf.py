@@ -35,6 +35,7 @@ from noc.core.datastream.decorator import datastream
 id_lock = Lock()
 
 
+@Label.match_labels("ipvrf", allowed_op={"="})
 @Label.model
 @full_text_search
 @on_init
@@ -50,7 +51,8 @@ id_lock = Lock()
         ("sa.ManagedObject", "vrf"),
         ("sa.ManagedObjectSelector", "filter_vrf"),
         ("vc.VCBindFilter", "vrf"),
-    ]
+    ],
+    clean_lazy_labels="ipvrf",
 )
 class VRF(NOCModel):
     """
@@ -254,3 +256,7 @@ class VRF(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_vrf")
+
+    @classmethod
+    def iter_lazy_labels(cls, vrf: "VRF"):
+        yield f"noc::ipvrf::{vrf.name}::="

@@ -33,7 +33,8 @@ id_lock = threading.Lock()
         ("inv.Firmware", "vendor"),
         ("sa.ManagedObject", "vendor"),
         ("sa.ManagedObjectSelector", "filter_vendor"),
-    ]
+    ],
+    clean_lazy_labels="vendor",
 )
 class Vendor(Document):
     """
@@ -146,3 +147,7 @@ class Vendor(Document):
                 return vendor
             except NotUniqueError:
                 pass  # Already created by concurrent process, reread
+
+    @classmethod
+    def iter_lazy_labels(cls, vendor: "Vendor"):
+        yield f"noc::vendor::{vendor.name}::="

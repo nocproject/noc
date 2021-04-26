@@ -60,6 +60,7 @@ m_valid = DictListParameter(
 id_lock = Lock()
 
 
+@Label.match_labels("managedobjectprofile", allowed_op={"="})
 @Label.model
 @on_init
 @on_save
@@ -71,7 +72,8 @@ id_lock = Lock()
         ("sa.ManagedObjectProfile", "cpe_profile"),
         ("sa.ManagedObjectSelector", "filter_object_profile"),
         ("inv.FirmwarePolicy", "object_profile"),
-    ]
+    ],
+    clean_lazy_labels="managedobjectprofile",
 )
 class ManagedObjectProfile(NOCModel):
     class Meta(object):
@@ -771,6 +773,10 @@ class ManagedObjectProfile(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_managedobjectprofile")
+
+    @classmethod
+    def iter_lazy_labels(cls, object_profile: "ManagedObjectProfile"):
+        yield f"noc::managedobjectprofile::{object_profile.name}::="
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

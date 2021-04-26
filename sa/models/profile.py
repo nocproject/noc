@@ -100,3 +100,7 @@ class Profile(Document):
         if not hasattr(cls, "_generic_profile_id"):
             cls._generic_profile_id = Profile.objects.filter(name=GENERIC_PROFILE).first().id
         return cls._generic_profile_id
+
+    @classmethod
+    def iter_lazy_labels(cls, profile: "Profile"):
+        yield f"noc::profile::{profile.name}::="

@@ -124,7 +124,9 @@ class Migration(BaseMigration):
                     "name": label,
                     "description": "",
                     "bg_color1": 8359053,
+                    "fg_color1": 16777215,
                     "bg_color2": 8359053,
+                    "fg_color2": 16777215,
                     "is_protected": False,
                     # Label scope
                     "enable_agent": False,
