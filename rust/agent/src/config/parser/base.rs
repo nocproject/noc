@@ -6,11 +6,13 @@
 // ---------------------------------------------------------------------
 
 use super::JsonParser;
+use super::YamlParser;
 use crate::error::AgentError;
 use crate::zk::ZkConfig;
 
 pub enum ConfigParser {
     Json(JsonParser),
+    Yaml(YamlParser),
 }
 
 pub trait Parser {
@@ -27,6 +29,9 @@ impl ConfigParser {
         let d = data.as_slice();
         if JsonParser::is_valid_extension(e) {
             return JsonParser::parse(d);
+        }
+        if YamlParser::is_valid_extension(e) {
+            return YamlParser::parse(d);
         }
         Err(AgentError::ParseError("Unknown format".to_string()))
     }
