@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,10 +33,10 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         platform = "Comware"
         version = "Unknown"
+        s = ""
 
         v = self.cli("display version")
         match = self.rx_version_HP.search(v)
-        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 37]) if self.has_snmp() else None
         if match:
             version = match.group("version")
         match = self.rx_platform_HP.search(v)
@@ -49,13 +49,16 @@ class Script(BaseScript):
                 if match:
                     platform = match.group("platform")
                     s = match.group("serial")
-            except Exception:
+            except self.CLISyntaxError:
                 pass
         r = {"vendor": "HP", "platform": platform, "version": version, "attributes": {}}
         if not s and self.has_snmp():
-            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
-            if not s:
-                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 2])
+            try:
+                for oid, s in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
+                    if s:
+                        break
+            except (self.snmp.TimeOutError, self.snmp.SNMPError):
+                pass
         if s:
             r["attributes"]["Serial Number"] = s
         return r
