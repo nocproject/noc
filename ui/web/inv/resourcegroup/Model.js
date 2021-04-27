@@ -29,6 +29,14 @@ Ext.define("NOC.inv.resourcegroup.Model", {
             persist: false
         },
         {
+            name: "dynamic_service_labels",
+            type: "auto"
+        },
+        {
+            name: "dynamic_client_labels",
+            type: "auto"
+        },
+        {
             name: "bi_id",
             type: "int",
             persist: false

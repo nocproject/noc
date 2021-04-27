@@ -83,6 +83,20 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "dynamic_service_labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Dynamic Service Labels"),
+                    allowBlank: true,
+                    uiStyle: "extra"
+                },
+                {
+                    name: "dynamic_client_labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Dynamic Client Labels"),
+                    allowBlank: true,
+                    uiStyle: "extra"
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),
