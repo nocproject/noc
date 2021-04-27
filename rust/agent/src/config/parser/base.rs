@@ -7,8 +7,8 @@
 
 use super::JsonParser;
 use super::YamlParser;
+use crate::config::ZkConfig;
 use crate::error::AgentError;
-use crate::zk::ZkConfig;
 
 pub enum ConfigParser {
     Json(JsonParser),

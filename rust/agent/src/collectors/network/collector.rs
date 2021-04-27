@@ -5,8 +5,8 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
-use crate::zk::ZkConfigCollector;
 use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use std::convert::TryFrom;

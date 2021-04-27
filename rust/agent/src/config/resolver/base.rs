@@ -8,8 +8,8 @@
 use super::{StaticResolver, ZkResolver};
 use crate::cli::CliArgs;
 use crate::config::ConfigReader;
+use crate::config::ZkConfig;
 use crate::error::AgentError;
-use crate::zk::ZkConfig;
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 use std::convert::TryFrom;

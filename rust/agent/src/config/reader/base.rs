@@ -6,8 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::FileReader;
+use crate::config::ZkConfig;
 use crate::error::AgentError;
-use crate::zk::ZkConfig;
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 

@@ -6,9 +6,9 @@
 // ---------------------------------------------------------------------
 
 use crate::collectors::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::timing::Timing;
-use crate::zk::ZkConfigCollector;
 use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use std::convert::TryFrom;

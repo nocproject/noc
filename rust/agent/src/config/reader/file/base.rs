@@ -7,8 +7,8 @@
 
 use super::super::Reader;
 use crate::config::ConfigParser;
+use crate::config::ZkConfig;
 use crate::error::AgentError;
-use crate::zk::ZkConfig;
 use async_trait::async_trait;
 use std::fs;
 use std::path::Path;
