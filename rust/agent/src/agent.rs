@@ -8,14 +8,15 @@
 use crate::cli::CliArgs;
 use crate::collectors::{Collectors, Runnable};
 use crate::config::{ConfigResolver, Reader, Resolver};
+use crate::config::{ZkConfig, ZkConfigCollector};
 use crate::error::AgentError;
-use crate::zk::{ZkConfig, ZkConfigCollector};
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::sync::Arc;
 use tokio::{runtime::Runtime, task::JoinHandle};
 
 pub struct RunningCollector {
+    #[allow(dead_code)]
     collector: Arc<Collectors>,
     handle: JoinHandle<()>,
 }

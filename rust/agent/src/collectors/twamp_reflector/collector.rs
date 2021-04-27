@@ -5,6 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 use super::super::{CollectorConfig, Id, Runnable};
+use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::proto::connection::Connection;
 use crate::proto::twamp::{
@@ -12,7 +13,6 @@ use crate::proto::twamp::{
     StartSessions, StopSessions, TestRequest, TestResponse, DEFAULT_COUNT, MODE_UNAUTHENTICATED,
 };
 use crate::proto::udp::UdpConnection;
-use crate::zk::ZkConfigCollector;
 use agent_derive::Id;
 use async_trait::async_trait;
 use bytes::Bytes;

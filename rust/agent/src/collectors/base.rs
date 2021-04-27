@@ -5,8 +5,8 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
+use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
-use crate::zk::ZkConfigCollector;
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 use rand::Rng;

@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------
 
 use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::proto::connection::Connection;
 use crate::proto::frame::{FrameReader, FrameWriter};
@@ -17,7 +18,6 @@ use crate::proto::twamp::{
     MODE_UNAUTHENTICATED,
 };
 use crate::timing::Timing;
-use crate::zk::ZkConfigCollector;
 use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};

@@ -6,8 +6,8 @@
 // ---------------------------------------------------------------------
 
 use super::super::Parser;
+use crate::config::ZkConfig;
 use crate::error::AgentError;
-use crate::zk::ZkConfig;
 
 pub struct YamlParser;
 
