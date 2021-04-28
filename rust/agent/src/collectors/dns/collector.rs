@@ -5,6 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
+use super::DnsOut;
 use crate::collectors::{Collectable, CollectorConfig, Id, Repeatable, Status};
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
@@ -13,16 +14,18 @@ use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use std::convert::TryFrom;
 use std::str::FromStr;
-use std::time::Duration;
 use std::time::Instant;
 use trust_dns_proto::rr::record_type::RecordType;
 use trust_dns_proto::xfer::dns_request::DnsRequestOptions;
 use trust_dns_resolver::TokioAsyncResolver;
 
+const NAME: &str = "dns";
+
 #[derive(Id, Repeatable)]
 pub struct DnsCollector {
     pub id: String,
     pub interval: u64,
+    pub labels: Vec<String>,
     pub query: String,
     pub query_type: String,
     pub record_type: RecordType,
@@ -38,6 +41,7 @@ impl TryFrom<&ZkConfigCollector> for DnsCollector {
             CollectorConfig::Dns(config) => Ok(Self {
                 id: value.id.clone(),
                 interval: value.interval,
+                labels: value.labels.clone(),
                 query: config.query.clone(),
                 query_type: config.query_type.clone(),
                 record_type: RecordType::from_str(&config.query_type)
@@ -58,6 +62,7 @@ impl Collectable for DnsCollector {
         let mut success: usize = 0;
         let mut timing = Timing::new();
         let total = self.n;
+        let ts = self.get_timestamp();
         for i in 0..total {
             log::debug!(
                 "[{}] {} lookup #{}: {}",
@@ -86,17 +91,21 @@ impl Collectable for DnsCollector {
         }
         timing.done();
         let failed = self.n - success;
-        log::debug!(
-            "[{}] total/success/failed={}/{}/{}, min/max/avg/jitter={:?}/{:?}/{:?}/{:?}",
-            &self.id,
+        self.feed(&DnsOut {
+            // Common
+            ts: ts.clone(),
+            collector: NAME,
+            labels: self.labels.clone(),
+            // Metrics
             total,
             success,
             failed,
-            Duration::from_nanos(timing.min_ns),
-            Duration::from_nanos(timing.max_ns),
-            Duration::from_nanos(timing.avg_ns),
-            Duration::from_nanos(timing.jitter_ns),
-        );
+            min_ns: timing.min_ns,
+            max_ns: timing.max_ns,
+            avg_ns: timing.avg_ns,
+            jitter_ns: timing.jitter_ns,
+        })
+        .await?;
         Ok(Status::Ok)
     }
 }

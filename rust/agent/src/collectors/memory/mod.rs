@@ -6,7 +6,11 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
+mod platform;
 pub use config::MemoryConfig;
+pub use out::MemoryOut;
+pub use platform::PlatformMemoryOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "memory")] {

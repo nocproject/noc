@@ -8,10 +8,13 @@
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use async_trait::async_trait;
+use chrono::{DateTime, SecondsFormat, Utc};
 use enum_dispatch::enum_dispatch;
 use rand::Rng;
+use serde::Serialize;
 use std::convert::TryFrom;
 use std::marker::PhantomData;
+use std::time::SystemTime;
 use tokio::time::Duration;
 
 #[derive(Debug)]
@@ -36,6 +39,22 @@ pub trait Runnable {
 /// Must be used along with Id and Repeatable traits
 #[async_trait]
 pub trait Collectable {
+    // Get current timestamp in RFC-3339 format
+    fn get_timestamp(&self) -> String {
+        let t: DateTime<Utc> = SystemTime::now().into();
+        t.to_rfc3339_opts(SecondsFormat::Millis, false)
+    }
+    // Feed collected data
+    async fn feed<T>(&self, data: &T) -> Result<(), AgentError>
+    where
+        T: Serialize + Sync,
+    {
+        let out = serde_json::to_string(data)
+            .map_err(|e| AgentError::SerializationError(e.to_string()))?;
+        log::debug!("Out: {}", out);
+        Ok(())
+    }
+    // Collection cycle
     async fn collect(&self) -> Result<Status, AgentError>;
 }
 

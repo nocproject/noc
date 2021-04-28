@@ -1,6 +1,6 @@
 [package]
 name = "agent"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["The NOC Project"]
 edition = "2018"
 description = "NOC Agent"
@@ -48,9 +48,9 @@ test = []
 # modbus_serial collector
 # modbus_serial = []
 # twamp-sender collector
-twamp-sender = ["chrono"]
+twamp-sender = []
 # twamp-reflector collector
-twamp-reflector = ["chrono"]
+twamp-reflector = []
 # uptime collector
 uptime = ["systemstat"]
 
@@ -70,6 +70,7 @@ config-json = ["serde_json"]
 config-yaml = ["serde_yaml"]
 
 [dependencies]
+chrono = "0.4"
 clap = { version = "2.33", default-features = false }
 log = "0.4"
 env_logger = "0.8"
@@ -84,7 +85,6 @@ rand = "0.8"
 lazy_static = "1.4"
 thiserror = "1.0"
 # Optional dependencies
-chrono = {version = "0.4", optional = true}
 trust-dns-proto = {version = "0.20", optional = true}
 serde_json = {version = "1.0", optional = true}
 serde_yaml = {version = "0.8", optional = true}

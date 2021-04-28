@@ -6,7 +6,9 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
 pub use config::UptimeConfig;
+pub use out::UptimeOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "uptime")] {

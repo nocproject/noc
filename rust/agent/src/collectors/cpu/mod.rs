@@ -6,7 +6,11 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
+mod platform;
 pub use config::CpuConfig;
+pub use out::CpuOut;
+pub use platform::PlatformCpuOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "cpu")] {
