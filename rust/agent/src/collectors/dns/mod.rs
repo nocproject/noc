@@ -6,7 +6,9 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
 pub use config::DnsConfig;
+pub use out::DnsOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "dns")] {

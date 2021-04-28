@@ -6,7 +6,9 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
 pub use config::NetworkConfig;
+pub use out::NetworkOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "network")] {

@@ -6,7 +6,9 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
 pub use config::TwampSenderConfig;
+pub use out::TwampSenderOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "twamp-sender")] {

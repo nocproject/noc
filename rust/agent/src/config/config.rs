@@ -36,6 +36,8 @@ pub struct ZkConfigCollector {
     pub interval: u64,
     #[serde(default)]
     pub disabled: bool,
+    #[serde(default)]
+    pub labels: Vec<String>,
     #[serde(flatten)]
     pub config: CollectorConfig,
 }

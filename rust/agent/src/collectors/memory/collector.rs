@@ -5,6 +5,7 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::{MemoryOut, PlatformMemoryOut};
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use agent_derive::{Id, Repeatable};
@@ -12,10 +13,13 @@ use async_trait::async_trait;
 use std::convert::TryFrom;
 use systemstat::{Platform, System};
 
+const NAME: &str = "memory";
+
 #[derive(Id, Repeatable)]
 pub struct MemoryCollector {
     pub id: String,
     pub interval: u64,
+    pub labels: Vec<String>,
 }
 
 impl TryFrom<&ZkConfigCollector> for MemoryCollector {
@@ -26,6 +30,7 @@ impl TryFrom<&ZkConfigCollector> for MemoryCollector {
             CollectorConfig::Memory(_) => Ok(Self {
                 id: value.id.clone(),
                 interval: value.interval,
+                labels: value.labels.clone(),
             }),
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
@@ -36,10 +41,22 @@ impl TryFrom<&ZkConfigCollector> for MemoryCollector {
 impl Collectable for MemoryCollector {
     async fn collect(&self) -> Result<Status, AgentError> {
         let sys = System::new();
+        let ts = self.get_timestamp();
         let memory = sys
             .memory()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
-        log::debug!("Memory usage: {:?}", memory);
+        self.feed(&MemoryOut {
+            // Common
+            ts: ts.clone(),
+            collector: NAME,
+            labels: self.labels.clone(),
+            //
+            total: memory.total.as_u64(),
+            free: memory.free.as_u64(),
+            //
+            platform: PlatformMemoryOut::try_from(&memory.platform_memory)?,
+        })
+        .await?;
         Ok(Status::Ok)
     }
 }

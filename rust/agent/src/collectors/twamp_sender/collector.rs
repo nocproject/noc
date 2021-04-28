@@ -6,12 +6,13 @@
 // ---------------------------------------------------------------------
 
 use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::TwampSenderOut;
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::proto::connection::Connection;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use crate::proto::pktmodel::{GetPacket, PacketModels};
-use crate::proto::tos::dscp_to_tos;
+use crate::proto::tos::{dscp_to_tos, tos_to_dscp};
 use crate::proto::twamp::{
     AcceptSession, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, UtcDateTime, ACCEPT_OK, MODE_REFUSED,
@@ -31,10 +32,13 @@ use tokio::{
     time::timeout,
 };
 
+const NAME: &str = "twamp_sender";
+
 #[derive(Id, Repeatable)]
 pub struct TwampSenderCollector {
     pub id: String,
     pub interval: u64,
+    pub labels: Vec<String>,
     pub server: String,
     pub port: u16,
     pub n_packets: usize,
@@ -50,6 +54,7 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
             CollectorConfig::TwampSender(config) => Ok(Self {
                 id: value.id.clone(),
                 interval: value.interval,
+                labels: value.labels.clone(),
                 server: config.server.clone(),
                 port: config.port,
                 n_packets: config.n_packets,
@@ -68,13 +73,16 @@ impl Collectable for TwampSenderCollector {
         //
         log::debug!("[{}] Connecting {}:{}", self.id, self.server, self.port);
         let stream = TcpStream::connect(format!("{}:{}", self.server, self.port)).await?;
-        TestSession::new(stream, self.model)
+        let out = TestSession::new(stream, self.model)
             .with_id(self.id.clone())
+            .with_ts(self.get_timestamp())
+            .with_labels(&self.labels)
             .with_tos(self.tos)
             .with_reflector_addr(self.server.clone())
             .with_n_packets(self.n_packets)
             .run()
             .await?;
+        self.feed(&out).await?;
         Ok(Status::Ok)
     }
 }
@@ -87,6 +95,8 @@ struct TestSession {
     reflector_port: u16,
     n_packets: usize,
     model: PacketModels,
+    labels: Option<Vec<String>>,
+    ts: Option<String>,
 }
 
 impl TestSession {
@@ -95,14 +105,24 @@ impl TestSession {
             id: String::new(),
             connection: Connection::new(stream),
             tos: 0,
+            ts: None,
             reflector_addr: String::new(),
             reflector_port: 0,
             n_packets: 0,
             model,
+            labels: None,
         }
     }
     pub fn with_id(&mut self, id: String) -> &mut Self {
         self.id = id;
+        self
+    }
+    pub fn with_labels(&mut self, labels: &Vec<String>) -> &mut Self {
+        self.labels = Some(labels.clone());
+        self
+    }
+    pub fn with_ts(&mut self, ts: String) -> &mut Self {
+        self.ts = Some(ts);
         self
     }
     pub fn with_tos(&mut self, tos: u8) -> &mut Self {
@@ -121,7 +141,7 @@ impl TestSession {
         log::debug!("[{}] Setting reflector port to {}", self.id, port);
         self.reflector_port = port;
     }
-    pub async fn run(&mut self) -> Result<(), AgentError> {
+    pub async fn run(&mut self) -> Result<TwampSenderOut, AgentError> {
         log::debug!("[{}] Connected", self.id);
         // Control messages timeout, 3 seconds by default
         let ctl_timeout = Duration::from_nanos(3_000_000_000);
@@ -132,9 +152,9 @@ impl TestSession {
         self.recv_accept_session(ctl_timeout).await?;
         self.send_start_sessions().await?;
         self.recv_start_ack(ctl_timeout).await?;
-        self.run_test().await?;
+        let out = self.run_test().await?;
         self.send_stop_sessions().await?;
-        Ok(())
+        Ok(out)
     }
     async fn recv_server_greeting(&mut self, t: Duration) -> Result<(), AgentError> {
         log::debug!("[{}] Waiting for Server-Greeting", self.id);
@@ -227,7 +247,7 @@ impl TestSession {
         self.connection.write_frame(&req).await?;
         Ok(())
     }
-    async fn run_test(&mut self) -> Result<(), AgentError> {
+    async fn run_test(&mut self) -> Result<TwampSenderOut, AgentError> {
         log::debug!("[{}] Running test", self.id);
         let socket = UdpSocket::bind("0.0.0.0:0").await?;
         // Test request TTL must be set to 255
@@ -256,9 +276,10 @@ impl TestSession {
             )
         );
         if let (Ok(r_stats), Ok(s_stats)) = (recv_result, sender_result) {
-            TestSession::process_stats(s_stats, r_stats)
+            self.process_stats(s_stats, r_stats)
+        } else {
+            Err(AgentError::InternalError("result is not ready".to_string()))
         }
-        Ok(())
     }
     async fn run_test_sender(
         id: String,
@@ -514,7 +535,11 @@ impl TestSession {
         }
         format!("{}ns", v)
     }
-    fn process_stats(s_stats: SenderStats, r_stats: ReceiverStats) {
+    fn process_stats(
+        &self,
+        s_stats: SenderStats,
+        r_stats: ReceiverStats,
+    ) -> Result<TwampSenderOut, AgentError> {
         let total = s_stats.pkt_sent as f64;
         let in_bitrate =
             (r_stats.in_octets as f64 * 8.0 / (r_stats.time_ns as f64 / 1_000_000_000.0)) as u64;
@@ -567,6 +592,45 @@ impl TestSession {
             jitter = Self::humanize_ns(r_stats.rt_timing.jitter_ns),
             loss = (r_stats.rt_loss as f64) * 100.0 / total,
         );
+        // Prepare result
+        let mut labels = self.labels.as_ref().unwrap().clone();
+        labels.push(format!(
+            "noc::dscp::{}",
+            tos_to_dscp(self.tos).unwrap_or("be").to_string()
+        ));
+        Ok(TwampSenderOut {
+            ts: self.ts.as_ref().unwrap().into(),
+            collector: NAME,
+            labels,
+            //
+            tx_packets: s_stats.pkt_sent,
+            rx_packets: r_stats.pkt_received,
+            tx_bytes: s_stats.out_octets,
+            rx_bytes: r_stats.in_octets,
+            duration_ns: s_stats.time_ns,
+            tx_pps: out_pps,
+            rx_pps: in_pps,
+            tx_bitrate: out_bitrate,
+            rx_bitrate: in_bitrate,
+            // Inbound
+            in_min_delay_ns: r_stats.in_timing.min_ns,
+            in_max_delay_ns: r_stats.in_timing.max_ns,
+            in_avg_delay_ns: r_stats.in_timing.avg_ns,
+            in_jitter_ns: r_stats.in_timing.jitter_ns,
+            in_loss: r_stats.in_loss,
+            // Outbound
+            out_min_delay_ns: r_stats.out_timing.min_ns,
+            out_max_delay_ns: r_stats.out_timing.max_ns,
+            out_avg_delay_ns: r_stats.out_timing.avg_ns,
+            out_jitter_ns: r_stats.out_timing.jitter_ns,
+            out_loss: r_stats.out_loss,
+            // Round-trip
+            rt_min_delay_ns: r_stats.rt_timing.min_ns,
+            rt_max_delay_ns: r_stats.rt_timing.max_ns,
+            rt_avg_delay_ns: r_stats.rt_timing.avg_ns,
+            rt_jitter_ns: r_stats.rt_timing.jitter_ns,
+            rt_loss: r_stats.rt_loss,
+        })
     }
 }
 
