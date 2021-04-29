@@ -28,7 +28,7 @@ import cachetools
 from typing import Iterable, Tuple
 
 # NOC modules
-from noc.gis.models.layer import Layer
+from noc.gis.models.layer import Layer, DEFAULT_ZOOM
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.copy import deep_merge
 from noc.core.middleware.tls import get_user
@@ -196,7 +196,7 @@ class Object(Document):
             mos = get_coordless_objects(self)
             if mos:
                 ManagedObject.objects.filter(container__in=mos).update(
-                    x=x, y=y, default_zoom=self.layer.default_zoom
+                    x=x, y=y, default_zoom=self.layer.default_zoom if self.layer else DEFAULT_ZOOM
                 )
         if self._created:
             if self.container:
@@ -697,7 +697,7 @@ class Object(Document):
         while c:
             if c.point and c.layer:
                 x, y = c.get_data_tuple("geopoint", ("x", "y"))
-                zoom = c.layer.default_zoom or 11
+                zoom = c.layer.default_zoom or DEFAULT_ZOOM
                 return x, y, zoom
             if c.container:
                 c = Object.get_by_id(c.container.id)
