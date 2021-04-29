@@ -117,8 +117,8 @@ impl TestSession {
         self.id = id;
         self
     }
-    pub fn with_labels(&mut self, labels: &Vec<String>) -> &mut Self {
-        self.labels = Some(labels.clone());
+    pub fn with_labels(&mut self, labels: &[String]) -> &mut Self {
+        self.labels = Some(labels.to_owned());
         self
     }
     pub fn with_ts(&mut self, ts: String) -> &mut Self {
@@ -276,7 +276,7 @@ impl TestSession {
             )
         );
         if let (Ok(r_stats), Ok(s_stats)) = (recv_result, sender_result) {
-            self.process_stats(s_stats, r_stats)
+            Ok(self.process_stats(s_stats, r_stats))
         } else {
             Err(AgentError::InternalError("result is not ready".to_string()))
         }
@@ -535,11 +535,7 @@ impl TestSession {
         }
         format!("{}ns", v)
     }
-    fn process_stats(
-        &self,
-        s_stats: SenderStats,
-        r_stats: ReceiverStats,
-    ) -> Result<TwampSenderOut, AgentError> {
+    fn process_stats(&self, s_stats: SenderStats, r_stats: ReceiverStats) -> TwampSenderOut {
         let total = s_stats.pkt_sent as f64;
         let in_bitrate =
             (r_stats.in_octets as f64 * 8.0 / (r_stats.time_ns as f64 / 1_000_000_000.0)) as u64;
@@ -598,7 +594,7 @@ impl TestSession {
             "noc::dscp::{}",
             tos_to_dscp(self.tos).unwrap_or("be").to_string()
         ));
-        Ok(TwampSenderOut {
+        TwampSenderOut {
             ts: self.ts.as_ref().unwrap().into(),
             collector: NAME,
             labels,
@@ -630,7 +626,7 @@ impl TestSession {
             rt_avg_delay_ns: r_stats.rt_timing.avg_ns,
             rt_jitter_ns: r_stats.rt_timing.jitter_ns,
             rt_loss: r_stats.rt_loss,
-        })
+        }
     }
 }
 

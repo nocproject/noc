@@ -13,10 +13,7 @@ pub struct JsonParser;
 
 impl Parser for JsonParser {
     fn is_valid_extension(ext: &str) -> bool {
-        match ext {
-            "json" => true,
-            _ => false,
-        }
+        matches!(ext, "json")
     }
     fn parse(data: &[u8]) -> Result<ZkConfig, AgentError> {
         match serde_json::from_slice(data) {

@@ -54,7 +54,7 @@ impl Resolver for ZkResolver {
         // Try to read state
         if let Some(url) = self.get_bootstrap_state() {
             log::info!("Setting zeroconf url to {}", url);
-            self.zeroconf_url = Some(url.into());
+            self.zeroconf_url = Some(url);
             return Ok(());
         }
         //
@@ -69,7 +69,7 @@ impl Resolver for ZkResolver {
     fn get_reader(&self) -> Result<ConfigReader, AgentError> {
         match &self.zeroconf_url {
             Some(url) => ConfigReader::from_url(url.into())
-                .ok_or(AgentError::ConfigurationError("Invalid schema".to_string())),
+                .ok_or_else(|| AgentError::ConfigurationError("Invalid schema".to_string())),
             None => Err(AgentError::ConfigurationError(
                 "Zeroconf url is not resolved".to_string(),
             )),
@@ -112,7 +112,7 @@ impl ZkResolver {
         }
     }
     // Set bootstrap state
-    fn set_bootstrap_state(&self, url: &String) -> Result<(), AgentError> {
+    fn set_bootstrap_state(&self, url: &str) -> Result<(), AgentError> {
         fs::write(&self.state_path, url)?;
         Ok(())
     }

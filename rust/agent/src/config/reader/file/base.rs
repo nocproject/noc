@@ -23,9 +23,9 @@ impl Reader for FileReader {
         log::debug!("Reading config file: {}", self.path);
         match Path::new(&self.path).extension() {
             Some(ext) => {
-                let x = ext.to_str().ok_or(AgentError::ConfigurationError(
-                    "Cannot parse extension".to_string(),
-                ))?;
+                let x = ext.to_str().ok_or_else(|| {
+                    AgentError::ConfigurationError("Cannot parse extension".to_string())
+                })?;
                 let data = fs::read(&self.path)?;
                 ConfigParser::from_ext(data, x.into())
             }
