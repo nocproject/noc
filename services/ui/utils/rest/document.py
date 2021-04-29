@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Union, Any, Optional, TypeVar, List, Dict
+from typing import Union, Any, Optional, TypeVar, List, Dict, Callable
 from http import HTTPStatus
 
 # Third-party modules
@@ -47,9 +47,18 @@ class DocumentResourceAPI(BaseResourceAPI[T]):
         return self.queryset(user).count()
 
     def get_items(
-        self, user: User, limit: int = config.ui.max_rest_limit, offset: int = 0
+        self,
+        user: User,
+        limit: int = config.ui.max_rest_limit,
+        offset: int = 0,
+        transforms: Optional[List[Callable]] = None,
     ) -> List[T]:
-        return self.queryset(user)[offset : offset + limit]
+        qs = self.queryset(user)
+        if transforms:
+            for t in transforms:
+                qs = t(qs)
+        qs = qs[offset : offset + limit]
+        return qs
 
     def get_item(self, id: str, user: User) -> Optional[T]:
         return self.queryset(user).filter(pk=id).first()

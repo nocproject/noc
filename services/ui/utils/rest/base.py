@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import typing
 from typing import Any, Optional, Callable, Dict, DefaultDict, TypeVar, Generic, List, Iterable
 import inspect
 from http import HTTPStatus
@@ -14,7 +15,7 @@ from collections import defaultdict
 
 # Third-party modules
 from pydantic import BaseModel
-from fastapi import APIRouter, HTTPException, Security, Response
+from fastapi import APIRouter, HTTPException, Security, Response, Depends
 
 # NOC modules
 from noc.config import config
@@ -22,6 +23,7 @@ from noc.aaa.models.user import User
 from noc.core.service.deps.user import get_user_scope
 from ...models.label import LabelItem
 from ...models.status import StatusResponse
+from .op import ListOp
 
 
 T = TypeVar("T")  # , bound=Model)
@@ -50,6 +52,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
 
     prefix: str
     model: T
+    list_ops: List[ListOp] = []
 
     def __init__(self):
         if not getattr(self, "prefix", None):
@@ -152,7 +155,11 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     def get_items(
-        self, user: User, limit: int = config.ui.max_rest_limit, offset: int = 0
+        self,
+        user: User,
+        limit: int = config.ui.max_rest_limit,
+        offset: int = 0,
+        transforms: Optional[List[Callable]] = None,
     ) -> List[T]:
         """
         Get list of items, satisfying criteria
@@ -231,15 +238,40 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         return "delete_item" not in self.__abstractmethods__
 
     def setup_view(self, view: str) -> None:
+        def get_list_dep() -> Callable:
+            """
+            Generate dependencies for additional operations
+            :return:
+            """
+            args = []
+            body = ["    r = {}"]
+            # Apply list ops as annotations
+            for list_op in self.list_ops:
+                args += [f"{list_op.name}: Optional[str] = None"]
+                body += [
+                    f"    if {list_op.name} is not None:",
+                    f'        r["{list_op.name}"] = {list_op.name}',
+                ]
+            code = [f"def inner({', '.join(args)}) -> dict:"] + body + ["    return r"]
+            r = {"Optional": typing.Optional}
+            exec("\n".join(code), {}, r)
+            return r["inner"]
+
         def inner_list(
             response: Response,
             limit: int = config.ui.max_rest_limit,
             offset: int = 0,
+            ops: dict = Depends(get_list_dep()),
             user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)]),
         ):
             total = self.get_total_items(user)
             if total:
-                items = self.get_items(user=user, limit=limit, offset=offset)
+                items = self.get_items(
+                    user=user,
+                    limit=limit,
+                    offset=offset,
+                    transforms=[list_ops_map[op].get_transform(v) for op, v in ops.items()],
+                )
             else:
                 items = []
             # Set headers
@@ -272,6 +304,8 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         sig = inspect.signature(fmt)
         if sig.return_annotation is BaseModel:
             raise ValueError(f"item_to_{view} has incorrect return type annotation")
+        # Additional operations mappings
+        list_ops_map: Dict[str, ListOp] = {x.name: x for x in self.list_ops}
         # List
         for path in iter_list_paths():
             # List
