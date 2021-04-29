@@ -22,6 +22,8 @@ from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
+DEFAULT_ZOOM = 11
+
 
 @on_delete_check(check=[("inv.Object", "layer")])
 class Layer(Document):
