@@ -72,18 +72,11 @@ impl Collectable for FsCollector {
 impl FsCollector {
     // Filter out internal filesystems
     #[cfg(target_os = "linux")]
-    fn is_ignored_fs_type(fs_type: &String) -> bool {
-        match &fs_type[..] {
-            "proc" => true,
-            "devpts" => true,
-            "sysfs" => true,
-            "cgroup" => true,
-            "overlay" => true,
-            _ => false,
-        }
+    fn is_ignored_fs_type(fs_type: &str) -> bool {
+        matches!(fs_type, "proc" | "devpts" | "sysfs" | "cgroup" | "overlay")
     }
     #[cfg(not(target_os = "linux"))]
-    fn is_ignored_fs_type(fs_type: &String) -> bool {
+    fn is_ignored_fs_type(fs_type: &str) -> bool {
         false
     }
 }

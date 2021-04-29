@@ -13,11 +13,7 @@ pub struct YamlParser;
 
 impl Parser for YamlParser {
     fn is_valid_extension(ext: &str) -> bool {
-        match ext {
-            "yml" => true,
-            "yaml" => true,
-            _ => false,
-        }
+        matches!(ext, "yml" | "yaml")
     }
     fn parse(data: &[u8]) -> Result<ZkConfig, AgentError> {
         match serde_yaml::from_slice(data) {
