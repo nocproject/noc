@@ -13,11 +13,13 @@ from ..models.administrativedomain import (
 )
 from ..utils.ref import get_reference
 from ..utils.rest.model import ModelResourceAPI
+from ..utils.rest.op import FilterExact
 
 
 class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
     prefix = "/api/ui/administrativedomain"
     model = AdministrativeDomain
+    list_ops = [FilterExact("name")]
 
     @classmethod
     def item_to_default(cls, item: AdministrativeDomain) -> DefaultAdministrativeDomainItem:
