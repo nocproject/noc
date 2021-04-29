@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------
 
 pub mod base;
+pub mod block_io;
 pub mod cpu;
 pub mod dns;
 pub mod fs;
