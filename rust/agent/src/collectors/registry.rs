@@ -4,6 +4,7 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
+use super::block_io::{BlockIoCollector, BlockIoConfig};
 use super::cpu::{CpuCollector, CpuConfig};
 use super::dns::{DnsCollector, DnsConfig};
 use super::fs::{FsCollector, FsConfig};
@@ -28,6 +29,8 @@ use std::convert::TryFrom;
 #[derive(Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
 pub enum CollectorConfig {
+    #[serde(rename = "block_io")]
+    BlockIo(BlockIoConfig),
     #[serde(rename = "cpu")]
     Cpu(CpuConfig),
     #[serde(rename = "dns")]
@@ -52,6 +55,7 @@ pub enum CollectorConfig {
 /// Each collector must implement Runnable trait.
 #[enum_dispatch]
 pub enum Collectors {
+    BlockIo(BlockIoCollector),
     Cpu(CpuCollector),
     Dns(DnsCollector),
     Fs(FsCollector),
@@ -70,6 +74,7 @@ impl TryFrom<&ZkConfigCollector> for Collectors {
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         Ok(match value.config {
+            CollectorConfig::BlockIo(_) => Collectors::BlockIo(BlockIoCollector::try_from(value)?),
             CollectorConfig::Cpu(_) => Collectors::Cpu(CpuCollector::try_from(value)?),
             CollectorConfig::Dns(_) => Collectors::Dns(DnsCollector::try_from(value)?),
             CollectorConfig::Fs(_) => Collectors::Fs(FsCollector::try_from(value)?),

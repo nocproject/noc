@@ -12,6 +12,7 @@ path = "src/main.rs"
 [features]
 default = [
     # Collectors, in sorted order
+    "block-io",
     "cpu",
     "dns",
     "fs",
@@ -33,6 +34,8 @@ default = [
 # Collectors
 #
 
+# block-io collector
+block-io = ["systemstat"]
 # cpu collector
 cpu = ["systemstat"]
 # dns collector
