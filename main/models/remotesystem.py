@@ -158,10 +158,9 @@ class RemoteSystem(Document):
             error_report()
             error = str(e)
         self.last_extract = datetime.datetime.now()
-        if error:
-            self.extract_error = error
-        else:
+        if not error:
             self.last_successful_extract = self.last_extract
+        self.extract_error = error
         self.save()
 
     def load(self, extractors=None, quiet=False):
@@ -175,10 +174,9 @@ class RemoteSystem(Document):
             error_report()
             error = str(e)
         self.last_load = datetime.datetime.now()
-        if error:
-            self.load_error = error
-        else:
+        if not error:
             self.last_successful_load = self.last_load
+        self.load_error = error
         self.save()
 
     def check(self, extractors=None):
