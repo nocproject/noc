@@ -328,7 +328,7 @@ class IPAMApplication(ExtApplication):
                     if spot
                     else []
                 ),
-                key=lambda x: IP.prefix(x["address"]),
+                key=lambda x: IP.prefix(x["address"]) if x["address"] else "",
             ),
             "info": dict(prefix_info),
             "ranges": [
