@@ -639,6 +639,9 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=10)
         macdb_window = IntParameter(default=4 * 86400)
         enable_remote_system_last_extract_info = BooleanParameter(default=False)
+        heatmap_lon = StringParameter(default="108.567849")
+        heatmap_lat = StringParameter(default="66.050063")
+        heatmap_zoom = StringParameter(default="4")
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")
