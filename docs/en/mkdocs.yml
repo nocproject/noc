@@ -1503,6 +1503,21 @@ nav:
               - whois: admin/reference/man/whois.md
               - wipe: admin/reference/man/wipe.md
               - workflow: admin/reference/man/workflow.md
+          - noc-agent:
+              - Overview: admin/reference/agent/index.md
+              - Collectors:
+                  - Overview: admin/reference/agent/collectors/index.md
+                  - block_io: admin/reference/agent/collectors/block_io.md
+                  - cpu: admin/reference/agent/collectors/cpu.md
+                  - dns: admin/reference/agent/collectors/dns.md
+                  - fs: admin/reference/agent/collectors/fs.md
+                  - memory: admin/reference/agent/collectors/memory.md
+                  - network: admin/reference/agent/collectors/network.md
+                  - test: admin/reference/agent/collectors/test.md
+                  - twamp_reflector: admin/reference/agent/collectors/twamp_reflector.md
+                  - twamp_sender: admin/reference/agent/collectors/twamp_sender.md
+                  - uptime: admin/reference/agent/collectors/uptime.md
+              - Compilation Features: admin/reference/agent/compilation-features.md
   - Developer's Guide:
       - Overview: dev/index.md
       - Get Started:
