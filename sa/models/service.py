@@ -8,7 +8,9 @@
 # Python modules
 import datetime
 import logging
-from typing import Any, Dict
+import operator
+from threading import Lock
+from typing import Any, Dict, Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -21,6 +23,7 @@ from mongoengine.fields import (
     LongField,
     ObjectIdField,
 )
+import cachetools
 
 # NOC modules
 from .serviceprofile import ServiceProfile
@@ -38,6 +41,8 @@ from noc.inv.models.capsitem import CapsItem
 from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
+
+id_lock = Lock()
 
 
 @Label.model
@@ -115,6 +120,13 @@ class Service(Document):
     effective_service_groups = ListField(ObjectIdField())
     static_client_groups = ListField(ObjectIdField())
     effective_client_groups = ListField(ObjectIdField())
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["Service"]:
+        return Service.objects.filter(id=id).first()
 
     def __str__(self):
         return str(self.id) if self.id else "new service"

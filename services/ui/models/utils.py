@@ -15,3 +15,8 @@ from pydantic import BaseModel
 class Reference(BaseModel):
     id: str
     label: Optional[str]
+
+
+class LabelItem(BaseModel):
+    id: str
+    label: str

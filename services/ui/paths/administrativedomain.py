@@ -13,13 +13,17 @@ from ..models.administrativedomain import (
 )
 from ..utils.ref import get_reference
 from ..utils.rest.model import ModelResourceAPI
-from ..utils.rest.op import FilterExact
+from ..utils.rest.op import FilterExact, RefFilter, FuncFilter
 
 
 class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
     prefix = "/api/ui/administrativedomain"
     model = AdministrativeDomain
-    list_ops = [FilterExact("name")]
+    list_ops = [
+        FuncFilter("query", function=lambda qs, value: qs.filter(name__regex=value)),
+        FilterExact("name"),
+        RefFilter("parent", model=AdministrativeDomain),
+    ]
 
     @classmethod
     def item_to_default(cls, item: AdministrativeDomain) -> DefaultAdministrativeDomainItem:
@@ -34,7 +38,7 @@ class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
             effective_labels=item.effective_labels,
             remote_system=get_reference(item.remote_system),
             remote_id=item.remote_id,
-            bi_id=item.bi_id,
+            bi_id=str(item.bi_id),
         )
 
     @classmethod
