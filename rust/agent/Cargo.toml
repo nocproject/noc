@@ -68,7 +68,7 @@ config-zk = ["trust-dns-proto"]
 # File reader
 config-file = []
 # JSON parser
-config-json = ["serde_json"]
+config-json = []
 # YAML parser
 config-yaml = ["serde_yaml"]
 
@@ -87,9 +87,9 @@ enum_dispatch = "0.3"
 rand = "0.8"
 lazy_static = "1.4"
 thiserror = "1.0"
+serde_json = "1.0"
 # Optional dependencies
 trust-dns-proto = {version = "0.20", optional = true}
-serde_json = {version = "1.0", optional = true}
 serde_yaml = {version = "0.8", optional = true}
 systemstat = {version = "0.1", optional = true}
 # Subcrates for procedural macroses

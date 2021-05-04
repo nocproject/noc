@@ -10,7 +10,7 @@ cfg_if::cfg_if! {
         mod base;
         pub use base::StaticResolver;
     } else {
-        use super::super::base::StubResolver;
-        pub type FileResolver = StubResolver;
+        use super::base::StubResolver;
+        pub type StaticResolver = StubResolver;
     }
 }

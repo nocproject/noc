@@ -10,5 +10,6 @@ pub mod cli;
 pub mod collectors;
 pub mod config;
 pub mod error;
+mod feature;
 pub mod proto;
 pub mod timing;

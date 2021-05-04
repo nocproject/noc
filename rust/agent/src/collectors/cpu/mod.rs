@@ -6,18 +6,18 @@
 // ---------------------------------------------------------------------
 
 mod config;
-mod out;
-mod platform;
 pub use config::CpuConfig;
-pub use out::CpuOut;
-pub use platform::PlatformCpuOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "cpu")] {
+        mod out;
+        mod platform;
+        pub use out::CpuOut;
+        pub use platform::PlatformCpuOut;
         mod collector;
         pub use collector::CpuCollector;
     } else {
         use super::StubCollector;
-        pub type CpuCollector = StubCollector<MemoryConfig>;
+        pub type CpuCollector = StubCollector<CpuConfig>;
     }
 }
