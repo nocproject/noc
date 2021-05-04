@@ -11,7 +11,7 @@
       "dateColDataType": "date",
       "table": "multicast",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, group as ip, channel, argMax(g_status, t) as Status, argMax(g_bitrate_in, t) as Input, argMax(g_bitrate_out, t) as Output FROM $table WHERE managed_object = $bi_id and group != '' and $timeFilter GROUP BY t, ip, channel ORDER BY Status",
+      "query": "SELECT $timeSeries as t, group as ip, channel, argMax(g_status, t) as Status, argMax(g_bitrate_in, t) as Input, argMax(g_bitrate_out, t) as Output FROM $table WHERE managed_object = $bi_id and channel != '' and $timeFilter GROUP BY t, ip, channel ORDER BY Status",
       "refId": "B",
       "resultFormat": "time_series",
       "format": "table",
