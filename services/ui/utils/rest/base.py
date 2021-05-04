@@ -21,7 +21,7 @@ from fastapi import APIRouter, HTTPException, Security, Response, Depends
 from noc.config import config
 from noc.aaa.models.user import User
 from noc.core.service.deps.user import get_user_scope
-from ...models.label import LabelItem
+from ...models.utils import LabelItem
 from ...models.status import StatusResponse
 from .op import ListOp
 
