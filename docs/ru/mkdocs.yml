@@ -406,6 +406,7 @@ nav:
               - Sumavision:
                   - Overview: user/reference/profiles/Sumavision/index.md
                   - Sumavision.EMR: user/reference/profiles/Sumavision/Sumavision.EMR.md
+                  - Sumavision.IPQAM: user/reference/profiles/Sumavision/Sumavision.IPQAM.md
               - Sun:
                   - Overview: user/reference/profiles/Sun/index.md
                   - Sun.iLOM3: user/reference/profiles/Sun/Sun.iLOM3.md
@@ -1647,6 +1648,7 @@ nav:
               - container: dev/reference/model-interface/container.md
               - cpu: dev/reference/model-interface/cpu.md
               - dimensions: dev/reference/model-interface/dimensions.md
+              - hwlimits: dev/reference/model-interface/hwlimits.md
               - geopoint: dev/reference/model-interface/geopoint.md
               - length: dev/reference/model-interface/length.md
               - management: dev/reference/model-interface/management.md
