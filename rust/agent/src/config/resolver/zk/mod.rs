@@ -10,7 +10,7 @@ cfg_if::cfg_if! {
         mod base;
         pub use base::ZkResolver;
     } else {
-        use super::super::base::StubResolver;
+        use super::base::StubResolver;
         pub type ZkResolver = StubResolver;
     }
 }

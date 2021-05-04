@@ -10,7 +10,7 @@ cfg_if::cfg_if! {
         mod base;
         pub use base::FileReader;
     } else {
-        use super::super::base::StubReader;
+        use super::base::StubReader;
         pub type FileReader = StubReader;
     }
 }

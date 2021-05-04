@@ -1,9 +1,7 @@
 use agent::agent::Agent;
 use agent::cli::CliArgs;
 use agent::error::AgentError;
-use std::convert::TryFrom;
-use std::env;
-use std::process;
+use std::{convert::TryFrom, env, process};
 
 fn run() -> Result<(), AgentError> {
     // Parse command-line arguments
