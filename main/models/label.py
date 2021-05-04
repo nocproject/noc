@@ -6,19 +6,21 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import operator
 from typing import Optional, List, Set, Iterable
 from threading import Lock
-import operator
 from itertools import accumulate
 
 # Third-party modules
+from pymongo import UpdateMany
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, BooleanField, ReferenceField
 import cachetools
 
 # NOC modules
-from noc.core.model.decorator import on_save, on_delete, is_document
+from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.remotesystem import RemoteSystem
+from noc.models import get_model, is_document
 
 
 MATCH_OPS = {"=", "<", ">", "&"}
@@ -473,3 +475,34 @@ class Label(Document):
             return m_cls
 
         return inner
+
+    @classmethod
+    def reset_model_labels(cls, model_id: str, labels: List[str]):
+        """
+        Unset labels from effective_labels field on models
+        :param model_id:
+        :param labels:
+        :return:
+        """
+        from django.db import connection
+
+        model = get_model(model_id)
+        if is_document(model):
+            coll = model._get_collection()
+            coll.bulk_write(
+                [
+                    UpdateMany[
+                        {"effective_labels": {"$in": labels}},
+                        {"$pull": {"effective_labels": {"$in": labels}}},
+                    ]
+                ]
+            )
+        else:
+            sql = f"""
+            UPDATE {model._meta.db_table}
+             SET effective_labels=array(
+             SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[])
+             ) WHERE effective_labels && %s::varchar[]
+             """
+            cursor = connection.cursor()
+            cursor.execute(sql, [labels, labels])
