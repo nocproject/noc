@@ -43,8 +43,12 @@ class DocumentResourceAPI(BaseResourceAPI[T]):
         """
         return cls.model.objects.all()
 
-    def get_total_items(self, user: User) -> int:
-        return self.queryset(user).count()
+    def get_total_items(self, user: User, transforms: Optional[List[Callable]] = None) -> int:
+        qs = self.queryset(user)
+        if transforms:
+            for t in transforms:
+                qs = t(qs)
+        return qs.count()
 
     def get_items(
         self,
