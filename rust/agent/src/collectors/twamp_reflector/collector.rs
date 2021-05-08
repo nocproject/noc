@@ -30,6 +30,7 @@ use tokio::{
 #[derive(Id)]
 pub struct TwampReflectorCollector {
     pub id: String,
+    pub service: String,
     pub listen: String,
     pub port: u16,
 }
@@ -40,7 +41,8 @@ impl TryFrom<&ZkConfigCollector> for TwampReflectorCollector {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::TwampReflector(config) => Ok(Self {
-                id: value.id.clone(),
+                id: value.get_id(),
+                service: value.get_service(),
                 listen: config.listen.clone(),
                 port: config.port,
             }),

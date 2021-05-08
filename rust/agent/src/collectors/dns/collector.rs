@@ -24,6 +24,7 @@ const NAME: &str = "dns";
 #[derive(Id, Repeatable)]
 pub struct DnsCollector {
     pub id: String,
+    pub service: String,
     pub interval: u64,
     pub labels: Vec<String>,
     pub query: String,
@@ -39,9 +40,10 @@ impl TryFrom<&ZkConfigCollector> for DnsCollector {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::Dns(config) => Ok(Self {
-                id: value.id.clone(),
-                interval: value.interval,
-                labels: value.labels.clone(),
+                id: value.get_id(),
+                service: value.get_service(),
+                interval: value.get_interval(),
+                labels: value.get_labels(),
                 query: config.query.clone(),
                 query_type: config.query_type.clone(),
                 record_type: RecordType::from_str(&config.query_type)
@@ -94,6 +96,7 @@ impl Collectable for DnsCollector {
         self.feed(&DnsOut {
             // Common
             ts: ts.clone(),
+            service: self.service.clone(),
             collector: NAME,
             labels: self.labels.clone(),
             // Metrics

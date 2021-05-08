@@ -19,6 +19,7 @@ const NAME: &str = "cpu";
 #[derive(Id, Repeatable)]
 pub struct CpuCollector {
     pub id: String,
+    pub service: String,
     pub interval: u64,
     pub labels: Vec<String>,
 }
@@ -29,9 +30,10 @@ impl TryFrom<&ZkConfigCollector> for CpuCollector {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::Cpu(_) => Ok(Self {
-                id: value.id.clone(),
-                interval: value.interval,
-                labels: value.labels.clone(),
+                id: value.get_id(),
+                service: value.get_service(),
+                interval: value.get_interval(),
+                labels: value.get_labels(),
             }),
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
@@ -57,6 +59,7 @@ impl Collectable for CpuCollector {
             self.feed(&CpuOut {
                 // Common
                 ts: ts.clone(),
+                service: self.service.clone(),
                 collector: NAME,
                 labels,
                 // Metrics

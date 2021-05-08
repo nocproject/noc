@@ -14,6 +14,7 @@ use std::convert::TryFrom;
 #[derive(Id, Repeatable)]
 pub struct TestCollector {
     pub id: String,
+    pub service: String,
     pub interval: u64,
 }
 
@@ -23,8 +24,9 @@ impl TryFrom<&ZkConfigCollector> for TestCollector {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::Test(_) => Ok(Self {
-                id: value.id.clone(),
-                interval: value.interval,
+                id: value.get_id(),
+                service: value.get_service(),
+                interval: value.get_interval(),
             }),
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }

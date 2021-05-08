@@ -112,7 +112,7 @@ impl<TCfg> TryFrom<&ZkConfigCollector> for StubCollector<TCfg> {
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         Ok(Self {
-            id: value.id.clone(),
+            id: value.get_id(),
             _phantom: PhantomData,
         })
     }

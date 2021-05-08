@@ -37,6 +37,7 @@ const NAME: &str = "twamp_sender";
 #[derive(Id, Repeatable)]
 pub struct TwampSenderCollector {
     pub id: String,
+    pub service: String,
     pub interval: u64,
     pub labels: Vec<String>,
     pub server: String,
@@ -52,9 +53,10 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::TwampSender(config) => Ok(Self {
-                id: value.id.clone(),
-                interval: value.interval,
-                labels: value.labels.clone(),
+                id: value.get_id(),
+                service: value.get_service(),
+                interval: value.get_interval(),
+                labels: value.get_labels(),
                 server: config.server.clone(),
                 port: config.port,
                 n_packets: config.n_packets,
@@ -75,6 +77,7 @@ impl Collectable for TwampSenderCollector {
         let stream = TcpStream::connect(format!("{}:{}", self.server, self.port)).await?;
         let out = TestSession::new(stream, self.model)
             .with_id(self.id.clone())
+            .with_service(self.service.clone())
             .with_ts(self.get_timestamp())
             .with_labels(&self.labels)
             .with_tos(self.tos)
@@ -89,6 +92,7 @@ impl Collectable for TwampSenderCollector {
 
 struct TestSession {
     id: String,
+    service: String,
     connection: Connection,
     tos: u8,
     reflector_addr: String,
@@ -103,6 +107,7 @@ impl TestSession {
     pub fn new(stream: TcpStream, model: PacketModels) -> Self {
         TestSession {
             id: String::new(),
+            service: String::new(),
             connection: Connection::new(stream),
             tos: 0,
             ts: None,
@@ -115,6 +120,10 @@ impl TestSession {
     }
     pub fn with_id(&mut self, id: String) -> &mut Self {
         self.id = id;
+        self
+    }
+    pub fn with_service(&mut self, service: String) -> &mut Self {
+        self.service = service;
         self
     }
     pub fn with_labels(&mut self, labels: &[String]) -> &mut Self {
@@ -596,6 +605,7 @@ impl TestSession {
         ));
         TwampSenderOut {
             ts: self.ts.as_ref().unwrap().into(),
+            service: self.service.clone(),
             collector: NAME,
             labels,
             //

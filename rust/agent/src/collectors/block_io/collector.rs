@@ -18,6 +18,7 @@ const NAME: &str = "block_io";
 #[derive(Id, Repeatable)]
 pub struct BlockIoCollector {
     pub id: String,
+    pub service: String,
     pub interval: u64,
     pub labels: Vec<String>,
 }
@@ -28,9 +29,10 @@ impl TryFrom<&ZkConfigCollector> for BlockIoCollector {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::BlockIo(_) => Ok(Self {
-                id: value.id.clone(),
-                interval: value.interval,
-                labels: value.labels.clone(),
+                id: value.get_id(),
+                service: value.get_service(),
+                interval: value.get_interval(),
+                labels: value.get_labels(),
             }),
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
@@ -48,6 +50,7 @@ impl Collectable for BlockIoCollector {
             labels.push(format!("noc::dev::{}", s.name));
             self.feed(&BlockIoOut {
                 ts: ts.clone(),
+                service: self.service.clone(),
                 collector: NAME,
                 labels,
                 //
