@@ -64,7 +64,7 @@ uptime = ["systemstat"]
 # Static resolver
 config-static = []
 # ZeroConf resolver
-config-zk = ["trust-dns-proto"]
+config-zk = ["trust-dns-proto", "trust-dns-resolver"]
 # File reader
 config-file = []
 # JSON parser
@@ -79,7 +79,6 @@ log = "0.4"
 env_logger = "0.8"
 tokio = { version = "1.5", features = ["full"] }
 bytes = "1.0"
-trust-dns-resolver = "0.20"
 serde = {version = "1.0", features=["derive"]}
 async-trait = "0.1"
 cfg-if = "1.0"
@@ -90,6 +89,7 @@ thiserror = "1.0"
 serde_json = "1.0"
 # Optional dependencies
 trust-dns-proto = {version = "0.20", optional = true}
+trust-dns-resolver = {version = "0.20", optional = true}
 serde_yaml = {version = "0.8", optional = true}
 systemstat = {version = "0.1", optional = true}
 # Subcrates for procedural macroses

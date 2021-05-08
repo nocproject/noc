@@ -6,9 +6,7 @@
 // ---------------------------------------------------------------------
 
 use crate::collectors::CollectorConfig;
-use crate::error::AgentError;
 use serde::Deserialize;
-use std::convert::TryFrom;
 
 #[derive(Deserialize, Debug)]
 pub struct ZkConfig {
@@ -33,6 +31,8 @@ pub struct ZkConfigConfigZeroconf {
 #[derive(Deserialize, Debug)]
 pub struct ZkConfigCollector {
     pub id: String,
+    #[serde(default)]
+    pub service: Option<String>,
     pub interval: u64,
     #[serde(default)]
     pub disabled: bool,
@@ -42,16 +42,20 @@ pub struct ZkConfigCollector {
     pub config: CollectorConfig,
 }
 
-impl TryFrom<Vec<u8>> for ZkConfig {
-    type Error = AgentError;
-
-    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        match serde_json::from_slice(value.as_slice()) {
-            Ok(x) => Ok(x),
-            Err(e) => {
-                log::error!("Cannot parse JSON: {}", e);
-                Err(AgentError::ParseError(e.to_string()))
-            }
+impl ZkConfigCollector {
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+    }
+    pub fn get_service(&self) -> String {
+        match &self.service {
+            Some(x) => x.into(),
+            None => self.get_id(),
         }
+    }
+    pub fn get_interval(&self) -> u64 {
+        self.interval
+    }
+    pub fn get_labels(&self) -> Vec<String> {
+        self.labels.clone()
     }
 }

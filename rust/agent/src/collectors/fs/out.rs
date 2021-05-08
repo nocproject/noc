@@ -10,6 +10,7 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct FsOut {
     pub ts: String,
+    pub service: String,
     pub collector: &'static str,
     pub labels: Vec<String>,
     //
