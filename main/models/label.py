@@ -7,13 +7,14 @@
 
 # Python modules
 import operator
-from typing import Optional, List, Set, Iterable
+from typing import Optional, List, Set, Iterable, Dict, Any
 from threading import Lock
 from itertools import accumulate
 
 # Third-party modules
 from pymongo import UpdateMany
 from mongoengine.document import Document
+from mongoengine.queryset.visitor import Q as m_Q
 from mongoengine.fields import StringField, IntField, BooleanField, ReferenceField
 import cachetools
 
@@ -159,7 +160,7 @@ class Label(Document):
         return bool(r.get(setting))
 
     @classmethod
-    def get_effective_settings(cls, label: str) -> bool:
+    def get_effective_settings(cls, label: str) -> Dict[str, Any]:
         """
         Returns dict with effective settings
         """
@@ -506,3 +507,78 @@ class Label(Document):
              """
             cursor = connection.cursor()
             cursor.execute(sql, [labels, labels])
+
+    @classmethod
+    def dynamic_classification(cls, profile_model_id: str, profile_field: Optional[str] = None):
+        def on_post_save(
+            sender,
+            instance=None,
+            document=None,
+            profile_model_id=profile_model_id,
+            profile_field=profile_field,
+            *args,
+            **kwargs,
+        ):
+            """
+
+            :param sender:
+            :param instance:
+            :param document:
+            :param profile_model_id:
+            :param profile_field:
+            :param args:
+            :param kwargs:
+            :return:
+            """
+            # @todo flag for lock classification (ex profile set on hk)
+            # @todo Deny add label to profile if use in instance (for reset loop)
+            # @todo Use iter_effective_labels for fix Label.model decorator eunning after
+            profile_model = get_model(profile_model_id)
+            if not hasattr(profile_model, "match_rules"):
+                # Dynamic classification not suported
+                return
+            instance = instance or document
+            profile_field = profile_field or "profile"
+            if not hasattr(instance, "effective_labels"):
+                # Instance without effective labels
+                return
+            effective_labels = instance.effective_labels or []
+            if is_document(instance):
+                match_profiles = profile_model.objects(
+                    m_Q(dynamic_order__ne=0)
+                    & (
+                        m_Q(match_rules__labels__in=effective_labels)
+                        | m_Q(match_rules__handler__exists=True)
+                    )
+                )
+            else:
+                match_profiles = profile_model.objects.filter(dynamic_order__gt=0).extra(
+                    where=[
+                        "exists (select 1 from jsonb_array_elements(match_rules) as r where r -> 'labels' ?| %s::varchar[])"
+                    ],
+                    params=[effective_labels],
+                )
+            for profile in match_profiles.order_by("dynamic_order"):
+                for rule in profile.match_rules:
+                    # rule["labels"] worked with documents too
+                    if (
+                        not set(rule["labels"]) - set(effective_labels)
+                        and instance.profile != profile
+                    ):
+                        # Match all profile labels
+                        setattr(instance, profile_field, profile)
+
+        def inner(m_cls):
+            # Install handlers
+            if is_document(m_cls):
+                from mongoengine import signals as mongo_signals
+
+                mongo_signals.pre_save.connect(on_post_save, sender=m_cls, weak=False)
+            else:
+                from django.db.models import signals as django_signals
+
+                django_signals.pre_save.connect(on_post_save, sender=m_cls, weak=False)
+
+            return m_cls
+
+        return inner

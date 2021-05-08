@@ -34,6 +34,7 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
+@Label.dynamic_classification(profile_model_id="SensorProfile")
 @Label.model
 @bi_sync
 @workflow
