@@ -7,7 +7,19 @@
 
 # Python modules
 import typing
-from typing import Any, Optional, Callable, Dict, DefaultDict, TypeVar, Generic, List, Iterable
+from typing import (
+    Any,
+    Optional,
+    Callable,
+    Dict,
+    DefaultDict,
+    TypeVar,
+    Generic,
+    List,
+    Iterable,
+    Tuple,
+    Union,
+)
 import inspect
 from http import HTTPStatus
 from abc import ABCMeta, abstractmethod
@@ -53,8 +65,14 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     prefix: str
     model: T
     list_ops: List[ListOp] = []
+    sort_fields: List[Union[str, Tuple[str, str]]] = []
 
     def __init__(self, router: APIRouter):
+        def split_sort(x: Union[str, Tuple[str, str]]) -> Tuple[str, str]:
+            if isinstance(x, str):
+                return x, x
+            return x[0], x[1]
+
         if not getattr(self, "prefix", None):
             raise ValueError("prefix is not set")
         if not getattr(self, "model", None):
@@ -63,6 +81,11 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         self.api_name = self.prefix.split("/")[-1]
         self.openapi_tags = ["ui", self.api_name]
         self.cleaners: DefaultDict[str, List[Callable[[Any], Any]]] = defaultdict(list)
+        self.sort_ops: Dict[str, str] = dict(split_sort(x) for x in self.sort_fields)
+        if self.sort_fields:
+            self.default_sort_op = split_sort(self.sort_fields[0])[1]
+        else:
+            self.default_sort_op = "id"
         # Setup endpoints
         for name, fn in inspect.getmembers(self):
             if name.startswith("item_to_"):
@@ -157,6 +180,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def get_items(
         self,
         user: User,
+        sort: List[str],
         limit: int = config.ui.max_rest_limit,
         offset: int = 0,
         transforms: Optional[List[Callable]] = None,
@@ -164,8 +188,10 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         """
         Get list of items, satisfying criteria
         :param user:
+        :param sort:
         :param limit:
         :param offset:
+        :param transforms:
         :return:
         """
 
@@ -261,6 +287,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
             response: Response,
             limit: int = config.ui.max_rest_limit,
             offset: int = 0,
+            sort: Optional[str] = None,
             ops: dict = Depends(get_list_dep()),
             user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)]),
         ):
@@ -271,6 +298,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
                     limit=limit,
                     offset=offset,
                     transforms=[list_ops_map[op].get_transform(v) for op, v in ops.items()],
+                    sort=list(self.iter_sort_items(sort or "")),
                 )
             else:
                 items = []
@@ -399,3 +427,32 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
             description="delete item",
             response_model=StatusResponse,
         )
+
+    def iter_sort_items(self, expr: str) -> Iterable[str]:
+        """
+        Parse sort expression and convert to the iterable
+        of order_by items
+
+        :param expr:
+        :return:
+        """
+
+        def format_op(s: str) -> str:
+            s_exp = self.sort_ops.get(s)
+            if s_exp:
+                return s_exp
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST, detail=f"Invalid sort field: {s}"
+            )
+
+        if not expr:
+            yield self.default_sort_op
+        else:
+            for item in expr.split(","):
+                item = item.strip()
+                if item.startswith("-"):
+                    yield f"-{format_op(item[1:])}"
+                elif item.startswith("+"):
+                    yield format_op(item[1:])
+                else:
+                    yield format_op(item)

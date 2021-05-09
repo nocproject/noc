@@ -47,14 +47,20 @@ class ModelResourceAPI(BaseResourceAPI[T]):
     def get_items(
         self,
         user: User,
+        sort: List[str],
         limit: int = config.ui.max_rest_limit,
         offset: int = 0,
         transforms: Optional[List[Callable]] = None,
     ) -> List[T]:
+        # Start from initial restrictions
         qs = self.queryset(user)
+        # Then apply transformations passed by query
         if transforms:
             for t in transforms:
                 qs = t(qs)
+        # Then apply sorting order
+        qs = qs.order_by(*tuple(sort))
+        # Finally, limit to selected frame
         qs = qs[offset : offset + limit]
         return qs
 
