@@ -5,8 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+from fastapi import APIRouter
+
 # NOC modules
 from noc.sa.models.service import Service
+from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import ServiceProfile
 from ..models.service import (
@@ -17,6 +21,8 @@ from ..models.service import (
 from ..utils.ref import get_reference, get_reference_label, get_reference_rg
 from ..utils.rest.document import DocumentResourceAPI
 from ..utils.rest.op import FilterExact, RefFilter
+
+router = APIRouter()
 
 
 class ServiceAPI(DocumentResourceAPI[Service]):
@@ -50,8 +56,11 @@ class ServiceAPI(DocumentResourceAPI[Service]):
             address=item.address,
             managed_object=get_reference(item.managed_object),
             nri_port=item.nri_port,
-            labels=[get_reference_label(ii) for ii in item.labels],
-            effective_labels=[get_reference_label(ii) for ii in item.effective_labels],
+            labels=[get_reference_label(ii) for ii in Label.objects.filter(name__in=item.labels)],
+            effective_labels=[
+                get_reference_label(ii)
+                for ii in Label.objects.filter(name__in=item.effective_labels)
+            ],
             static_service_groups=[get_reference_rg(sg) for sg in item.static_service_groups],
             effective_service_groups=[get_reference_rg(sg) for sg in item.effective_service_groups],
             static_client_groups=[get_reference_rg(sg) for sg in item.static_client_groups],
@@ -96,4 +105,5 @@ class ServiceAPI(DocumentResourceAPI[Service]):
         )
 
 
-router = ServiceAPI().router
+# Install router
+ServiceAPI(router)
