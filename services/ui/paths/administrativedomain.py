@@ -30,6 +30,7 @@ class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
         FilterExact("name"),
         RefFilter("parent", model=AdministrativeDomain),
     ]
+    sort_fields = ["name", "id", ("parent", "parent__name")]
 
     @classmethod
     def item_to_default(cls, item: AdministrativeDomain) -> DefaultAdministrativeDomainItem:
