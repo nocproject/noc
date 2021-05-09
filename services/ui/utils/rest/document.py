@@ -22,6 +22,7 @@ from noc.aaa.models.user import User
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.typing import SupportsGetById
 from .base import BaseResourceAPI
+from ...models.utils import SummaryItem
 
 
 T = TypeVar("T", bound=Document)
@@ -49,6 +50,29 @@ class DocumentResourceAPI(BaseResourceAPI[T]):
             for t in transforms:
                 qs = t(qs)
         return qs.count()
+
+    def get_summary_items(
+        self, user: User, field: str, transforms: Optional[List[Callable]] = None
+    ) -> List[SummaryItem]:
+        """
+        Calculate total amount of items, satisfying criteria
+        :param user:
+        :param field:
+        :param transforms:
+        :return:
+        """
+        if field not in self.model._fields:
+            raise HTTPException(
+                status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail=f"Unknown model field: {field}"
+            )
+        qs = self.queryset(user)
+        if transforms:
+            for t in transforms:
+                qs = t(qs)
+        return [
+            SummaryItem(id=str(r["_id"]), label=str(r["_id"]), count=int(r["count"]))
+            for r in qs.aggregate([{"$group": {"_id": f"${field}", "count": {"$sum": 1}}}])
+        ]
 
     def get_items(
         self,
