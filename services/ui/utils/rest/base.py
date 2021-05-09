@@ -21,7 +21,7 @@ from fastapi import APIRouter, HTTPException, Security, Response, Depends
 from noc.config import config
 from noc.aaa.models.user import User
 from noc.core.service.deps.user import get_user_scope
-from ...models.utils import LabelItem
+from ...models.utils import LabelItem, SummaryItem
 from ...models.status import StatusResponse
 from .op import ListOp
 
@@ -154,6 +154,18 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    def get_summary_items(
+        self, user: User, field: str, transforms: Optional[List[Callable]] = None
+    ) -> int:
+        """
+        Calculate total amount of items, satisfying criteria
+        :param user:
+        :param field:
+        :param transforms:
+        :return:
+        """
+
+    @abstractmethod
     def get_items(
         self,
         user: User,
@@ -230,6 +242,14 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         """
 
     @property
+    def has_summary(self) -> bool:
+        """
+        Returns True if defined delete_item
+        :return:
+        """
+        return "get_summary_items" not in self.__abstractmethods__
+
+    @property
     def has_delete(self) -> bool:
         """
         Returns True if defined delete_item
@@ -280,6 +300,21 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
             response.headers[X_NOC_OFFSET] = str(offset)
             return [fmt(item) for item in items]
 
+        def inner_summary(
+            response: Response,
+            field: str,
+            limit: int = config.ui.max_rest_limit,
+            offset: int = 0,
+            ops: dict = Depends(get_list_dep()),
+            user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)]),
+        ):
+            summary = self.get_summary_items(
+                user,
+                field=field,
+                transforms=[list_ops_map[op].get_transform(v) for op, v in ops.items()],
+            )
+            return summary
+
         def inner_get(
             id: str, user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)])
         ):
@@ -328,6 +363,17 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
                 tags=self.openapi_tags,
                 name=f"{self.api_name}_get_{view}",
                 description=f"Get item with {view} view",
+            )
+        # Summary
+        if self.has_summary:
+            self.router.add_api_route(
+                path=f"{self.prefix}/v/summary",
+                endpoint=inner_summary,
+                methods=GET,
+                response_model=List[SummaryItem],
+                tags=self.openapi_tags,
+                name=f"{self.api_name}_list_summary",
+                description="Get summary items by field",
             )
 
     def setup_write(self):

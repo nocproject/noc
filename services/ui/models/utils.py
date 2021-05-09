@@ -20,3 +20,9 @@ class Reference(BaseModel):
 class LabelItem(BaseModel):
     id: str
     label: str
+
+
+class SummaryItem(BaseModel):
+    id: str
+    label: str
+    count: int

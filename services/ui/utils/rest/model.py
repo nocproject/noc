@@ -11,7 +11,8 @@ from http import HTTPStatus
 
 # Third-party modules
 from fastapi import HTTPException
-from django.db.models import Model, QuerySet, ForeignKey
+from django.db.models import Model, QuerySet, ForeignKey, Count
+from django.core.exceptions import FieldDoesNotExist
 
 # NOC modules
 from noc.config import config
@@ -20,6 +21,7 @@ from noc.aaa.models.user import User
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.typing import SupportsGetById
 from .base import BaseResourceAPI
+from ...models.utils import SummaryItem
 
 
 T = TypeVar("T", bound=Model)
@@ -43,6 +45,31 @@ class ModelResourceAPI(BaseResourceAPI[T]):
 
     def get_total_items(self, user: User) -> int:
         return self.queryset(user).count()
+
+    def get_summary_items(
+        self, user: User, field: str, transforms: Optional[List[Callable]] = None
+    ) -> List[SummaryItem]:
+        """
+        Calculate total amount of items, satisfying criteria
+        :param user:
+        :param field:
+        :param transforms:
+        :return:
+        """
+        try:
+            field = self.model._meta.get_field(field)
+        except FieldDoesNotExist:
+            raise HTTPException(
+                status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail=f"Unknown model field: {field}"
+            )
+        qs = self.queryset(user)
+        if transforms:
+            for t in transforms:
+                qs = t(qs)
+        return [
+            SummaryItem(id=str(r[field.name]), label=str(r[field.name]), count=int(r["count"]))
+            for r in qs.values(field.name).annotate(count=Count("id"))
+        ]
 
     def get_items(
         self,
