@@ -28,7 +28,7 @@ class DefaultAdministrativeDomainItem(BaseModel):
     effective_labels: List[LabelItem]
     remote_system: Optional[Reference]
     remote_id: Optional[str]
-    bi_id: Optional[int]
+    bi_id: Optional[str]
 
 
 class FormAdministrativeDomainItem(BaseModel):

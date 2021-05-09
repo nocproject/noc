@@ -5,15 +5,21 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+from fastapi import APIRouter
+
 # NOC modules
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.main.models.label import Label
 from ..models.administrativedomain import (
     DefaultAdministrativeDomainItem,
     FormAdministrativeDomainItem,
 )
-from ..utils.ref import get_reference
+from ..utils.ref import get_reference, get_reference_label
 from ..utils.rest.model import ModelResourceAPI
 from ..utils.rest.op import FilterExact, RefFilter, FuncFilter
+
+router = APIRouter()
 
 
 class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
@@ -34,8 +40,11 @@ class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
             default_pool=get_reference(item.default_pool),
             bioseg_floating_name_template=get_reference(item.bioseg_floating_name_template),
             bioseg_floating_parent_segment=get_reference(item.bioseg_floating_parent_segment),
-            labels=item.labels,
-            effective_labels=item.effective_labels,
+            labels=[get_reference_label(ii) for ii in Label.objects.filter(name__in=item.labels)],
+            effective_labels=[
+                get_reference_label(ii)
+                for ii in Label.objects.filter(name__in=item.effective_labels)
+            ],
             remote_system=get_reference(item.remote_system),
             remote_id=item.remote_id,
             bi_id=str(item.bi_id),
@@ -53,4 +62,5 @@ class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
         )
 
 
-router = AdministrativeDomainAPI().router
+# Install endpoints
+AdministrativeDomainAPI(router)

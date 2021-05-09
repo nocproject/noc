@@ -54,12 +54,12 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     model: T
     list_ops: List[ListOp] = []
 
-    def __init__(self):
+    def __init__(self, router: APIRouter):
         if not getattr(self, "prefix", None):
             raise ValueError("prefix is not set")
         if not getattr(self, "model", None):
             raise ValueError("model is not set")
-        self.router = APIRouter()
+        self.router = router
         self.api_name = self.prefix.split("/")[-1]
         self.openapi_tags = ["ui", self.api_name]
         self.cleaners: DefaultDict[str, List[Callable[[Any], Any]]] = defaultdict(list)

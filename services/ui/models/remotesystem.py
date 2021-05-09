@@ -21,7 +21,7 @@ class EnvItem(BaseModel):
 class DefaultRemoteSystemItem(BaseModel):
     id: str
     name: str
-    description: str
+    description: Optional[str]
     handler: str
     # Environment variables
     environment: List[EnvItem]
@@ -47,10 +47,10 @@ class DefaultRemoteSystemItem(BaseModel):
     # Usage statistics
     last_extract: Optional[datetime]
     last_successful_extract: Optional[datetime]
-    extract_error: str
+    extract_error: Optional[str]
     last_load: Optional[datetime]
     last_successful_load: Optional[datetime]
-    load_error: str
+    load_error: Optional[str]
 
 
 class FormRemoteSystemItem(BaseModel):
