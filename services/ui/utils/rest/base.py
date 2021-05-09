@@ -169,7 +169,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         return form_model
 
     @abstractmethod
-    def get_total_items(self, user: User) -> int:
+    def get_total_items(self, user: User, transforms: Optional[List[Callable]] = None) -> int:
         """
         Calculate total amount of items, satisfying criteria
         :param user:
@@ -291,7 +291,9 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
             ops: dict = Depends(get_list_dep()),
             user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)]),
         ):
-            total = self.get_total_items(user)
+            total = self.get_total_items(
+                user, transforms=[list_ops_map[op].get_transform(v) for op, v in ops.items()]
+            )
             if total:
                 items = self.get_items(
                     user=user,
