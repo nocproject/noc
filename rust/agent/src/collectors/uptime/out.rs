@@ -9,9 +9,5 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct UptimeOut {
-    pub ts: String,
-    pub service: String,
-    pub collector: &'static str,
-    pub labels: Vec<String>,
     pub uptime: u64,
 }

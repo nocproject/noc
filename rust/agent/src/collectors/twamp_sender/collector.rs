@@ -5,9 +5,8 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::super::{Collectable, Collector, CollectorConfig, Status};
+use super::super::{Collectable, Collector, CollectorConfig, Schedule, Status};
 use super::TwampSenderOut;
-use crate::collectors::Id;
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::proto::connection::Connection;
@@ -63,6 +62,7 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollectorConfig {
 #[async_trait]
 impl Collectable for TwampSenderCollector {
     const NAME: &'static str = "twamp_sender";
+    type Output = TwampSenderOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
         //
@@ -73,63 +73,50 @@ impl Collectable for TwampSenderCollector {
             self.data.port
         );
         let stream = TcpStream::connect(format!("{}:{}", self.data.server, self.data.port)).await?;
+        let ts = Self::get_timestamp();
         let out = TestSession::new(stream, self.data.model)
             .with_id(self.id.clone())
-            .with_service(self.get_service())
-            .with_ts(Self::get_timestamp())
-            .with_labels(&self.labels)
+            .with_labels(self.get_labels())
             .with_tos(self.data.tos)
             .with_reflector_addr(self.data.server.clone())
             .with_n_packets(self.data.n_packets)
             .run()
             .await?;
-        self.feed(&out).await?;
+        self.feed(ts, self.labels.clone(), &out).await?;
         Ok(Status::Ok)
     }
 }
 
 struct TestSession {
     id: String,
-    service: String,
+    labels: Option<Vec<String>>,
     connection: Connection,
     tos: u8,
     reflector_addr: String,
     reflector_port: u16,
     n_packets: usize,
     model: PacketModels,
-    labels: Option<Vec<String>>,
-    ts: Option<String>,
 }
 
 impl TestSession {
     pub fn new(stream: TcpStream, model: PacketModels) -> Self {
         TestSession {
             id: String::new(),
-            service: String::new(),
+            labels: None,
             connection: Connection::new(stream),
             tos: 0,
-            ts: None,
             reflector_addr: String::new(),
             reflector_port: 0,
             n_packets: 0,
             model,
-            labels: None,
         }
     }
     pub fn with_id(&mut self, id: String) -> &mut Self {
         self.id = id;
         self
     }
-    pub fn with_service(&mut self, service: String) -> &mut Self {
-        self.service = service;
-        self
-    }
-    pub fn with_labels(&mut self, labels: &[String]) -> &mut Self {
-        self.labels = Some(labels.to_owned());
-        self
-    }
-    pub fn with_ts(&mut self, ts: String) -> &mut Self {
-        self.ts = Some(ts);
+    pub fn with_labels(&mut self, labels: Vec<String>) -> &mut Self {
+        self.labels = Some(labels);
         self
     }
     pub fn with_tos(&mut self, tos: u8) -> &mut Self {
@@ -602,11 +589,6 @@ impl TestSession {
             tos_to_dscp(self.tos).unwrap_or("be").to_string()
         ));
         TwampSenderOut {
-            ts: self.ts.as_ref().unwrap().into(),
-            service: self.service.clone(),
-            collector: TwampSenderCollector::get_name(),
-            labels,
-            //
             tx_packets: s_stats.pkt_sent,
             rx_packets: r_stats.pkt_received,
             tx_bytes: s_stats.out_octets,
