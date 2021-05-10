@@ -9,11 +9,6 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct BlockIoOut {
-    pub ts: String,
-    pub service: String,
-    pub collector: &'static str,
-    pub labels: Vec<String>,
-    //
     pub read_ios: usize,
     pub read_merges: usize,
     pub read_sectors: usize,

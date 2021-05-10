@@ -10,11 +10,6 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct MemoryOut {
-    pub ts: String,
-    pub service: String,
-    pub collector: &'static str,
-    pub labels: Vec<String>,
-    //
     pub total: u64,
     pub free: u64,
     //

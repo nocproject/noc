@@ -9,11 +9,6 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct DnsOut {
-    pub ts: String,
-    pub service: String,
-    pub collector: &'static str,
-    pub labels: Vec<String>,
-    //
     pub total: usize,
     pub success: usize,
     pub failed: usize,

@@ -38,30 +38,52 @@ pub trait Runnable {
 /// .collect() method for implicit implementation.
 /// Must be used along with Id and Repeatable traits
 #[async_trait]
-pub trait Collectable {
+pub trait Collectable: Schedule {
     const NAME: &'static str;
+    type Output: Serialize + Sync;
 
     fn get_name() -> &'static str {
         Self::NAME
     }
+    fn get_timestamp() -> String {
+        let t: DateTime<Utc> = SystemTime::now().into();
+        t.to_rfc3339_opts(SecondsFormat::Millis, false)
+    }
     // Collection cycle
     async fn collect(&self) -> Result<Status, AgentError>;
+    // Feed result
+    async fn feed(
+        &self,
+        ts: String,
+        labels: Vec<String>,
+        data: &Self::Output,
+    ) -> Result<(), AgentError> {
+        let r = Output::<Self::Output> {
+            ts,
+            service: self.get_service(),
+            collector: Self::get_name(),
+            labels,
+            data,
+        };
+        let out =
+            serde_json::to_string(&r).map_err(|e| AgentError::SerializationError(e.to_string()))?;
+        log::debug!("Out: {}", out);
+        Ok(())
+    }
 }
 
-/// Helper trait for implicit collector implementation.
-pub trait Id {
+/// Collector's schedule attributes
+pub trait Schedule {
     fn get_id(&self) -> String;
-}
-
-/// Helper trait for implicit collector implementation.
-pub trait Repeatable {
     fn get_interval(&self) -> u64;
+    fn get_service(&self) -> String;
+    fn get_labels(&self) -> Vec<String>;
 }
 
 #[async_trait]
 impl<T> Runnable for T
 where
-    T: Id + Repeatable + Collectable + Send + Sync,
+    T: Schedule + Collectable + Send + Sync,
 {
     async fn run(&self) {
         let id = self.get_id();
@@ -119,39 +141,18 @@ where
 }
 
 // @todo: Move to Collector
-impl<T> Id for Collector<T> {
+impl<T> Schedule for Collector<T> {
     fn get_id(&self) -> String {
         self.id.clone()
     }
-}
-
-// @todo: Move to Collector
-impl<T> Repeatable for Collector<T> {
     fn get_interval(&self) -> u64 {
         self.interval
     }
-}
-
-impl<T> Collector<T> {
-    pub fn get_service(&self) -> String {
+    fn get_service(&self) -> String {
         self.service.clone()
     }
-    pub fn get_labels(&self) -> Vec<String> {
+    fn get_labels(&self) -> Vec<String> {
         self.labels.clone()
-    }
-    pub fn get_timestamp() -> String {
-        let t: DateTime<Utc> = SystemTime::now().into();
-        t.to_rfc3339_opts(SecondsFormat::Millis, false)
-    }
-    // Feed collected data
-    pub async fn feed<D>(&self, data: &D) -> Result<(), AgentError>
-    where
-        D: Serialize + Sync,
-    {
-        let out = serde_json::to_string(data)
-            .map_err(|e| AgentError::SerializationError(e.to_string()))?;
-        log::debug!("Out: {}", out);
-        Ok(())
     }
 }
 
@@ -164,6 +165,19 @@ impl<T> TryFrom<&ZkConfigCollector> for NoConfig<T> {
     fn try_from(_value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         Ok(Self {})
     }
+}
+
+#[derive(Serialize)]
+pub struct Output<'a, T>
+where
+    T: Serialize + Sync,
+{
+    pub ts: String,
+    pub service: String,
+    pub collector: &'static str,
+    pub labels: Vec<String>,
+    #[serde(flatten)]
+    pub data: &'a T,
 }
 
 /// Stub collectors are used to substitute collectors disabled in compile time.

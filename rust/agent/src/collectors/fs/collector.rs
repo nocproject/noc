@@ -4,7 +4,7 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, Collector, NoConfig, Status};
+use super::super::{Collectable, Collector, NoConfig, Schedule, Status};
 use super::FsOut;
 use crate::error::AgentError;
 use async_trait::async_trait;
@@ -16,6 +16,7 @@ pub type FsCollector = Collector<NoConfig<ConfigStub>>;
 #[async_trait]
 impl Collectable for FsCollector {
     const NAME: &'static str = "fs";
+    type Output = FsOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
         let sys = System::new();
@@ -28,19 +29,18 @@ impl Collectable for FsCollector {
                 let mut labels = self.get_labels();
                 labels.push(format!("noc::fs::{}", fs.fs_mounted_on));
                 labels.push(format!("noc::fstype::{}", fs.fs_type));
-                self.feed(&FsOut {
-                    ts: ts.clone(),
-                    service: self.get_service(),
-                    collector: Self::get_name(),
+                self.feed(
+                    ts.clone(),
                     labels,
-                    //
-                    files: fs.files,
-                    files_total: fs.files_total,
-                    files_avail: fs.files_avail,
-                    free: fs.free.as_u64(),
-                    avail: fs.avail.as_u64(),
-                    total: fs.total.as_u64(),
-                })
+                    &FsOut {
+                        files: fs.files,
+                        files_total: fs.files_total,
+                        files_avail: fs.files_avail,
+                        free: fs.free.as_u64(),
+                        avail: fs.avail.as_u64(),
+                        total: fs.total.as_u64(),
+                    },
+                )
                 .await?;
             }
         }

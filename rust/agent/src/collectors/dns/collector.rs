@@ -6,7 +6,7 @@
 // ---------------------------------------------------------------------
 
 use super::DnsOut;
-use crate::collectors::{Collectable, Collector, CollectorConfig, Status};
+use crate::collectors::{Collectable, Collector, CollectorConfig, Schedule, Status};
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::timing::Timing;
@@ -49,6 +49,7 @@ impl TryFrom<&ZkConfigCollector> for DnsCollectorConfig {
 #[async_trait]
 impl Collectable for DnsCollector {
     const NAME: &'static str = "dns";
+    type Output = DnsOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
         let resolver = TokioAsyncResolver::tokio_from_system_conf()
@@ -85,21 +86,21 @@ impl Collectable for DnsCollector {
         }
         timing.done();
         let failed = self.data.n - success;
-        self.feed(&DnsOut {
-            // Common
-            ts: ts.clone(),
-            service: self.get_service(),
-            collector: Self::get_name(),
-            labels: self.get_labels(),
-            // Metrics
-            total,
-            success,
-            failed,
-            min_ns: timing.min_ns,
-            max_ns: timing.max_ns,
-            avg_ns: timing.avg_ns,
-            jitter_ns: timing.jitter_ns,
-        })
+        self.feed(
+            ts.clone(),
+            self.get_labels(),
+            &DnsOut {
+                // Common
+                // Metrics
+                total,
+                success,
+                failed,
+                min_ns: timing.min_ns,
+                max_ns: timing.max_ns,
+                avg_ns: timing.avg_ns,
+                jitter_ns: timing.jitter_ns,
+            },
+        )
         .await?;
         Ok(Status::Ok)
     }

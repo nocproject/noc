@@ -4,7 +4,7 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, Collector, NoConfig, Status};
+use super::super::{Collectable, Collector, NoConfig, Schedule, Status};
 use super::UptimeOut;
 use crate::error::AgentError;
 use async_trait::async_trait;
@@ -16,6 +16,7 @@ pub type UptimeCollector = Collector<NoConfig<ConfigStub>>;
 #[async_trait]
 impl Collectable for UptimeCollector {
     const NAME: &'static str = "uptime";
+    type Output = UptimeOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
         let ts = Self::get_timestamp();
@@ -25,13 +26,13 @@ impl Collectable for UptimeCollector {
             .uptime()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
         // Prepare output
-        self.feed(&UptimeOut {
+        self.feed(
             ts,
-            service: self.get_service(),
-            collector: Self::get_name(),
-            labels: self.get_labels(),
-            uptime: uptime.as_secs(),
-        })
+            self.get_labels(),
+            &UptimeOut {
+                uptime: uptime.as_secs(),
+            },
+        )
         .await?;
         Ok(Status::Ok)
     }

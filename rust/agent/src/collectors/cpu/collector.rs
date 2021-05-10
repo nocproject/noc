@@ -4,7 +4,7 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, Collector, NoConfig, Status};
+use super::super::{Collectable, Collector, NoConfig, Schedule, Status};
 use super::{CpuOut, PlatformCpuOut};
 use crate::error::AgentError;
 use async_trait::async_trait;
@@ -18,6 +18,7 @@ pub type CpuCollector = Collector<NoConfig<ConfigStub>>;
 #[async_trait]
 impl Collectable for CpuCollector {
     const NAME: &'static str = "cpu";
+    type Output = CpuOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
         let sys = System::new();
@@ -33,20 +34,20 @@ impl Collectable for CpuCollector {
         for (i, s) in stats.iter().enumerate() {
             let mut labels = self.get_labels();
             labels.push(format!("noc::cpu::{}", i));
-            self.feed(&CpuOut {
-                // Common
-                ts: ts.clone(),
-                service: self.get_service(),
-                collector: Self::get_name(),
+            self.feed(
+                ts.clone(),
                 labels,
-                // Metrics
-                user: s.user,
-                nice: s.nice,
-                system: s.system,
-                interrupt: s.interrupt,
-                idle: s.idle,
-                platform: PlatformCpuOut::try_from(&s.platform)?,
-            })
+                &CpuOut {
+                    // Common
+                    // Metrics
+                    user: s.user,
+                    nice: s.nice,
+                    system: s.system,
+                    interrupt: s.interrupt,
+                    idle: s.idle,
+                    platform: PlatformCpuOut::try_from(&s.platform)?,
+                },
+            )
             .await?;
         }
         Ok(Status::Ok)

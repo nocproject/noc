@@ -6,7 +6,9 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
 pub use config::TestConfig;
+pub use out::TestOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "test")] {

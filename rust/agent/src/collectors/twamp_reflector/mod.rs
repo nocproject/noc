@@ -6,7 +6,9 @@
 // ---------------------------------------------------------------------
 
 mod config;
+mod out;
 pub use config::TwampReflectorConfig;
+pub use out::TwampReflectorOut;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "twamp-reflector")] {
