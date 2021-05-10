@@ -148,17 +148,11 @@ lazy_static! {
 }
 
 pub fn dscp_to_tos(dscp: String) -> Option<u8> {
-    match DSCP_TO_TOS_MAP.get(dscp.as_str()) {
-        Some(x) => Some(*x),
-        None => None,
-    }
+    DSCP_TO_TOS_MAP.get(dscp.as_str()).copied()
 }
 
 pub fn tos_to_dscp(tos: u8) -> Option<&'static str> {
-    match TOS_TO_DSCP_MAP.get(&tos) {
-        Some(x) => Some(*x),
-        None => None,
-    }
+    TOS_TO_DSCP_MAP.get(&tos).copied()
 }
 
 #[cfg(test)]
