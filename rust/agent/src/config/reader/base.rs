@@ -35,10 +35,7 @@ impl ConfigReader {
         }
     }
     fn get_schema(url: String) -> Option<String> {
-        match url.find(':') {
-            Some(pos) => Some(url[..pos].into()),
-            None => None,
-        }
+        url.find(':').map(|pos| url[..pos].into())
     }
 }
 
