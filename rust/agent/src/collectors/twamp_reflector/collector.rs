@@ -4,7 +4,7 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{CollectorConfig, Id, Runnable};
+use super::super::{Collector, CollectorConfig, Runnable};
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::proto::connection::Connection;
@@ -13,7 +13,6 @@ use crate::proto::twamp::{
     StartSessions, StopSessions, TestRequest, TestResponse, DEFAULT_COUNT, MODE_UNAUTHENTICATED,
 };
 use crate::proto::udp::UdpConnection;
-use agent_derive::Id;
 use async_trait::async_trait;
 use bytes::Bytes;
 use chrono::Utc;
@@ -27,22 +26,19 @@ use tokio::{
     time::timeout,
 };
 
-#[derive(Id)]
-pub struct TwampReflectorCollector {
-    pub id: String,
-    pub service: String,
+pub struct TwampReflectorCollectorConfig {
     pub listen: String,
     pub port: u16,
 }
 
-impl TryFrom<&ZkConfigCollector> for TwampReflectorCollector {
+pub type TwampReflectorCollector = Collector<TwampReflectorCollectorConfig>;
+
+impl TryFrom<&ZkConfigCollector> for TwampReflectorCollectorConfig {
     type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::TwampReflector(config) => Ok(Self {
-                id: value.get_id(),
-                service: value.get_service(),
                 listen: config.listen.clone(),
                 port: config.port,
             }),
@@ -64,19 +60,24 @@ struct ClientSession {
 impl Runnable for TwampReflectorCollector {
     async fn run(&self) {
         log::debug!("[{}] Starting collector", self.id);
-        let r = TcpListener::bind(format!("{}:{}", self.listen, self.port)).await;
+        let r = TcpListener::bind(format!("{}:{}", self.data.listen, self.data.port)).await;
         if let Err(e) = r {
             log::error!(
                 "[{}] Failed to create listener {}:{}: {}",
                 self.id,
-                self.listen,
-                self.port,
+                self.data.listen,
+                self.data.port,
                 e
             );
             return;
         }
         let listener = r.unwrap();
-        log::info!("[{}] Listening {}:{}", self.id, self.listen, self.port);
+        log::info!(
+            "[{}] Listening {}:{}",
+            self.id,
+            self.data.listen,
+            self.data.port
+        );
         loop {
             match listener.accept().await {
                 Ok((stream, addr)) => {

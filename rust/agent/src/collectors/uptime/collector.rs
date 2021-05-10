@@ -4,45 +4,21 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::super::{Collectable, Collector, NoConfig, Status};
 use super::UptimeOut;
-use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
-use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
-use std::convert::TryFrom;
 use systemstat::{Platform, System};
 
-const NAME: &str = "uptime";
-
-#[derive(Id, Repeatable)]
-pub struct UptimeCollector {
-    pub id: String,
-    pub service: String,
-    pub interval: u64,
-    pub labels: Vec<String>,
-}
-
-impl TryFrom<&ZkConfigCollector> for UptimeCollector {
-    type Error = AgentError;
-
-    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
-        match &value.config {
-            CollectorConfig::Uptime(_) => Ok(Self {
-                id: value.get_id(),
-                service: value.get_service(),
-                interval: value.get_interval(),
-                labels: value.get_labels(),
-            }),
-            _ => Err(AgentError::ConfigurationError("invalid config".into())),
-        }
-    }
-}
+pub struct ConfigStub;
+pub type UptimeCollector = Collector<NoConfig<ConfigStub>>;
 
 #[async_trait]
 impl Collectable for UptimeCollector {
+    const NAME: &'static str = "uptime";
+
     async fn collect(&self) -> Result<Status, AgentError> {
-        let ts = self.get_timestamp();
+        let ts = Self::get_timestamp();
         // Collect uptime
         let sys = System::new();
         let uptime = sys
@@ -51,9 +27,9 @@ impl Collectable for UptimeCollector {
         // Prepare output
         self.feed(&UptimeOut {
             ts,
-            service: self.service.clone(),
-            collector: NAME,
-            labels: self.labels.clone(),
+            service: self.get_service(),
+            collector: Self::get_name(),
+            labels: self.get_labels(),
             uptime: uptime.as_secs(),
         })
         .await?;

@@ -4,46 +4,22 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::super::{Collectable, Collector, NoConfig, Status};
 use super::NetworkOut;
-use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
-use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
-use std::convert::TryFrom;
 use systemstat::{Platform, System};
 
-const NAME: &str = "network";
-
-#[derive(Id, Repeatable)]
-pub struct NetworkCollector {
-    pub id: String,
-    pub service: String,
-    pub interval: u64,
-    pub labels: Vec<String>,
-}
-
-impl TryFrom<&ZkConfigCollector> for NetworkCollector {
-    type Error = AgentError;
-
-    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
-        match &value.config {
-            CollectorConfig::Network(_) => Ok(Self {
-                id: value.get_id(),
-                service: value.get_service(),
-                interval: value.get_interval(),
-                labels: value.get_labels(),
-            }),
-            _ => Err(AgentError::ConfigurationError("invalid config".into())),
-        }
-    }
-}
+pub struct ConfigStub;
+pub type NetworkCollector = Collector<NoConfig<ConfigStub>>;
 
 #[async_trait]
 impl Collectable for NetworkCollector {
+    const NAME: &'static str = "network";
+
     async fn collect(&self) -> Result<Status, AgentError> {
         let sys = System::new();
-        let ts = self.get_timestamp();
+        let ts = Self::get_timestamp();
         let interfaces = sys
             .networks()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
@@ -51,12 +27,12 @@ impl Collectable for NetworkCollector {
             let stats = sys
                 .network_stats(&iface.name)
                 .map_err(|e| AgentError::InternalError(e.to_string()))?;
-            let mut labels = self.labels.clone();
+            let mut labels = self.get_labels();
             labels.push(format!("noc::interface::{}", iface.name));
             self.feed(&NetworkOut {
                 ts: ts.clone(),
-                service: self.service.clone(),
-                collector: NAME,
+                service: self.get_service(),
+                collector: Self::get_name(),
                 labels,
                 //
                 rx_bytes: stats.rx_bytes.as_u64(),

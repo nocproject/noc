@@ -4,58 +4,34 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::super::{Collectable, Collector, NoConfig, Status};
 use super::FsOut;
-use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
-use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
-use std::convert::TryFrom;
 use systemstat::{Platform, System};
 
-const NAME: &str = "fs";
-
-#[derive(Id, Repeatable)]
-pub struct FsCollector {
-    pub id: String,
-    pub service: String,
-    pub interval: u64,
-    pub labels: Vec<String>,
-}
-
-impl TryFrom<&ZkConfigCollector> for FsCollector {
-    type Error = AgentError;
-
-    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
-        match &value.config {
-            CollectorConfig::Fs(_) => Ok(Self {
-                id: value.get_id(),
-                service: value.get_service(),
-                interval: value.get_interval(),
-                labels: value.get_labels(),
-            }),
-            _ => Err(AgentError::ConfigurationError("invalid config".into())),
-        }
-    }
-}
+pub struct ConfigStub;
+pub type FsCollector = Collector<NoConfig<ConfigStub>>;
 
 #[async_trait]
 impl Collectable for FsCollector {
+    const NAME: &'static str = "fs";
+
     async fn collect(&self) -> Result<Status, AgentError> {
         let sys = System::new();
-        let ts = self.get_timestamp();
+        let ts = Self::get_timestamp();
         let mounts = sys
             .mounts()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
         for fs in mounts.iter() {
             if !FsCollector::is_ignored_fs_type(&fs.fs_type, &fs.fs_mounted_on) {
-                let mut labels = self.labels.clone();
+                let mut labels = self.get_labels();
                 labels.push(format!("noc::fs::{}", fs.fs_mounted_on));
                 labels.push(format!("noc::fstype::{}", fs.fs_type));
                 self.feed(&FsOut {
                     ts: ts.clone(),
-                    service: self.service.clone(),
-                    collector: NAME,
+                    service: self.get_service(),
+                    collector: Self::get_name(),
                     labels,
                     //
                     files: fs.files,
