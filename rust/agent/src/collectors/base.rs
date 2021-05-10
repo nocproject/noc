@@ -39,20 +39,10 @@ pub trait Runnable {
 /// Must be used along with Id and Repeatable traits
 #[async_trait]
 pub trait Collectable {
-    // Get current timestamp in RFC-3339 format
-    fn get_timestamp(&self) -> String {
-        let t: DateTime<Utc> = SystemTime::now().into();
-        t.to_rfc3339_opts(SecondsFormat::Millis, false)
-    }
-    // Feed collected data
-    async fn feed<T>(&self, data: &T) -> Result<(), AgentError>
-    where
-        T: Serialize + Sync,
-    {
-        let out = serde_json::to_string(data)
-            .map_err(|e| AgentError::SerializationError(e.to_string()))?;
-        log::debug!("Out: {}", out);
-        Ok(())
+    const NAME: &'static str;
+
+    fn get_name() -> &'static str {
+        Self::NAME
     }
     // Collection cycle
     async fn collect(&self) -> Result<Status, AgentError>;
@@ -98,6 +88,81 @@ where
             }
             tokio::time::sleep(sleep_duration).await;
         }
+    }
+}
+
+// Collector generics
+// T - additional collector config and state
+pub struct Collector<T> {
+    pub id: String,
+    pub service: String,
+    pub interval: u64,
+    pub labels: Vec<String>,
+    pub data: T,
+}
+
+impl<T> TryFrom<&ZkConfigCollector> for Collector<T>
+where
+    T: for<'a> TryFrom<&'a ZkConfigCollector, Error = AgentError>,
+{
+    type Error = AgentError;
+
+    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
+        Ok(Self {
+            id: value.get_id(),
+            service: value.get_service(),
+            interval: value.get_interval(),
+            labels: value.get_labels(),
+            data: T::try_from(value)?,
+        })
+    }
+}
+
+// @todo: Move to Collector
+impl<T> Id for Collector<T> {
+    fn get_id(&self) -> String {
+        self.id.clone()
+    }
+}
+
+// @todo: Move to Collector
+impl<T> Repeatable for Collector<T> {
+    fn get_interval(&self) -> u64 {
+        self.interval
+    }
+}
+
+impl<T> Collector<T> {
+    pub fn get_service(&self) -> String {
+        self.service.clone()
+    }
+    pub fn get_labels(&self) -> Vec<String> {
+        self.labels.clone()
+    }
+    pub fn get_timestamp() -> String {
+        let t: DateTime<Utc> = SystemTime::now().into();
+        t.to_rfc3339_opts(SecondsFormat::Millis, false)
+    }
+    // Feed collected data
+    pub async fn feed<D>(&self, data: &D) -> Result<(), AgentError>
+    where
+        D: Serialize + Sync,
+    {
+        let out = serde_json::to_string(data)
+            .map_err(|e| AgentError::SerializationError(e.to_string()))?;
+        log::debug!("Out: {}", out);
+        Ok(())
+    }
+}
+
+// Empty config for collector
+pub type NoConfig<T> = PhantomData<T>;
+
+impl<T> TryFrom<&ZkConfigCollector> for NoConfig<T> {
+    type Error = AgentError;
+
+    fn try_from(_value: &ZkConfigCollector) -> Result<Self, Self::Error> {
+        Ok(Self {})
     }
 }
 

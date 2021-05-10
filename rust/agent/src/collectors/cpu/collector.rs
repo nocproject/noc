@@ -4,47 +4,24 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
-use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::super::{Collectable, Collector, NoConfig, Status};
 use super::{CpuOut, PlatformCpuOut};
-use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
-use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use std::convert::TryFrom;
 use systemstat::{Platform, System};
 use tokio::time::{sleep, Duration};
 
-const NAME: &str = "cpu";
-
-#[derive(Id, Repeatable)]
-pub struct CpuCollector {
-    pub id: String,
-    pub service: String,
-    pub interval: u64,
-    pub labels: Vec<String>,
-}
-
-impl TryFrom<&ZkConfigCollector> for CpuCollector {
-    type Error = AgentError;
-
-    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
-        match &value.config {
-            CollectorConfig::Cpu(_) => Ok(Self {
-                id: value.get_id(),
-                service: value.get_service(),
-                interval: value.get_interval(),
-                labels: value.get_labels(),
-            }),
-            _ => Err(AgentError::ConfigurationError("invalid config".into())),
-        }
-    }
-}
+pub struct ConfigStub;
+pub type CpuCollector = Collector<NoConfig<ConfigStub>>;
 
 #[async_trait]
 impl Collectable for CpuCollector {
+    const NAME: &'static str = "cpu";
+
     async fn collect(&self) -> Result<Status, AgentError> {
         let sys = System::new();
-        let ts = self.get_timestamp();
+        let ts = Self::get_timestamp();
         let delayed_stats = sys
             .cpu_load()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
@@ -54,13 +31,13 @@ impl Collectable for CpuCollector {
             .done()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
         for (i, s) in stats.iter().enumerate() {
-            let mut labels = self.labels.clone();
+            let mut labels = self.get_labels();
             labels.push(format!("noc::cpu::{}", i));
             self.feed(&CpuOut {
                 // Common
                 ts: ts.clone(),
-                service: self.service.clone(),
-                collector: NAME,
+                service: self.get_service(),
+                collector: Self::get_name(),
                 labels,
                 // Metrics
                 user: s.user,

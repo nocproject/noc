@@ -5,8 +5,9 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::super::{Collectable, CollectorConfig, Id, Repeatable, Status};
+use super::super::{Collectable, Collector, CollectorConfig, Status};
 use super::TwampSenderOut;
+use crate::collectors::Id;
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
 use crate::proto::connection::Connection;
@@ -19,7 +20,6 @@ use crate::proto::twamp::{
     MODE_UNAUTHENTICATED,
 };
 use crate::timing::Timing;
-use agent_derive::{Id, Repeatable};
 use async_trait::async_trait;
 use bytes::{Bytes, BytesMut};
 use chrono::Utc;
@@ -32,14 +32,7 @@ use tokio::{
     time::timeout,
 };
 
-const NAME: &str = "twamp_sender";
-
-#[derive(Id, Repeatable)]
-pub struct TwampSenderCollector {
-    pub id: String,
-    pub service: String,
-    pub interval: u64,
-    pub labels: Vec<String>,
+pub struct TwampSenderCollectorConfig {
     pub server: String,
     pub port: u16,
     pub n_packets: usize,
@@ -47,16 +40,14 @@ pub struct TwampSenderCollector {
     pub tos: u8,
 }
 
-impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
+pub type TwampSenderCollector = Collector<TwampSenderCollectorConfig>;
+
+impl TryFrom<&ZkConfigCollector> for TwampSenderCollectorConfig {
     type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::TwampSender(config) => Ok(Self {
-                id: value.get_id(),
-                service: value.get_service(),
-                interval: value.get_interval(),
-                labels: value.get_labels(),
                 server: config.server.clone(),
                 port: config.port,
                 n_packets: config.n_packets,
@@ -71,18 +62,25 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollector {
 
 #[async_trait]
 impl Collectable for TwampSenderCollector {
+    const NAME: &'static str = "twamp_sender";
+
     async fn collect(&self) -> Result<Status, AgentError> {
         //
-        log::debug!("[{}] Connecting {}:{}", self.id, self.server, self.port);
-        let stream = TcpStream::connect(format!("{}:{}", self.server, self.port)).await?;
-        let out = TestSession::new(stream, self.model)
+        log::debug!(
+            "[{}] Connecting {}:{}",
+            self.get_id(),
+            self.data.server,
+            self.data.port
+        );
+        let stream = TcpStream::connect(format!("{}:{}", self.data.server, self.data.port)).await?;
+        let out = TestSession::new(stream, self.data.model)
             .with_id(self.id.clone())
-            .with_service(self.service.clone())
-            .with_ts(self.get_timestamp())
+            .with_service(self.get_service())
+            .with_ts(Self::get_timestamp())
             .with_labels(&self.labels)
-            .with_tos(self.tos)
-            .with_reflector_addr(self.server.clone())
-            .with_n_packets(self.n_packets)
+            .with_tos(self.data.tos)
+            .with_reflector_addr(self.data.server.clone())
+            .with_n_packets(self.data.n_packets)
             .run()
             .await?;
         self.feed(&out).await?;
@@ -606,7 +604,7 @@ impl TestSession {
         TwampSenderOut {
             ts: self.ts.as_ref().unwrap().into(),
             service: self.service.clone(),
-            collector: NAME,
+            collector: TwampSenderCollector::get_name(),
             labels,
             //
             tx_packets: s_stats.pkt_sent,

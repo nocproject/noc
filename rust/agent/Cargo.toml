@@ -92,8 +92,6 @@ trust-dns-proto = {version = "0.20", optional = true}
 trust-dns-resolver = {version = "0.20", optional = true}
 serde_yaml = {version = "0.8", optional = true}
 systemstat = {version = "0.1", optional = true}
-# Subcrates for procedural macroses
-agent-derive = {path = "libs/agent-derive"}
 
 [dev-dependencies]
 criterion = "0.3"
