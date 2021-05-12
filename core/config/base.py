@@ -98,6 +98,14 @@ class BaseConfig(object, metaclass=ConfigBase):
             value = self.expand(value)
         self._params[path].set_value(value)
 
+    def find_parameter(self, path) -> BaseParameter:
+        """
+        Get parameter instance by name
+        :param path: Comma-separated path
+        :return: Parameter instance
+        """
+        return self._params[path]
+
     def get_parameter(self, path):
         return self._params[path].value
 

@@ -98,8 +98,8 @@ class LoginService(FastAPIService):
             self.revoked_cond.notify_all()
 
     async def on_activate(self):
-        # expire = config.login.session_ttl
-        # start_timestamp = time.time() - expire
+        # revokedtokens is optional, so mark liftbridge as non-critical service.
+        config.find_parameter("liftbridge.addresses").set_critical(False)
         await self.subscribe_stream(
             "revokedtokens",
             0,
