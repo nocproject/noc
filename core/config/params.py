@@ -337,3 +337,12 @@ class ServiceParameter(BaseParameter):
         if len(p) != 2:
             return False
         return is_ipv4(p[0]) and is_int(p[1])
+
+    def set_critical(self, critical: bool) -> None:
+        """
+        Change parameter's critical status
+
+        :param critical:
+        :return:
+        """
+        self.critical = critical
