@@ -1,0 +1,8 @@
+{
+    "name": "Power | MSTB 2.5/16-ST-5.08",
+    "$collection": "inv.connectiontypes",
+    "uuid": "e2003d48-d316-45a0-9ba3-1c337d6e8d39",
+    "description": "Terminal block connector, 8 pins",
+    "c_group": [],
+    "genders": "f"
+}

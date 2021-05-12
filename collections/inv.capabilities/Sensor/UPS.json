@@ -1,0 +1,8 @@
+{
+    "name": "Sensor | UPS",
+    "$collection": "inv.capabilities",
+    "uuid": "62fe147f-8daa-477e-87ec-1b74e24d023f",
+    "description": "Port (RS-232) connected to UPS by  Megatec, CyberPower Protocol II",
+    "type": "bool",
+    "card_template": null
+}

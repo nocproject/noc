@@ -1,0 +1,326 @@
+{
+    "name": "Qtech | Controller | QFC-PBIC-LIGHT v.2",
+    "$collection": "inv.objectmodels",
+    "uuid": "d6a7ae5d-3c6c-4c4c-a145-33018aa1ac20",
+    "vendor__code": "QTECH",
+    "description": "Контроллер предназначен для охраны, мониторинга и управления оборудованием в электрических и телекоммуникационных шкафах. ",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "eth0",
+            "protocols": ["10BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "оптронный вход, срабатывающий от замыкания на +48В",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "+in1",
+            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+        },
+        {
+            "description": "оптронный вход, срабатывающий от замыкания на +48В",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "+in2",
+            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+        },
+        {
+            "description": "оптронный вход, срабатывающий от замыкания на GND",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "-in3",
+            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+        },
+        {
+            "description": "оптронный вход, срабатывающий от замыкания на GND",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "-in4",
+            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+        },
+        {
+            "description": "",
+            "direction": "s",
+            "gender": "f",
+            "group": "1",
+            "name": "GND",
+            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+        },
+        {
+            "description": "вход подключения внешнего датчика температуры",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "temp",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "description": "вход подключения внешнего датчика температуры",
+            "direction": "s",
+            "gender": "f",
+            "group": "2",
+            "name": "GND",
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "description": "интерфейс для подключения контроллера ЭПУ и выпрями-тельных модулей",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "+12V",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "интерфейс для подключения контроллера ЭПУ и выпрями-тельных модулей",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "A",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "интерфейс для подключения контроллера ЭПУ и выпрями-тельных модулей",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "B",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "интерфейс для подключения контроллера ЭПУ и выпрями-тельных модулей",
+            "direction": "s",
+            "gender": "f",
+            "group": "3",
+            "name": "GND(AC-DC)",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Интерфейс конвертера Ethernet <-> RS-485 или подключения счёт-чика электроэнергии;",
+            "direction": "s",
+            "gender": "f",
+            "group": "4",
+            "name": "+10V",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Интерфейс конвертера Ethernet <-> RS-485 или подключения счёт-чика электроэнергии;",
+            "direction": "s",
+            "gender": "f",
+            "group": "4",
+            "name": "rs485_a",
+            "protocols": [">RS-485-A"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Интерфейс конвертера Ethernet <-> RS-485 или подключения счёт-чика электроэнергии;",
+            "direction": "s",
+            "gender": "f",
+            "group": "4",
+            "name": "rs485_b",
+            "protocols": [">RS-485-B"],
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Интерфейс конвертера Ethernet <-> RS-485 или подключения счёт-чика электроэнергии;",
+            "direction": "s",
+            "gender": "f",
+            "group": "4",
+            "name": "GND(Wh)",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Подключение цепей для контроля тока",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "c_sen1",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Подключение цепей для контроля тока",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "c_sen1",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Подключение цепей для контроля тока",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "c_sen2",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "Подключение цепей для контроля тока",
+            "direction": "s",
+            "gender": "f",
+            "group": "5",
+            "name": "c_sen2",
+            "type__name": "Power | MSTB 2.5/4-ST-5.08"
+        },
+        {
+            "description": "вход наличия сетевого напряжения",
+            "direction": "s",
+            "gender": "f",
+            "group": "6",
+            "name": "L",
+            "protocols": [">220VAC"],
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "description": "вход наличия сетевого напряжения",
+            "direction": "s",
+            "gender": "f",
+            "group": "6",
+            "name": "N",
+            "protocols": [">220VAC"],
+            "type__name": "Power | MSTB 2.5/2-ST-5.08"
+        },
+        {
+            "description": "Встроенное электромагнитное реле",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "rele1",
+            "type__name": "Power | MSTB 2.5/8-ST-5.08"
+        },
+        {
+            "description": "Встроенное электромагнитное реле",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "rele1",
+            "type__name": "Power | MSTB 2.5/8-ST-5.08"
+        },
+        {
+            "description": "Встроенное электромагнитное реле",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "rele2",
+            "type__name": "Power | MSTB 2.5/8-ST-5.08"
+        },
+        {
+            "description": "Встроенное электромагнитное реле",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "rele2",
+            "type__name": "Power | MSTB 2.5/8-ST-5.08"
+        },
+        {
+            "description": "Напряжение питания устройства",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "+V",
+            "type__name": "Power | MSTB 2.5/8-ST-5.08"
+        },
+        {
+            "description": "Напряжение питания устройства",
+            "direction": "s",
+            "gender": "f",
+            "group": "7",
+            "name": "GND",
+            "type__name": "Power | MSTB 2.5/8-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["Q00011707"],
+            "part_no": ["QFC-PBIC-LIGHT-V.2"]
+        },
+        "dimensions": {
+            "depth": 57,
+            "height": 90,
+            "width": 106
+        },
+        "management": {
+            "managed": true
+        }
+    },
+    "sensors": [
+        {
+            "description": "Дискретные вход 1",
+            "name": "in1",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.5.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Дискретные вход 2",
+            "name": "in2",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.6.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Дискретные вход 3",
+            "name": "in3",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.7.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Дискретные вход 4",
+            "name": "in4",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.8.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Состояние реле 1",
+            "name": "relay1",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.9.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Состояние реле 2",
+            "name": "relay2",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.10.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Напряжение питания устройства",
+            "name": "v48",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.11.0",
+            "units__name": "Volt AC"
+        },
+        {
+            "description": "Вход наличия сетевого напряжения",
+            "name": "v220_state",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.12.0",
+            "units__name": "Unknown"
+        },
+        {
+            "description": "Внутренний датчик температуры",
+            "name": "temp_in",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.13.0",
+            "units__name": "Celsius"
+        },
+        {
+            "description": "Наружный датчик температуры",
+            "name": "temp_out",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.14.0",
+            "units__name": "Celsius"
+        },
+        {
+            "description": "Ток потребления нагрузки",
+            "name": "current_load",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.15.0",
+            "units__name": "Ampere"
+        },
+        {
+            "description": "Ток заряда АКБ",
+            "name": "current_battery",
+            "snmp_oid": "1.3.6.1.4.1.27514.103.0.16.0",
+            "units__name": "Ampere"
+        }
+    ]
+}

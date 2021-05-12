@@ -1,5 +1,5 @@
 {
-    "name": "Electrical | MSTB 2,5/5-ST-5,08",
+    "name": "Electrical | MSTB 2,5/5-ST-5.08",
     "$collection": "inv.connectiontypes",
     "uuid": "778c12bf-ed21-4775-aa78-758359630c64",
     "description": "Terminal block outlet, 5 pins",
