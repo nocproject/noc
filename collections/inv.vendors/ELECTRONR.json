@@ -2,7 +2,7 @@
     "name": "ElectronR",
     "uuid": "833744e0-db0a-4c7d-9baf-dc5ed41c8845",
     "full_name": "ELECTRON",
-    "code": ["ELECTRONR"],
+    "code": ["ELECTRONR", "ELECTRON"],
     "site": "http://electron-ru.com/",
     "$collection": "inv.vendors"
 }

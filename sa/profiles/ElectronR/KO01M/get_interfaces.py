@@ -15,41 +15,8 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     def execute_snmp(self):
-        i = [1, 2, 3, 4, 5]
-        interfaces = []
-        interfaces += [
-            {
-                "type": "physical",
-                "name": "Temperature",
-                "admin_status": True,
-                "oper_status": True,
-                "snmp_ifindex": 140,
-                "subinterfaces": [],
-            }
-        ]
-        interfaces += [
-            {
-                "type": "physical",
-                "name": "Pulse",
-                "admin_status": True,
-                "oper_status": True,
-                "snmp_ifindex": 160,
-                "subinterfaces": [],
-            }
-        ]
-        for ii in i:
-            status = self.snmp.get("1.3.6.1.4.1.35419.20.1.10%s.0" % ii)
-            interfaces += [
-                {
-                    "type": "physical",
-                    "name": ii,
-                    "admin_status": status,
-                    "oper_status": status,
-                    "snmp_ifindex": ii,
-                    "subinterfaces": [],
-                }
-            ]
-        interfaces += [
+
+        interfaces = [
             {
                 "type": "physical",
                 "name": "eth0",

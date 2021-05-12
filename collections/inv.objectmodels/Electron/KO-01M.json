@@ -1,0 +1,150 @@
+{
+    "name": "Electron | КО-01М",
+    "$collection": "inv.objectmodels",
+    "uuid": "a4332eb7-43a3-46c5-894c-d604f2e9a0da",
+    "vendor__code": "ELECTRON",
+    "description": " Контроллер  предназначен  для  сбора  информации  о  состоянии датчиков  и  точек  контроля  на  объекте,  а  так  же  показаний  счетчиков  электрической энергии и передачи этой информации с объекта в центр мониторинга по имеющимся между ними каналам связи.",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "eth0",
+            "protocols": ["10BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "+U пит",
+            "direction": "s",
+            "gender": "f",
+            "name": "+5V",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "OUT",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 3",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 4",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 5",
+            "direction": "s",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "12",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "IMP+",
+            "direction": "s",
+            "gender": "f",
+            "name": "13",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "IMP-",
+            "direction": "s",
+            "gender": "f",
+            "name": "14",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["KO-01M", "KO01M"]
+        },
+        "dimensions": {
+            "depth": 35,
+            "height": 80,
+            "width": 80
+        },
+        "management": {
+            "managed": true
+        }
+    },
+    "sensors": [
+        {
+            "description": "Внутренний датчик температуры",
+            "name": "temp",
+            "snmp_oid": "1.3.6.1.4.1.35419.20.1.140.0",
+            "units__name": "Celsius"
+        },
+        {
+            "description": "Датчик числа импульсов",
+            "name": "pulse",
+            "snmp_oid": "1.3.6.1.4.1.35419.20.1.160.0",
+            "units__name": "Unknown"
+        }
+    ]
+}

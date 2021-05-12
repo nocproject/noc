@@ -29,7 +29,7 @@ class Profile(BaseProfile):
     rx_discrete_name = re.compile(r"^\d+/\d+$")
 
     matchers = {
-        "is_femto": {"platform": {"$regex": "FEMTO"}},
+        "is_femto": {"platform": {"$regex": "FEMTO|Femto"}},
     }
 
     SENSORS_TYPE = {3: 15, 4: 16, 5: 17, 6: 18}
