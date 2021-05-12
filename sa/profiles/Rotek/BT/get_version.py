@@ -16,6 +16,18 @@ class Script(BaseScript):
     reuse_cli_session = False
     keep_cli_session = False
 
+    def execute_cli(self, **kwargs):
+        v = self.http.get("/info.cgi?_", json=True, cached=True, eof_mark=b"}")
+        platform = v["model"]
+        if "," in platform:
+            platform = platform.split(",")[0]
+        return {
+            "vendor": "Rotek",
+            "version": v["fwversion"],
+            "platform": platform,
+            "attributes": {"Serial Number": v["serno"]},
+        }
+
     def execute_snmp(self):
         oid = self.snmp.get("1.3.6.1.2.1.1.1.0")
         sn = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.10.0")
@@ -40,6 +52,8 @@ class Script(BaseScript):
         else:
             platform = oid.split()[0].strip()
             version = oid.split()[1].strip()
+            if "," in platform:
+                platform = platform.split(",")[0]
             result = {
                 "vendor": "Rotek",
                 "version": version,

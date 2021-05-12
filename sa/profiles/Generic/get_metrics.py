@@ -592,13 +592,16 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def collect_sensor_metrics(self, metrics):
         for m in metrics:
             if m.oid:
-                value = self.snmp.get(m.oid)
-                self.set_metric(
-                    id=m.id,
-                    metric=m.metric,
-                    labels=m.labels,
-                    value=value,
-                )
+                try:
+                    value = self.snmp.get(m.oid)
+                    self.set_metric(
+                        id=m.id,
+                        metric=m.metric,
+                        labels=m.labels,
+                        value=float(value),
+                    )
+                except Exception:
+                    continue
 
     # @metrics(
     #     [
