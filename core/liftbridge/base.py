@@ -214,8 +214,11 @@ class LiftBridgeClient(object):
                 # Use random existing channel
                 broker = random.choice(self.open_brokers)
             else:
+                # Dirty hack to not block the tread with resolver
+                # Avoid to call parameter's __get__ method
+                addresses = await config.liftbridge.__dict__["addresses"].async_get()
                 # Use random broker from seed
-                svc = random.choice(config.liftbridge.addresses)
+                svc = random.choice(addresses)
                 broker = "%s:%s" % (svc.host, svc.port)
         channel = self.channels.get(broker)
         if not channel:
