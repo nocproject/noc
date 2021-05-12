@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
-from core.script.metrics import scale
+from noc.core.script.metrics import scale
 from noc.core.validators import is_float, is_int
 
 

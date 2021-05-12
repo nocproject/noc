@@ -1,0 +1,8 @@
+{
+    "name": "Sensor | elMeter",
+    "$collection": "inv.capabilities",
+    "uuid": "65e026bd-7e4b-451d-818d-8d7d2c4c5581",
+    "description": "Port connected to Electric meter device",
+    "type": "bool",
+    "card_template": null
+}

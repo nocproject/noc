@@ -30,7 +30,7 @@
             "gender": "f",
             "name": "alarm",
             "protocols": [">DryContact"],
-            "type__name": "Electrical | MSTB 2,5/5-ST-5,08"
+            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
         },
         {
             "description": "Port 1 (Copper)",
