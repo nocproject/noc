@@ -97,9 +97,11 @@ class LoginService(FastAPIService):
         async with self.revoked_cond:
             self.revoked_cond.notify_all()
 
-    async def on_activate(self):
+    async def subscribe_lift(self):
         # revokedtokens is optional, so mark liftbridge as non-critical service.
         config.find_parameter("liftbridge.addresses").set_critical(False)
+        # expire = config.login.session_ttl
+        # start_timestamp = time.time() - expire
         await self.subscribe_stream(
             "revokedtokens",
             0,
@@ -109,6 +111,9 @@ class LoginService(FastAPIService):
             # start_position=StartPosition.TIMESTAMP,
             auto_set_cursor=False,
         )
+
+    async def on_activate(self):
+        self.loop.create_task(self.subscribe_lift())
 
 
 if __name__ == "__main__":
