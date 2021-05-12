@@ -268,19 +268,22 @@ class ServiceParameter(BaseParameter):
 
     def __get__(self, instance, owner):
         if not self.value:
-            self.resolve()
+            from noc.core.ioloop.util import run_sync
+
+            run_sync(self.resolve)
+        return self.value
+
+    async def async_get(self):
+        if not self.value:
+            await self.resolve()
         return self.value
 
     def set_value(self, value):
         self.value = None
-        value = smart_text(value)
-        if isinstance(value, str):
-            self.services = [value]
-        else:
-            self.services = value
+        self.services = [smart_text(value)]
 
-    def resolve(self):
-        from noc.core.dcs.util import resolve
+    async def resolve(self):
+        from noc.core.dcs.util import resolve_async
         from noc.core.dcs.error import ResolutionError
 
         if isinstance(self.services, list) and ":" in self.services[0]:
@@ -296,7 +299,7 @@ class ServiceParameter(BaseParameter):
                     self.value = [ServiceItem(*svc.split(":"))]
                     break
                 try:
-                    items = resolve(
+                    items = await resolve_async(
                         svc,
                         wait=self.wait,
                         timeout=self.DEFAULT_RESOLUTION_TIMEOUT,
@@ -317,13 +320,14 @@ class ServiceParameter(BaseParameter):
         """
         :return: List of <host>:<port>
         """
-        return [str(i) for i in self.value]
+        if self.value:
+            return [str(i) for i in self.value]
+        return []
 
     def dump_value(self):
         if len(self.services) == 1:
             return self.services[0]
-        else:
-            return self.services
+        return self.services
 
     @staticmethod
     def is_static(svc):
