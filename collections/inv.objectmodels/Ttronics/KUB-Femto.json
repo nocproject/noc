@@ -1,0 +1,165 @@
+{
+    "name": "Ttronics | КУБ-Фемто",
+    "$collection": "inv.objectmodels",
+    "uuid": "8454fa9e-0888-4c9e-9e0c-2b578ef6880e",
+    "vendor__code": "TTRONICS",
+    "description": "Прибор «КУБ-Фемто» (далее – прибор) предназначен для контроля и мониторинга различных объектов через  сеть  Ethernet.  Прибор  оснащен  входом  для  датчика  температуры  и  6  многофункциональными портами, к которым могут быть подключены различные типы датчиков: открытия двери, затопления, задымления, влажности, вибрации/удара, снятия показания с импульсного выхода счетчика ресурсов и  т.п. ",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "eth0",
+            "protocols": ["10BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Датчик температуры +3.3(out)",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Датчик температуры",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Датчик температуры GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 3",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 4",
+            "direction": "s",
+            "gender": "f",
+            "name": "10",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "11",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 5",
+            "direction": "s",
+            "gender": "f",
+            "name": "12",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "13",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "Универсальные порт 6",
+            "direction": "s",
+            "gender": "f",
+            "name": "14",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "15",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "16",
+            "type__name": "Power | MSTB 2.5/16-ST-5.08"
+        },
+        {
+            "description": "+U пит",
+            "direction": "s",
+            "gender": "f",
+            "name": "+U",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "GND",
+            "direction": "s",
+            "gender": "f",
+            "name": "GND",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["KUB-FEMTO", "КУБ-Фемто"]
+        },
+        "dimensions": {
+            "depth": 35,
+            "height": 80,
+            "width": 80
+        },
+        "management": {
+            "managed": true
+        }
+    },
+    "sensors": [
+        {
+            "description": "Значение температуры с выносного датчика",
+            "name": "temp",
+            "snmp_oid": "1.3.6.1.3.55.1.2.1.0",
+            "units__name": "Celsius"
+        }
+    ]
+}
