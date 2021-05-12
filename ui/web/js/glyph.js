@@ -908,6 +908,7 @@ NOC.glyph = {
     "tencent-weibo": 0xf1d5,
     "tencent_weibo": 0xf1d5,
     "terminal": 0xf120,
+    "thermometer_full": 0xf2c7,
     "text-height": 0xf034,
     "text-width": 0xf035,
     "text_height": 0xf034,
