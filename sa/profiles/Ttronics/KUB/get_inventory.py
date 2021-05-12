@@ -255,17 +255,17 @@ class Script(BaseScript):
         ]
         # Universal input
         for num in range(1, 7):
-            in_config = self.snmp.get(f".1.3.6.1.3.55.1.3.1.2.{num - 1}")
+            in_config = self.snmp.get(f"1.3.6.1.3.55.1.3.1.2.{num - 1}")
             if in_config not in self.femto_input_config_map:
                 self.logger.warning("Unknown type of port")
                 continue
-            oid = self.get_oid(self.femto_input_config_map[num]["type"], num)
+            oid = self.get_oid(self.femto_input_config_map[in_config]["type"], num)
             r += [
                 {
-                    "name": f'{self.femto_input_config_map[num]["type"]}{num}',
+                    "name": f'{self.femto_input_config_map[in_config]["type"]}{num}',
                     "status": True,
                     "description": f"Универсальных вход {num}",
-                    "measurement": self.femto_input_config_map[num]["units"],
+                    "measurement": self.femto_input_config_map[in_config]["units"],
                     "snmp_oid": oid,
                 }
             ]
