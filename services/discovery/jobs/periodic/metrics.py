@@ -385,14 +385,14 @@ class MetricsCheck(DiscoveryCheck):
             )
         ):
             if not s.get("profile"):
-                self.logger.debug("[%s] Sensor has no profile. Skipping", s["name"])
+                self.logger.debug("[%s] Sensor has no profile. Skipping", s["local_id"])
                 continue
             pm: "SensorProfile" = SensorProfile.get_by_id(s["profile"])
             if not pm.enable_collect:
                 continue
             state = State.get_by_id(s["state"])
             if not state.is_productive:
-                self.logger.debug("[%s] Sensor is not productive state. Skipping", s["name"])
+                self.logger.debug("[%s] Sensor is not productive state. Skipping", s["local_id"])
                 continue
             for mtype in ["Sensor | Value", "Sensor | Status"]:
                 m_id = next(self.id_count)

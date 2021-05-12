@@ -16,7 +16,26 @@ class Script(BaseScript):
     name = "Rotek.BT.get_interfaces"
     interface = IGetInterfaces
 
+    def execute_cli(self, **kwargs):
+        if self.is_4250:
+            v = self.http.get("/info.cgi?_", json=True, cached=True, eof_mark=b"}")
+            return [
+                {
+                    "interfaces": [
+                        {
+                            "type": "physical",
+                            "name": "eth0",
+                            "mac": v["macaddr"],
+                            "subinterfaces": [],
+                        }
+                    ]
+                }
+            ]
+        raise NotImplementedError
+
     def execute_snmp(self):
+        if self.is_4250:
+            raise NotImplementedError
         interfaces = []
         try:
             ifindex = self.snmp.get("1.3.6.1.2.1.2.2.1.1.1")
