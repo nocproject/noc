@@ -28,6 +28,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.ConsolePanel",
         "NOC.sa.managedobject.InventoryPanel",
         "NOC.sa.managedobject.InterfacePanel",
+        "NOC.sa.managedobject.SensorsPanel",
         "NOC.sa.managedobject.CPEPanel",
         "NOC.sa.managedobject.ScriptPanel",
         "NOC.sa.managedobject.LinksPanel",
@@ -161,6 +162,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInterfaces
         });
 
+        me.sensorsButton = Ext.create("Ext.button.Button", {
+            text: __("Sensors"),
+            glyph: NOC.glyph.thermometer_full,
+            scope: me,
+            handler: me.onSensors
+        });
+
         me.cpeButton = Ext.create("Ext.button.Button", {
             text: __("CPE"),
             glyph: NOC.glyph.share_alt,
@@ -238,6 +246,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
+        me.ITEM_SENSORS = me.registerItem("NOC.sa.managedobject.SensorsPanel");
         me.ITEM_CPE = me.registerItem("NOC.sa.managedobject.CPEPanel");
         me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
@@ -1515,6 +1524,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.confdbPreviewButton,
                 me.inventoryButton,
                 me.interfacesButton,
+                me.sensorsButton,
                 me.cpeButton,
                 me.linksButton,
                 me.discoveryButton,
@@ -1693,6 +1703,11 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_INTERFACE, me.currentRecord);
     },
     //
+    onSensors: function() {
+        var me = this;
+        me.previewItem(me.ITEM_SENSORS, me.currentRecord);
+    },
+    //
     onCPE: function() {
         var me = this;
         me.previewItem(me.ITEM_CPE, me.currentRecord);
@@ -1796,6 +1811,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.consoleButton.setDisabled(disabled || !me.hasPermission("console") || !me.currentRecord.get("is_managed"));
         me.scriptsButton.setDisabled(disabled || !me.hasPermission("script") || !me.currentRecord.get("is_managed"));
         me.interfacesButton.setDisabled(disabled);
+        me.sensorsButton.setDisabled(disabled);
         me.cpeButton.setDisabled(disabled);
         me.linksButton.setDisabled(disabled);
         me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
@@ -1832,6 +1848,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                     break;
                 case "interfaces":
                     me.onInterfaces();
+                    break;
+                case "sensors":
+                    me.onSensors();
                     break;
                 case "links":
                     me.onLinks();
