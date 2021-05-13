@@ -47,7 +47,7 @@ orjson==3.5.2
 progressbar2==3.53.1
 protobuf==3.15.8
 psycopg2==2.8.6
-pydantic==1.7.1
+pydantic==1.7.4
 pymongo==3.11.3
 pynsq==0.9.0
 pyproj==2.6.0
