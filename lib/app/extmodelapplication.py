@@ -374,7 +374,7 @@ class ExtModelApplication(ExtApplication):
                     v = stencil_registry.get(o.shape)
                     r[f.name] = v.id
                     r["%s__label" % f.name] = smart_text(v.title)
-            elif f.name == "labels" and isinstance(f, ArrayField):
+            elif f.name in {"labels", "effective_labels"} and isinstance(f, ArrayField):
                 r["labels"] = [
                     {
                         "id": ll.name,
