@@ -70,8 +70,8 @@ Ext.define("NOC.sa.managedobject.SensorsPanel", {
                             editor: "inv.sensorprofile.LookupField"
                         },
                         {
-                            text: __("Labels"),
-                            dataIndex: "labels",
+                            text: __("Effective Labels"),
+                            dataIndex: "effective_labels",
                             renderer: NOC.render.LabelField,
                             editor: "labelfield",
                             width: 200

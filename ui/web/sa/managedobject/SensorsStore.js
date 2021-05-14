@@ -27,6 +27,10 @@ Ext.define("NOC.sa.managedobject.SensorsStore", {
             type: "auto"
         },
         {
+            name: "effective_labels",
+            type: "auto"
+        },
+        {
             name: "last_seen",
             type: "date"
         },

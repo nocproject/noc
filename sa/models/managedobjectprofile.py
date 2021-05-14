@@ -15,14 +15,15 @@ from noc.core.translation import ugettext as _
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
-from typing import Optional
+from typing import Optional, List
+from pydantic import BaseModel
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
-from noc.core.model.fields import PickledField, DocumentReferenceField
+from noc.core.model.fields import PickledField, DocumentReferenceField, PydanticField
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
@@ -45,6 +46,15 @@ from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
+
+
+class MatchRule(BaseModel):
+    labels: List[str]
+    handler: Optional[str]
+
+
+class MatchRules(BaseModel):
+    __root__: List[MatchRule]
 
 
 m_valid = DictListParameter(
@@ -600,6 +610,17 @@ class ManagedObjectProfile(NOCModel):
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
+    # Dynamic Profile Classification
+    dynamic_order = models.IntegerField(_("Dynamic Order"), default=0)
+    match_rules = PydanticField(
+        _("Match Dynamic Rules"),
+        schema=MatchRules,
+        blank=True,
+        null=True,
+        default=list,
+        # ? Internal validation not worked with JSON Field
+        # validators=[match_rules_validate],
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -747,6 +768,9 @@ class ManagedObjectProfile(NOCModel):
                 self.metrics = m_valid.clean(self.metrics)
             except ValueError as e:
                 raise ValueError(e)
+        if self.match_rules:
+            # Not calling validate(). Probably on NOCModel
+            MatchRules.parse_obj(self.match_rules)
         super().save(*args, **kwargs)
 
     @classmethod

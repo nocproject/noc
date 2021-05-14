@@ -10,8 +10,10 @@ from pickle import loads, dumps, HIGHEST_PROTOCOL
 
 # Third-party modules
 import psycopg2
+from pydantic import BaseModel, ValidationError
 from psycopg2.extensions import adapt
 from django.db import models
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 from bson import ObjectId
 
@@ -351,3 +353,20 @@ class ObjectIDArrayField(models.Field):
         if isinstance(value, (str, ObjectId)):
             value = [value]
         return "{ %s }" % ", ".join(str(x) for x in value)
+
+
+class PydanticField(models.JSONField):
+    def __init__(
+        self, verbose_name=None, name=None, encoder=None, decoder=None, schema=None, **kwargs
+    ):
+        if not schema.__custom_root_type__:
+            raise ValueError("Schema must __root__ attribute")
+        self.schema: BaseModel = schema
+        super().__init__(verbose_name, name, encoder, decoder, **kwargs)
+
+    def validate(self, value, model_instance):
+        super().validate(value, model_instance)
+        try:
+            self.schema.parse_obj(value)
+        except ValidationError as e:
+            raise DjangoValidationError(e)

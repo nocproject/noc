@@ -10,6 +10,8 @@ Ext.define("NOC.inv.sensorprofile.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.LabelField",
+    "NOC.core.ListFormField",
+    "NOC.main.handler.LookupField",
     "NOC.inv.sensorprofile.Model",
     "NOC.wf.workflow.LookupField",
     "NOC.main.style.LookupField"
@@ -32,6 +34,12 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           dataIndex: "labels",
           renderer: NOC.render.LabelField,
           width: 100
+        },
+        {
+          text: __("Dynamic Order"),
+          dataIndex: "dynamic_order",
+          width: 60,
+          align: "right"
         }
       ],
 
@@ -82,8 +90,39 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           allowBlank: true,
           query: {
             "enable_sensorprofile": true
+          }
           },
-        }
+          {
+            name: "dynamic_order",
+            xtype: "numberfield",
+            fieldLabel: __("Dynamic Order"),
+            allowBlank: true,
+            uiStyle: "small"
+          },
+          {
+            name: "match_rules",
+            xtype: "listform",
+            fieldLabel: __("Match Rules"),
+            items: [
+                {
+                  name: "labels",
+                  xtype: "labelfield",
+                  fieldLabel: __("Match Labels"),
+                  allowBlank: false,
+                  uiStyle: "extra"
+                },
+                {
+                  name: "handler",
+                  xtype: "main.handler.LookupField",
+                  fieldLabel: __("Match Handler"),
+                  allowBlank: true,
+                  uiStyle: "medium",
+                  query: {
+                    "allow_match_rule": true
+                }
+                }
+              ]
+          }
       ]
     });
     me.callParent();

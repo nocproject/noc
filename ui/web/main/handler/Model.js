@@ -74,6 +74,10 @@ Ext.define("NOC.main.handler.Model", {
         {
             name: "allow_mx_transmutation",
             type: "boolean"
+        },
+        {
+            name: "allow_match_rule",
+            type: "boolean"
         }
     ]
 });
