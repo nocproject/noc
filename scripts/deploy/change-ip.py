@@ -140,4 +140,7 @@ if __name__ == "__main__":
 
     os.system("systemctl restart noc")
     change_inside_tower(old_ip_address, my_ip)
+
+    os.system(f"chown grafana {GRAFANA_DEB_PATH}")
+    os.system("systemctl restart grafana-server")
     print("That's all")
