@@ -178,6 +178,22 @@ Ext.define("NOC.main.handler.Application", {
                             boxLabel: __("Allow MX Transmutation")
                         }
                     ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Math rule"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "allow_match_rule",
+                            xtype: "checkbox",
+                            boxLabel: __("Allow Match Rule")
+                        }
+                    ]
                 }
             ]
         });

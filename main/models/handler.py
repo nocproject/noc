@@ -54,6 +54,7 @@ class Handler(Document):
     allow_ds_filter = BooleanField()
     allow_ifdesc = BooleanField()
     allow_mx_transmutation = BooleanField()
+    allow_match_rule = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 

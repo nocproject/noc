@@ -23,7 +23,12 @@ class DatabaseWrapper(PGDatabaseWrapper):
         :param conn_params:
         :return:
         """
-        return psycopg2.connect(cursor_factory=SpanCursor, **conn_params)
+        connection = psycopg2.connect(cursor_factory=SpanCursor, **conn_params)
+        # Register dummy loads() to avoid a round trip from psycopg2's decode
+        # to json.dumps() to json.loads(), when using a custom decoder in
+        # JSONField.
+        psycopg2.extras.register_default_jsonb(conn_or_curs=connection, loads=lambda x: x)
+        return connection
 
     def init_connection_state(self):
         """

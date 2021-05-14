@@ -31,6 +31,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.ref.soposition.LookupField",
         "NOC.main.ref.soform.LookupField",
         "NOC.core.LabelField",
+        "NOC.core.ListFormField",
         "Ext.ux.form.MultiIntervalField",
         "Ext.ux.form.GridField"
     ],
@@ -226,6 +227,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     xtype: "labelfield",
                                     fieldLabel: __("Labels"),
                                     allowBlank: true,
+                                    uiStyle: "extra",
                                     query: {
                                         "enable_managedobjectprofile": true
                                     },
@@ -242,60 +244,135 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Shape"),
                                     allowBlank: true
                                 },
-                                                                {
-                                    name: "shape_overlay_glyph",
-                                    xtype: "main.glyph.LookupField",
-                                    fieldLabel: __("Glyph"),
-                                    allowBlank: true
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Shape"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "shape_overlay_glyph",
+                                                    xtype: "main.glyph.LookupField",
+                                                    fieldLabel: __("Glyph"),
+                                                    allowBlank: true
+                                                },
+                                                {
+                                                    name: "shape_overlay_position",
+                                                    xtype: "main.ref.soposition.LookupField",
+                                                    fieldLabel: __("Position"),
+                                                    allowBlank: true
+                                                },
+                                                {
+                                                    name: "shape_overlay_form",
+                                                    xtype: "main.ref.soform.LookupField",
+                                                    fieldLabel: __("Form"),
+                                                    allowBlank: true
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 },
                                 {
-                                    name: "shape_overlay_position",
-                                    xtype: "main.ref.soposition.LookupField",
-                                    fieldLabel: __("Position"),
-                                    allowBlank: true
+                                    xtype: "fieldset",
+                                    title: __("Address Resolution Policy"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 8
+                                    },
+                                    items: [
+                                        {
+                                            name: "address_resolution_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Address Resolution Policy"),
+                                            store: [
+                                                ["D", __("Disabled")],
+                                                ["O", __("Once")],
+                                                ["E", __("Enabled")]
+                                            ],
+                                            allowBlank: false,
+                                            labelWidth: 200,
+                                            value: "D",
+                                            uiStyle: "large"
+                                        },
+                                        {
+                                            name: "resolver_handler",
+                                            xtype: "main.handler.LookupField",
+                                            fieldLabel: __("Resolver Handler"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            query: {
+                                                allow_resolver: true
+                                            }
+                                        }
+                                    ]
                                 },
                                 {
-                                    name: "shape_overlay_form",
-                                    xtype: "main.ref.soform.LookupField",
-                                    fieldLabel: __("Form"),
-                                    allowBlank: true
+                                    xtype: "fieldset",
+                                    title: __("IPAM Field"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 8
+                                    },
+                                    items: [
+                                        {
+                                            name: "name_template",
+                                            xtype: "textfield",
+                                            fieldLabel: __("Name template"),
+                                            allowBlank: true,
+                                            uiStyle: "large"
+                                        },
+                                        {
+                                            name: "fqdn_suffix",
+                                            xtype: "textfield",
+                                            fieldLabel: __("FQDN Suffix"),
+                                            allowBlank: true,
+                                            uiStyle: "large"
+                                        }
+                                    ]
                                 },
                                 {
-                                    name: "name_template",
-                                    xtype: "textfield",
-                                    fieldLabel: __("Name template"),
+                                    name: "dynamic_order",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Dynamic Order"),
                                     allowBlank: true,
-                                    uiStyle: "large"
+                                    uiStyle: "small"
                                 },
                                 {
-                                    name: "fqdn_suffix",
-                                    xtype: "textfield",
-                                    fieldLabel: __("FQDN Suffix"),
-                                    allowBlank: true,
-                                    uiStyle: "large"
-                                },
-                                {
-                                    name: "address_resolution_policy",
-                                    xtype: "combobox",
-                                    fieldLabel: __("Address Resolution Policy"),
-                                    store: [
-                                        ["D", __("Disabled")],
-                                        ["O", __("Once")],
-                                        ["E", __("Enabled")]
-                                    ],
-                                    allowBlank: false,
-                                    value: "D",
-                                    uiStyle: "medium"
-                                },
-                                {
-                                    name: "resolver_handler",
-                                    xtype: "main.handler.LookupField",
-                                    fieldLabel: __("Resolver Handler"),
-                                    allowBlank: true,
-                                    uiStyle: "medium",
-                                    query: {
-                                        allow_resolver: true
-                                    }
+                                    name: "match_rules",
+                                    xtype: "listform",
+                                    uiStyle: "large",
+                                    fieldLabel: __("Match Rules"),
+                                    items: [
+                                        {
+                                            name: "labels",
+                                            xtype: "labelfield",
+                                            fieldLabel: __("Match Labels"),
+                                            allowBlank: false,
+                                            uiStyle: "extra"
+                                        },
+                                        {
+                                            name: "handler",
+                                            xtype: "main.handler.LookupField",
+                                            fieldLabel: __("Match Handler"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            query: {
+                                                "allow_match_rule": true
+                                            }
+                                        }
+                                    ]
                                 }
                             ]
                         },
