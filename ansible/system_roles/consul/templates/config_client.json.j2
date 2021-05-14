@@ -29,5 +29,8 @@
   "retry_join": [ {% set comma_nodes = joiner(", ") -%}
   {% for n in groups['svc-consul-server'] %}
      {{ comma_nodes() }}"{{ hostvars[n].ansible_host }}"
-  {% endfor %}]
+  {% endfor %}],
+  "limits": {
+      "http_max_conns_per_client": 1000
+  }
 }
