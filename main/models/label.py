@@ -491,10 +491,10 @@ class Label(Document):
             coll = model._get_collection()
             coll.bulk_write(
                 [
-                    UpdateMany[
+                    UpdateMany(
                         {"effective_labels": {"$in": labels}},
                         {"$pull": {"effective_labels": {"$in": labels}}},
-                    ]
+                    )
                 ]
             )
         else:

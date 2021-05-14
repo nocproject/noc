@@ -192,10 +192,10 @@ class RegexpLabel(Document):
                 coll = get_db()["noc.interfaces"]
                 coll.bulk_write(
                     [
-                        UpdateMany[
+                        UpdateMany(
                             {field: {"$re": self.regexp}},
                             {"$addToSet": {"effective_labels": {"$each": labels}}},
-                        ]
+                        )
                     ]
                 )
 

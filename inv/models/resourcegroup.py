@@ -148,10 +148,10 @@ class ResourceGroup(Document):
             coll = model._get_collection()
             coll.bulk_write(
                 [
-                    UpdateMany[
+                    UpdateMany(
                         {"effective_service_groups": {"$in": [self.id]}},
                         {"$pull": {"effective_service_groups": {"$in": [self.id]}}},
-                    ]
+                    )
                 ]
             )
         else:
@@ -167,10 +167,10 @@ class ResourceGroup(Document):
             coll = model._get_collection()
             coll.bulk_write(
                 [
-                    UpdateMany[
+                    UpdateMany(
                         {"effective_client_groups": {"$in": [self.id]}},
                         {"$pull": {"effective_client_groups": {"$in": [self.id]}}},
-                    ]
+                    )
                 ]
             )
         else:
