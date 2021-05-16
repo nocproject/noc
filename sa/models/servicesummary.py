@@ -72,6 +72,7 @@ class ServiceSummary(Document):
     }
     managed_object = IntField()
     interface = ObjectIdField()
+    subinterface = ObjectIdField()
     service = ListField(EmbeddedDocumentField(SummaryItem))
     subscriber = ListField(EmbeddedDocumentField(SummaryItem))
 
@@ -84,6 +85,7 @@ class ServiceSummary(Document):
             interface None means unbound or box-wise services
         """
         from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
         from noc.sa.models.service import Service
         from noc.wf.models.state import State
 
@@ -117,6 +119,16 @@ class ServiceSummary(Document):
                 comment="[servicesummary.build_summary_for_object] Getting services for interfaces",
             )
         }
+        # service -> subinterface bindings
+        svc_subinterface = {}
+        for x in SubInterface._get_collection().find(
+            {"managed_object": managed_object, "service": {"$exists": True}},
+            {"_id": 1, "interface": 1, "service": 1},
+            comment="[servicesummary.build_summary_for_object] Getting services for subinterface",
+        ):
+            svc_interface[x["service"]] = x["interface"]
+            svc_subinterface[x["service"]] = x["_id"]
+
         # Iterate over object's services
         # And walk underlying tree
         ri = {}

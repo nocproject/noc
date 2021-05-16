@@ -7,18 +7,19 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, ListField
+from mongoengine.fields import StringField, IntField, ListField, ReferenceField
 
 # NOC modules
 from noc.config import config
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.datastream.decorator import datastream
+from noc.sa.models.service import Service
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
 from .interfaceprofile import InterfaceProfile
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 
 
 SUBINTERFACE_AFI = (
@@ -89,6 +90,8 @@ class SubInterface(Document):
     tunnel_local_address = StringField(required=False)
     tunnel_remote_address = StringField(required=False)
     project = ForeignKeyField(Project)
+    #
+    service = ReferenceField(Service)
 
     def __str__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
