@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Callable, Union, TypeVar
+from typing import Callable, Union, TypeVar, List
 from http import HTTPStatus
 
 # Third-party modules
@@ -37,7 +37,9 @@ class ListOp(object):
 
 
 class FilterExact(ListOp):
-    def get_transform(self, value):
+    def get_transform(self, values: List):
+        value = values[0]
+
         def inner(qs):
             return qs.filter(**{self.name: value})
 
@@ -49,8 +51,9 @@ class RefFilter(ListOp):
         super().__init__(name)
         self.model = model
 
-    def get_transform(self, value):
+    def get_transform(self, values: List):
         def inner_document(qs):
+            value = values[0]
             if value and not is_objectid(value):
                 raise HTTPException(
                     status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
@@ -64,6 +67,7 @@ class RefFilter(ListOp):
             return qs.filter(**{self.name: vv})
 
         def inner_model(qs):
+            value = values[0]
             if value and not is_int(value):
                 raise HTTPException(
                     status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
@@ -86,11 +90,29 @@ class FuncFilter(ListOp):
         super().__init__(name)
         self.function = function
 
-    def get_transform(self, value):
+    def get_transform(self, values: List):
         def inner(qs):
-            r = self.function(qs, value)
+            r = self.function(qs, values)
             if r is not None:
                 return r
             return qs
+
+        return inner
+
+
+class FilterBool(ListOp):
+    def get_transform(self, values: List):
+        value = values[0] != "false"
+
+        def inner(qs):
+            return qs.filter(**{self.name: value})
+
+        return inner
+
+
+class FilterIn(ListOp):
+    def get_transform(self, values: List):
+        def inner(qs):
+            return qs.filter(**{f"{self.name}__in": values})
 
         return inner
