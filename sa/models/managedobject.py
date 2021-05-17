@@ -43,6 +43,7 @@ from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
+from noc.main.models.regexplabel import RegexpLabel
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
@@ -1772,27 +1773,33 @@ class ManagedObject(NOCModel):
         return "events.%s" % pool, 0
 
     @classmethod
-    def iter_effective_labels(cls, intance: "ManagedObject") -> Iterable[List[str]]:
-        yield intance.labels or []
-        yield list(AdministrativeDomain.iter_lazy_labels(intance.administrative_domain))
-        yield list(Pool.iter_lazy_labels(intance.pool))
-        yield list(ManagedObjectProfile.iter_lazy_labels(intance.object_profile))
-        lazy_profile_labels = list(Profile.iter_lazy_labels(intance.profile))
+    def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
+        yield instance.labels or []
+        yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
+        yield list(Pool.iter_lazy_labels(instance.pool))
+        yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
+        yield RegexpLabel.get_effective_labels("managedobject_name", instance.name)
+        lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
         yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
-        if intance.vendor:
-            lazy_vendor_labels = list(Vendor.iter_lazy_labels(intance.vendor))
+        if instance.vendor:
+            lazy_vendor_labels = list(Vendor.iter_lazy_labels(instance.vendor))
             yield Label.ensure_labels(lazy_vendor_labels, enable_managedobject=True)
-        if intance.platform:
-            lazy_platform_labels = list(Platform.iter_lazy_labels(intance.platform))
+        if instance.platform:
+            lazy_platform_labels = list(Platform.iter_lazy_labels(instance.platform))
             yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
-        if intance.address:
-            yield list(PrefixTable.iter_lazy_labels(intance.address))
-        if intance.vrf:
-            yield list(VRF.iter_lazy_labels(intance.vrf))
-        if intance.vc_domain:
-            yield list(VCDomain.iter_lazy_labels(intance.vc_domain))
-        if intance.tt_system:
-            yield list(TTSystem.iter_lazy_labels(intance.tt_system))
+        if instance.address:
+            yield list(PrefixTable.iter_lazy_labels(instance.address))
+            yield RegexpLabel.get_effective_labels("managedobject_address", instance.address)
+        if instance.description:
+            yield RegexpLabel.get_effective_labels(
+                "managedobject_description", instance.description
+            )
+        if instance.vrf:
+            yield list(VRF.iter_lazy_labels(instance.vrf))
+        if instance.vc_domain:
+            yield list(VCDomain.iter_lazy_labels(instance.vc_domain))
+        if instance.tt_system:
+            yield list(TTSystem.iter_lazy_labels(instance.tt_system))
 
     @classmethod
     def can_set_label(cls, label):

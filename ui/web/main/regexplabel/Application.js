@@ -121,6 +121,22 @@ Ext.define("NOC.main.regexplabel.Application", {
               boxLabel: __("Interface Description")
             }
             ]
+        },
+        {
+          xtype: "fieldset",
+          layout: "hbox",
+          title: __("Sensor"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right"
+          },
+          items: [
+            {
+              name: "enable_sensor_local_id",
+              xtype: "checkbox",
+              boxLabel: __("Sensor Local ID")
+            }
+            ]
         }
         ]},
     ]
