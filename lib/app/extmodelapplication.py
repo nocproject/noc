@@ -375,7 +375,7 @@ class ExtModelApplication(ExtApplication):
                     r[f.name] = v.id
                     r["%s__label" % f.name] = smart_text(v.title)
             elif f.name in {"labels", "effective_labels"} and isinstance(f, ArrayField):
-                r["labels"] = [
+                r[f.name] = [
                     {
                         "id": ll.name,
                         "is_protected": ll.is_protected,
