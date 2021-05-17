@@ -49,6 +49,7 @@ from .capsprofile import CapsProfile
 
 
 class MatchRule(BaseModel):
+    dynamic_order: int = 0
     labels: List[str]
     handler: Optional[str]
 
@@ -611,7 +612,6 @@ class ManagedObjectProfile(NOCModel):
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
     # Dynamic Profile Classification
-    dynamic_order = models.IntegerField(_("Dynamic Order"), default=0)
     match_rules = PydanticField(
         _("Match Dynamic Rules"),
         schema=MatchRules,

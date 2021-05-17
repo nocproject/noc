@@ -901,11 +901,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "auto"
         },
         {
-            name: "dynamic_order",
-            type: "int",
-            defaultValue: 0
-        },
-        {
             name: "match_rules",
             type: "auto"
         }

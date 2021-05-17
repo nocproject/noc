@@ -16,11 +16,6 @@ class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
             "sa_managedobjectprofile",
-            "dynamic_order",
-            models.IntegerField("Dynamic Order", default=0),
-        )
-        self.db.add_column(
-            "sa_managedobjectprofile",
             "match_rules",
             models.JSONField("Match Dynamic Rules", null=True, blank=True, default=lambda: "[]"),
         )
