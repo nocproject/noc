@@ -17,7 +17,7 @@ from ..models.administrativedomain import (
 )
 from ..utils.ref import get_reference, get_reference_label
 from ..utils.rest.model import ModelResourceAPI
-from ..utils.rest.op import FilterExact, RefFilter, FuncFilter
+from ..utils.rest.op import FilterExact, RefFilter, FuncFilter, FilterIn
 
 router = APIRouter()
 
@@ -26,7 +26,8 @@ class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
     prefix = "/api/ui/administrativedomain"
     model = AdministrativeDomain
     list_ops = [
-        FuncFilter("query", function=lambda qs, value: qs.filter(name__regex=value)),
+        FilterIn("id"),
+        FuncFilter("query", function=lambda qs, values: qs.filter(name__icontains=values[0])),
         FilterExact("name"),
         RefFilter("parent", model=AdministrativeDomain),
     ]

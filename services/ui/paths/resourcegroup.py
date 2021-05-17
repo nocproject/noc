@@ -13,7 +13,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from ..models.resourcegroup import DefaultResourceGroupItem, FormResourceGroupItem
 from ..utils.ref import get_reference, get_reference_label
 from ..utils.rest.document import DocumentResourceAPI
-from ..utils.rest.op import FilterExact, RefFilter
+from ..utils.rest.op import FilterIn, RefFilter
 
 router = APIRouter()
 
@@ -21,7 +21,7 @@ router = APIRouter()
 class ResourceGroupAPI(DocumentResourceAPI[ResourceGroup]):
     prefix = "/api/ui/resourcegroup"
     model = ResourceGroup
-    list_ops = [FilterExact("id"), RefFilter("parent", model=ResourceGroup)]
+    list_ops = [FilterIn("id"), RefFilter("parent", model=ResourceGroup)]
 
     @classmethod
     def item_to_default(cls, item: ResourceGroup) -> DefaultResourceGroupItem:

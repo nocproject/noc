@@ -27,7 +27,7 @@ from collections import defaultdict
 
 # Third-party modules
 from pydantic import BaseModel
-from fastapi import APIRouter, HTTPException, Security, Response, Depends
+from fastapi import APIRouter, HTTPException, Security, Response, Depends, Query
 
 # NOC modules
 from noc.config import config
@@ -293,13 +293,13 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
             body = ["    r = {}"]
             # Apply list ops as annotations
             for list_op in self.list_ops:
-                args += [f"{list_op.name}: Optional[str] = None"]
+                args += [f"{list_op.name}: Optional[List[str]] = Query(None)"]
                 body += [
                     f"    if {list_op.name} is not None:",
                     f'        r["{list_op.name}"] = {list_op.name}',
                 ]
             code = [f"def inner({', '.join(args)}) -> dict:"] + body + ["    return r"]
-            r = {"Optional": typing.Optional}
+            r = {"Optional": typing.Optional, "List": typing.List, "Query": Query}
             exec("\n".join(code), {}, r)
             return r["inner"]
 

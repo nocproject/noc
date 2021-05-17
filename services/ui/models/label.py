@@ -27,6 +27,18 @@ class LabelItem(BaseModel):
     fg_color2: str
 
 
+class LabelLabelItem(BaseModel):
+    id: str
+    label: str
+    is_protected: bool
+    scope: str
+    value: str
+    bg_color1: str
+    fg_color1: str
+    bg_color2: str
+    fg_color2: str
+
+
 class DefaultLabelItem(BaseModel):
     id: str
     name: str

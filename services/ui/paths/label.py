@@ -10,10 +10,10 @@ from fastapi import APIRouter
 
 # NOC modules
 from noc.main.models.label import Label
-from ..models.label import DefaultLabelItem, LabelItem, FormLabelItem
+from ..models.label import DefaultLabelItem, FormLabelItem, LabelLabelItem
 from ..utils.ref import get_reference
 from ..utils.rest.document import DocumentResourceAPI
-from ..utils.rest.op import FilterExact, FuncFilter
+from ..utils.rest.op import FilterExact, FuncFilter, FilterBool
 
 router = APIRouter()
 
@@ -22,15 +22,17 @@ class LabelAPI(DocumentResourceAPI[Label]):
     prefix = "/api/ui/label"
     model = Label
     list_ops = [
-        FuncFilter("query", function=lambda qs, value: qs.filter(name__regex=value)),
+        FuncFilter("query", function=lambda qs, values: qs.filter(name__icontains=values[0])),
+        FuncFilter("id", function=lambda qs, values: qs.filter(name=values[0])),
         FilterExact("name"),
+        FilterBool("enable_service"),
     ]
 
     @classmethod
-    def item_to_label(cls, item: Label) -> LabelItem:
-        return LabelItem(
+    def item_to_label(cls, item: Label) -> LabelLabelItem:
+        return LabelLabelItem(
             id=str(item.name),
-            name=str(item.name),
+            label=str(item.name),
             is_protected=item.is_protected,
             scope=item.name.rsplit("::", 1)[0] if item.is_scoped else "",
             value=item.name.split("::")[-1],
