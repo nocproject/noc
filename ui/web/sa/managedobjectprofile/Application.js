@@ -343,18 +343,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ]
                                 },
                                 {
-                                    name: "dynamic_order",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Dynamic Order"),
-                                    allowBlank: true,
-                                    uiStyle: "small"
-                                },
-                                {
                                     name: "match_rules",
                                     xtype: "listform",
                                     uiStyle: "large",
                                     fieldLabel: __("Match Rules"),
                                     items: [
+                                        {
+                                            name: "dynamic_order",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Dynamic Order"),
+                                            allowBlank: true,
+                                            defaultValue: 0,
+                                            uiStyle: "small"
+                                        },
                                         {
                                             name: "labels",
                                             xtype: "labelfield",

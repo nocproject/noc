@@ -34,12 +34,6 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           dataIndex: "labels",
           renderer: NOC.render.LabelField,
           width: 100
-        },
-        {
-          text: __("Dynamic Order"),
-          dataIndex: "dynamic_order",
-          width: 60,
-          align: "right"
         }
       ],
 
@@ -93,17 +87,18 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           }
           },
           {
-            name: "dynamic_order",
-            xtype: "numberfield",
-            fieldLabel: __("Dynamic Order"),
-            allowBlank: true,
-            uiStyle: "small"
-          },
-          {
             name: "match_rules",
             xtype: "listform",
             fieldLabel: __("Match Rules"),
             items: [
+                {
+                  name: "dynamic_order",
+                  xtype: "numberfield",
+                  fieldLabel: __("Dynamic Order"),
+                  allowBlank: true,
+                  defaultValue: 0,
+                  uiStyle: "small"
+                },
                 {
                   name: "labels",
                   xtype: "labelfield",

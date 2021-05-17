@@ -34,6 +34,7 @@ id_lock = Lock()
 
 
 class MatchRule(EmbeddedDocument):
+    dynamic_order = IntField(default=0)
     labels = ListField(StringField())
     handler = StringField()
 
