@@ -105,6 +105,7 @@ class RemoteSystem(Document):
     enable_networksegment = BooleanField()
     enable_networksegmentprofile = BooleanField()
     enable_object = BooleanField()
+    enable_sensor = BooleanField()
     enable_service = BooleanField()
     enable_serviceprofile = BooleanField()
     enable_street = BooleanField()
