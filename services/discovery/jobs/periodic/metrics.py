@@ -771,10 +771,12 @@ class MetricsCheck(DiscoveryCheck):
         w_value = self.get_window_function(m, cfg)
         if w_value is None and not active:
             return alarms, events
+        if w_value is None:
+            w_value = m.abs_value
         if active:
             # Check we should close existing threshold
             for th in cfg.threshold_profile.thresholds:
-                if w_value and th.is_open_match(w_value):
+                if th.is_open_match(w_value):
                     new_threshold = th
                     break
             threshold = cfg.threshold_profile.find_threshold(active["threshold"])
@@ -805,9 +807,7 @@ class MetricsCheck(DiscoveryCheck):
                     # Remain umbrella alarm
                     alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
             elif threshold:
-                if w_value is None:
-                    w_value = m.abs_value
-                if w_value and threshold.is_clear_match(w_value):
+                if threshold.is_clear_match(w_value):
                     # Close Event
                     active = None  # Reset threshold
                     del self.job.context["active_thresholds"][path]
@@ -842,14 +842,14 @@ class MetricsCheck(DiscoveryCheck):
                         active["threshold"],
                         active["close_event_class"].name,
                         path,
-                        m.abs_value,
+                        w_value,
                     )
                 if active.get("close_handler"):
                     if active["close_handler"].allow_threshold:
                         handler = active["close_handler"].get_handler()
                         if handler:
                             try:
-                                handler(self, cfg, active["threshold"], m.abs_value)
+                                handler(self, cfg, active["threshold"], w_value)
                             except Exception as e:
                                 self.logger.error("Exception when calling close handler: %s", e)
                     else:
