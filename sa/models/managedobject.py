@@ -92,7 +92,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 27
+MANAGEDOBJECT_CACHE_VERSION = 28
 CREDENTIAL_CACHE_VERSION = 3
 
 Credentials = namedtuple(
@@ -104,7 +104,6 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
-@Label.model
 @full_text_search
 @bi_sync
 @on_init
@@ -112,6 +111,7 @@ logger = logging.getLogger(__name__)
 @on_delete
 @datastream
 @resourcegroup
+@Label.model
 @on_delete_check(
     check=[
         # ("cm.ValidationRule.ObjectItem", ""),
