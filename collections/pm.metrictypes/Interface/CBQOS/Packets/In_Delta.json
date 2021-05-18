@@ -1,0 +1,10 @@
+{
+    "name": "Interface | CBQOS | Packets | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "27812aaa-0fe9-4769-bb5f-b5f12eb58002",
+    "scope__name": "Interface",
+    "field_name": "cbqos_packets_in_delta",
+    "field_type": "UInt64",
+    "description": "The total number of received packets passed by the interface class-map.",
+    "measure": "bytes"
+}
