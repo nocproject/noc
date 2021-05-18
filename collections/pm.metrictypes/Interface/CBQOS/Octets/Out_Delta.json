@@ -1,0 +1,10 @@
+{
+    "name": "Interface | CBQOS | Octets | Out | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "a07edd12-ee03-405d-8c7c-aaab8c77f5d9",
+    "scope__name": "Interface",
+    "field_name": "cbqos_octets_out_delta",
+    "field_type": "UInt64",
+    "description": "The total number of sending octets passed by the interface class-map.",
+    "measure": "bytes"
+}

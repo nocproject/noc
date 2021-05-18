@@ -1,0 +1,10 @@
+{
+    "name": "Interface | CBQOS | Drops | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "fceeedee-21c0-4cf4-8302-7eea980e27fe",
+    "scope__name": "Interface",
+    "field_name": "cbqos_drops_in_delta",
+    "field_type": "UInt64",
+    "description": "Drops packet on input class-map (delta)",
+    "measure": "packets"
+}
