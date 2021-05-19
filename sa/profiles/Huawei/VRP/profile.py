@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei,VRP profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -192,10 +192,12 @@ class Profile(BaseProfile):
         "RprPos": "unknown",
         "Rpr": "unknown",
         "10GE": "physical",
+        "25GE": "physical",
         "40GE": "physical",
         "100GE": "physical",
         "Serial": None,
         "Pos": None,
+        "Vbdif": "other",
     }
 
     rx_iftype = re.compile(r"^(\D+?|\d{2,3}\S+?)\d+.*$")
