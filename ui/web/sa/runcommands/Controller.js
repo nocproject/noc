@@ -296,6 +296,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
         var makeRequest = function(mode) {
             var objects = [];
             var config = me.lookupReference('sa-run-commands-command-form').getValues();
+            var ignore_cli_errors = JSON.stringify(me.lookupReference('ignore-cli-errors').getValue());
 
             me.getStore('selectedStore').each(function(record) {
                 objects.push(record.get('id'));
@@ -327,7 +328,8 @@ Ext.define('NOC.sa.runcommands.Controller', {
                                 script: 'commands',
                                 args: {
                                     commands: obj[key].split('\n'),
-                                    include_commands: true
+                                    include_commands: true,
+                                    ignore_cli_errors: ignore_cli_errors
                                 }
                             });
                         }
