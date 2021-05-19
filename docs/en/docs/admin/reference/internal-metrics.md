@@ -290,6 +290,17 @@ todo
 | ------------- | ---------------- | --------------------------- | --------------------------------------------------------------- |
 | smtp_response | code (SMTP code) | MailSenderService.send_mail | Number of sent messages (divided by SMTP server response codes) |
 
+### Kafkasender
+
+| Metric name   | Tag value        | A place                     | Physical meaning                                 |
+| ------------- | ---------------- | --------------------------- | ------------------------------------------------ |
+| messages            | {{ no }} | KafkaSenderService.on_message    | Number of received messages from MX service   |
+| messages_drops      | {{ no }} | KafkaSenderService.on_message    | Number of dropped messages                    |
+| messages_processed  | {{ no }} | KafkaSenderService.on_message    | Number of processed messages                  |
+| messages_sent_ok    | topic    | KafkaSenderService.send_to_kafka | Number of successfully sent messages          |
+| messages_sent_error | topic    | KafkaSenderService.send_to_kafka | Number of messages with processing error      |
+| bytes_sent          | topic    | KafkaSenderService.send_to_kafka | Amount of bytes of sent messages              |
+
 ## System-wide metrics (self-monitoring)
 
 Subsystem metrics are calculated based on information from the database ( Postgres or MongoDB) and require an installed service seflmon.
