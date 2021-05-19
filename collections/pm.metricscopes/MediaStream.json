@@ -1,0 +1,45 @@
+{
+    "name": "MediaStream",
+    "$collection": "pm.metricscopes",
+    "uuid": "38c4eb0b-9142-4436-823a-9f6d634ce855",
+    "table_name": "mediastream",
+    "description": "Metrics for Video/Audio Streams",
+    "key_fields": [
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "object",
+            "model": "inv.Object"
+        }
+    ],
+    "enable_timedelta": true,
+    "labels": [
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::media::stream::*",
+            "store_column": "stream",
+            "view_column": "stream"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::media::channel::*",
+            "view_column": "channel"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::media::view::*",
+            "view_column": "view"
+        }
+    ]
+}
