@@ -36,6 +36,10 @@ Ext.define("NOC.pm.measurementunits.Model", {
             type: "string"
         },
         {
+            name: "dashboard_sr_color",
+            type: "int"
+        },
+        {
             name: "scale_type",
             type: "string",
             defaultValue: "d"

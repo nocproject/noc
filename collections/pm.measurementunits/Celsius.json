@@ -4,7 +4,8 @@
     "uuid": "1485097a-e3c8-46f9-bf62-bf676df36150",
     "description": "Temperature measurement",
     "label": "C",
-    "dashboard_label": "C",
+    "dashboard_label": "celsius",
+    "dashboard_sr_color": 16440874,
     "scale_type": "d",
     "alt_units": [
         {

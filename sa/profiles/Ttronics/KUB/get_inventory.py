@@ -16,8 +16,8 @@ class Script(BaseScript):
 
     nano_input_config_map = {
         0: {"type": "volt", "units": "Volt AC"},
-        1: {"type": "in", "units": "enum"},
-        2: {"type": "relay", "units": "enum"},
+        1: {"type": "in", "units": "StatusEnum"},
+        2: {"type": "relay", "units": "StatusEnum"},
         3: {"type": "counter", "units": "Unknown"},
         4: {"type": "vibration", "units": "Unknown"},
     }
@@ -131,7 +131,7 @@ class Script(BaseScript):
                     "name": "ups_rs232",
                     "status": v != 0,
                     "description": "Флаг наличия связи с ИБП по порту RS-232",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": "1.3.6.1.4.1.51315.1.29.0",
                 },
             ]
@@ -141,28 +141,28 @@ class Script(BaseScript):
                         "name": "ups_state",
                         "status": bool(v),
                         "description": "ИБП. Текущее состояние ИБП",
-                        "measurement": "enum",
+                        "measurement": "StatusEnum",
                         "snmp_oid": "1.3.6.1.4.1.51315.1.27.0",
                     },
                     {
                         "name": "ups_battery_state",
                         "status": bool(v),
                         "description": "ИБП. Текущее состояние батареи ИБП",
-                        "measurement": "enum",
+                        "measurement": "StatusEnum",
                         "snmp_oid": "1.3.6.1.4.1.51315.1.38.0",
                     },
                     {
                         "name": "ups_bypass",
                         "status": bool(v),
                         "description": "ИБП. Текущий статус bypass",
-                        "measurement": "enum",
+                        "measurement": "StatusEnum",
                         "snmp_oid": "1.3.6.1.4.1.51315.1.31.0",
                     },
                     {
                         "name": "ups_mode",
                         "status": bool(v),
                         "description": "ИБП. Текущий режим работы ИБП",
-                        "measurement": "enum",
+                        "measurement": "StatusEnum",
                         "snmp_oid": "1.3.6.1.4.1.51315.1.32.0",
                     },
                     {
@@ -190,7 +190,7 @@ class Script(BaseScript):
                         "name": "ups_load_P",
                         "status": bool(v),
                         "description": "ИБП. Нагрузка ИБП в %.",
-                        "measurement": "Rate",
+                        "measurement": "Percent",
                         "snmp_oid": "1.3.6.1.4.1.51315.1.37.0",
                     },
                     {
@@ -211,7 +211,7 @@ class Script(BaseScript):
                         "name": "ups_battery_capasity",
                         "status": bool(v),
                         "description": "ИБП. Ёмкость батареи в %.",
-                        "measurement": "Rate",
+                        "measurement": "Percent",
                         "snmp_oid": "1.3.6.1.4.1.51315.1.41.0",
                     },
                     {
@@ -225,7 +225,7 @@ class Script(BaseScript):
         return r
 
     femto_input_config_map = {
-        0: {"type": "in", "units": "enum"},
+        0: {"type": "in", "units": "StatusEnum"},
         1: {"type": "volt", "units": "Volt AC"},
         2: {"type": "counter", "units": "Unknown"},
         3: {"type": "vibration", "units": "Unknown"},

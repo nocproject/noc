@@ -4,6 +4,7 @@
     "uuid": "9e59d6e9-debf-48d4-b122-8283e1206797",
     "description": "Electric current measurement",
     "label": "A",
-    "dashboard_label": "A",
+    "dashboard_label": "mamp",
+    "dashboard_sr_color": 16777215,
     "scale_type": "d"
 }

@@ -4,6 +4,6 @@
     "uuid": "732b43bf-fa42-4ba1-9169-f318470d1fc4",
     "description": "Electric utilities",
     "label": "kW⋅h",
-    "dashboard_label": "kW h",
+    "dashboard_label": "kwatth",
     "scale_type": "d"
 }

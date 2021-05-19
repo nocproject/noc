@@ -68,7 +68,7 @@ class EnumValue(EmbeddedDocument):
         return {"key": self.key, "value": self.value}
 
 
-@on_delete_check(check=[("inv.Sensor", "units")])
+@on_delete_check(check=[("inv.Sensor", "units"), ("inv.SensorProfile", "units")])
 class MeasurementUnits(Document):
     meta = {
         "collection": "measurementunits",
@@ -87,7 +87,8 @@ class MeasurementUnits(Document):
     # Short label
     label = StringField()
     # Label for dashboards
-    dashboard_label = StringField()
+    dashboard_label = StringField(required=False)
+    dashboard_sr_color = IntField(default=0x000000, required=False, null=True)
     # Type of scale (K/M/G prefixes)
     # * d - decimal scale, 1/1_000/1_000_000/...
     # * b - binary scale,  1/2^10/2^20/...
@@ -123,6 +124,8 @@ class MeasurementUnits(Document):
             "dashboard_label": self.dashboard_label,
             "scale_type": self.scale_type,
         }
+        if self.dashboard_sr_color:
+            r["dashboard_sr_color"] = self.dashboard_sr_color
         if self.description:
             r["description"] = self.description
         if self.alt_units:
@@ -141,6 +144,7 @@ class MeasurementUnits(Document):
                 "description",
                 "label",
                 "dashboard_label",
+                "dashboard_sr_color",
                 "scale_type",
                 "alt_units",
                 "enum",
