@@ -8,7 +8,7 @@ console.debug("Defining NOC.pm.measurementunits.Application");
 
 Ext.define("NOC.pm.measurementunits.Application", {
   extend: "NOC.core.ModelApplication",
-  requires: ["NOC.pm.measurementunits.Model"],
+  requires: ["NOC.pm.measurementunits.Model", "Ext.ux.form.ColorField"],
   model: "NOC.pm.measurementunits.Model",
   search: true,
 
@@ -63,7 +63,13 @@ Ext.define("NOC.pm.measurementunits.Application", {
           name: "dashboard_label",
           xtype: "textfield",
           fieldLabel: __("Dashboard Label"),
-          allowBlank: false,
+          uiStyle: "medium"
+        },
+        {
+          name: "dashboard_sr_color",
+          xtype: "colorfield",
+          fieldLabel: __("Dashboard Series Color"),
+          allowBlank: true,
           uiStyle: "medium"
         },
         {

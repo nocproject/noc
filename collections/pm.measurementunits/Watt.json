@@ -4,6 +4,7 @@
     "uuid": "6f814980-325b-4854-a25b-1b7f0aa9ca7b",
     "description": "Power measurement",
     "label": "W",
-    "dashboard_label": "W",
+    "dashboard_label": "watt",
+    "dashboard_sr_color": 14692164,
     "scale_type": "d"
 }

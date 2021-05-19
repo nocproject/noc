@@ -87,6 +87,14 @@ class Sensor(Document):
     def get_by_bi_id(cls, id):
         return Sensor.objects.filter(bi_id=id).first()
 
+    @property
+    def munits(self) -> MeasurementUnits:
+        """
+        Get effective units
+        :return:
+        """
+        return self.profile.units or self.units
+
     def seen(self, source: Optional[str] = None):
         """
         Seen sensor

@@ -24,7 +24,7 @@ class Script(BaseScript):
                     "name": f"in{i}",
                     "status": 1,
                     "description": f"Цифровой вход номер {i}",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": f"1.3.6.1.4.1.27514.102.0.{4 + i}.0",
                 }
             ]
@@ -35,7 +35,7 @@ class Script(BaseScript):
                     "name": f"relay{i}",
                     "status": 1,
                     "description": f"Реле {i}",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": f"1.3.6.1.4.1.27514.102.0.{8 + i}.0",
                 }
             ]
@@ -53,7 +53,7 @@ class Script(BaseScript):
                 "name": "v230_state",
                 "status": 1,
                 "description": "Флаг наличия сетевого напря-жения AC 230В",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.27514.102.0.12.0",
             },
             # tempIN
@@ -148,7 +148,7 @@ class Script(BaseScript):
                 "name": "in",
                 "status": True,
                 "description": "Цифровой вход",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.27514.103.0.5.0",
             },
             # Relay
@@ -156,7 +156,7 @@ class Script(BaseScript):
                 "name": "relay",
                 "status": True,
                 "description": "Реле",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.27514.103.0.6.0",
             },
             # v230
@@ -164,7 +164,7 @@ class Script(BaseScript):
                 "name": "v230_state",
                 "status": True,
                 "description": "Флаг наличия сетевого напряжения AC 230В",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.27514.103.0.7.0",
             },
             # temp1
@@ -194,7 +194,7 @@ class Script(BaseScript):
                 "name": "ups_rs232",
                 "status": True,
                 "description": "Флаг наличия связи с ИБП по порту RS-232",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.27514.103.0.13.0",
             },
         ]
@@ -204,28 +204,28 @@ class Script(BaseScript):
                     "name": "ups_state",
                     "status": bool(v),
                     "description": "ИБП. Текущее состояние ИБП",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.14.0",
                 },
                 {
                     "name": "ups_battery_state",
                     "status": bool(v),
                     "description": "ИБП. Текущее состояние батареи ИБП",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.15.0",
                 },
                 {
                     "name": "ups_bypass",
                     "status": bool(v),
                     "description": "ИБП. Текущий статус bypass",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.16.0",
                 },
                 {
                     "name": "ups_mode",
                     "status": bool(v),
                     "description": "ИБП. Текущий режим работы ИБП",
-                    "measurement": "enum",
+                    "measurement": "StatusEnum",
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.17.0",
                 },
                 {
@@ -253,7 +253,7 @@ class Script(BaseScript):
                     "name": "ups_load_P",
                     "status": bool(v),
                     "description": "ИБП. Нагрузка ИБП в %.",
-                    "measurement": "Rate",
+                    "measurement": "Percent",
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.22.0",
                 },
                 {
@@ -274,7 +274,7 @@ class Script(BaseScript):
                     "name": "ups_battery_capasity",
                     "status": bool(v),
                     "description": "ИБП. Ёмкость батареи в %.",
-                    "measurement": "Rate",
+                    "measurement": "Percent",
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.25.0",
                 },
                 {
@@ -319,7 +319,7 @@ class Script(BaseScript):
                             "name": f"elmeter_Tariff{num}",
                             "status": bool(v),
                             "description": f"Электросчётчик. Суммарное значение потреблённой мощности по тарифу {num}",
-                            "measurement": "Hertz",
+                            "measurement": "Kilowatt-hour",
                             "snmp_oid": f"1.3.6.1.4.1.27514.103.0.{23 + 1}.0",
                         }
                     ]

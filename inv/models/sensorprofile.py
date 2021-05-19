@@ -24,6 +24,7 @@ import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from noc.main.models.label import Label
+from noc.pm.models.measurementunits import MeasurementUnits
 from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
@@ -53,6 +54,7 @@ class SensorProfile(Document):
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
     enable_collect = BooleanField(default=False)
+    units = PlainReferenceField(MeasurementUnits)
     # Dynamic Profile Classification
     dynamic_order = IntField(default=0)
     match_rules = ListField(EmbeddedDocumentField(MatchRule))

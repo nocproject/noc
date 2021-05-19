@@ -21,7 +21,7 @@ class Script(BaseScript):
                 "name": "in",
                 "status": True,
                 "description": "Дверь",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.1.0",
             },
             # v230
@@ -29,7 +29,7 @@ class Script(BaseScript):
                 "name": "v230_state",
                 "status": True,
                 "description": "Флаг наличия сетевого напряжения AC 230В",
-                "measurement": "enum",
+                "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.9.0",
             },
             # temp1
@@ -52,7 +52,7 @@ class Script(BaseScript):
             {
                 "name": "ups_battery_U",
                 "status": True,
-                "description": "ИБП. Напряжение  батареи  ИБП.",
+                "description": "ИБП. Напряжение на АКБ",
                 "measurement": "Volt AC",
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.6.0",
             },

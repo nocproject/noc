@@ -1,0 +1,9 @@
+{
+    "name": "Percent",
+    "$collection": "pm.measurementunits",
+    "uuid": "0726cc8a-a08c-4b9f-834d-d3cd0fedd771",
+    "description": "Percent (0 - 100)",
+    "label": "%",
+    "dashboard_label": "percent",
+    "scale_type": "d"
+}
