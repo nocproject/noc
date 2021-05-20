@@ -5,10 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetchassisid import IGetChassisID
+# Python modules
 import re
+
+# NOC modules
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
@@ -16,7 +18,10 @@ class Script(BaseScript):
     interface = IGetChassisID
     rx_mac = re.compile(r"^\s*MAC address:\s+(?P<mac>\S+)")
 
-    def execute(self):
-        match = self.re_search(self.rx_mac, self.cli("show atmlan mac-address"))
+    def execute_cli(self, **kwargs):
+        try:
+            match = self.re_search(self.rx_mac, self.cli("show atmlan mac-address"))
+        except self.CLISyntaxError:
+            raise NotImplementedError
         mac = match.group("mac")
         return {"first_chassis_mac": mac, "last_chassis_mac": mac}
