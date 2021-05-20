@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -49,13 +50,58 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    rx_ma5103_mac = re.compile(r"^\s*Current MAC address of active mainboard:\s+(?P<mac>\S+)")
+    rx_ma5103_ip = re.compile(r"^\s*\d+\s+Ethernet\s+(?P<ip>\S+)\s+(?P<mask>\S+)\s+", re.MULTILINE)
+
+    def get_ma5103(self):
         interfaces = []
+        v = self.cli("show mac-address")
+        match = self.rx_ma5103_mac.search(v)
+        mac = MAC(match.group("mac"))
+        v = self.cli("show atmlan ip-address 1")
+        match = self.rx_ma5103_ip.search(v)
+        ip_address = f"{match.group('ip')}/{IPv4.netmask_to_len(match.group('mask'))}"
+        iface = {
+            "name": "mgmt",
+            "type": "SVI",
+            "admin_status": True,  # always True, since inactive
+            "oper_status": True,  # SVIs aren't shown at all
+            "mac": mac,
+            "subinterfaces": [
+                {
+                    "name": "mgmt",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "mac": mac,
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": [ip_address],
+                    "vlan_ids": [1],
+                }
+            ],
+        }
+        interfaces += [iface]
+        interfaces += [
+            {
+                "name": "FE:0/0/1",
+                "type": "physical",
+                "mac": mac,
+                "hints": ["uplink"],
+                "subinterfaces": [],
+            }
+        ]
+        return [{"interfaces": interfaces}]
+
+    def execute_cli(self, **kwargs):
+        interfaces = []
+        if self.is_ma5103:
+            return self.get_ma5103()
+
         vlans = []
         for v in self.scripts.get_vlans():
             vlans += [v["vlan_id"]]
         iface = {
             "name": "FE:0/0/1",
+            "hints": ["nni"],
             "type": "physical",
             "subinterfaces": [
                 {"name": "FE:0/0/1", "enabled_afi": ["BRIDGE"], "tagged_vlans": vlans}
@@ -64,6 +110,7 @@ class Script(BaseScript):
         interfaces += [iface]
         iface = {
             "name": "FE:0/0/2",
+            "hints": ["nni"],
             "type": "physical",
             "subinterfaces": [
                 {"name": "FE:0/0/2", "enabled_afi": ["BRIDGE"], "tagged_vlans": vlans}
