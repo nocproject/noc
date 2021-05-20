@@ -8,6 +8,7 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.slot import SlotRule
+from noc.core.mib import mib
 
 
 class Script(GetMetricsScript):
@@ -42,3 +43,49 @@ class Script(GetMetricsScript):
             value=int(metric),
             multi=True,
         )
+
+    @metrics(
+        [
+            "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | Out",
+            "Interface | CBQOS | Octets | Out | Delta",
+            "Interface | CBQOS | Packets | Out",
+            "Interface | CBQOS | Packets | Out | Delta",
+        ],
+        volatile=False,
+        has_capability="Juniper | OID | jnxCosIfqStatsTable",
+        access="S",  # CLI version
+    )
+    def get_interface_cbqos_metrics_snmp(self, metrics):
+        ifaces = {str(m.ifindex): m.labels for m in metrics if m.ifindex}
+        for ifindex in ifaces:
+            for index, packets, octets, discards in self.snmp.get_tables(
+                [
+                    mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
+                    mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],
+                    mib["JUNIPER-COS-MIB::jnxCosIfqTailDropPkts", ifindex],
+                ]
+            ):
+                # ifindex, traffic_class = index.split(".", 1)
+                # if ifindex not in ifaces:
+                #    continue
+                traffic_class = "".join([chr(int(x)) for x in index.split(".")[1:]])
+                ts = self.get_ts()
+                for metric, value in [
+                    ("Interface | CBQOS | Drops | Out | Delta", discards),
+                    ("Interface | CBQOS | Octets | Out | Delta", octets),
+                    ("Interface | CBQOS | Octets | Out", octets),
+                    ("Interface | CBQOS | Packets | Out | Delta", packets),
+                    ("Interface | CBQOS | Packets | Out", packets),
+                ]:
+                    scale = 1
+                    self.set_metric(
+                        id=(metric, ifaces[ifindex]),
+                        metric=metric,
+                        value=float(value),
+                        ts=ts,
+                        labels=ifaces[ifindex] + [f"noc::traffic_class::{traffic_class}"],
+                        multi=True,
+                        type="delta" if metric.endswith("Delta") else "gauge",
+                        scale=scale,
+                    )
