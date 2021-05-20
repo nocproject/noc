@@ -24,12 +24,15 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         v = self.scripts.get_version()
         platform = v["platform"]
         r += [{"type": "CHASSIS", "vendor": "HUAWEI", "part_no": platform}]
-        v = self.cli("show version 0")
+        if self.is_ma5103:
+            v = self.cli("show version 0/7")
+        else:
+            v = self.cli("show version 0")
         for match in self.rx_slot.finditer(v):
             r += [
                 {

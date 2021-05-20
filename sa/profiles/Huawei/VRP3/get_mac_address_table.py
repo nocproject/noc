@@ -22,7 +22,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
         with self.configure():
             self.cli("interface lan 0/0")
             cmd = "show mac-table"
@@ -40,7 +40,7 @@ class Script(BaseScript):
                 macs = self.cli(cmd)
             except self.CLISyntaxError:
                 # Not supported at all
-                raise self.NotSupportedError()
+                raise NotImplementedError
             r = []
             for match in self.rx_line.finditer(macs):
                 r += [
