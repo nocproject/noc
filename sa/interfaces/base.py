@@ -746,6 +746,8 @@ class RDParameter(Parameter):
         '100000:500'
         >>> RDParameter().clean("100000L:100")
         '100000:100'
+        >>> RDParameter().clean("15.37977:999")
+        '1021017:999'
         """
         try:
             left, right = value.split(":", 1)
@@ -754,6 +756,13 @@ class RDParameter(Parameter):
             self.raise_error(value)
         if right < 0:
             self.raise_error(value)
+        if "." in left and left.count(".") == 1:
+            # Type 2 notation
+            hleft, lleft = left.split(".")
+            try:
+                left = str((int(hleft) << 16) + int(lleft))
+            except ValueError:
+                self.raise_error(value)
         if "." in left:
             # IP:N
             try:
