@@ -121,8 +121,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if hasattr(self, "state_cls"):
             tx.update_state(self)
         # Notify all subscribers
-        for s_node, s_name in self._subscribers:
-            s_node.activate(tx, s_name, value)
+        if value is not None:
+            for s_node, s_name in self._subscribers:
+                s_node.activate(tx, s_name, value)
 
     def activate_const(self, name: str, value: ValueType) -> None:
         """
