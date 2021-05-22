@@ -44,7 +44,10 @@ class Transaction(object):
         :return:
         """
         state = node.get_state()
-        if state:
+        if not state:
+            return
+        d = state.dict(exclude_none=True)
+        if d:
             self._states[node.node_id] = state.dict()
 
     def get_changed_state(self) -> Dict[str, Any]:

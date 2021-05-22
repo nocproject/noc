@@ -38,7 +38,7 @@ class NodeCDAG(object):
         return i["x"]  # None node has `x` input
 
     def is_activated(self):
-        return not any(True for v in self.tx.get_inputs(self.node).values() if v is None)
+        return self.tx.get_inputs(self.measure_node)["x"] is not None
 
     def begin(self) -> Transaction:
         self.tx = self.cdag.begin()

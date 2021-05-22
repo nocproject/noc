@@ -77,7 +77,8 @@ def test_math_node(fn, x, expected):
     cdag = NodeCDAG(fn)
     assert cdag.is_activated() is False
     cdag.activate("x", x)
-    assert cdag.is_activated() is True
+    x_act = expected is not None
+    assert cdag.is_activated() is x_act
     value = cdag.get_value()
     if expected is None:
         assert value is None
