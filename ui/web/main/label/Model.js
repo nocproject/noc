@@ -42,6 +42,11 @@ Ext.define("NOC.main.label.Model", {
             defaultValue: 16777215
         },
         {
+            name: "display_order",
+            type: "int",
+            defaultValue: 0
+        },
+        {
             name: "is_protected",
             type: "boolean"
         },
