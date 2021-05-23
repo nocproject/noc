@@ -265,6 +265,14 @@ Ext.define("NOC.main.label.Application", {
           ]
         },
         {
+          name: "display_order",
+          xtype: "numberfield",
+          fieldLabel: __("Display Order"),
+          uiStyle: "small",
+          minValue: 0,
+          allowBlank: false
+        },
+        {
           xtype: "fieldset",
           layout: "vbox",
           title: __("Enable"),
