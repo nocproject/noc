@@ -42,6 +42,7 @@ class ProbeNode(BaseCDAGNode):
     config_cls = ProbeNodeConfig
     state_cls = ProbeNodeState
     categories = [Category.UTIL]
+    dot_shape = "cds"
     _conversions: Dict[str, Dict[str, Callable]] = {}
     _conv_lock = Lock()
 

@@ -9,6 +9,7 @@
 import sys
 import os
 import argparse
+from typing import NoReturn
 
 # NOC modules
 from noc.config import config
@@ -166,7 +167,7 @@ class BaseCommand(object):
         Apply additional parser arguments
         """
 
-    def die(self, msg):
+    def die(self, msg: str) -> NoReturn:
         raise CommandError(msg)
 
     def setup_logging(self, loglevel):
