@@ -20,6 +20,10 @@ class Reference(BaseModel):
 class LabelItem(BaseModel):
     id: str
     label: str
+    # For tree structure fields
+    parent: Optional[Reference]
+    level: Optional[int]
+    has_children: Optional[bool]
 
 
 class SummaryItem(BaseModel):
