@@ -21,6 +21,7 @@ from ..graph import CDAG
 class InputItem(BaseModel):
     name: str
     node: str
+    dynamic: bool = False
 
 
 class NodeItem(BaseModel):
@@ -61,16 +62,12 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         return match(self.ctx, expr)
 
     def construct(self) -> None:
-        print("@ construct")
         for item in self.config:
-            print(item)
             # Check match
             if not self.is_matched(item.match):
-                print("not matched")
                 continue
             # Check for prerequisites
             if not self.requirements_met(item.inputs):
-                print("not met")
                 continue
             # Create node
             node = self.graph.add_node(
@@ -84,8 +81,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
             if item.inputs:
                 for input in item.inputs:
                     r_node = self.graph[self.expand_input(input.node)]
-                    r_node.subscribe(node, input.name)
-                    node.mark_as_bound(input.name)
+                    r_node.subscribe(node, input.name, dynamic=input.dynamic)
 
     def expand_input(self, name: str) -> str:
         if "{" in name:

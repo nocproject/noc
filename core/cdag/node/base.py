@@ -35,7 +35,13 @@ class BaseCDAGNodeMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         sig = inspect.signature(n.get_value)
-        n.static_inputs = [x for x in sig.parameters if x != "self"]
+        inputs = [x for x in sig.parameters if x != "self"]
+        if "kwargs" in inputs:
+            n.allow_dynamic = True
+            inputs.remove("kwargs")
+        else:
+            n.allow_dynamic = False
+        n.static_inputs = inputs
         return n
 
 
@@ -44,6 +50,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     state_cls: Type[BaseModel]
     config_cls: Type[BaseModel]
     static_inputs: List[str]  # Filled by metaclass
+    allow_dynamic: bool = False  # Filled by metaclass
     dot_shape: str = "box"
     categories: List[Category] = []
 
@@ -58,12 +65,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.description = description
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
-        self._inputs = {i for i in self.iter_inputs()}
-        self._bound_inputs: Set[str] = set()
         self._subscribers: List[Tuple[BaseCDAGNode, str]] = []
         # Pre-calculated inputs
         self.const_inputs: Dict[str, ValueType] = {}
         self._const_value: Optional[ValueType] = None
+        # Manually-configured dynamic inputs
+        self._dynamic_inputs: Set[str] = set()
+        # All inputs
+        self._inputs = {i for i in self.iter_inputs()}
+        self._bound_inputs: Set[str] = set()
 
     @classmethod
     def construct(
@@ -100,6 +110,16 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         yield from self.static_inputs
+        yield from self._dynamic_inputs
+
+    def iter_unbound_inputs(self) -> Iterable[str]:
+        """
+        Iterate all unbound inputs
+        :return:
+        """
+        for i in self.iter_inputs():
+            if i not in self._bound_inputs:
+                yield i
 
     def activate(self, tx: Transaction, name: str, value: ValueType) -> None:
         """
@@ -114,7 +134,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         inputs = tx.get_inputs(self)
         is_active = inputs[name] is not None
         inputs[name] = value
-        if is_active or any(True for v in inputs.values() if v is None):
+        if is_active or any(
+            True for n, v in inputs.items() if v is None and self.is_required_input(n)
+        ):
             return  # Already activated or non-activated inputs
         # Activate node, calculate value
         value = self.get_value(**inputs)
@@ -124,6 +146,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if value is not None:
             for s_node, s_name in self._subscribers:
                 s_node.activate(tx, s_name, value)
+
+    def is_required_input(self, name: str) -> bool:
+        return name not in self._dynamic_inputs
 
     def activate_const(self, name: str, value: ValueType) -> None:
         """
@@ -140,14 +165,18 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             for node, name in self._subscribers:
                 node.activate_const(name, self._const_value)
 
-    def subscribe(self, node: "BaseCDAGNode", name: str) -> None:
+    def subscribe(self, node: "BaseCDAGNode", name: str, dynamic: bool = False) -> None:
         """
-        Subscribe to activation function
+        Subscribe to node activation
         :param node: Connected node
         :param name: Connected input name
+        :param dynamic: Create input when necessary
         :return:
         """
+        if dynamic:
+            node.add_input(name)
         self._subscribers += [(node, name)]
+        node.mark_as_bound(name)
         if self.is_const:
             node.activate_const(name, self._const_value)
 
@@ -185,3 +214,16 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             return False
         self._const_value = self.get_value(**self.const_inputs)
         return True
+
+    def add_input(self, name: str) -> None:
+        """
+        Add new dynamic input
+        :param name: Input name
+        :return:
+        """
+        if name in self._inputs:
+            return
+        if not self.allow_dynamic:
+            raise TypeError("Dynamic inputs are not allowed")
+        self._inputs.add(name)
+        self._dynamic_inputs.add(name)

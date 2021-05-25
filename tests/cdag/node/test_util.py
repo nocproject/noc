@@ -54,3 +54,42 @@ def test_util_node(op, x, expected):
     cdag = NodeCDAG(op)
     cdag.activate("x", x)
     assert cdag.get_value() == expected
+
+
+TS = 1621755589311551271
+TS_DATE = "2021-05-23"
+TS_STR = "2021-05-23 07:39:49"
+LABELS = ["test"]
+
+
+@pytest.mark.parametrize(
+    "values,expected",
+    [
+        ({}, None),
+        ({"m1": 1, "m2": 2}, {"date": TS_DATE, "ts": TS_STR, "labels": LABELS, "m1": 1, "m2": 2}),
+        ({"m1": 1, "m2": None}, {"date": TS_DATE, "ts": TS_STR, "labels": LABELS, "m1": 1}),
+    ],
+)
+def test_metrics(values, expected):
+    cdag = NodeCDAG("metrics", {"scope": "test", "spool": False})
+    # Check default inputs
+    node = cdag.get_node()
+    inputs = set(node.iter_inputs())
+    assert inputs == {"ts", "labels"}
+    assert node.allow_dynamic is True
+    # Add dynamic inputs
+    for k in values:
+        node.add_input(k)
+    inputs = set(node.iter_inputs())
+    x_inputs = {"ts", "labels"}
+    x_inputs.update({x for x in values})
+    assert inputs == x_inputs
+    # Activate dynamic inputs
+    for k, v in values.items():
+        if v is not None:
+            cdag.activate(k, v)
+    # Activate static inputs
+    cdag.activate("ts", TS)
+    cdag.activate("labels", LABELS)
+    value = cdag.get_value()
+    assert value == expected

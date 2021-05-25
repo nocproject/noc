@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Any, Dict
+import itertools
+from typing import Optional, Any, Dict, List
 
 # NOC modules
 from .node.base import BaseCDAGNode
@@ -83,9 +84,12 @@ class CDAG(object):
         """
         n_map: Dict[str, str] = {}
         r = ["digraph {", '  rankdir="LR";']
+        tb: List[str] = []
+        tb_conn: List[str] = []
+        tb_count = itertools.count()
         # Nodes
         for n, node_id in enumerate(sorted(self.nodes)):
-            dot_id = "n%05d" % n
+            dot_id = f"n{n:05d}"
             n_map[node_id] = dot_id
             node = self.nodes[node_id]
             n_attrs = ""
@@ -95,19 +99,30 @@ class CDAG(object):
                     v = getattr(node.config, fn)
                     if hasattr(v, "value"):
                         v = v.value
-                    attrs += ["%s: %s" % (fn, v)]
+                    attrs += [f"{fn}: {v}"]
                 if attrs:
                     n_attrs = "\\n" + "\\n".join(attrs)
             r += [
-                '  %s [label="%s\\ntype: %s%s", shape="%s"];'
-                % (dot_id, node_id, node.name, n_attrs, node.dot_shape)
+                f'  {dot_id} [label="{node_id}\\ntype: {node.name}{n_attrs}", shape="{node.dot_shape}"];'
             ]
+            unbound = list(node.iter_unbound_inputs())
+            if unbound:
+                tbc = []
+                for n in unbound:
+                    cnt = next(tb_count)
+                    tb_name = f"p{cnt:05d}"
+                    tbc += [f"<{tb_name}> {n}"]
+                    tb_conn += [f'  TB:{tb_name} -> {dot_id} [label="{n}"];']
+                tb_labels = " | ".join(tbc)
+                tb += [f"{{ {node_id} | {{ {tb_labels} }}}}"]
+        # Render terminal block and its edges
+        if tb:
+            tb_label = " | ".join(tb)
+            r.insert(2, f'  TB [label="{tb_label}" ,shape="record"];')
+            r += tb_conn
         # Edges
         for node in self.nodes.values():
             for r_node, in_name in node.iter_subscribers():
-                r += [
-                    '  %s -> %s [label="%s"];'
-                    % (n_map[node.node_id], n_map[r_node.node_id], in_name)
-                ]
+                r += [f'  {n_map[node.node_id]} -> {n_map[r_node.node_id]} [label="{in_name}"];']
         r += ["}"]
         return "\n".join(r)
