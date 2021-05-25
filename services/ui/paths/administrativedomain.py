@@ -11,6 +11,7 @@ from fastapi import APIRouter
 # NOC modules
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.label import Label
+from ..models.utils import LabelItem
 from ..models.administrativedomain import (
     DefaultAdministrativeDomainItem,
     FormAdministrativeDomainItem,
@@ -32,6 +33,16 @@ class AdministrativeDomainAPI(ModelResourceAPI[AdministrativeDomain]):
         RefFilter("parent", model=AdministrativeDomain),
     ]
     sort_fields = ["name", "id", ("parent", "parent__name")]
+
+    @classmethod
+    def item_to_label(cls, item: AdministrativeDomain) -> LabelItem:
+        return LabelItem(
+            id=str(item.id),
+            label=str(item.name),
+            parent=get_reference(item.parent),
+            level=item.level,
+            has_children=item.has_children,
+        )
 
     @classmethod
     def item_to_default(cls, item: AdministrativeDomain) -> DefaultAdministrativeDomainItem:

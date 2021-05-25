@@ -186,6 +186,16 @@ class AdministrativeDomain(NOCModel):
             return self.parent.get_bioseg_floating_parent_segment()
         return None
 
+    @property
+    def level(self) -> int:
+        """
+        Return level
+        :return:
+        """
+        if not self.parent:
+            return 0
+        return len(self.get_path()) - 1  # self
+
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_administrativedomain")
