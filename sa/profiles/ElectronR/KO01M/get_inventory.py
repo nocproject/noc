@@ -25,7 +25,7 @@ class Script(BaseScript):
                 "snmp_oid": "1.3.6.1.4.1.35419.20.1.140.0",
             },
             {
-                "name": "Pulse",
+                "name": "pulse",
                 "status": True,
                 "description": "Датчик числа импульсов",
                 "measurement": "Unknown",
