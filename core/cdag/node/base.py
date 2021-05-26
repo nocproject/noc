@@ -60,6 +60,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         state: Optional[Dict[str, Any]] = None,
         description: str = None,
         config: Optional[Dict[str, Any]] = None,
+        sticky: bool = False,
     ):
         self.node_id = node_id
         self.description = description
@@ -74,22 +75,39 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         # All inputs
         self._inputs = {i for i in self.iter_inputs()}
         self._bound_inputs: Set[str] = set()
+        self.sticky = sticky
 
     @classmethod
     def construct(
         cls,
         graph,
         node_id: str,
-        description: Optional[str],
-        state: Optional[BaseModel],
-        config: Optional[BaseModel],
-        ctx: Optional[Dict[str, Any]],
+        description: Optional[str] = None,
+        state: Optional[BaseModel] = None,
+        config: Optional[BaseModel] = None,
+        ctx: Optional[Dict[str, Any]] = None,
+        sticky: bool = False,
     ) -> Optional["BaseCDAGNode"]:
         """
         Construct node
         :return:
         """
-        node = cls(node_id, description=description, state=state, config=config)
+        node = cls(node_id, description=description, state=state, config=config, sticky=sticky)
+        graph.nodes[node_id] = node
+        return node
+
+    def clone(self, graph, node_id: str) -> Optional["BaseCDAGNode"]:
+        if hasattr(self, "config_cls"):
+            config = self.config.dict()
+        else:
+            config = {}
+        node = self.__class__(
+            node_id,
+            description=self.description,
+            state={},
+            config=config,
+            sticky=self.sticky,
+        )
         graph.nodes[node_id] = node
         return node
 
@@ -173,6 +191,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param dynamic: Create input when necessary
         :return:
         """
+        if node == self:
+            raise ValueError("Cannot subscribe to self")
+        if (node, name) in self._subscribers:
+            return
         if dynamic:
             node.add_input(name)
         self._subscribers += [(node, name)]
@@ -227,3 +249,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             raise TypeError("Dynamic inputs are not allowed")
         self._inputs.add(name)
         self._dynamic_inputs.add(name)
+
+    def is_dynamic_input(self, name: str) -> bool:
+        """
+        Check if input is dynamic
+        :param name:
+        :return:
+        """
+        return name in self._dynamic_inputs

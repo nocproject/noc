@@ -31,6 +31,7 @@ class NodeItem(BaseModel):
     config: Optional[Dict[str, Any]]
     inputs: Optional[List[InputItem]]
     match: Optional[Dict[str, Any]]
+    sticky: bool = False
 
 
 class ConfigCDAGFactory(BaseCDAGFactory):
@@ -76,6 +77,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
                 description=item.description,
                 config=item.config,
                 ctx=self.ctx,
+                sticky=item.sticky,
             )
             # Connect node
             if item.inputs:

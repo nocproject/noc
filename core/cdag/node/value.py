@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Optional
 
 # Third-party modules
 from pydantic import BaseModel
@@ -28,15 +28,6 @@ class ValueNode(BaseCDAGNode):
     config_cls = ValueNodeConfig
     dot_shape = "cds"
     categories = [Category.UTIL]
-
-    def __init__(
-        self,
-        node_id: str,
-        state: Optional[Dict[str, Any]] = None,
-        description: str = None,
-        config: Optional[Dict[str, Any]] = None,
-    ):
-        super().__init__(node_id, state=state, description=description, config=config)
 
     def get_value(self) -> Optional[ValueType]:
         return self.config.value

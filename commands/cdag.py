@@ -8,6 +8,7 @@
 # Python modules
 import os
 from collections import defaultdict
+from typing import List
 
 # Third-party modules
 import orjson
@@ -24,7 +25,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # Args
-        parser.add_argument("--config", help="Graph config path")
+        parser.add_argument("--config", help="Graph config path", action="append")
         # dot command
         dot = subparsers.add_parser("dot")
         dot.add_argument("--output", help="Output path")
@@ -37,13 +38,13 @@ class Command(BaseCommand):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_dot(self, config, output, *args, **kwargs):
-        cdag = self.from_config_path(config)
+        cdag = self.from_config_paths(config)
         with open(output, "w") as f:
             f.write(cdag.get_dot())
 
     def handle_metrics(self, config, input, output, *args, **kwargs):
         svc = get_service()
-        cdag = self.from_config_path(config)
+        cdag = self.from_config_paths(config)
         probes = {n.node_id: n for n in cdag.nodes.values() if n.name == "probe"}
         senders = {n for n in cdag.nodes.values() if n.name == "metrics"}
         default_units = {n.node_id: n.config.unit for n in probes.values()}
@@ -88,6 +89,13 @@ class Command(BaseCommand):
         else:
             self.die("Unknown config format")
         factory.construct()
+        return cdag
+
+    def from_config_paths(self, paths: List[str]) -> CDAG:
+        cdags = [self.from_config_path(path) for path in paths]
+        cdag = cdags[0]
+        for n, other in enumerate(cdags[1:]):
+            cdag.merge(other, prefix=str(n))
         return cdag
 
 
