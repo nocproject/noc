@@ -34,6 +34,7 @@ class CDAG(object):
         description: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None,
         ctx: Optional[Dict[str, Any]] = None,
+        sticky: bool = False,
     ) -> BaseCDAGNode:
         if node_id in self.nodes:
             raise ValueError("Node %s is already configured" % node_id)
@@ -49,6 +50,7 @@ class CDAG(object):
             state=self.state.get(node_id),
             config=config,
             ctx=ctx,
+            sticky=sticky,
         )
 
     def begin(self) -> Transaction:
@@ -76,6 +78,35 @@ class CDAG(object):
             r[node_id] = ns.dict()
         return r
 
+    def merge(self, other: "CDAG", prefix: Optional[str] = "") -> "CDAG":
+        """
+        Merge other graph into this one
+        :param other:
+        :param prefix: Optional merged node's prefix
+        :return:
+        """
+        # Merge nodes
+        nodes: Dict[str, BaseCDAGNode] = {}
+        for node_id, node in other.nodes.items():
+            # Normalize name
+            if node.sticky or not prefix:
+                new_id = node_id
+            else:
+                new_id = f"{prefix}::{node_id}"
+            if new_id in self.nodes:
+                # Already installed
+                nodes[node_id] = self.nodes[new_id]
+            else:
+                # Clone
+                nodes[node_id] = node.clone(self, new_id)
+        # Merge subscribers
+        for node_id, o_node in other.nodes.items():
+            node = nodes[node_id]
+            for r_node, name in o_node.iter_subscribers():
+                node.subscribe(nodes[r_node.node_id], name, dynamic=r_node.is_dynamic_input(name))
+        #
+        return self
+
     def get_dot(self) -> str:
         """
         Build graphviz dot representation for graph
@@ -102,8 +133,12 @@ class CDAG(object):
                     attrs += [f"{fn}: {v}"]
                 if attrs:
                     n_attrs = "\\n" + "\\n".join(attrs)
+            if node.sticky:
+                style = ', style="bold"'
+            else:
+                style = ""
             r += [
-                f'  {dot_id} [label="{node_id}\\ntype: {node.name}{n_attrs}", shape="{node.dot_shape}"];'
+                f'  {dot_id} [label="{node_id}\\ntype: {node.name}{n_attrs}", shape="{node.dot_shape}"{style}];'
             ]
             unbound = list(node.iter_unbound_inputs())
             if unbound:
@@ -118,7 +153,7 @@ class CDAG(object):
         # Render terminal block and its edges
         if tb:
             tb_label = " | ".join(tb)
-            r.insert(2, f'  TB [label="{tb_label}" ,shape="record"];')
+            r.insert(2, f'  TB [label="{tb_label}" ,shape="record", style="bold"];')
             r += tb_conn
         # Edges
         for node in self.nodes.values():
