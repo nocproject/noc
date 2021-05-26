@@ -48,11 +48,11 @@ class Script(BaseScript):
                 "measurement": "Volt AC",
                 "snmp_oid": "1.3.6.1.4.1.27514.102.0.11.0",
             },
-            # V220 state
+            # V230 state
             {
                 "name": "v230_state",
                 "status": 1,
-                "description": "Флаг наличия сетевого напря-жения AC 230В",
+                "description": "Флаг наличия сетевого напряжения AC 230В",
                 "measurement": "StatusEnum",
                 "snmp_oid": "1.3.6.1.4.1.27514.102.0.12.0",
             },
@@ -71,7 +71,7 @@ class Script(BaseScript):
             {
                 "name": "temp_out",
                 "status": bool(v),
-                "description": "Значение температуры с внутреннего датчика",
+                "description": "Значение температуры с внешнего датчика",
                 "measurement": "Celsius",
                 "snmp_oid": "1.3.6.1.4.1.27514.102.0.14.0",
             }

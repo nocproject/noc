@@ -7,12 +7,37 @@
 
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
-from noc.core.script.metrics import scale
+from noc.core.script.metrics import scale, invert0
 from noc.core.validators import is_float, is_int
 
 
 class Script(GetMetricsScript):
     name = "Qtech.QFC.get_metrics"
+
+    SENSOR_OID_SCALE = {
+        # V3
+        "1.3.6.1.4.1.27514.103.0.7.0": invert0,
+        "1.3.6.1.4.1.27514.103.0.19.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.103.0.21.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.103.0.24.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.103.0.26.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.103.0.27.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.103.0.28.0": scale(0.01, 2),
+        "1.3.6.1.4.1.27514.103.0.30.0": scale(0.01, 2),
+        "1.3.6.1.4.1.27514.103.0.31.0": scale(0.01, 2),
+        # V2
+        "1.3.6.1.4.1.27514.102.0.7.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.102.0.8.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.102.0.11.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.102.0.12.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.102.0.16.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.102.0.17.0": scale(0.01, 2),
+        "1.3.6.1.4.1.27514.102.0.19.0": scale(0.01, 2),
+        "1.3.6.1.4.1.27514.102.0.20.0": scale(0.01, 2),
+        "1.3.6.1.4.1.27514.102.0.21.0": scale(0.01, 2),
+        "1.3.6.1.4.1.27514.102.1.5.0": scale(0.1, 2),
+        "1.3.6.1.4.1.27514.102.1.6.0": scale(0.1, 2),
+    }
 
     def check_oid(self):
         if self.is_lite:

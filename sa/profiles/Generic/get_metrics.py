@@ -11,6 +11,7 @@ import os
 import re
 import itertools
 import operator
+from typing import Union, Optional, List, Tuple, Callable, Dict
 from collections import defaultdict
 
 # Third-party modules
@@ -43,12 +44,12 @@ class MetricConfig(object):
     __slots__ = ("id", "metric", "labels", "oid", "ifindex", "sla_type")
 
     def __init__(self, id, metric, labels=None, oid=None, ifindex=None, sla_type=None):
-        self.id = id
-        self.metric = metric
-        self.labels = labels
-        self.oid = oid
-        self.ifindex = ifindex
-        self.sla_type = sla_type
+        self.id: int = id
+        self.metric: str = metric
+        self.labels: List[str] = labels
+        self.oid: str = oid
+        self.ifindex: int = ifindex
+        self.sla_type: str = sla_type
 
     def __repr__(self):
         return "<MetricConfig #%s %s>" % (self.id, self.metric)
@@ -58,10 +59,10 @@ class BatchConfig(object):
     __slots__ = ("id", "metric", "labels", "type", "scale")
 
     def __init__(self, id, metric, labels, type, scale):
-        self.id = id
-        self.metric = metric
-        self.labels = labels
-        self.type = type
+        self.id: int = id
+        self.metric: str = metric
+        self.labels: List[str] = labels
+        self.type: str = type
         self.scale = scale
 
 
@@ -275,25 +276,25 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.metrics = []
-        self.ts = None
+        self.ts: Optional[int] = None
         # SNMP batch to be collected by collect_snmp_metrics
         # oid -> BatchConfig
-        self.snmp_batch = defaultdict(list)
+        self.snmp_batch: Dict[str, List[BatchConfig]] = defaultdict(list)
         # Collected metric ids
         self.seen_ids = set()
         # get_labels_hash(metric type, labels) -> metric config
-        self.labels = {}
+        self.labels: Dict[str, List[MetricConfig]] = {}
         # metric type -> [metric config]
-        self.metric_configs = defaultdict(list)
+        self.metric_configs: Dict[str, List[MetricConfig]] = defaultdict(list)
 
-    def get_snmp_metrics_get_timeout(self):
+    def get_snmp_metrics_get_timeout(self) -> int:
         """
         Timeout for snmp GET request
         :return:
         """
         return self.profile.snmp_metrics_get_timeout
 
-    def get_snmp_metrics_get_chunk(self):
+    def get_snmp_metrics_get_chunk(self) -> int:
         """
         Aggregate up to *snmp_metrics_get_chunk* oids
         to one SNMP GET request
@@ -302,7 +303,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         return self.profile.snmp_metrics_get_chunk
 
     @staticmethod
-    def get_labels_hash(metric, labels):
+    def get_labels_hash(metric: str, labels: List[str]):
         if labels:
             return "\x00".join([metric] + labels)
         else:
@@ -319,7 +320,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         * sla_test - optional sla test inventory
         """
         # Generate list of MetricConfig from input parameters
-        metrics = [MetricConfig(**m) for m in metrics]
+        metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
         # Split by metric types
         self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in metrics}
         for m in metrics:
@@ -478,7 +479,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def get_ifindex(self, name):
         return self.ifindexes.get(name)
 
-    def get_ts(self):
+    def get_ts(self) -> int:
         """
         Returns current timestamp in nanoseconds
         """
@@ -487,7 +488,15 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         return self.ts
 
     def set_metric(
-        self, id, metric=None, value=0, ts=None, labels=None, type="gauge", scale=1, multi=False
+        self,
+        id: Union[int, Tuple[str, None]],
+        metric: str = None,
+        value: Union[int, float] = 0,
+        ts: Optional[int] = None,
+        labels: Optional[Union[List[str], Tuple[str]]] = None,
+        type: str = "gauge",
+        scale: Union[float, int, Callable] = 1,
+        multi: bool = False,
     ):
         """
         Append metric to output
@@ -584,12 +593,14 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 labels=mc.labels,
             )
 
+    SENSOR_OID_SCALE: Dict[str, Union[int, Callable]] = {}  # oid -> scale
+
     @metrics(
         ["Sensor | Value"],
         access="S",
         volatile=False,
     )
-    def collect_sensor_metrics(self, metrics):
+    def collect_sensor_metrics(self, metrics: List[MetricConfig]):
         for m in metrics:
             if m.oid:
                 try:
@@ -599,6 +610,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         metric=m.metric,
                         labels=m.labels,
                         value=float(value),
+                        scale=self.SENSOR_OID_SCALE.get(m.oid, 1),
                     )
                 except Exception:
                     continue
