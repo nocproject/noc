@@ -10,19 +10,21 @@ import pytest
 
 # NOC modules
 from noc.core.cdag.graph import CDAG
-from noc.core.cdag.factory.config import ConfigCDAGFactory, NodeItem, InputItem
+from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig, NodeItem, InputItem
 
-CONFIG = [
-    NodeItem(name="n01", type="value", description="Value of 1", config={"value": 1.0}),
-    NodeItem(name="n02", type="value", description="Value of 2", config={"value": 2.0}),
-    NodeItem(
-        name="n03",
-        type="add",
-        description="Add values",
-        inputs=[InputItem(name="x", node="n01"), InputItem(name="y", node="n02")],
-    ),
-    NodeItem(name="n04", type="state", inputs=[InputItem(name="x", node="n03")]),
-]
+CONFIG = GraphConfig(
+    nodes=[
+        NodeItem(name="n01", type="value", description="Value of 1", config={"value": 1.0}),
+        NodeItem(name="n02", type="value", description="Value of 2", config={"value": 2.0}),
+        NodeItem(
+            name="n03",
+            type="add",
+            description="Add values",
+            inputs=[InputItem(name="x", node="n01"), InputItem(name="y", node="n02")],
+        ),
+        NodeItem(name="n04", type="state", inputs=[InputItem(name="x", node="n03")]),
+    ]
+)
 
 
 @pytest.mark.parametrize("config,out_state", [(CONFIG, {"n04": {"value": 3.0}})])
@@ -33,7 +35,7 @@ def test_config_factory(config, out_state):
     factory = ConfigCDAGFactory(cdag, CONFIG)
     factory.construct()
     # Check nodes
-    for item in CONFIG:
+    for item in CONFIG.nodes:
         node = cdag[item.name]
         assert node
         assert node.node_id == item.name
@@ -43,22 +45,24 @@ def test_config_factory(config, out_state):
     assert cdag.get_state() == out_state
 
 
-MISSED_CONFIG = [
-    NodeItem(name="n01", type="value", description="Value of 1", config={"value": 1.0}),
-    NodeItem(
-        name="n02!",
-        type="value",
-        description="Value of 2. Intentionally malformed id",
-        config={"value": 2.0},
-    ),
-    NodeItem(
-        name="n03",
-        type="add",
-        description="Add values",
-        inputs=[InputItem(name="x", node="n01"), InputItem(name="y", node="n02")],
-    ),
-    NodeItem(name="n04", type="state", inputs=[InputItem(name="x", node="n03")]),
-]
+MISSED_CONFIG = GraphConfig(
+    nodes=[
+        NodeItem(name="n01", type="value", description="Value of 1", config={"value": 1.0}),
+        NodeItem(
+            name="n02!",
+            type="value",
+            description="Value of 2. Intentionally malformed id",
+            config={"value": 2.0},
+        ),
+        NodeItem(
+            name="n03",
+            type="add",
+            description="Add values",
+            inputs=[InputItem(name="x", node="n01"), InputItem(name="y", node="n02")],
+        ),
+        NodeItem(name="n04", type="state", inputs=[InputItem(name="x", node="n03")]),
+    ]
+)
 
 
 def test_config_missed_node():
@@ -70,23 +74,25 @@ def test_config_missed_node():
     assert nodes == {"n01", "n02!"}
 
 
-MATCHERS_CONFIG = [
-    NodeItem(name="n01", type="value", description="Value of 1", config={"value": 1.0}),
-    NodeItem(name="n02", type="value", description="Value of 2", config={"value": 2.0}),
-    NodeItem(
-        name="n03",
-        type="add",
-        description="Add values",
-        inputs=[InputItem(name="x", node="n01"), InputItem(name="y", node="n02")],
-        match={"allow_sum": True},
-    ),
-    NodeItem(
-        name="n04",
-        type="state",
-        inputs=[InputItem(name="x", node="n03")],
-        match={"allow_sum": True, "allow_state": True},
-    ),
-]
+MATCHERS_CONFIG = GraphConfig(
+    nodes=[
+        NodeItem(name="n01", type="value", description="Value of 1", config={"value": 1.0}),
+        NodeItem(name="n02", type="value", description="Value of 2", config={"value": 2.0}),
+        NodeItem(
+            name="n03",
+            type="add",
+            description="Add values",
+            inputs=[InputItem(name="x", node="n01"), InputItem(name="y", node="n02")],
+            match={"allow_sum": True},
+        ),
+        NodeItem(
+            name="n04",
+            type="state",
+            inputs=[InputItem(name="x", node="n03")],
+            match={"allow_sum": True, "allow_state": True},
+        ),
+    ]
+)
 
 
 @pytest.mark.parametrize(

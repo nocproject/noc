@@ -14,6 +14,7 @@ from noc.core.cdag.factory.yaml import YAMLCDAGFactory
 
 
 CONFIG1 = """
+nodes:
 - name: n01
   description: Value of 1
   type: value
@@ -26,6 +27,7 @@ CONFIG1 = """
     value: 2.0
 """
 CONFIG2 = """
+nodes:
 - name: n03
   type: add
   description: Add values
@@ -36,6 +38,7 @@ CONFIG2 = """
     node: n02
 """
 CONFIG3 = """
+nodes:
 - name: n04
   type: state
   inputs:
@@ -59,6 +62,7 @@ def test_factory_chain(configs, out_state):
 
 
 NS_CONFIG1 = """
+nodes:
 - name: n01
   description: Value of 1
   type: value
@@ -71,6 +75,7 @@ NS_CONFIG1 = """
     value: 2.0
 """
 NS_CONFIG2 = """
+nodes:
 - name: n03
   type: add
   description: Add values
@@ -81,6 +86,7 @@ NS_CONFIG2 = """
     node: ns1::n02
 """
 NS_CONFIG3 = """
+nodes:
 - name: n04
   type: state
   inputs:

@@ -34,6 +34,10 @@ class NodeItem(BaseModel):
     sticky: bool = False
 
 
+class GraphConfig(BaseModel):
+    nodes: List[NodeItem]
+
+
 class ConfigCDAGFactory(BaseCDAGFactory):
     """
     Build CDAG from abstract config
@@ -42,7 +46,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
     def __init__(
         self,
         graph: CDAG,
-        config: List[NodeItem],
+        config: GraphConfig,
         ctx: Optional[FactoryCtx] = None,
         namespace: Optional[str] = None,
     ):
@@ -63,7 +67,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         return match(self.ctx, expr)
 
     def construct(self) -> None:
-        for item in self.config:
+        for item in self.config.nodes:
             # Check match
             if not self.is_matched(item.match):
                 continue
