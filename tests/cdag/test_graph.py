@@ -14,6 +14,7 @@ from noc.core.cdag.factory.yaml import YAMLCDAGFactory
 
 
 CONFIG = """
+nodes:
 - name: n01
   description: Value of 1
   type: value
@@ -73,6 +74,7 @@ def test_invalid_node_class():
 
 
 CONST_CONFIG = """
+nodes:
 - name: n01
   description: Value of 1
   type: value

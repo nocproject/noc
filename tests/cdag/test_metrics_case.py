@@ -10,6 +10,7 @@ from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.yaml import YAMLCDAGFactory
 
 CONFIG = """
+nodes:
 - name: load_in
   description: load_in probe
   type: probe

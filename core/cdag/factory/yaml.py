@@ -13,7 +13,7 @@ import yaml
 
 # NOC modules
 from .base import CDAG
-from .config import ConfigCDAGFactory, NodeItem, FactoryCtx
+from .config import ConfigCDAGFactory, GraphConfig, FactoryCtx
 
 
 class YAMLCDAGFactory(ConfigCDAGFactory):
@@ -24,5 +24,5 @@ class YAMLCDAGFactory(ConfigCDAGFactory):
         ctx: Optional[FactoryCtx] = None,
         namespace: Optional[str] = None,
     ):
-        items = [NodeItem(**i) for i in yaml.safe_load(config)]
-        super().__init__(graph, items, ctx, namespace)
+        cfg = GraphConfig(**yaml.safe_load(config))
+        super().__init__(graph, cfg, ctx, namespace)

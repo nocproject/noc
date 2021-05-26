@@ -13,7 +13,7 @@ import orjson
 
 # NOC modules
 from .base import CDAG
-from .config import ConfigCDAGFactory, NodeItem, FactoryCtx
+from .config import ConfigCDAGFactory, GraphConfig, FactoryCtx
 
 
 class JSONCDAGFactory(ConfigCDAGFactory):
@@ -24,5 +24,5 @@ class JSONCDAGFactory(ConfigCDAGFactory):
         cfx: Optional[FactoryCtx] = None,
         namespace: Optional[str] = None,
     ):
-        items = [NodeItem(**i) for i in orjson.loads(config)]
-        super().__init__(graph, items, cfx, namespace)
+        cfg = GraphConfig(**orjson.loads(config))
+        super().__init__(graph, cfg, cfx, namespace)

@@ -13,49 +13,51 @@ from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.json import JSONCDAGFactory
 
 
-CONFIG = """[
-    {
-        "name": "n01",
-        "type": "value",
-        "description": "Value of 1",
-        "config": {
-            "value": 1.0
-        }
-    },
-    {
-        "name": "n02",
-        "type": "value",
-        "description": "Value of 2",
-        "config": {
-            "value": 2.0
-        }
-    },
-    {
-        "name": "n03",
-        "type": "add",
-        "description": "Add values",
-        "inputs": [
-            {
-                "name": "x",
-                "node": "n01"
-            },
-            {
-                "name": "y",
-                "node": "n02"
+CONFIG = """{
+    "nodes": [
+        {
+            "name": "n01",
+            "type": "value",
+            "description": "Value of 1",
+            "config": {
+                "value": 1.0
             }
-        ]
-    },
-    {
-        "name": "n04",
-        "type": "state",
-        "inputs": [
-            {
-                "name": "x",
-                "node": "n03"
+        },
+        {
+            "name": "n02",
+            "type": "value",
+            "description": "Value of 2",
+            "config": {
+                "value": 2.0
             }
-        ]
-    }
-]
+        },
+        {
+            "name": "n03",
+            "type": "add",
+            "description": "Add values",
+            "inputs": [
+                {
+                    "name": "x",
+                    "node": "n01"
+                },
+                {
+                    "name": "y",
+                    "node": "n02"
+                }
+            ]
+        },
+        {
+            "name": "n04",
+            "type": "state",
+            "inputs": [
+                {
+                    "name": "x",
+                    "node": "n03"
+                }
+            ]
+        }
+    ]
+}
 """
 
 
