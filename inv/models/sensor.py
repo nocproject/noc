@@ -189,6 +189,6 @@ class Sensor(Document):
 
     @classmethod
     def iter_effective_labels(cls, instance: "Sensor") -> Iterable[List[str]]:
-        yield instance.labels or [] + instance.profile.labels or [] + RegexpLabel.get_effective_labels(
-            "sensor_local_id", instance.local_id
-        )
+        yield (instance.labels or []) + (
+            instance.profile.labels or []
+        ) + RegexpLabel.get_effective_labels("sensor_local_id", instance.local_id)
