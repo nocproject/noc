@@ -22,6 +22,9 @@ class Script(BaseScript):
         "Huawei | OID | hwCBQoSClassifierStatisticsTable": mib[
             "HUAWEI-CBQOS-MIB::hwCBQoSClassifierMatchedPackets"
         ],
+        "Huawei | OID | hwCBQoSPolicyStatisticsClassifierTable": mib[
+            "HUAWEI-CBQOS-MIB::hwCBQoSPolicyStatClassifierMatchedPassPackets"
+        ],
     }
 
     CHECK_SNMP_GET = {
