@@ -60,6 +60,7 @@ class SubInterface(Document):
             "tagged_vlans",
             "enabled_afi",
             "forwarding_instance",
+            "service",
             {"fields": ["ipv4_addresses"], "sparse": True},
         ],
     }
