@@ -6,6 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Iterable, Any
+import time
 import re
 import heapq
 import itertools
@@ -275,3 +279,214 @@ class ReportModelFilter(object):
                 ids = ids.intersection(i_set)
             r[c.strip()] = ids.copy()
         return r
+
+
+@dataclass
+class ReportField:
+    name: str
+    label: str
+    description: Optional[str] = ""
+    unit: Optional[str] = None
+    default: Optional[str] = None
+    metric_name: Optional[str] = None  # Field name on clickhouse
+    group: bool = False
+
+
+@dataclass
+class FilterValues:
+    value: Any
+    description: str
+
+
+@dataclass
+class ReportFilter:
+    name: str
+    type: str
+    description: str
+    values: Optional[FilterValues]
+    required: bool
+
+
+@dataclass
+class ReportConfig:
+    name: str
+    description: str
+    timebased: bool
+    enabled: bool
+    fields: List[ReportField]
+    columns: List[ReportField] = field(init=False)
+    groupby: List[str]
+    intervals: List[str]
+    filters: List[ReportFilter]
+    dataretentiondays: int
+
+    def __post_init__(self):
+        self.columns = [f for f in self.fields]
+
+
+class ReportDataSource(object):
+    name = None
+    description = None
+    object_model = None
+
+    # (List#, Name, Alias): TypeNormalizer or (TypeNormalizer, DefaultValue)
+    FIELDS: List[ReportField] = []
+    INTERVALS: List[str] = ["HOUR"]
+    TIMEBASED: bool = False
+    SORTED: bool = True
+
+    def __init__(
+        self,
+        fields: List[str],
+        objectids: List[str] = None,
+        allobjectids: bool = False,
+        start: Optional[datetime.datetime] = None,
+        end: Optional[datetime.datetime] = None,
+        interval: Optional[str] = None,
+        max_intervals: Optional[int] = None,
+        filters: Optional[List[str]] = None,
+        rows: Optional[int] = None,
+    ):
+        self.fields = fields
+        self.objectids = objectids
+        self.allobjectids = allobjectids
+        self.filters = filters or []
+        self.interval = interval
+        self.max_intervals = max_intervals
+        self.rows = rows
+        if self.TIMEBASED and not start:
+            raise ValueError("Timebased Report required start param")
+        self.end = end or datetime.datetime.now()
+        self.start = start or self.end - datetime.timedelta(days=1)
+
+    @classmethod
+    def get_config(cls) -> ReportConfig:
+        """
+        Return ReportConfig
+        :return:
+        """
+        return ReportConfig(
+            name=cls.name,
+            description=cls.description,
+            timebased=cls.TIMEBASED,
+            enabled=True,
+            fields=cls.FIELDS,
+            groupby=[f.name for f in cls.FIELDS if f.group],
+            intervals=cls.INTERVALS,
+            filters=[],
+            dataretentiondays=1,
+        )
+
+    def iter_data(self):
+        pass
+
+    def extract(self) -> Iterable[Dict[str, int]]:
+        """
+        Generate list of rows. Each row is a list of fields. First value - is id
+        :return:
+        """
+        raise NotImplementedError
+
+
+class CHTableReportDataSource(ReportDataSource):
+    CHUNK_SIZE = 5000
+    TABLE_NAME = None
+    object_field = "sa.ManagedObject"
+
+    def get_client(self):
+        if not hasattr(self, "_client"):
+            from noc.core.clickhouse.connect import connection
+
+            self._client = connection()
+        return self._client
+
+    def get_object_filter(self, ids) -> str:
+        return f'{self.object_field} IN ({", ".join([str(c) for c in ids])})'
+
+    group_intervals = {
+        "HOUR": "toStartOfHour(toDateTime(any(ts))))",
+        "DAY": "toStartOfDay(toDateTime(any(ts)))",
+        "WEEK": "toStartOfWeek(toDateTime(any(ts)))",
+        "MONTH": "toMonth(toDateTime(any(ts)))",
+    }
+
+    def get_group_interval(self) -> str:
+        """
+        If set max_intervals - use variants interval
+        :return:
+        """
+        if self.max_intervals:
+            minutes = ((self.end - self.start).total_seconds() / 60) / self.max_intervals
+            return f"toStartOfInterval(ts, INTERVAL {minutes} minute)"
+        return self.group_intervals[self.interval]
+
+    def get_custom_conditions(self) -> Dict[str, List[str]]:
+        return {
+            "q_where": [
+                f'{f} IN ({", ".join([str(c) for c in self.filters[f]])})' for f in self.filters
+            ]
+        }
+
+    def get_query_ch(self, from_date: datetime.datetime, to_date: datetime.datetime) -> str:
+        ts_from_date = time.mktime(from_date.timetuple())
+        ts_to_date = time.mktime(to_date.timetuple())
+        query_map = {
+            "q_select": [],
+            "q_where": [
+                f"(date >= toDate({ts_from_date})) AND (ts >= toDateTime({ts_from_date}) AND ts <= toDateTime({ts_to_date})) %s",  # objectids_filter
+            ],
+        }
+        ts = self.get_group_interval()
+        query_map["q_select"] += [f"{ts} AS ts"]
+        query_map["q_group"] = ["ts"]
+        # if self.interval == "HOUR":
+        #    query_map["q_select"] += ["toStartOfHour(toDateTime(ts)) AS ts"]
+        #    query_map["q_group"] = ["ts"]
+        for f in self.FIELDS:
+            if f.name not in self.fields:
+                continue
+            query_map["q_select"] += [f"{f.metric_name} as {f.name}"]
+        query_map["q_order_by"] = ["ts"]
+        custom_conditions = self.get_custom_conditions()
+        if "where" in custom_conditions:
+            query_map["q_where"] += custom_conditions["where"]
+        if "having" in custom_conditions:
+            query_map["q_having"] = custom_conditions["having"]
+        query = [
+            f'SELECT {",".join(query_map["q_select"])}',
+            f"FROM {self.TABLE_NAME}",
+            f'WHERE {" AND ".join(query_map["q_where"])}',
+        ]
+        if "q_group" in query_map:
+            query += [f'GROUP BY {",".join(query_map["q_group"])}']
+        if "q_having" in query_map:
+            query += [f'HAVING {" AND ".join(query_map["q_having"])}']
+        if "q_order_by" in query_map:
+            query += [f'ORDER BY {",".join(query_map["q_order_by"])}']
+        if self.rows:
+            query += [f"LIMIT {self.rows}"]
+        return "\n ".join(query)
+
+    def do_query(self):
+        f_date, to_date = self.start, self.end
+        query = self.get_query_ch(f_date, to_date)
+        logger.info("Query: %s", query)
+        client = self.get_client()
+        if self.allobjectids or not self.objectids:
+            for row in client.execute(query % ""):
+                yield row
+        else:
+            # chunked query
+            ids = self.objectids
+            while ids:
+                chunk, ids = ids[: self.CHUNK_SIZE], ids[self.CHUNK_SIZE :]
+                for row in client.execute(query % f" AND {self.get_object_filter(chunk)}"):
+                    yield row
+
+    def extract(self):
+        fields = []
+        if self.interval:
+            fields += ["ts"]
+        fields += [f.name for f in self.FIELDS if f.name in self.fields]
+        for row in self.do_query():
+            yield dict(zip(fields, row))
