@@ -400,6 +400,9 @@ class CHTableReportDataSource(ReportDataSource):
             self._client = connection()
         return self._client
 
+    def get_table(self):
+        return self.TABLE_NAME
+
     def get_object_filter(self, ids) -> str:
         return f'{self.object_field} IN ({", ".join([str(c) for c in ids])})'
 
@@ -454,7 +457,7 @@ class CHTableReportDataSource(ReportDataSource):
             query_map["q_having"] = custom_conditions["having"]
         query = [
             f'SELECT {",".join(query_map["q_select"])}',
-            f"FROM {self.TABLE_NAME}",
+            f"FROM {self.get_table()}",
             f'WHERE {" AND ".join(query_map["q_where"])}',
         ]
         if "q_group" in query_map:
