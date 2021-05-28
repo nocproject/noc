@@ -424,6 +424,8 @@ class CHTableReportDataSource(ReportDataSource):
         return self.group_intervals[self.interval]
 
     def get_custom_conditions(self) -> Dict[str, List[str]]:
+        if not self.filters:
+            return {}
         return {
             "q_where": [
                 f'{f} IN ({", ".join([str(c) for c in self.filters[f]])})' for f in self.filters
@@ -451,10 +453,10 @@ class CHTableReportDataSource(ReportDataSource):
             query_map["q_select"] += [f"{f.metric_name} as {f.name}"]
         query_map["q_order_by"] = ["ts"]
         custom_conditions = self.get_custom_conditions()
-        if "where" in custom_conditions:
-            query_map["q_where"] += custom_conditions["where"]
-        if "having" in custom_conditions:
-            query_map["q_having"] = custom_conditions["having"]
+        if "q_where" in custom_conditions:
+            query_map["q_where"] += custom_conditions["q_where"]
+        if "q_having" in custom_conditions:
+            query_map["q_having"] = custom_conditions["q_having"]
         query = [
             f'SELECT {",".join(query_map["q_select"])}',
             f"FROM {self.get_table()}",
