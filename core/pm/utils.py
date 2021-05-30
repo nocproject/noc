@@ -162,7 +162,7 @@ def get_interface_metrics(
               date >= toDate('%s')
               AND ts >= toDateTime('%s')
               AND managed_object IN (%s)
-              AND NOT arrayExists(x -> startsWith(x, 'noc::unit::'), labels)
+              AND NOT arrayExists(x -> startsWith(x, 'noc::subinterface::'), labels)
             GROUP BY managed_object, labels
             """ % (
         ", ".join(["argMax(%s, ts) as %s" % (f, f) for f in meric_map["map"].keys()]),

@@ -53,8 +53,8 @@
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::unit::*",
-            "store_column": "unit"
+            "label": "noc::subinterface::*",
+            "store_column": "subinterface"
         },
         {
             "is_order_key": false,
