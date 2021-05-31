@@ -69,7 +69,7 @@ class ExtDocApplication(ExtApplication):
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
-    ignored_fields = {"id", "bi_id"}
+    ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
 
     rx_oper_splitter = re.compile(r"^(?P<field>\S+?)(?P<f_num>\d+)__in")

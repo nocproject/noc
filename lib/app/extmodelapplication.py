@@ -71,7 +71,7 @@ class ExtModelApplication(ExtApplication):
     )
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
-    ignored_fields = {"id", "bi_id"}
+    ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
     file_fields_mask = None
 
