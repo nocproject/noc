@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 # NOC modules
@@ -42,6 +42,7 @@ class Service(BaseModel):
     cpe_mac: Optional[str]
     cpe_model: Optional[str]
     cpe_group: Optional[str]
+    labels: Optional[List[str]]
     description: Optional[str] = None
 
     class Config:
@@ -70,4 +71,5 @@ class Service(BaseModel):
         "cpe_model",
         "cpe_group",
         "description",
+        "labels",
     ]
