@@ -455,6 +455,8 @@ class BaseLoader(object):
         self.pending_deletes += [(item.id, item)]
 
     def change_workflow(self, o, state: str, changed_date: Optional[datetime.datetime] = None):
+        if not o:
+            return
         state = self.clean_wf_state(o.profile.workflow, state)
         if state and o.state != state:
             self.logger.debug("Change workflow state: %s -> %s", o.state, state)
