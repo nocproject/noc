@@ -23,7 +23,7 @@ class LabelAPI(DocumentResourceAPI[Label]):
     model = Label
     list_ops = [
         FuncFilter("query", function=lambda qs, values: qs.filter(name__icontains=values[0])),
-        FuncFilter("id", function=lambda qs, values: qs.filter(name=values[0])),
+        FuncFilter("id", function=lambda qs, values: qs.filter(name__in=values)),
         FilterExact("name"),
         FilterBool("enable_agent"),
         FilterBool("enable_service"),
