@@ -10,7 +10,7 @@ cd /opt/noc/docker
 ```
 Run *pre.sh* script for make dirs\permissions\config
 ```
-./noc-docker-setup.sh -p all
+./pre.sh -p all
 ```
 Check `./var/...-noc/etc/noc.conf` and edit config if needed
 
