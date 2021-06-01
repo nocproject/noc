@@ -36,7 +36,7 @@ class Script(BaseScript):
 
     rx_lldp_nei = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)\s+(\(\d\.\d\))?(?P<chassis_id>\S+)\s+"
-        r"(?P<port_id>\S+)\s+\d+\s+\d+",
+        r"(?P<port_id>\S+\s\S+|\S+)\s+\d+\s+\d+",
         re.DOTALL | re.MULTILINE,
     )
     rx_edp_nei = re.compile(
@@ -105,7 +105,7 @@ class Script(BaseScript):
 
             n = {
                 "remote_chassis_id": remote_chassis_id,
-                "remote_port": remote_port,
+                "remote_port": remote_port.strip("."),
                 "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
             }
