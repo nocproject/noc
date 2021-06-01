@@ -6,5 +6,6 @@
     "field_name": "cbqos_drops_out_delta",
     "field_type": "UInt64",
     "description": "Drops packet on output class-map (delta)",
-    "measure": "packets"
+    "measure": "packets",
+    "units__name": "Packets"
 }

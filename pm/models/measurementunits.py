@@ -13,12 +13,14 @@ from typing import Optional
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, IntField, UUIDField, ListField, EmbeddedDocumentField
+from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
+from noc.core.expr import get_fn
 
 DEFAULT_UNITS_NAME = "Unknown"
 
@@ -44,6 +46,18 @@ class AltUnit(EmbeddedDocument):
     def __str__(self):
         return self.name
 
+    def clean(self):
+        if self.from_primary:
+            try:
+                get_fn(self.from_primary)
+            except SyntaxError:
+                raise ValidationError("Syntx Error on from_primary exression")
+        if self.to_primary:
+            try:
+                get_fn(self.to_primary)
+            except SyntaxError:
+                raise ValidationError("Syntx Error on to_primary exression")
+
     @property
     def json_data(self):
         return {
@@ -68,7 +82,9 @@ class EnumValue(EmbeddedDocument):
         return {"key": self.key, "value": self.value}
 
 
-@on_delete_check(check=[("inv.Sensor", "units"), ("inv.SensorProfile", "units")])
+@on_delete_check(
+    check=[("inv.Sensor", "units"), ("inv.SensorProfile", "units"), ("pm.MetricType", "units")]
+)
 class MeasurementUnits(Document):
     meta = {
         "collection": "measurementunits",

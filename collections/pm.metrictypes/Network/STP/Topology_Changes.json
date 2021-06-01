@@ -6,5 +6,6 @@
     "field_name": "stp_topology_changes",
     "field_type": "UInt32",
     "description": "The total number of topology changes detected by this bridge since the management entity was last reset or initialized.",
-    "measure": "C"
+    "measure": "C",
+    "units__name": "Units"
 }

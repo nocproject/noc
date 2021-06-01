@@ -6,5 +6,6 @@
     "field_name": "errors_in_delta",
     "field_type": "UInt32",
     "description": "Errors when receive packet (delta)",
-    "measure": "packets"
+    "measure": "packets",
+    "units__name": "Packets"
 }

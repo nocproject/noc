@@ -6,5 +6,6 @@
     "field_name": "rf_tx_dbm",
     "field_type": "Float32",
     "description": "RF Tx power",
-    "measure": "dBuV"
+    "measure": "dBuV",
+    "units__name": "Decibel-uv"
 }

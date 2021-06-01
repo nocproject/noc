@@ -1,0 +1,9 @@
+{
+    "name": "Decibel",
+    "$collection": "pm.measurementunits",
+    "uuid": "63fe8f4f-7f6b-4423-94da-a17a679bdae3",
+    "description": "The decibel (symbol: dB) is a relative unit of measurement corresponding to one tenth of a bel (B).",
+    "label": "dB",
+    "dashboard_label": "dB",
+    "scale_type": "d"
+}

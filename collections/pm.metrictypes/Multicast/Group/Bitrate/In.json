@@ -6,5 +6,6 @@
     "field_name": "g_bitrate_in",
     "field_type": "UInt64",
     "description": "Input Bitrate (bps)",
-    "measure": "bps"
+    "measure": "bps",
+    "units__name": "Bit/s"
 }

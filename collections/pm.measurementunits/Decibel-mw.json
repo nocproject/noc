@@ -1,0 +1,9 @@
+{
+    "name": "Decibel-mw",
+    "$collection": "pm.measurementunits",
+    "uuid": "e787d8a7-e3e2-40a5-8570-782f6aad90ef",
+    "description": "dBm or dBmW (decibel-milliwatts) is a unit of level used to indicate that a power level is expressed in decibels (dB) with reference to one milliwatt (mW)",
+    "label": "dBm",
+    "dashboard_label": "dBm",
+    "scale_type": "d"
+}

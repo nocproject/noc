@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_snr_down",
     "field_type": "UInt16",
     "description": "(Signal-to-noise ratio) Measured difference in level of a desired signal to the level of background noise.",
-    "measure": "dB"
+    "measure": "dB",
+    "units__name": "Decibel"
 }

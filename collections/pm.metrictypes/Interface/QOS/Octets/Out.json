@@ -6,5 +6,6 @@
     "field_name": "qos_octets_out",
     "field_type": "UInt64",
     "description": "The total number of transmitted out octets passed by the interface queue.",
-    "measure": "bytes"
+    "measure": "bytes",
+    "units__name": "Bytes"
 }

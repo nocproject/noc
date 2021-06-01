@@ -6,5 +6,6 @@
     "field_name": "sip_sessions_active",
     "field_type": "UInt64",
     "description": "The total number of active SIP sessions.",
-    "measure": "C"
+    "measure": "C",
+    "units__name": "Units"
 }

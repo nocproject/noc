@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_errors_ses_delta",
     "field_type": "UInt32",
     "description": "Count of seconds during this interval where there was:\nATU-C:(CRC-8 summed over all bearer channels) >=18 OR\nLOS >=1 OR SEF >=1 OR LPR >=1\nATU-R:(FEBE summed over all bearer channels) >=18 OR\nLOS-FE >=1 OR RDI >=1 OR LPR-FE >=1 .\nThis parameter is inhibited during UAS.",
-    "measure": "count"
+    "measure": "count",
+    "units__name": "Second"
 }

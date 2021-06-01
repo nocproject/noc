@@ -6,5 +6,6 @@
     "field_name": "octets_out",
     "field_type": "UInt64",
     "description": "The total number of octets transmitted out of the interface, including framing characters.",
-    "measure": "bytes"
+    "measure": "bytes",
+    "units__name": "Bytes"
 }

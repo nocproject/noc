@@ -11,7 +11,8 @@ Ext.define("NOC.pm.metrictype.Application", {
     requires: [
         "NOC.core.JSONPreview",
         "NOC.pm.metrictype.Model",
-        "NOC.pm.metricscope.LookupField"
+        "NOC.pm.metricscope.LookupField",
+        "NOC.pm.measurementunits.LookupField"
     ],
     model: "NOC.pm.metrictype.Model",
     search: true,
@@ -107,6 +108,12 @@ Ext.define("NOC.pm.metrictype.Application", {
                     fieldLabel: __("Measure"),
                     allowBlank: false,
                     uiStyle: "medium"
+                },
+                {
+                  name: "units",
+                  xtype: "pm.measurementunits.LookupField",
+                  fieldLabel: __("Metric Measurement Units"),
+                  allowBlank: true
                 }
             ],
             formToolbar: [

@@ -6,5 +6,6 @@
     "field_name": "qos_octets_in",
     "field_type": "UInt64",
     "description": "The total number of received octets passed by the interface queue.",
-    "measure": "bytes"
+    "measure": "bytes",
+    "units__name": "Bytes"
 }

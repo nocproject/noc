@@ -6,5 +6,6 @@
     "field_name": "stp_topology_changes_delta",
     "field_type": "UInt32",
     "description": "The delta of topology changes detected by this bridge since the management entity was last collect.",
-    "measure": "C"
+    "measure": "C",
+    "units__name": "Units"
 }

@@ -6,5 +6,6 @@
     "field_name": "optical_rx_dbm",
     "field_type": "Int16",
     "description": "Signal Receive Power on transmitter",
-    "measure": "dBm"
+    "measure": "dBm",
+    "units__name": "Decibel-mw"
 }

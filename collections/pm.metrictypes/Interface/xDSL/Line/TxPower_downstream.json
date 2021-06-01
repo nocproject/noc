@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_txpower_down",
     "field_type": "UInt16",
     "description": "(≈ voltage) with which device sends its signal to the cable.",
-    "measure": "dB"
+    "measure": "dB",
+    "units__name": "Decibel"
 }

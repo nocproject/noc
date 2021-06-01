@@ -1,0 +1,9 @@
+{
+    "name": "Scalar",
+    "$collection": "pm.measurementunits",
+    "uuid": "4b3a9ec4-491a-4e2c-857d-e13656c0ada9",
+    "description": "Value with unknown measurement units",
+    "label": "Scalar",
+    "dashboard_label": "null",
+    "scale_type": "d"
+}

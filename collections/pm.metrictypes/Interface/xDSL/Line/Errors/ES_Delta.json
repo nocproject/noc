@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_errors_es_delta",
     "field_type": "UInt32",
     "description": "Count of the number of Errored Seconds since agent reset.  The errored second parameter is a count of one-second intervals containing one or more crc anomalies, or one or more los or sef defects.",
-    "measure": "count"
+    "measure": "count",
+    "units__name": "Units"
 }

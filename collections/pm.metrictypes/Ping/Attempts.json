@@ -6,5 +6,6 @@
     "field_name": "attempts",
     "field_type": "UInt16",
     "description": "ICMP Ping packet loss in per request",
-    "measure": "int"
+    "measure": "",
+    "units__name": "Packets"
 }

@@ -6,5 +6,6 @@
     "field_name": "c_bandwidth_percent",
     "field_type": "UInt8",
     "description": "Used Bandwidth in Percent",
-    "measure": "%"
+    "measure": "%",
+    "units__name": "Percent"
 }

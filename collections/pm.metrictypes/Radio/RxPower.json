@@ -6,5 +6,6 @@
     "field_name": "rx_power",
     "field_type": "Float32",
     "description": "Signal Rx Power on transmitter",
-    "measure": "dBm"
+    "measure": "dBm",
+    "units__name": "Decibel-mw"
 }

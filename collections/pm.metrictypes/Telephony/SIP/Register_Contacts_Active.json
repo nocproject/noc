@@ -6,5 +6,6 @@
     "field_name": "sip_register_contacts_active",
     "field_type": "UInt64",
     "description": "The number of SIP Contacts register on local device (not on all cluster, if available).",
-    "measure": "C"
+    "measure": "C",
+    "units__name": "Units"
 }

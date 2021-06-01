@@ -5,5 +5,23 @@
     "description": "Time measurement",
     "label": "s",
     "dashboard_label": "s",
-    "scale_type": "d"
+    "scale_type": "d",
+    "alt_units": [
+        {
+            "dashboard_label": "ms",
+            "description": null,
+            "from_primary": "x * 1000",
+            "label": "ms",
+            "name": "milliSecond",
+            "to_primary": "x / 1000"
+        },
+        {
+            "dashboard_label": "μs",
+            "description": null,
+            "from_primary": "x * 1000000",
+            "label": "μs",
+            "name": "microSecond",
+            "to_primary": "x / 1000000"
+        }
+    ]
 }

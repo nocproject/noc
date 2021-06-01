@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_noise_margin_down",
     "field_type": "Int16",
     "description": "Noise Margin as seen by this ATU with respect to its transmitted signal in tenth dB.",
-    "measure": "dB"
+    "measure": "dB",
+    "units__name": "Decibel"
 }

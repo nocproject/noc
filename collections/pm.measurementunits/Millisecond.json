@@ -1,0 +1,27 @@
+{
+    "name": "milliSecond",
+    "$collection": "pm.measurementunits",
+    "uuid": "f3c6a418-88bd-4009-bea1-d5457275073f",
+    "description": "Time measurement",
+    "label": "ms",
+    "dashboard_label": "ms",
+    "scale_type": "d",
+    "alt_units": [
+        {
+            "dashboard_label": "s",
+            "description": "Second",
+            "from_primary": "x / 1000",
+            "label": "s",
+            "name": "Second",
+            "to_primary": "x * 1000"
+        },
+        {
+            "dashboard_label": "μs",
+            "description": "Microsecond",
+            "from_primary": "x * 1000",
+            "label": "μs",
+            "name": "microSecond",
+            "to_primary": "x / 1000"
+        }
+    ]
+}

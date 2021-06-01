@@ -6,5 +6,6 @@
     "field_name": "cbqos_packets_out_delta",
     "field_type": "UInt64",
     "description": "The total number of sending packets passed by the interface class-map.",
-    "measure": "bytes"
+    "measure": "bytes",
+    "units__name": "Packets"
 }

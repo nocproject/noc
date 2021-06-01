@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_attenuation_up",
     "field_type": "UInt16",
     "description": "Measured difference in the total power transmitted by the peer ATU and the total power received by this ATU.",
-    "measure": "dB"
+    "measure": "dB",
+    "units__name": "Decibel"
 }

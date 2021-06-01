@@ -6,5 +6,6 @@
     "field_name": "errors_crc_in",
     "field_type": "UInt32",
     "description": "Errors when recieved packets which have CRC checking errors ",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__name": "Packets/s"
 }

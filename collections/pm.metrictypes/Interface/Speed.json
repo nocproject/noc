@@ -6,5 +6,6 @@
     "field_name": "speed",
     "field_type": "UInt64",
     "description": "Interface speed",
-    "measure": "bit/s"
+    "measure": "bit/s",
+    "units__name": "Bit/s"
 }

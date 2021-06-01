@@ -6,5 +6,6 @@
     "field_name": "xdsl_line_errors_retrain_delta",
     "field_type": "UInt32",
     "description": "Refer to changing the line parameters (retrain) to adapt to the change of transmission line characteristics.",
-    "measure": "count"
+    "measure": "count",
+    "units__name": "Units"
 }
