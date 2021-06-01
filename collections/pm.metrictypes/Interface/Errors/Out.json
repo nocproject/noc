@@ -6,5 +6,6 @@
     "field_name": "errors_out",
     "field_type": "UInt32",
     "description": "Errors when transmit packet",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__name": "Packets/s"
 }

@@ -1,0 +1,39 @@
+{
+    "name": "InterfaceOperState",
+    "$collection": "pm.measurementunits",
+    "uuid": "75284e4b-3a00-40de-ab36-a210663ed889",
+    "description": "Operational state of the interface",
+    "label": " ",
+    "dashboard_label": " ",
+    "scale_type": "d",
+    "enum": [
+        {
+            "key": "up",
+            "value": 1
+        },
+        {
+            "key": "Down",
+            "value": 2
+        },
+        {
+            "key": "testing",
+            "value": 3
+        },
+        {
+            "key": "unknown",
+            "value": 4
+        },
+        {
+            "key": "dormant",
+            "value": 5
+        },
+        {
+            "key": "notPresent",
+            "value": 6
+        },
+        {
+            "key": "lowerLayerDown",
+            "value": 7
+        }
+    ]
+}

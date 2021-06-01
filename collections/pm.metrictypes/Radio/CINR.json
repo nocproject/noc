@@ -6,5 +6,6 @@
     "field_name": "cinr",
     "field_type": "Int16",
     "description": "Carrier to Interference + Noise Ratio",
-    "measure": "dB"
+    "measure": "dB",
+    "units__name": "Decibel"
 }

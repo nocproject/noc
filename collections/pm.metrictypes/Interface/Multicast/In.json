@@ -6,5 +6,6 @@
     "field_name": "multicast_in",
     "field_type": "UInt64",
     "description": "Multicast packets on input interface",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__name": "Packets/s"
 }

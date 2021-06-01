@@ -6,5 +6,6 @@
     "field_name": "disk_usage_p",
     "field_type": "UInt8",
     "description": "Disk Usage %",
-    "measure": "%"
+    "measure": "%",
+    "units__name": "Percent"
 }

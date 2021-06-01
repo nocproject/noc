@@ -6,5 +6,6 @@
     "field_name": "load_5s",
     "field_type": "UInt8",
     "description": "CPU Usage in percents",
-    "measure": "%"
+    "measure": "%",
+    "units__name": "Percent"
 }

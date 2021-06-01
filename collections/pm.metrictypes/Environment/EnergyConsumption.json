@@ -6,5 +6,6 @@
     "field_name": "energy_consumption",
     "field_type": "Float32",
     "description": "The metric for the Energy consumption (kWh)",
-    "measure": "kWh"
+    "measure": "kWh",
+    "units__name": "Kilowatt-hour"
 }

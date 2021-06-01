@@ -6,5 +6,6 @@
     "field_name": "errors_frame_in",
     "field_type": "UInt32",
     "description": "Errors when received frames whose actual length differs with 802.3 ",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__name": "Packets/s"
 }

@@ -5,6 +5,7 @@
     "scope__name": "Memory",
     "field_name": "load_1min",
     "field_type": "UInt8",
-    "description": "",
-    "measure": "%"
+    "description": null,
+    "measure": "%",
+    "units__name": "Percent"
 }

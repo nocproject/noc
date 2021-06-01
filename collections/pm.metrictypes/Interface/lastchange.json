@@ -1,10 +1,11 @@
 {
-    "name": "Interface | Last Сhange",
+    "name": "Interface | Last Change",
     "$collection": "pm.metrictypes",
     "uuid": "b345c39b-c77a-4e86-89de-746932307e8c",
     "scope__name": "Interface",
     "field_name": "lastchange",
     "field_type": "Int16",
     "description": "Last change interface day(s)",
-    "measure": "day(s)"
+    "measure": "day(s)",
+    "units__name": "Units"
 }

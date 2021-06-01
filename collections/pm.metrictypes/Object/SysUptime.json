@@ -6,5 +6,6 @@
     "field_name": "sys_uptime",
     "field_type": "UInt64",
     "description": "Object  RFC1213-MIB:SysUptime ",
-    "measure": "sec"
+    "measure": "sec",
+    "units__name": "Second"
 }

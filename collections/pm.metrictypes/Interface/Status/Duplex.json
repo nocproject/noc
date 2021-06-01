@@ -6,5 +6,6 @@
     "field_name": "status_duplex",
     "field_type": "UInt8",
     "description": "Interface duplex status (1 - unknown, 2 - half, 3 - full)",
-    "measure": " "
+    "measure": "",
+    "units__name": "DuplexStatus"
 }

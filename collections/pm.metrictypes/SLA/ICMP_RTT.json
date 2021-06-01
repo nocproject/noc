@@ -6,5 +6,6 @@
     "field_name": "icmp_rtt",
     "field_type": "UInt32",
     "description": "Measured round trip time for ICMP packets in microseconds",
-    "measure": "μs"
+    "measure": "μs",
+    "units__name": "microSecond"
 }

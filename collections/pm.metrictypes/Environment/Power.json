@@ -6,5 +6,6 @@
     "field_name": "power_consume",
     "field_type": "UInt16",
     "description": "Metric for device Consume Power (W)",
-    "measure": "W"
+    "measure": "W",
+    "units__name": "Watt"
 }

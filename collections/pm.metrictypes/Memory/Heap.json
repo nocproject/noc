@@ -6,5 +6,6 @@
     "field_name": "heap",
     "field_type": "UInt8",
     "description": "Memory Heap in percents",
-    "measure": "%"
+    "measure": "%",
+    "units__name": "Percent"
 }

@@ -6,5 +6,6 @@
     "field_name": "c_group_count",
     "field_type": "UInt8",
     "description": "Used multicast groups on channel",
-    "measure": " "
+    "measure": "",
+    "units__name": "Units"
 }

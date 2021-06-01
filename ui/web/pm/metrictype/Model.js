@@ -49,6 +49,15 @@ Ext.define("NOC.pm.metrictype.Model", {
             type: "string"
         },
         {
+            name: "units",
+            type: "string"
+        },
+        {
+            name: "units__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "is_builtin",
             type: "boolean",
             persist: false

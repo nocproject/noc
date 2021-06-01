@@ -6,5 +6,6 @@
     "field_name": "pptp",
     "field_type": "UInt32",
     "description": "Total active PPTP sessions on the box",
-    "measure": "sessions"
+    "measure": "sessions",
+    "units__name": "Units"
 }

@@ -1,0 +1,9 @@
+{
+    "name": "Decibel-uv",
+    "$collection": "pm.measurementunits",
+    "uuid": "c26cd7d5-7a25-48f1-bdfb-90ceae629245",
+    "description": "Voltage relative to 1 microvolt.",
+    "label": "dBuV",
+    "dashboard_label": "dBuV",
+    "scale_type": "d"
+}

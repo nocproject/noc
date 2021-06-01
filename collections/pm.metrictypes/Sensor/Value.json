@@ -6,5 +6,6 @@
     "field_name": "value",
     "field_type": "Float32",
     "description": "Numeric value of the sensor",
-    "measure": "c"
+    "measure": "c",
+    "units__name": "Scalar"
 }

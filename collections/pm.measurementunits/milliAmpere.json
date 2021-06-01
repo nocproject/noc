@@ -1,0 +1,20 @@
+{
+    "name": "milliAmpere",
+    "$collection": "pm.measurementunits",
+    "uuid": "a18c82bf-9338-4fe5-93fa-91be9c2a62c0",
+    "description": "Electric current measurement",
+    "label": "mA",
+    "dashboard_label": "mamp",
+    "dashboard_sr_color": 16777215,
+    "scale_type": "d",
+    "alt_units": [
+        {
+            "dashboard_label": "amp",
+            "description": "Electric current measurement",
+            "from_primary": "x * 1000",
+            "label": "A",
+            "name": "Ampere",
+            "to_primary": "x / 1000"
+        }
+    ]
+}

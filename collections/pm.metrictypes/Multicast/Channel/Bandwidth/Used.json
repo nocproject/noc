@@ -6,5 +6,6 @@
     "field_name": "c_bandwidth_used",
     "field_type": "Float32",
     "description": "Used Bandwidth (bps)",
-    "measure": "bps"
+    "measure": "bps",
+    "units__name": "Bit/s"
 }

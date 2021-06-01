@@ -6,5 +6,6 @@
     "field_name": "tx_power",
     "field_type": "Int32",
     "description": "Signal Tx Power on transmitter",
-    "measure": "dBm"
+    "measure": "dBm",
+    "units__name": "Decibel-mw"
 }

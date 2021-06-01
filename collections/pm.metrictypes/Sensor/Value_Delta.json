@@ -6,5 +6,6 @@
     "field_name": "value_delta",
     "field_type": "Float32",
     "description": "For counters, the difference between the current and previous values",
-    "measure": "c"
+    "measure": "c",
+    "units__name": "Scalar"
 }

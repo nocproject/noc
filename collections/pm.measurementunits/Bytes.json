@@ -1,0 +1,19 @@
+{
+    "name": "Bytes",
+    "$collection": "pm.measurementunits",
+    "uuid": "c78335e8-540b-4843-9fde-65baed385c9d",
+    "description": "Bytes, or multiples thereof, are almost always used to specify the sizes of computer files and the capacity of storage units",
+    "label": "bytes",
+    "dashboard_label": "bytes",
+    "scale_type": "b",
+    "alt_units": [
+        {
+            "dashboard_label": "bits",
+            "description": "Bit",
+            "from_primary": "x * 8",
+            "label": "bits",
+            "name": "bit",
+            "to_primary": "x / 8"
+        }
+    ]
+}

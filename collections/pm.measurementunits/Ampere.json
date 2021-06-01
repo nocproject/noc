@@ -4,7 +4,17 @@
     "uuid": "9e59d6e9-debf-48d4-b122-8283e1206797",
     "description": "Electric current measurement",
     "label": "A",
-    "dashboard_label": "mamp",
+    "dashboard_label": "amp",
     "dashboard_sr_color": 16777215,
-    "scale_type": "d"
+    "scale_type": "d",
+    "alt_units": [
+        {
+            "dashboard_label": "mamp",
+            "description": "milliAmpere",
+            "from_primary": "x * 1000",
+            "label": "mA",
+            "name": "milliAmpere",
+            "to_primary": "x / 1000"
+        }
+    ]
 }

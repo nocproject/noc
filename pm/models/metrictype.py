@@ -17,6 +17,7 @@ import cachetools
 
 # NOC Modules
 from .metricscope import MetricScope
+from .measurementunits import MeasurementUnits
 from noc.inv.models.capability import Capability
 from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.doccategory import category
@@ -68,6 +69,7 @@ class MetricType(Document):
     )
     # Text description
     description = StringField(required=False)
+    units = PlainReferenceField(MeasurementUnits)
     # Measure name, like 'kbit/s'
     # Compatible to Grafana
     measure = StringField()
@@ -96,6 +98,7 @@ class MetricType(Document):
             "field_type": self.field_type,
             "description": self.description,
             "measure": self.measure,
+            "units__name": self.units.name,
         }
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
@@ -113,6 +116,7 @@ class MetricType(Document):
                 "field_type",
                 "description",
                 "measure",
+                "units__name",
                 "vector_tag",
             ],
         )

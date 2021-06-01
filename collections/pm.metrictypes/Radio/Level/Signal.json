@@ -6,5 +6,6 @@
     "field_name": "signal_level",
     "field_type": "Int32",
     "description": "Signal Level",
-    "measure": "dBm"
+    "measure": "dBm",
+    "units__name": "Decibel-mw"
 }

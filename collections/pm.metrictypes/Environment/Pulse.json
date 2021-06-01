@@ -6,5 +6,6 @@
     "field_name": "pulse",
     "field_type": "UInt32",
     "description": "Metric for pulse output. The number of impulses since switching on.",
-    "measure": " "
+    "measure": "",
+    "units__name": "Units"
 }

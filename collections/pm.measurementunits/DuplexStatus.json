@@ -1,0 +1,23 @@
+{
+    "name": "DuplexStatus",
+    "$collection": "pm.measurementunits",
+    "uuid": "a12e431c-442d-47a7-a135-7a0524903fa1",
+    "description": "Interface Duplex state",
+    "label": " ",
+    "dashboard_label": " ",
+    "scale_type": "d",
+    "enum": [
+        {
+            "key": "Unknown",
+            "value": 1
+        },
+        {
+            "key": "Half",
+            "value": 2
+        },
+        {
+            "key": "Full",
+            "value": 3
+        }
+    ]
+}

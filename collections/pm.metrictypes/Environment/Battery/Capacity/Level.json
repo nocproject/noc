@@ -6,5 +6,6 @@
     "field_name": "battery_capacity_level",
     "field_type": "UInt8",
     "description": "Metric Battery Level (%)",
-    "measure": "%"
+    "measure": "%",
+    "units__name": "Percent"
 }

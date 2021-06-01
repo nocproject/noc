@@ -6,5 +6,6 @@
     "field_name": "broadcast_out",
     "field_type": "UInt64",
     "description": "Broadcast packets on output interface",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__name": "Packets/s"
 }
