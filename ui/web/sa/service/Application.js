@@ -79,7 +79,7 @@ Ext.define("NOC.sa.service.Application", {
                     xtype: "labelfield",
                     fieldLabel: __("Labels"),
                     query: {
-                        "enable_serice": true
+                        "enable_service": true
                     },
                 },
                 {
