@@ -126,10 +126,10 @@ class Label(Document):
         # Wildcard labels are protected
         if self.is_wildcard:
             self.is_protected = True
-
-    def on_save(self):
         if hasattr(self, "_changed_fields") and "name" in self._changed_fields:
             raise ValueError("Rename label is not allowed operation")
+
+    def on_save(self):
         if self.is_scoped and not self.is_wildcard and not self.is_matched:
             self._ensure_wildcards()
 
