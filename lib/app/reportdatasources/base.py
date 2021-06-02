@@ -407,10 +407,10 @@ class CHTableReportDataSource(ReportDataSource):
         return f'{self.object_field} IN ({", ".join([str(c) for c in ids])})'
 
     group_intervals = {
-        "HOUR": "toStartOfHour(toDateTime(any(ts))))",
-        "DAY": "toStartOfDay(toDateTime(any(ts)))",
-        "WEEK": "toStartOfWeek(toDateTime(any(ts)))",
-        "MONTH": "toMonth(toDateTime(any(ts)))",
+        "HOUR": "toStartOfHour(toDateTime(ts))",
+        "DAY": "toStartOfDay(toDateTime(ts))",
+        "WEEK": "toStartOfWeek(toDateTime(ts))",
+        "MONTH": "toMonth(toDateTime(ts))",
     }
 
     def get_group_interval(self) -> str:
@@ -421,6 +421,8 @@ class CHTableReportDataSource(ReportDataSource):
         if self.max_intervals:
             minutes = ((self.end - self.start).total_seconds() / 60) / self.max_intervals
             return f"toStartOfInterval(ts, INTERVAL {minutes} minute)"
+        elif self.interval not in self.group_intervals:
+            raise NotImplementedError("Not supported interval")
         return self.group_intervals[self.interval]
 
     def get_custom_conditions(self) -> Dict[str, List[str]]:
