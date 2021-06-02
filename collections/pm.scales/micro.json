@@ -1,0 +1,9 @@
+{
+    "name": "micro",
+    "$collection": "pm.scales",
+    "uuid": "e25114a4-e389-4d13-9ef4-412126ad8d5d",
+    "code": "u",
+    "label": "u",
+    "base": 10,
+    "exp": -6
+}

@@ -1,0 +1,9 @@
+{
+    "name": "Kibi",
+    "$collection": "pm.scales",
+    "uuid": "dcf9f357-0b37-4888-9223-f0de02e203aa",
+    "code": "ki",
+    "label": "ki",
+    "base": 2,
+    "exp": 10
+}

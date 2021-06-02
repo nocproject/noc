@@ -243,6 +243,7 @@ _MODELS = {
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     "fm.Uptime": "noc.fm.models.uptime.Uptime",
     # pm models
+    "pm.Scale": "noc.pm.models.scale.Scale",
     "pm.MeasurementUnits": "noc.pm.models.measurementunits.MeasurementUnits",
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
@@ -343,6 +344,7 @@ COLLECTIONS = [
     "dev.Spec",
     "sa.Action",
     "inv.Capability",
+    "pm.Scale",
     "pm.MeasurementUnits",
     "pm.MetricScope",
     "pm.MetricType",

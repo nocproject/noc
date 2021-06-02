@@ -1,0 +1,9 @@
+{
+    "name": "Mega",
+    "$collection": "pm.scales",
+    "uuid": "a9515962-afed-4dd5-af3d-5210c4137b15",
+    "code": "M",
+    "label": "M",
+    "base": 10,
+    "exp": 6
+}

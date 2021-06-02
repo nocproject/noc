@@ -1,0 +1,9 @@
+{
+    "name": "Hecto",
+    "$collection": "pm.scales",
+    "uuid": "1d0a8c54-9c10-478e-80fa-4ceaa8d672eb",
+    "code": "h",
+    "label": "h",
+    "base": 10,
+    "exp": 2
+}

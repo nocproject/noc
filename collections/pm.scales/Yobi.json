@@ -1,0 +1,9 @@
+{
+    "name": "Yobi",
+    "$collection": "pm.scales",
+    "uuid": "df4101d5-80ce-4be3-91b5-2cf0061ecf12",
+    "code": "Yi",
+    "label": "Yi",
+    "base": 2,
+    "exp": 80
+}

@@ -1,0 +1,9 @@
+{
+    "name": "Deca",
+    "$collection": "pm.scales",
+    "uuid": "3d94c27e-dcd7-4c57-b387-867c20785a3d",
+    "code": "da",
+    "label": "da",
+    "base": 10,
+    "exp": 1
+}

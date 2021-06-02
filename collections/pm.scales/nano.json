@@ -1,0 +1,9 @@
+{
+    "name": "nano",
+    "$collection": "pm.scales",
+    "uuid": "a4a7f932-5858-4b9e-9bdf-c897be6e1320",
+    "code": "n",
+    "label": "n",
+    "base": 10,
+    "exp": -9
+}
