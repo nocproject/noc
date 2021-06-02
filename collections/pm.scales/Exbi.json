@@ -1,0 +1,9 @@
+{
+    "name": "Exbi",
+    "$collection": "pm.scales",
+    "uuid": "faeff723-e716-45d5-a6d5-b19333e241f5",
+    "code": "Ei",
+    "label": "Ei",
+    "base": 2,
+    "exp": 60
+}

@@ -1,0 +1,9 @@
+{
+    "name": "Zetta",
+    "$collection": "pm.scales",
+    "uuid": "4566a420-80b3-4665-8cf7-deae20d31a0e",
+    "code": "Z",
+    "label": "Z",
+    "base": 10,
+    "exp": 21
+}

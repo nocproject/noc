@@ -1,0 +1,9 @@
+{
+    "name": "zepto",
+    "$collection": "pm.scales",
+    "uuid": "483bcb16-6c84-493c-8ab8-7997c7d55228",
+    "code": "z",
+    "label": "z",
+    "base": 10,
+    "exp": -21
+}

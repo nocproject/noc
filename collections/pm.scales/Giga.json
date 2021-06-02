@@ -1,0 +1,9 @@
+{
+    "name": "Giga",
+    "$collection": "pm.scales",
+    "uuid": "231beac1-25c6-4a0e-be00-b3acd2d124ba",
+    "code": "G",
+    "label": "G",
+    "base": 10,
+    "exp": 9
+}

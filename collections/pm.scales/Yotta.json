@@ -1,0 +1,9 @@
+{
+    "name": "Yotta",
+    "$collection": "pm.scales",
+    "uuid": "8768df7f-6af4-4cd2-a266-f35eea111943",
+    "code": "Y",
+    "label": "Y",
+    "base": 10,
+    "exp": 24
+}

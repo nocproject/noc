@@ -1,0 +1,9 @@
+{
+    "name": "Tebi",
+    "$collection": "pm.scales",
+    "uuid": "19319584-b29f-480e-82ce-6b5587a30ff0",
+    "code": "Ti",
+    "label": "Ti",
+    "base": 2,
+    "exp": 40
+}

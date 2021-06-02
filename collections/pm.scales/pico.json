@@ -1,0 +1,9 @@
+{
+    "name": "pico",
+    "$collection": "pm.scales",
+    "uuid": "57d8c4e4-f6a1-46f0-849b-fd41deefa49f",
+    "code": "p",
+    "label": "p",
+    "base": 10,
+    "exp": -12
+}

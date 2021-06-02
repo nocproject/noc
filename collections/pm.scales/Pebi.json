@@ -1,0 +1,9 @@
+{
+    "name": "Pebi",
+    "$collection": "pm.scales",
+    "uuid": "b89fdcbc-0c81-4c88-9140-d0d7175c0bbb",
+    "code": "Pi",
+    "label": "Pi",
+    "base": 2,
+    "exp": 50
+}

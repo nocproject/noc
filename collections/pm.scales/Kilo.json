@@ -1,0 +1,9 @@
+{
+    "name": "Kilo",
+    "$collection": "pm.scales",
+    "uuid": "24ad63a4-fd80-4184-ae50-8e702d9723a4",
+    "code": "k",
+    "label": "k",
+    "base": 10,
+    "exp": 3
+}

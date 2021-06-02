@@ -1,0 +1,9 @@
+{
+    "name": "Zebi",
+    "$collection": "pm.scales",
+    "uuid": "848def72-71d0-40ca-a956-8b8e204ba1c0",
+    "code": "Zi",
+    "label": "Zi",
+    "base": 2,
+    "exp": 70
+}

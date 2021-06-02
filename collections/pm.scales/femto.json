@@ -1,0 +1,9 @@
+{
+    "name": "femto",
+    "$collection": "pm.scales",
+    "uuid": "038010bd-14c9-47d0-978e-841c6a2a7688",
+    "code": "f",
+    "label": "f",
+    "base": 10,
+    "exp": -15
+}

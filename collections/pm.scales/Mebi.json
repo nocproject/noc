@@ -1,0 +1,9 @@
+{
+    "name": "Mebi",
+    "$collection": "pm.scales",
+    "uuid": "f52099b5-3c26-450c-8eee-5e65d8bdd0ae",
+    "code": "Mi",
+    "label": "Mi",
+    "base": 2,
+    "exp": 20
+}

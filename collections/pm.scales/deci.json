@@ -1,0 +1,9 @@
+{
+    "name": "deci",
+    "$collection": "pm.scales",
+    "uuid": "10895b06-84c3-44df-b9c2-30e8f8088238",
+    "code": "d",
+    "label": "d",
+    "base": 10,
+    "exp": -1
+}

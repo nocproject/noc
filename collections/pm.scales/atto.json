@@ -1,0 +1,9 @@
+{
+    "name": "atto",
+    "$collection": "pm.scales",
+    "uuid": "843424ed-8155-4b1f-8e75-4c32a0fafdba",
+    "code": "a",
+    "label": "a",
+    "base": 10,
+    "exp": -18
+}
