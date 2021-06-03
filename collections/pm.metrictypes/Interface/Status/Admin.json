@@ -6,6 +6,7 @@
     "field_name": "status_admin",
     "field_type": "UInt8",
     "description": "Interface admin state",
-    "measure": " ",
-    "units__name": "InterfaceOperState"
+    "measure": "",
+    "units__code": "ifaceoper",
+    "scale__code": "1"
 }

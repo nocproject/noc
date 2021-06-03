@@ -7,5 +7,6 @@
     "field_type": "UInt64",
     "description": "Packets on output interface queue",
     "measure": "packet/s",
-    "units__name": "Packets/s"
+    "units__code": "pps",
+    "scale__code": "1"
 }

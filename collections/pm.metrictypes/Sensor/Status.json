@@ -6,6 +6,7 @@
     "field_name": "status",
     "field_type": "UInt8",
     "description": "Sensor status value",
-    "measure": "c",
-    "units__name": "StatusEnum"
+    "measure": "",
+    "units__code": "status",
+    "scale__code": "1"
 }

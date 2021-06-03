@@ -1,0 +1,9 @@
+{
+    "name": "Bel",
+    "$collection": "pm.measurementunits",
+    "uuid": "136bfc65-d6b6-43ba-b7c0-0867e0579afb",
+    "code": "B",
+    "description": "A unit used to express relative difference in power or intensity,",
+    "label": "bel",
+    "dashboard_label": "bel"
+}

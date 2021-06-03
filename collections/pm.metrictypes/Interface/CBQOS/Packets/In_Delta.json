@@ -7,5 +7,6 @@
     "field_type": "UInt64",
     "description": "The total number of received packets passed by the interface class-map.",
     "measure": "bytes",
-    "units__name": "Packets"
+    "units__code": "pkt",
+    "scale__code": "1"
 }

@@ -1,0 +1,9 @@
+{
+    "name": "Bel*watt",
+    "$collection": "pm.measurementunits",
+    "uuid": "43bc8e76-ad57-4e59-a04a-266cd81b77a6",
+    "code": "BW",
+    "description": "The Bel watt or dBW is a unit for the measurement of the strength of a signal expressed in decibels relative to one watt",
+    "label": "BW",
+    "dashboard_label": "BW"
+}

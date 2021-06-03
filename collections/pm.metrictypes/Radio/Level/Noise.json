@@ -7,5 +7,6 @@
     "field_type": "Int32",
     "description": "Noise Level",
     "measure": "dBm",
-    "units__name": "Decibel-mw"
+    "units__code": "dBm",
+    "scale__code": "1"
 }

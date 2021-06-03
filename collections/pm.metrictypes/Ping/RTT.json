@@ -7,5 +7,6 @@
     "field_type": "UInt32",
     "description": "ICMP Ping round trip time in microseconds",
     "measure": "ms",
-    "units__name": "milliSecond"
+    "units__code": "s",
+    "scale__code": "m"
 }

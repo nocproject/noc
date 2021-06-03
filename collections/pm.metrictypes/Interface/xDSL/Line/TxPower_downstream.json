@@ -7,5 +7,6 @@
     "field_type": "UInt16",
     "description": "(≈ voltage) with which device sends its signal to the cable.",
     "measure": "dB",
-    "units__name": "Decibel"
+    "units__code": "dB",
+    "scale__code": "1"
 }

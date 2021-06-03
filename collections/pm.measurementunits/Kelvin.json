@@ -1,0 +1,20 @@
+{
+    "name": "Kelvin",
+    "$collection": "pm.measurementunits",
+    "uuid": "6edb8a57-a6af-4083-aece-6b3506e39067",
+    "code": "K",
+    "description": "Temperature measurement",
+    "label": "K",
+    "dashboard_label": "kelvin",
+    "dashboard_sr_color": 16440874,
+    "convert_from": [
+        {
+            "expr": "x + 273.15",
+            "unit__code": "C"
+        },
+        {
+            "expr": "(x - 32) * 5 / 9 + 273.15",
+            "unit__code": "F"
+        }
+    ]
+}

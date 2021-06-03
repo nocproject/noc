@@ -7,5 +7,6 @@
     "field_type": "Int32",
     "description": "Measured deviation of round trip time in microseconds",
     "measure": "μs",
-    "units__name": "microSecond"
+    "units__code": "s",
+    "scale__code": "u"
 }

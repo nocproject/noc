@@ -7,5 +7,6 @@
     "field_type": "Int16",
     "description": "Laser bias current",
     "measure": "mA",
-    "units__name": "milliAmpere"
+    "units__code": "A",
+    "scale__code": "m"
 }

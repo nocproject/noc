@@ -32,6 +32,19 @@ Ext.define("NOC.pm.measurementunits.Model", {
             type: "string"
         },
         {
+            name: "code",
+            type: "string"
+        },
+        {
+            name: "base_unit",
+            type: "string"
+        },
+        {
+            name: "base_unit__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "dashboard_label",
             type: "string"
         },
@@ -40,12 +53,7 @@ Ext.define("NOC.pm.measurementunits.Model", {
             type: "int"
         },
         {
-            name: "scale_type",
-            type: "string",
-            defaultValue: "d"
-        },
-        {
-            name: "alt_units",
+            name: "convert_from",
             type: "auto"
         },
         {

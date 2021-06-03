@@ -1,0 +1,9 @@
+{
+    "name": "Joule",
+    "$collection": "pm.measurementunits",
+    "uuid": "7f581a0d-d31f-4e48-9139-99d0a0732ef3",
+    "code": "J",
+    "description": "Energy measurement unit",
+    "label": "joule",
+    "dashboard_label": "joule"
+}

@@ -7,5 +7,7 @@
     "field_type": "Int8",
     "description": "Metric for displaying the status of sensors",
     "measure": "",
-    "units__name": "StatusEnum"
+    "units__code": "status",
+    "scale__code": "1"
 }
+

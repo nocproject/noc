@@ -7,5 +7,6 @@
     "field_type": "Int16",
     "description": "Temparature, in Celsius",
     "measure": "C",
-    "units__name": "Celsius"
+    "units__code": "C",
+    "scale__code": "1"
 }

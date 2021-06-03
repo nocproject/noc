@@ -7,5 +7,6 @@
     "field_type": "UInt32",
     "description": "Errors when receive packet (delta)",
     "measure": "packets",
-    "units__name": "Packets"
+    "units__code": "pkt",
+    "scale__code": "1"
 }

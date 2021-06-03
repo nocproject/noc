@@ -7,5 +7,6 @@
     "field_type": "UInt64",
     "description": "The total number of transmitted out octets passed by the interface queue.",
     "measure": "bytes",
-    "units__name": "Bytes"
+    "units__code": "byte",
+    "scale__code": "1"
 }
