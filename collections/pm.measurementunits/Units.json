@@ -1,9 +1,0 @@
-{
-    "name": "Units",
-    "$collection": "pm.measurementunits",
-    "uuid": "47d59f1d-c463-4f2c-b85d-265618fc7cf6",
-    "description": "Once measurement unit",
-    "label": " ",
-    "dashboard_label": "unit",
-    "scale_type": "d"
-}

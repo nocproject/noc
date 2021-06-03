@@ -7,5 +7,6 @@
     "field_type": "Int16",
     "description": "Signal Receive Power on transmitter",
     "measure": "dBm",
-    "units__name": "Decibel-mw"
+    "units__code": "dBm",
+    "scale__code": "1"
 }

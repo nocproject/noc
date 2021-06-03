@@ -98,37 +98,37 @@
             "description": "Дискретные вход",
             "name": "in",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.5.0",
-            "units__name": "Unknown"
+            "units__code": "status"
         },
         {
             "description": "Состояние реле",
             "name": "relay",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.6.0",
-            "units__name": "Unknown"
+            "units__code": "status"
         },
         {
             "description": "Вход наличия сетевого напряжения",
             "name": "v230_state",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.7.0",
-            "units__name": "Unknown"
+            "units__code": "status"
         },
         {
             "description": "Значение температуры с датчика №1",
             "name": "temp1",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.8.0",
-            "units__name": "Celsius"
+            "units__code": "C"
         },
         {
             "description": "Значение температуры с датчика №2",
             "name": "temp2",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.9.0",
-            "units__name": "Celsius"
+            "units__code": "C"
         },
         {
             "description": "Флаг наличия связи с ИБП по порту RS-232",
             "name": "ups_rs232",
             "snmp_oid": "1.3.6.1.4.1.27514.103.0.13.0",
-            "units__name": "Unknown"
+            "units__code": "status"
         }
     ]
 }

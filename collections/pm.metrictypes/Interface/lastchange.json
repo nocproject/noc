@@ -7,5 +7,6 @@
     "field_type": "Int16",
     "description": "Last change interface day(s)",
     "measure": "day(s)",
-    "units__name": "Units"
+    "units__code": "1",
+    "scale__code": "1"
 }

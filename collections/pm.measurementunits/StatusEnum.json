@@ -2,10 +2,10 @@
     "name": "StatusEnum",
     "$collection": "pm.measurementunits",
     "uuid": "5d4d1252-ac89-450c-bbe6-4e88e3518066",
+    "code": "status",
     "description": "Status for enum key",
     "label": "Status",
     "dashboard_label": " ",
-    "scale_type": "d",
     "enum": [
         {
             "key": "OK",

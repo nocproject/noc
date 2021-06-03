@@ -7,5 +7,6 @@
     "field_type": "Float32",
     "description": "The metric for the Voltage (V)",
     "measure": "V",
-    "units__name": "Volt DC"
+    "units__code": "VDC",
+    "scale__code": "1"
 }

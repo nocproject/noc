@@ -134,7 +134,7 @@ class ObjectModelSensor(EmbeddedDocument):
         r = {"name": self.name}
         if self.description:
             r["description"] = self.description
-        r["units__name"] = self.units.name
+        r["units__code"] = self.units.code
         if self.modbus_register:
             r["modbus_register"] = self.modbus_register
         if self.snmp_oid:

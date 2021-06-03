@@ -7,5 +7,6 @@
     "field_type": "Int16",
     "description": "Noise Margin as seen by this ATU with respect to its transmitted signal in tenth dB.",
     "measure": "dB",
-    "units__name": "Decibel"
+    "units__code": "dB",
+    "scale__code": "1"
 }

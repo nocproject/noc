@@ -7,5 +7,6 @@
     "field_type": "Float32",
     "description": "RF Tx power",
     "measure": "dBuV",
-    "units__name": "Decibel-uv"
+    "units__code": "dBm",
+    "scale__code": "1"
 }

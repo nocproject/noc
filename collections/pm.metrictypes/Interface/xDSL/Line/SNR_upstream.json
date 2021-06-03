@@ -7,5 +7,6 @@
     "field_type": "UInt16",
     "description": "(Signal-to-noise ratio) Measured difference in level of a desired signal to the level of background noise.",
     "measure": "dB",
-    "units__name": "Decibel"
+    "units__code": "dB",
+    "scale__code": "1"
 }

@@ -7,5 +7,6 @@
     "field_type": "UInt8",
     "description": "Interface duplex status (1 - unknown, 2 - half, 3 - full)",
     "measure": "",
-    "units__name": "DuplexStatus"
+    "units__code": "ifaceduplex",
+    "scale__code": "1"
 }

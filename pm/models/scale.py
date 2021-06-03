@@ -18,11 +18,13 @@ import cachetools
 # NOC modules
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
+from noc.core.model.decorator import on_delete_check
 
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[("pm.MetricType", "scale")])
 class Scale(Document):
     meta = {
         "collection": "scales",

@@ -1,0 +1,19 @@
+{
+    "name": "Bit",
+    "$collection": "pm.measurementunits",
+    "uuid": "0f32c8bb-4279-4f55-b09e-09727a6edf4b",
+    "code": "bit",
+    "description": "The bit is the most basic unit of information in computing and digital communications",
+    "label": "b",
+    "dashboard_label": "bit",
+    "convert_from": [
+        {
+            "expr": "x / 8",
+            "unit__code": "byte"
+        },
+        {
+            "expr": "x * time_delta",
+            "unit__code": "bit/s"
+        }
+    ]
+}

@@ -7,5 +7,6 @@
     "field_type": "UInt8",
     "description": "Used multicast groups on channel",
     "measure": "",
-    "units__name": "Units"
+    "units__code": "1",
+    "scale__code": "1"
 }

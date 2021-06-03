@@ -7,5 +7,6 @@
     "field_type": "Int8",
     "description": "Power input status",
     "measure": "",
-    "units__name": "StatusEnum"
+    "units__code": "status",
+    "scale__code": "1"
 }

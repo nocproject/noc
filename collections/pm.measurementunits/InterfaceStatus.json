@@ -2,10 +2,10 @@
     "name": "InterfaceOperState",
     "$collection": "pm.measurementunits",
     "uuid": "75284e4b-3a00-40de-ab36-a210663ed889",
+    "code": "ifaceoper",
     "description": "Operational state of the interface",
     "label": " ",
-    "dashboard_label": " ",
-    "scale_type": "d",
+    "dashboard_label": null,
     "enum": [
         {
             "key": "up",

@@ -7,5 +7,6 @@
     "field_type": "UInt16",
     "description": "Measured difference in the the total power transmitted by this ATU and total power received by the peer ATU.",
     "measure": "dB",
-    "units__name": "Decibel"
+    "units__code": "dB",
+    "scale__code": "1"
 }
