@@ -55,7 +55,11 @@ class Script(BaseScript):
             elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Iface MAC address
                 raise NotImplementedError()
-            elif port_subtype == LLDP_PORT_SUBTYPE_LOCAL and port_id.isdigit():
+            elif (
+                port_subtype == LLDP_PORT_SUBTYPE_LOCAL
+                and port_id.isdigit()
+                and int(port_id) in names
+            ):
                 # Iface local (ifindex)
                 iface_name = names[int(port_id)]
             else:
