@@ -32,6 +32,7 @@ class ModelBase(type):
             sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
             managed=getattr(cls.Meta, "managed", True),
+            view_table_source=getattr(cls.Meta, "view_table_source", None),
         )
         # Call field.contribute_to_class() for all fields
         for k in attrs:
@@ -44,7 +45,14 @@ class ModelBase(type):
 
 class ModelMeta(object):
     def __init__(
-        self, engine=None, db_table=None, description=None, sample=False, tags=None, managed=True
+        self,
+        engine=None,
+        db_table=None,
+        description=None,
+        sample=False,
+        tags=None,
+        managed=True,
+        view_table_source=None,
     ):
         self.engine = engine
         self.db_table = db_table
@@ -52,6 +60,7 @@ class ModelMeta(object):
         self.sample = sample
         self.tags = tags
         self.managed = managed
+        self.view_table_source = view_table_source
         self.fields = {}  # name -> Field
         self.ordered_fields = []  # fields in order
 

@@ -249,6 +249,13 @@ class ArrayField(BaseField):
         return [self.field_type.to_python(x.strip("'\" ")) for x in value[1:-1].split(",")]
 
 
+class MaterializedField(BaseField):
+    def __init__(self, field_type, expression, description=None):
+        super().__init__(description=description, low_cardinality=True)
+        self.field_type = field_type
+        self.expression = expression
+
+
 class ReferenceField(BaseField):
     db_type = "UInt64"
     default_value = 0
@@ -317,11 +324,12 @@ class IPv6Field(BaseField):
 
 
 class AggregatedField(BaseField):
-    def __init__(self, field_type, agg_functions, description=None, f_expr=""):
+    def __init__(self, source_field, field_type, agg_function, description=None, f_expr=""):
         super().__init__(description=description)
+        self.source_field = source_field
         self.field_type = field_type
         self.is_agg = True
-        self.agg_functions = agg_functions
+        self.agg_function = agg_function
         self.f_expr = f_expr
 
     def to_json(self, value):
@@ -332,7 +340,7 @@ class AggregatedField(BaseField):
         return self.field_type.db_type
 
     def get_create_sql(self):
-        pass
+        return f"`{self.name}` AggregateFunction({self.agg_function}, {self.field_type})"
 
     def get_expr(self, function, f_param):
         return self.f_expr.format(p={"field": self.name, "function": function, "f_param": f_param})
