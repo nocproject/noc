@@ -224,3 +224,25 @@ def test_case():
             assert result is None
         else:
             assert result == expected
+
+
+def setup_module(_module):
+    from noc.core.cdag.node.probe import ProbeNode
+
+    ProbeNode.set_convert(
+        {
+            # Name -> alias -> expr
+            "bit": {"byte": "x * 8"},
+            "bit/s": {
+                "byte/s": "x * 8",
+                "bit": "delta / time_delta",
+                "byte": "delta * 8 / time_delta",
+            },
+        }
+    )
+
+
+def teardown_module(_module):
+    from noc.core.cdag.node.probe import ProbeNode
+
+    ProbeNode.reset_convert()

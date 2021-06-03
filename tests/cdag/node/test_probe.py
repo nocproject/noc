@@ -346,11 +346,69 @@ from .util import NodeCDAG
                 ),
             ],
         ),
+        # Plain measures + scale
+        (
+            "bit",
+            [
+                (1621601000_000000000, 1, "k,bit", 1_000, None),
+                (1621601001_000000000, 2, "k,bit", 2_000, None),
+                (1621601002_000000000, 3, "k,bit", 3_000, None),
+            ],
+        ),
+        # Scaled, plain measures
+        (
+            "k,bit",
+            [
+                (1621601000_000000000, 1_000, "bit", 1, None),
+                (1621601001_000000000, 2_000, "bit", 2, None),
+                (1621601002_000000000, 3_000, "bit", 3, None),
+            ],
+        ),
+        # Scaled, same measures
+        (
+            "k,bit",
+            [
+                (1621601000_000000000, 1_000, "k,bit", 1_000, None),
+                (1621601001_000000000, 2_000, "k,bit", 2_000, None),
+                (1621601002_000000000, 3_000, "k,bit", 3_000, None),
+            ],
+        ),
+        # Scaled, base mismatch
+        (
+            "bit",
+            [
+                (1621601000_000000000, 1, "ki,bit", 1_024, None),
+                (1621601001_000000000, 2, "ki,bit", 2_048, None),
+                (1621601002_000000000, 3, "ki,bit", 3_072, None),
+            ],
+        ),
+        # Scaled, base mismatch
+        (
+            "ki,bit",
+            [
+                (1621601000_000000000, 1_024, "bit", 1, None),
+                (1621601001_000000000, 2_048, "bit", 2, None),
+                (1621601002_000000000, 3_072, "bit", 3, None),
+            ],
+        ),
+        # Full scale mismatch
+        (
+            "k,bit",
+            [
+                (1621601000_000000000, 1_000, "ki,bit", 1_024, None),
+                (1621601001_000000000, 2_000, "ki,bit", 2_048, None),
+                (1621601002_000000000, 3_000, "ki,bit", 3_072, None),
+            ],
+        ),
     ],
 )
 def test_probe(unit, data):
     state = {}
-    cdag = NodeCDAG("probe", config={"unit": unit}, state=state)
+    if "," in unit:
+        scale, unit = unit.split(",")
+    else:
+        scale = "1"
+    cdag = NodeCDAG("probe", config={"unit": unit, "scale": scale}, state=state)
     for ts, value, m_unit, expected, x_state in data:
         cdag.begin()
         assert cdag.is_activated() is False
@@ -374,3 +432,59 @@ def test_probe(unit, data):
             assert n_state == {}
         else:
             assert n_state["node"] == x_state
+
+
+def setup_module(_module):
+    from noc.core.cdag.node.probe import ProbeNode
+
+    ProbeNode.set_convert(
+        {
+            # Name -> alias -> expr
+            "bit": {"byte": "x * 8"},
+            "bit/s": {
+                "byte/s": "x * 8",
+                "bit": "delta / time_delta",
+                "byte": "delta * 8 / time_delta",
+            },
+        }
+    )
+    ProbeNode.set_scale(
+        {
+            "Y": (10, 24),
+            "Z": (10, 21),
+            "E": (10, 18),
+            "P": (10, 15),
+            "T": (10, 12),
+            "G": (10, 9),
+            "M": (10, 6),
+            "k": (10, 3),
+            "h": (10, 2),
+            "da": (10, 1),
+            "1": (10, 0),
+            "d": (10, -1),
+            "c": (10, -2),
+            "m": (10, -3),
+            "u": (10, -6),
+            "n": (10, -9),
+            "p": (10, -12),
+            "f": (10, -15),
+            "a": (10, -18),
+            "z": (10, -21),
+            "y": (10, -24),
+            "Yi": (2, 80),
+            "Zi": (2, 70),
+            "Ei": (2, 60),
+            "Pi": (2, 50),
+            "Ti": (2, 40),
+            "Gi": (2, 30),
+            "Mi": (2, 20),
+            "ki": (2, 10),
+        }
+    )
+
+
+def teardown_module(_module):
+    from noc.core.cdag.node.probe import ProbeNode
+
+    ProbeNode.reset_convert()
+    ProbeNode.reset_scale()
