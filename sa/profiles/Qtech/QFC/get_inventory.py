@@ -226,7 +226,7 @@ class Script(BaseScript):
                     "status": bool(v),
                     "description": "ИБП. Текущий режим работы ИБП",
                     "measurement": "StatusEnum",
-                    "snmp_oid": "1.3.6.1.4.1.27514.103.0.17.0",
+                    "snmp_oid": "1.3.6.1.4.1.27514.103.0.18.0",
                 },
                 {
                     "name": "ups_in_U",
@@ -312,7 +312,7 @@ class Script(BaseScript):
                 },
             ]
             for num in range(1, 5):
-                v = self.snmp.get(f"1.3.6.1.4.1.27514.103.0.{29 + 1}.0")
+                v = self.snmp.get(f"1.3.6.1.4.1.27514.103.0.{29 + num}.0")
                 if v:
                     r += [
                         {
@@ -320,7 +320,7 @@ class Script(BaseScript):
                             "status": bool(v),
                             "description": f"Электросчётчик. Суммарное значение потреблённой мощности по тарифу {num}",
                             "measurement": "Kilowatt-hour",
-                            "snmp_oid": f"1.3.6.1.4.1.27514.103.0.{23 + 1}.0",
+                            "snmp_oid": f"1.3.6.1.4.1.27514.103.0.{29 + num}.0",
                         }
                     ]
         return r
