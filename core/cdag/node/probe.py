@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Callable
+from typing import Optional, Dict, Callable, Iterable, Tuple
 from threading import Lock
 import inspect
 
@@ -15,6 +15,8 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.expr import get_fn
+from noc.pm.models.measurementunits import MeasurementUnits
+from noc.pm.models.scale import Scale
 from .base import BaseCDAGNode, ValueType, Category
 
 MAX31 = 0x7FFFFFFF
@@ -30,6 +32,7 @@ class ProbeNodeState(BaseModel):
 
 class ProbeNodeConfig(BaseModel):
     unit: str
+    scale: str = "1"
 
 
 class ProbeNode(BaseCDAGNode):
@@ -44,16 +47,44 @@ class ProbeNode(BaseCDAGNode):
     categories = [Category.UTIL]
     dot_shape = "cds"
     _conversions: Dict[str, Dict[str, Callable]] = {}
+    _scales: Dict[str, Tuple[int, int]] = {}
     _conv_lock = Lock()
+    # Test stub, set by .set_convert() classmethod
+    _MS_CONVERT: Dict[str, Dict[str, str]] = {}
+    # Test stub, set by .set_scale() classmethod
+    _SCALE: Dict[str, Tuple[int, int]] = {}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.convert = self.get_convert(self.config.unit)
+        self.base, self.exp = self.get_scale(self.config.scale)
 
     def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
+        def upscale(v: ValueType) -> Optional[ValueType]:
+            if v is None:
+                return None  # Cannot scale None
+            if scale == self.config.scale:
+                return v  # No upscale
+            base, exp = self.get_scale(scale)
+            if base == self.base:
+                # Same base
+                return v * base ** (exp - self.exp)
+            elif self.exp == 0:
+                # Base mismatch, Target scale is 1
+                return v * base ** exp
+            elif exp == 0:
+                # Base mismatch, Source scale is 1
+                return v * self.base ** -self.exp
+            return v * (base ** exp) * self.base ** -self.exp
+
+        if "," in unit:
+            # <scale>,<unit>
+            scale, unit = unit.split(",")
+        else:
+            scale = "1"
         # No translation
         if unit == self.config.unit:
-            return x
+            return upscale(x)
         fn = self.convert[unit]
         kwargs = {}
         if fn.has_x:
@@ -61,7 +92,7 @@ class ProbeNode(BaseCDAGNode):
         if not (fn.has_delta or fn.has_time_delta):
             # No state dependency, just conversion
             self.set_state(None, None)
-            return fn(**kwargs)
+            return upscale(fn(**kwargs))
         if self.state.lt is None:
             # No previous measurement, store state and exit
             self.set_state(ts, x)
@@ -80,7 +111,7 @@ class ProbeNode(BaseCDAGNode):
                 return None
             kwargs["delta"] = delta
         self.set_state(ts, x)
-        return fn(**kwargs)
+        return upscale(fn(**kwargs))
 
     def set_state(self, lt, lv):
         self.state.lt = lt
@@ -141,12 +172,87 @@ class ProbeNode(BaseCDAGNode):
             if unit in cls._conversions:
                 return cls._conversions[unit]
             # Prepare, while concurrent threads are waiting on lock
-            cls._conversions[unit] = {u: q(x) for u, x in MS_CONVERT[unit].items()}
+            cls._conversions[unit] = {u: q(x) for u, x in cls.iter_conversion(unit)}
             return cls._conversions[unit]
 
+    @classmethod
+    def get_scale(cls, code: str) -> Tuple[int, int]:
+        """
+        Get scale base and exponent by code
+        :param code: Scale code
+        :return: Tuple of base, exp
+        """
+        # Lock-free positive case
+        x = cls._scales.get(code)
+        if x:
+            return x
+        # Not ready, try with lock
+        with cls._conv_lock:
+            # Already prepared by concurrent thread
+            if code in cls._scales:
+                return cls._scales[code]
+            # Prepare, while concurrent threads waiting on lock
+            cls._scales = {s_code: (s_base, s_exp) for s_code, s_base, s_exp in cls.iter_scales()}
+            return cls._scales[code]
 
-MS_CONVERT = {
-    # Name -> alias -> expr
-    "bit": {"byte": "x * 8"},
-    "bit/s": {"byte/s": "x * 8", "bit": "delta / time_delta", "byte": "delta * 8 / time_delta"},
-}
+    @classmethod
+    def iter_conversion(cls, code: str) -> Iterable[Tuple[str, str]]:
+        """
+        Iterate all possible conversions for unit code
+        :param code:
+        :return:
+        """
+        if cls._MS_CONVERT:
+            # Test branch
+            yield from cls._MS_CONVERT[code].items()
+        else:
+            # Real path
+            mu = MeasurementUnits.get_by_code(code)
+            if mu and mu.convert_from:
+                for conv in mu.convert_from:
+                    yield conv.unit.code, conv.expr
+
+    @classmethod
+    def iter_scales(cls) -> Iterable[Tuple[str, int, int]]:
+        if cls._SCALE:
+            # Test branch
+            for code, (base, exp) in cls._SCALE.items():
+                yield code, base, exp
+        else:
+            # Real path
+            for scale in Scale.objects.all():
+                yield scale.code, scale.base, scale.exp
+
+    @classmethod
+    def set_convert(cls, data: Dict[str, Dict[str, str]]) -> None:
+        """
+        Override database-based measure units by test data
+        :param data:
+        :return:
+        """
+        cls._MS_CONVERT = data
+
+    @classmethod
+    def reset_convert(cls):
+        """
+        Remove conversion override set by .set_convert()
+        :return:
+        """
+        cls._MS_CONVERT = {}
+
+    @classmethod
+    def set_scale(cls, data: Dict[str, Tuple[int, int]]) -> None:
+        """
+        Override database-based scales by test data
+        :param data:
+        :return:
+        """
+        cls._SCALE = data
+
+    @classmethod
+    def reset_scale(cls):
+        """
+        Remove scale-based override set by .set_scale()
+        :return:
+        """
+        cls._SCALE = {}
