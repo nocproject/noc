@@ -196,6 +196,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
 
     def iter_related(object, model, field):
         if setup["is_document"]:
+            field = field.replace(".", "__")
             qs = {field: str(object.id)}
         else:
             qs = {field: object.pk}

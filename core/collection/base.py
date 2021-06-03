@@ -17,12 +17,14 @@ import sys
 import threading
 import operator
 from base64 import b85decode
+from typing import Tuple, Dict
 
 # Third-party modules
 import orjson
 import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField, BinaryField
 from mongoengine.errors import NotUniqueError
+from mongoengine.document import Document
 from pymongo import UpdateOne
 import cachetools
 
@@ -49,7 +51,7 @@ class Collection(object):
     def __init__(self, name, stdout=None):
         self.name = name
         self._model = None
-        self.ref_cache = {}
+        self.ref_cache: Dict[Tuple[Document, str, str], Document] = {}
         self._name_field = None
         self.stdout = stdout or sys.stdout
         self.partial_errors = {}
@@ -244,24 +246,17 @@ class Collection(object):
             r[str(k)] = v
         return r
 
-    def lookup(self, ref, field, key):
+    def lookup(self, ref: Document, field: str, key: str) -> Document:
         field = str(field)
-        if ref not in self.ref_cache:
-            self.ref_cache[ref] = {field: {}}
-        if field not in self.ref_cache[ref]:
-            self.ref_cache[ref][field] = {}
-        if key in self.ref_cache[ref][field]:
-            return self.ref_cache[ref][field][key]
-        else:
-            try:
-                v = ref.objects.get(**{field: key})
-            except ref.DoesNotExist:
-                raise ValueError(
-                    "lookup for %s.%s == '%s' has been failed"
-                    % (ref._meta["collection"], field, key)
-                )
-            self.ref_cache[ref][field][key] = v
+        v = self.ref_cache.get((ref, field, key))
+        if v:
             return v
+        v = ref.objects.filter(**{field: key}).first()
+        if v:
+            self.ref_cache[ref, field, key] = v
+            return v
+        coll = ref._meta["collection"]
+        raise ValueError(f"lookup for {coll}.{field} == '{key}' has been failed")
 
     def update_item(self, data):
         def set_attrs(obj, values):
