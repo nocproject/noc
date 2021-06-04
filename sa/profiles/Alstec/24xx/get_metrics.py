@@ -10,8 +10,24 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metr
 from noc.core.text import parse_table
 
 
+def convert_string(v):
+    return float(v)
+
+
 class Script(GetMetricsScript):
     name = "Alstec.24xx.get_metrics"
+
+    SENSOR_OID_SCALE = {
+        "1.3.6.1.4.1.27514.103.0.5.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.5.6.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.3.8.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.3.9.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.8.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.1": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.2": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.3": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.4": convert_string,
+    }
 
     @metrics(["CPU | Load | 1min"], volatile=False, access="C")  # CLI version
     def get_cpu_metrics(self, metrics):
