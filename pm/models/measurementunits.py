@@ -23,7 +23,7 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.expr import get_fn
 
-DEFAULT_UNITS_NAME = "Unknown"
+DEFAULT_UNITS_NAME = "Scalar"
 
 id_lock = Lock()
 

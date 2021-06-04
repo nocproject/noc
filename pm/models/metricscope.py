@@ -342,7 +342,7 @@ class MetricScope(Document):
             ch.rename_table(table, raw_table)
             changed = True
         # Old schema
-        if ensure_column(raw_table, "path"):
+        if ch.has_table(raw_table) and not ensure_column(raw_table, "labels"):
             # Old schema, data table will be move to old_noc db for save data.
             ch.ensure_db(OLD_PM_SCHEMA_TABLE)
             ch.rename_table(raw_table, f"{OLD_PM_SCHEMA_TABLE}.{raw_table}")
