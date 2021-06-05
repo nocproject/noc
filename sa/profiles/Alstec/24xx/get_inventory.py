@@ -24,7 +24,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Дверь",
                 "measurement": "StatusEnum",
-                "snmp_oid": "1.3.6.1.4.1.27514.103.0.5.0",
+                "snmp_oid": "1.3.6.1.4.1.27142.1.2.45.1.5.7.0",
             },
             # temp1
             {
