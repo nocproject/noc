@@ -31,8 +31,9 @@ class Command(BaseCommand):
         # slot name, stream name
         ("mx", "message"),
         ("kafkasender", "kafkasender"),
+        ("metrics", "metrics"),
     ]
-    # Pool-basend streams, depending on slots
+    # Pool-based streams, depending on slots
     POOLED_SLOT_STREAMS = [
         # slot name, stream name
         ("classifier-%s", "events.%s"),
