@@ -189,7 +189,7 @@ class Script(BaseScript):
     re_lag_split = re.compile(
         r"""
         -{79}\n
-        (?P<lag>LAG\s\d+.+?)
+        (?P<lag>LAG\s\d+.+?|Lag\-id\s*:\s*\d+.+?)
         Port-id\s+Adm
         """,
         re.VERBOSE | re.MULTILINE | re.DOTALL,
