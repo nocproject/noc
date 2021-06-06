@@ -49,7 +49,7 @@ class Profile(BaseProfile):
         "end_of_context": "exit",
     }
 
-    matchers = {"is_builtin_controller": {"platform": {"$in": ["ALS24110P"]}}}
+    matchers = {"is_builtin_controller": {"platform": {"$in": ["ALS24110P", "ALS-24110P"]}}}
 
     rx_physical_port = re.compile(r"^d\+\/\d+")
 
