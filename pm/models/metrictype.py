@@ -9,6 +9,7 @@
 import os
 import operator
 from threading import Lock
+from typing import Callable
 
 # Third-party modules
 from mongoengine.document import Document
@@ -153,7 +154,10 @@ class MetricType(Document):
         )
 
     def clean_value(self, value):
-        return getattr(self, "clean_%s" % self.field_type)(value)
+        return getattr(self, f"clean_{self.field_type}")(value)
+
+    def get_cleaner(self) -> Callable:
+        return getattr(self, f"clean_{self.field_type}", None)
 
     @staticmethod
     def clean_UInt8(value):

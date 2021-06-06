@@ -37,6 +37,7 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
     def construct(self) -> None:
         # Construct probe nodes
         probes = {}
+        cleaners = {}
         for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
             name = mt.field_name
             probes[name] = self.graph.add_node(
@@ -46,6 +47,9 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                 config={"unit": mt.units.code, "scale": mt.scale.code},
                 sticky=self.sticky,
             )
+            cleaner = mt.get_cleaner()
+            if cleaner:
+                cleaners[name] = cleaner
         # Construct metric sender node
         ms = self.graph.add_node(
             "sender",
@@ -59,4 +63,7 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
             node.subscribe(ms, name, dynamic=True)
         # Additional key fields
         for kf in self.scope.key_fields:
-            ms.add_input(kf.field_name)
+            ms.add_input(kf.field_name, is_key=True)
+        # Set up cleaners
+        for name, cleaner in cleaners.items():
+            ms.set_cleaner(name, cleaner)

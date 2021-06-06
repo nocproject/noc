@@ -72,6 +72,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self._const_value: Optional[ValueType] = None
         # Manually-configured dynamic inputs
         self._dynamic_inputs: Set[str] = set()
+        self._key_inputs: Set[str] = set()
         # All inputs
         self._inputs = {i for i in self.iter_inputs()}
         self._bound_inputs: Set[str] = set()
@@ -108,6 +109,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             config=config,
             sticky=self.sticky,
         )
+        if self.allow_dynamic:
+            for di in self._dynamic_inputs:
+                node.add_input(di)
         graph.nodes[node_id] = node
         return node
 
@@ -237,7 +241,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self._const_value = self.get_value(**self.const_inputs)
         return True
 
-    def add_input(self, name: str) -> None:
+    def add_input(self, name: str, is_key: bool = False) -> None:
         """
         Add new dynamic input
         :param name: Input name
@@ -249,6 +253,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             raise TypeError("Dynamic inputs are not allowed")
         self._inputs.add(name)
         self._dynamic_inputs.add(name)
+        if is_key:
+            self._key_inputs.add(name)
 
     def is_dynamic_input(self, name: str) -> bool:
         """
