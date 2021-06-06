@@ -44,7 +44,10 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                 name,
                 "probe",
                 description=f"Input collector for {name} metric",
-                config={"unit": mt.units.code, "scale": mt.scale.code},
+                config={
+                    "unit": mt.units.code if mt.units else "1",
+                    "scale": mt.scale.code if mt.scale else "1",
+                },
                 sticky=self.sticky,
             )
             cleaner = mt.get_cleaner()
