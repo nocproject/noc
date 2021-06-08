@@ -101,7 +101,7 @@ class LabelItem(EmbeddedDocument):
         return r
 
 
-@on_delete_check(check=[("pm.MetricType", "scope")])
+@on_delete_check(check=[("pm.MetricType", "scope"), ("main.MetricStream", "scope")])
 @on_save
 class MetricScope(Document):
     meta = {

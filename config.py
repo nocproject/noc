@@ -442,6 +442,9 @@ class Config(BaseConfig):
         enable_alarm = BooleanParameter(default=False)
         enable_managedobject = BooleanParameter(default=False)
         enable_reboot = BooleanParameter(default=False)
+        enable_metrics = BooleanParameter(default=False)
+        # Comma-separated list of metric scopes
+        enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
