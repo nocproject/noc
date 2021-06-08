@@ -106,6 +106,7 @@ _MODELS = {
     "main.Handler": "noc.main.models.handler.Handler",
     "main.Language": "noc.main.models.language.Language",
     "main.MessageRoute": "noc.main.models.messageroute.MessageRoute",
+    "main.MetricStream": "noc.main.models.metricstream.MetricStream",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",

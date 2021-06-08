@@ -69,7 +69,7 @@ class BaseService(object):
     # Service name
     name = None
     # Leader lock name
-    # Only one active instace per leader lock can be active
+    # Only one active instance per leader lock can be active
     # at given moment
     # Config variables can be expanded as %(varname)s
     leader_lock_name = None
@@ -141,7 +141,10 @@ class BaseService(object):
         self.publisher_start_lock = threading.Lock()
         # Metrics publisher buffer
         self.metrics_queue: Optional[QBuffer] = None
-        self.metrics_start_lock = threading.Lock()
+        # MX metrics publisher buffer
+        self.mx_metrics_queue: Optional[QBuffer] = None
+        self.mx_metrics_scopes: Dict[str, Callable] = {}
+        self.mx_partitions: int = 0
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
@@ -390,6 +393,9 @@ class BaseService(object):
             connect()
 
         await self.init_api()
+        #
+        if config.message.enable_metrics:
+            self.mx_partitions = await self.get_stream_partitions("message")
         #
         if self.use_telemetry:
             self.start_telemetry_callback()
@@ -674,7 +680,17 @@ class BaseService(object):
             self.publish_queue = LiftBridgeQueue(self.loop)
             self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
-            self.loop.create_task(self.publish_metrics())
+            self.loop.create_task(self.publish_metrics(self.metrics_queue))
+            if config.message.enable_metrics:
+                from noc.main.models.metricstream import MetricStream
+
+                for mss in MetricStream.objects.filter():
+                    if mss.is_active and mss.scope.table_name in set(
+                        config.message.enable_metric_scopes
+                    ):
+                        self.mx_metrics_scopes[mss.scope.table_name] = mss.to_mx
+                self.mx_metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
+                self.loop.create_task(self.publish_metrics(self.mx_metrics_queue))
 
     def publish(
         self,
@@ -880,10 +896,10 @@ class BaseService(object):
         executor = self.get_executor(name)
         return executor.submit(fn, *args, **kwargs)
 
-    async def publish_metrics(self):
-        while not (self.publish_queue.to_shutdown and self.metrics_queue.is_empty()):
+    async def publish_metrics(self, queue: QBuffer) -> None:
+        while not (self.publish_queue.to_shutdown and queue.is_empty()):
             t0 = perf_counter()
-            for stream, partititon, chunk in self.metrics_queue.iter_slice():
+            for stream, partititon, chunk in queue.iter_slice():
                 self.publish(chunk, stream=stream, partition=partititon)
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
@@ -910,6 +926,15 @@ class BaseService(object):
         self.metrics_queue.put(
             stream=f"ch.{table}", partition=key % self.n_metrics_partitions, data=metrics
         )
+        # Mirror to MX
+        if config.message.enable_metrics and (
+            not self.mx_metrics_scopes or table in self.mx_metrics_scopes
+        ):
+            self.mx_metrics_queue.put(
+                stream="message",
+                partition=key % self.mx_partitions,
+                data=[self.mx_metrics_scopes[table](m) for m in metrics],
+            )
 
     def start_telemetry_callback(self) -> None:
         """
