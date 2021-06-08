@@ -69,7 +69,7 @@
         {{ comma() }}
           {
           "intervalFactor": 1,
-          "query": "SELECT $timeSeries as t, argMax(load_in, t) as `Input {{ port }}`,  argMax(load_out, t) as `Output {{ port }}` FROM $table WHERE managed_object = $bi_id and interface = toString('{{port}}') and subinterface == '' and $timeFilter GROUP BY t ORDER BY t",
+          "query": "SELECT $timeSeries as t, argMax(load_in, t) as `Input {{ port }}`,  argMax(load_out, t) as `Output {{ port }}` FROM $table WHERE managed_object = $bi_id and interface = toString('{{port}}') and queue = '' and subinterface == '' and traffic_class = '' and $timeFilter GROUP BY t ORDER BY t",
           "resultFormat": "time_series",
           "database": "{{ noc_db_metrics }}",
           "tableLoading": false,
