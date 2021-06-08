@@ -1,0 +1,44 @@
+---
+forms:
+  ui:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Web 2.0 API interface<br/>
+      <strong>Long description</strong>: Nginx upstream to provide API for new web interface<br/>
+      <strong>Scale Recommendations</strong>: At least two per system. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/ui/ target=_blank>Web</a><br/>
+      <strong>Placement constraint</strong>: On node with service Nginx <br/>
+    power:
+      default: 2
+      label: "Instances"
+      type: int
+      max: 32
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+
+services:
+  ui:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/ui/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 300
+      priority: 50
+      startretries: 999
+      stopwaitsecs: 2
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc
+      - nginx

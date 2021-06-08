@@ -127,6 +127,17 @@ server {
     }
 {% endif %}
 
+{% if 'svc-ui-exec' in groups and groups['svc-ui-exec'] | length > 0 %}
+
+    location /api/ui/ {
+	proxy_pass http://ui;
+        auth_request /api/auth/auth/;
+        auth_request_set $user $upstream_http_remote_user;
+        auth_request_set $groups $upstream_http_remote_groups;
+    }
+
+{% endif %}
+
 {% if 'svc-card-exec' in groups and groups['svc-card-exec'] | length > 0 %}
     # Card service api
     location /api/card/ {
