@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Iterable, Any
+from typing import List, Optional, Dict, Iterable, Any, Tuple
 import time
 import re
 import heapq
@@ -344,20 +344,23 @@ class ReportDataSource(object):
         end: Optional[datetime.datetime] = None,
         interval: Optional[str] = None,
         max_intervals: Optional[int] = None,
-        filters: Optional[List[str]] = None,
+        filters: Optional[List[Dict[str, str]]] = None,
         rows: Optional[int] = None,
+        groups: Optional[List[str]] = None,
     ):
-        self.fields = fields
+        self.query_fields: List[str] = fields
+        self.fields: Dict[str, ReportField] = self.get_fields(fields)  # OrderedDict
         self.objectids = objectids
-        self.allobjectids = allobjectids
-        self.filters = filters or []
-        self.interval = interval
-        self.max_intervals = max_intervals
-        self.rows = rows
+        self.allobjectids: bool = allobjectids
+        self.filters: List[Dict[str, str]] = filters or []
+        self.interval: str = interval
+        self.max_intervals: int = max_intervals
+        self.rows: int = rows
+        self.groups: List[str] = groups or []
         if self.TIMEBASED and not start:
             raise ValueError("Timebased Report required start param")
-        self.end = end or datetime.datetime.now()
-        self.start = start or self.end - datetime.timedelta(days=1)
+        self.end: datetime.datetime = end or datetime.datetime.now()
+        self.start: datetime.datetime = start or self.end - datetime.timedelta(days=1)
 
     @classmethod
     def get_config(cls) -> ReportConfig:
@@ -376,6 +379,15 @@ class ReportDataSource(object):
             filters=[],
             dataretentiondays=1,
         )
+
+    @classmethod
+    def get_fields(cls, fields):
+        r = {}
+        for query_f in fields:
+            for f in cls.FIELDS:
+                if f.name == query_f:
+                    r[query_f] = f
+        return r
 
     def iter_data(self):
         pass
@@ -413,47 +425,69 @@ class CHTableReportDataSource(ReportDataSource):
         "MONTH": "toMonth(toDateTime(ts))",
     }
 
-    def get_group_interval(self) -> str:
+    def get_group(self) -> Tuple[List[str], List[str]]:
         """
         If set max_intervals - use variants interval
         :return:
         """
+        select, group = [], []
         if self.max_intervals:
             minutes = ((self.end - self.start).total_seconds() / 60) / self.max_intervals
-            return f"toStartOfInterval(ts, INTERVAL {minutes} minute)"
-        elif self.interval not in self.group_intervals:
+            select += [f"toStartOfInterval(ts, INTERVAL {minutes} minute) AS ts"]
+            group += ["ts"]
+        elif self.interval and self.interval not in self.group_intervals:
             raise NotImplementedError("Not supported interval")
-        return self.group_intervals[self.interval]
+        elif self.interval in self.group_intervals:
+            select += [f"{self.group_intervals[self.interval]} as ts"]
+            group += ["ts"]
+
+        return select, group
 
     def get_custom_conditions(self) -> Dict[str, List[str]]:
         if not self.filters:
             return {}
+        where, having = [], []
+        for ff in self.filters:
+            f_name = ff["name"]
+            for s in self.FIELDS:
+                if s.name == f_name:
+                    f_name = s.metric_name
+                    break
+            op = ff.get("op", "IN")
+            if op == "IN":
+                f_value = f'{tuple(ff["value"])}'
+            else:
+                f_value = ff["value"][0]
+            q = f"{f_name} {op} {f_value}"
+            if ff["name"] in self.fields and self.fields[ff["name"]].group:
+                where += [q]
+            else:
+                having += [q]
         return {
-            "q_where": [
-                f'{f} IN ({", ".join([str(c) for c in self.filters[f]])})' for f in self.filters
-            ]
+            "q_where": where,
+            "q_having": having,
         }
 
     def get_query_ch(self, from_date: datetime.datetime, to_date: datetime.datetime) -> str:
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
+        select, group = self.get_group()
         query_map = {
-            "q_select": [],
+            "q_select": select or [],
+            "q_group": group or [],
             "q_where": [
                 f"(date >= toDate({ts_from_date})) AND (ts >= toDateTime({ts_from_date}) AND ts <= toDateTime({ts_to_date})) %s",  # objectids_filter
             ],
         }
-        ts = self.get_group_interval()
-        query_map["q_select"] += [f"{ts} AS ts"]
-        query_map["q_group"] = ["ts"]
-        # if self.interval == "HOUR":
-        #    query_map["q_select"] += ["toStartOfHour(toDateTime(ts)) AS ts"]
-        #    query_map["q_group"] = ["ts"]
-        for f in self.FIELDS:
-            if f.name not in self.fields:
-                continue
-            query_map["q_select"] += [f"{f.metric_name} as {f.name}"]
-        query_map["q_order_by"] = ["ts"]
+
+        for ff in self.fields:
+            fc = self.fields[ff]
+            if fc.group and fc.name in self.groups:
+                # query_map["q_select"] += [f"{f.metric_name} as {f.name}"]
+                query_map["q_group"] += [f"{fc.metric_name}"]
+            query_map["q_select"] += [f"{fc.metric_name} as {fc.name}"]
+        if self.interval:
+            query_map["q_order_by"] = ["ts"]
         custom_conditions = self.get_custom_conditions()
         if "q_where" in custom_conditions:
             query_map["q_where"] += custom_conditions["q_where"]
@@ -464,9 +498,9 @@ class CHTableReportDataSource(ReportDataSource):
             f"FROM {self.get_table()}",
             f'WHERE {" AND ".join(query_map["q_where"])}',
         ]
-        if "q_group" in query_map:
+        if "q_group" in query_map and query_map["q_group"]:
             query += [f'GROUP BY {",".join(query_map["q_group"])}']
-        if "q_having" in query_map:
+        if "q_having" in query_map and query_map["q_having"]:
             query += [f'HAVING {" AND ".join(query_map["q_having"])}']
         if "q_order_by" in query_map:
             query += [f'ORDER BY {",".join(query_map["q_order_by"])}']
@@ -494,6 +528,6 @@ class CHTableReportDataSource(ReportDataSource):
         fields = []
         if self.interval:
             fields += ["ts"]
-        fields += [f.name for f in self.FIELDS if f.name in self.fields]
+        fields += list(self.fields.keys())
         for row in self.do_query():
             yield dict(zip(fields, row))
