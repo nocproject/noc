@@ -22,7 +22,8 @@ Ext.define("NOC.main.metricstream.Application", {
                 {
                     text: __("Scope"),
                     dataIndex: "scope",
-                    width: 200
+                    width: 200,
+                    renderer: NOC.render.Lookup("scope")
                 },
                 {
                     text: __("Active"),
