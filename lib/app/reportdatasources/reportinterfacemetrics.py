@@ -12,6 +12,8 @@ from .base import CHTableReportDataSource, ReportField
 class ReportInterfaceMetrics(CHTableReportDataSource):
     name = "reportinterfacemetrics"
     description = "Query Metrics from Interface table"
+    object_field = "managed_object"
+    CHUNK_SIZE = 1500
 
     TABLE_NAME = "noc.interface"
     FIELDS = [
@@ -62,6 +64,13 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             metric_name="round(quantile(0.90)(load_in), 0)",
         ),
         ReportField(
+            name="load_in_avg",
+            label="Load In (Average)",
+            description="",
+            unit="BIT/S",
+            metric_name="round(avg(load_in), 0)",
+        ),
+        ReportField(
             name="load_in_p",
             label="Load In (% Bandwith)",
             description="",
@@ -74,6 +83,13 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             description="",
             unit="BIT/S",
             metric_name="round(quantile(0.90)(load_out), 0)",
+        ),
+        ReportField(
+            name="load_out_avg",
+            label="Load Out (Average)",
+            description="",
+            unit="BIT/S",
+            metric_name="round(avg(load_out), 0)",
         ),
         ReportField(
             name="load_out_p",
