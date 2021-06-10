@@ -404,6 +404,7 @@ class CHTableReportDataSource(ReportDataSource):
     CHUNK_SIZE = 5000
     TABLE_NAME = None
     object_field = "sa.ManagedObject"
+    ts_field = "ts"
 
     def get_client(self):
         if not hasattr(self, "_client"):
@@ -476,7 +477,7 @@ class CHTableReportDataSource(ReportDataSource):
             "q_select": select or [],
             "q_group": group or [],
             "q_where": [
-                f"(date >= toDate({ts_from_date})) AND (ts >= toDateTime({ts_from_date}) AND ts <= toDateTime({ts_to_date})) %s",  # objectids_filter
+                f"(date >= toDate({ts_from_date})) AND ({self.ts_field} >= toDateTime({ts_from_date}) AND {self.ts_field} <= toDateTime({ts_to_date})) %s",  # objectids_filter
             ],
         }
 
