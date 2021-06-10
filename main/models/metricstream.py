@@ -63,7 +63,7 @@ class MetricStream(Document):
             "    v = {",
             f'    "scope": "{self.scope.name}",',
             '    "bi_id": input["managed_object"],',
-            '    "labels": input["labels"],',
+            '    "labels": input.get("labels", []),',
             "    }",
             '    if "ts" in input:',
             '        v["ts"] = input["ts"].replace(" ", "T")',
