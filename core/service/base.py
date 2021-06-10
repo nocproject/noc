@@ -53,6 +53,7 @@ from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.mx import send_message
 from .rpc import RPCProxy
 from .loader import set_service
 
@@ -930,10 +931,11 @@ class BaseService(object):
         if config.message.enable_metrics and (
             not self.mx_metrics_scopes or table in self.mx_metrics_scopes
         ):
-            self.mx_metrics_queue.put(
-                stream="message",
-                partition=key % self.mx_partitions,
+            send_message(
                 data=[self.mx_metrics_scopes[table](m) for m in metrics],
+                message_type="metrics",
+                headers={},
+                sharding_key=key % self.mx_partitions,
             )
 
     def start_telemetry_callback(self) -> None:
