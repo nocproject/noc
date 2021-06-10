@@ -42,6 +42,12 @@ class Profile(BaseProfile):
         ("hints", "interfaces", "defaults", "admin-status", False),
     ]
 
+    matchers = {
+        "is_mes14_24": {"platform": {"$regex": "MES-?[12]4.."}},
+    }
+
+    # snmp_rate_limit = {"is_mes14_24": 4}
+
     INTERFACE_TYPES = {
         "te": "physical",  # tengigabitethernet
         "gi": "physical",  # gigabitethernet

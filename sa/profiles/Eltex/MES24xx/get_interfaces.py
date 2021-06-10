@@ -96,3 +96,9 @@ class Script(BaseScript):
                     i["subinterfaces"][0]["ipv4_addresses"] = [match.group("ip")]
                     break
         return [{"interfaces": interfaces}]
+
+    def execute(self, **kwargs):
+        if self.is_mes14_24:
+            # Model 14XX/24XX
+            self.always_prefer = "S"
+        return super().execute()
