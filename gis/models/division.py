@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Division object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,8 @@ from mongoengine.fields import (
     DateTimeField,
     IntField,
     ListField,
+    LongField,
+    ReferenceField,
 )
 
 # NOC modules
@@ -21,8 +23,11 @@ from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.remotesystem import RemoteSystem
+from noc.core.bi.decorator import bi_sync
 
 
+@bi_sync
 @Label.model
 @on_delete_check(
     check=[("gis.Street", "parent"), ("gis.Division", "parent"), ("gis.Building", "adm_division")]
@@ -52,6 +57,12 @@ class Division(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField(unique=True)
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())

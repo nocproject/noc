@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // gis.building application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.gis.building.Application");
@@ -39,6 +39,18 @@ Ext.define("NOC.gis.building.Application", {
                     dataIndex: "homes",
                     width: 75,
                     align: "right"
+                },
+                {
+                    text: __("Remote System"),
+                    dataIndex: "remote_system",
+                    flex: 1,
+                    sort: false
+                },
+                {
+                    text: __("Remote Id"),
+                    dataIndex: "remote_id",
+                    flex: 1,
+                    sort: false
                 }
             ],
             fields: [
