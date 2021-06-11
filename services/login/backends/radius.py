@@ -7,7 +7,7 @@
 
 # Third-party modules
 from pyrad.packet import AccessAccept, AccessRequest
-from pyrad.client import Client
+from pyrad.client import Client, Timeout
 from pyrad.dictionary import Dictionary
 
 from noc.core.comp import smart_bytes
@@ -29,7 +29,7 @@ class RADIUSBackend(BaseAuthBackend):
         req["User-Password"] = req.PwCrypt(password)
         try:
             reply = client.SendPacket(req)
-        except client.Timeout:
+        except Timeout:
             raise self.LoginError("Timed out")
         if reply.code != AccessAccept:
             raise self.LoginError("RADIUS Authentication failed. Code=%s", reply.code)
