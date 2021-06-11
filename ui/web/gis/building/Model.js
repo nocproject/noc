@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // gis.building Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.gis.building.Model");
@@ -76,6 +76,14 @@ Ext.define("NOC.gis.building.Model", {
             name: "full_path",
             type: "string",
             persist: false
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_id",
+            type: "string"
         }
     ]
 });

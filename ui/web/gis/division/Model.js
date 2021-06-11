@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // gis.division Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.gis.division.Model");
@@ -65,6 +65,14 @@ Ext.define("NOC.gis.division.Model", {
         },
         {
             name: "name",
+            type: "string"
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_id",
             type: "string"
         }
     ]
