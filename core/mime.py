@@ -17,6 +17,10 @@ class ContentType(IntEnum):
     JPEG = 100
     GIF = 101
     PNG = 102
+    # Text
+    CSV = 201
+    # Vendor
+    MS_EXCEL = 1001
 
     @property
     def content_type(self) -> Optional[str]:
@@ -36,6 +40,8 @@ _IMAGE_TYPE = {ContentType.JPEG.value, ContentType.GIF.value, ContentType.PNG.va
 _CONTENT_TYPE = {
     # Application types
     ContentType.OCTET_STREAM.value: "application/octet-stream",
+    ContentType.CSV.value: "text/csv",
+    ContentType.MS_EXCEL.value: "application/vnd.ms-excel",
     # Images
     ContentType.JPEG.value: "image/jpeg",
     ContentType.GIF.value: "image/gif",

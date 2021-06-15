@@ -8,7 +8,8 @@
 # Python modules
 import datetime
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Iterable, Any, Tuple
+from io import BytesIO, StringIO
+from typing import List, Optional, Dict, Iterable, Any, Tuple, Callable
 import time
 import re
 import heapq
@@ -18,6 +19,7 @@ import logging
 # NOC modules
 from django.db.models import Q as d_Q
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.comp import smart_bytes
 from .report_objectstat import (
     AttributeIsolator,
     CapabilitiesIsolator,
@@ -359,8 +361,10 @@ class ReportDataSource(object):
         self.groups: List[str] = groups or []
         if self.TIMEBASED and not start:
             raise ValueError("Timebased Report required start param")
-        self.end: datetime.datetime = end or datetime.datetime.now()
-        self.start: datetime.datetime = start or self.end - datetime.timedelta(days=1)
+        self.end: datetime.datetime = end.replace(tzinfo=None) or datetime.datetime.now()
+        self.start: datetime.datetime = start.replace(tzinfo=None) or self.end.replace(
+            tzinfo=None
+        ) - datetime.timedelta(days=1)
 
     @classmethod
     def get_config(cls) -> ReportConfig:
@@ -398,6 +402,63 @@ class ReportDataSource(object):
         :return:
         """
         raise NotImplementedError
+
+    def report_json(self, fmt: Optional[Callable] = None):
+        import orjson
+
+        return orjson.dumps([row for row in self.extract()])
+
+    def report_csv(self, fmt: Optional[Callable] = None) -> bytes:
+        import csv
+
+        response = StringIO()
+        writer = csv.writer(
+            response, dialect="excel", delimiter=";", quotechar='"', quoting=csv.QUOTE_NONNUMERIC
+        )
+        print(self.fields)
+        # Header
+        writer.writerow((self.fields[f].label for f in self.fields))
+        for row in self.extract():
+            writer.writerow((row[f] for f in self.fields))
+
+        return smart_bytes(response.getvalue())
+
+    def report_xlsx(self, fmt: Optional[Callable] = None) -> bytes:
+        import xlsxwriter
+
+        response = BytesIO()
+        wb = xlsxwriter.Workbook(response)
+        cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
+        ws = wb.add_worksheet("Data")
+        max_column_data_length: Dict[str, int] = {}
+        # Header
+        for cn, c in enumerate(self.fields):
+            label = self.fields[c].label
+            if c not in max_column_data_length or len(str(label)) > max_column_data_length[c]:
+                max_column_data_length[c] = len(str(label))
+            ws.write(0, cn, label, cf1)
+        for rn, row in enumerate(self.extract(), start=1):
+            for cn, c in enumerate(self.fields):
+                if c not in max_column_data_length or len(str(row[c])) > max_column_data_length[c]:
+                    max_column_data_length[c] = len(str(row[c]))
+                ws.write(rn, cn, row[c], cf1)
+        # for
+        ws.autofilter(0, 0, rn, cn)
+        ws.freeze_panes(1, 0)
+        for cn, c in enumerate(self.fields):
+            # Set column width
+            width = 15
+            if width < max_column_data_length[c]:
+                width = max_column_data_length[c]
+            ws.set_column(cn, cn, width=width)
+        wb.close()
+        response.seek(0)
+        return response.getvalue()
+
+    def report(self, report_fmt: str):
+        if not hasattr(self, f"report_{report_fmt}"):
+            raise NotImplementedError(f"Not supported format {report_fmt}")
+        return getattr(self, f"report_{report_fmt}")()
 
 
 class CHTableReportDataSource(ReportDataSource):
