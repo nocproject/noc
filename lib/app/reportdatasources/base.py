@@ -361,10 +361,10 @@ class ReportDataSource(object):
         self.groups: List[str] = groups or []
         if self.TIMEBASED and not start:
             raise ValueError("Timebased Report required start param")
-        self.end: datetime.datetime = end.replace(tzinfo=None) or datetime.datetime.now()
-        self.start: datetime.datetime = start.replace(tzinfo=None) or self.end.replace(
-            tzinfo=None
-        ) - datetime.timedelta(days=1)
+        self.end: datetime.datetime = end or datetime.datetime.now()
+        self.end = self.end.replace(tzinfo=None)
+        self.start: datetime.datetime = start or self.end - datetime.timedelta(days=1)
+        self.start = self.start.replace(tzinfo=None)
 
     @classmethod
     def get_config(cls) -> ReportConfig:
