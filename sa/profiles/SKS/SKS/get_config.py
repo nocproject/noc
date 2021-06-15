@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,10 @@ class Script(BaseScript):
     def execute_cli(self, policy="r"):
         assert policy in ("r", "s")
         if policy == "s":
-            config = self.cli("show startup-config")
+            try:
+                config = self.cli("show startup-config")
+            except self.CLISyntaxError:
+                config = self.cli("show configuration")
         else:
             config = self.cli("show running-config")
         try:
