@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_hw = re.compile(
-        r"^\s+Hardware is (?P<hw_type>\S+)(, active is \S+)?"
+        r"^\s+Hardware is (?P<hw_type>\S+)(\(card not installed\))?(, active is \S+)?"
         r"(,\s+address is (?P<mac>\S+))?\s*\n",
         re.MULTILINE,
     )
