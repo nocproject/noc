@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Forwarding Instance model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ class ForwardingInstance(Document):
         "collection": "noc.forwardinginstances",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["managed_object"],
+        "indexes": ["managed_object", "name"],
     }
     managed_object = ForeignKeyField(ManagedObject)
     type = StringField(
