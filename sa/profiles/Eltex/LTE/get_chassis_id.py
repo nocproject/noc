@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.LTE.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,12 +24,15 @@ class Script(BaseScript):
     def execute(self):
         macs = []
         with self.profile.switch(self):
-            cmd = self.cli("show version")
-            match = self.rx_mac1.search(cmd)
-            if match:
-                macs += [match.group("mac")]
-            cmd = self.cli("show interfaces mac-address")
-            macs += self.rx_mac2.findall(cmd)
+            try:
+                cmd = self.cli("show version")
+                match = self.rx_mac1.search(cmd)
+                if match:
+                    macs += [match.group("mac")]
+                cmd = self.cli("show interfaces mac-address")
+                macs += self.rx_mac2.findall(cmd)
+            except self.CLISyntaxError:
+                pass
         if not macs:
             mac_table = self.scripts.get_mac_address_table()
             for m in mac_table:

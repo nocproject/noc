@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     LTE
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Profile(BaseProfile):
     pattern_username = r"(?<!Last )login: "
     pattern_more = [(r"\[Yes/press any key for no\]", "Y")]
     # pattern_unprivileged_prompt = r"^\S+>"
-    pattern_syntax_error = r"^(Command not found|Incomplete command|Invalid argument)"
+    pattern_syntax_error = r"\n(Command not found|Incomplete command|Invalid argument)"
     pattern_operation_error = r"Data verify failed, bad MAC!"
     username_submit = "\r"
     password_submit = "\r"
