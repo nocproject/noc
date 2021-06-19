@@ -37,6 +37,7 @@ class BaseRemoteSystem(object):
         "subscriber",
         "serviceprofile",
         "service",
+        "street",
     ]
 
     def __init__(self, remote_system):
