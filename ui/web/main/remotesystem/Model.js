@@ -103,6 +103,10 @@ Ext.define("NOC.main.remotesystem.Model", {
         {
             name: "enable_label",
             type: "boolean"
+        },
+        {
+            name: "enable_street",
+            type: "boolean"
         }
     ]
 });

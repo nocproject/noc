@@ -95,6 +95,7 @@ class RemoteSystem(Document):
     enable_object = BooleanField()
     enable_service = BooleanField()
     enable_serviceprofile = BooleanField()
+    enable_street = BooleanField()
     enable_subscriber = BooleanField()
     enable_subscriberprofile = BooleanField()
     enable_resourcegroup = BooleanField()
