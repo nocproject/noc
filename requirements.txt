@@ -98,3 +98,5 @@ pytest-dependency==0.5.1; extra == "testing"
 Cython==0.29.21; extra == "cython"
 # Kafka
 aiokafka==0.6.0; extra == "sender-kafka"
+# etl/extractor
+dbf==0.99.1; extra == "testing"

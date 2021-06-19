@@ -86,6 +86,7 @@ class RemoteSystem(Document):
     enable_admdiv = BooleanField()
     enable_administrativedomain = BooleanField()
     enable_authprofile = BooleanField()
+    enable_building = BooleanField()
     enable_container = BooleanField()
     enable_link = BooleanField()
     enable_managedobject = BooleanField()

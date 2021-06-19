@@ -74,6 +74,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Auth Profile")
                         },
                         {
+                            name: "enable_building",
+                            xtype: "checkbox",
+                            boxLabel: __("Building")
+                        },
+                        {
                             name: "enable_container",
                             xtype: "checkbox",
                             boxLabel: __("Container")
