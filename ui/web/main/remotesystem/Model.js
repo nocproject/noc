@@ -45,6 +45,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             type: "boolean"
         },
         {
+            name: "enable_building",
+            type: "boolean"
+        },
+        {
             name: "enable_container",
             type: "boolean"
         },
