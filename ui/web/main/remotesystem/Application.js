@@ -59,6 +59,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                     title: __("Extractors/Loaders"),
                     items: [
                         {
+                            name: "enable_address",
+                            xtype: "checkbox",
+                            boxLabel: __("Address")
+                        },
+                        {
                             name: "enable_admdiv",
                             xtype: "checkbox",
                             boxLabel: __("Administrative-Territorial Division")
