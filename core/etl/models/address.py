@@ -21,3 +21,5 @@ class Address(BaseModel):
     street: Reference["Street"]
     num: int
     num_letter: Optional[str]
+
+    _csv_fields = ["id", "building", "street", "num", "num_letter"]

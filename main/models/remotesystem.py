@@ -83,6 +83,7 @@ class RemoteSystem(Document):
     # Environment variables
     environment = ListField(EmbeddedDocumentField(EnvItem))
     # Enable extractors/loaders
+    enable_address = BooleanField()
     enable_admdiv = BooleanField()
     enable_administrativedomain = BooleanField()
     enable_authprofile = BooleanField()

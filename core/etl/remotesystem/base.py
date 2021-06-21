@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base Remote System
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2021, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ class BaseRemoteSystem(object):
     extractors_order = [
         "label",
         "admdiv",
+        "address",
         "building",
         "networksegmentprofile",
         "networksegment",
