@@ -38,6 +38,30 @@ class AdmDivExtractor(BaseExtractor):
     model = AdmDiv
     twice_code = []
 
+    area_type = (
+        "г",
+        "гп",
+        "д",
+        "дп",
+        "ж/д",
+        "им",
+        "кп",
+        "м",
+        "маяк",
+        "мыс",
+        "нп",
+        "п",
+        "п.ст",
+        "пгт",
+        "рзд",
+        "рп",
+        "с",
+        "сл",
+        "ст",
+        "у",
+        "х",
+    )
+
     def __init__(self, system, *args, **kwargs):
         super(AdmDivExtractor, self).__init__(system)
         self.oktmo_url = str(self.config.get("OKTMO_URL"))
@@ -114,14 +138,15 @@ class AdmDivExtractor(BaseExtractor):
                 kod1 = row[1]
                 kod2 = row[2]
                 kod3 = row[3]
-                name = " ".join(row[6].split()[1:])
-                short_name = row[6].split()[0]
-                name = " ".join(row[6].split()[1:])
-                short_name = row[6].split()[0]
+                if row[6].split()[0] in self.area_type:
+                    short_name = " ".join(row[6].split()[1:])
+                    name = row[6]
+                else:
+                    name = short_name = row[6]
                 oktmo = f"{ter}{kod1}{kod2}{kod3}"
-                if ter == "04" and self.check_twice_code(ter, kod1, kod2, kod3):
+                if ter == self.region and self.check_twice_code(ter, kod1, kod2, kod3):
                     parent = self.parent_level(ter, kod1, kod2, kod3)
                     parent = "" if parent == oktmo else parent
-                    yield f"{ter}{kod1}{kod2}{kod3}", parent, name, short_name
+                    yield f"{oktmo}", parent, name, short_name
                 else:
                     continue
