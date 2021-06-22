@@ -42,3 +42,17 @@
   with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
   tags:
     - classifier
+
+- name: call consul to setup correlator
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/correlator-{{ item }}/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='correlator'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
+  tags:
+    - correlator
