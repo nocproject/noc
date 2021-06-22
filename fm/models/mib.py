@@ -8,6 +8,7 @@
 # Python modules
 import re
 import threading
+from typing import Optional, List, Dict
 import operator
 
 # Third-party modules
@@ -31,6 +32,8 @@ id_lock = threading.Lock()
 
 # Regular expression patterns
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
+
+TRY_ENCODINGS = ["utf-8", "big5"]
 
 
 @on_delete_check(check=[("fm.MIBData", "mib")])
@@ -283,7 +286,7 @@ class MIB(Document):
             o.save()
 
     @classmethod
-    def resolve_vars(cls, vars):
+    def resolve_vars(cls, vars: Dict[str, bytes]):
         """
         Resolve FM key -> value dict according to MIBs
 
@@ -351,6 +354,23 @@ class MIB(Document):
             if rk != k or rv != v:
                 r[rk] = rv
         return r
+
+    @classmethod
+    def guess_encoding(cls, s: bytes, encodings: Optional[List[str]] = None) -> str:
+        """
+        Try to guess encoding
+        :param s:
+        :param encodings:
+        :return:
+        """
+        encodings = encodings or TRY_ENCODINGS
+        exc = None
+        for enc in encodings:
+            try:
+                return s.decode(enc)
+            except UnicodeDecodeError as e:
+                exc = e
+        raise exc
 
 
 # Avoid circular references

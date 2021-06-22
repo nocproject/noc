@@ -100,10 +100,10 @@ class MIBApplication(ExtDocApplication):
         errors = {}
         while len(left):
             n = len(left)
-            for name in left:
+            for name in list(left.keys()):
                 try:
                     svc = open_sync_rpc("mib")
-                    r = svc.compile(left[name].read())
+                    r = svc.compile(MIB.guess_encoding(left[name].read()))
                     if r.get("status"):
                         del left[name]
                         if name in errors:
@@ -115,8 +115,9 @@ class MIBApplication(ExtDocApplication):
             if len(left) == n:
                 # Failed to upload anything, stopping
                 break
-        r = {"success": len(left) == 0, "errors": errors}
-        return r
+        return self.render_json(
+            {"success": len(left) == 0, "message": f"ERROR: {errors}"}, status=self.OK
+        )
 
     @view(url="^(?P<id>[0-9a-f]{24})/text/$", method=["GET"], access="launch", api=True)
     def api_text(self, request, id):
