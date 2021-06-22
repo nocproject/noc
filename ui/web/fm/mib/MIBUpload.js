@@ -65,8 +65,13 @@ Ext.define("NOC.fm.mib.MIBUpload", {
                     NOC.info(__("MIBs has been uploaded"));
                     me.close();
                 },
-                failure: function() {
-                    NOC.error(__("Failed to upload MIB"));
+                failure: function(arg1, arg2) {
+                    var message = __("Failed to upload MIB");
+                    var _arg2 = Ext.decode(arg2.response.responseText);
+                    if(_arg2 && _arg2.message) {
+                        message = _arg2.message;
+                    }
+                    NOC.error(message);
                 }
             });
         }

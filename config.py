@@ -512,7 +512,7 @@ class Config(BaseConfig):
         card_template_path = StringParameter(default="services/card/templates/card.html.j2")
         pm_templates = StringParameter(default="templates/ddash/")
         custom_path = StringParameter()
-        mib_path = StringParameter(default="/var/mib")
+        mib_path = StringParameter(default="/var/lib/noc/mibs/")
 
     class pg(ConfigSection):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
