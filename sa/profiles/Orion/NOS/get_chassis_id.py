@@ -1,11 +1,12 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
@@ -17,4 +18,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.profile.get_version(self)
-        return {"first_chassis_mac": v["mac"], "last_chassis_mac": v["mac"]}
+        r = [{"first_chassis_mac": v["mac"], "last_chassis_mac": v["mac"]}]
+        if v.get("mac2") is not None:
+            r += [{"first_chassis_mac": v["mac2"], "last_chassis_mac": v["mac2"]}]
+        return r
