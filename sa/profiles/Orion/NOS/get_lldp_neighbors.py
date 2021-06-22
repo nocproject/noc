@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Orion.NOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,8 +42,8 @@ class Script(BaseScript):
     """
     rx_lldp = re.compile(r"^port(?P<port>\d+)\s+(?P<chassis_id>\S+)", re.MULTILINE)
     rx_int = re.compile(
-        r"^Port\s+port(?P<interface>\d+)\s+has\s+1\s+remotes:\s*\n"
-        r"^\s*\n"
+        r"^P(ort\s+port)?(?P<interface>\d+)\s+has\s+1\s+remotes:\s*\n"
+        r"(^\s*\n)?"
         r"^Remote\s*1\s*\n"
         r"^-+\s*\n"
         r"^ChassisIdSubtype\s*:\s+(?P<chassis_subtype>\S+)\s*\n"
@@ -57,9 +57,42 @@ class Script(BaseScript):
         r"^SysCapEnabled\s*:\s+(?P<caps>.+)\s*\n",
         re.MULTILINE,
     )
+    rx_int_a26 = re.compile(
+        r"^Port name\s*:\s*(?P<interface>\S+)\s*\n"
+        r"^Port Remote Counter\s*:\s*1\s*\n"
+        r"^TimeMark\s*:\s*\d+\s*\n"
+        r"^ChassisIdSubtype\s*:\s*(?P<chassis_subtype>\d+)\s*\n"
+        r"^ChassisId\s*:\s*(?P<chassis_id>\S+)\s*\n"
+        r"^PortIdSubtype\s*:\s*(?P<port_subtype>\S+)\s*\n"
+        r"^PortId\s*:\s*(?P<port_id>.+)\n"
+        r"^PortDesc\s*:\s*(?P<port_descr>.+)\n"
+        r"^SysName\s*:\s*(?P<sys_name>.*)\n",
+        re.MULTILINE,
+    )
 
     def execute_cli(self):
         result = []
+        if self.is_a26:
+            v = self.cli("show lldp neighbors interface")
+            for match in self.rx_int_a26.finditer(v):
+                neighbor = {
+                    "remote_chassis_id_subtype": match.group("chassis_subtype"),
+                    "remote_chassis_id": match.group("chassis_id"),
+                    "remote_port_subtype": {
+                        # Need more examples
+                        "Interface": LLDP_PORT_SUBTYPE_NAME,
+                    }[match.group("port_subtype")],
+                    "remote_port": match.group("port_id"),
+                }
+                if match.group("port_descr").strip():
+                    p = match.group("port_descr").strip()
+                    neighbor["remote_port_description"] = p
+                if match.group("sys_name").strip():
+                    p = match.group("sys_name").strip()
+                    neighbor["remote_system_name"] = p
+                result += [{"local_interface": match.group("interface"), "neighbors": [neighbor]}]
+            return result
+
         chassis = {}
         v = self.cli("show lldp remote")
         for match in self.rx_lldp.finditer(v):
@@ -101,12 +134,12 @@ class Script(BaseScript):
             caps = lldp_caps_to_bits(
                 match.group("caps").strip().split(","),
                 {
-                    "Other": LLDP_CAP_OTHER,
-                    "Repeater/Hub": LLDP_CAP_REPEATER,
-                    "Bridge/Switch": LLDP_CAP_BRIDGE,
-                    "Router": LLDP_CAP_ROUTER,
-                    "Telephone": LLDP_CAP_TELEPHONE,
-                    "Station": LLDP_CAP_STATION_ONLY,
+                    "other": LLDP_CAP_OTHER,
+                    "repeater/hub": LLDP_CAP_REPEATER,
+                    "bridge/switch": LLDP_CAP_BRIDGE,
+                    "router": LLDP_CAP_ROUTER,
+                    "telephone": LLDP_CAP_TELEPHONE,
+                    "station": LLDP_CAP_STATION_ONLY,
                 },
             )
             neighbor["remote_capabilities"] = caps
