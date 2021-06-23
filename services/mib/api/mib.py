@@ -12,10 +12,6 @@ import subprocess
 import re
 from importlib.machinery import SourceFileLoader
 import datetime
-from shutil import which
-
-# Third-party modules
-from typing import Optional, List
 
 # NOC modules
 from noc.config import config

@@ -14,7 +14,6 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.service.loader import get_service
-from ..typing import ValueType
 from .base import BaseCDAGNode, ValueType, Category
 
 

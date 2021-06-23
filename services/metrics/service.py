@@ -105,7 +105,7 @@ class MetricsService(FastAPIService):
             labels = data.get("labels")
             if not labels or not si.key_labels:
                 return
-            scopes = {f'{l.rsplit("::", 1)[0]}::': l for l in labels}
+            scopes = {f'{ll.rsplit("::", 1)[0]}::': ll for ll in labels}
             for k in si.key_labels:
                 v = scopes.get(k)
                 if v is not None:

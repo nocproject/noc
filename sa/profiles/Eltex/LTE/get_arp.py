@@ -22,7 +22,8 @@ class Script(BaseScript):
         r"^\s*\d+\s+port\s+(?P<interface>\d+)\s+" r"(?P<mac>\S+)\s+(?P<ip>\d+\S+)", re.MULTILINE
     )
     rx_line2 = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+\s\d+)\s+", re.MULTILINE
+        r"^\s*(?P<vlan>\d+)\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+\s\d+)\s+",
+        re.MULTILINE,
     )
 
     def execute(self):
