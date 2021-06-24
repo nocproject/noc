@@ -7,6 +7,7 @@
 
 # python modules
 import dbf
+import csv
 import requests
 import os
 import re
@@ -19,6 +20,7 @@ from .base import BaseExtractor
 from ..models.street import Street
 from ..models.address import Address
 from ..models.building import Building
+from ..models.admdiv import AdmDiv
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
 
 
@@ -28,9 +30,135 @@ class FiasRemoteSystem(BaseRemoteSystem):
 
     Configuration variables
     *FIAS_URL* - url of source FIAS data
+    *OKTMO_URL* - url of source OKTMO data
     *CACHE_PATH* - dir target download files
-    *REGION* - region code
+    *OKTMO_REGION* - region code OKTMO
+    *FIAS_REGION* - region code FIAS
     """
+
+
+@FiasRemoteSystem.extractor
+class AdmDivExtractor(BaseExtractor):
+    """
+    Oktmo extractor.
+    """
+
+    name = "admdiv"
+    model = AdmDiv
+    twice_code = []
+
+    area_type = (
+        "г",
+        "гп",
+        "д",
+        "дп",
+        "ж/д",
+        "им",
+        "кп",
+        "м",
+        "маяк",
+        "мыс",
+        "нп",
+        "п",
+        "п.ст",
+        "пгт",
+        "рзд",
+        "рп",
+        "с",
+        "сл",
+        "ст",
+        "у",
+        "х",
+    )
+
+    def __init__(self, system, *args, **kwargs):
+        super(AdmDivExtractor, self).__init__(system)
+        self.oktmo_url = str(self.config.get("OKTMO_URL"))
+        self.cache_path = str(self.config.get("CACHE_PATH"))
+        self.region = str(self.config.get("OKTMO_REGION"))
+        self.check_path(self.cache_path)
+        self.csv_path = None
+
+    def check_path(self, path):
+        # check exists cache_path
+        dirpath = Path(path)
+        if not dirpath.exists() or not dirpath.is_dir():
+            os.makedirs(path)
+
+    def download(self):
+        r = requests.get(self.oktmo_url, stream=True)
+        self.csv_path = os.path.join(self.cache_path, "oktmo.csv")
+        if r.status_code == 200:
+            with open(self.csv_path, "wb") as f:
+                for chunk in r.iter_content(1024):
+                    f.write(chunk)
+
+    def extract(self):
+        super(AdmDivExtractor, self).extract()
+        return
+
+    def check_twice_code(self, ter, kod1, kod2, kod3):
+        """
+        Checking duble oktmo code
+
+        :param ter:
+        :param kod1:
+        :param kod2:
+        :param kod3:
+        :return:
+        """
+        if kod3 == "000":
+            oktmo = f"{ter}{kod1}{kod2}{kod3}"
+            if oktmo in self.twice_code:
+                return False
+            else:
+                self.twice_code.append(oktmo)
+        return True
+
+    def parent_level(self, ter, kod1, kod2, kod3):
+        """
+        Creating parent code
+
+        :param ter:
+        :param kod1:
+        :param kod2:
+        :param kod3:
+        :return:
+        """
+        if self.region != "0" and kod1[1:3] == "00" and kod2 == "000" and kod3 == "000":
+            return f"{ter}000000000"
+        elif kod1[1:3] != "00" and kod2 == "000" and kod3 == "000":
+            return f"{ter}{kod1[0]}00000000"
+        elif kod2 != "000" and kod3 == "000":
+            return f"{ter}{kod1}000000"
+        elif kod2 == "000" and kod3 != "000":
+            return f"{ter}{kod1}000000"
+        elif kod2 != "000" and kod3 != "000":
+            return f"{ter}{kod1}{kod2}000"
+        else:
+            return ""
+
+    def iter_data(self):
+        self.download()
+        with open(self.csv_path, encoding="cp1251") as f:
+            reader = csv.reader(f, delimiter=";", quotechar='"')
+            for row in reader:
+                ter = row[0]
+                kod1 = row[1]
+                kod2 = row[2]
+                kod3 = row[3]
+                if row[6].split()[0] in self.area_type:
+                    short_name = " ".join(row[6].split()[1:])
+                    name = row[6]
+                else:
+                    name = short_name = row[6]
+                oktmo = f"{ter}{kod1}{kod2}{kod3}"
+                if ter == self.region and self.check_twice_code(ter, kod1, kod2, kod3):
+                    parent = self.parent_level(ter, kod1, kod2, kod3)
+                    parent = "" if parent == oktmo else parent
+                    yield f"{oktmo}", parent, name, short_name
+                else:
+                    continue
 
 
 @FiasRemoteSystem.extractor
@@ -46,7 +174,7 @@ class StreetExtractor(BaseExtractor):
         super(StreetExtractor, self).__init__(system)
         self.fias_url = str(self.config.get("FIAS_URL"))
         self.cache_path = str(self.config.get("CACHE_PATH"))
-        self.region = str(self.config.get("REGION"))
+        self.region = str(self.config.get("FIAS_REGION"))
         self.check_path(self.cache_path)
         self.zip_path = os.path.join(self.cache_path, "fias_dbf.zip")
         self.dbf_file = f"ADDROB{self.region}.DBF"
@@ -69,11 +197,11 @@ class StreetExtractor(BaseExtractor):
                 with open(self.zip_path, "wb") as f:
                     for chunk in r.iter_content(1024):
                         f.write(chunk)
-            if is_zipfile(self.zip_path):
-                with ZipFile(self.zip_path, "r") as f:
-                    f.extract(self.dbf_file, self.cache_path)
-            else:
-                raise Exception("zipfile not found!")
+        if is_zipfile(self.zip_path):
+            with ZipFile(self.zip_path, "r") as f:
+                f.extract(self.dbf_file, self.cache_path)
+        else:
+            raise Exception("zipfile not found!")
 
     def extract(self):
         super().extract()
@@ -155,7 +283,7 @@ class AddressExtractor(BaseExtractor):
         super(AddressExtractor, self).__init__(system)
         self.fias_url = str(self.config.get("FIAS_URL"))
         self.cache_path = str(self.config.get("CACHE_PATH"))
-        self.region = str(self.config.get("REGION"))
+        self.region = str(self.config.get("FIAS_REGION"))
         self.check_path(self.cache_path)
         self.zip_path = os.path.join(self.cache_path, "fias_dbf.zip")
         self.dbf_file = f"HOUSE{self.region}.DBF"
@@ -179,12 +307,11 @@ class AddressExtractor(BaseExtractor):
                 with open(self.zip_path, "wb") as f:
                     for chunk in r.iter_content(1024):
                         f.write(chunk)
-            if is_zipfile(self.zip_path):
-                with ZipFile(self.zip_path, "r") as f:
-                    f.extract(self.dbf_file_house, self.cache_path)
-                    f.extract(self.dbf_file_address, self.cache_path)
-            else:
-                raise Exception("zipfile not found!")
+        if is_zipfile(self.zip_path):
+            with ZipFile(self.zip_path, "r") as f:
+                f.extract(self.dbf_file, self.cache_path)
+        else:
+            raise Exception("zipfile not found!")
 
     def extract(self):
         super().extract()
@@ -221,7 +348,7 @@ class BuildingExtractor(BaseExtractor):
         super(BuildingExtractor, self).__init__(system)
         self.fias_url = str(self.config.get("FIAS_URL"))
         self.cache_path = str(self.config.get("CACHE_PATH"))
-        self.region = str(self.config.get("REGION"))
+        self.region = str(self.config.get("FIAS_REGION"))
         self.check_path(self.cache_path)
         self.zip_path = os.path.join(self.cache_path, "fias_dbf.zip")
         self.dbf_file_house = f"HOUSE{self.region}.DBF"
@@ -247,12 +374,12 @@ class BuildingExtractor(BaseExtractor):
                 with open(self.zip_path, "wb") as f:
                     for chunk in r.iter_content(1024):
                         f.write(chunk)
-            if is_zipfile(self.zip_path):
-                with ZipFile(self.zip_path, "r") as f:
-                    f.extract(self.dbf_file_house, self.cache_path)
-                    f.extract(self.dbf_file_address, self.cache_path)
-            else:
-                raise Exception("zipfile not found!")
+        if is_zipfile(self.zip_path):
+            with ZipFile(self.zip_path, "r") as f:
+                f.extract(self.dbf_file_house, self.cache_path)
+                f.extract(self.dbf_file_address, self.cache_path)
+        else:
+            raise Exception("zipfile not found!")
 
     def extract(self):
         super().extract()

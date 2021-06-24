@@ -19,9 +19,6 @@ class BaseRemoteSystem(object):
 
     extractors_order = [
         "label",
-        "admdiv",
-        "address",
-        "building",
         "networksegmentprofile",
         "networksegment",
         "object",
@@ -38,7 +35,10 @@ class BaseRemoteSystem(object):
         "subscriber",
         "serviceprofile",
         "service",
+        "admdiv",
         "street",
+        "building",
+        "address",
     ]
 
     def __init__(self, remote_system):
