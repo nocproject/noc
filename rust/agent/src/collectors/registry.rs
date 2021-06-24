@@ -8,6 +8,7 @@ use super::block_io::{BlockIoCollector, BlockIoConfig};
 use super::cpu::{CpuCollector, CpuConfig};
 use super::dns::{DnsCollector, DnsConfig};
 use super::fs::{FsCollector, FsConfig};
+use super::http::{HttpCollector, HttpConfig};
 use super::memory::{MemoryCollector, MemoryConfig};
 use super::network::{NetworkCollector, NetworkConfig};
 use super::test::{TestCollector, TestConfig};
@@ -37,6 +38,8 @@ pub enum CollectorConfig {
     Dns(DnsConfig),
     #[serde(rename = "fs")]
     Fs(FsConfig),
+    #[serde(rename = "http")]
+    Http(HttpConfig),
     #[serde(rename = "memory")]
     Memory(MemoryConfig),
     #[serde(rename = "network")]
@@ -59,6 +62,7 @@ pub enum Collectors {
     Cpu(CpuCollector),
     Dns(DnsCollector),
     Fs(FsCollector),
+    Http(HttpCollector),
     Memory(MemoryCollector),
     Network(NetworkCollector),
     Test(TestCollector),
@@ -78,6 +82,7 @@ impl TryFrom<&ZkConfigCollector> for Collectors {
             CollectorConfig::Cpu(_) => Collectors::Cpu(CpuCollector::try_from(value)?),
             CollectorConfig::Dns(_) => Collectors::Dns(DnsCollector::try_from(value)?),
             CollectorConfig::Fs(_) => Collectors::Fs(FsCollector::try_from(value)?),
+            CollectorConfig::Http(_) => Collectors::Http(HttpCollector::try_from(value)?),
             CollectorConfig::Memory(_) => Collectors::Memory(MemoryCollector::try_from(value)?),
             CollectorConfig::Network(_) => Collectors::Network(NetworkCollector::try_from(value)?),
             CollectorConfig::Test(_) => Collectors::Test(TestCollector::try_from(value)?),
