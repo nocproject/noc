@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Action
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ import cachetools
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 from noc.core.ip import IP
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
@@ -63,6 +64,14 @@ class ActionParameter(EmbeddedDocument):
         return r
 
 
+@on_delete_check(
+    check=[
+        ("sa.ActionCommands", "action"),
+        ("fm.AlarmDiagnosticConfig", "on_clear_action"),
+        ("fm.AlarmDiagnosticConfig", "periodic_action"),
+        ("fm.AlarmDiagnosticConfig", "on_raise_action"),
+    ]
+)
 class Action(Document):
     meta = {
         "collection": "noc.actions",

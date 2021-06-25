@@ -9,7 +9,11 @@
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 
+
+@on_delete_check(check=[("maintenance.Maintenance", "type")])
 class MaintenanceType(Document):
     meta = {
         "collection": "noc.maintenancetype",
