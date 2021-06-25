@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Interface Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -57,8 +57,8 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     check=[
         ("inv.Interface", "profile"),
         ("inv.InterfaceClassificationRule", "profile"),
-        ("inv.SubInterface", "profile")
-        # ("sa.ServiceProfile", "")
+        ("inv.SubInterface", "profile"),
+        ("sa.ServiceProfile", "interface_profile"),
     ]
 )
 class InterfaceProfile(Document):

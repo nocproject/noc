@@ -64,6 +64,7 @@ class VLANTranslation(EmbeddedDocument):
         ("sa.AdministrativeDomain", "bioseg_floating_parent_segment"),
         ("sa.ManagedObject", "segment"),
         ("inv.NetworkSegment", "parent"),
+        ("inv.NetworkSegment", "sibling"),
         ("vc.VLAN", "segment"),
     ]
 )

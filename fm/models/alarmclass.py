@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # AlarmClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,6 +51,7 @@ handlers_lock = Lock()
         ("fm.ActiveAlarm", "alarm_class"),
         ("fm.AlarmClassConfig", "alarm_class"),
         ("fm.ArchivedAlarm", "alarm_class"),
+        ("fm.AlarmDiagnosticConfig", "alarm_class"),
     ]
 )
 class AlarmClass(Document):

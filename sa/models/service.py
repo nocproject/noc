@@ -51,7 +51,14 @@ id_lock = Lock()
 @resourcegroup
 @workflow
 @on_delete
-@on_delete_check(clean=[("phone.PhoneNumber", "service"), ("inv.Interface", "service")])
+@on_delete_check(
+    clean=[
+        ("phone.PhoneNumber", "service"),
+        ("inv.Interface", "service"),
+        ("inv.SubInterface", "service"),
+        ("sa.Service", "parent"),
+    ]
+)
 class Service(Document):
     meta = {
         "collection": "noc.services",

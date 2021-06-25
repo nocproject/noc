@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Map Layer
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ id_lock = Lock()
 DEFAULT_ZOOM = 11
 
 
-@on_delete_check(check=[("inv.Object", "layer")])
+@on_delete_check(check=[("inv.Object", "layer"), ("inv.ObjectConnection", "layer")])
 class Layer(Document):
     meta = {
         "collection": "noc.layers",

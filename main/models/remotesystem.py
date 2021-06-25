@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -49,6 +49,10 @@ class EnvItem(EmbeddedDocument):
         ("crm.Supplier", "remote_system"),
         ("crm.SupplierProfile", "remote_system"),
         ("fm.TTSystem", "remote_system"),
+        ("gis.Address", "remote_system"),
+        ("gis.Building", "remote_system"),
+        ("gis.Division", "remote_system"),
+        ("gis.Street", "remote_system"),
         ("inv.AllocationGroup", "remote_system"),
         ("inv.InterfaceProfile", "remote_system"),
         ("inv.NetworkSegment", "remote_system"),
@@ -57,6 +61,7 @@ class EnvItem(EmbeddedDocument):
         ("inv.Object", "remote_system"),
         ("ip.AddressProfile", "remote_system"),
         ("ip.PrefixProfile", "remote_system"),
+        ("main.Label", "remote_system"),
         ("sa.ManagedObject", "remote_system"),
         ("sa.AdministrativeDomain", "remote_system"),
         ("sa.ManagedObjectProfile", "remote_system"),
