@@ -57,6 +57,7 @@ id_lock = Lock()
         ("inv.Interface", "service"),
         ("inv.SubInterface", "service"),
         ("sa.Service", "parent"),
+        ("sla.SLAProbe", "service"),
     ]
 )
 class Service(Document):
