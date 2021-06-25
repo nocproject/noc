@@ -143,7 +143,7 @@ class ActiveAlarm(Document):
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
-            yield "alarm", self.id
+            yield "alarm", str(self.id)
 
     def clean(self):
         super().clean()

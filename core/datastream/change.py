@@ -12,7 +12,7 @@ from collections import defaultdict
 from typing import Optional, Any, Tuple, Set, List
 
 # NOC modules
-from noc.core.defer import call_later
+from noc.core.defer import defer
 from noc.core.datastream.loader import loader
 
 tls = threading.local()
@@ -115,7 +115,7 @@ class BaseChangeTrackerPolicy(object):
 
     def apply_changes(self, changes: List[Tuple[str, Any]]):
         if changes:
-            call_later("noc.core.datastream.change.do_changes", changes=changes)
+            defer("noc.core.datastream.change.do_changes", changes=changes)
 
 
 class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):

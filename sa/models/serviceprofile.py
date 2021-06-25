@@ -30,7 +30,8 @@ from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
-from noc.core.defer import call_later
+from noc.core.defer import defer
+from noc.core.hash import hash_int
 from noc.inv.models.capsitem import CapsItem
 from noc.wf.models.workflow import Workflow
 
@@ -84,10 +85,11 @@ class ServiceProfile(Document):
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interface_profile" in self._changed_fields:
-            call_later(
+            defer(
                 "noc.sa.models.serviceprofile.refresh_interface_profiles",
-                sp_id=self.id,
-                ip_id=self.interface_profile.id if self.interface_profile else None,
+                key=hash_int(self.id),
+                sp_id=str(self.id),
+                ip_id=str(self.interface_profile.id) if self.interface_profile else None,
             )
 
     @classmethod

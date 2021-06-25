@@ -32,6 +32,7 @@ class Command(BaseCommand):
         ("mx", "message"),
         ("kafkasender", "kafkasender"),
         ("metrics", "metrics"),
+        ("worker", "jobs"),
     ]
     # Pool-based streams, depending on slots
     POOLED_SLOT_STREAMS = [
