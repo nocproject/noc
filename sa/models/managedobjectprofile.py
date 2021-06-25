@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
 from noc.core.scheduler.job import Job
-from noc.core.defer import call_later
+from noc.core.defer import call_later, defer
 from noc.sa.interfaces.base import DictListParameter, ObjectIdParameter, BooleanParameter
 from noc.core.bi.decorator import bi_sync
 from noc.ip.models.prefixprofile import PrefixProfile
@@ -716,8 +716,9 @@ class ManagedObjectProfile(NOCModel):
         )
 
         if box_changed or periodic_changed:
-            call_later(
+            defer(
                 "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
+                key=self.id,
                 profile_id=self.id,
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
@@ -811,6 +812,9 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
             "id", "is_managed", "pool"
         ):
             yield o_id, is_managed, pool_cache[pool_id]
+
+    # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
+    from .managedobject import ManagedObject  # noqa
 
     try:
         profile = ManagedObjectProfile.objects.get(id=profile_id)

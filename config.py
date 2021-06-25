@@ -396,6 +396,11 @@ class Config(BaseConfig):
         stream_ch_replication_factor = IntParameter(
             default=1, help="Replicaton factor for clickhouse streams"
         )
+        stream_jobs_retention_max_age = SecondsParameter(default="24h")
+        stream_jobs_retention_max_bytes = BytesParameter(default=0)
+        stream_jobs_segment_max_age = SecondsParameter(default="1h")
+        stream_jobs_segment_max_bytes = BytesParameter(default=0)
+        stream_jobs_auto_pause_time = SecondsParameter(default=0)
         metrics_send_delay = FloatParameter(default=0.25)
 
     listen = StringParameter(default="auto:0")

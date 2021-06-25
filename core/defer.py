@@ -9,11 +9,17 @@
 import datetime
 import logging
 from typing import Optional
+import warnings
+import orjson
+from threading import Lock
 
 # NOC modules
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.hash import dict_hash_int_args
+from noc.core.deprecations import RemovedInNOC2102Warning
+from noc.core.service.loader import get_service
+from noc.core.ioloop.util import run_sync
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +46,19 @@ def call_later(
     :param shard: Sharding key
     :param max_runs: Maximum amount of retries
     """
+    # Check if defer should be used
+    if (
+        scheduler == "scheduler"
+        and not pool
+        and job_class == DEFAULT_JOB_CLASS
+        and not max_runs
+        and not delay
+    ):
+        warnings.warn(
+            "defer should be used instead of call_later. Will be strict requirement in NOC 21.2",
+            RemovedInNOC2102Warning,
+        )
+        # @todo: Really pass to defer?
     scheduler = Scheduler(scheduler, pool=pool)
     data = kwargs or {}
     ts = datetime.datetime.now()
@@ -74,3 +93,36 @@ def call_later(
     logger.info("Delayed call to %s(%s) in %ss", name, data, delay or "0")
     logger.debug("update(%s, %s, upsert=True)", q, op)
     scheduler.get_collection().update_one(q, op, upsert=True)
+
+
+JOBS_STREAM = "jobs"
+JOBS_PARTITIONS: Optional[int] = None
+jp_lock = Lock()
+
+
+def defer(handler: str, key: Optional[int] = None, **kwargs) -> None:
+    """
+    Offload job to worker
+    :param handler: Full path to callable
+    :param key: Sharding key
+    :param kwargs: Callable arguments
+    :return:
+    """
+    global JOBS_PARTITIONS, jp_lock
+
+    async def init_partitions():
+        global JOBS_PARTITIONS
+
+        JOBS_PARTITIONS = await svc.get_stream_partitions(JOBS_STREAM)
+
+    svc = get_service()
+    if JOBS_PARTITIONS is None:
+        # Get number of partitions
+        with jp_lock:
+            if JOBS_PARTITIONS is None:
+                run_sync(init_partitions)
+
+    q = [{"handler": handler, "kwargs": kwargs or {}}]
+    if key is None:
+        key = dict_hash_int_args(handler=handler, **kwargs)
+    svc.publish(orjson.dumps(q), stream=JOBS_STREAM, partition=key % JOBS_PARTITIONS)

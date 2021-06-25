@@ -90,3 +90,22 @@ class ServiceStub(object):
                 )
 
         run_sync(wrap)
+
+    async def get_stream_partitions(self, stream: str) -> int:
+        """
+
+        :param stream:
+        :return:
+        """
+        async with LiftBridgeClient() as client:
+            while True:
+                meta = await client.fetch_metadata()
+                if meta.metadata:
+                    for stream_meta in meta.metadata:
+                        if stream_meta.name == stream:
+                            if stream_meta.partitions:
+                                return len(stream_meta.partitions)
+                            break
+                # Cluster election in progress or cluster is misconfigured
+                self.logger.info("Stream '%s' has no active partitions. Waiting" % stream)
+                await asyncio.sleep(1)

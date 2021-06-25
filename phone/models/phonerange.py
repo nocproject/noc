@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # PhoneRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,8 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
-from noc.core.defer import call_later
+from noc.core.defer import defer
+from noc.core.hash import hash_int
 from noc.core.text import clean_number
 from noc.core.resourcegroup.decorator import resourcegroup
 from .dialplan import DialPlan
@@ -165,7 +166,11 @@ class PhoneRange(Document):
                 n.save()
         # Allocate numbers when necessary
         if self.to_allocate_numbers:
-            call_later("noc.phone.models.phonerange.allocate_numbers", range_id=self.id)
+            defer(
+                "noc.phone.models.phonerange.allocate_numbers",
+                key=hash_int(self.id),
+                range_id=str(self.id),
+            )
         # Reparent nested ranges
         for r in PhoneRange.objects.filter(
             dialplan=self.dialplan,

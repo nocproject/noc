@@ -29,7 +29,8 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
-from noc.core.defer import call_later
+from noc.core.defer import defer
+from noc.core.hash import hash_int
 from noc.models import get_model_id
 
 logger = logging.getLogger(__name__)
@@ -154,8 +155,12 @@ class State(Document):
                 logger.error("Error import state job handler: %s" % e)
                 h = None
             if h:
-                call_later(
-                    STATE_JOB, handler=self.job_handler, model=get_model_id(obj), object=str(obj.pk)
+                defer(
+                    STATE_JOB,
+                    key=hash_int(obj.pk),
+                    handler=self.job_handler,
+                    model=get_model_id(obj),
+                    object=str(obj.pk),
                 )
             else:
                 logger.debug(

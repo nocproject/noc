@@ -1318,6 +1318,7 @@ nav:
               - tgsender: admin/reference/services/tgsender.md
               - trapcollector: admin/reference/services/trapcollector.md
               - web: admin/reference/services/web.md
+              - worker: admin/reference/services/worker.md
               - ui: admin/reference/services/ui.md
           - Configuration:
               - Configuration System Overview: admin/reference/config/index.md
@@ -2244,6 +2245,7 @@ nav:
               - dispose.POOL: dev/reference/streams/dispose.md
               - events.POOL: dev/reference/streams/events.md
               - kafkasender: dev/reference/streams/kafkasender.md
+              - jobs: dev/reference/streams/jobs.md
               - mx: dev/reference/streams/mx.md
           - Tools:
               - Overview: dev/reference/tools/index.md
