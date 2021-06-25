@@ -13,7 +13,14 @@ from threading import Lock
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, ListField, DateTimeField, LongField
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    DateTimeField,
+    LongField,
+    ReferenceField,
+)
 import cachetools
 
 # NOC modules
@@ -25,7 +32,7 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
-
+from noc.sa.models.service import Service
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
 
@@ -71,6 +78,8 @@ class SLAProbe(Document):
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    #
+    service = ReferenceField(Service)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
