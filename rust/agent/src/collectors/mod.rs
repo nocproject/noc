@@ -10,6 +10,7 @@ pub mod block_io;
 pub mod cpu;
 pub mod dns;
 pub mod fs;
+pub mod http;
 pub mod memory;
 pub mod network;
 mod registry;

@@ -16,6 +16,7 @@ default = [
     "cpu",
     "dns",
     "fs",
+    "http",
     "memory",
     "network",
     "test",
@@ -42,6 +43,8 @@ cpu = ["systemstat"]
 dns = ["trust-dns-proto"]
 # fs collector
 fs = ["systemstat"]
+# http collector
+http = ["reqwest"]
 # memory collector
 memory = ["systemstat"]
 # network collector
@@ -92,6 +95,7 @@ trust-dns-proto = {version = "0.20", optional = true}
 trust-dns-resolver = {version = "0.20", optional = true}
 serde_yaml = {version = "0.8", optional = true}
 systemstat = {version = "0.1", optional = true}
+reqwest = { version = "0.11", features = ["rustls-tls", "gzip", "deflate", "trust-dns"], optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
