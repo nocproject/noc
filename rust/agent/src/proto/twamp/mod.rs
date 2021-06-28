@@ -45,7 +45,7 @@ mod test_response;
 
 pub use accept_session::AcceptSession;
 pub use ntp::{NtpTimeStamp, UtcDateTime};
-pub use request_tw_session::RequestTwSession;
+pub use request_tw_session::{IpVn, RequestTwSession};
 pub use server_greeting::ServerGreeting;
 pub use server_start::ServerStart;
 pub use setup_response::SetupResponse;

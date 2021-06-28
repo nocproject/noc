@@ -9,6 +9,14 @@ use super::{NtpTimeStamp, UtcDateTime, CMD_REQUEST_TW_SESSION, MBZ};
 use crate::error::AgentError;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
+use std::cmp::{Eq, PartialEq};
+use std::net::IpAddr;
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub enum IpVn {
+    V4,
+    V6,
+}
 
 /// ## Request-TW-Session structure
 /// RFC-5357: 3.6
@@ -71,13 +79,13 @@ use bytes::{Buf, BufMut, BytesMut};
 /// Sender port, Sender address, Receiver port, Receiver address.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequestTwSession {
-    pub ipvn: u8,
+    pub ipvn: IpVn,
     // Test session utilizes same addresses as the control one
     // Ignored
-    // sender_port: u16,
-    // receiver_port: u16,
-    // sender_address: Bytes,
-    // receiver_address: Bytes,
+    pub sender_port: u16,
+    pub receiver_port: u16,
+    pub sender_address: IpAddr,
+    pub receiver_address: IpAddr,
     pub padding_length: u32,
     pub start_time: UtcDateTime,
     pub timeout: u64,
@@ -96,10 +104,11 @@ impl FrameReader for RequestTwSession {
             return Err(AgentError::FrameError("Invalid command code".into()));
         }
         // MBZ 4 bits + IPVN 4 bits
-        let ipvn = s.get_u8();
-        if ipvn != 4 && ipvn != 6 {
-            return Err(AgentError::FrameError("Invalid IP version".into()));
-        }
+        let ipvn = match s.get_u8() {
+            4 => IpVn::V4,
+            6 => IpVn::V6,
+            _ => return Err(AgentError::FrameError("Invalid IP version".into())),
+        };
         // Conf-Sender, 2 octets, must be zero
         let conf_sender = s.get_u8();
         if conf_sender != 0 {
@@ -120,9 +129,40 @@ impl FrameReader for RequestTwSession {
         if num_packets != 0 {
             return Err(AgentError::FrameError("Num-Packets must be zero".into()));
         }
-        // Sender and Receiver ports and addresses are ignored
+        // Sender Port (2 octets)
+        let sender_port = s.get_u16();
+        // Receiver Port (2 octets)
+        let receiver_port = s.get_u16();
+        // Sender address
+        let sender_address = match &ipvn {
+            IpVn::V4 => {
+                let mut sa = [0u8; 4];
+                s.copy_to_bytes(4).copy_to_slice(&mut sa);
+                s.advance(12); // Skip zeroes
+                IpAddr::from(sa)
+            }
+            IpVn::V6 => {
+                let mut sa = [0u8; 16];
+                s.copy_to_bytes(4).copy_to_slice(&mut sa);
+                IpAddr::from(sa)
+            }
+        };
+        // Sender address
+        let receiver_address = match &ipvn {
+            IpVn::V4 => {
+                let mut da = [0u8; 4];
+                s.copy_to_bytes(4).copy_to_slice(&mut da);
+                s.advance(12); // Skip zeroes
+                IpAddr::from(da)
+            }
+            IpVn::V6 => {
+                let mut da = [0u8; 16];
+                s.copy_to_bytes(4).copy_to_slice(&mut da);
+                IpAddr::from(da)
+            }
+        };
         // Session identifier is ignored
-        s.advance(36 + 16);
+        s.advance(16);
         // Padding length, 4 octets
         let padding_length = s.get_u32();
         // Start-Time, 8 octets
@@ -137,6 +177,10 @@ impl FrameReader for RequestTwSession {
         s.advance(16);
         Ok(RequestTwSession {
             ipvn,
+            sender_port,
+            receiver_port,
+            sender_address,
+            receiver_address,
             padding_length,
             start_time: ts.into(),
             timeout,
@@ -155,16 +199,38 @@ impl FrameWriter for RequestTwSession {
         // Command, 1 octet
         s.put_u8(CMD_REQUEST_TW_SESSION);
         // MBZ 4 bits + IPVN 4 bits
-        s.put_u8(self.ipvn);
+        match &self.ipvn {
+            IpVn::V4 => s.put_u8(4),
+            IpVn::V6 => s.put_u8(6),
+        }
         // Conf-Sender, 1 octets and Conf-Receiver, 1 octets, both zero
         s.put_u16(0);
         // Number of schedule slots, 4 octets, set to zero
         s.put_u32(0);
         // Number of packets, 4 octets, set to zero
         s.put_u32(0);
-        // Sender Port, Receiver Port, Sender Address, Receiver Address
-        // 36 octets, set to zero
-        s.put(&MBZ[..36]);
+        // Sender port, 2 octets
+        s.put_u16(self.sender_port);
+        // Receiver port, 2 octets
+        s.put_u16(self.receiver_port);
+        // Sender address, 16 octets
+        match (&self.ipvn, self.sender_address) {
+            (IpVn::V4, IpAddr::V4(x)) => {
+                s.put(&x.octets()[..4]);
+                s.put(&MBZ[..12]);
+            }
+            (IpVn::V6, IpAddr::V6(x)) => s.put(&x.octets()[..16]),
+            _ => return Err(AgentError::InternalError("invalid sender address".into())),
+        };
+        // Receiver address, 16 octets
+        match (&self.ipvn, self.receiver_address) {
+            (IpVn::V4, IpAddr::V4(x)) => {
+                s.put(&x.octets()[..4]);
+                s.put(&MBZ[..12]);
+            }
+            (IpVn::V6, IpAddr::V6(x)) => s.put(&x.octets()[..16]),
+            _ => return Err(AgentError::InternalError("invalid receiver address".into())),
+        };
         // Session id, 16 octets, set to zero
         s.put(&MBZ[..16]);
         // Padding length, 4 octets
@@ -187,10 +253,11 @@ impl FrameWriter for RequestTwSession {
 
 #[cfg(test)]
 mod tests {
-    use super::RequestTwSession;
+    use super::{IpVn, RequestTwSession};
     use crate::proto::frame::{FrameReader, FrameWriter};
     use bytes::{Buf, BytesMut};
     use chrono::{TimeZone, Utc};
+    use std::net::{IpAddr, Ipv4Addr};
 
     static REQUEST_TW_SESSION1: &[u8] = &[
         0x05, // Command, 5
@@ -218,7 +285,11 @@ mod tests {
 
     fn get_request_tw_session() -> RequestTwSession {
         RequestTwSession {
-            ipvn: 4,
+            ipvn: IpVn::V4,
+            sender_port: 0,
+            receiver_port: 0,
+            sender_address: IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+            receiver_address: IpAddr::V4(Ipv4Addr::UNSPECIFIED),
             padding_length: 0,
             start_time: Utc.ymd(2021, 2, 12).and_hms(10, 0, 0),
             timeout: 255,

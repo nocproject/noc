@@ -14,7 +14,7 @@ use crate::proto::frame::{FrameReader, FrameWriter};
 use crate::proto::pktmodel::{GetPacket, PacketModels};
 use crate::proto::tos::{dscp_to_tos, tos_to_dscp};
 use crate::proto::twamp::{
-    AcceptSession, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
+    AcceptSession, IpVn, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, UtcDateTime, ACCEPT_OK, MODE_REFUSED,
     MODE_UNAUTHENTICATED,
 };
@@ -24,6 +24,8 @@ use bytes::{Bytes, BytesMut};
 use chrono::Utc;
 use std::convert::TryFrom;
 use std::net::SocketAddr;
+use std::net::{IpAddr, Ipv4Addr};
+use std::str::FromStr;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::{
@@ -96,6 +98,7 @@ struct TestSession {
     reflector_port: u16,
     n_packets: usize,
     model: PacketModels,
+    socket: Option<Arc<UdpSocket>>,
 }
 
 impl TestSession {
@@ -109,6 +112,7 @@ impl TestSession {
             reflector_port: 0,
             n_packets: 0,
             model,
+            socket: None,
         }
     }
     pub fn with_id(&mut self, id: String) -> &mut Self {
@@ -142,6 +146,7 @@ impl TestSession {
         self.recv_server_greeting(ctl_timeout).await?;
         self.send_setup_reponse().await?;
         self.recv_server_start(ctl_timeout).await?;
+        self.open_test_socket().await?;
         self.send_request_tw_session().await?;
         self.recv_accept_session(ctl_timeout).await?;
         self.send_start_sessions().await?;
@@ -189,10 +194,31 @@ impl TestSession {
         );
         Ok(())
     }
+    async fn open_test_socket(&mut self) -> Result<(), AgentError> {
+        log::debug!("[{}] Opening test socket", self.id);
+        let socket = UdpSocket::bind("0.0.0.0:0").await?;
+        // Test request TTL must be set to 255
+        socket.set_ttl(255)?;
+        // @todo: Set IP_TOS. No public tokio/mio API yet :(
+        self.socket = Some(Arc::new(socket));
+        Ok(())
+    }
     async fn send_request_tw_session(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Sending Request-TW-Session", self.id);
+        let addr = self
+            .socket
+            .as_ref()
+            .unwrap()
+            .local_addr()
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        let remote_addr = Ipv4Addr::from_str(&self.reflector_addr)
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
         let srq = RequestTwSession {
-            ipvn: 4,
+            ipvn: IpVn::V4,
+            sender_port: addr.port(),
+            receiver_port: self.reflector_port,
+            sender_address: addr.ip(),
+            receiver_address: IpAddr::V4(remote_addr),
             padding_length: 0,
             start_time: Utc::now(),
             timeout: 255, // @todo: Make configurable
@@ -243,11 +269,7 @@ impl TestSession {
     }
     async fn run_test(&mut self) -> Result<TwampSenderOut, AgentError> {
         log::debug!("[{}] Running test", self.id);
-        let socket = UdpSocket::bind("0.0.0.0:0").await?;
-        // Test request TTL must be set to 255
-        socket.set_ttl(255)?;
-        // @todo: Set IP_TOS
-        let shared_socket = Arc::new(socket);
+        let shared_socket = self.socket.as_ref().unwrap();
         let addr: SocketAddr = format!("{}:{}", self.reflector_addr, self.reflector_port)
             .parse()
             .map_err(|_| AgentError::ConfigurationError("Address parse error".into()))?;
