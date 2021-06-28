@@ -11,6 +11,6 @@ cfg_if::cfg_if! {
         pub use linux::PlatformCpuOut;
     } else {
         pub mod default;
-        pub use default:PlatformCpuOut;
+        pub use default::PlatformCpuOut;
     }
 }
