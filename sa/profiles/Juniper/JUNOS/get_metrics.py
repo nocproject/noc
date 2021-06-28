@@ -9,6 +9,18 @@
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.slot import SlotRule
 from noc.core.mib import mib
+from noc.core.script.metrics import scale
+
+SLA_METRICS_MAP = {
+    "SLA | Packets": "JUNIPER-RPM-MIB::jnxRpmResSumSent",
+    "SLA | Packets | Loss | Out": "JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
+    # "SLA | Packets | Loss | In": "JUNIPER-RPM-MIB::jnxRpmResSumReceived",
+    "SLA | Jitter | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
+    "SLA | Jitter | Out | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
+    "SLA | Jitter | In | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 7),
+    "SLA | RTT | Min": ("JUNIPER-RPM-MIB::jnxRpmResCalcMin", 1),
+    "SLA | RTT | Max": ("JUNIPER-RPM-MIB::jnxRpmResCalcMax", 1),
+}
 
 
 class Script(GetMetricsScript):
@@ -89,3 +101,71 @@ class Script(GetMetricsScript):
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,
                     )
+
+    def collect_profile_metrics(self, metrics):
+        # SLA Metrics
+        if self.has_capability("Juniper | RPM | Probes"):
+            self.get_ip_sla_udp_jitter_metrics_snmp(
+                [m for m in metrics if m.metric in SLA_METRICS_MAP]
+            )
+
+    # @metrics(
+    #     list(SLA_METRICS_MAP.keys()),
+    #     has_capability="Huawei | NQA | Probes",
+    #     volatile=True,
+    #     access="S",  # CLI version
+    # )
+    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+        """
+        Returns collected ip sla metrics in form
+        probe id -> {
+            rtt: RTT in seconds
+        }
+        :return:
+        """
+        oids = {}
+        # stat_index = 250
+        for m in metrics:
+            if m.metric not in SLA_METRICS_MAP:
+                continue
+            if len(m.labels) < 2:
+                continue
+            _, name = m.labels[0].rsplit("::", 1)
+            _, group = m.labels[1].rsplit("::", 1)
+            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            base = SLA_METRICS_MAP[m.metric]
+            if not isinstance(base, tuple):
+                oid = mib[
+                    base,
+                    key,
+                    2,
+                ]
+            else:
+                oid = mib[
+                    base[0],
+                    key,
+                    2,
+                    base[1],
+                ]
+            oids[oid] = m
+
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            if results[r] is None:
+                continue
+            m = oids[r]
+            self.set_metric(
+                id=m.id,
+                metric=m.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=m.labels,
+                multi=True,
+                type="gauge",
+                scale=1 if m.metric != "SLA | Packets | Loss | Out" else scale(0.000001),
+            )

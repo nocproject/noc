@@ -19,6 +19,7 @@ class Script(BaseScript):
     interface = IGetSLAProbes
 
     probes_snmp_type_map = {
+        5: "udp-jitter",
         6: "icmp-echo",
     }
 
@@ -44,7 +45,7 @@ class Script(BaseScript):
                 }
             probes[index] = {
                 "name": index_map[index]["test_name"],
-                "owner": index_map[index]["admin_name"],
+                "group": index_map[index]["admin_name"],
                 "status": status,
                 "type": self.probes_snmp_type_map[rtt_type],
             }

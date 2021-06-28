@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Jitter | ICPIF",
+    "$collection": "pm.metrictypes",
+    "uuid": "34d658e9-a39d-4147-9c5d-9df0fd767b95",
+    "scope__name": "SLA",
+    "field_name": "jitter_icpif",
+    "field_type": "Int32",
+    "description": "Represents ICPIF value for the latest jitter operation. This value will be 93 for packet loss of 10% or more.",
+    "measure": "*",
+    "units__code": "1",
+    "scale__code": "1"
+}

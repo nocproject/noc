@@ -52,6 +52,8 @@ class SLACheck(DiscoveryCheck):
         new_probes = {}
         for p in self.object.scripts.get_sla_probes():
             new_probes[p.get("group", ""), p["name"]] = p
+            for ll in p.get("tags", []):
+                Label.ensure_label(ll, enable_slaprobe=True)
         # Check existing probes
         for p in SLAProbe.objects.filter(managed_object=self.object.id):
             group = p.group or ""

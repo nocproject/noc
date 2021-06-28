@@ -12,6 +12,24 @@ from .oidrules.sslot import SSlotRule
 from noc.core.mib import mib
 
 
+SLA_METRICS_MAP = {
+    "SLA | Packets": "NQA-MIB::nqaJitterStatsSentProbes",
+    "SLA | Packets | Loss | Out": "NQA-MIB::nqaJitterStatsPacketLossSD",
+    "SLA | Packets | Loss | In": "NQA-MIB::nqaJitterStatsPacketLossDS",
+    "SLA | Packets | Disordered": "NQA-MIB::nqaJitterStatsPktDisorderNum",
+    "SLA | Probes | Error": "NQA-MIB::nqaJitterStatsErrors",
+    "SLA | OneWayLatency | Out | Max": "NQA-MIB::nqaJitterStatsMaxDelaySD",
+    "SLA | OneWayLatency | In | Max": "NQA-MIB::nqaJitterStatsMaxDelayDS",
+    "SLA | Jitter | Avg": "NQA-MIB::nqaJitterStatsAvgJitter",
+    "SLA | Jitter | Out | Avg": "NQA-MIB::nqaJitterStatsAvgJitterSD",
+    "SLA | Jitter | In | Avg": "NQA-MIB::nqaJitterStatsAvgJitterDS",
+    "SLA | Jitter | MOS": "NQA-MIB::nqaJitterStatsOperOfMos",
+    "SLA | Jitter | ICPIF": "NQA-MIB::nqaJitterStatsOperOfIcpif",
+    "SLA | RTT | Min": "NQA-MIB::nqaJitterStatsRTTMin",
+    "SLA | RTT | Max": "NQA-MIB::nqaJitterStatsRTTMax",
+}
+
+
 class Script(GetMetricsScript):
     name = "Huawei.VRP.get_metrics"
 
@@ -163,6 +181,68 @@ class Script(GetMetricsScript):
                     type=mtype,
                     scale=scale,
                 )
+
+    def collect_profile_metrics(self, metrics):
+        # SLA Metrics
+        if self.has_capability("Huawei | NQA | Probes"):
+            self.get_ip_sla_udp_jitter_metrics_snmp(
+                [m for m in metrics if m.metric in SLA_METRICS_MAP]
+            )
+
+    # @metrics(
+    #     list(SLA_METRICS_MAP.keys()),
+    #     has_capability="Huawei | NQA | Probes",
+    #     volatile=True,
+    #     access="S",  # CLI version
+    # )
+    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+        """
+        Returns collected ip sla metrics in form
+        probe id -> {
+            rtt: RTT in seconds
+        }
+        :return:
+        """
+        oids = {}
+        # stat_index = 250
+        stat_index = {}
+        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"], only_first=True):
+            key = ".".join(oid.split(".")[14:-1])
+            stat_index[key] = oid.rsplit(".", 1)[-1]
+        for m in metrics:
+            if m.metric not in SLA_METRICS_MAP:
+                continue
+            if len(m.labels) < 2:
+                continue
+            _, name = m.labels[0].rsplit("::", 1)
+            _, group = m.labels[1].rsplit("::", 1)
+            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            oid = mib[
+                SLA_METRICS_MAP[m.metric],
+                key,
+                stat_index[key],
+            ]
+            oids[oid] = m
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            if results[r] is None:
+                continue
+            m = oids[r]
+            self.set_metric(
+                id=m.id,
+                metric=m.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=m.labels,
+                multi=True,
+                type="gauge",
+                scale=1,
+            )
 
     # @metrics(
     #     ["Interface | Errors | CRC", "Interface | Errors | Frame"],

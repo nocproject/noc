@@ -45,7 +45,7 @@ class Script(BaseScript):
     TEST_TYPES = {
         "icmp-echo": "icmp-echo",
         "path-jitter": "path-jitter",
-        "udp-jitter": "path-jitter",
+        "udp-jitter": "udp-jitter",
         "icmp-jitter": "icmp-echo",
         "echo": "icmp-echo",
         "udp-echo": "udp-echo",
@@ -86,6 +86,7 @@ class Script(BaseScript):
 
     probes_snmp_type_map = {
         1: "icmp-echo",
+        9: "udp-jitter",
     }
 
     def execute_snmp(self, **kwargs):
@@ -112,10 +113,22 @@ class Script(BaseScript):
             }
             if tag:
                 probes[index]["tags"] = [f"noc::sla::tag::{tag}"]
+        # Getting target
         for oid, target in self.snmp.getnext(
             mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddress"],
-            display_hints={mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddressString"]: render_bin},
+            display_hints={mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddress"]: render_bin},
         ):
-            probes[oid.rsplit(".", 1)[-1]]["target"] = target
-
+            key = oid.rsplit(".", 1)[-1]
+            if key not in probes:
+                self.logger.debug("[%s] Probe not in probes config. Skipping target", key)
+                continue
+            probes[key]["target"] = ".".join(str(int(x)) for x in target)
+        # Getting Schedule
+        for oid, ptime in self.snmp.getnext(
+            mib["CISCO-RTTMON-MIB::rttMonScheduleAdminRttStartTime"]
+        ):
+            key = oid.rsplit(".", 1)[-1]
+            if key in probes and not ptime:
+                self.logger.debug("[%s] Probe not schedules. Set status to False", key)
+                probes[key]["status"] = False
         return list(probes.values())

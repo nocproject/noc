@@ -1,0 +1,12 @@
+  {
+    "name": "SLA | Packets | Loss | Out",
+    "$collection": "pm.metrictypes",
+    "uuid": "db5773d6-74b2-41da-960b-e20b2d6760f5",
+    "scope__name": "SLA",
+    "field_name": "packets_loss_out",
+    "field_type": "UInt32",
+    "description": "The number of packets lost when sent from source to destination.",
+    "measure": "pp",
+    "units__code": "pkt",
+    "scale__code": "1"
+}
