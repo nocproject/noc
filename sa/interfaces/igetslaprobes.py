@@ -34,6 +34,7 @@ class IGetSLAProbes(BaseInterface):
                 choices=[
                     "icmp-echo",
                     "path-jitter",
+                    "udp-jitter",
                     "udp-echo",
                     "tcp-connect",
                     "http-get",

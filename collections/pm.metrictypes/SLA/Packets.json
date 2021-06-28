@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Packets",
+    "$collection": "pm.metrictypes",
+    "uuid": "3fcb6efe-b3e5-46b2-8572-f0d1fefbee6a",
+    "scope__name": "SLA",
+    "field_name": "packets_count",
+    "field_type": "UInt32",
+    "description": " The number of packets (probes) sent in the test.",
+    "measure": "*",
+    "units__code": "pkt",
+    "scale__code": "1"
+}

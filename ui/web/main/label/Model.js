@@ -211,6 +211,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_slaprobe",
+            type: "boolean"
+        },
+        {
             name: "enable_slaprofile",
             type: "boolean"
         },

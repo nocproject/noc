@@ -19,11 +19,12 @@ class Script(BaseScript):
 
     rx_res = re.compile(
         r"^\s+Owner: (?P<owner>\S+), Test: (?P<test>\S+)\s*\n"
-        r"^\s+Target address: (?P<target>\S+), Probe type: (?P<type>\S+)(,|, Icmp-id: \d+,|\n)"
+        r"^\s+Target address: (?P<target>\S+), Probe type: (?P<type>\S+)"
+        r"(,|,?\n?\s+Icmp-id: \d+,|\n)"
         r"(^\s+Routing Instance Name: \S+\s*\n)?"
-        r"\s+Test size: \d+ probes\s*\n"
+        r"(\s+Test size: \d+ probes\s*\n)?"
         r"^\s+Probe results:\s*\n"
-        r"^\s+Response received,.+,(?P<hw_timestamp>.+)\n",
+        r"(^\s+Response received,.+,(?P<hw_timestamp>.+)\n)?",
         re.MULTILINE,
     )
 
@@ -32,7 +33,7 @@ class Script(BaseScript):
         "icmp-ping-timestamp": "icmp-echo",
         "icmp6-ping": "icmp-echo",
         "udp-ping": "udp-echo",
-        "udp-ping-timestanp": "udp-echo",
+        "udp-ping-timestamp": "udp-echo",
         "tcp-ping": "tcp-connect",
         "http-get": "http-get",
         "http-metadata-get": "http-get",
@@ -46,9 +47,12 @@ class Script(BaseScript):
                 {
                     "group": match.group("owner"),
                     "name": match.group("test"),
-                    "type": self.TEST_TYPES[match.group("type")],
+                    "type": self.TEST_TYPES[match.group("type").strip(",")],
                     "target": match.group("target"),
-                    "hw_timestamp": match.group("hw_timestamp").strip() != "No hardware timestamps",
                 }
             ]
+            if match.group("hw_timestamp"):
+                r[-1]["hw_timestamp"] = (
+                    match.group("hw_timestamp").strip() != "No hardware timestamps"
+                )
         return r

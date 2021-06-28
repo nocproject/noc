@@ -14,6 +14,24 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metr
 from noc.core.mib import mib
 
 
+SLA_METRICS_MAP = {
+    "SLA | Packets": "CISCO-RTTMON-MIB::rttMonLatestJitterOperNumOfRTT",
+    "SLA | Packets | Loss | Out": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossSD",
+    "SLA | Packets | Loss | In": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossDS",
+    "SLA | Packets | Disordered": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketOutOfSequence",
+    # "SLA | Probes | Error": "CISCO-RTTMON-MIB::nqaJitterStatsErrors",
+    "SLA | OneWayLatency | Out | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
+    "SLA | OneWayLatency | In | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
+    "SLA | Jitter | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
+    "SLA | Jitter | Out | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
+    "SLA | Jitter | In | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
+    "SLA | Jitter | MOS": "CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
+    "SLA | Jitter | ICPIF": "CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
+    "SLA | RTT | Min": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
+    "SLA | RTT | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
+}
+
+
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
     always_prefer = "S"
@@ -141,62 +159,6 @@ class Script(GetMetricsScript):
                 except ValueError:
                     pass
 
-    @metrics(
-        ["SLA | Jitter | Ingress", "SLA | Jitter | Egress", "SLA | Jitter | Rtt"],
-        has_capability="Cisco | IP | SLA | Probes",
-        volatile=False,
-        access="S",  # CLI version
-    )
-    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
-        """
-        Returns collected ip sla metrics in form
-        probe id -> {
-            rtt: RTT in seconds
-        }
-        :return:
-        """
-        setup_metrics = {
-            tuple(m.labels): m.id
-            for m in metrics
-            if m.metric in {"SLA | Jitter | Ingress", "SLA | Jitter | Egress", "SLA | Jitter | Rtt"}
-        }
-
-        for sla_index, sla_rtt_sum, sla_egress, sla_ingress in self.snmp.get_tables(
-            [
-                "1.3.6.1.4.1.9.9.42.1.3.5.1.9",
-                "1.3.6.1.4.1.9.9.42.1.3.5.1.63",
-                "1.3.6.1.4.1.9.9.42.1.3.5.1.64",
-            ],
-            bulk=False,
-        ):
-            sla_probe_index, m_timestamp = sla_index.split(".")
-            if (f"noc::sla::name::{sla_probe_index}",) not in setup_metrics:
-                continue
-            if sla_rtt_sum:
-                self.set_metric(
-                    id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
-                    metric="SLA | Jitter | Rtt",
-                    labels=(f"noc::sla::name::{sla_probe_index}",),
-                    value=float(sla_rtt_sum) * 1000.0,
-                    multi=True,
-                )
-            if sla_egress:
-                self.set_metric(
-                    id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
-                    metric="SLA | Jitter | Egress",
-                    labels=(f"noc::sla::name::{sla_probe_index}",),
-                    value=float(sla_egress) * 1000.0,
-                    multi=True,
-                )
-            if sla_ingress:
-                self.set_metric(
-                    id=setup_metrics[(f"noc::sla::name::{sla_probe_index}",)],
-                    metric="SLA | Jitter | Ingress",
-                    labels=(f"noc::sla::name::{sla_probe_index}",),
-                    value=float(sla_ingress) * 1000.0,
-                    multi=True,
-                )
-
     def get_cbqos_config_snmp(self):
         class_map = {}
         for oid, name in self.snmp.getnext(mib["CISCO-CLASS-BASED-QOS-MIB::cbQosCMName"]):
@@ -313,3 +275,58 @@ class Script(GetMetricsScript):
             )
         # print(r)
         # "noc::traffic_class::*", "noc::interface::*"
+
+    def collect_profile_metrics(self, metrics):
+        # SLA Metrics
+        if self.has_capability("Cisco | IP | SLA | Probes"):
+            self.get_ip_sla_udp_jitter_metrics_snmp(
+                [m for m in metrics if m.metric in SLA_METRICS_MAP]
+            )
+
+    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+        """
+        Returns collected ip sla metrics in form
+        probe id -> {
+            rtt: RTT in seconds
+        }
+        :return:
+        """
+        oids = {}
+        # stat_index = 250
+        stat_index = {}
+        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"], only_first=True):
+            key = ".".join(oid.split(".")[14:-1])
+            stat_index[key] = oid.rsplit(".", 1)[-1]
+        for m in metrics:
+            if m.metric not in SLA_METRICS_MAP:
+                continue
+            if len(m.labels) < 2:
+                continue
+            _, name = m.labels[0].rsplit("::", 1)
+            _, group = m.labels[1].rsplit("::", 1)
+            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            oid = mib[
+                SLA_METRICS_MAP[m.metric],
+                name,
+            ]
+            oids[oid] = m
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            if results[r] is None:
+                continue
+            m = oids[r]
+            self.set_metric(
+                id=m.id,
+                metric=m.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=m.labels,
+                multi=True,
+                type="gauge",
+                scale=1,
+            )

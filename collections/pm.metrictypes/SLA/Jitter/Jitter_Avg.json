@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Jitter | Avg",
+    "$collection": "pm.metrictypes",
+    "uuid": "2fa8da34-2bc8-4b18-b53b-9eb02d604d0c",
+    "scope__name": "SLA",
+    "field_name": "jitter_avg",
+    "field_type": "Int32",
+    "description": "The average of positive and negative jitter values in SD and DS direction for latest operation.",
+    "measure": "μs",
+    "units__code": "s",
+    "scale__code": "u"
+}
