@@ -48,7 +48,7 @@ class ConsulProtocol(BaseProtocol):
         for i in kv_data:
             k = i["Key"][pl:]
             v = i["Value"]
-            if v == '""' or v == "''":
+            if v == b'""' or v == b"''":
                 # fix if value is "" - return '""'
                 v = ""
             c = k.count("/")
