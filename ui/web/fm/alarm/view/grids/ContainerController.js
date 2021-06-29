@@ -172,5 +172,30 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                 this
             );
         msg.setWidth(500);
+    },
+    addGroupEscalate: function() {
+        var grid = this.lookupReference("fm-alarm-active"),
+            ids = grid.getSelection().map(function(alarm) {
+                return alarm.id
+            });
+        Ext.Ajax.request({
+            url: "/fm/alarm/escalate/",
+            method: "POST",
+            jsonData: {
+                ids: ids
+            },
+            scope: this,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                if(data.status) {
+                    NOC.info(_('Escalated'));
+                } else {
+                    NOC.error(__("Escalate failed : ") + (data.hasOwnProperty('error') ? data.error : 'unknowns error!'));
+                }
+            },
+            failure: function() {
+                NOC.error(__("Escalate failed"));
+            }
+        });
     }
 });

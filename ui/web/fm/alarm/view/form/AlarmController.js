@@ -57,8 +57,11 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
     },
     onEscalateObject: function() {
         Ext.Ajax.request({
-            url: this.getViewModel().get("alarmUrl") + "/escalate/",
-            method: "GET",
+            url: "/fm/alarm/escalate/",
+            method: "POST",
+            jsonData: {
+                ids: [this.getViewModel().get('selected.id')]
+            },
             scope: this,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
