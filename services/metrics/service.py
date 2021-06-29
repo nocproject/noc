@@ -1,5 +1,6 @@
+#!./bin/python
 # ----------------------------------------------------------------------
-# metrics service
+# Metrics service
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
