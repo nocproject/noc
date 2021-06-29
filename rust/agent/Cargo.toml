@@ -1,6 +1,6 @@
 [package]
 name = "agent"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["The NOC Project"]
 edition = "2018"
 description = "NOC Agent"

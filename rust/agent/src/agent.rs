@@ -114,7 +114,7 @@ impl Agent {
     }
     async fn update_collector(&mut self, _config: &ZkConfigCollector) -> Result<(), AgentError> {
         // @todo: Implement. May be restart new one
-        return Ok(());
+        Ok(())
     }
     // Wait for all running collectors to complete
     async fn wait_all(&mut self) -> Result<(), AgentError> {
