@@ -62,4 +62,17 @@ impl UdpConnection {
         self.socket.send_to(&self.buffer, addr).await?;
         Ok(())
     }
+    pub async fn connect(&self, addr: SocketAddr) -> Result<(), AgentError> {
+        self.socket
+            .connect(addr)
+            .await
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        Ok(())
+    }
+    pub async fn send<T: FrameWriter>(&mut self, frame: &T) -> Result<(), AgentError> {
+        self.buffer.clear();
+        frame.write_bytes(&mut self.buffer)?;
+        self.socket.send(&self.buffer).await?;
+        Ok(())
+    }
 }

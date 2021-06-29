@@ -256,6 +256,7 @@ impl ClientSession {
         }
         //
         let mut seq = 0u32;
+        let mut connected = false;
         loop {
             let (req, addr) = match timeout(recv_timeout, socket.recv_from::<TestRequest>()).await {
                 Ok(Ok(r)) => r,
@@ -265,6 +266,10 @@ impl ClientSession {
                 // Timed out, break the loop
                 Err(_) => break,
             };
+            if !connected {
+                socket.connect(addr).await?;
+                connected = true;
+            }
             // Build response
             let ts = Utc::now();
             let resp = TestResponse {
@@ -279,7 +284,7 @@ impl ClientSession {
                 pad_to: req.pad_to,
             };
             //
-            socket.send_to(&resp, addr).await?;
+            socket.send(&resp).await?;
             seq += 1;
         }
         log::debug!("[{}] Stopping reflector", id);
