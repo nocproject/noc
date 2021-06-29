@@ -8,6 +8,7 @@
 use crate::error::AgentError;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::BytesMut;
+use std::net::SocketAddr;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::TcpStream,
@@ -55,5 +56,19 @@ impl Connection {
             return Err(AgentError::NetworkError(e.to_string()));
         }
         Ok(())
+    }
+    pub fn local_addr(&self) -> Result<SocketAddr, AgentError> {
+        let addr = self
+            .stream
+            .local_addr()
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        Ok(addr)
+    }
+    pub fn peer_addr(&self) -> Result<SocketAddr, AgentError> {
+        let addr = self
+            .stream
+            .peer_addr()
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        Ok(addr)
     }
 }

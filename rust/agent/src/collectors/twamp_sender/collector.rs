@@ -24,8 +24,6 @@ use bytes::{Bytes, BytesMut};
 use chrono::Utc;
 use std::convert::TryFrom;
 use std::net::SocketAddr;
-use std::net::{IpAddr, Ipv4Addr};
-use std::str::FromStr;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::{
@@ -149,6 +147,7 @@ impl TestSession {
         self.open_test_socket().await?;
         self.send_request_tw_session().await?;
         self.recv_accept_session(ctl_timeout).await?;
+        self.connect_test_socket().await?;
         self.send_start_sessions().await?;
         self.recv_start_ack(ctl_timeout).await?;
         let out = self.run_test().await?;
@@ -196,6 +195,7 @@ impl TestSession {
     }
     async fn open_test_socket(&mut self) -> Result<(), AgentError> {
         log::debug!("[{}] Opening test socket", self.id);
+        // Create Socket
         let socket = UdpSocket::bind("0.0.0.0:0").await?;
         // Test request TTL must be set to 255
         socket.set_ttl(255)?;
@@ -203,22 +203,31 @@ impl TestSession {
         self.socket = Some(Arc::new(socket));
         Ok(())
     }
-    async fn send_request_tw_session(&mut self) -> Result<(), AgentError> {
-        log::debug!("[{}] Sending Request-TW-Session", self.id);
-        let addr = self
-            .socket
+    async fn connect_test_socket(&mut self) -> Result<(), AgentError> {
+        // Parse address
+        let addr: SocketAddr = format!("{}:{}", self.reflector_addr, self.reflector_port)
+            .parse()
+            .map_err(|_| AgentError::ConfigurationError("Address parse error".into()))?;
+        // Connect to bind the route
+        self.socket
             .as_ref()
             .unwrap()
-            .local_addr()
+            .connect(addr)
+            .await
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
-        let remote_addr = Ipv4Addr::from_str(&self.reflector_addr)
-            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        Ok(())
+    }
+    async fn send_request_tw_session(&mut self) -> Result<(), AgentError> {
+        log::debug!("[{}] Sending Request-TW-Session", self.id);
+        let local_addr = self.connection.local_addr()?;
+        let local_port = self.socket.as_ref().unwrap().local_addr()?.port();
+        let remote_addr = self.connection.peer_addr()?;
         let srq = RequestTwSession {
             ipvn: IpVn::V4,
-            sender_port: addr.port(),
+            sender_port: local_port,
             receiver_port: self.reflector_port,
-            sender_address: addr.ip(),
-            receiver_address: IpAddr::V4(remote_addr),
+            sender_address: local_addr.ip(),
+            receiver_address: remote_addr.ip(),
             padding_length: 0,
             start_time: Utc::now(),
             timeout: 255, // @todo: Make configurable
@@ -285,7 +294,6 @@ impl TestSession {
             TestSession::run_test_sender(
                 self.id.clone(),
                 shared_socket.clone(),
-                &addr,
                 self.model,
                 self.n_packets,
                 udp_overhead
@@ -300,12 +308,11 @@ impl TestSession {
     async fn run_test_sender(
         id: String,
         socket: Arc<UdpSocket>,
-        addr: &SocketAddr,
         model: PacketModels,
         n_packets: usize,
         udp_overhead: usize,
     ) -> Result<SenderStats, &'static str> {
-        match TestSession::test_sender(socket, addr, model, n_packets, udp_overhead).await {
+        match TestSession::test_sender(socket, model, n_packets, udp_overhead).await {
             Ok(r) => Ok(r),
             Err(e) => {
                 log::error!("[{}] Sender error: {}", id, e);
@@ -330,7 +337,6 @@ impl TestSession {
     #[inline]
     async fn test_sender(
         socket: Arc<UdpSocket>,
-        addr: &SocketAddr,
         model: PacketModels,
         n_packets: usize,
         udp_overhead: usize,
@@ -352,7 +358,7 @@ impl TestSession {
             };
             req.write_bytes(&mut buf)?;
             //
-            out_octets += socket.send_to(&buf, addr).await? + udp_overhead;
+            out_octets += socket.send(&buf).await? + udp_overhead;
             pkt_sent += 1;
             // Reset buffer pointer
             buf.clear();
