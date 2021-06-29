@@ -220,6 +220,9 @@ class ListParameter(BaseParameter):
         super().__init__(default=default, help=help)
 
     def clean(self, v):
+        if isinstance(v, str):
+            # Alter format - ['value1','value2']
+            v = v[1:-1].split(",")
         return [self.item.clean(x) for x in v]
 
 
