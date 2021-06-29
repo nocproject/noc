@@ -34,6 +34,7 @@ use tokio::{
 pub struct TwampSenderCollectorConfig {
     pub server: String,
     pub port: u16,
+    pub reflector_port: u16,
     pub n_packets: usize,
     pub model: PacketModels,
     pub tos: u8,
@@ -49,6 +50,7 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollectorConfig {
             CollectorConfig::TwampSender(config) => Ok(Self {
                 server: config.server.clone(),
                 port: config.port,
+                reflector_port: config.reflector_port,
                 n_packets: config.n_packets,
                 model: PacketModels::try_from(config.model.clone())?,
                 tos: dscp_to_tos(config.dscp.to_lowercase())
@@ -79,6 +81,7 @@ impl Collectable for TwampSenderCollector {
             .with_labels(self.get_labels())
             .with_tos(self.data.tos)
             .with_reflector_addr(self.data.server.clone())
+            .with_req_reflector_port(self.data.reflector_port)
             .with_n_packets(self.data.n_packets)
             .run()
             .await?;
@@ -94,6 +97,7 @@ struct TestSession {
     tos: u8,
     reflector_addr: String,
     reflector_port: u16,
+    req_reflector_port: u16,
     n_packets: usize,
     model: PacketModels,
     socket: Option<Arc<UdpSocket>>,
@@ -108,6 +112,7 @@ impl TestSession {
             tos: 0,
             reflector_addr: String::new(),
             reflector_port: 0,
+            req_reflector_port: 0,
             n_packets: 0,
             model,
             socket: None,
@@ -127,6 +132,10 @@ impl TestSession {
     }
     pub fn with_reflector_addr(&mut self, addr: String) -> &mut Self {
         self.reflector_addr = addr;
+        self
+    }
+    pub fn with_req_reflector_port(&mut self, port: u16) -> &mut Self {
+        self.req_reflector_port = port;
         self
     }
     pub fn with_n_packets(&mut self, n_packets: usize) -> &mut Self {
@@ -231,7 +240,7 @@ impl TestSession {
         let srq = RequestTwSession {
             ipvn: IpVn::V4,
             sender_port: local_port,
-            receiver_port: self.reflector_port,
+            receiver_port: self.req_reflector_port,
             sender_address: local_addr.ip(),
             receiver_address: remote_addr.ip(),
             padding_length,

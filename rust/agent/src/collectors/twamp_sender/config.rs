@@ -13,12 +13,18 @@ pub struct TwampSenderConfig {
     pub server: String,
     #[serde(default = "default_862")]
     pub port: u16,
+    #[serde(default = "default_0")]
+    pub reflector_port: u16,
     #[serde(default = "default_be")]
     pub dscp: String,
     pub n_packets: usize,
     // Model config
     #[serde(flatten)]
     pub model: ModelConfig,
+}
+
+fn default_0() -> u16 {
+    0
 }
 
 fn default_862() -> u16 {
