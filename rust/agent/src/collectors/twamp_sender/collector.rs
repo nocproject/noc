@@ -16,7 +16,7 @@ use crate::proto::tos::{dscp_to_tos, tos_to_dscp};
 use crate::proto::twamp::{
     AcceptSession, IpVn, RequestTwSession, ServerGreeting, ServerStart, SetupResponse, StartAck,
     StartSessions, StopSessions, TestRequest, TestResponse, UtcDateTime, ACCEPT_OK, MODE_REFUSED,
-    MODE_UNAUTHENTICATED,
+    MODE_UNAUTHENTICATED, PAD_UNAUTHENTICATED,
 };
 use crate::timing::Timing;
 use async_trait::async_trait;
@@ -222,16 +222,24 @@ impl TestSession {
         let local_addr = self.connection.local_addr()?;
         let local_port = self.socket.as_ref().unwrap().local_addr()?.port();
         let remote_addr = self.connection.peer_addr()?;
+        // Padding length must be not less than difference of sizes
+        // between Test-Response and Test-Request packets.
+        // So:
+        // * 27 for unauthenticated mode
+        // * 56 for authenticated
+        let padding_length = PAD_UNAUTHENTICATED;
         let srq = RequestTwSession {
             ipvn: IpVn::V4,
             sender_port: local_port,
             receiver_port: self.reflector_port,
             sender_address: local_addr.ip(),
             receiver_address: remote_addr.ip(),
-            padding_length: 0,
+            padding_length,
             start_time: Utc::now(),
             timeout: 255, // @todo: Make configurable
             type_p: self.tos as u32,
+            octets_reflected: 0,
+            reflect_padding: 0,
         };
         self.connection.write_frame(&srq).await?;
         Ok(())

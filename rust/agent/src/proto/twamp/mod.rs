@@ -12,6 +12,8 @@ pub const MODE_UNAUTHENTICATED: u32 = 1;
 pub const MODE_AUTHENTICATED: u32 = 2;
 pub const MODE_ENCRYPTED: u32 = 4;
 
+pub const PAD_UNAUTHENTICATED: u32 = 27;
+
 pub const DEFAULT_COUNT: u32 = 1024;
 
 pub const CMD_START_SESSIONS: u8 = 2;
