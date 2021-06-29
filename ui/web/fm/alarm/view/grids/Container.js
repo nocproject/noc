@@ -25,6 +25,7 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
     tbar: [
         {
             glyph: NOC.glyph.download,
+            text: __("Group actions"),
             tooltip: __("Group actions"),
             itemId: "alarm_action_menu",
             bind: {
@@ -38,6 +39,12 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
                         text: __("Group comment"),
                         listeners: {
                             click: "addGroupComment"
+                        }
+                    },
+                    {
+                        text: __("Escalate"),
+                        listeners: {
+                            click: "addGroupEscalate"
                         }
                     }
                 ]

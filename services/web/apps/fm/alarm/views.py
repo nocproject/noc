@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -712,14 +712,20 @@ class AlarmApplication(ExtApplication):
         r = [x for x in r if x]
         return "".join(r)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/escalate/", method=["GET"], api=True, access="escalate")
-    def api_escalation_alarm(self, request, id):
-        alarm = get_alarm(id)
-        if alarm.status == "A":
-            AlarmEscalation.watch_escalations(alarm)
-            return {"status": True}
-        else:
-            return {"status": False, "error": "The alarm is not active at the moment"}
+    @view(
+        url=r"^escalate/",
+        method=["POST"],
+        api=True,
+        access="escalate",
+        validate={"ids": StringListParameter(required=True)},
+    )
+    def api_escalation_alarm(self, request, ids):
+        alarms = list(ActiveAlarm.objects.filter(id__in=ids))
+        if not alarms:
+            return self.response_not_found()
+        for alarm in alarms:
+            AlarmEscalation.watch_escalations(alarm, force=True)
+        return {"status": True}
 
     def location(self, id):
         """

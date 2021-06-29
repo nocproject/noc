@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # AlarmEscalation model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -115,7 +115,7 @@ class AlarmEscalation(Document):
         return list(AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm_class))
 
     @classmethod
-    def watch_escalations(cls, alarm, timestamp_policy="a"):
+    def watch_escalations(cls, alarm, force=None, timestamp_policy="a"):
         now = datetime.datetime.now()
         for esc in cls.get_class_escalations(alarm.alarm_class):
             for e_item in esc.escalations:
@@ -144,7 +144,8 @@ class AlarmEscalation(Document):
                         delay,
                     )
                 elif et > now:
-                    delay = (et - now).total_seconds()
+                    # A delay is needed for the alarm tree to assemble
+                    delay = 60 if force else (et - now).total_seconds()
                 else:
                     delay = None
                 call_later(
@@ -156,6 +157,7 @@ class AlarmEscalation(Document):
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
                     escalation_delay=e_item.delay,
+                    force=force,
                     timestamp_policy=timestamp_policy,
                 )
                 if e_item.stop_processing:

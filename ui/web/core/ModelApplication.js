@@ -1724,6 +1724,7 @@ Ext.define("NOC.core.ModelApplication", {
 
         me.actionMenu = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.download,
+            text: __("Group actions"),
             tooltip: __("Group actions"),
             hasAccess: NOC.hasPermission("update"),
             itemId: "action_menu",
