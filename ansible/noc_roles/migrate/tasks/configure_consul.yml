@@ -1,6 +1,20 @@
 ---
 # have to be in migrate role because it's run once by default. and not in free strategy
 
+- name: call consul to setup worker
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/worker-{{ item }}/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='worker'].{n:pool,num:config.power} | [?n=='\"+item+\"'] | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
+  tags:
+    - worker
+
 - name: call consul to setup discovery
   run_once: "True"
   include_role:
