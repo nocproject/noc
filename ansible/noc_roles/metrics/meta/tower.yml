@@ -1,6 +1,6 @@
 ---
 forms:
-  worker:
+  metrics:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Metrics service <br/>
