@@ -7,7 +7,6 @@
     state: directory
     path: "{{ item }}"
     owner: root
-    group: wheel
     mode: 0777
   with_items:
     - "{{ mib_path }}"
