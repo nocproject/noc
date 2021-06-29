@@ -289,6 +289,7 @@ class ReportField:
     label: str
     description: Optional[str] = ""
     unit: Optional[str] = None
+    summary: Optional[bool] = False
     default: Optional[str] = None
     metric_name: Optional[str] = None  # Field name on clickhouse
     group: bool = False
@@ -352,6 +353,7 @@ class ReportDataSource(object):
     ):
         self.query_fields: List[str] = fields
         self.fields: Dict[str, ReportField] = self.get_fields(fields)  # OrderedDict
+        self.fields_summary = self.get_summary_fields(fields)
         self.objectids = objectids
         self.allobjectids: bool = allobjectids
         self.filters: List[Dict[str, str]] = filters or []
@@ -389,9 +391,22 @@ class ReportDataSource(object):
         r = {}
         for query_f in fields:
             for f in cls.FIELDS:
-                if f.name == query_f:
+                if f.name == query_f and not f.summary:
                     r[query_f] = f
         return r
+
+    @classmethod
+    def get_summary_fields(cls, fields):
+        r = {}
+        for query_f in fields:
+            for f in cls.FIELDS:
+                if f.name == query_f and f.summary:
+                    r[query_f] = f
+        return r
+
+    def get_summary_statistics(self) -> Dict[str, Any]:
+        # Return summary
+        return {}
 
     def iter_data(self):
         pass
