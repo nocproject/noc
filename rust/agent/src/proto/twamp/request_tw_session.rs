@@ -59,8 +59,9 @@ pub enum IpVn {
 /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 /// |                       Type-P Descriptor                       |
 /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-/// |                         MBZ (8 octets)                        |
-/// |                                                               |
+/// |     Octets to be reflected    |  Length of padding to reflect |
+/// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/// |                       MBZ (4 octets)                          |
 /// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 /// |                                                               |
 /// |                       HMAC (16 octets)                        |
@@ -74,8 +75,11 @@ pub enum IpVn {
 /// * Number of Schedule Slots must be set to zero
 /// * Number of packets must be set to zero
 /// * SID must be set to zeroes
+/// RFC-6038 defines additional fields:
+/// * Octets to be reflected
+/// * Length of padding to reflect
 /// NB:
-/// Test session utilizes same addresses as the control one. So following fields are ignored:
+/// Test session utilizes same addresses as the control one. So following fields are ignored, though filled:
 /// Sender port, Sender address, Receiver port, Receiver address.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequestTwSession {
@@ -90,6 +94,8 @@ pub struct RequestTwSession {
     pub start_time: UtcDateTime,
     pub timeout: u64,
     pub type_p: u32,
+    pub octets_reflected: u16,
+    pub reflect_padding: u16,
     // hmac: bytes,
 }
 
@@ -171,8 +177,12 @@ impl FrameReader for RequestTwSession {
         let timeout = s.get_u64();
         // Type-P, 4 octets
         let type_p = s.get_u32();
-        // MBZ 8 octets
-        s.advance(8);
+        // Octets reflected
+        let octets_reflected = s.get_u16();
+        // Padding to reflect
+        let reflect_padding = s.get_u16();
+        // MBZ 4 octets
+        s.advance(4);
         // HMAC 16 octets
         s.advance(16);
         Ok(RequestTwSession {
@@ -185,6 +195,8 @@ impl FrameReader for RequestTwSession {
             start_time: ts.into(),
             timeout,
             type_p,
+            octets_reflected,
+            reflect_padding,
         })
     }
 }
@@ -243,8 +255,12 @@ impl FrameWriter for RequestTwSession {
         s.put_u64(self.timeout);
         // Type-P, 4 octets
         s.put_u32(self.type_p);
-        // MBZ, 8 octets
-        s.put(&MBZ[..8]);
+        // Octets reflected
+        s.put_u16(self.octets_reflected);
+        // Reflect padding
+        s.put_u16(self.reflect_padding);
+        // MBZ, 4 octets
+        s.put(&MBZ[..4]);
         // HMAC, 16 octets
         s.put(&MBZ[..16]);
         Ok(())
@@ -278,7 +294,9 @@ mod tests {
         0xe3, 0xd0, 0xd0, 0x20, 0x00, 0x00, 0x00, 0x00, // Start Time, 8 octets
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, // Timeout, 8 octets
         0x00, 0x00, 0x00, 0x2e, // Type-P, DSCP EF (46/0x2e)
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // MBZ, 8 octets
+        0x00, 0x00, // Octets reflected
+        0x00, 0x00, // Padding to reflect
+        0x00, 0x00, 0x00, 0x00, // MBZ, 4 octets
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, // HMAC, 16 octets
     ];
@@ -294,6 +312,8 @@ mod tests {
             start_time: Utc.ymd(2021, 2, 12).and_hms(10, 0, 0),
             timeout: 255,
             type_p: 46,
+            octets_reflected: 0,
+            reflect_padding: 0,
         }
     }
 
