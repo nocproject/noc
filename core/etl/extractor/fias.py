@@ -8,6 +8,7 @@
 # python modules
 import dbf
 import csv
+import logging
 import requests
 import os
 import re
@@ -23,6 +24,8 @@ from ..models.building import Building
 from ..models.admdiv import AdmDiv
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
 
+logger = logging.getLogger(__name__)
+
 
 class FiasRemoteSystem(BaseRemoteSystem):
     """
@@ -35,6 +38,18 @@ class FiasRemoteSystem(BaseRemoteSystem):
     *OKTMO_REGION* - region code OKTMO
     *FIAS_REGION* - region code FIAS
     """
+
+    def extract(self, extractors=None):
+        extractors = extractors or []
+        for en in self.extractors_order:
+            if extractors and en not in extractors:
+                self.logger.info("Skipping extractor %s", en)
+                continue
+            if en not in self.extractors:
+                self.logger.info("Extractor %s is not implemented. Skipping", en)
+                continue
+            xc = self.extractors[en](self)
+            xc.extract()
 
 
 @FiasRemoteSystem.extractor
@@ -180,6 +195,8 @@ class StreetExtractor(BaseExtractor):
         self.dbf_file = f"ADDROB{self.region}.DBF"
         self.dbf_path = os.path.join(self.cache_path, self.dbf_file)
 
+        self.parent_admdiv_data = self.parent_admdiv_data()
+
     def check_path(self, path):
         # check exists cache_path
         dirpath = Path(path)
@@ -206,6 +223,18 @@ class StreetExtractor(BaseExtractor):
     def extract(self):
         super().extract()
         return
+
+    def parent_admdiv_data(self):
+        parent = set()
+        l_chain = self.system.get_loader_chain()
+        line = l_chain.get_loader("admdiv")
+        ls = line.get_new_state()
+        if not ls:
+            ls = line.get_current_state()
+        for o in line.iter_jsonl(ls):
+            id = getattr(o, "id")
+            parent.add(id)
+        return parent
 
     def get_tables(self):
         field_specs = (
@@ -264,7 +293,7 @@ class StreetExtractor(BaseExtractor):
         cities, streets = self.get_tables()
         for r in streets:
             parent = self.get_parent(cities, r.PARENTGUID)
-            if parent:
+            if parent and parent.OKTMO in self.parent_admdiv_data:
                 yield r.AOGUID, parent.OKTMO, r.FORMALNAME.rstrip(), r.SHORTNAME.rstrip(), r.STARTDATE, r.ENDDATE
         cities.close()
         streets.close()
@@ -289,6 +318,9 @@ class AddressExtractor(BaseExtractor):
         self.dbf_file = f"HOUSE{self.region}.DBF"
         self.dbf_path = os.path.join(self.cache_path, self.dbf_file)
         self.now = datetime.now().date()
+
+        self.street = self.street_data()
+        self.building = self.building_data()
 
     def check_path(self, path):
         # check exists cache_path
@@ -317,6 +349,30 @@ class AddressExtractor(BaseExtractor):
         super().extract()
         return
 
+    def street_data(self):
+        street = set()
+        l_chain = self.system.get_loader_chain()
+        line = l_chain.get_loader("street")
+        ls = line.get_new_state()
+        if not ls:
+            ls = line.get_current_state()
+        for o in line.iter_jsonl(ls):
+            id = getattr(o, "id")
+            street.add(id)
+        return street
+
+    def building_data(self):
+        building = set()
+        l_chain = self.system.get_loader_chain()
+        line = l_chain.get_loader("building")
+        ls = line.get_new_state()
+        if not ls:
+            ls = line.get_current_state()
+        for o in line.iter_jsonl(ls):
+            id = getattr(o, "id")
+            building.add(id)
+        return building
+
     def num_letter(self, num_letter):
         found = re.search(r"^\d+", num_letter.rstrip())
         if found:
@@ -331,7 +387,12 @@ class AddressExtractor(BaseExtractor):
         with dbf.Table(filename=self.dbf_path, codepage="cp866") as table:
             for r in table:
                 num, letter = self.num_letter(r.HOUSENUM)
-                if r.ENDDATE >= self.now and num:
+                if (
+                    r.ENDDATE >= self.now
+                    and num
+                    and r.HOUSEGUID in self.building
+                    and r.AOGUID in self.street
+                ):
                     yield r.HOUSEID, r.HOUSEGUID, r.AOGUID, num, letter
 
 
@@ -357,11 +418,25 @@ class BuildingExtractor(BaseExtractor):
         self.dbf_path_address = os.path.join(self.cache_path, self.dbf_file_address)
         self.now = datetime.now().date()
 
+        self.adm_div = self.adm_div_data()
+
     def check_path(self, path):
         # check exists cache_path
         dirpath = Path(path)
         if not dirpath.exists() or not dirpath.is_dir():
             os.makedirs(path)
+
+    def adm_div_data(self):
+        div_data = set()
+        l_chain = self.system.get_loader_chain()
+        line = l_chain.get_loader("admdiv")
+        ls = line.get_new_state()
+        if not ls:
+            ls = line.get_current_state()
+        for o in line.iter_jsonl(ls):
+            id = getattr(o, "id")
+            div_data.add(id)
+        return div_data
 
     def download(self):
         if (
@@ -401,5 +476,5 @@ class BuildingExtractor(BaseExtractor):
         with dbf.Table(filename=self.dbf_path_house, codepage="cp866") as table:
             for r in table:
                 oktmo = oktmo_data.get(r.AOGUID)
-                if r.ENDDATE >= self.now and oktmo:
+                if r.ENDDATE >= self.now and oktmo and oktmo in self.adm_div:
                     yield r.HOUSEGUID, oktmo, r.POSTALCODE, r.STARTDATE, r.ENDDATE
