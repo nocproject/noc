@@ -5,6 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+from threading import Lock
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -18,6 +22,7 @@ from mongoengine.fields import (
     LongField,
     ReferenceField,
 )
+import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -27,6 +32,8 @@ from .entrance import Entrance
 from .division import Division
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.bi.decorator import bi_sync
+
+id_lock = Lock()
 
 
 @bi_sync
@@ -80,6 +87,13 @@ class Building(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
+
+    _id_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Building.objects.filter(id=id).first()
 
     @property
     def primary_address(self):

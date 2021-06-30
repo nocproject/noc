@@ -5,6 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+from threading import Lock
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -17,6 +21,7 @@ from mongoengine.fields import (
     LongField,
     ReferenceField,
 )
+import cachetools
 
 # NOC modules
 from noc.main.models.label import Label
@@ -25,6 +30,8 @@ from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete_check
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.bi.decorator import bi_sync
+
+id_lock = Lock()
 
 
 @bi_sync
@@ -66,6 +73,13 @@ class Division(Document):
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+
+    _id_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Division.objects.filter(id=id).first()
 
     def __str__(self):
         if self.short_name:

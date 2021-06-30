@@ -5,6 +5,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+from threading import Lock
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -15,6 +19,7 @@ from mongoengine.fields import (
     ReferenceField,
     LongField,
 )
+import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -23,6 +28,8 @@ from noc.core.comp import smart_text
 from .division import Division
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.bi.decorator import bi_sync
+
+id_lock = Lock()
 
 
 @bi_sync
@@ -54,6 +61,13 @@ class Street(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
+
+    _id_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Street.objects.filter(id=id).first()
 
     def __str__(self):
         if self.short_name:
