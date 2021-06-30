@@ -45,9 +45,9 @@ def escalate(
     alarm_id,
     escalation_id,
     escalation_delay,
-    force,
     login="correlator",
     timestamp_policy="a",
+    force=None,
     *args,
     **kwargs,
 ):
