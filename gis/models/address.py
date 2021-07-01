@@ -31,7 +31,7 @@ class Address(Document):
         "collection": "noc.addresses",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["building", "street"],
+        "indexes": ["building", "street", "remote_id"],
     }
     #
     building = PlainReferenceField(Building)

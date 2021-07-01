@@ -44,7 +44,7 @@ class Building(Document):
         "collection": "noc.buildings",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["adm_division", "data", "sort_order"],
+        "indexes": ["adm_division", "data", "sort_order", "remote_id"],
     }
     # Administrative division
     adm_division = PlainReferenceField(Division)

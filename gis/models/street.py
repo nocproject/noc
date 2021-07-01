@@ -39,7 +39,7 @@ class Street(Document):
         "collection": "noc.streets",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent", "data"],
+        "indexes": ["parent", "data", "remote_id"],
     }
     #
     parent = PlainReferenceField(Division)
