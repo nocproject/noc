@@ -1,19 +1,20 @@
 //---------------------------------------------------------------------
-// NOC.core.LabelField -
+// NOC.core.label.LabelField -
 // Label Field
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.LabelField");
+console.debug("Defining NOC.core.label.LabelField");
 
-Ext.define("NOC.core.LabelField", {
+Ext.define("NOC.core.label.LabelField", {
     extend: "Ext.form.field.Tag",
     requires: [
         "Ext.selection.Model",
         "Ext.data.Store",
         "Ext.data.ChainedStore",
-        "NOC.core.LabelFieldModel"
+        "NOC.core.label.LabelFieldModel",
+        "NOC.core.label.TreePicker",
     ],
     alias: "widget.labelfield",
     displayField: "name",
@@ -24,6 +25,8 @@ Ext.define("NOC.core.LabelField", {
     filterPickList: true,
     forceSelection: true,
     createNewOnEnter: false,
+    isTree: false,
+    pickerPosition: "left", // right | left
     appClass: "main.label",
     triggers: {
         toBuffer: {
@@ -41,14 +44,17 @@ Ext.define("NOC.core.LabelField", {
         }
     },
     labelTpl: [
-        '<span style="color: {fg_color1};background-color: {bg_color1};border-radius: 5px 0 0 5px;padding: 0 3px 0 3px;">{scope}</span>',
-        '<span style="color: {fg_color2};background-color: {bg_color2};border-radius: 0 5px 5px 0;padding-right: 3px;">{value}</span>'
+        '<div data-qtip="{scope}::{value}">',
+        '<div class="noc-label-wrapper">',
+        '<span class="noc-label-field-start" style="color: {fg_color1};background-color: {bg_color1};">{scope}</span>',
+        '<span class="noc-label-field-end" style="color: {fg_color2};background-color: {bg_color2};">{value}</span>',
+        '</div>'
     ],
     listConfig: {
         itemTpl: [
             '<div data-qtip="{scope}::{value}">',
-            '<span style="color: {fg_color1};background-color: {bg_color1};border-radius: 5px 0 0 5px;padding: 0 3px 0 3px;">{scope}</span>',
-            '<span style="color: {fg_color2};background-color: {bg_color2};border-radius: 0 5px 5px 0;padding-right: 3px;">{value}</span>',
+            '<span class="noc-label-field-start" style="color: {fg_color1};background-color: {bg_color1};">{scope}</span>',
+            '<span class="noc-label-field-end" style="color: {fg_color2};background-color: {bg_color2};">{value}</span>',
             '</div>'
         ]
     },
@@ -60,7 +66,7 @@ Ext.define("NOC.core.LabelField", {
     initComponent: function() {
         var me = this,
             store = me.store || {
-                model: "NOC.core.LabelFieldModel",
+                model: "NOC.core.label.LabelFieldModel",
                 pageSize: 0,
                 proxy: {
                     type: "rest",
@@ -83,7 +89,15 @@ Ext.define("NOC.core.LabelField", {
                     me.getTrigger("create").show();
                 }
             };
-
+        me.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
+        if(me.isTree) {
+            me.treePicker = Ext.create({
+                xtype: "core.label.treepicker",
+                displayField: me.displayField,
+                query: me.query,
+                scope: me,
+            });
+        }
         Ext.apply(me, {
             store: store
         });
@@ -92,7 +106,7 @@ Ext.define("NOC.core.LabelField", {
             process(NOC.permissions$.getPermissions(me.appClass));
         } else {
             NOC.permissions$.subscribe({
-                    key: this.appClass,
+                    key: me.appClass,
                     value: function(perms) {
                         process(perms);
                     }
@@ -332,5 +346,31 @@ Ext.define("NOC.core.LabelField", {
             }
         });
         labelField.setValue(newVal);
-    }
+    },
+
+    onTriggerClick: function(el) {
+        if(!el) {
+            return;
+        }
+        if(this.isTree) {
+            var position,
+                heightAbove = this.getPosition()[1] - Ext.getBody().getScroll().top,
+                heightBelow = Ext.Element.getViewportHeight() - heightAbove - this.getHeight();
+            this.treePicker.setWidth(this.getWidth());
+            this.treePicker.height = Math.max(heightAbove, heightBelow) - 5;
+            this.setEditable(false);
+            position = this.getPosition();
+            if(this.pickerPosition === "left") {
+                position[0] = position[0] - this.getWidth();
+            } else if(this.pickerPosition === "right") {
+                position[0] = position[0] + this.getWidth();
+            }
+            if(heightAbove > heightBelow) {
+                position[1] -= this.treePicker.height + this.getHeight();
+            }
+            this.treePicker.showAt(position);
+        } else {
+            Ext.form.field.Tag.prototype.onTriggerClick.apply(this, arguments);
+        }
+    },
 });

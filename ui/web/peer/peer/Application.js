@@ -10,7 +10,7 @@ Ext.define("NOC.peer.peer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.RepoPreview",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",

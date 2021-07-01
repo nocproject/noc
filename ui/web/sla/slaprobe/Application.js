@@ -10,7 +10,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.StateField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.sla.slaprobe.Model",
         "NOC.sa.managedobject.LookupField",
         "NOC.sla.slaprofile.LookupField"

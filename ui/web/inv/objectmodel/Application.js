@@ -10,7 +10,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.JSONPreview",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",

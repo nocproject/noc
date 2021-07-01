@@ -22,7 +22,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.main.prefixtable.LookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.ip.vrf.LookupField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.fm.ttsystem.LookupField",

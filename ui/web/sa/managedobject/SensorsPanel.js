@@ -11,7 +11,7 @@ Ext.define("NOC.sa.managedobject.SensorsPanel", {
     requires: [
         "NOC.sa.managedobject.SensorsStore",
         "NOC.inv.sensorprofile.LookupField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
     ],
     app: null,
     autoScroll: true,

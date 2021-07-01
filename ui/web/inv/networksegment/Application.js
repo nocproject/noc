@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.networksegment.Application");
 Ext.define("NOC.inv.networksegment.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.inv.allocationgroup.LookupField",
         "NOC.inv.networksegment.Model",
         "NOC.inv.networksegment.TreeCombo",

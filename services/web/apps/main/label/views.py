@@ -5,6 +5,7 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
 from collections import defaultdict
 
 # NOC modules
@@ -32,6 +33,7 @@ class LabelApplication(ExtDocApplication):
         :return:
         """
         query = request.GET.get("__query")
+        allow_matched = ("allow_matched", ["true"]) in request.GET.lists()
         labels_filter = {
             str(k): True if v[0] == "true" else False
             for k, v in request.GET.lists()
@@ -54,7 +56,7 @@ class LabelApplication(ExtDocApplication):
                 "fg_color2": "#%x" % ll.fg_color2,
             }
             for ll in labels
-            if not (ll.is_wildcard or ll.is_matched)
+            if not (ll.is_wildcard or (ll.is_matched and not allow_matched))
         ]
         return {
             "data": labels,
@@ -83,15 +85,30 @@ class LabelApplication(ExtDocApplication):
 
             leafs[parent].append(
                 {
-                    "text": ll.name,
+                    "name": ll.name,
                     # "type": f.type,
                     "parent": parent,
                     "id": str(ll.name),
                     "leaf": True,
-                    "checked": False,
+                    "is_protected": False,
+                    "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
+                    "value": ll.name.split("::")[-1],
+                    "bg_color1": "#%x" % ll.bg_color1,
+                    "fg_color1": "#%x" % ll.fg_color1,
+                    "bg_color2": "#%x" % ll.bg_color2,
+                    "fg_color2": "#%x" % ll.fg_color2,
+                    # "checked": False,
                 }
             )
 
         return self.render_json(
-            {"text": "root", "children": [{"text": lf, "children": leafs[lf]} for lf in leafs]}
+            {
+                "name": "root",
+                "is_protected": False,
+                "leaf": False,
+                "children": [
+                    {"name": lf, "leaf": False, "is_protected": False, "children": leafs[lf]}
+                    for lf in leafs
+                ],
+            }
         )

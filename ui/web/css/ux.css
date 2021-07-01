@@ -99,21 +99,21 @@
  */
 .x-noc-label {
   display: inline-block;
-  font-size: 0.875rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  font-size: 11px;
+  padding: 0 7px 0px 7px;
   text-overflow: ellipsis;
   overflow: hidden;
   vertical-align: top;
   max-width: 100%;
-  border-radius: 0.75rem;
+  border-radius: 5px;
 }
 
 .x-noc-label-text {
   display: inline-block;
+  padding-bottom: 2px;
 }
 
 .x-noc-label-text-scoped {
   display: inline-block;
-  padding-left: 0.25rem;
+  padding: 0 2px 2px 0;
 }

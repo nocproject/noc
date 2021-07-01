@@ -10,7 +10,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sla.slaprofile.Model",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.main.style.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.ref.windowfunction.LookupField",

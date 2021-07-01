@@ -1,17 +1,17 @@
 //---------------------------------------------------------------------
-// fm.alarm.treepicker widget
+// core.treepicker widget
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.TreePicker");
+console.debug("Defining NOC.core.tagfield.TreePicker");
 
-Ext.define("NOC.fm.alarm.view.grids.TreePicker", {
+Ext.define("NOC.core.tagfield.TreePicker", {
     extend: "Ext.tree.Panel",
-    alias: "widget.fm.alarm.treepicker",
-    controller: "fm.alarm.treepicker",
+    alias: "widget.core.tagfield.treepicker",
+    controller: "core.tagfield.treepicker",
     requires: [
-        "NOC.fm.alarm.view.grids.TreePickerController"
+        "NOC.core.tagfield.TreePickerController"
     ],
     baseCls: Ext.baseCSSPrefix + "boundlist",
     shrinkWrap: 2,
@@ -49,6 +49,7 @@ Ext.define("NOC.fm.alarm.view.grids.TreePicker", {
                 keyup: "onChangeSearchField"
             }
         },
+        '->',
         {
             glyph: NOC.glyph.times_circle,
             tooltip: __("Close"),

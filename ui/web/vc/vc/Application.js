@@ -9,7 +9,7 @@ console.debug("Defining NOC.vc.vc.Application");
 Ext.define("NOC.vc.vc.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.vc.vc.Model",
         "NOC.vc.vc.AddFirstFreeForm",

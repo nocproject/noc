@@ -1,18 +1,18 @@
 //---------------------------------------------------------------------
-// fm.alarm.tagfield widget
+// core.tagfield widget
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.Tagfield");
+console.debug("Defining NOC.core.tagfield.Tagfield");
 
-Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
+Ext.define("NOC.core.tagfield.Tagfield", {
     extend: "Ext.form.field.Tag",
-    alias: "widget.fm.alarm.tagfield",
-    controller: "fm.alarm.tagfield",
+    alias: "widget.core.tagfield",
+    controller: "core.tagfield",
     requires: [
-        "NOC.fm.alarm.view.grids.TreePicker",
-        "NOC.fm.alarm.view.grids.TagfieldController"
+        "NOC.core.tagfield.TagfieldController",
+        "NOC.core.tagfield.TreePicker",
     ],
     displayField: "label",
     valueField: "id",
@@ -22,7 +22,7 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
     queryDelay: 200,
     minChars: 2,
     pageSize: true,
-    isTree: false,
+    lazyLoadTree: false,
     pickerPosition: "left", // right | left
     store: {
         fields: ["id", "label"],
@@ -55,11 +55,10 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
     },
     initComponent: function() {
         this.store.proxy.url = this.url;
-        if(this.isTree) {
-            // this.treePicker = this.createTreePicker();
+        if(this.lazyLoadTree) {
             this.triggers.picker.cls = "theme-classic fas fa fa-folder-open-o";
             this.treePicker = Ext.create({
-                xtype: "fm.alarm.treepicker",
+                xtype: "core.tagfield.treepicker",
                 displayField: this.displayField,
                 scope: this,
             });
@@ -81,7 +80,7 @@ Ext.define("NOC.fm.alarm.view.grids.Tagfield", {
         if(!el) {
             return;
         }
-        if(this.isTree) {
+        if(this.lazyLoadTree) {
             var position,
                 heightAbove = this.getPosition()[1] - Ext.getBody().getScroll().top,
                 heightBelow = Ext.Element.getViewportHeight() - heightAbove - this.getHeight();

@@ -12,7 +12,7 @@ Ext.define("NOC.vc.vlan.Application", {
         "NOC.vc.vlan.Model",
         "NOC.vc.vlanprofile.LookupField",
         "NOC.core.combotree.ComboTree",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.TemplatePreview",
         "NOC.core.StateField",
         "NOC.project.project.LookupField",
