@@ -10,7 +10,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
     extend: "NOC.core.FormPanel",
     alias: "widget.ip.ipam.address.form",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.StateField",
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",

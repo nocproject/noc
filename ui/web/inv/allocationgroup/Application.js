@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.allocationgroup.Application");
 Ext.define("NOC.inv.allocationgroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.inv.allocationgroup.Model",
         "NOC.main.remotesystem.LookupField"
     ],

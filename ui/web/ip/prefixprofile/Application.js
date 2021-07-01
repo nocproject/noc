@@ -9,7 +9,7 @@ console.debug("Defining NOC.ip.prefixprofile.Application");
 Ext.define("NOC.ip.prefixprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.ip.prefixprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",

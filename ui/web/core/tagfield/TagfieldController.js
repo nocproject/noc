@@ -4,10 +4,10 @@
 // Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.TagfieldController");
-Ext.define("NOC.fm.alarm.view.grids.TagfieldController", {
+console.debug("Defining NOC.core.tagfield.TagfieldController");
+Ext.define("NOC.core.tagfield.TagfieldController", {
     extend: "Ext.app.ViewController",
-    alias: "controller.fm.alarm.tagfield",
+    alias: "controller.core.tagfield",
 
     onChangeTagValue: function(self) {
         var view = this.getView(),

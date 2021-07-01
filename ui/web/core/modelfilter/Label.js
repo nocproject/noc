@@ -10,7 +10,7 @@ console.debug("Defining NOC.core.modelfilter.Label");
 Ext.define("NOC.core.modelfilter.Label", {
     extend: "NOC.core.modelfilter.Base",
     require: [
-        "NOC.core.LabelField"
+        "NOC.core.label.LabelField"
     ],
 
     initComponent: function() {

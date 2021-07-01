@@ -19,7 +19,7 @@ Ext.define("NOC.sa.service.Application", {
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.capability.LookupField",
         "NOC.inv.resourcegroup.LookupField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.service.Model",

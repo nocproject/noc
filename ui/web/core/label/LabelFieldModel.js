@@ -1,11 +1,11 @@
 //---------------------------------------------------------------------
-// NOC.core.LabelField model
+// NOC.core.label.LabelField model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.LabelFieldModel");
-Ext.define("NOC.core.LabelFieldModel", {
+console.debug("Defining NOC.core.label.LabelFieldModel");
+Ext.define("NOC.core.label.LabelFieldModel", {
     extend: "Ext.data.Model",
     fields: [
         {name: "id", type: "string"},

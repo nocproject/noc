@@ -9,7 +9,7 @@ console.debug("Defining NOC.crm.supplierprofile.Application");
 Ext.define("NOC.crm.supplierprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.crm.supplierprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.wf.workflow.LookupField",

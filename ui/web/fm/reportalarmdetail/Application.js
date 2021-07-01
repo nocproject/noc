@@ -141,7 +141,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             },
             {
                 name: "subscribers",
-                xtype: "fm.alarm.tagfield",
+                xtype: "core.tagfield",
                 url: "/crm/subscriberprofile/lookup/",
                 fieldLabel: __("Subscribers that Sum"),
                 allowBlank: true,

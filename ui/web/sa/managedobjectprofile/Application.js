@@ -30,7 +30,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.glyph.LookupField",
         "NOC.main.ref.soposition.LookupField",
         "NOC.main.ref.soform.LookupField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
         "Ext.ux.form.MultiIntervalField",
         "Ext.ux.form.GridField"
@@ -361,7 +361,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "labelfield",
                                             fieldLabel: __("Match Labels"),
                                             allowBlank: false,
-                                            uiStyle: "extra"
+                                            isTree: true,
+                                            pickerPosition: "down",
+                                            uiStyle: "extra",
+                                            query: {
+                                                "allow_matched": true
+                                            }
                                         },
                                         {
                                             name: "handler",

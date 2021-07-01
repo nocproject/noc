@@ -10,7 +10,7 @@ Ext.define("NOC.peer.asset.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.RepoPreview",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.peer.asset.Model",
         "Ext.ux.form.UCField"
     ],

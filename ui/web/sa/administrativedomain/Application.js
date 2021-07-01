@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.administrativedomain.Application");
 Ext.define("NOC.sa.administrativedomain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.combotree.ComboTree",
         "NOC.sa.administrativedomain.Model",
         "NOC.main.pool.LookupField",

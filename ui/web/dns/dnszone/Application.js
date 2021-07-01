@@ -9,7 +9,7 @@ console.debug("Defining NOC.dns.dnszone.Application");
 Ext.define("NOC.dns.dnszone.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.dns.dnszone.Model",
         "NOC.dns.dnszone.RecordsModel",
         "NOC.dns.dnszone.RRTypeField",

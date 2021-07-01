@@ -10,7 +10,7 @@ Ext.define("NOC.sa.authprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.PasswordField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.sa.authprofile.Model",
         "NOC.main.remotesystem.LookupField"
     ],

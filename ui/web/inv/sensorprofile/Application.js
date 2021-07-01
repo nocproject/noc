@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.sensorprofile.Application");
 Ext.define("NOC.inv.sensorprofile.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.LabelField",
+    "NOC.core.label.LabelField",
     "NOC.core.ListFormField",
     "NOC.main.handler.LookupField",
     "NOC.inv.sensorprofile.Model",
@@ -111,7 +111,12 @@ Ext.define("NOC.inv.sensorprofile.Application", {
                   xtype: "labelfield",
                   fieldLabel: __("Match Labels"),
                   allowBlank: false,
-                  uiStyle: "extra"
+                  isTree: true,
+                  pickerPosition: "down",
+                  uiStyle: "extra",
+                  query: {
+                    "allow_matched": true
+                  }
                 },
                 {
                   name: "handler",

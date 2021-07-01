@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// fm.alarm.treepicker controller
+// core.tagfield.treepicker controller
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2020 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarm.view.grids.TreePickerController");
+console.debug("Defining NOC.core.tagfield.TreePickerController");
 
-Ext.define("NOC.fm.alarm.view.grids.TreePickerController", {
+Ext.define("NOC.core.tagfield.TreePickerController", {
     extend: "Ext.app.ViewController",
-    alias: "controller.fm.alarm.treepicker",
+    alias: "controller.core.tagfield.treepicker",
     requires: [],
     // store events
     onLoadTree: function(store, records, success) {
@@ -150,5 +150,4 @@ Ext.define("NOC.fm.alarm.view.grids.TreePickerController", {
             this.selectNode();
         }
     },
-
 });

@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.regexplabel.Application");
 Ext.define("NOC.main.regexplabel.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.main.regexplabel.Model"
     ],
     model: "NOC.main.regexplabel.Model",

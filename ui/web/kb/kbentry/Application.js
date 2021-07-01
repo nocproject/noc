@@ -11,7 +11,7 @@ Ext.define("NOC.kb.kbentry.Application", {
     layout: "card",
     requires: [
         "NOC.core.ListFormField",
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.kb.kbentry.Model",
         "NOC.kb.kbentry.HistoryPanel",
         "NOC.main.language.LookupField",

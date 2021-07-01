@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.commandsnippet.Application");
 Ext.define("NOC.sa.commandsnippet.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.sa.commandsnippet.Model",
         "NOC.sa.managedobjectselector.LookupField"
     ],

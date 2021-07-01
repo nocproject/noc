@@ -16,7 +16,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     requires: [
         "NOC.core.combotree.ComboTree",
         "NOC.core.ComboBox",
-        "NOC.fm.alarm.view.grids.Tagfield",
+        "NOC.core.tagfield.Tagfield",
         "NOC.fm.alarm.view.grids.SidebarModel",
         "NOC.fm.alarm.view.grids.SidebarController",
         "NOC.fm.alarm.view.grids.ProfileFilter",
@@ -216,9 +216,9 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    xtype: "fm.alarm.tagfield",
+                    xtype: "core.tagfield",
                     url: "/sa/administrativedomain/lookup/",
-                    isTree: true,
+                    lazyLoadTree: true,
                     fieldLabel: __("Adm. Domain"),
                     name: "administrative_domain",
                     bind: {
@@ -235,7 +235,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    xtype: "fm.alarm.tagfield",
+                    xtype: "core.tagfield",
                     url: "/fm/alarmclass/lookup/",
                     fieldLabel: __("Class"),
                     name: "alarm_class",
