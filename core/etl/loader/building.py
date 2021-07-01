@@ -35,6 +35,7 @@ class BuildingLoader(BaseLoader):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.clean_map["adm_division"] = lambda x: [
-            x.parent for x in Division.objects.get_by_id(id=x)
-        ]
+        division_dict = {}
+        for r in Division.objects.all():
+            division_dict[r.id] = r
+        self.clean_map["adm_division"] = lambda x: [x.parent for x in division_dict[x]]

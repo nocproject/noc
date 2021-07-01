@@ -37,7 +37,11 @@ class AddressLoader(BaseLoader):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.clean_map["building"] = lambda x: [
-            x.building for x in Building.objects.get(remote_id=x)
-        ]
-        self.clean_map["street"] = lambda x: [x.street for x in Street.objects.get_by_id(id=x)]
+        building_dict = {}
+        street_dict = {}
+        for r in Building.objects.all():
+            building_dict[r.id] = r
+        for rec in Street.objects.all():
+            street_dict[rec.id] = rec
+        self.clean_map["building"] = lambda x: [x.building for x in building_dict[x]]
+        self.clean_map["street"] = lambda x: [x.street for x in street_dict[x]]
