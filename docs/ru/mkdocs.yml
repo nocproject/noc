@@ -1499,7 +1499,6 @@ nav:
               - test: admin/reference/man/test.md
               - todos: admin/reference/man/todos.md
               - translation: admin/reference/man/translation.md
-              - update-addr: admin/reference/man/update-addr.md
               - user: admin/reference/man/user.md
               - verify-model: admin/reference/man/verify-model.md
               - whois: admin/reference/man/whois.md
