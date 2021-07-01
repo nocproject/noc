@@ -18,7 +18,6 @@ from mongoengine.fields import (
     DateTimeField,
     IntField,
     ListField,
-    LongField,
     ReferenceField,
 )
 import cachetools
@@ -29,12 +28,10 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete_check
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
-@bi_sync
 @Label.model
 @on_delete_check(
     check=[("gis.Street", "parent"), ("gis.Division", "parent"), ("gis.Building", "adm_division")]
@@ -68,8 +65,6 @@ class Division(Document):
     remote_system = ReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
-    # Object id in BI
-    bi_id = LongField(unique=True)
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
