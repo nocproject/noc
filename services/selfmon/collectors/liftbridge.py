@@ -23,6 +23,7 @@ class LiftbridgeStreamCollector(BaseCollector):
         "dispose": "correlator",
         "mx": "mx",
         "kafkasender": "kafkasender",
+        "jobs": "worker",
     }
 
     async def get_meta(self) -> Metadata:
