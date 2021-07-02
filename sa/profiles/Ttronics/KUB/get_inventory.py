@@ -18,8 +18,8 @@ class Script(BaseScript):
         0: {"type": "volt", "units": "Volt AC"},
         1: {"type": "in", "units": "StatusEnum"},
         2: {"type": "relay", "units": "StatusEnum"},
-        3: {"type": "counter", "units": "Unknown"},
-        4: {"type": "vibration", "units": "Unknown"},
+        3: {"type": "counter", "units": "Scalar"},
+        4: {"type": "vibration", "units": "Scalar"},
     }
 
     def get_oid(self, p_type, num):
@@ -227,10 +227,10 @@ class Script(BaseScript):
     femto_input_config_map = {
         0: {"type": "in", "units": "StatusEnum"},
         1: {"type": "volt", "units": "Volt AC"},
-        2: {"type": "counter", "units": "Unknown"},
-        3: {"type": "vibration", "units": "Unknown"},
-        4: {"type": "impedance", "units": "Unknown"},
-        9: {"type": "ups", "units": "Unknown"},
+        2: {"type": "counter", "units": "Scalar"},
+        3: {"type": "vibration", "units": "Scalar"},
+        4: {"type": "impedance", "units": "Scalar"},
+        9: {"type": "ups", "units": "Scalar"},
     }
 
     def get_femto_sensors(self):
@@ -246,7 +246,7 @@ class Script(BaseScript):
         r = [
             # temp
             {
-                "name": "temp",
+                "name": "temp_out",
                 "status": 1,
                 "description": "Значение температуры с выносного датчика",
                 "measurement": "Celsius",
@@ -259,7 +259,7 @@ class Script(BaseScript):
             if in_config not in self.femto_input_config_map:
                 self.logger.warning("Unknown type of port")
                 continue
-            oid = self.get_oid(self.femto_input_config_map[in_config]["type"], num)
+            oid = f"1.3.6.1.3.55.1.3.1.4.{num - 1}"
             r += [
                 {
                     "name": f'{self.femto_input_config_map[in_config]["type"]}{num}',
