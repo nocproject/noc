@@ -43,8 +43,9 @@ class Command(BaseCommand):
     CURSOR_STREAM = {
         "events": "classifier",
         "dispose": "correlator",
-        "mx": "mx",
+        "message": "mx",
         "kafkasender": "kafkasender",
+        "jobs": "worker",
     }
 
     def handle(self, *args, **options):

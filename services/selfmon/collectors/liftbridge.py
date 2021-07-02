@@ -21,7 +21,7 @@ class LiftbridgeStreamCollector(BaseCollector):
     CURSOR_STREAM = {
         "events": "classifier",
         "dispose": "correlator",
-        "mx": "mx",
+        "message": "mx",
         "kafkasender": "kafkasender",
         "jobs": "worker",
     }
