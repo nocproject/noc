@@ -12,7 +12,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.administrativedomain.TreeCombo",
         "NOC.sa.managedobjectselector.LookupField",
-        "NOC.fm.alarm.view.grids.Tagfield"
+        "NOC.core.tagfield.Tagfield"
     ],
 
     items: {
