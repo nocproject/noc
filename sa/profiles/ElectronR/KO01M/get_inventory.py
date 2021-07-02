@@ -28,7 +28,7 @@ class Script(BaseScript):
                 "name": "pulse",
                 "status": True,
                 "description": "Датчик числа импульсов",
-                "measurement": "Unknown",
+                "measurement": "Scalar",
                 "snmp_oid": "1.3.6.1.4.1.35419.20.1.160.0",
             },
         ]
@@ -40,7 +40,7 @@ class Script(BaseScript):
                     "name": f"in{i}",
                     "status": bool(mode),
                     "description": f"Цифровой вход номер {i}",
-                    "measurement": "Unknown",
+                    "measurement": "Scalar",
                     "snmp_oid": f"1.3.6.1.4.1.35419.20.1.{100 + i}.0",
                 }
             ]
