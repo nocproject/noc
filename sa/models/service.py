@@ -39,6 +39,7 @@ from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
 from noc.inv.models.capsitem import CapsItem
 from noc.main.models.label import Label
+from noc.pm.models.agent import Agent
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ class Service(Document):
             "managed_object",
             "parent",
             "order_id",
+            "agent",
             "static_service_groups",
             "effective_service_groups",
             "static_client_groups",
@@ -113,6 +115,8 @@ class Service(Document):
     cpe_group = StringField()
     # Capabilities
     caps = ListField(EmbeddedDocumentField(CapsItem))
+    # Link to agent
+    agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -176,3 +180,15 @@ class Service(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_service")
+
+    def get_effective_agent(self) -> Optional[Agent]:
+        """
+        Find effective agent for service
+        :return:
+        """
+        svc = self
+        while svc:
+            if svc.agent:
+                return svc.agent
+            svc = svc.parent
+        return None

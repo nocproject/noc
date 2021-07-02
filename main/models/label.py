@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from typing import Optional, List, Set, Iterable, Dict, Any
+from typing import Optional, List, Set, Iterable, Dict, Any, Callable
 from threading import Lock
 from itertools import accumulate
 
@@ -604,3 +604,15 @@ class Label(Document):
             return m_cls
 
         return inner
+
+    @classmethod
+    def filter_labels(cls, labels: List[str], pred: Callable) -> List[str]:
+        """
+        Filter labels satisfying predicate
+        :param labels:
+        :param pred:
+        :return:
+        """
+        if not labels:
+            return []
+        return [label.name for label in Label.objects.filter(name__in=labels) if pred(label)]

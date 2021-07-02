@@ -40,6 +40,15 @@ Ext.define("NOC.inv.capability.Model", {
         {
             name: "card_template",
             type: "string"
+        },
+        {
+            name: "agent_collector",
+            type: "string"
+        },
+        {
+            name: "agent_param",
+            type: "string"
         }
+
     ]
 });

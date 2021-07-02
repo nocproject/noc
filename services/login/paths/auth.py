@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # /api/auth/auth/ handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,7 +26,12 @@ from noc.services.login.service import LoginService
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-PINHOLE_PATHS = {"/api/login/login", "/api/login/is_logged", "/api/login/token"}
+PINHOLE_PATHS = {
+    "/api/login/login",
+    "/api/login/is_logged",
+    "/api/login/token",
+    "/api/zeroconf/config",
+}
 
 
 @router.get("/api/auth/auth/", tags=["login"])
