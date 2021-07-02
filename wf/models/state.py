@@ -52,6 +52,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
         ("ip.VRF", "state"),
         ("phone.PhoneNumber", "state"),
         ("phone.PhoneRange", "state"),
+        ("pm.Agent", "state"),
         ("sa.Service", "state"),
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),

@@ -59,6 +59,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_agent",
+            type: "boolean"
+        },
+        {
             name: "enable_service",
             type: "boolean"
         },

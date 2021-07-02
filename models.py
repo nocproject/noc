@@ -244,6 +244,8 @@ _MODELS = {
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     "fm.Uptime": "noc.fm.models.uptime.Uptime",
     # pm models
+    "pm.Agent": "noc.pm.models.agent.Agent",
+    "pm.AgentProfile": "noc.pm.models.agent.AgentProfile",
     "pm.Scale": "noc.pm.models.scale.Scale",
     "pm.MeasurementUnits": "noc.pm.models.measurementunits.MeasurementUnits",
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
