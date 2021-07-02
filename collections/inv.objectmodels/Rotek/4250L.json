@@ -104,7 +104,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["4250L", "RT-PWR-220-U"]
+            "part_no": ["4250L", "RT-PWR-220-U", "RT-Pwr-220-U"]
         },
         "management": {
             "is_managed": "true"

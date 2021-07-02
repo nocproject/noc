@@ -1,9 +1,9 @@
 {
-    "name": "Ttronics | КУБ-Фемто",
+    "name": "Булат | BFC-PBIC-S",
     "$collection": "inv.objectmodels",
-    "uuid": "8454fa9e-0888-4c9e-9e0c-2b578ef6880e",
-    "vendor__code": "TTRONICS",
-    "description": "Прибор «КУБ-Фемто» (далее – прибор) предназначен для контроля и мониторинга различных объектов через  сеть  Ethernet.  Прибор  оснащен  входом  для  датчика  температуры  и  6  многофункциональными портами, к которым могут быть подключены различные типы датчиков: открытия двери, затопления, задымления, влажности, вибрации/удара, снятия показания с импульсного выхода счетчика ресурсов и  т.п. ",
+    "uuid": "44d08eb1-d006-41c3-999a-79f46f4354f6",
+    "vendor__code": "QTECH",
+    "description": "Контроллер Булат, реплика «КУБ-Нано  48»  (далее  –  прибор)  предназначен  для  контроля  и  мониторинга  различных  объектов  через  сеть  передачи  данных  Ethernet  10  Mbps.  Прибор  оснащен  специальным  входом  для  датчика температуры  и  4-мя  универсальными  портами,  к  которым  могут  быть  подключены  различные  типы совместимых  датчиков.",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -36,10 +36,10 @@
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "Универсальные порт 1",
+            "description": "DI (+5V)",
             "direction": "s",
             "gender": "f",
-            "name": "4",
+            "name": "4(DI (+5V))",
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
@@ -50,7 +50,7 @@
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "Универсальные порт 2",
+            "description": "Универсальные порт 1",
             "direction": "s",
             "gender": "f",
             "name": "6",
@@ -64,7 +64,7 @@
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "Универсальные порт 3",
+            "description": "Универсальные порт 2",
             "direction": "s",
             "gender": "f",
             "name": "8",
@@ -78,7 +78,7 @@
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "Универсальные порт 4",
+            "description": "Универсальные порт 3",
             "direction": "s",
             "gender": "f",
             "name": "10",
@@ -92,7 +92,7 @@
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "Универсальные порт 5",
+            "description": "Универсальные порт 4",
             "direction": "s",
             "gender": "f",
             "name": "12",
@@ -106,17 +106,19 @@
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "Универсальные порт 6",
+            "description": "B(RS485)",
             "direction": "s",
             "gender": "f",
             "name": "14",
+            "protocols": ["<RS-485-B"],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
-            "description": "GND",
+            "description": "B(RS485)",
             "direction": "s",
             "gender": "f",
             "name": "15",
+            "protocols": ["<RS-485-A"],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
@@ -124,6 +126,7 @@
             "direction": "s",
             "gender": "f",
             "name": "16",
+            "protocols": ["RS"],
             "type__name": "Power | MSTB 2.5/16-ST-5.08"
         },
         {
@@ -139,14 +142,22 @@
             "gender": "f",
             "name": "GND",
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "rs232",
+            "protocols": ["<RS-232"],
+            "type__name": "Electrical | RJ11"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["KUB-FEMTO", "KUB-Femto", "КУБ-Фемто"]
+            "part_no": ["BFC-PBIC-S"]
         },
         "dimensions": {
-            "depth": 35,
+            "depth": 26,
             "height": 80,
             "width": 80
         },
@@ -156,10 +167,16 @@
     },
     "sensors": [
         {
-            "description": "Значение температуры с выносного датчика",
+            "description": "Значение температуры с внутреннего датчика",
             "name": "temp_out",
-            "snmp_oid": "1.3.6.1.3.55.1.2.1.0",
+            "snmp_oid": "1.3.6.1.4.1.51315.1.1.0",
             "units__code": "C"
+        },
+        {
+            "description": "Напряжение питания устройства",
+            "name": "supply",
+            "snmp_oid": "1.3.6.1.4.1.51315.1.14.0",
+            "units__code": "VAC"
         }
     ]
 }
