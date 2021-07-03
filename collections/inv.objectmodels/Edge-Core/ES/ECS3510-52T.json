@@ -1,0 +1,542 @@
+{
+    "name": "Edge-Core | ES | ECS3510-52T",
+    "$collection": "inv.objectmodels",
+    "uuid": "12cebb15-1c7a-4fdb-8ea2-e3acc613156b",
+    "vendor__code": "EDGECORE",
+    "description": "ECS3510-52T это 100-мегабитный L2 коммутатор; 48 портов 10/100BASE-TX и 4 комбо гигабитных портов",
+    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
+    "connections": [
+        {
+            "description": "Eth 1/1",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/3",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/4",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/5",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/6",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/7",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/8",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/9",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/10",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/11",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/12",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/13",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/14",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/15",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/16",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/17",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/18",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/19",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/20",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/21",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/22",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/23",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/24",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/25",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/25",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/26",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/26",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/27",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/27",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/28",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/28",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/29",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/29",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/30",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/30",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/31",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/31",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/32",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/32",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/33",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/33",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/34",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/34",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/35",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/35",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/36",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/36",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/37",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/37",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/38",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/38",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/39",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/39",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/40",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/40",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/41",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/41",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/42",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/42",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/43",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/43",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/44",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/44",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/45",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/45",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/46",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/46",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/47",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/47",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/48",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/48",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/49",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/49_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/49 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Eth49_sfp",
+            "name": "Eth 1/49_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Eth 1/49",
+            "direction": "s",
+            "gender": "s",
+            "name": "Eth 1/49",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Eth 1/50",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/50_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/50 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Eth50_sfp",
+            "name": "Eth 1/50_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Eth 1/50",
+            "direction": "s",
+            "gender": "s",
+            "name": "Eth 1/50",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Eth 1/51",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/51_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/51 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Eth51_sfp",
+            "name": "Eth 1/51_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Eth 1/51",
+            "direction": "s",
+            "gender": "s",
+            "name": "Eth 1/51",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Eth 1/52",
+            "direction": "s",
+            "gender": "f",
+            "name": "Eth 1/52_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Eth 1/52 Fiber",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "Eth52_sfp",
+            "name": "Eth 1/52_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Eth 1/52",
+            "direction": "s",
+            "gender": "s",
+            "name": "Eth 1/52",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | DB9"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ECS3510-52T"]
+        },
+        "dimensions": {
+            "depth": 230,
+            "height": 44,
+            "width": 440
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 40.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3
+        }
+    }
+}
