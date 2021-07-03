@@ -2,9 +2,12 @@
 # ----------------------------------------------------------------------
 # mx service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from typing import Dict
 
 # Third-party modules
 import orjson
@@ -33,6 +36,7 @@ class MXService(FastAPIService):
         self.slot_number = 0
         self.total_slots = 0
         self.router = Router()
+        self.stream_partitions: Dict[str, int] = {}
 
     async def on_activate(self):
         self.router.load()
@@ -62,7 +66,11 @@ class MXService(FastAPIService):
                     headers.update(action_headers)
                 # Determine sharding channel
                 sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
-                partitions = await self.get_stream_partitions(stream)
+                partitions = self.stream_partitions.get(stream)
+                if not partitions:
+                    # Request amount of partitions
+                    partitions = await self.get_stream_partitions(stream)
+                    self.stream_partitions[stream] = partitions
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
                 for body in route.iter_transmute(headers, msg.value):
