@@ -43,9 +43,6 @@ from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
-from noc.core.nsq.topic import TopicQueue
-from noc.core.nsq.pub import mpub
-from noc.core.nsq.error import NSQPubError
 from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
 from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
@@ -134,10 +131,6 @@ class BaseService(object):
         self.is_active = False
         # Can be initialized in subclasses
         self.scheduler = None
-        # NSQ Topics
-        # name -> TopicQueue()
-        self.topic_queues: Dict[str, TopicQueue] = {}
-        self.topic_queue_lock = threading.Lock()
         # Liftbridge publisher
         self.publish_queue: Optional[LiftBridgeQueue] = None
         self.publisher_start_lock = threading.Lock()
@@ -427,8 +420,6 @@ class BaseService(object):
         await self.shutdown_executors()
         # Custom deactivation
         await self.on_deactivate()
-        # Shutdown NSQ topics
-        await self.shutdown_topic_queues()
         # Shutdown Liftbridge publisher
         await self.shutdown_publisher()
         # Continue deactivation
@@ -532,8 +523,6 @@ class BaseService(object):
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
-        for topic in self.topic_queues:
-            self.topic_queues[topic].apply_metrics(r)
         if self.publish_queue:
             self.publish_queue.apply_metrics(r)
         apply_hists(r)
@@ -737,70 +726,6 @@ class BaseService(object):
                     await asyncio.sleep(1)
                     self.publish_queue.put(req, fifo=False)
 
-    def get_topic_queue(self, topic: str) -> TopicQueue:
-        q = self.topic_queues.get(topic)
-        if q:
-            return q
-        # Create when necessary
-        with self.topic_queue_lock:
-            q = self.topic_queues.get(topic)
-            if q:
-                return q  # Created in concurrent task
-            q = TopicQueue(topic)
-            self.topic_queues[topic] = q
-            self.loop.create_task(self.nsq_publisher_guard(q))
-            return q
-
-    async def nsq_publisher_guard(self, queue: TopicQueue):
-        while not queue.to_shutdown:
-            try:
-                await self.nsq_publisher(queue)
-            except Exception as e:
-                self.logger.error("Unhandled exception in NSQ publisher, restarting: %s", e)
-
-    async def nsq_publisher(self, queue: TopicQueue):
-        """
-        Publisher for NSQ topic
-
-        :return:
-        """
-        topic = queue.topic
-        self.logger.info("[nsq|%s] Starting NSQ publisher", topic)
-        while not queue.to_shutdown or not queue.is_empty():
-            # Message throttling. Wait and allow to collect more messages
-            await queue.wait(timeout=10, rate=config.nsqd.topic_mpub_rate)
-            # Get next batch up to `mpub_messages` messages or up to `mpub_size` size
-            messages = list(
-                queue.iter_get(
-                    n=config.nsqd.mpub_messages,
-                    size=config.nsqd.mpub_size,
-                    total_overhead=4,
-                    message_overhead=4,
-                )
-            )
-            if not messages:
-                continue
-            try:
-                self.logger.debug("[nsq|%s] Publishing %d messages", topic, len(messages))
-                await mpub(topic, messages, dcs=self.dcs)
-            except NSQPubError:
-                if queue.to_shutdown:
-                    self.logger.debug(
-                        "[nsq|%s] Failed to publish during shutdown. Dropping messages", topic
-                    )
-                else:
-                    # Return to queue
-                    self.logger.info(
-                        "[nsq|%s] Failed to publish. %d messages returned to queue",
-                        topic,
-                        len(messages),
-                    )
-                    queue.return_messages(messages)
-            del messages  # Release memory
-        self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
-        # Queue is shut down and empty, notify
-        queue.notify_shutdown()
-
     async def shutdown_executors(self):
         if self.executors:
             self.logger.info("Shutting down executors")
@@ -830,52 +755,6 @@ class BaseService(object):
                     self.publish_queue.qsize(),
                 )
             self.publish_queue.shutdown()
-
-    async def shutdown_topic_queues(self):
-        # Issue shutdown
-        with self.topic_queue_lock:
-            has_topics = bool(self.topic_queues)
-            if has_topics:
-                self.logger.info("Shutting down topic queues")
-            for topic in self.topic_queues:
-                self.topic_queues[topic].shutdown()
-        # Wait for shutdown
-        while has_topics:
-            with self.topic_queue_lock:
-                topic = next(iter(self.topic_queues.keys()))
-                queue = self.topic_queues[topic]
-                del self.topic_queues[topic]
-                has_topics = bool(self.topic_queues)
-            try:
-                self.logger.info("Waiting shutdown of topic queue %s", topic)
-                await queue.wait_for_shutdown(5.0)
-            except asyncio.TimeoutError:
-                self.logger.info("Failed to shutdown topic queue %s: Timed out", topic)
-
-    def pub(self, topic, data, raw=False):
-        """
-        Publish message to topic
-        :param topic: Topic name
-        :param data: Message to send. Message will be automatically
-          converted to JSON if *raw* is False, or passed as-is
-          otherwise
-        :param raw: True - pass message as-is, False - convert to JSON
-        """
-        q = self.get_topic_queue(topic)
-        if raw:
-            q.put(data)
-        else:
-            for chunk in q.iter_encode_chunks(data):
-                q.put(chunk)
-
-    def mpub(self, topic, messages):
-        """
-        Publish multiple messages to topic
-        """
-        q = self.get_topic_queue(topic)
-        for m in messages:
-            for chunk in q.iter_encode_chunks(m):
-                q.put(chunk)
 
     def get_executor(self, name: str) -> ThreadPoolExecutor:
         """
