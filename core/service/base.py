@@ -548,10 +548,64 @@ class BaseService(object):
         start_position: StartPosition = StartPosition.RESUME,
         cursor_id: Optional[str] = None,
         auto_set_cursor: bool = True,
+        async_cursor: bool = False,
     ) -> None:
         # @todo: Restart on failure
+        async def set_cursor_sync(offset: int) -> None:
+            """
+            Synchronous version of cursor setter.
+            Blocks until the cursor is really set.
+            :param offset:
+            :return:
+            """
+            await client.set_cursor(
+                stream=stream,
+                partition=partition,
+                cursor_id=cursor_id,
+                offset=offset,
+            )
+
+        async def set_cursor_async(offset: int) -> None:
+            """
+            Asynchronous version of cursor setter. Doesn't block subscriber loop,
+            though committed cursor position may lag behind the really processed one.
+            :param offset:
+            :return:
+            """
+            nonlocal cursor_cond, cursor_offset
+            async with cursor_cond:
+                cursor_offset = offset
+                cursor_cond.notify_all()
+
+        async def cursor_setter() -> None:
+            nonlocal cursor_cond, cursor_offset
+            offset: int = -1
+            while True:
+                # Wait for change
+                async with cursor_cond:
+                    await cursor_cond.wait()
+                    changed = cursor_offset > offset
+                    offset = cursor_offset
+                # Set cursor
+                if changed:
+                    await set_cursor_sync(offset)
+                if self.subscriber_shutdown_waiter:
+                    break
+
         self.logger.info("Subscribing %s:%s", stream, partition)
         cursor_id = cursor_id or self.name
+        # Setup cursor setter
+        if auto_set_cursor and cursor_id:
+            if async_cursor:
+                set_cursor = set_cursor_async
+                cursor_cond = asyncio.Condition()
+                cursor_offset: int = -1
+                asyncio.get_running_loop().create_task(cursor_setter())
+            else:
+                set_cursor = set_cursor_sync
+        else:
+            set_cursor = None
+        # Main subscriber loop
         try:
             async with LiftBridgeClient() as client:
                 self.active_subscribers += 1
@@ -566,13 +620,8 @@ class BaseService(object):
                         await handler(msg)
                     except Exception as e:
                         self.logger.error("Failed to process message: %s", e)
-                    if auto_set_cursor and cursor_id:
-                        await client.set_cursor(
-                            stream=stream,
-                            partition=partition,
-                            cursor_id=cursor_id,
-                            offset=msg.offset,
-                        )
+                    if set_cursor:
+                        await set_cursor(msg.offset)
                     if self.subscriber_shutdown_waiter:
                         break
         finally:
