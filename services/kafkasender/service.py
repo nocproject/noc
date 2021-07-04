@@ -34,7 +34,9 @@ class KafkaSenderService(FastAPIService):
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
-        await self.subscribe_stream(KAFKASENDER_STREAM, self.slot_number, self.on_message)
+        await self.subscribe_stream(
+            KAFKASENDER_STREAM, self.slot_number, self.on_message, async_cursor=True
+        )
 
     async def on_message(self, msg: Message) -> None:
         """

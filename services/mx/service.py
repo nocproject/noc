@@ -41,7 +41,7 @@ class MXService(FastAPIService):
     async def on_activate(self):
         self.router.load()
         self.slot_number, self.total_slots = await self.acquire_slot()
-        await self.subscribe_stream(MX_STREAM, self.slot_number, self.on_message)
+        await self.subscribe_stream(MX_STREAM, self.slot_number, self.on_message, async_cursor=True)
 
     async def on_message(self, msg: Message) -> None:
         metrics["messages"] += 1
