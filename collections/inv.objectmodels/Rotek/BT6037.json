@@ -107,7 +107,7 @@
             "part_no": ["BT-6037v1rev3", "BT6037", "BT6037(V1.REV2)"]
         },
         "management": {
-            "is_managed": "true"
+            "managed": "true"
         }
     },
     "sensors": [
