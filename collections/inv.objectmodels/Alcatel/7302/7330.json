@@ -2,7 +2,7 @@
     "name": "Alcatel | 7302 | 7330",
     "$collection": "inv.objectmodels",
     "uuid": "58b4b22e-e182-479f-a2d2-09a63df6f65f",
-    "vendor__code": "CISCO",
+    "vendor__code": "ALU",
     "description": "supporting 14 slots for DSL, P2P fiber, splitters, and voice line cards",
     "connection_rule__name": "Alcatel | 7302",
     "cr_context": "CHASSIS",
