@@ -44,6 +44,7 @@ from noc.pm.models.agent import Agent
 logger = logging.getLogger(__name__)
 
 id_lock = Lock()
+_path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 @Label.model
@@ -176,6 +177,16 @@ class Service(Document):
 
     def get_caps(self) -> Dict[str, Any]:
         return CapsItem.get_caps(self.caps, self.profile.caps)
+
+    @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
+    def get_path(self):
+        """
+        Returns list of parent segment ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        return [self.id]
 
     @classmethod
     def can_set_label(cls, label):

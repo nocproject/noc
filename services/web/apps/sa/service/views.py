@@ -9,7 +9,7 @@
 from mongoengine.queryset import Q
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.lib.app.decorators.state import state_handler
 from noc.sa.models.service import Service
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -67,3 +67,14 @@ class ServiceApplication(ExtDocApplication):
             data[fn] = [x["group"] for x in (data.get(fn) or [])]
         # Clean other
         return super().clean(data)
+
+    @view("^(?P<id>[0-9a-f]{24})/get_path/$", access="read", api=True)
+    def api_get_path(self, request, id):
+        o = self.get_object_or_404(Service, id=id)
+        path = [Service.get_by_id(ns) for ns in o.get_path()]
+        return {
+            "data": [
+                {"level": level + 1, "id": str(p.id), "label": smart_text(p)}
+                for level, p in enumerate(path)
+            ]
+        }

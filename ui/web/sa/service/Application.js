@@ -12,6 +12,7 @@ Ext.define("NOC.sa.service.Application", {
         "NOC.core.StateField",
         "NOC.sa.service.Model",
         "NOC.sa.service.LookupField",
+        "NOC.sa.service.TreeCombo",
         "NOC.sa.serviceprofile.LookupField",
         "NOC.crm.subscriber.LookupField",
         "NOC.crm.supplier.LookupField",
@@ -307,6 +308,12 @@ Ext.define("NOC.sa.service.Application", {
     },
 
     filters: [
+        {
+            title: __("By Service"),
+            name: "parent",
+            ftype: "tree",
+            lookup: "sa.service"
+        },
         {
             title: __("By Profile"),
             name: "profile",
