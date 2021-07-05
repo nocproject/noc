@@ -13,6 +13,7 @@ nav:
           - Overview: user/tutorial/index.md
       - How-to Guides:
           - Overview: user/howto/index.md
+          - Loading GIS data with etl command: user/howto/fias/index.md
       - Background:
           - Overview: user/background/index.md
       - Reference:
