@@ -9,7 +9,7 @@ console.debug("Defining NOC.pm.agent.Application");
 Ext.define("NOC.pm.agent.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.LabelField",
+        "NOC.core.label.LabelField",
         "NOC.core.StateField",
         "NOC.core.JSONPreview",
         "NOC.pm.agent.Model",
