@@ -67,11 +67,11 @@ class KafkaSenderService(FastAPIService):
         self.logger.debug("Sending to topic %s", topic)
         producer = await self.get_producer()
         try:
-            await producer.send_and_wait(topic, data, key=key)
-            metrics["messages_sent_ok", topic] += 1
-            metrics["bytes_sent", topic] += len(data)
+            await producer.send(topic, data, key=key)
+            metrics["messages_sent_ok", ("topic", topic)] += 1
+            metrics["bytes_sent", ("topic", topic)] += len(data)
         except KafkaError as e:
-            metrics["messages_sent_error", topic] += 1
+            metrics["messages_sent_error", ("topic", topic)] += 1
             self.logger.error("Failed to send to topic %s: %s", topic, e)
 
     async def get_producer(self) -> AIOKafkaProducer:
@@ -85,6 +85,7 @@ class KafkaSenderService(FastAPIService):
             self.producer = AIOKafkaProducer(
                 bootstrap_servers=bootstrap,
                 acks="all",
+                max_batch_size=config.kafkasender.max_batch_size,
                 sasl_mechanism=config.kafkasender.sasl_mechanism,
                 security_protocol=config.kafkasender.security_protocol,
                 sasl_plain_username=config.kafkasender.username,
