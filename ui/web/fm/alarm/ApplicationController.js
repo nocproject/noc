@@ -37,22 +37,24 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             viewModel = view.getViewModel(),
             prefix = url[0], queryStr = url.length ? url[1] : undefined;
         this.initFilter(viewModel);
-        if(this.getView().getCmd() === "history" && this.getView().noc.hasOwnProperty("cmd")) {
-            var alarmId = this.getView().noc.cmd.args[0];
-            if(this.urlHasId("fm.alarm/" + alarmId)) {
-                view.setHistoryHash(alarmId);
+        if(url[0] === "fm.alarm") {
+            if(this.getView().getCmd() === "history" && this.getView().noc.hasOwnProperty("cmd")) {
+                var alarmId = this.getView().noc.cmd.args[0];
+                if(this.urlHasId("fm.alarm/" + alarmId)) {
+                    view.setHistoryHash(alarmId);
+                    this.openForm();
+                }
+            } else if(this.urlHasId(prefix)) {
+                view.setHistoryHash(prefix.split("/")[1]);
                 this.openForm();
-            }
-        } else if(this.urlHasId(prefix)) {
-            view.setHistoryHash(prefix.split("/")[1]);
-            this.openForm();
-        } else {
-            if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
-                this.deserialize(queryStr, viewModel);
-            } else {  // restore from local store
-                var filter = window.localStorage.getItem("fm-alarm-filter");
-                if(filter) {
-                    this.deserialize(filter, viewModel);
+            } else {
+                if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
+                    this.deserialize(queryStr, viewModel);
+                } else {  // restore from local store
+                    var filter = window.localStorage.getItem("fm-alarm-filter");
+                    if(filter) {
+                        this.deserialize(filter, viewModel);
+                    }
                 }
             }
         }
