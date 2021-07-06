@@ -310,6 +310,9 @@ class Config(BaseConfig):
         security_protocol = StringParameter(
             choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
         )
+        max_batch_size = BytesParameter(
+            default=16384, help="Maximum size of buffered data per partition"
+        )
 
     language = StringParameter(default="en")
     language_code = StringParameter(default="en")
