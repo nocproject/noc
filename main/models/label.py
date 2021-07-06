@@ -21,7 +21,7 @@ import cachetools
 # NOC modules
 from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.remotesystem import RemoteSystem
-from noc.models import get_model, is_document
+from noc.models import get_model, is_document, LABEL_MODELS
 
 
 MATCH_OPS = {"=", "<", ">", "&"}
@@ -132,12 +132,35 @@ class Label(Document):
     def on_save(self):
         if self.is_scoped and not self.is_wildcard and not self.is_matched:
             self._ensure_wildcards()
+        # Check if unset enable and label added to model
+        if hasattr(self, "_changed_fields"):
+            for model_id, setting in LABEL_MODELS.items():
+                if setting in self._changed_fields and not getattr(self, setting):
+                    r = self.check_label(model_id, self.name)
+                    if r:
+                        raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
 
     def on_delete(self):
         if self.is_wildcard and any(Label.objects.filter(name__startswith=self.name[:-1])):
             raise ValueError("Cannot delete wildcard label with matched labels")
         if self.is_builtin and not self.is_matched:
             raise ValueError("Cannot delete builtin label")
+        # Check if label added to model
+        for model_id, setting in LABEL_MODELS.items():
+            if not getattr(self, setting):
+                continue
+            r = self.check_label(model_id, self.name)
+            if r:
+                raise ValueError(f"Referred from model {model_id}: {r!r} (id={r.id})")
+
+    @classmethod
+    def check_label(cls, model, label_name):
+        model_ins = get_model(model)
+        if is_document(model_ins):
+            label = label_name
+        else:
+            label = [label_name]
+        return model_ins.objects.filter(**{"labels__contains": label}).first()
 
     @staticmethod
     def get_wildcards(label: str) -> List[str]:

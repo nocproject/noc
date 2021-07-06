@@ -377,3 +377,57 @@ COLLECTIONS = [
     "bi.Dashboard",
     "cm.ConfDBQuery",
 ]
+
+# Model -> Setting
+LABEL_MODELS = {
+    "pm.Agent": "enable_agent",
+    "sa.Service": "enable_service",
+    "sa.ServiceProfile": "enable_serviceprofile",
+    "sa.ManagedObject": "enable_managedobject",
+    "sa.ManagedObjectProfile": "enable_managedobjectprofile",
+    "sa.AdministrativeDomain": "enable_administrativedomain",
+    "sa.AuthProfile": "enable_authprofile",
+    "sa.CommandSnippet": "enable_commandsnippet",
+    #
+    "inv.AllocationGroup": "enable_allocationgroup",
+    "inv.NetworkSegment": "enable_networksegment",
+    "inv.Object": "enable_object",
+    "inv.ObjectModel": "enable_objectmodel",
+    "inv.Platform": "enable_platform",
+    "inv.ResourceGroup": "enable_resourcegroup",
+    "inv.Sensor": "enable_sensor",
+    "inv.SensorProfile": "enable_sensorprofile",
+    #
+    "crm.Subscriber": "enable_subscriber",
+    "crm.SubscriberProfile": "enable_subscriberprofile",
+    "crm.Supplier": "enable_supplier",
+    "crm.SupplierProfile": "enable_supplierprofile",
+    #
+    "dns.DNSZone": "enable_dnszone",
+    "dns.DNSZoneRecord": "enable_dnszonerecord",
+    #
+    "gis.Division": "enable_division",
+    "kb.KBEntry": "enable_kbentry",
+    #
+    "ip.Address": "enable_ipaddress",
+    "ip.AddressProfile": "enable_addressprofile",
+    "ip.AddressRange": "enable_ipaddressrange",
+    "ip.Prefix": "enable_ipprefix",
+    "ip.PrefixProfile": "enable_prefixprofile",
+    "ip.VRF": "enable_vrf",
+    "ip.VRFGroup": "enable_vrfgroup",
+    #
+    "peer.AS": "enable_asn",
+    "peer.ASSet": "enable_assetpeer",
+    "peer.Peer": "enable_peer",
+    #
+    "vc.VC": "enable_vc",
+    "vc.VLAN": "enable_vlan",
+    "vc.VLANProfile": "enable_vlanprofile",
+    "vc.VPN": "enable_vpn",
+    "vc.VPNProfile": "enable_vpnprofile",
+    #
+    "sla.SLAProbe": "enable_slaprobe",
+    "sla.SLAProfile": "enable_slaprofile",
+    "fm.ActiveAlarm": "enable_alarm",
+}
