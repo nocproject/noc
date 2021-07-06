@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+from django.core.exceptions import FieldError
+
 # NOC modules
 from noc.models import get_model
 from noc.core.comp import smart_text
@@ -239,4 +242,31 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         "clean_lazy_labels": clean_lazy_labels or None,
     }
     setup = {"is_document": False}
+    return decorator
+
+
+def tree(field=None):
+    """
+    Class decorator checking cycling.
+
+    """
+
+    def decorator(cls):
+        if hasattr(cls, field):
+
+            def before_save(self, field):
+                parent = getattr(self, field, None)
+                seen = {getattr(self, "id", None)}
+                while parent:
+                    parent_id = getattr(parent, "id", None)
+                    if parent_id in seen:
+                        raise FieldError("Parent cycle link")
+                    seen.add(parent_id)
+                    parent = getattr(parent, field, None)
+
+            cls.before_save = before_save
+            cls.tree_field = field
+
+        return cls
+
     return decorator
