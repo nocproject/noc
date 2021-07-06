@@ -15,6 +15,8 @@ from noc.core.translation import ugettext as _
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # NOC modules
 from noc.config import config
@@ -24,7 +26,7 @@ from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.model.fields import DocumentReferenceField
-from noc.core.model.decorator import on_delete_check, on_init
+from noc.core.model.decorator import on_delete_check, on_init, tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.datastream.decorator import datastream
 
@@ -32,6 +34,7 @@ id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
+@tree(field="parent")
 @Label.match_labels("adm_domain", allowed_op={"=", "<"})
 @Label.model
 @on_init
@@ -201,3 +204,9 @@ class AdministrativeDomain(NOCModel):
 
 if TYPE_CHECKING:
     from noc.inv.models.networksegment import NetworkSegment  # noqa
+
+
+@receiver(pre_save, sender=AdministrativeDomain)
+def check_cycle_link(sender, instance, **kwargs):
+    if hasattr(instance, "before_save"):
+        instance.before_save(field=instance.tree_field)
