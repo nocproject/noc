@@ -52,6 +52,10 @@ services:
       timeout: 3s
       retries: 100
 
+  liftbridge:
+    image: liftbridge/liftbridge:latest
+    command: liftbridge --embedded-nats
+
   pytests:
     build:
       context: ../
@@ -65,6 +69,8 @@ services:
       mongodb-repl-set-init:
         condition: service_healthy
       clickhouse:
+        condition: service_started
+      liftbridge:
         condition: service_started
       nsqd:
         condition: service_started
