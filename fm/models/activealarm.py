@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 from collections import defaultdict
+from typing import Optional
 
 # Third-party modules
 from django.template import Template as DjangoTemplate
@@ -36,7 +37,7 @@ from noc.main.models.template import Template
 from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
@@ -47,7 +48,7 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 
 
-@datastream
+@change
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
@@ -140,6 +141,10 @@ class ActiveAlarm(Document):
 
     def __str__(self):
         return "%s" % self.id
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ActiveAlarm"]:
+        return ActiveAlarm.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:

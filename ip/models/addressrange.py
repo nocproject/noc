@@ -17,14 +17,14 @@ from noc.config import config
 from noc.core.model.fields import CIDRField
 from noc.core.ip import IP
 from noc.core.validators import check_ipv4, check_ipv6
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.main.models.label import Label
 from .afi import AFI_CHOICES
 from .vrf import VRF
 
 
 @Label.model
-@datastream
+@change
 class AddressRange(NOCModel):
     class Meta(object):
         verbose_name = _("Address Range")
@@ -91,6 +91,13 @@ class AddressRange(NOCModel):
             self.from_address,
             self.to_address,
         )
+
+    @classmethod
+    def get_by_id(cls, id):
+        addressrange = AddressRange.objects.filter(id=id)[:1]
+        if addressrange:
+            return addressrange[0]
+        return None
 
     def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:

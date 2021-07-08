@@ -29,7 +29,7 @@ from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 
 
 id_lock = Lock()
@@ -40,7 +40,7 @@ id_lock = Lock()
 @full_text_search
 @on_init
 @workflow
-@datastream
+@change
 @on_delete_check(
     check=[
         ("ip.Address", "vrf"),

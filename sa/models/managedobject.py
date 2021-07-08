@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -77,8 +77,8 @@ from noc.core.script.caller import SessionContext, ScriptCaller
 from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
-from noc.core.datastream.decorator import datastream
-from noc.core.datastream.change import change_tracker
+from noc.core.change.decorator import change
+from noc.core.change.policy import change_tracker
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
@@ -109,7 +109,7 @@ logger = logging.getLogger(__name__)
 @on_init
 @on_save
 @on_delete
-@datastream
+@change
 @resourcegroup
 @Label.model
 @on_delete_check(
@@ -1089,9 +1089,9 @@ class ManagedObject(NOCModel):
             self.write_config(data)
         # Apply mirroring settings
         self.mirror_config(data, changed)
-        # Rebuild datastream if necessary
+        # Apply changes if necessary
         if changed:
-            change_tracker.register([("managedobject", self.id)])
+            change_tracker.register("update", "sa.ManagedObject", str(self.id), fields=[])
         return changed
 
     def notify_config_changes(self, is_new, data, diff):

@@ -12,12 +12,12 @@ from django.db import models
 from noc.core.model.base import NOCModel
 from noc.core.timepattern import TimePattern as TP
 from noc.core.model.decorator import on_init
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from .timepattern import TimePattern
 
 
 @on_init
-@datastream
+@change
 class TimePatternTerm(NOCModel):
     """
     Time pattern terms
@@ -37,6 +37,13 @@ class TimePatternTerm(NOCModel):
 
     def __str__(self):
         return "%s: %s" % (self.time_pattern.name, self.term)
+
+    @classmethod
+    def get_by_id(cls, id):
+        tpt = TimePatternTerm.objects.filter(id=id)[:1]
+        if tpt:
+            return tpt[0]
+        return None
 
     @classmethod
     def check_syntax(cls, term):

@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+from typing import Optional
 
 # Third-party modules
 from django.template import Template, Context
@@ -26,7 +27,7 @@ from mongoengine.fields import (
 from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE
@@ -35,7 +36,7 @@ from .alarmlog import AlarmLog
 from .alarmseverity import AlarmSeverity
 
 
-@datastream
+@change
 class ArchivedAlarm(Document):
     meta = {
         "collection": "noc.alarms.archived",
@@ -110,6 +111,10 @@ class ArchivedAlarm(Document):
 
     def __str__(self):
         return "%s" % self.id
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ArchivedAlarm"]:
+        return ArchivedAlarm.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:

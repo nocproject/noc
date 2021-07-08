@@ -29,7 +29,7 @@ from noc.core.ip import IPv6
 from noc.core.validators import is_ipv4, is_ipv6
 from noc.core.rpsl import rpsl_format
 from noc.core.gridvcs.manager import GridVCSField
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
 from .dnszoneprofile import DNSZoneProfile
@@ -45,7 +45,7 @@ ZONE_REVERSE_IPV6 = "6"
 
 @Label.model
 @on_init
-@datastream
+@change
 @on_delete_check(check=[("dns.DNSZoneRecord", "zone")])
 class DNSZone(NOCModel):
     """

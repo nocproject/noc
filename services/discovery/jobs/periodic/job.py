@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from noc.core.span import Span
-from noc.core.datastream.change import change_tracker
+from noc.core.change.policy import change_tracker
 from ..box.resolver import ResolverCheck
 from .uptime import UptimeCheck
 from .interfacestatus import InterfaceStatusCheck

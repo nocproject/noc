@@ -12,7 +12,7 @@ from django.contrib.postgres.fields import ArrayField
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.translation import ugettext as _
 from noc.main.models.label import Label
 from .dnszone import DNSZone
@@ -20,7 +20,7 @@ from .dnszone import DNSZone
 
 @Label.model
 @on_init
-@datastream
+@change
 class DNSZoneRecord(NOCModel):
     """
     Zone RRs
@@ -48,6 +48,13 @@ class DNSZoneRecord(NOCModel):
             self.zone.name,
             " ".join([x for x in (self.name, self.type, self.content) if x]),
         )
+
+    @classmethod
+    def get_by_id(cls, id):
+        dnszonerecord = DNSZoneRecord.objects.filter(id=id)[:1]
+        if dnszonerecord:
+            return dnszonerecord[0]
+        return None
 
     def iter_changed_datastream(self, changed_fields=None):
         for ds, id in self.zone.iter_changed_datastream(changed_fields=changed_fields):

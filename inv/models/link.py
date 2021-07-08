@@ -8,6 +8,7 @@
 # Python modules
 from collections import defaultdict
 import datetime
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -17,13 +18,13 @@ from mongoengine.fields import StringField, DateTimeField, ListField, IntField, 
 from noc.config import config
 from noc.core.mongo.fields import PlainReferenceListField
 from noc.core.model.decorator import on_delete, on_save
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.comp import smart_text
 
 
 @on_delete
 @on_save
-@datastream
+@change
 class Link(Document):
     """
     Network links.
@@ -84,6 +85,10 @@ class Link(Document):
             return "(%s)" % ", ".join(smart_text(i) for i in self.interfaces)
         else:
             return "Stale link (%s)" % self.id
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["Link"]:
+        return Link.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
