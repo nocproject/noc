@@ -54,7 +54,12 @@ services:
 
   liftbridge:
     image: liftbridge/liftbridge:latest
-    command: liftbridge --embedded-nats
+    entrypoint: liftbridge --data-dir=/tmp/lift --embedded-nats --raft-bootstrap-seed
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: "512M"
 
   pytests:
     build:

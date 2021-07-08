@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ./noc wipe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from contextlib import contextmanager
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.mongo.connection import connect
 from noc.core.validators import is_int
-from noc.core.datastream.change import change_tracker
+from noc.core.change.policy import change_tracker
 from noc.core.comp import smart_text
 
 

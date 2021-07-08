@@ -24,7 +24,7 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
 from noc.core.model.decorator import on_delete_check
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .addressprofile import AddressProfile
@@ -32,7 +32,7 @@ from .addressprofile import AddressProfile
 
 @Label.model
 @on_init
-@datastream
+@change
 @full_text_search
 @workflow
 @on_delete_check(check=[("ip.Address", "ipv6_transition")])
@@ -123,6 +123,13 @@ class Address(NOCModel):
 
     def __str__(self):
         return "%s(%s): %s" % (self.vrf.name, self.afi, self.address)
+
+    @classmethod
+    def get_by_id(cls, id):
+        address = Address.objects.filter(id=id)[:1]
+        if address:
+            return address[0]
+        return None
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_address:

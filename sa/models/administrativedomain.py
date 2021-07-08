@@ -28,7 +28,7 @@ from noc.main.models.label import Label
 from noc.core.model.fields import DocumentReferenceField
 from noc.core.model.decorator import on_delete_check, on_init, tree
 from noc.core.bi.decorator import bi_sync
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -39,7 +39,7 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 @Label.model
 @on_init
 @bi_sync
-@datastream
+@change
 @on_delete_check(
     check=[
         ("cm.ObjectNotify", "administrative_domain"),

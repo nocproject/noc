@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ./noc segment command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from noc.inv.models.biosegtrial import BioSegTrial
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.core.bioseg.moderator.base import moderate_trial
-from noc.core.datastream.change import change_tracker
+from noc.core.change.policy import change_tracker
 from noc.core.text import alnum_key
 from noc.core.clickhouse.connect import connection
 from noc.inv.models.discoveryid import DiscoveryID

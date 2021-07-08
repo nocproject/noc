@@ -7,6 +7,7 @@
 
 # Python modules
 import logging
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -18,14 +19,14 @@ from .managedobject import ManagedObject, CREDENTIAL_CACHE_VERSION
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.inv.models.capsitem import CapsItem
 
 logger = logging.getLogger(__name__)
 
 
 @on_save
-@datastream
+@change
 class ObjectCapabilities(Document):
     meta = {"collection": "noc.sa.objectcapabilities", "strict": False, "auto_create_index": False}
     object = ForeignKeyField(ManagedObject, primary_key=True)
@@ -33,6 +34,10 @@ class ObjectCapabilities(Document):
 
     def __str__(self):
         return "%s caps" % self.object.name
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ObjectCapabilities"]:
+        return ObjectCapabilities.objects.filter(object=id).first()
 
     def on_save(self):
         cache.delete("cred-%s" % self.object.id, version=CREDENTIAL_CACHE_VERSION)

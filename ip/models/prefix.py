@@ -31,7 +31,7 @@ from noc.core.translation import ugettext as _
 from noc.core.wf.decorator import workflow
 from noc.core.model.decorator import on_delete_check
 from noc.wf.models.state import State
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
@@ -42,7 +42,7 @@ id_lock = Lock()
 @Label.model
 @full_text_search
 @workflow
-@datastream
+@change
 @on_delete_check(
     ignore=[
         ("ip.PrefixBookmark", "prefix"),

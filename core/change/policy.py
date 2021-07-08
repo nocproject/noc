@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# DataStream change notification
+# Change tracking policy
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
@@ -9,18 +9,24 @@
 import threading
 import contextlib
 from collections import defaultdict
-from typing import Optional, Any, Tuple, Set, List
+from typing import Optional, Tuple, List, Dict
+from abc import ABCMeta, abstractmethod
+
 
 # NOC modules
 from noc.core.defer import defer
-from noc.core.datastream.loader import loader
+from noc.core.hash import hash_int
+
+
+CHANGE_HANDLER = "noc.core.change.change.on_change"
+
 
 tls = threading.local()
 
 
 class ChangeTracker(object):
     """
-    Thread-local datastream change tracker.
+    Thread-local change tracker.
     """
 
     @staticmethod
@@ -31,13 +37,16 @@ class ChangeTracker(object):
             tls._ct_policy = policy
         return policy
 
-    def register(self, changes: List[Tuple[str, Any]]) -> None:
+    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
         """
         Register datastream change
-        :param changes: List of (datastream, object id)
+        :param op: Operation, either create, update or delete
+        :param model: Model id
+        :param id: Item id
+        :param fields: List of changed fields
         :return:
         """
-        self.get_policy().register(changes)
+        self.get_policy().register(op, model, id, fields)
 
     @staticmethod
     def push_policy(policy: "BaseChangeTrackerPolicy") -> None:
@@ -77,7 +86,7 @@ class ChangeTracker(object):
     @contextlib.contextmanager
     def bulk_changes(self):
         """
-        Apply all datastream changes at once
+        Apply all changes at once
         :return:
         """
         # Store current effective policy
@@ -86,7 +95,7 @@ class ChangeTracker(object):
         policy = BulkChangeTrackerPolicy()
         tls._ct_policy = policy
         yield
-        policy.apply()
+        policy.commit()
         if prev_policy:
             tls._ct_policy = prev_policy
         else:
@@ -96,7 +105,7 @@ class ChangeTracker(object):
 change_tracker = ChangeTracker()
 
 
-class BaseChangeTrackerPolicy(object):
+class BaseChangeTrackerPolicy(object, metaclass=ABCMeta):
     """
     Base class for change tracker policies
     """
@@ -104,18 +113,9 @@ class BaseChangeTrackerPolicy(object):
     def __init__(self):
         ...
 
-    def register(self, changes: List[Tuple[str, Any]]) -> None:
+    @abstractmethod
+    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
         ...
-
-    def apply(self):
-        """
-        Apply collected changes
-        :return:
-        """
-
-    def apply_changes(self, changes: List[Tuple[str, Any]]):
-        if changes:
-            defer("noc.core.datastream.change.do_changes", changes=changes)
 
 
 class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
@@ -123,41 +123,59 @@ class DropChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Drop all changes
     """
 
+    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+        pass
+
 
 class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
     """
     Simple policy, applies every registered change
     """
 
-    def register(self, changes: List[Tuple[str, Any]]) -> None:
-        self.apply_changes(changes)
+    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+        key = hash_int(id)
+        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields)])
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
     def __init__(self):
         super().__init__()
-        self.changes: Set[Tuple[str, Any]] = set()
+        self.changes: Dict[Tuple[str, str], Tuple[str, Optional[List]]] = {}
 
-    def register(self, changes: List[Tuple[str, Any]]) -> None:
-        self.changes.update(changes)
+    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+        def merge_fields(f1: Optional[List[str]], f2: Optional[List[str]]) -> Optional[List[str]]:
+            f1 = f1 or []
+            f2 = f2 or []
+            return list(set(f1) | set(f2))
 
-    def apply(self):
-        self.apply_changes(list(self.changes))
+        prev = self.changes.get((model, id))
+        if prev is None:
+            # First change
+            self.changes[model, id] = (op, fields)
+            return
+        # Series of change
+        if op == "delete":
+            # Delete overrides any operation
+            self.changes[model, id] = (op, None)
+            return
+        if op == "create":
+            raise RuntimeError("create must be first update")
+        # Update
+        prev_op = prev[0]
+        if prev_op == "create":
+            # Create + Update -> Create with merged fields
+            self.changes[model, id] = ("create", merge_fields(prev[1], fields))
+        elif prev_op == "update":
+            # Update + Update -> Update with merged fields
+            self.changes[model, id] = ("update", merge_fields(prev[1], fields))
+        elif prev_op == "delete":
+            raise RuntimeError("Cannot update after delete")
 
-
-def do_changes(changes):
-    """
-    Change calculation worker
-    :param changes: List of datastream name, object id
-    :return:
-    """
-    # Compact and organize datastreams
-    datastreams = defaultdict(set)
-    for ds_name, object_id in changes:
-        datastreams[ds_name].add(object_id)
-    # Apply batches
-    for ds_name in datastreams:
-        ds = loader[ds_name]
-        if not ds:
-            continue
-        ds.bulk_update(sorted(datastreams[ds_name]))
+    def commit(self) -> None:
+        # Split to buckets
+        changes = defaultdict(list)
+        for (model_id, item_id), (op, fields) in self.changes.items():
+            part = 0
+            changes[part].append((op, model_id, item_id, fields))
+        for part, items in changes.items():
+            defer(CHANGE_HANDLER, key=part, changes=items)

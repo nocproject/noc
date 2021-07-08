@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NRI Portmapper check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.service import Service
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.inv.models.interface import Interface
-from noc.core.datastream.change import change_tracker
+from noc.core.change.policy import change_tracker
 
 
 class NRIServiceCheck(DiscoveryCheck):
@@ -98,4 +98,4 @@ class NRIServiceCheck(DiscoveryCheck):
             self.logger.info("Sending %d updates", len(bulk))
             icol.bulk_write(bulk)
             ServiceSummary.refresh_object(self.object.id)
-            change_tracker.register([("managedobject", self.object.id)])
+            change_tracker.register("update", "sa.ManagedObject", str(self.object.id), [])

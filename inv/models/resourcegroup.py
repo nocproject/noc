@@ -21,7 +21,7 @@ from noc.config import config
 from noc.models import get_model, is_document
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
@@ -32,7 +32,7 @@ id_lock = threading.Lock()
 
 @Label.model
 @bi_sync
-@datastream
+@change
 @on_save
 @on_delete_check(
     check=[

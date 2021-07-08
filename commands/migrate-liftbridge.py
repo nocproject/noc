@@ -22,6 +22,7 @@ from noc.config import config
 
 
 class Command(BaseCommand):
+    _slots = None
     # List of single-partitioned streams
     STREAMS = [
         "revokedtokens",
@@ -48,7 +49,18 @@ class Command(BaseCommand):
         "jobs": "worker",
     }
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--slots",
+            dest="slots",
+            type=int,
+            required=False,
+            help="Static slot count (used for tests)",
+        )
+
+    def handle(self, slots=None, *args, **options):
+        if slots:
+            self._slots = slots
         changed = False
         # Get liftbridge metadata
         meta = self.get_meta()
@@ -85,6 +97,8 @@ class Command(BaseCommand):
     def iter_limits(self) -> Tuple[str, int]:
         async def get_slot_limits():
             nonlocal slot_name
+            if self._slots:
+                return self._slots
             return await dcs.get_slot_limit(slot_name)
 
         dcs = get_dcs()

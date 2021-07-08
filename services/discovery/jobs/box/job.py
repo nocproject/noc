@@ -14,7 +14,7 @@ from noc.services.discovery.jobs.base import MODiscoveryJob
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 from noc.core.span import Span
-from noc.core.datastream.change import change_tracker
+from noc.core.change.policy import change_tracker
 from .resolver import ResolverCheck
 from .suggestsnmp import SuggestSNMPCheck
 from .profile import ProfileCheck

@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, ListField, ReferenceField
@@ -15,7 +18,7 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.sa.models.service import Service
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
@@ -45,7 +48,7 @@ TUNNEL_TYPES = (
 )
 
 
-@datastream
+@change
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
@@ -96,6 +99,10 @@ class SubInterface(Document):
 
     def __str__(self):
         return "%s %s" % (self.interface.managed_object.name, self.name)
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["SubInterface"]:
+        return SubInterface.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

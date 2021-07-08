@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import logging
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -32,7 +33,7 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
 
@@ -49,7 +50,7 @@ logger = logging.getLogger(__name__)
 
 
 @on_delete
-@datastream
+@change
 @on_delete_check(
     ignore=[
         ("inv.Link", "interfaces"),
@@ -116,6 +117,10 @@ class Interface(Document):
 
     def __str__(self):
         return "%s: %s" % (self.managed_object.name, self.name)
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["Interface"]:
+        return Interface.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

@@ -39,7 +39,7 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
@@ -76,7 +76,7 @@ id_lock = Lock()
 @on_init
 @on_save
 @bi_sync
-@datastream
+@change
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "object_profile"),
