@@ -193,6 +193,9 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                             flex: 1
                         }
                     ],
+                    listeners: {
+                        itemdblclick: "onRowDblClickTreePanel"
+                    },
                     viewConfig: {
                         getRowClass: function(record) {
                             var c = record.get("row_class");
@@ -286,8 +289,5 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                 value: "{selected.id}"
             }
         }
-    ],
-    listeners: {
-        beforeactivate: "onFormActivate"
-    }
+    ]
 });

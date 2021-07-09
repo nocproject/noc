@@ -38,7 +38,8 @@ Ext.define("NOC.fm.alarm.Application", {
             xtype: "fm.alarm.form",
             listeners: {
                 fmAlarmCloseForm: "onCloseForm",
-                fmAlarmRefreshForm: "onRefreshForm"
+                fmAlarmRefreshForm: "onRefreshForm",
+                fmAlarmSelectItem: "onOpenForm"
             }
         }
     ]
