@@ -815,6 +815,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
 
         },
         {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
             name: "beef_storage",
             type: "string"
         },

@@ -489,6 +489,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             defaultValue: "P"
         },
         {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
             name: "static_service_groups",
             type: "auto"
         },

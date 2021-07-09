@@ -343,6 +343,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ]
                                 },
                                 {
+                                    name: "dynamic_classification_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Dynamic Classification Policy"),
+                                    store: [
+                                        ["D", __("Disabled")],
+                                        ["R", __("By Rule")],
+                                    ],
+                                    allowBlank: false,
+                                    labelWidth: 200,
+                                    value: "R",
+                                    uiStyle: "medium"
+                                },
+                                {
                                     name: "match_rules",
                                     xtype: "listform",
                                     uiStyle: "large",
