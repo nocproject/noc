@@ -46,9 +46,6 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
             }, this);
         }
     },
-    onFormActivate: function(self) {
-        self.down("[reference=fm-alarm-form-tab-panel]").setActiveTab(0);
-    },
     onClose: function() {
         this.fireViewEvent("fmAlarmCloseForm");
     },
@@ -232,5 +229,8 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
                 NOC.error(__("Failed to post message"));
             }
         });
+    },
+    onRowDblClickTreePanel: function(grid, record) {
+        this.fireViewEvent("fmAlarmSelectItem", record);
     }
 });

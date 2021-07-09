@@ -37,17 +37,17 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             viewModel = view.getViewModel(),
             prefix = url[0], queryStr = url.length ? url[1] : undefined;
         this.initFilter(viewModel);
-        if(url[0] === "fm.alarm") {
-            if(this.getView().getCmd() === "history" && this.getView().noc.hasOwnProperty("cmd")) {
-                var alarmId = this.getView().noc.cmd.args[0];
-                if(this.urlHasId("fm.alarm/" + alarmId)) {
-                    view.setHistoryHash(alarmId);
-                    this.openForm();
-                }
-            } else if(this.urlHasId(prefix)) {
-                view.setHistoryHash(prefix.split("/")[1]);
+        if(this.getView().getCmd() === "history" && this.getView().noc.hasOwnProperty("cmd")) {
+            var alarmId = this.getView().noc.cmd.args[0];
+            if(this.urlHasId("fm.alarm/" + alarmId)) {
+                view.setHistoryHash(alarmId);
                 this.openForm();
-            } else {
+            }
+        } else if(this.urlHasId(prefix)) {
+            view.setHistoryHash(prefix.split("/")[1]);
+            this.openForm();
+        } else {
+            if(url[0] === "fm.alarm") {
                 if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
                     this.deserialize(queryStr, viewModel);
                 } else {  // restore from local store
@@ -367,6 +367,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         } else { // restore from url
             id = Ext.History.getHash().split(/[/?]/)[1];
         }
+        this.getView().down("[reference=fm-alarm-form-tab-panel]").setActiveTab(0);
         this.getAlarmDetail(id);
     },
     getAlarmDetail: function(alarmId) {
