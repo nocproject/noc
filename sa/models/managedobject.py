@@ -105,6 +105,9 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
+@Label.dynamic_classification(
+    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
+)
 @bi_sync
 @on_init
 @on_save
@@ -499,6 +502,13 @@ class ManagedObject(NOCModel):
         "ConfDB Raw Policy",
         max_length=1,
         choices=[("P", "Profile"), ("D", "Disable"), ("E", "Enable")],
+        default="P",
+    )
+    # Dynamic Profile Classification
+    dynamic_classification_policy = CharField(
+        "Dynamic Classification Policy",
+        max_length=1,
+        choices=[("P", "Profile"), ("D", "Disable"), ("R", "By Rule")],
         default="P",
     )
     # Resource groups
@@ -1603,6 +1613,11 @@ class ManagedObject(NOCModel):
             return self.object_profile.periodic_discovery_running_policy
         return self.periodic_discovery_running_policy
 
+    def get_dynamic_classification_policy(self):
+        if self.dynamic_classification_policy == "P":
+            return self.object_profile.dynamic_classification_policy
+        return self.dynamic_classification_policy
+
     def get_full_fqdn(self):
         if not self.fqdn:
             return None
@@ -1774,7 +1789,7 @@ class ManagedObject(NOCModel):
 
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
-        yield instance.labels or []
+        yield list(instance.labels or [])
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))

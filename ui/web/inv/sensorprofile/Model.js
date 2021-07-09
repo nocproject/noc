@@ -36,6 +36,11 @@ Ext.define("NOC.inv.sensorprofile.Model", {
             type: "string"
         },
         {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
             name: "enable_collect",
             type: "boolean"
         },

@@ -14,9 +14,10 @@ from itertools import accumulate
 # Third-party modules
 from pymongo import UpdateMany
 from mongoengine.document import Document
-from mongoengine.queryset.visitor import Q as m_Q
+from django.db import connection
 from mongoengine.fields import StringField, IntField, BooleanField, ReferenceField
 import cachetools
+import orjson
 
 # NOC modules
 from noc.core.model.decorator import on_save, on_delete
@@ -576,42 +577,64 @@ class Label(Document):
                 # Dynamic classification not suported
                 return
             instance = instance or document
+            policy = getattr(instance, "get_dynamic_classification_policy", None)
+            if policy and policy() == "D":
+                # Dynamic classification not enabled
+                return
             profile_field = profile_field or "profile"
             if not hasattr(instance, "effective_labels"):
                 # Instance without effective labels
                 return
             effective_labels = instance.effective_labels or []
             if is_document(instance):
-                match_profiles = profile_model.objects(
-                    m_Q(match_rules__dynamic_order__ne=0)
-                    & (
-                        m_Q(match_rules__labels__in=effective_labels)
-                        | m_Q(match_rules__handler__exists=True)
-                    )
-                ).order_by("match_rules__dynamic_order")
-            else:
-                match_profiles = (
-                    profile_model.objects.filter()
-                    .extra(
-                        select={
-                            "dynamic_order": "jsonb_array_elements(match_rules) -> 'dynamic_order'"
+                coll = profile_model._get_collection()
+                match_profiles = coll.aggregate(
+                    [
+                        {"$unwind": "$match_rules"},
+                        {
+                            "$match": {
+                                "match_rules.dynamic_order": {"$gt": 0},
+                                "match_rules.labels": {"$in": effective_labels},
+                            }
                         },
-                        where=[
-                            "exists (select 1 from jsonb_array_elements(match_rules) as r where r -> 'labels' ?| %s::varchar[])"
-                        ],
-                        params=[effective_labels],
-                    )
-                    .order_by(*["dynamic_order"])
+                        {
+                            "$project": {
+                                "dynamic_order": "$match_rules.dynamic_order",
+                                "labels": "$match_rules.labels",
+                                "handlers": 1,
+                            }
+                        },
+                        {"$sort": {"dynamic_order": 1}},
+                    ]
                 )
+            else:
+                with connection.cursor() as cursor:
+                    query = (
+                        """
+                            SELECT pt.id, t.labels, t.dynamic_order, t.handler, match_rules
+                            FROM %s as pt
+                            CROSS JOIN LATERAL jsonb_to_recordset(pt.match_rules::jsonb)
+                            AS t("dynamic_order" int, "labels" jsonb, "handler" text)
+                            WHERE t.labels ?| %%s::varchar[] order by dynamic_order
+                        """
+                        % profile_model._meta.db_table
+                    )
+                    cursor.execute(query, [effective_labels])
+                    match_profiles = [
+                        {
+                            "_id": r[0],
+                            "labels": orjson.loads(r[1]),
+                            "dynamic_order": r[2],
+                            "handler": r[3],
+                        }
+                        for r in cursor.fetchall()
+                    ]
             for profile in match_profiles:
-                for rule in profile.match_rules:
-                    # rule["labels"] worked with documents too
-                    if (
-                        not set(rule["labels"]) - set(effective_labels)
-                        and instance.profile != profile
-                    ):
-                        # Match all profile labels
+                if not set(profile["labels"]) - set(effective_labels):
+                    if instance.profile.id != profile["_id"]:
+                        profile = profile_model.get_by_id(profile["_id"])
                         setattr(instance, profile_field, profile)
+                    break
 
         def inner(m_cls):
             # Install handlers

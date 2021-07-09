@@ -45,6 +45,11 @@ class Sensor(Document):
     profile = PlainReferenceField(SensorProfile, default=SensorProfile.get_default_profile)
     object = PlainReferenceField(Object)
     managed_object = ForeignKeyField(ManagedObject)
+    # Dynamic Profile Classification
+    dynamic_classification_policy = StringField(
+        choices=[("P", "Profile"), ("R", "By Rule"), ("D", "Disable")],
+        default="P",
+    )
     local_id = StringField()
     state = PlainReferenceField(State)
     units = PlainReferenceField(MeasurementUnits)
@@ -127,6 +132,11 @@ class Sensor(Document):
             self.fire_event("missed")
             self.touch()
 
+    def get_dynamic_classification_policy(self):
+        if self.dynamic_classification_policy == "P":
+            return self.profile.dynamic_classification_policy
+        return self.dynamic_classification_policy
+
     @classmethod
     def sync_object(cls, obj: Object) -> None:
         """
@@ -189,6 +199,16 @@ class Sensor(Document):
 
     @classmethod
     def iter_effective_labels(cls, instance: "Sensor") -> Iterable[List[str]]:
-        yield (instance.labels or []) + (
-            instance.profile.labels or []
-        ) + RegexpLabel.get_effective_labels("sensor_local_id", instance.local_id)
+        yield list(instance.labels or [])
+        if instance.profile.labels:
+            yield list(instance.profile.labels)
+        yield RegexpLabel.get_effective_labels("sensor_local_id", instance.local_id)
+        if instance.object:
+            yield list(instance.object.effective_labels)
+            mo_id = instance.object.get_data("management", "managed_object")
+            if mo_id:
+                mo = ManagedObject.get_by_id(mo_id)
+                if mo:
+                    yield list(mo.effective_labels)
+        if instance.managed_object:
+            yield list(instance.managed_object.effective_labels)

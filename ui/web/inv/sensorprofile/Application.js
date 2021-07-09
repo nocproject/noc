@@ -72,6 +72,24 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           allowBlank: true
         },
         {
+          name: "dynamic_classification_policy",
+          xtype: "combobox",
+          fieldLabel: __("Dynamic Classification Policy"),
+          allowBlank: false,
+          queryMode: "local",
+          displayField: "label",
+          valueField: "id",
+          store: {
+            fields: ["id", "label"],
+            data: [
+                {id: "D", label: "Disable"},
+                {id: "R", label: "By Rule"},
+            ]
+          },
+          defaultValue: "R",
+          uiStyle: "medium"
+        },
+        {
           name: "enable_collect",
           xtype: "checkbox",
           boxLabel: __("Enable Collect"),
