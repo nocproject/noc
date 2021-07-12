@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -83,9 +83,9 @@ class Script(BaseScript):
         v = self.cli("show fiber-ports optical-transceiver")
         for i in parse_table(v):
             port = i[0]
-            if port.startswith("Gi"):
+            if port.lower().startswith("gi"):
                 port_ifname = "gigabitethernet %s" % port[2:]
-            elif port.startswith("Fa"):
+            elif port.lower().startswith("fa"):
                 port_ifname = "fastethernet %s" % port[2:]
             c = self.cli("show fiber-ports optical-transceiver %s" % port_ifname)
             match = self.rx_trans.search(c)
