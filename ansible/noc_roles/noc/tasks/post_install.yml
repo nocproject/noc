@@ -24,7 +24,7 @@
 
 - name: "Downloading rust libs"
   get_url:
-    url: "https://cdn.getnoc.com/noc/lib/libip.so"
+    url: "https://cdn.getnoc.com/noc/libs/libip.so"
     dest: "{{ noc_root }}/speedup/ip.so"
     force: true
   environment:
