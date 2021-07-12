@@ -145,7 +145,7 @@ command:
     - '!/\?\?\\s/'
     - '!/\\sM/'
     stderr: []
-    timeout: 20000
+    timeout: 40000
 {% if noc_python_interpreter != "python3" %}
   {{ noc_root }}/bin/python -c 'import sys;print sys.getdefaultencoding()':
     exit-status: 0
