@@ -6,7 +6,8 @@ ENV\
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
     PYTHONPATH=/opt/noc:/opt:/usr/local/bin/python3.8 \
-    PROJ_DIR=/usr
+    PROJ_DIR=/usr \
+    IP_SO="build/rust/release/libip.so"
 
 COPY . /opt/noc/
 WORKDIR /opt/noc/
@@ -30,6 +31,8 @@ RUN \
     && cythonize -i /opt/noc/speedup/*.pyx \
     && mkdir /opt/nocspeedup \
     && cp /opt/noc/speedup/*.so /opt/nocspeedup \
+    && if [ -f "$IP_SO" ]; then cp $IP_SO /opt/nocspeedup/ip.so; else \
+       curl -LJO https://cdn.getnoc.com/noc/lib/ip.so@master && cp ip.so@master /opt/nocspeedup/ip.so; fi \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && pip3 uninstall -y Cython \
     && apt remove --purge -y $BUILD_PACKAGES \

@@ -22,6 +22,31 @@
     - requirements
     - get_source
 
+- name: "Downloading rust libs"
+  get_url:
+    url: "https://cdn.getnoc.com/noc/lib/libip.so"
+    dest: "{{ noc_root }}/speedup/ip.so"
+    force: true
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  register: rustipso
+
+- block:
+    - name: Find old ip.c files
+      find:
+        paths: "{{ noc_root }}/speedup"
+        patterns: "^ip.c.*"
+        use_regex: true
+      register: ipc_to_delete
+
+    - name: Remove files
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ ipc_to_delete.files }}"
+  when: rustipso.changed
+
 - name: Cleanup hanging .pyc files
   command: ./scripts/deploy/cleanup-pyc
   args:
