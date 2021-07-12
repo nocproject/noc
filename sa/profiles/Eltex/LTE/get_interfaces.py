@@ -30,7 +30,9 @@ class Script(BaseScript):
         r"^\s+untagged:\s+(?P<untagged>\d+|none)",
         re.MULTILINE | re.DOTALL,
     )
-
+    rx_portchannel = re.compile(
+        r"^port-channel \d+ \(\d+ members\): (?P<members>.+)\n", re.MULTILINE
+    )
     rx_ip = re.compile(r"\n\nIP address:\s+(?P<ip>\d+\S+)")
     rx_mgmt_ip = re.compile(
         r"^Management interface:( \((?P<state>\S+)\))?\s*\n"
@@ -122,6 +124,7 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["untagged_vlan"] = u
                 interfaces += [iface]
         except self.CLISyntaxError:
+            portchannel_members = []
             # We are already in `switch` context
             c = self.cli("show vlan", cached=True)
             t = parse_table(c, allow_wrap=True, footer="dummy footer")
@@ -141,9 +144,22 @@ class Script(BaseScript):
                                 found = True
                                 break
                         if not found:
+                            if ifname.startswith("port-channel"):
+                                iftype = "aggregated"
+                                c = self.cli("show channel-group hw %s" % ifname)
+                                match = self.rx_portchannel.search(c)
+                                portchannel_members += [
+                                    {
+                                        "interface": ifname,
+                                        "members": match.group("members").split(","),
+                                        "type": "L",
+                                    }
+                                ]
+                            else:
+                                iftype = "physical"
                             iface = {
                                 "name": ifname,
-                                "type": "physical",
+                                "type": iftype,
                                 "subinterfaces": [
                                     {
                                         "name": ifname,
@@ -182,6 +198,12 @@ class Script(BaseScript):
                 if match:
                     i["mac"] = match.group("mac")
                     i["subinterfaces"][0]["mac"] = match.group("mac")
+                for p in portchannel_members:
+                    for m in p["members"]:
+                        if i["name"] == m.strip():
+                            i["aggregated_interface"] = p["interface"]
+                            i["enabled_protocols"] = ["LACP"]
+                            break
                 try:
                     c = self.cli("show interfaces status %s" % i["name"])
                     match = self.rx_status.search(c)
