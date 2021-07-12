@@ -1,6 +1,7 @@
 ---
 stages:
   - Lint
+  - Prebuild
   - Test
   - Build
   - Upload
@@ -8,8 +9,10 @@ stages:
 include:
   - project: "noc/common-jobs"
     ref: stable
-    file: "/templates/upload.yml"
-  - local: "/ansible/.ansible-ci.yml"
+    file:
+      - /templates/upload.yml
+      - /templates/build_rust.yml
+  - local: /ansible/.ansible-ci.yml
 
 workflow:
   rules:
@@ -179,6 +182,7 @@ py:test:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     # see docker/docker-compose.yml for complete list of migrations
+    - ls -al
     - >
       docker-compose
       -f .docker/docker-compose.yml
@@ -355,29 +359,33 @@ build:web:
       - dist/ui/pkg/web
       - dist/ui/pkg/web.debug
 
-build:rust:
+Prebuild ip.so:
+  stage: Prebuild
+  image: registry.getnoc.com/infrastructure/build/rust-centos7:master
+  extends: .build_rust
+  variables:
+    BUILD_TARGET: pyip
+  artifacts:
+    paths:
+      - build/rust/release/libip.so
+
+Build dnssync:
   stage: Build
-  image: rust:1.53
-  script:
-    - set -x
-    - cd rust/
-    - export CARGO_TARGET_DIR=../build/rust
-    - cargo test
-    - cargo build --release
-  tags:
-    - docker
-  only:
-    refs:
-      - merge_requests
-      - master
-    changes:
-      - "rust/**"
-      - "rust/**/*"
+  extends: .build_rust
+  variables:
+    BUILD_TARGET: dnssync
+  artifacts:
+    paths:
+      - build/rust/release/noc-dns-sync
+
+Build agent:
+  stage: Build
+  extends: .build_rust
+  variables:
+    BUILD_TARGET: agent
   artifacts:
     paths:
       - build/rust/release/noc-agent
-      - build/rust/release/noc-dns-sync
-    expire_in: 7 days
 
 upload docs:
   stage: Upload
@@ -390,6 +398,20 @@ upload docs:
     refs:
       - master
       - /^release-\d+\.\d+/
+
+upload rust libs:
+  stage: Upload
+  environment: libs
+  extends: .upload
+  variables:
+    SOURCE: build/rust/release/libip.so
+    DEST: cdn/$S3_BUCKET/libs/
+    BUILD_TARGET: pyip
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - rust/$BUILD_TARGET/*
+        - rust/$BUILD_TARGET/**/*
 
 gemnasium-python-dependency_scanning:
   stage: Test
