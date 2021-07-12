@@ -285,14 +285,13 @@ def update_affected_objects(maintenance_id):
 
     # @todo: Calculate affected objects considering topology
     affected = [{"object": o} for o in sorted(affected)]
-    if affected:
-        Maintenance._get_collection().update(
-            {"_id": maintenance_id},
-            {"$set": {"administrative_domain": affected_ad}},
-        )
-        AffectedObjects._get_collection().update(
-            {"maintenance": maintenance_id}, {"$set": {"affected_objects": affected}}, upsert=True
-        )
+    Maintenance._get_collection().update(
+        {"_id": maintenance_id},
+        {"$set": {"administrative_domain": affected_ad}},
+    )
+    AffectedObjects._get_collection().update(
+        {"maintenance": maintenance_id}, {"$set": {"affected_objects": affected}}, upsert=True
+    )
 
 
 def stop(maintenance_id):
