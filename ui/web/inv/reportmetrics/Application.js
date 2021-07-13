@@ -26,9 +26,11 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["iface_name", __("Interface Name"), true],
         ["iface_description", __("Interface Description"), true],
         ["iface_speed", __("Interface Speed"), false],
-        ["load_in", __("Load In (90% percentile)"), true],
+        ["load_in_perc", __("Load In (90% percentile)"), false],
+        ["load_in_avg", __("Load In (Average)"), true],
         ["load_in_p", __("Load In (% Bandwith)"), false],
-        ["load_out", __("Load Out (90% percentile)"), true],
+        ["load_out_perc", __("Load Out (90% percentile)"), false],
+        ["load_out_avg", __("Load Out (Average)"), true],
         ["load_out_p", __("Load Out (% Bandwith)"), false],
         ["octets_in_sum", __("Traffic In (Sum by period in MB)"), false],
         ["octets_out_sum", __("Traffic Out (Sum by period in MB)"), false],
@@ -41,7 +43,7 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         ["interface_flap", __("Interface Flap count"), false],
         ["interface_load_url", __("Interface Load URL"), false],
         ["lastchange", __("Interface Last Change (days)"), false],
-        ["status_oper", __("Operational status"), false],
+        ["status_oper_last", __("Operational status (Last)"), false],
         ["mac_counter", __("Mac counter"), false]
     ],
     objectData: [
@@ -161,6 +163,13 @@ Ext.define("NOC.inv.reportmetrics.Application", {
                 name: "exclude_zero",
                 xtype: "checkboxfield",
                 boxLabel: __("Filter interface has zero load"),
+                allowBlank: false,
+                defaultValue: false
+            },
+            {
+                name: "use_aggregated_source",
+                xtype: "checkboxfield",
+                boxLabel: __("Use aggregated Datasource"),
                 allowBlank: false,
                 defaultValue: false
             }
