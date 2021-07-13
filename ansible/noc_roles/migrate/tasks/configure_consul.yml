@@ -69,3 +69,16 @@
   with_items: "{{ hostvars |json_query('*.noc_services[] | [].pool') |unique }}"
   tags:
     - correlator
+
+- name: call consul to setup kafkasender
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/kafkasender/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='kafkasender'].{num:config.power} | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  tags:
+    - kafkasender
