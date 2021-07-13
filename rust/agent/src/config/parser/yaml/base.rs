@@ -15,6 +15,9 @@ impl Parser for YamlParser {
     fn is_valid_extension(ext: &str) -> bool {
         matches!(ext, "yml" | "yaml")
     }
+    fn is_valid_content_type(ct: &str) -> bool {
+        matches!(ct, "text/yaml")
+    }
     fn parse(data: &[u8]) -> Result<ZkConfig, AgentError> {
         match serde_yaml::from_slice(data) {
             Ok(x) => Ok(x),

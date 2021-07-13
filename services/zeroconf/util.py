@@ -52,7 +52,7 @@ def find_agent(
             return agents[0]
     # No match or multiple matches, restrict to ip
     if ip:
-        qs = Agent.objects.filter(ip_ip__in=ip)
+        qs = Agent.objects.filter(ip__ip__in=ip)
         if agents:
             qs = qs.filter(bi_id__in=[a.bi_id for a in agents])
         agents = list(qs)

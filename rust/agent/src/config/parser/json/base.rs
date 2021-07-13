@@ -15,6 +15,9 @@ impl Parser for JsonParser {
     fn is_valid_extension(ext: &str) -> bool {
         matches!(ext, "json")
     }
+    fn is_valid_content_type(ct: &str) -> bool {
+        matches!(ct, "text/json" | "application/json")
+    }
     fn parse(data: &[u8]) -> Result<ZkConfig, AgentError> {
         match serde_json::from_slice(data) {
             Ok(x) => Ok(x),

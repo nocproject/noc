@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------
-// <describe module here>
+// FileReader module
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
