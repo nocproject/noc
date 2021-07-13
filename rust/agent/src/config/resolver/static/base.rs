@@ -7,12 +7,13 @@
 
 use super::super::Resolver;
 use crate::cli::CliArgs;
-use crate::config::reader::{ConfigReader, FileReader};
+use crate::config::reader::ConfigReader;
 use crate::error::AgentError;
 use std::convert::TryFrom;
 
 pub struct StaticResolver {
     pub path: String,
+    pub disable_cert_validation: bool,
 }
 
 impl TryFrom<CliArgs> for StaticResolver {
@@ -20,7 +21,10 @@ impl TryFrom<CliArgs> for StaticResolver {
 
     fn try_from(args: CliArgs) -> Result<StaticResolver, Self::Error> {
         match args.config {
-            Some(path) => Ok(StaticResolver { path }),
+            Some(path) => Ok(StaticResolver {
+                path,
+                disable_cert_validation: args.disable_cert_validation,
+            }),
             None => Err(AgentError::ConfigurationError(
                 "--config option required".to_string(),
             )),
@@ -36,8 +40,9 @@ impl Resolver for StaticResolver {
         false
     }
     fn get_reader(&self) -> Result<ConfigReader, AgentError> {
-        Ok(ConfigReader::File(FileReader {
-            path: self.path.clone(),
-        }))
+        match ConfigReader::from_url(self.path.to_string(), None, !self.disable_cert_validation) {
+            Some(cr) => Ok(cr),
+            None => Err(AgentError::InternalError("Cannot get reader".to_string())),
+        }
     }
 }

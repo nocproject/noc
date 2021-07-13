@@ -53,7 +53,7 @@ impl TryFrom<CliArgs> for ConfigResolver {
         if args.config.is_some() {
             return Ok(ConfigResolver::File(StaticResolver::try_from(args)?));
         }
-        if args.bootstrap_state.is_some() {
+        if args.bootstrap_state.is_some() || args.zk_url.is_some() {
             return Ok(ConfigResolver::Zk(ZkResolver::try_from(args)?));
         }
         Err(AgentError::ConfigurationError(

@@ -14,7 +14,9 @@ use std::env::ArgsOs;
 pub struct CliArgs {
     pub verbose: bool,
     pub config: Option<String>,
+    pub zk_url: Option<String>,
     pub bootstrap_state: Option<String>,
+    pub disable_cert_validation: bool,
 }
 
 impl TryFrom<ArgsOs> for CliArgs {
@@ -40,12 +42,26 @@ impl TryFrom<ArgsOs> for CliArgs {
                     .help("Load config from file"),
             )
             .arg(
+                Arg::with_name("zk-url")
+                    .short("u")
+                    .long("zk-url")
+                    .value_name("URL")
+                    .takes_value(true)
+                    .help("Zeroconf url"),
+            )
+            .arg(
                 Arg::with_name("bootstrap")
                     .short("s")
                     .long("bootstrap-state")
                     .value_name("FILE")
                     .takes_value(true)
                     .help("Bootstrap state file"),
+            )
+            .arg(
+                Arg::with_name("disable-cert-validation")
+                    .short("-k")
+                    .long("disable_cert_validation")
+                    .help("Disable TLS certificate validation"),
             );
 
         let matches = app
@@ -54,7 +70,9 @@ impl TryFrom<ArgsOs> for CliArgs {
         Ok(Self {
             verbose: matches.is_present("verbose"),
             config: matches.value_of("config").map(|c| c.into()),
+            zk_url: matches.value_of("zk-url").map(|c| c.into()),
             bootstrap_state: matches.value_of("bootstrap").map(|c| c.into()),
+            disable_cert_validation: matches.is_present("disable-cert-validation"),
         })
     }
 }

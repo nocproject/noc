@@ -1,6 +1,6 @@
 [package]
 name = "agent"
-version = "0.5.3"
+version = "0.6.0"
 authors = ["The NOC Project"]
 edition = "2018"
 description = "NOC Agent"
@@ -27,6 +27,7 @@ default = [
     "config-static",
     "config-zk",
     "config-file",
+    "config-http",
     "config-json",
     "config-yaml",
 ]
@@ -67,9 +68,11 @@ uptime = ["systemstat"]
 # Static resolver
 config-static = []
 # ZeroConf resolver
-config-zk = ["trust-dns-proto", "trust-dns-resolver"]
+config-zk = ["trust-dns-proto", "trust-dns-resolver", "systemstat"]
 # File reader
 config-file = []
+# HTTP reader
+config-http = ["reqwest"]
 # JSON parser
 config-json = []
 # YAML parser

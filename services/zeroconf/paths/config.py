@@ -10,7 +10,7 @@ from typing import Optional, List
 from http import HTTPStatus
 
 # Third-party modules
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, Header, HTTPException
 
 # NOC modules
 from ..models.zk import ZkConfig
@@ -25,10 +25,15 @@ def config(
     serial: Optional[str] = None,
     mac: Optional[List[str]] = Query(None),
     ip: Optional[List[str]] = Query(None),
+    x_noc_agent_key: Optional[str] = Header(None),
 ):
+    if agent_id and not x_noc_agent_key:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
     agent = find_agent(agent_id=agent_id, serial=serial, mac=mac, ip=ip)
     if not agent:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+    if agent_id and agent.key != x_noc_agent_key:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
     if agent.profile.update_addresses:
         agent.update_addresses(serial=serial, mac=mac, ip=ip)
     return get_config(agent)

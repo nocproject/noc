@@ -7,6 +7,8 @@
 
 pub mod base;
 pub mod file;
+pub mod http;
 
 pub use base::{ConfigReader, Reader};
 pub use file::FileReader;
+pub use http::HttpReader;

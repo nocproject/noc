@@ -20,6 +20,9 @@ pub trait Parser {
     fn is_valid_extension(_ext: &str) -> bool {
         false
     }
+    fn is_valid_content_type(_ct: &str) -> bool {
+        false
+    }
     fn parse(data: &[u8]) -> Result<ZkConfig, AgentError>;
 }
 
@@ -34,6 +37,15 @@ impl ConfigParser {
             return YamlParser::parse(d);
         }
         Err(AgentError::ParseError("Unknown format".to_string()))
+    }
+    pub fn from_content_type(data: Vec<u8>, ct: &str) -> Result<ZkConfig, AgentError> {
+        if JsonParser::is_valid_content_type(ct) {
+            return JsonParser::parse(data.as_slice());
+        }
+        if YamlParser::is_valid_content_type(ct) {
+            return YamlParser::parse(data.as_slice());
+        }
+        Err(AgentError::ParseError("Unknown content type".to_string()))
     }
 }
 //

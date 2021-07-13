@@ -14,7 +14,29 @@ use std::fs;
 use std::path::Path;
 
 pub struct FileReader {
-    pub path: String,
+    path: String,
+}
+
+pub struct FileReaderBuilder {
+    path: Option<String>,
+}
+
+impl FileReader {
+    pub fn builder() -> FileReaderBuilder {
+        FileReaderBuilder { path: None }
+    }
+}
+
+impl FileReaderBuilder {
+    pub fn with_path(&mut self, path: String) -> &mut Self {
+        self.path = Some(path);
+        self
+    }
+    pub fn build(&self) -> FileReader {
+        FileReader {
+            path: self.path.as_ref().unwrap().clone(),
+        }
+    }
 }
 
 #[async_trait]

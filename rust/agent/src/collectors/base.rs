@@ -76,7 +76,7 @@ pub trait Collectable: Schedule {
 pub trait Schedule {
     fn get_id(&self) -> String;
     fn get_interval(&self) -> u64;
-    fn get_service(&self) -> String;
+    fn get_service(&self) -> u64;
     fn get_labels(&self) -> Vec<String>;
 }
 
@@ -117,7 +117,7 @@ where
 // T - additional collector config and state
 pub struct Collector<T> {
     pub id: String,
-    pub service: String,
+    pub service: u64,
     pub interval: u64,
     pub labels: Vec<String>,
     pub data: T,
@@ -148,8 +148,8 @@ impl<T> Schedule for Collector<T> {
     fn get_interval(&self) -> u64 {
         self.interval
     }
-    fn get_service(&self) -> String {
-        self.service.clone()
+    fn get_service(&self) -> u64 {
+        self.service
     }
     fn get_labels(&self) -> Vec<String> {
         self.labels.clone()
@@ -173,7 +173,7 @@ where
     T: Serialize + Sync,
 {
     pub ts: String,
-    pub service: String,
+    pub service: u64,
     pub collector: &'static str,
     pub labels: Vec<String>,
     #[serde(flatten)]

@@ -25,14 +25,15 @@ pub struct ZkConfigConfig {
 
 #[derive(Deserialize, Debug)]
 pub struct ZkConfigConfigZeroconf {
+    pub id: u64,             // Agent id
+    pub key: Option<String>, // Agent auth key
     pub interval: u64,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct ZkConfigCollector {
     pub id: String,
-    #[serde(default)]
-    pub service: Option<String>,
+    pub service: u64,
     pub interval: u64,
     #[serde(default)]
     pub disabled: bool,
@@ -46,11 +47,8 @@ impl ZkConfigCollector {
     pub fn get_id(&self) -> String {
         self.id.clone()
     }
-    pub fn get_service(&self) -> String {
-        match &self.service {
-            Some(x) => x.into(),
-            None => self.get_id(),
-        }
+    pub fn get_service(&self) -> u64 {
+        self.service
     }
     pub fn get_interval(&self) -> u64 {
         self.interval
