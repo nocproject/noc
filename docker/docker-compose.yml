@@ -676,6 +676,7 @@ services:
     working_dir: /opt/noc
     env_file:
       - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+      - .env.proxy
     volumes:
       - noc_speedup:/opt/nocspeedup:rw
     logging:
@@ -1140,6 +1141,8 @@ services:
       "
     volumes:
       - nginx_ssl:/etc/nginx/ssl
+    env_file:
+      - .env.proxy
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
