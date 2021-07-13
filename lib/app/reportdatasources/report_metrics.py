@@ -15,7 +15,7 @@ from .base import BaseReportColumn
 
 
 class ReportMetrics(BaseReportColumn):
-    CHUNK_SIZE = 500
+    CHUNK_SIZE = 1000
     TABLE_NAME = None
     SELECT_QUERY_MAP = {
         # (List#, Name, Alias): TypeNormalizer or (TypeNormalizer, DefaultValue)

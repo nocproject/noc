@@ -176,7 +176,7 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             metric_name="countEqual(arrayMap((a,p) -> a + p, arrayPushFront(groupArray(status_oper), groupArray(status_oper)[1]), arrayPushBack(groupArray(status_oper), groupArray(status_oper)[-1])), 1)",
         ),
         ReportField(
-            name="status_oper",
+            name="status_oper_last",
             label="Operational status",
             description="",
             unit="ENUM",
