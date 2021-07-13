@@ -32,7 +32,7 @@ RUN \
     && mkdir /opt/nocspeedup \
     && cp /opt/noc/speedup/*.so /opt/nocspeedup \
     && if [ -f "$IP_SO" ]; then cp $IP_SO /opt/nocspeedup/ip.so; else \
-       curl -LJO https://cdn.getnoc.com/noc/lib/ip.so@master && cp ip.so@master /opt/nocspeedup/ip.so; fi \
+       curl -LJO https://cdn.getnoc.com/noc/libs/libip.so && cp libip.so /opt/nocspeedup/ip.so; fi \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && pip3 uninstall -y Cython \
     && apt remove --purge -y $BUILD_PACKAGES \
