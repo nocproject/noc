@@ -225,7 +225,7 @@ class Command(BaseCommand):
         # config_diff_filter_rule = ""
         # config_validation_rule = ""
         # max_scripts = "1"
-        tags = ["autoadd"]
+        labels = ["autoadd"]
         # pool = "default"
         # container = ""
         # trap_source_type = "d"
@@ -280,13 +280,13 @@ class Command(BaseCommand):
             self.hosts_enable.add(mm.address)
             self.mo[mm.address] = {
                 "name": mm.name,
-                "tags": mm.labels,
+                "labels": mm.labels,
                 "is_managed": mm.is_managed,
                 "snmp_ro": mm.auth_profile.snmp_ro if mm.auth_profile else mm.snmp_ro,
             }
         # добавить в список мо с remote:deleted
         moall = ManagedObject.objects.filter(is_managed=False).exclude(
-            tags__contains="remote:deleted"
+            labels__contains="remote:deleted"
         )
         if pool:
             moall = moall.filter(pool=self.pool)
@@ -295,7 +295,7 @@ class Command(BaseCommand):
                 self.hosts_enable.add(mm.address)
                 self.mo[mm.address] = {
                     "name": mm.name,
-                    "tags": mm.tags,
+                    "labels": mm.labels,
                     "is_managed": mm.is_managed,
                     "snmp_ro": mm.auth_profile.snmp_ro if mm.auth_profile else mm.snmp_ro,
                 }
@@ -309,7 +309,7 @@ class Command(BaseCommand):
         asyncio.run(snmp_task())
         print("enable_snmp ", len(self.enable_snmp))
 
-        data = "IP;Доступен по ICMP;IP есть;is_managed;SMNP sysname;SNMP sysObjectId;Vendor;Model;Имя;pool;tags\n"
+        data = "IP;Доступен по ICMP;IP есть;is_managed;SMNP sysname;SNMP sysObjectId;Vendor;Model;Имя;pool;labels\n"
         # столбцы x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12
         for ipx in self.enable_ping:
             x2 = "Да"
@@ -318,8 +318,8 @@ class Command(BaseCommand):
                 x3 = "Да"
                 x8 = self.mo[ipx]["name"]
                 x11 = str(self.mo[ipx]["is_managed"])
-                if self.mo[ipx]["tags"]:
-                    x9 = ",".join(self.mo[ipx]["tags"] if self.mo[ipx]["tags"] else [])
+                if self.mo[ipx]["labels"]:
+                    x9 = ",".join(self.mo[ipx]["labels"] if self.mo[ipx]["labels"] else [])
             else:
                 if autoadd:
                     m = ManagedObject(
@@ -335,7 +335,7 @@ class Command(BaseCommand):
                         segment=NetworkSegment.objects.get(name=segment),
                         scheme=1,
                         address=ipx,
-                        labels=tags,
+                        labels=labels,
                         pool=Pool.objects.get(name=pool),
                     )
                     m.save()
