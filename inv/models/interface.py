@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional
+from typing import Optional, Iterable, List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -19,16 +19,20 @@ from mongoengine.fields import (
     ListField,
     DateTimeField,
     ReferenceField,
+    ObjectIdField,
 )
 from pymongo import ReadPreference
 
 # NOC Modules
 from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.resourcegroup.decorator import resourcegroup
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
+from noc.main.models.regexplabel import RegexpLabel
+from noc.main.models.label import Label
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
@@ -51,6 +55,8 @@ logger = logging.getLogger(__name__)
 
 @on_delete
 @change
+@resourcegroup
+@Label.model
 @on_delete_check(
     ignore=[
         ("inv.Link", "interfaces"),
@@ -112,6 +118,14 @@ class Interface(Document):
     nri_name = StringField()
     #
     service = ReferenceField(Service)
+    # Resource groups
+    static_service_groups = ListField(ObjectIdField())
+    effective_service_groups = ListField(ObjectIdField())
+    static_client_groups = ListField(ObjectIdField())
+    effective_client_groups = ListField(ObjectIdField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     PROFILE_LINK = "profile"
 
@@ -384,7 +398,39 @@ class Interface(Document):
             return self.profile
         return InterfaceProfile.get_default_profile()
 
+    @classmethod
+    def can_set_label(cls, label):
+        # return Label.get_effective_setting(label, setting="enable_sensor")
+        return False
+
+    @classmethod
+    def iter_effective_labels(cls, instance: "Interface") -> Iterable[List[str]]:
+        yield list(instance.labels or [])
+        # if instance.profile.labels:
+        #     yield list(instance.profile.labels)
+        yield RegexpLabel.get_effective_labels("interface_name", instance.name)
+        yield RegexpLabel.get_effective_labels("interface_description", instance.name)
+        if instance.managed_object:
+            yield list(instance.managed_object.effective_labels)
+        if instance.is_linked:
+            yield ["noc::interface::linked::="]
+        for si in instance.parent.subinterface_set.filter(enabled_afi__in=["BRIDGE", "IPv4"]):
+            if si.tagged_vlans:
+                lazy_tagged_vlans_labels = list(
+                    VCFilter.iter_lazy_labels(si.tagged_vlans, "tagged")
+                )
+                yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
+            if si.untagged_vlan:
+                lazy_untagged_vlans_labels = list(
+                    VCFilter.iter_lazy_labels(si.tagged_vlans, "untagged")
+                )
+                yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
+            if si.ipv4_addresses:
+                yield list(PrefixTable.iter_lazy_labels(si.ipv4_addresses[0]))
+
 
 # Avoid circular references
 from noc.sa.models.servicesummary import ServiceSummary
 from .link import Link
+from noc.main.models.prefixtable import PrefixTable
+from noc.vc.models.vcfilter import VCFilter
