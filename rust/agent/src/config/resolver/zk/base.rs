@@ -10,10 +10,10 @@ use crate::cli::CliArgs;
 use crate::config::reader::ConfigReader;
 use crate::config::ZkConfig;
 use crate::error::AgentError;
+use crate::state::AgentState;
 use crate::sysid::{SysId, SysIdBuilder};
 use async_trait::async_trait;
 use std::convert::TryFrom;
-use std::fs;
 use std::str;
 use tokio::time::{sleep, Duration};
 use trust_dns_resolver::TokioAsyncResolver;
@@ -23,8 +23,8 @@ const DEFAULT_CONFIG_RETRY_INTERVAL: u64 = 10;
 pub struct ZkResolver {
     pub state_path: Option<String>,
     pub config_interval: u64,
-    pub zeroconf_url: Option<String>,
     pub disable_cert_validation: bool,
+    pub state: AgentState,
     pub sys_id: SysId,
 }
 
@@ -36,13 +36,19 @@ impl TryFrom<CliArgs> for ZkResolver {
             (None, None) => Err(AgentError::ConfigurationError(
                 "--bootstrap-state or --zk-url options are required".to_string(),
             )),
-            _ => Ok(ZkResolver {
-                state_path: args.bootstrap_state,
-                config_interval: DEFAULT_CONFIG_RETRY_INTERVAL,
-                zeroconf_url: args.zk_url,
-                disable_cert_validation: args.disable_cert_validation,
-                sys_id: SysId::new(),
-            }),
+            _ => {
+                let mut state = AgentState::from_file_or_default(args.bootstrap_state.clone());
+                if let Some(zk_url) = args.zk_url {
+                    state.set_zeroconf_url(zk_url);
+                }
+                Ok(ZkResolver {
+                    state_path: args.bootstrap_state.clone(),
+                    config_interval: DEFAULT_CONFIG_RETRY_INTERVAL,
+                    disable_cert_validation: args.disable_cert_validation,
+                    sys_id: SysId::new(),
+                    state,
+                })
+            }
         }
     }
 }
@@ -56,34 +62,23 @@ impl Resolver for ZkResolver {
         true
     }
     async fn bootstrap(&mut self) -> Result<(), AgentError> {
-        if self.zeroconf_url.is_some() {
+        if self.state.has_url() {
             // Already set
-            return Ok(());
-        }
-        // Try to read state
-        if let Some(url) = self.get_bootstrap_state() {
-            log::info!("Setting zeroconf url to {}", url);
-            self.zeroconf_url = Some(url);
             return Ok(());
         }
         //
         let url = self.get_from_dns().await?;
         log::info!("Resolved zeroconf url to {}", url);
-        if let Err(e) = self.set_bootstrap_state(&url) {
-            log::info!(
-                "Cannot set bootstrap state to {:?}: {:?}",
-                self.state_path,
-                e
-            );
-        }
-        self.zeroconf_url = Some(url);
+        self.state.set_zeroconf_url(url);
+        self.state.try_save(self.state_path.clone());
         Ok(())
     }
     fn get_reader(&self) -> Result<ConfigReader, AgentError> {
-        match &self.zeroconf_url {
+        match &self.state.zeroconf_url {
             Some(url) => ConfigReader::from_url(
                 url.into(),
                 Some(&self.sys_id),
+                Some(&self.state),
                 !self.disable_cert_validation,
             )
             .ok_or_else(|| AgentError::ConfigurationError("Invalid schema".to_string())),
@@ -104,11 +99,12 @@ impl Resolver for ZkResolver {
             self.config_interval = zk_interval;
         }
         if let Some(agent_id) = config.config.zeroconf.id {
-            self.sys_id.set_agent_id(agent_id);
+            self.state.set_agent_id(agent_id);
         }
         if let Some(agent_key) = config.config.zeroconf.key.clone() {
-            self.sys_id.set_agent_key(agent_key);
+            self.state.set_agent_key(agent_key);
         }
+        self.state.try_save(self.state_path.clone());
         Ok(())
     }
     // Wait for next round
@@ -118,33 +114,6 @@ impl Resolver for ZkResolver {
 }
 
 impl ZkResolver {
-    // Get bootstrap state
-    fn get_bootstrap_state(&self) -> Option<String> {
-        match &self.state_path {
-            Some(path) => match fs::read(path) {
-                Ok(data) => match String::from_utf8(data) {
-                    Ok(x) => Some(x),
-                    Err(e) => {
-                        log::info!("Cannot parse state from {}: {}", path, e);
-                        None
-                    }
-                },
-                Err(e) => {
-                    log::info!("Cannot get state from {}: {}", path, e);
-                    None
-                }
-            },
-            None => None,
-        }
-    }
-    // Set bootstrap state
-    fn set_bootstrap_state(&self, url: &str) -> Result<(), AgentError> {
-        if let Some(path) = &self.state_path {
-            fs::write(path, url)?;
-        }
-        Ok(())
-    }
-    //
     async fn get_from_dns(&mut self) -> Result<String, AgentError> {
         log::debug!("Resolving zeroconf URL via DNS");
         let resolver = TokioAsyncResolver::tokio_from_system_conf()

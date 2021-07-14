@@ -8,6 +8,7 @@
 use super::{FileReader, HttpReader};
 use crate::config::ZkConfig;
 use crate::error::AgentError;
+use crate::state::AgentState;
 use crate::sysid::SysId;
 use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
@@ -28,6 +29,7 @@ impl ConfigReader {
     pub fn from_url(
         url: String,
         sys_id: Option<&SysId>,
+        state: Option<&AgentState>,
         validate_cert: bool,
     ) -> Option<ConfigReader> {
         match ConfigReader::get_schema(url.clone()) {
@@ -39,6 +41,7 @@ impl ConfigReader {
                     HttpReader::builder()
                         .with_path(url)
                         .with_cert_validation(validate_cert)
+                        .with_agent_state(state)
                         .with_sys_id(sys_id)
                         .build(),
                 )),
