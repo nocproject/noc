@@ -107,11 +107,11 @@ def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]
                 r["bi_id"] = item.bi_id
             lt = time.localtime(ts or t0)
             r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", lt)
-            data += [r]
+            data += [orjson.dumps(r)]
 
         for partition in range(0, n_parts):
             svc.publish(
-                value=orjson.dumps(data),
+                value=b"\n".join(data),
                 stream=f"ch.{bi_dict_model._meta.db_table}",
                 partition=partition,
                 headers={},
