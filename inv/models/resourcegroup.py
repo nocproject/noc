@@ -11,8 +11,8 @@ import threading
 from typing import List
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
 from pymongo import UpdateMany
 import cachetools
 
@@ -28,6 +28,13 @@ from noc.main.models.label import Label
 from .technology import Technology
 
 id_lock = threading.Lock()
+
+
+class MatchLabels(EmbeddedDocument):
+    labels = ListField(StringField())
+
+    def __str__(self):
+        return ", ".join(self.labels)
 
 
 @Label.model
@@ -84,8 +91,8 @@ class ResourceGroup(Document):
     technology = PlainReferenceField(Technology)
     parent = PlainReferenceField("inv.ResourceGroup")
     description = StringField()
-    dynamic_service_labels = ListField(StringField())
-    dynamic_client_labels = ListField(StringField())
+    dynamic_service_labels = ListField(EmbeddedDocumentField(MatchLabels))
+    dynamic_client_labels = ListField(EmbeddedDocumentField(MatchLabels))
     # @todo: FM integration
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
@@ -182,9 +189,12 @@ class ResourceGroup(Document):
     def get_dynamic_service_groups(cls, labels: List[str], model: str) -> List[str]:
         coll = cls._get_collection()
         r = []
+        if not model:
+            return r
+        print(labels, model)
         for rg in coll.aggregate(
             [
-                {"$match": {"dynamic_service_labels": {"$in": labels}}},
+                {"$match": {"dynamic_service_labels.labels": {"$in": labels}}},
                 {
                     "$lookup": {
                         "from": "technologies",
@@ -201,12 +211,12 @@ class ResourceGroup(Document):
                 {
                     "$project": {
                         "bool_f": {
-                            "$allElementsTrue": [
+                            "$anyElementTrue": [
                                 {
                                     "$map": {
-                                        "input": "$dynamic_service_labels",
+                                        "input": "$dynamic_service_labels.labels",
                                         "as": "item",
-                                        "in": {"$in": ["$$item", labels]},
+                                        "in": {"$setIsSubset": ["$$item", labels]},
                                     }
                                 }
                             ]
@@ -223,9 +233,11 @@ class ResourceGroup(Document):
     def get_dynamic_client_groups(cls, labels: List[str], model: str) -> List[str]:
         coll = cls._get_collection()
         r = []
+        if not model:
+            return r
         for rg in coll.aggregate(
             [
-                {"$match": {"dynamic_client_labels": {"$in": labels}}},
+                {"$match": {"dynamic_client_labels.labels": {"$in": labels}}},
                 {
                     "$lookup": {
                         "from": "technologies",
@@ -242,12 +254,12 @@ class ResourceGroup(Document):
                 {
                     "$project": {
                         "bool_f": {
-                            "$allElementsTrue": [
+                            "$anyElementTrue": [
                                 {
                                     "$map": {
-                                        "input": "dynamic_client_labels",
+                                        "input": "dynamic_client_labels.labels",
                                         "as": "item",
-                                        "in": {"$in": ["$$item", labels]},
+                                        "in": {"$setIsSubset": ["$$item", labels]},
                                     }
                                 }
                             ]

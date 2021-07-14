@@ -10,10 +10,12 @@ Ext.define("NOC.inv.resourcegroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.label.LabelField",
+        "NOC.core.ListFormField",
         "NOC.inv.resourcegroup.Model",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.inv.technology.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+
     ],
     model: "NOC.inv.resourcegroup.Model",
     search: true,
@@ -83,18 +85,42 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "dynamic_service_labels",
-                    xtype: "labelfield",
-                    fieldLabel: __("Dynamic Service Labels"),
-                    allowBlank: true,
-                    uiStyle: "extra"
+                name: "dynamic_service_labels",
+                xtype: "listform",
+                fieldLabel: __("Dynamic Service Labels"),
+                items: [
+                    {
+                      name: "labels",
+                      xtype: "labelfield",
+                      fieldLabel: __("Match Labels"),
+                      allowBlank: false,
+                      isTree: true,
+                      pickerPosition: "down",
+                      uiStyle: "extra",
+                      query: {
+                        "allow_matched": true
+                      }
+                    },
+                  ]
                 },
                 {
-                    name: "dynamic_client_labels",
-                    xtype: "labelfield",
-                    fieldLabel: __("Dynamic Client Labels"),
-                    allowBlank: true,
-                    uiStyle: "extra"
+                name: "dynamic_client_labels",
+                xtype: "listform",
+                fieldLabel: __("Dynamic Service Labels"),
+                items: [
+                    {
+                      name: "labels",
+                      xtype: "labelfield",
+                      fieldLabel: __("Match Labels"),
+                      allowBlank: false,
+                      isTree: true,
+                      pickerPosition: "down",
+                      uiStyle: "extra",
+                      query: {
+                        "allow_matched": true
+                      }
+                    },
+                  ]
                 },
                 {
                     xtype: "fieldset",
