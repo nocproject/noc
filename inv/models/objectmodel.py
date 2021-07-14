@@ -89,7 +89,7 @@ class ObjectModelConnection(EmbeddedDocument):
             "gender": self.gender,
         }
         if self.combo:
-            r["combo"] = self.group
+            r["combo"] = self.combo
         if self.group:
             r["group"] = self.group
         if self.cross:
