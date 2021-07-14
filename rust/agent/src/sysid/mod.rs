@@ -12,27 +12,12 @@ pub use util::MAC;
 
 #[derive(Debug)]
 pub struct SysId {
-    // Agent id
-    pub agent_id: Option<u64>,
-    // Agent key
-    pub agent_key: Option<String>,
     // Board serial number
     pub serial: Option<String>,
     // Network interfaces' IP addresses
     pub ip: Vec<String>,
     // Network interfaces' MAC addresses
     pub mac: Vec<String>,
-}
-
-impl SysId {
-    pub fn set_agent_id(&mut self, agent_id: u64) -> &mut SysId {
-        self.agent_id = Some(agent_id);
-        self
-    }
-    pub fn set_agent_key(&mut self, agent_key: String) -> &mut SysId {
-        self.agent_key = Some(agent_key);
-        self
-    }
 }
 
 pub trait SysIdBuilder {

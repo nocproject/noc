@@ -9,6 +9,7 @@ use super::super::Reader;
 use crate::config::ConfigParser;
 use crate::config::ZkConfig;
 use crate::error::AgentError;
+use crate::state::AgentState;
 use crate::sysid::SysId;
 use async_trait::async_trait;
 
@@ -46,12 +47,33 @@ impl HttpReaderBuilder {
         self.disable_cert_validation = !cert_validation;
         self
     }
-    pub fn with_sys_id(&mut self, sys_id: Option<&SysId>) -> &mut Self {
-        if let Some(s) = sys_id {
+    pub fn with_agent_state(&mut self, state: Option<&AgentState>) -> &mut Self {
+        if let Some(s) = state {
             let mut qs: Vec<String> = Vec::new();
+            // Insert existing querystring, if any
+            if let Some(old_qs) = &self.querystring {
+                qs.push(old_qs.clone());
+            }
             // Agent id
             if let Some(agent_id) = s.agent_id {
                 qs.push(format!("agent_id={}", agent_id));
+            }
+            //
+            if let Some(key_header) = s.agent_key.clone() {
+                self.key_header = Some(key_header)
+            }
+            if !qs.is_empty() {
+                self.querystring = Some(qs.join("&"));
+            }
+        }
+        self
+    }
+    pub fn with_sys_id(&mut self, sys_id: Option<&SysId>) -> &mut Self {
+        if let Some(s) = sys_id {
+            let mut qs: Vec<String> = Vec::new();
+            // Insert existing querystring, if any
+            if let Some(old_qs) = &self.querystring {
+                qs.push(old_qs.clone());
             }
             // MAC
             if !s.mac.is_empty() {
@@ -64,10 +86,6 @@ impl HttpReaderBuilder {
             //
             if !qs.is_empty() {
                 self.querystring = Some(qs.join("&"));
-            }
-            //
-            if let Some(key_header) = s.agent_key.clone() {
-                self.key_header = Some(key_header)
             }
         }
         self

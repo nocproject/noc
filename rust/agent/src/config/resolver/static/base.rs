@@ -40,7 +40,12 @@ impl Resolver for StaticResolver {
         false
     }
     fn get_reader(&self) -> Result<ConfigReader, AgentError> {
-        match ConfigReader::from_url(self.path.to_string(), None, !self.disable_cert_validation) {
+        match ConfigReader::from_url(
+            self.path.to_string(),
+            None,
+            None,
+            !self.disable_cert_validation,
+        ) {
             Some(cr) => Ok(cr),
             None => Err(AgentError::InternalError("Cannot get reader".to_string())),
         }

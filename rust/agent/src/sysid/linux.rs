@@ -31,12 +31,6 @@ impl SysIdBuilder for SysId {
                 }
             }
         }
-        SysId {
-            agent_id: None,
-            agent_key: None,
-            serial,
-            ip,
-            mac,
-        }
+        SysId { serial, ip, mac }
     }
 }
