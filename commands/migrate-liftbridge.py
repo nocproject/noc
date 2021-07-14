@@ -18,6 +18,7 @@ from noc.core.mongo.connection import connect
 from noc.core.service.loader import get_dcs
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
+from noc.core.bi.dictionaries.loader import loader as bi_dict_loader
 from noc.config import config
 
 
@@ -120,6 +121,11 @@ class Command(BaseCommand):
             if not bi_model:
                 continue
             yield f"ch.{bi_model._meta.db_table}", n_ch_shards
+        # BI Dictionary models
+        for name in bi_dict_loader:
+            bi_dict_model = bi_dict_loader[name]
+            if bi_dict_model:
+                yield f"ch.{bi_dict_model._meta.db_table}", n_ch_shards
 
     def apply_stream_settings(self, meta: Metadata, stream: str, partitions: int, rf: int) -> bool:
         def delete_stream(name: str):

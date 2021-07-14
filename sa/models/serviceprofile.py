@@ -35,6 +35,7 @@ from noc.core.hash import hash_int
 from noc.inv.models.capsitem import CapsItem
 from noc.wf.models.workflow import Workflow
 from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
 
 
 id_lock = Lock()
@@ -42,6 +43,7 @@ id_lock = Lock()
 
 @Label.model
 @bi_sync
+@change
 @on_save
 @on_delete_check(check=[("sa.Service", "profile")])
 class ServiceProfile(Document):

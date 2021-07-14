@@ -133,6 +133,9 @@ class Config(BaseConfig):
     class clickhouse(ConfigSection):
         rw_addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
+        db_dictionaries = StringParameter(
+            default="noc_dict", help="Database for store Dictionary Table"
+        )
         rw_user = StringParameter(default="default")
         rw_password = SecretParameter()
         ro_addresses = ServiceParameter(service="clickhouse", wait=True)

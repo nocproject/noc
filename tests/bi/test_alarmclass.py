@@ -20,11 +20,11 @@ CONFIG = """<dictionaries>
     <dictionary>
         <name>alarmclass</name>
         <lifetime>
-            <min>3600</min>
-            <max>3600</max>
+            <min>360</min>
+            <max>360</max>
         </lifetime>
         <layout>
-            <flat />
+            <hashed />
         </layout>
         <source>
             <http>
@@ -39,6 +39,7 @@ CONFIG = """<dictionaries>
              <attribute>
                  <name>id</name>
                  <type>String</type>
+                 <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
              <attribute>

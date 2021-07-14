@@ -46,3 +46,27 @@ class AggregatingMergeTree(BaseEngine):
             f'ORDER BY ({",".join(self.order_by)}) '
             f"SETTINGS index_granularity = {self.granularity} "
         )
+
+
+class ReplacingMergeTree(BaseEngine):
+    def __init__(
+        self, date_field, order_by, version_field=None, granularity=DEFAULT_MERGE_TREE_GRANULARITY
+    ):
+        self.date_field = date_field
+        self.version_field = version_field
+        self.order_by = order_by
+        self.granularity = granularity
+
+    def get_create_sql(self):
+        f_version = ""
+        if self.version_field:
+            f_version = f"ReplacingMergeTree({f_version}) "
+        partition = ""
+        if self.date_field:
+            partition = f"PARTITION BY toYYYYMM({self.date_field}) "
+        return (
+            f"ReplacingMergeTree({f_version}) "
+            f"{partition} "
+            f'ORDER BY ({",".join(self.order_by)}) '
+            f"SETTINGS index_granularity = {self.granularity} "
+        )

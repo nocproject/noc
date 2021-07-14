@@ -25,6 +25,7 @@ from noc.core.mongo.fields import PlainReferenceField, DateField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync, new_bi_id
 from noc.core.prettyjson import to_json
+from noc.core.change.decorator import change
 from noc.models import get_model
 from noc.main.models.label import Label
 from .vendor import Vendor
@@ -34,6 +35,7 @@ id_lock = threading.Lock()
 
 @Label.model
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "platform"),
