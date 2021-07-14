@@ -123,6 +123,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_interface",
+            type: "boolean"
+        },
+        {
             name: "enable_subscriber",
             type: "boolean"
         },

@@ -94,6 +94,9 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_sensor) {
               r.push(__("Sensor"));
             }
+            if (item.data.enable_interface) {
+              r.push(__("Interface"));
+            }
             if (item.data.enable_subscriber) {
               r.push(__("Subscriber"));
             }
@@ -324,6 +327,11 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_slaprofile",
               xtype: "checkbox",
               boxLabel: __("SLA Profile")
+            },
+            {
+              name: "enable_interface",
+              xtype: "checkbox",
+              boxLabel: __("Interface")
             }
             ]
         },
