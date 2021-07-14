@@ -63,7 +63,7 @@ def find_agent(
     return None
 
 
-def get_config(agent: Agent) -> ZkConfig:
+def get_config(agent: Agent, level: int = 0) -> ZkConfig:
     """
     Generate agent config
     :param agent:
@@ -76,10 +76,12 @@ def get_config(agent: Agent) -> ZkConfig:
         version="1",
         config=ZkConfigConfig(
             zeroconf=ZkConfigConfigZeroconf(
-                id=agent.bi_id, key=agent.key, interval=300 if is_disabled else check_interval
+                id=agent.bi_id if level > 0 else None,
+                key=agent.key if level > 0 else None,
+                interval=300 if is_disabled else check_interval,
             )
         ),
-        collectors=list(iter_collectors(agent)),
+        collectors=list(iter_collectors(agent)) if level >= 2 else [],
     )
 
 

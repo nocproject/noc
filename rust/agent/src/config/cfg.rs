@@ -25,7 +25,7 @@ pub struct ZkConfigConfig {
 
 #[derive(Deserialize, Debug)]
 pub struct ZkConfigConfigZeroconf {
-    pub id: u64,             // Agent id
+    pub id: Option<u64>,     // Agent id
     pub key: Option<String>, // Agent auth key
     pub interval: u64,
 }
