@@ -29,8 +29,8 @@ impl SysId {
         self.agent_id = Some(agent_id);
         self
     }
-    pub fn set_agent_key(&mut self, agent_key: Option<String>) -> &mut SysId {
-        self.agent_key = agent_key;
+    pub fn set_agent_key(&mut self, agent_key: String) -> &mut SysId {
+        self.agent_key = Some(agent_key);
         self
     }
 }

@@ -103,9 +103,12 @@ impl Resolver for ZkResolver {
             );
             self.config_interval = zk_interval;
         }
-        self.sys_id.set_agent_id(config.config.zeroconf.id);
-        self.sys_id
-            .set_agent_key(config.config.zeroconf.key.clone());
+        if let Some(agent_id) = config.config.zeroconf.id {
+            self.sys_id.set_agent_id(agent_id);
+        }
+        if let Some(agent_key) = config.config.zeroconf.key.clone() {
+            self.sys_id.set_agent_key(agent_key);
+        }
         Ok(())
     }
     // Wait for next round

@@ -36,4 +36,17 @@ def config(
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
     if agent.profile.update_addresses:
         agent.update_addresses(serial=serial, mac=mac, ip=ip)
-    return get_config(agent)
+    # Get request auth level
+    if agent_id and x_noc_agent_key:
+        req_level = 2
+    else:
+        req_level = 1
+    # Compare with expected level
+    exp_level = agent.auth_level
+    if req_level < exp_level:
+        agent.fire_event("fail")
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
+    auth_level = min(req_level, agent.auth_level)
+    cfg = get_config(agent, level=auth_level)
+    agent.fire_event("seen")
+    return cfg

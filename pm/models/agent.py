@@ -60,6 +60,7 @@ def gen_key() -> str:
 
 @workflow
 @bi_sync
+@Label.model
 @on_delete_check(check=[("sa.Service", "agent")])
 class Agent(Document):
     meta = {
@@ -140,3 +141,15 @@ class Agent(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_agent")
+
+    @property
+    def auth_level(self) -> int:
+        """
+        Get current authorization level
+        :return:
+        """
+        if "noc::agent::auth::auth" in self.effective_labels:
+            return 2
+        if "noc::agent::auth::pre" in self.effective_labels:
+            return 1
+        return 0
