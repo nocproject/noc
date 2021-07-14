@@ -21,6 +21,7 @@ from noc.main.models.style import Style
 from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -28,6 +29,7 @@ id_lock = Lock()
 
 @Label.model
 @bi_sync
+@change
 @on_delete_check(check=[("crm.Subscriber", "profile")])
 class SubscriberProfile(Document):
     meta = {"collection": "noc.subscriberprofiles", "strict": False, "auto_create_index": False}

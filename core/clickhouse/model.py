@@ -15,6 +15,7 @@ from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from .fields import BaseField
+from .engines import ReplacingMergeTree
 from .connect import connection
 
 __all__ = ["Model", "NestedModel"]
@@ -32,6 +33,7 @@ class ModelBase(type):
             sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
             managed=getattr(cls.Meta, "managed", True),
+            is_local=getattr(cls.Meta, "is_local", False),
             view_table_source=getattr(cls.Meta, "view_table_source", None),
         )
         # Call field.contribute_to_class() for all fields
@@ -52,6 +54,7 @@ class ModelMeta(object):
         sample=False,
         tags=None,
         managed=True,
+        is_local=False,  # Local table, do not create distributed
         view_table_source=None,
     ):
         self.engine = engine
@@ -61,6 +64,7 @@ class ModelMeta(object):
         self.tags = tags
         self.managed = managed
         self.view_table_source = view_table_source
+        self.is_local = is_local
         self.fields = {}  # name -> Field
         self.ordered_fields = []  # fields in order
 
@@ -237,10 +241,15 @@ class Model(object, metaclass=ModelBase):
                     )
 
             else:
-                connect.execute(
-                    post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s"
-                    % (table_name, cls.quote_name(field_name), db_type, cls.quote_name(after))
+                query = (
+                    f"ALTER TABLE {table_name} ADD COLUMN {cls.quote_name(field_name)} {db_type}"
                 )
+                if after:
+                    # None if add before first field
+                    query += f" AFTER {cls.quote_name(after)}"
+                else:
+                    query += " FIRST"
+                connect.execute(post=query)
                 c = True
             after = field_name
         return c
@@ -275,7 +284,7 @@ class Model(object, metaclass=ModelBase):
             ch.execute(post=cls.get_create_sql())
             changed = True
         # For cluster mode check d_* distributed table
-        if is_cluster:
+        if is_cluster and not cls._meta.is_local:
             if ch.has_table(dist_table):
                 changed |= cls.ensure_columns(ch, dist_table)
             else:
@@ -427,3 +436,257 @@ class NestedModel(Model):
     @classmethod
     def get_create_sql(cls):
         return cls.get_create_fields_sql()
+
+
+class DictionaryBase(ModelBase):
+    def __new__(mcs, name, bases, attrs):
+        from .fields import DateTimeField, UInt64Field
+
+        # Initialize class
+        cls = type.__new__(mcs, name, bases, attrs)
+        # Append _meta
+        cls._meta = DictionaryMeta(
+            name=getattr(cls.Meta, "name"),
+            engine=getattr(
+                cls.Meta,
+                "engine",
+                ReplacingMergeTree(None, order_by=getattr(cls.Meta, "primary_key", ("bi_id",))),
+            ),
+            source_model=getattr(cls.Meta, "source_model", None),
+            db_table=f'dict_{getattr(cls.Meta, "name", None)}',
+            primary_key=getattr(cls.Meta, "primary_key", ("bi_id",)),
+            incremental_update=getattr(cls.Meta, "incremental_update", False),
+            description=getattr(cls.Meta, "description", None),
+            managed=getattr(cls.Meta, "managed", True),
+            is_local=getattr(cls.Meta, "is_local", True),
+            view_table_source=getattr(cls.Meta, "view_table_source", None),
+            # For Dictionary table
+            layout=getattr(cls.Meta, "layout", "hashed"),
+            lifetime_min=getattr(cls.Meta, "lifetime_min", 360),
+            lifetime_max=getattr(cls.Meta, "lifetime_max", 360),
+        )
+        # Call field.contribute_to_class() for all fields
+        cls._meta.register_field("ts", DateTimeField())
+        cls._meta.register_field("bi_id", UInt64Field())
+        for k in attrs:
+            if isinstance(attrs[k], BaseField):
+                cls._meta.register_field(k, attrs[k])
+        # Fill _meta.ordered_fields
+        cls._meta.order_fields()
+        return cls
+
+
+class DictionaryMeta(object):
+    def __init__(
+        self,
+        name=None,
+        engine=None,
+        source_model=None,
+        primary_key=("bi_id",),
+        incremental_update=False,
+        db_table=None,
+        description=None,
+        managed=True,
+        is_local=False,  # Local table, do not create distributed
+        view_table_source=None,
+        layout=None,
+        lifetime_min=360,
+        lifetime_max=360,
+    ):
+        self.name = name  # Dictionary name
+        self.engine = engine
+        self.source_model = source_model
+        self.primary_key = primary_key
+        self.incremental_update = incremental_update
+        self.db_table = db_table or name
+        self.description = description
+        self.view_table_source = view_table_source
+        self.managed = managed
+        self.is_local = is_local
+        self.layout = layout
+        self.lifetime_min = lifetime_min
+        self.lifetime_max = lifetime_max
+        self.fields = {}  # name -> Field
+        self.ordered_fields = []  # fields in order
+
+    def register_field(self, name, field):
+        self.fields[name] = field
+        field.set_name(name)
+
+    def get_field(self, name):
+        return self.fields[name]
+
+    def order_fields(self):
+        """
+        Fill `ordered_fields`
+        :return:
+        """
+        self.ordered_fields = list(
+            sorted(self.fields.values(), key=operator.attrgetter("field_number"))
+        )
+
+
+class DictionaryModel(Model, metaclass=DictionaryBase):
+    class Meta(object):
+        name = None
+        engine = None
+        source_model = None
+        description = None
+
+    _collection = None
+    _seq = None
+
+    @classmethod
+    def _getdictionary_table(cls):
+        return f"{config.clickhouse.db_dictionaries}.{cls._meta.name}"
+
+    @classmethod
+    def _get_layout(cls):
+        return f"{cls._meta.layout.upper()}()"
+
+    @classmethod
+    def get_config(cls):
+        """
+        Generate XML config
+        :return:
+        """
+        x = [
+            "<dictionaries>",
+            "    <comment>Generated by NOC, do not change manually</comment>",
+            "    <dictionary>",
+            "        <name>%s</name>" % cls._meta.name,
+            "        <lifetime>",
+            "            <min>%s</min>" % cls._meta.lifetime_min,
+            "            <max>%s</max>" % cls._meta.lifetime_max,
+            "        </lifetime>",
+            "        <layout>",
+            "            <%s />" % cls._meta.layout,
+            "        </layout>",
+            "        <source>",
+            "            <http>",
+            '                <url>http://{{ range $index, $element := service "datasource~_agent"}}{{if eq $index 0}}{{.Address}}:{{.Port}}{{end}}{{else}}127.0.0.1:65535{{ end }}/api_datasource/ch_%s.tsv</url>'
+            % cls._meta.name,
+            "                <format>TabSeparated</format>",
+            "            </http>",
+            "        </source>",
+            "        <structure>",
+            "             <id>",
+            "                 <name>bi_id</name>",
+            "             </id>",
+        ]
+        for field in cls._meta.ordered_fields:
+            if field.name in cls._meta.primary_key or field.name == "ts":
+                continue
+            hier = getattr(field, "is_self_reference", False)
+            x += [
+                "             <attribute>",
+                "                 <name>%s</name>" % field.name,
+                "                 <type>%s</type>" % field.get_db_type(),
+                "                 <null_value>Unknown</null_value>",
+                "                 <hierarchical>%s</hierarchical>" % ("true" if hier else "false"),
+                "             </attribute>",
+            ]
+        x += ["        </structure>", "    </dictionary>", "</dictionaries>"]
+        return "\n".join(x)
+
+    @classmethod
+    def get_field_type(cls, name):
+        """
+        Returns field type
+
+        :param name:
+        :return:
+        """
+        return cls._meta.fields[name].get_db_type()
+
+    @classmethod
+    def get_create_view_sql(cls):
+        """
+        CREATE VIEW noc.v_mo_dict1 (`bi_id` UInt64, `name` String, `address` String)
+         AS  select argMax(managed_object, ts) as bi_id,
+          argMax(name,ts) as name ,
+           argMax(ip,ts) as address
+            from mo_datastream group by managed_object;
+        """
+        r = []
+        for field in cls._meta.ordered_fields:
+            if field.name in cls._meta.primary_key:
+                r += [f"{cls.quote_name(field.name)} AS {field.name}"]
+                continue
+            elif field.name == "ts" and cls._meta.incremental_update:
+                r += [f"argMax({cls.quote_name(field.name)}, ts) AS last_changed"]
+                continue
+            elif field.name == "ts":
+                continue
+            r += [f"argMax({cls.quote_name(field.name)}, ts) AS {field.name}"]
+        r = ",\n".join(r)
+        view = cls._get_db_table()
+        src = cls._get_raw_db_table()
+        return f'CREATE OR REPLACE VIEW {view} AS SELECT {r} FROM {src} GROUP BY {", ".join(cls._meta.primary_key)}'
+
+    @classmethod
+    def iter_create_sql(cls, is_dictionary=False):
+        """
+        Yields (field name, db  type) for all model's fields
+        :return:
+        """
+        for field in cls._meta.ordered_fields:
+            for fn, db_type in field.iter_create_sql():
+                if is_dictionary and getattr(field, "is_self_reference", None):
+                    db_type = f"{db_type} HIERARCHICAL"
+                elif is_dictionary and cls._meta.incremental_update and fn == "ts":
+                    fn = "last_changed"
+                yield fn, db_type
+
+    @classmethod
+    def get_create_dictionary_sql(cls):
+        """
+        CREATE OR REPLACE DICTIONARY default.mo_dic1 (     bi_id UInt64,     name String,     ip String )
+         PRIMARY KEY bi_id
+          SOURCE(CLICKHOUSE(HOST 'localhost' PORT 9000 USER 'noc' PASSWORD '' DB 'noc' TABLE 'v_mo_dict1' WHERE ''))
+           LIFETIME(MIN 300 MAX 360) LAYOUT(HASHED()) ;
+        """
+        r = []
+        for name, db_type in cls.iter_create_sql(is_dictionary=True):
+            if name == "ts":
+                continue
+            r += [f"{cls.quote_name(name)} {db_type}"]
+        update_field = ""
+        if cls._meta.incremental_update:
+            update_field = "UPDATE_FIELD 'last_changed' UPDATE_LAG 15"
+        return (
+            f'CREATE DICTIONARY IF NOT EXISTS {cls._getdictionary_table()} ({", ".join(r)}) '
+            f'PRIMARY KEY {", ".join(cls._meta.primary_key)} '
+            f"SOURCE(CLICKHOUSE(HOST 'localhost' PORT 9000 USER '{config.clickhouse.ro_user}' "
+            f"PASSWORD '{config.clickhouse.ro_password}' DB '{config.clickhouse.db}' "
+            f"TABLE '{cls._get_db_table()}' WHERE '' {update_field})) "
+            f"LIFETIME(MIN {cls._meta.lifetime_min} MAX {cls._meta.lifetime_max}) "
+            f"LAYOUT({cls._get_layout()})"
+        )
+
+    @classmethod
+    def detach_dictionary(cls, connect=None):
+        ch = connect or connection()
+        ch.execute(post=f" DETACH DICTIONARY IF EXISTS {cls._getdictionary_table()}")
+        return True
+
+    @classmethod
+    def ensure_dictionary(cls, connect=None):
+        """
+        Check dictionary is exists
+        :param connect:
+        :return: True, if table has been altered, False otherwise
+        """
+        # changed = False
+        ch = connect or connection()
+        ch.execute(post=cls.get_create_dictionary_sql())
+        return True
+
+    @classmethod
+    def dump(cls, out):
+        # @todo: !!!
+        raise NotImplementedError()
+
+    @classmethod
+    def extract(cls, item):
+        raise NotImplementedError

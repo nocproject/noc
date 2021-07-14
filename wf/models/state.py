@@ -31,6 +31,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
 from noc.core.defer import defer
 from noc.core.hash import hash_int
+from noc.core.change.decorator import change
 from noc.models import get_model_id
 
 logger = logging.getLogger(__name__)
@@ -40,6 +41,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("wf.Transition", "from_state"),

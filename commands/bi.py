@@ -11,10 +11,12 @@ import datetime
 import gzip
 import time
 import random
-from typing import List
+import argparse
+from typing import List, Optional
 from functools import partial
 
 # Third-party modules
+import orjson
 from pymongo.errors import OperationFailure
 
 # NOC modules
@@ -36,7 +38,7 @@ class Command(BaseCommand):
     MIN_WINDOW = datetime.timedelta(seconds=2)
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # Args
         parser.add_argument(
             "--data-prefix", default=config.path.bi_data_prefix, help="Show only summary"
@@ -54,11 +56,19 @@ class Command(BaseCommand):
         clean.add_argument("--force", action="store_true", default=False, help="Really remove data")
         # load command
         subparsers.add_parser("load")
+        # dictionary command
+        rebuild_dict = subparsers.add_parser("rebuild-dictionary")
+        rebuild_dict.add_argument(
+            "dictionaries",
+            help="List rebuilding dictionaries",
+            nargs=argparse.REMAINDER,
+            default=None,
+        )
 
     def handle(self, cmd, data_prefix, *args, **options):
         self.data_prefix = data_prefix
         connect()
-        return getattr(self, "handle_%s" % cmd)(*args, **options)
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def get_last_extract(self, name):
         coll = get_db()["noc.bi_timestamps"]
@@ -145,6 +155,48 @@ class Command(BaseCommand):
             xf = xpath[:-4]
             self.stdout.write("Rename dictionary XML to %s\n" % xf)
             os.rename(xpath, xf)
+
+    def handle_rebuild_dictionary(self, dictionaries=None, *args, **options):
+        async def upload(table: str, data: List[bytes]):
+            CHUNK = 500
+            n_parts = len(config.clickhouse.cluster_topology.split(","))
+            async with LiftBridgeClient() as client:
+                while data:
+                    chunk, data = data[:CHUNK], data[CHUNK:]
+                    for part in range(0, n_parts):
+                        await client.publish(
+                            b"\n".join(chunk),
+                            stream=f"ch.{table}",
+                            partition=part,
+                            auto_compress=bool(config.liftbridge.compression_method),
+                        )
+
+        from noc.core.bi.dictionaries.loader import loader
+        from noc.core.clickhouse.model import DictionaryModel
+        from noc.models import get_model
+
+        t0 = time.time()
+        lt = time.localtime(t0)
+
+        # Extract dictionaries
+        for dcls_name in loader:
+            if dictionaries and dcls_name not in dictionaries:
+                # self.print("Sk")
+                continue
+            bi_dict_model: Optional["DictionaryModel"] = loader[dcls_name]
+            if not bi_dict_model:
+                continue
+            data = []
+            model = get_model(bi_dict_model._meta.source_model)
+            for item in model.objects.all():
+                r = bi_dict_model.extract(item)
+                if "bi_id" not in r:
+                    r["bi_id"] = item.bi_id
+                r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", lt)
+                data += [orjson.dumps(r)]
+
+            table = bi_dict_model._meta.db_table
+            run_sync(partial(upload, table, data))
 
     def handle_clean(self, *args, **options):
         for ecls in self.EXTRACTORS:

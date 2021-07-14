@@ -18,6 +18,7 @@ import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.main.models.remotesystem import RemoteSystem
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,7 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("wf.State", "workflow"),

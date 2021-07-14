@@ -8,6 +8,7 @@
 # Python modules
 import threading
 import contextlib
+import time
 from collections import defaultdict
 from typing import Optional, Tuple, List, Dict
 from abc import ABCMeta, abstractmethod
@@ -134,13 +135,14 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
 
     def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
         key = hash_int(id)
-        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields)])
+        t0 = time.time()
+        defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0)])
 
 
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
     def __init__(self):
         super().__init__()
-        self.changes: Dict[Tuple[str, str], Tuple[str, Optional[List]]] = {}
+        self.changes: Dict[Tuple[str, str], Tuple[str, Optional[List], Optional[float]]] = {}
 
     def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
         def merge_fields(f1: Optional[List[str]], f2: Optional[List[str]]) -> Optional[List[str]]:
@@ -148,15 +150,16 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
             f2 = f2 or []
             return list(set(f1) | set(f2))
 
+        t0 = time.time()
         prev = self.changes.get((model, id))
         if prev is None:
             # First change
-            self.changes[model, id] = (op, fields)
+            self.changes[model, id] = (op, fields, t0)
             return
         # Series of change
         if op == "delete":
             # Delete overrides any operation
-            self.changes[model, id] = (op, None)
+            self.changes[model, id] = (op, None, t0)
             return
         if op == "create":
             raise RuntimeError("create must be first update")
@@ -164,18 +167,18 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         prev_op = prev[0]
         if prev_op == "create":
             # Create + Update -> Create with merged fields
-            self.changes[model, id] = ("create", merge_fields(prev[1], fields))
+            self.changes[model, id] = ("create", merge_fields(prev[1], fields), t0)
         elif prev_op == "update":
             # Update + Update -> Update with merged fields
-            self.changes[model, id] = ("update", merge_fields(prev[1], fields))
+            self.changes[model, id] = ("update", merge_fields(prev[1], fields), t0)
         elif prev_op == "delete":
             raise RuntimeError("Cannot update after delete")
 
     def commit(self) -> None:
         # Split to buckets
         changes = defaultdict(list)
-        for (model_id, item_id), (op, fields) in self.changes.items():
+        for (model_id, item_id), (op, fields, ts) in self.changes.items():
             part = 0
-            changes[part].append((op, model_id, item_id, fields))
+            changes[part].append((op, model_id, item_id, fields, ts))
         for part, items in changes.items():
             defer(CHANGE_HANDLER, key=part, changes=items)

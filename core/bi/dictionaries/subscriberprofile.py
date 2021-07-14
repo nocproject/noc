@@ -1,20 +1,34 @@
 # ----------------------------------------------------------------------
 # Interface Profile dictionary
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField
+from noc.crm.models.subscriberprofile import SubscriberProfile as SubscriberProfileModel
 
 
-class SubscriberProfile(Dictionary):
+class SubscriberProfile(DictionaryModel):
     class Meta(object):
         name = "subscriberprofile"
-        layout = "flat"
+        layout = "hashed"
+        source_model = "crm.SubscriberProfile"
+        incremental_update = True
 
+    id = StringField()
     name = StringField()
     desription = StringField()
     glyph = StringField()
+
+    @classmethod
+    def extract(cls, item: "SubscriberProfileModel"):
+
+        return {
+            "id": str(item.id),
+            "name": item.name,
+            "desription": item.description or "",
+            "glyph": item.glyph or "",
+        }

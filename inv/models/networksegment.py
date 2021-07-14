@@ -32,6 +32,7 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
 from .networksegmentprofile import NetworkSegmentProfile
@@ -59,6 +60,7 @@ class VLANTranslation(EmbeddedDocument):
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("sa.AdministrativeDomain", "bioseg_floating_parent_segment"),

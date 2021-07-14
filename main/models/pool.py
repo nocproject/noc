@@ -18,6 +18,7 @@ import cachetools
 # NOC Modules
 from noc.main.models.label import Label
 from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
@@ -25,6 +26,7 @@ id_lock = threading.Lock()
 
 @Label.match_labels("pool", allowed_op={"="})
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("sa.AdministrativeDomain", "default_pool"),

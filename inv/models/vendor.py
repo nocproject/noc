@@ -19,6 +19,7 @@ import cachetools
 # NOC modules
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
@@ -26,6 +27,7 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_save
+@change
 @on_delete_check(
     check=[
         ("inv.ObjectModel", "vendor"),
