@@ -31,6 +31,9 @@
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
   register: rustipso
+  tags:
+    - requirements
+    - get_source
 
 - block:
     - name: Find old ip.c files
@@ -46,6 +49,9 @@
         state: absent
       with_items: "{{ ipc_to_delete.files }}"
   when: rustipso.changed
+  tags:
+    - requirements
+    - get_source
 
 - name: Cleanup hanging .pyc files
   command: ./scripts/deploy/cleanup-pyc
