@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Ttronics.KUB.get_inventory
+# Rotek.BT.get_inventory
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details
@@ -34,7 +34,7 @@ class Script(BaseScript):
             },
             # temp1
             {
-                "name": "temp",
+                "name": "temp_out",
                 "status": True,
                 "description": "Температура в шкафу",
                 "measurement": "Celsius",
