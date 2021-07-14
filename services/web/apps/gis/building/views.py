@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # gis.building application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,11 +12,17 @@ from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.address import Address
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 class AddressInline(DocInline):
     def field_text_address(self, o):
         return o.display_ru()
+
+    def instance_to_dict(self, o, fields=None):
+        r = super().instance_to_dict(o, fields=fields)
+        r["remote_system"] = smart_text(r["remote_system"])
+        return r
 
 
 class BuildingApplication(ExtDocApplication):
