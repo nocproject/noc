@@ -26,11 +26,26 @@ TITLE_BAD_CHARS = '"\\\n\r'
 class MODashboard(JinjaDashboard):
     name = "mo"
     template = "dash_mo.j2"
+    has_capability = None
 
-    def resolve_object(self, object):
-        o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
+    def __new__(cls, *args, **kwargs):
+        from .loader import loader
+
+        object_id, *_ = args
+        mo: ManagedObject = cls.resolve_object(object_id)
+        caps = mo.get_caps()
+        dash = cls
+        print(loader.caps_map)
+        for capability in loader.caps_map:
+            if capability in caps:
+                dash = loader.caps_map[capability]
+        return super().__new__(dash)
+
+    @classmethod
+    def resolve_object(cls, object_id):
+        o = ManagedObject.objects.filter(Q(id=object_id) | Q(bi_id=object_id))[:1]
         if not o:
-            raise self.NotFound()
+            raise cls.NotFound()
         else:
             return o[0]
 
