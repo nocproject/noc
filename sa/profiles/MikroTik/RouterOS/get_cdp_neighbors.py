@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_cdp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,6 +22,8 @@ class Script(BaseScript):
         # Get neighbors
         neighbors = []
         for n, f, r in self.cli_detail("/ip neighbor print detail without-paging"):
+            if r.get("platform") is None:  # Found in ROS 6.40.9
+                return {"device_id": device_id, "neighbors": []}
             platform = r["platform"]
             if platform == "MikroTik":
                 continue
