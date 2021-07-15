@@ -35,6 +35,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.macvendor import MACVendor
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.translation import ugettext as _
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -64,12 +65,12 @@ def get_column_width(name):
     return 15
 
 
-MAC_MOVED_QUERY = """SELECT
+MAC_MOVED_QUERY = f"""SELECT
    managed_object,
    MACNumToString(mac) as smac,
-   dictGetString('managedobject', 'name', managed_object),
-   dictGetString('managedobject', 'address', managed_object),
-   dictGetString('managedobject', 'adm_domain_name', managed_object),
+   dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'name', managed_object),
+   dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'address', managed_object),
+   dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'adm_domain_name', managed_object),
    groupUniqArray((interface, toUnixTimestamp(ts))) as ifaces,
    groupUniqArray(interface) as migrate_ifaces,
    uniqExact(interface)
@@ -232,10 +233,7 @@ class ReportMovedMacApplication(ExtApplication):
         mos_id = set(mos.order_by("bi_id").values_list("bi_id", flat=True))
         if interface_profile:
             interface_profile = InterfaceProfile.objects.get(id=interface_profile)
-            iface_filter = (
-                "dictGetString('interfaceattributes', 'profile', (managed_object, interface)) == '%s'"
-                % interface_profile.name
-            )
+            iface_filter = f"dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, interface)) == '{interface_profile.name}'"
         else:
             iface_filter = "is_uni = 1"
         serials_changed = {}

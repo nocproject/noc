@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.bi.dictionaries.loader import loader
 from noc.models import get_model
+from noc.config import config
 
 
 class OP(object):
@@ -53,14 +54,16 @@ def f_lookup(seq, model=None):
     :return:
     """
     dict_name = seq[0]
-    dc = Dictionary.get_dictionary_class(dict_name)
+    dc = loader[dict_name]
     if len(seq) == 2:
         field_name = dc.get_pk_name()
     else:
         field_name = seq[2]
     t = dc.get_field_type(field_name)
     id_expr = to_sql(seq[1])
-    return "dictGet%s('%s', '%s', %s)" % (t, dict_name, field_name, id_expr)
+    return (
+        f"dictGet{t}('{config.clickhouse.db_dictionaries}.{dict_name}', '{field_name}', {id_expr})"
+    )
 
 
 def in_lookup(seq, model=None):
@@ -89,7 +92,7 @@ def f_ternary_if(seq, model=None):
     :param model:
     :return:
     """
-    return "((%s) ? (%s) : (%s))" % (to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
+    return f"(({to_sql(seq[0])}) ? ({to_sql(seq[1])}) : ({to_sql(seq[2])}))"
 
 
 def f_between(seq, model=None):
@@ -99,7 +102,7 @@ def f_between(seq, model=None):
     :param model:
     :return:
     """
-    return "((%s) BETWEEN (%s) AND (%s))" % (to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
+    return f"(({to_sql(seq[0])}) BETWEEN ({to_sql(seq[1])}) AND ({to_sql(seq[2])}))"
 
 
 def f_names(seq, model=None):
@@ -109,11 +112,7 @@ def f_names(seq, model=None):
     :param model:
     :return:
     """
-    return "arrayMap(k->dictGetString('%s', 'name', toUInt64(k)), dictGetHierarchy('%s', %s))" % (
-        seq[0],
-        seq[0],
-        seq[1],
-    )
+    return f"arrayMap(k->dictGetString('{config.clickhouse.db_dictionaries}.{seq[0]}', 'name', toUInt64(k)), dictGetHierarchy('{seq[0]}', {seq[1]}))"
 
 
 def f_duration(seq, model=None):

@@ -35,9 +35,11 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectdata import ObjectData
 from noc.core.mongo.connection import get_db
 from noc.core.translation import ugettext as _
+from noc.config import config
 
 
 def get_column_width(name):
+
     excel_column_format = {
         "ID": 6,
         "OBJECT_NAME": 38,
@@ -301,17 +303,17 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
                 2,
                 "",
                 "iface_description",
-            ): "dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path)))",
+            ): f"dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes','description' , (managed_object, arrayStringConcat(path)))",
             (
                 3,
                 "",
                 "profile",
-            ): "dictGetString('interfaceattributes', 'profile', (managed_object, arrayStringConcat(path)))",
+            ): f"dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, arrayStringConcat(path)))",
             (
                 4,
                 "speed",
                 "iface_speed",
-            ): "dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path)))",
+            ): f"dictGetUInt64('{config.clickhouse.db_dictionaries}.interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path)))",
             (5, "load_in_max", "load_in_max"): "divide(max(load_in),1048576)",
             (6, "load_out_max", "load_out_max"): "divide(max(load_out),1048576)",
             (7, "max_load_in_time", "max_load_in_time"): "argMax(ts,load_in)",

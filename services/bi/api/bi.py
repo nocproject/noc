@@ -23,7 +23,7 @@ import cachetools
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.loader import loader
-from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.bi.dictionaries.loader import loader as dict_loader
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.pm.models.metricscope import MetricScope
@@ -104,20 +104,20 @@ class BIAPI(API):
                     }
                 ]
                 if cls.ref_dict.get(k.model, None):
-                    for f in Dictionary.get_dictionary_class(
-                        cls.ref_dict.get(k.model, None)
-                    )._meta.ordered_fields:
-                        r["fields"] += [
-                            {
-                                "name": f.name,
-                                "description": f.description or f.name,
-                                "type": "UInt64",
-                                "ro": True,
-                                "dict": cls.ref_dict.get(k.model, None),
-                                "dict_id": k.field_name,
-                                "model": k.model,
-                            }
-                        ]
+                    dcls = dict_loader[cls.ref_dict.get(k.model, None)]
+                    if dcls:
+                        for f in dcls._meta.ordered_fields:
+                            r["fields"] += [
+                                {
+                                    "name": f.name,
+                                    "description": f.description or f.name,
+                                    "type": "UInt64",
+                                    "ro": True,
+                                    "dict": cls.ref_dict.get(k.model, None),
+                                    "dict_id": k.field_name,
+                                    "model": k.model,
+                                }
+                            ]
             if ms.labels:
                 r["fields"] += [
                     {
