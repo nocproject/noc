@@ -5,11 +5,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-import logging
-
 # Python modules
+import logging
 import os
 
+# Third-Partu modules
 import orjson
 
 BAD_CHARS = r"!\"%'()+,:;<>?@\^`{|}~\\\n\r"
