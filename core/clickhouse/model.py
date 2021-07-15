@@ -10,7 +10,6 @@ import operator
 from time import perf_counter
 
 # NOC modules
-from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
@@ -353,6 +352,8 @@ class Model(object, metaclass=ModelBase):
         :param dry_run: Do not query, only return it.
         :return:
         """
+        from noc.core.bi.query import to_sql, escape_field
+
         # Get field expressions
         fields = query.get("fields", [])
         if not fields:
@@ -598,6 +599,17 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         :return:
         """
         return cls._meta.fields[name].get_db_type()
+
+    @classmethod
+    def get_pk_name(cls):
+        """
+        Get primary key's name
+
+        :return: Field name
+        """
+        if "name" in cls._meta.fields:
+            return "name"
+        return cls._meta.ordered_fields[0].name
 
     @classmethod
     def get_create_view_sql(cls):

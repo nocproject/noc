@@ -7,6 +7,7 @@
 
 # NOC Modules
 from .base import CHTableReportDataSource, ReportField
+from noc.config import config
 
 
 class ReportInterfaceMetrics(CHTableReportDataSource):
@@ -38,7 +39,7 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             label="Interface Profile Name",
             description="",
             unit="STRING",
-            metric_name="dictGetString('interfaceattributes', 'profile', (managed_object, interface))",
+            metric_name=f"dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, interface))",
             group=True,
         ),
         ReportField(
@@ -46,7 +47,7 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             label="Interface Description",
             description="",
             unit="STRING",
-            metric_name="dictGetString('interfaceattributes','description' , (managed_object, interface))",
+            metric_name=f"dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes','description' , (managed_object, interface))",
             group=True,
         ),
         ReportField(
@@ -54,7 +55,7 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             label="Interface Speed",
             description="",
             unit="BIT/S",
-            metric_name="if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, interface)), max(speed))",
+            metric_name=f"if(max(speed) = 0, dictGetUInt64('{config.clickhouse.db_dictionaries}.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed))",
         ),
         ReportField(
             name="load_in_perc",
@@ -75,7 +76,7 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             label="Load In (% Bandwith)",
             description="",
             unit="BIT/S",
-            metric_name="replaceOne(toString(round(quantile(0.90)(load_in) / if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
+            metric_name=f"replaceOne(toString(round(quantile(0.90)(load_in) / if(max(speed) = 0, dictGetUInt64('{config.clickhouse.db_dictionaries}.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)), 4) * 100), '.', ',')",
         ),
         ReportField(
             name="load_out_perc",
@@ -96,7 +97,7 @@ class ReportInterfaceMetrics(CHTableReportDataSource):
             label="Load Out (% Bandwith)",
             description="",
             unit="BYTE",
-            metric_name="replaceOne(toString(round(quantile(0.90)(load_out) / if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', (managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
+            metric_name=f"replaceOne(toString(round(quantile(0.90)(load_out) / if(max(speed) = 0, dictGetUInt64('{config.clickhouse.db_dictionaries}.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)), 4) * 100), '.', ',')",
         ),
         ReportField(
             name="octets_in_sum",

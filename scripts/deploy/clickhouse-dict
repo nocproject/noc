@@ -9,16 +9,22 @@
 # Python modules
 import os
 import sys
+from typing import Optional
+
 # NOC modules
-from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.bi.dictionaries.loader import loader
+from noc.core.clickhouse.model import DictionaryModel
 from noc.core.fileutils import safe_rewrite
 
 
 def main(path):
-    for dc in Dictionary.iter_cls():
-        xml = dc.get_config()
+    for dcls_name in loader:
+        dcls: Optional["DictionaryModel"] = loader[dcls_name]
+        if not dcls:
+            continue
+        xml = dcls.get_config()
         safe_rewrite(
-            os.path.join(path, "%s.xml" % dc._meta.name),
+            os.path.join(path, "%s.xml" % dcls._meta.name),
             xml
         )
 

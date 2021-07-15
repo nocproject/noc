@@ -35,6 +35,7 @@ from noc.core.bi.dictionaries.pool import Pool
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
+from noc.config import config
 
 
 class Services(NestedModel):
@@ -121,7 +122,7 @@ class Alarms(Model):
         if field == "services":
             return ",".join(
                 [
-                    "arrayStringConcat(arrayMap(x -> concat(dictGetString('serviceprofile'",
+                    f"arrayStringConcat(arrayMap(x -> concat(dictGetString('{config.clickhouse.db_dictionaries}.serviceprofile'",
                     " 'name', toUInt64(services.profile[indexOf(services.summary, x)]))",
                     " ':', toString(x)), services.summary),',')",
                 ]
@@ -130,7 +131,7 @@ class Alarms(Model):
         elif field == "subscribers":
             return ",".join(
                 [
-                    "arrayStringConcat(arrayMap(x -> concat(dictGetString('subscriberprofile'",
+                    f"arrayStringConcat(arrayMap(x -> concat(dictGetString('{config.clickhouse.db_dictionaries}.subscriberprofile'",
                     " 'name', toUInt64(subscribers.profile[indexOf(subscribers.summary, x)]))",
                     " ':', toString(x)), subscribers.summary),',')",
                 ]
