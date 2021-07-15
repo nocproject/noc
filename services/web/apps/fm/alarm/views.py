@@ -724,7 +724,22 @@ class AlarmApplication(ExtApplication):
         if not alarms:
             return self.response_not_found()
         for alarm in alarms:
-            AlarmEscalation.watch_escalations(alarm, force=True)
+            if alarm.escalation_tt:
+                alarm.log_message(
+                    "Already escalated with TT #%s" % alarm.escalation_tt,
+                    source=request.user.username,
+                )
+            elif alarm.root:
+                alarm.log_message(
+                    "Alarm is not root cause, skipping escalation",
+                    source=request.user.username,
+                )
+            else:
+                alarm.log_message(
+                    "Alarm has been escalated by %s" % request.user.username,
+                    source=request.user.username,
+                )
+                AlarmEscalation.watch_escalations(alarm, force=True)
         return {"status": True}
 
     def location(self, id):
