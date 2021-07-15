@@ -31,6 +31,7 @@ from noc.core.bi.dictionaries.version import Version
 from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
+from noc.core.bi.dictionaries.project import Project
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
@@ -50,6 +51,8 @@ class ManagedObject(Model):
     container = ReferenceField(Container, description=_("Container"))
     location = StringField(description="Geo location")
     level = UInt16Field(description=_("Level"))
+    # Project
+    project = ReferenceField(Project, description=_("Project"))
     # Coordinates
     x = Float64Field(description=_("Longitude"))
     y = Float64Field(description=_("Latitude"))
