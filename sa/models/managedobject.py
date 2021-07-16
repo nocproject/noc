@@ -520,6 +520,9 @@ class ManagedObject(NOCModel):
     labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
 
+    # enable fetching for netflow collector
+    enable_flow = BooleanField("enable_flow", default=True)
+
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
     EV_ALARM_RISEN = "alarm_risen"  # New alarm risen
@@ -620,7 +623,7 @@ class ManagedObject(NOCModel):
             }
         ):
             yield "cfgtrap", self.id
-        if config.datastream.enable_cfgnetflow and changed_fields.intersection(
+        if config.datastream.enable_cfgnetflow and self.enable_flow and changed_fields.intersection(
             {
                 "bi_id",
                 "address",

@@ -611,6 +611,10 @@ class ManagedObjectProfile(NOCModel):
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
+
+    # enable fetching for netflow collector
+    enable_flow = models.BooleanField(default=True)
+
     # Dynamic Profile Classification
     dynamic_classification_policy = models.CharField(
         _("Dynamic Classification Policy"),
