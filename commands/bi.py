@@ -225,7 +225,7 @@ class Command(BaseCommand):
                     try:
                         r = bi_dict_model.extract(item)
                     except (AttributeError, ValueError) as e:
-                        self.print(f"[{item}] Error when extract item", e)
+                        self.print(f"[{model}:{item.id}] Error when extract item", e)
                         continue
                     if "bi_id" not in r:
                         r["bi_id"] = item.bi_id

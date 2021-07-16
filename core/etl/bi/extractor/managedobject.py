@@ -117,7 +117,8 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "uptime": uptime.last_value if uptime else 0.0,
                 "availability": 100.0,
                 "tags": [str(t) for t in mo.labels if "{" not in t] if mo.labels else [],  # { - bug
-                "serials": list(set(serials))
+                "serials": list(set(serials)),
+                "project": mo.project,
                 # subscribers
                 # services
             }
