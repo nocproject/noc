@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.label import Label
@@ -30,11 +33,16 @@ class LabelApplication(ExtDocApplication):
         :return:
         """
         query = request.GET.get("__query")
+        allow_matched = ("allow_matched", ["true"]) in request.GET.lists()
+        labels_filter = {
+            str(k): True if v[0] == "true" else False
+            for k, v in request.GET.lists()
+            if k.startswith("enable_")
+        }
         if query:
-            labels = Label.objects.filter(tag__icontains=query).order_by("id")
-        else:
-            # If not query - return all
-            labels = Label.objects.filter().order_by("id")
+            labels_filter["name__icontains"] = query
+        # If not query - return all
+        labels = Label.objects.filter(**labels_filter).order_by("id")
         labels = [
             {
                 "id": ll.name,
@@ -48,10 +56,59 @@ class LabelApplication(ExtDocApplication):
                 "fg_color2": "#%x" % ll.fg_color2,
             }
             for ll in labels
-            if not ll.is_wildcard
+            if not (ll.is_wildcard or (ll.is_matched and not allow_matched))
         ]
         return {
             "data": labels,
             "total": len(labels),
             "success": True,
         }
+
+    @view(url="^lookup_tree/", method=["GET"], access=True)
+    def api_labels_lookup_tree(self, request):
+        leafs = defaultdict(list)
+        level = 1
+        labels_filter = {}
+        query = request.GET.get("__query")
+        if query:
+            labels_filter["name__icontains"] = query
+        # If not query - return all
+        for ll in Label.objects.filter(**labels_filter).order_by("id"):
+            if ll.is_wildcard:
+                # wildcards[ll.name] =
+                continue
+            path = ll.name.split("::")
+            if ll.is_matched:
+                parent = "::".join(path[: -level - 1])
+            else:
+                parent = "::".join(path[:-level])
+
+            leafs[parent].append(
+                {
+                    "name": ll.name,
+                    # "type": f.type,
+                    "parent": parent,
+                    "id": str(ll.name),
+                    "leaf": True,
+                    "is_protected": False,
+                    "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
+                    "value": ll.name.split("::")[-1],
+                    "bg_color1": "#%x" % ll.bg_color1,
+                    "fg_color1": "#%x" % ll.fg_color1,
+                    "bg_color2": "#%x" % ll.bg_color2,
+                    "fg_color2": "#%x" % ll.fg_color2,
+                    # "checked": False,
+                }
+            )
+
+        return self.render_json(
+            {
+                "name": "root",
+                "is_protected": False,
+                "leaf": False,
+                "children": [
+                    {"name": lf, "leaf": False, "is_protected": False, "children": leafs[lf]}
+                    for lf in leafs
+                ],
+            }
+        )

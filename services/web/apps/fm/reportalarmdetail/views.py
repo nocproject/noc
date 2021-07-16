@@ -41,18 +41,19 @@ from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+from noc.config import config
 
-LONG_ARCHIVE_QUERY = """SELECT
+LONG_ARCHIVE_QUERY = f"""SELECT
   alarm_id,
-  dictGetString('managedobject', 'id', managed_object) as sova_id,
-  dictGetString('objectprofile', 'name', object_profile) as op,
-  dictGetString('vendor', 'name', vendor) as vendor,
-  dictGetString('platform', 'name', platform) as platform,
-  dictGetString('version', 'name', version) as version, ts,  close_ts,
-  dictGetString('managedobject', 'location_address', managed_object) as location,
-  '' as OO,  dictGetString('pool', 'name', pool) as pool,
-  dictGetString('administrativedomain', 'name', administrative_domain) as adm_domain,
-  dictGetString('managedobject', 'name', managed_object) as mo_name,
+  dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as sova_id,
+  dictGetString('{config.clickhouse.db_dictionaries}.objectprofile', 'name', object_profile) as op,
+  dictGetString('{config.clickhouse.db_dictionaries}.vendor', 'name', vendor) as vendor,
+  dictGetString('{config.clickhouse.db_dictionaries}.platform', 'name', platform) as platform,
+  dictGetString('{config.clickhouse.db_dictionaries}.version', 'name', version) as version, ts,  close_ts,
+  dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'location_address', managed_object) as location,
+  '' as OO,  dictGetString('{config.clickhouse.db_dictionaries}.pool', 'name', pool) as pool,
+  dictGetString('{config.clickhouse.db_dictionaries}.administrativedomain', 'name', administrative_domain) as adm_domain,
+  dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'name', managed_object) as mo_name,
   IPv4NumToString(ip) as ip,
   escalation_tt,  duration,  severity,  reboots  %s FROM alarms
   WHERE date >= '%s' AND date < '%s' AND alarm_class = %d AND root == ''"""
@@ -90,7 +91,7 @@ class ReportAlarmObjects(object):
     def load(mos_id):
         query = "select sa.id, sa.name, sa.address, sa.is_managed, "
         query += "profile, op.name as object_profile, sa.container, "
-        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';'), "
+        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.labels, ';'), "
         query += "platform, version "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         if mos_id:

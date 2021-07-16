@@ -5,8 +5,9 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::{NTPTimeStamp, UTCDateTime};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use super::{NtpTimeStamp, UtcDateTime};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Test-Response structure
@@ -45,11 +46,11 @@ use bytes::{Buf, BufMut, BytesMut};
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TestResponse {
     pub seq: u32,
-    pub timestamp: UTCDateTime,
+    pub timestamp: UtcDateTime,
     pub err_estimate: u16,
-    pub recv_timestamp: UTCDateTime,
+    pub recv_timestamp: UtcDateTime,
     pub sender_seq: u32,
-    pub sender_timestamp: UTCDateTime,
+    pub sender_timestamp: UtcDateTime,
     pub sender_err_estimate: u16,
     pub sender_ttl: u8,
     // Padding to size, excluding IP + UDP
@@ -60,22 +61,22 @@ impl FrameReader for TestResponse {
     fn min_size() -> usize {
         41
     }
-    fn parse(s: &mut BytesMut) -> Result<TestResponse, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<TestResponse, AgentError> {
         let pad_to = s.len();
         // Sequence number, 4 octets
         let seq = s.get_u32();
         // Timestamp, 8 octets
-        let ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // Err estimate, 2 octets
         let err_estimate = s.get_u16();
         // MBZ, 2 octets
         s.advance(2);
         // Receive timestamp, 8 octets
-        let recv_ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let recv_ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // Sender sequence number, 4 octets
         let sender_seq = s.get_u32();
         // Sender timestamp
-        let sender_ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let sender_ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // Sender err estimate, 2 octets
         let sender_err_estimate = s.get_u16();
         // MBZ, 2 octets
@@ -106,11 +107,11 @@ impl FrameWriter for TestResponse {
         self.pad_to
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Sequence number, 4 octets
         s.put_u32(self.seq);
         // Timestamp, 8 octets
-        let ts: NTPTimeStamp = self.timestamp.into();
+        let ts: NtpTimeStamp = self.timestamp.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // Err estimate, 2 octets
@@ -118,13 +119,13 @@ impl FrameWriter for TestResponse {
         // MBZ, 2 octets
         s.put_u16(0);
         // Receive timestamp, 8 octets
-        let ts: NTPTimeStamp = self.recv_timestamp.into();
+        let ts: NtpTimeStamp = self.recv_timestamp.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // Sender sequence number, 4 octets
         s.put_u32(self.sender_seq);
         // Sender timestamp
-        let ts: NTPTimeStamp = self.sender_timestamp.into();
+        let ts: NtpTimeStamp = self.sender_timestamp.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // Sender err estimate, 2 octets
@@ -188,7 +189,8 @@ mod tests {
         let expected = get_test_response();
         let res = TestResponse::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

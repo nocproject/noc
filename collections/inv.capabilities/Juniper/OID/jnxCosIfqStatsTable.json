@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | OID | jnxCosIfqStatsTable",
+    "$collection": "inv.capabilities",
+    "uuid": "d4be6c68-6360-4afb-976f-24c51b4d925d",
+    "description": "Supported CBQoS stat on jnxCosIfqStatsTable OIDs",
+    "type": "bool",
+    "card_template": null
+}

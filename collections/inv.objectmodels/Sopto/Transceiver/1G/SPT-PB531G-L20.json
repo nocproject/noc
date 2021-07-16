@@ -5,7 +5,7 @@
     "vendor__code": "SOPTO",
     "description": "PT-PB531G-L20 http://www.fiber-optic-modules.com/ru/products/spt-pb351g-l20d",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

@@ -11,10 +11,30 @@ import re
 # NOC modules
 from noc.core.text import parse_kv
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.core.mib import mib
+
+
+SLA_METRICS_MAP = {
+    "SLA | Packets": "CISCO-RTTMON-MIB::rttMonLatestJitterOperNumOfRTT",
+    "SLA | Packets | Loss | Out": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossSD",
+    "SLA | Packets | Loss | In": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossDS",
+    "SLA | Packets | Disordered": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketOutOfSequence",
+    # "SLA | Probes | Error": "CISCO-RTTMON-MIB::nqaJitterStatsErrors",
+    "SLA | OneWayLatency | Out | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
+    "SLA | OneWayLatency | In | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
+    "SLA | Jitter | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
+    "SLA | Jitter | Out | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
+    "SLA | Jitter | In | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
+    "SLA | Jitter | MOS": "CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
+    "SLA | Jitter | ICPIF": "CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
+    "SLA | RTT | Min": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
+    "SLA | RTT | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
+}
 
 
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
+    always_prefer = "S"
 
     rx_ipsla_probe = re.compile(
         r"(?:IPSLA operation id:|Round Trip Time \(RTT\) for.+Index)\s+(\d+)", re.MULTILINE
@@ -51,7 +71,7 @@ class Script(GetMetricsScript):
         :return:
         """
         setup_metrics = {
-            tuple(m.path): m.id for m in metrics if m.metric in {"SLA | JITTER", "SLA | UDP RTT"}
+            tuple(m.labels): m.id for m in metrics if m.metric in {"SLA | JITTER", "SLA | UDP RTT"}
         }
         v = self.cli("show ip sla statistics")
         metric_map = {
@@ -67,14 +87,14 @@ class Script(GetMetricsScript):
 
         for probe_id, data in zip(r_v[1::2], r_v[2::2]):
             p = parse_kv(metric_map, data)
-            if ("", str(probe_id)) not in setup_metrics:
+            if (f"noc::sla::name::{probe_id}",) not in setup_metrics:
                 continue
             if "rtt" in p:
                 # Latest RTT: 697 milliseconds
                 rtt = p["rtt"].split()[0]
                 try:
                     self.set_metric(
-                        id=("SLA | UDP RTT", ("", probe_id)),
+                        id=("SLA | UDP RTT", (f"noc::sla::name::{probe_id}",)),
                         metric="SLA | UDP RTT",
                         value=float(rtt) * 1000,
                         multi=True,
@@ -86,7 +106,7 @@ class Script(GetMetricsScript):
                 # Source to Destination Jitter Min/Avg/Max: 0/8/106 milliseconds
                 jitter = p["sd_jitter"].split()[0].split("/")[1]
                 self.set_metric(
-                    id=("SLA | JITTER", ("", probe_id)),
+                    id=("SLA | JITTER", (f"noc::sla::name::{probe_id}",)),
                     metric="SLA | JITTER",
                     value=float(jitter) * 1000,
                     multi=True,
@@ -107,7 +127,7 @@ class Script(GetMetricsScript):
         :return:
         """
         setup_metrics = {
-            tuple(m.path): m.id
+            tuple(m.labels): m.id
             for m in metrics
             if m.metric == "SLA | ICMP RTT" and m.sla_type == "icmp-echo"
         }
@@ -123,28 +143,146 @@ class Script(GetMetricsScript):
 
         for probe_id, data in zip(r_v[1::2], r_v[2::2]):
             p = parse_kv(metric_map, data)
-            if ("", str(probe_id)) not in setup_metrics:
+            if (f"noc::sla::name::{probe_id}",) not in setup_metrics:
                 continue
             if "rtt" in p:
                 # Latest RTT: 697 milliseconds
                 rtt = p["rtt"].split()[0]
                 try:
                     self.set_metric(
-                        id=setup_metrics[("", str(probe_id))],
+                        id=setup_metrics[(f"noc::sla::name::{probe_id}",)],
                         metric="SLA | ICMP RTT",
-                        path=("", probe_id),
+                        labels=(f"noc::sla::name::{probe_id}",),
                         value=float(rtt) * 1000,
                         multi=True,
                     )
                 except ValueError:
                     pass
 
+    def get_cbqos_config_snmp(self):
+        class_map = {}
+        for oid, name in self.snmp.getnext(mib["CISCO-CLASS-BASED-QOS-MIB::cbQosCMName"]):
+            class_map[oid.rsplit(".", 1)[-1]] = name
+        policy_map = {}
+        for oid, iftype, direction, ifindex in self.snmp.get_tables(
+            [
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfType"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosPolicyDirection"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosIfIndex"],
+            ],
+            bulk=False,
+        ):
+            # direction 1 - input, 2 - output
+            policy_map[oid.rsplit(".", 1)[-1]] = {
+                "iftype": iftype,
+                "direction": {1: "In", 2: "Out"}[direction],
+                "ifindex": ifindex,
+            }
+        config_cmap = {}
+        for entry_index, config_index, object_type, parent in self.snmp.get_tables(
+            [
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosConfigIndex"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosObjectsType"],
+                mib["CISCO-CLASS-BASED-QOS-MIB::cbQosParentObjectsIndex"],
+            ],
+            bulk=False,
+        ):
+            if object_type != 2:
+                # class-map only
+                continue
+            policy_index, object_index = entry_index.split(".")
+            config_cmap[object_index] = {
+                "pmap_index": policy_index,
+                "type": object_type,
+                "cmap_name": class_map[str(config_index)],
+                "cmap_index": config_index,
+            }
+            config_cmap[object_index].update(policy_map[policy_index])
+        return config_cmap
+
+    CBQOS_OIDS_MAP = {
+        # oid, type, scale
+        "In": {
+            "Interface | CBQOS | Drops | In | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMDropByte",
+                "delta",
+                1,
+            ),
+            "Interface | CBQOS | Octets | In | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMPostPolicyByte",
+                "delta",
+                1,
+            ),
+        },
+        "Out": {
+            "Interface | CBQOS | Drops | Out | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMDropByte",
+                "delta",
+                1,
+            ),
+            "Interface | CBQOS | Octets | Out | Delta": (
+                "CISCO-CLASS-BASED-QOS-MIB::cbQosCMPostPolicyByte",
+                "delta",
+                1,
+            ),
+        },
+    }
+
     @metrics(
-        ["SLA | Jitter | Ingress", "SLA | Jitter | Egress", "SLA | Jitter | Rtt"],
-        has_capability="Cisco | IP | SLA | Probes",
+        [
+            "Interface | CBQOS | Drops | In | Delta",
+            "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | In | Delta",
+            "Interface | CBQOS | Octets | Out | Delta",
+        ],
         volatile=False,
         access="S",  # CLI version
     )
+    def get_interface_cbqos_metrics_snmp(self, metrics):
+        print(metrics)
+        ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
+        config = self.get_cbqos_config_snmp()
+        oids = {}
+        for c, item in config.items():
+            if item["ifindex"] in ifaces:
+                for metric, mc in self.CBQOS_OIDS_MAP[item["direction"]].items():
+                    oids[mib[mc[0], item["pmap_index"], c]] = [
+                        metric,
+                        mc,
+                        ifaces[item["ifindex"]],
+                        ifaces[item["ifindex"]] + [f'noc::traffic_class::{item["cmap_name"]}'],
+                    ]
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            # if not results[r]:
+            #     continue
+            metric, mc, mlabesl, labels = oids[r]
+            _, mtype, scale = mc
+            self.set_metric(
+                id=(metric, mlabesl),
+                metric=metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=labels,
+                multi=True,
+                type=mtype,
+                scale=scale,
+            )
+        # print(r)
+        # "noc::traffic_class::*", "noc::interface::*"
+
+    def collect_profile_metrics(self, metrics):
+        # SLA Metrics
+        if self.has_capability("Cisco | IP | SLA | Probes"):
+            self.get_ip_sla_udp_jitter_metrics_snmp(
+                [m for m in metrics if m.metric in SLA_METRICS_MAP]
+            )
+
     def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
         """
         Returns collected ip sla metrics in form
@@ -153,44 +291,42 @@ class Script(GetMetricsScript):
         }
         :return:
         """
-        setup_metrics = {
-            tuple(m.path): m.id
-            for m in metrics
-            if m.metric in {"SLA | Jitter | Ingress", "SLA | Jitter | Egress", "SLA | Jitter | Rtt"}
-        }
-
-        for sla_index, sla_rtt_sum, sla_egress, sla_ingress in self.snmp.get_tables(
-            [
-                "1.3.6.1.4.1.9.9.42.1.3.5.1.9",
-                "1.3.6.1.4.1.9.9.42.1.3.5.1.63",
-                "1.3.6.1.4.1.9.9.42.1.3.5.1.64",
-            ],
-            bulk=False,
-        ):
-            sla_probe_index, m_timestamp = sla_index.split(".")
-            if ("", str(sla_probe_index)) not in setup_metrics:
+        oids = {}
+        # stat_index = 250
+        stat_index = {}
+        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"], only_first=True):
+            key = ".".join(oid.split(".")[14:-1])
+            stat_index[key] = oid.rsplit(".", 1)[-1]
+        for m in metrics:
+            if m.metric not in SLA_METRICS_MAP:
                 continue
-            if sla_rtt_sum:
-                self.set_metric(
-                    id=setup_metrics[("", str(sla_probe_index))],
-                    metric="SLA | Jitter | Rtt",
-                    path=("", sla_probe_index),
-                    value=float(sla_rtt_sum) * 1000.0,
-                    multi=True,
-                )
-            if sla_egress:
-                self.set_metric(
-                    id=setup_metrics[("", str(sla_probe_index))],
-                    metric="SLA | Jitter | Egress",
-                    path=("", sla_probe_index),
-                    value=float(sla_egress) * 1000.0,
-                    multi=True,
-                )
-            if sla_ingress:
-                self.set_metric(
-                    id=setup_metrics[("", str(sla_probe_index))],
-                    metric="SLA | Jitter | Ingress",
-                    path=("", sla_probe_index),
-                    value=float(sla_ingress) * 1000.0,
-                    multi=True,
-                )
+            if len(m.labels) < 2:
+                continue
+            _, name = m.labels[0].rsplit("::", 1)
+            _, group = m.labels[1].rsplit("::", 1)
+            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            oid = mib[
+                SLA_METRICS_MAP[m.metric],
+                name,
+            ]
+            oids[oid] = m
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            if results[r] is None:
+                continue
+            m = oids[r]
+            self.set_metric(
+                id=m.id,
+                metric=m.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=m.labels,
+                multi=True,
+                type="gauge",
+                scale=1,
+            )

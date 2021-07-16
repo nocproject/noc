@@ -6,7 +6,7 @@
     "description": "12-port Annex A ADSL2+ line card (over POTS) with splitters built-in",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "USER 1-12 PSTN 1-12",

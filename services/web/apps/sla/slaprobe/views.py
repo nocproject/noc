@@ -8,9 +8,11 @@
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sla.models.slaprobe import SLAProbe
+from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class SLAProbeApplication(ExtDocApplication):
     """
     SLAProbe application

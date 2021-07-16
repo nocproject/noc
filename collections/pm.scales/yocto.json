@@ -1,0 +1,9 @@
+{
+    "name": "yocto",
+    "$collection": "pm.scales",
+    "uuid": "47088b82-afcf-403a-a92e-9dfe7f83be2a",
+    "code": "y",
+    "label": "y",
+    "base": 10,
+    "exp": -24
+}

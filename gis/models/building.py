@@ -1,9 +1,13 @@
 # ---------------------------------------------------------------------
 # Building object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+import operator
+from threading import Lock
 
 # Third-party modules
 from mongoengine.document import Document
@@ -15,7 +19,10 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     DictField,
     DateTimeField,
+    LongField,
+    ReferenceField,
 )
+import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -23,8 +30,13 @@ from noc.core.model.decorator import on_save
 from noc.core.model.decorator import on_delete_check
 from .entrance import Entrance
 from .division import Division
+from noc.main.models.remotesystem import RemoteSystem
+from noc.core.bi.decorator import bi_sync
+
+id_lock = Lock()
 
 
+@bi_sync
 @on_save
 @on_delete_check(check=[("gis.Address", "building"), ("inv.CoveredBuilding", "building")])
 class Building(Document):
@@ -32,7 +44,7 @@ class Building(Document):
         "collection": "noc.buildings",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["adm_division", "data", "sort_order"],
+        "indexes": ["adm_division", "data", "sort_order", "remote_id"],
     }
     # Administrative division
     adm_division = PlainReferenceField(Division)
@@ -69,6 +81,19 @@ class Building(Document):
     # Internal field for sorting
     # Filled by primary address trigger
     sort_order = StringField()
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField(unique=True)
+
+    _id_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Building.objects.filter(id=id).first()
 
     @property
     def primary_address(self):

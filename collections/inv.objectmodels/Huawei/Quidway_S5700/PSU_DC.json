@@ -4,7 +4,7 @@
     "uuid": "6244c026-146d-4c42-a914-8d2d384b8c88",
     "vendor__code": "HUAWEI",
     "description": "Huawei Quidway S5700 DC Power Supply Unit",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU slot",

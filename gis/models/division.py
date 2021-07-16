@@ -1,9 +1,13 @@
 # ---------------------------------------------------------------------
 # Division object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+import operator
+from threading import Lock
 
 # Third-party modules
 from mongoengine.document import Document
@@ -14,14 +18,21 @@ from mongoengine.fields import (
     DateTimeField,
     IntField,
     ListField,
+    ReferenceField,
 )
+import cachetools
 
 # NOC modules
+from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.comp import smart_text
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.remotesystem import RemoteSystem
+
+id_lock = Lock()
 
 
+@Label.model
 @on_delete_check(
     check=[("gis.Street", "parent"), ("gis.Division", "parent"), ("gis.Building", "adm_division")]
 )
@@ -30,7 +41,7 @@ class Division(Document):
         "collection": "noc.divisions",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent", "data", "name"],
+        "indexes": ["parent", "data", "name", "remote_id"],
     }
     # Division type
     type = StringField(default="A", choices=[("A", "Administrative")])
@@ -50,8 +61,20 @@ class Division(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
-    #
-    tags = ListField(StringField())
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
+
+    _id_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Division.objects.filter(id=id).first()
 
     def __str__(self):
         if self.short_name:
@@ -95,3 +118,7 @@ class Division(Document):
             r = [smart_text(p)] + r
             p = p.parent
         return " | ".join(r)
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_division")

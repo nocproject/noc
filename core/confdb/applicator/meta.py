@@ -74,10 +74,10 @@ class MetaApplicator(BaseApplicator):
                 else:
                     yield "meta", "service-groups", group.name, "id", str(group.id)
                     yield "meta", "service-groups", group.name, "technology", group.technology.name
-        # meta tags
-        if self.object.tags:
-            for tag in self.object.tags:
-                yield "meta", "tags", tag
+        # meta labels
+        if self.object.labels:
+            for label in self.object.labels:
+                yield "meta", "labels", label
         # meta matchers
         if self.object.version:
             yield from self.iter_object_meta_matchers()

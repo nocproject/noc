@@ -7,27 +7,18 @@
 
 # Third-Party modules
 import json
-from django.db.models import Q
 
 # NOC modules
-from .jinja import JinjaDashboard
+from .mo import MODashboard
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.sa.models.managedobject import ManagedObject
 
 TITLE_BAD_CHARS = '"\\\n\r'
 
 
-class MOCardDashboard(JinjaDashboard):
+class MOCardDashboard(MODashboard):
     name = "mocard"
     template = "dash_mo_card.j2"
-
-    def resolve_object(self, object):
-        o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
-        if not o:
-            raise self.NotFound()
-        else:
-            return o[0]
 
     def resolve_object_data(self, object):
         def interface_profile_has_metrics(profile):

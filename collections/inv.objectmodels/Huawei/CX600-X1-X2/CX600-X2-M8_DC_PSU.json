@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "CX600-X2-M8 DC Power Supply Unit 1200W",
     "cr_context": "FAN",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connector",

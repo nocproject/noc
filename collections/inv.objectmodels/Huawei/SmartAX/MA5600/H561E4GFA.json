@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "4-портовая электрическая вторичная плата GE/FE ",
     "cr_context": "SUBBOARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Board connector",

@@ -37,6 +37,7 @@ class JinjaDashboard(BaseDashboard):
             else:
                 pm_template_path += [config.path.pm_templates]
         j2_env = Environment(loader=FileSystemLoader(pm_template_path))
+        j2_env.globals["noc_db_metrics"] = config.clickhouse.db
         tmpl = j2_env.get_template(self.template)
         data = tmpl.render(context)
         render = demjson.decode(data)

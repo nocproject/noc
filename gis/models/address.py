@@ -1,27 +1,37 @@
 # ---------------------------------------------------------------------
 # Address object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, DictField, BooleanField
+from mongoengine.fields import (
+    StringField,
+    IntField,
+    DictField,
+    BooleanField,
+    ReferenceField,
+    LongField,
+)
 from mongoengine.signals import post_save
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from .street import Street
 from .building import Building
+from noc.main.models.remotesystem import RemoteSystem
+from noc.core.bi.decorator import bi_sync
 
 
+@bi_sync
 class Address(Document):
     meta = {
         "collection": "noc.addresses",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["building", "street"],
+        "indexes": ["building", "street", "remote_id"],
     }
     #
     building = PlainReferenceField(Building)
@@ -46,6 +56,12 @@ class Address(Document):
     data = DictField()
 
     is_primary = BooleanField(default=True)
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField(unique=True)
 
     @classmethod
     def update_primary(cls, sender, document, **kwargs):

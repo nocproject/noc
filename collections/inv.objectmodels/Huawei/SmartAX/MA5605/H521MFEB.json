@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5605 It is system control and FE subtending/uplink Electrical Interface Board (Support Optical Cascading), providing 1×100Base-TX interfaces (uplink) and 1xSFP (subtending).",
     "cr_context": "BOARD",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

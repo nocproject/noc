@@ -6,7 +6,7 @@
     "description": "Chassis FastIron SX 1600",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "mgmt",

@@ -52,10 +52,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, argMax(elec_current, t) as Electric_Current FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{sensor.name}}') and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, argMax(elec_current, t) as Electric_Current FROM $table WHERE managed_object = $bi_id and sensor=toString('{{sensor.name}}') and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "environment",
       "dateLoading": false,

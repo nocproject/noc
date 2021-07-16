@@ -6,5 +6,7 @@
     "field_name": "multicast_out",
     "field_type": "UInt64",
     "description": "Multicast packets on output interface",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__code": "pps",
+    "scale__code": "1"
 }

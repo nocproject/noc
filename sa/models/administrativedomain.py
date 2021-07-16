@@ -12,8 +12,11 @@ from typing import Optional, TYPE_CHECKING
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 # NOC modules
 from noc.config import config
@@ -21,18 +24,22 @@ from noc.core.model.base import NOCModel
 from noc.main.models.pool import Pool
 from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.fields import TagsField, DocumentReferenceField
-from noc.core.model.decorator import on_delete_check, on_init
+from noc.main.models.label import Label
+from noc.core.model.fields import DocumentReferenceField
+from noc.core.model.decorator import on_delete_check, on_init, tree
 from noc.core.bi.decorator import bi_sync
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
 
+@tree(field="parent")
+@Label.match_labels("adm_domain", allowed_op={"=", "<"})
+@Label.model
 @on_init
 @bi_sync
-@datastream
+@change
 @on_delete_check(
     check=[
         ("cm.ObjectNotify", "administrative_domain"),
@@ -45,7 +52,8 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
         ("maintenance.Maintenance", "administrative_domain"),
         ("phone.PhoneNumber", "administrative_domain"),
         ("phone.PhoneRange", "administrative_domain"),
-    ]
+    ],
+    clean_lazy_labels="adm_domain",
 )
 class AdministrativeDomain(NOCModel):
     """
@@ -80,7 +88,10 @@ class AdministrativeDomain(NOCModel):
     # Object id in BI
     bi_id = models.BigIntegerField(unique=True)
 
-    tags = TagsField("Tags", null=True, blank=True)
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -178,6 +189,34 @@ class AdministrativeDomain(NOCModel):
             return self.parent.get_bioseg_floating_parent_segment()
         return None
 
+    @property
+    def level(self) -> int:
+        """
+        Return level
+        :return:
+        """
+        if not self.parent:
+            return 0
+        return len(self.get_path()) - 1  # self
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_administrativedomain")
+
+    @classmethod
+    def iter_lazy_labels(cls, adm_domain: "AdministrativeDomain"):
+        for ad in AdministrativeDomain.objects.filter(id__in=adm_domain.get_path()):
+            if ad == adm_domain:
+                yield f"noc::adm_domain::{ad.name}::="
+                continue
+            yield f"noc::adm_domain::{ad.name}::<"
+
 
 if TYPE_CHECKING:
     from noc.inv.models.networksegment import NetworkSegment  # noqa
+
+
+@receiver(pre_save, sender=AdministrativeDomain)
+def check_cycle_link(sender, instance, **kwargs):
+    if hasattr(instance, "before_save"):
+        instance.before_save(field=instance.tree_field)

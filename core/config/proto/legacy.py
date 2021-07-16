@@ -123,11 +123,6 @@ class LegacyProtocol(BaseProtocol):
         ("ping-%(pool)s-%(node)s.tos", "ping.tos"),
         ("ping.global_n_instances", "global_n_instances"),
         ("ping-%(pool)s-%(node)s.global_n_instances", "global_n_instances"),
-        # Pmwriter
-        ("pmwriter.batch_size", "pmwriter.batch_size"),
-        ("pmwriter-global-%(node)s.batch_size", "pmwriter.batch_size"),
-        ("pmwriter.metrics_buffer", "pmwriter.metrics_buffer"),
-        ("pmwriter-global-%(node)s.metrics_buffer", "pmwriter.metrics_buffer"),
         # SAE
         ("sae.db_threads", "sae.db_threads"),
         ("sae-global-%(node)s.db_threads", "sae.db_threads"),

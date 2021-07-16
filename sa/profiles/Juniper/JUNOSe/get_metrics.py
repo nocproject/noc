@@ -37,7 +37,7 @@ class Script(GetMetricsScript):
             for slot, rtt in r_v.items():
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    path=("0", str(slot), ""),
+                    labels=("noc::chassis::0", f"noc::slot::{str(slot)}"),
                     value=int(rtt),
                     multi=True,
                 )
@@ -54,14 +54,14 @@ class Script(GetMetricsScript):
             port = oid2[1][2:].replace(".", "/")
             self.set_metric(
                 id=("Subscribers | Summary", None),
-                path=("0", "", "", str(port)),
+                labels=("noc::chassis::0", f"noc::interface::{str(port)}"),
                 value=int(v),
                 multi=True,
             )
         metric = self.snmp.get("1.3.6.1.4.1.4874.2.2.20.1.8.3.0")
         self.set_metric(
             id=("Subscribers | Summary", None),
-            path=("0", "", "", ""),
+            labels=("noc::chassis::0",),
             value=int(metric),
             multi=True,
         )
@@ -81,7 +81,7 @@ class Script(GetMetricsScript):
             for port, rtt in r_v.items():
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    path=("0", "", "", str(port)),
+                    labels=("noc::chassis::0", f"noc::interface::{str(port)}"),
                     value=int(rtt),
                     multi=True,
                 )

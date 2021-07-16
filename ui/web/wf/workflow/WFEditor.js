@@ -662,6 +662,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0) {
                     delete element.data["remote_id"];
                 }
+                delete element.data["bi_id"];
                 delete element.data["remote_system__label"];
                 delete element.data["workflow__label"];
                 delete element.data["from_state__label"];
@@ -685,7 +686,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0) {
                 delete element.data["remote_id"];
             }
-            delete element["position"];
+            delete element.data["bi_id"];
+            delete element.data["position"];
             delete element.data["type"];
             delete element.data["update_ttl"];
             delete element.data["workflow"];
@@ -693,6 +695,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             return element.data;
         });
         var ret = Ext.merge(Ext.clone(me.workflow), {states: states, transitions: transitions});
+        delete ret["bi_id"];
         delete ret["type"];
         delete ret["id"];
         Ext.Ajax.request({

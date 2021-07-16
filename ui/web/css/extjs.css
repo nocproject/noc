@@ -599,3 +599,31 @@ table {
     height: 16px;
     border-radius: 50%;
 }
+
+.x-form-text-default .x-tagfield-item {
+    font-size: 11px;
+    padding: 2px 18px 0 5px;
+    line-height: 11px;
+    height: 17px;
+}
+
+.noc-label-field-start {
+    border-radius: 5px 0 0 5px;
+    padding: 0 3px 0 3px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.noc-label-field-end {
+    border-radius: 0 5px 5px 0;
+    padding-right: 3px;
+}
+
+.noc-label-wrapper {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+}

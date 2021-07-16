@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Capability model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import os
 import operator
 from threading import Lock
-from typing import Union
+from typing import Union, Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -44,6 +44,10 @@ class Capability(Document):
     type = StringField(choices=["bool", "str", "int", "float"])
     # Jinja2 template for managed object's card tags
     card_template = StringField(required=False)
+    # Expose to agent, if set. Collector name
+    agent_collector = StringField()
+    # Collector param
+    agent_param = StringField()
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -54,12 +58,12 @@ class Capability(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["Capability"]:
         return Capability.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["Capability"]:
         return Capability.objects.filter(name=name).first()
 
     @property
@@ -72,12 +76,24 @@ class Capability(Document):
             "type": self.type,
             "card_template": self.card_template,
         }
+        if self.agent_collector and self.agent_param:
+            r["agent_collector"] = self.agent_collector
+            r["agent_param"] = self.agent_param
         return r
 
     def to_json(self):
         return to_json(
             self.json_data,
-            order=["name", "$collection", "uuid", "description", "type", "card_template"],
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+                "type",
+                "card_template",
+                "agent_collector",
+                "agent_param",
+            ],
         )
 
     def get_json_path(self):

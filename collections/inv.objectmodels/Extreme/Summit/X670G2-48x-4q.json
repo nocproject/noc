@@ -6,7 +6,7 @@
     "description": "48 10GBASE-X SFP+ and 4 40GBASE-X QSFP+, ExtremeXOS Advanced Edge License,  unpopulated dual PSU power slot , and 3 unpopulated fan airflow slots",
     "connection_rule__name": "Extreme | XOS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Console port",

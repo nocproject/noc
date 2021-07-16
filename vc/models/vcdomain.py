@@ -12,12 +12,14 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
+from noc.main.models.label import Label
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.model.decorator import on_delete_check
 from .vctype import VCType
 from .vcfilter import VCFilter
 
 
+@Label.match_labels("vcdomain", allowed_op={"="})
 @on_save
 @on_delete
 @on_delete_check(
@@ -30,6 +32,7 @@ from .vcfilter import VCFilter
         ("vc.VCDomainProvisioningConfig", "vc_domain"),
     ],
     ignore=[("inv.MACDB", "vc_domain")],
+    clean_lazy_labels="vcdomain",
 )
 class VCDomain(NOCModel):
     """
@@ -92,14 +95,18 @@ class VCDomain(NOCModel):
         for x, y in chunks:
             if x > y or y < l_min or x > l_max:
                 continue  # Skip chunk outside of type's range
-            for l in range(max(l_min, x), min(l_max, y) + 1):
-                if not VC.objects.filter(vc_domain=self, l1=l).exists():
-                    return l  # Return first free found
+            for ll in range(max(l_min, x), min(l_max, y) + 1):
+                if not VC.objects.filter(vc_domain=self, l1=ll).exists():
+                    return ll  # Return first free found
         return None  # Nothing found
 
     @classmethod
     def get_default(cls):
         return VCDomain.objects.get(name="default")
+
+    @classmethod
+    def iter_lazy_labels(cls, vcdomain: "VCDomain"):
+        yield f"noc::vcdomain::{vcdomain.name}::="
 
 
 # Avoid circular references

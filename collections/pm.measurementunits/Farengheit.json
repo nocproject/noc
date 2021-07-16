@@ -1,0 +1,21 @@
+{
+    "name": "Farengheit",
+    "$collection": "pm.measurementunits",
+    "uuid": "bc024661-dfd9-449f-97f0-31e8c1342ac8",
+    "code": "F",
+    "description": "Temperature measurement",
+    "label": "F",
+    "dashboard_label": "kelvin",
+    "dashboard_sr_color": 16440874,
+    "convert_from": [
+        {
+            "expr": "x * (9 / 5) - 459.67",
+            "unit__code": "K"
+        },
+        {
+            "expr": "x * (9 / 5) + 32",
+            "unit__code": "C"
+        }
+    ],
+    "base_unit__code": "K"
+}

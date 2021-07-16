@@ -96,9 +96,15 @@ class User(NOCModel):
         max_length=16, null=True, blank=True, default=config.language, choices=LANGUAGES
     )
     # Heatmap position
-    heatmap_lon = models.FloatField("Longitude", blank=True, null=True)
-    heatmap_lat = models.FloatField("Latitude", blank=True, null=True)
-    heatmap_zoom = models.IntegerField("Zoom", blank=True, null=True)
+    heatmap_lon = models.FloatField(
+        "Longitude", blank=True, null=True, default=config.web.heatmap_lon
+    )
+    heatmap_lat = models.FloatField(
+        "Latitude", blank=True, null=True, default=config.web.heatmap_lat
+    )
+    heatmap_zoom = models.IntegerField(
+        "Zoom", blank=True, null=True, default=config.web.heatmap_zoom
+    )
     # Last login (Populated by login service)
     last_login = models.DateTimeField("Last Login", blank=True, null=True)
 

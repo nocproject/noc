@@ -18,14 +18,18 @@ import cachetools
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
+from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
+@change
 @on_delete_check(check=[("crm.Subscriber", "profile")])
 class SubscriberProfile(Document):
     meta = {"collection": "noc.subscriberprofiles", "strict": False, "auto_create_index": False}
@@ -40,8 +44,9 @@ class SubscriberProfile(Document):
     display_order = IntField(default=100)
     # Show in total summary
     show_in_summary = BooleanField(default=True)
-    # Tags
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Alarm weight
     weight = IntField(default=0)
     # Integration with external NRI and TT systems
@@ -61,3 +66,7 @@ class SubscriberProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return SubscriberProfile.objects.filter(id=id).first()
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_subscriberprofile")

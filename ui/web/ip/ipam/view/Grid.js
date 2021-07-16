@@ -119,9 +119,9 @@ Ext.define("NOC.ip.ipam.view.Grid", {
             flex: 1
         },
         {
-            text: __("Tags"),
-            dataIndex: "tags",
-            renderer: NOC.render.Tags
+            text: __("Labels"),
+            dataIndex: "labels",
+            renderer: NOC.render.LabelField
         }
     ]
 });

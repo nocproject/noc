@@ -41,6 +41,17 @@ def parse_get_response(pdu: bytes, display_hints=None) -> GetResponse:
 
 
 class Profile(BaseProfile):
+    """
+    Supported two device revision - V2 and V3:
+    V2 - Monitoring controller. May worked as battery controller, and has RS485 port
+    for transparent connect device or Energy meter connected
+    V3 - Monitoring and UPS controller, additional have RS232 port
+     for connect to UPS supported  Megatec, CyberPower Protocol II proto
+
+     V2 - 1.3.6.1.4.1.27514.102 MIB Tree
+     V3 - 1.3.6.1.4.1.27514.103 MIB Tree
+    """
+
     name = "Qtech.QFC"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 1

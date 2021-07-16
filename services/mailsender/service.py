@@ -12,6 +12,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from email.header import Header
 
 # Third-party modules
@@ -72,9 +73,10 @@ class MailSenderService(TornadoService):
         message.attach(MIMEText(body, _charset="utf-8"))
         for a in attachments:
             part = MIMEBase("application", "octet-stream")
-            part.set_payload(a["data"].encode("utf-8"), charset="utf-8")
             if "transfer-encoding" in a:
-                part.add_header("Content-Transfer-Encoding", a["transfer-encoding"])
+                part = MIMEApplication(a["data"])
+            else:
+                part.set_payload(a["data"].encode("utf-8"), charset="utf-8")
             part.add_header("Content-Disposition", "attachment", filename=a["filename"])
             message.attach(part)
         msg = message.as_string()

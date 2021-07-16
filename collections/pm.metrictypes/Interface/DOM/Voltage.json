@@ -6,5 +6,7 @@
     "field_name": "voltage_v",
     "field_type": "Int16",
     "description": "Transceiver supply voltage",
-    "measure": "V"
+    "measure": "V",
+    "units__code": "VDC",
+    "scale__code": "1"
 }

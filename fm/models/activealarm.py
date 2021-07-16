@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 from collections import defaultdict
+from typing import Optional
 
 # Third-party modules
 from django.template import Template as DjangoTemplate
@@ -33,9 +34,10 @@ from noc.aaa.models.user import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
+from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
@@ -46,7 +48,7 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 
 
-@datastream
+@change
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
@@ -133,15 +135,20 @@ class ActiveAlarm(Document):
     dlm_windows = ListField(IntField())
     # RCA_* enums
     rca_type = IntField(default=RCA_NONE)
-    # tags
-    tags = ListField(StringField())
+    # labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     def __str__(self):
         return "%s" % self.id
 
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ActiveAlarm"]:
+        return ActiveAlarm.objects.filter(id=id).first()
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
-            yield "alarm", self.id
+            yield "alarm", str(self.id)
 
     def clean(self):
         super().clean()
@@ -155,9 +162,9 @@ class ActiveAlarm(Document):
         self.rca_neighbors = data.rca_neighbors
         self.dlm_windows = data.dlm_windows
         if not self.id:
-            tags = set(self.managed_object.tags or [])
-            tags |= set(self.managed_object.object_profile.tags or [])
-            self.tags = list(tags)
+            self.effective_labels = [
+                label for label in self.iter_effective_labels() if self.can_set_label(label)
+            ]
 
     def safe_save(self, **kwargs):
         """
@@ -290,7 +297,8 @@ class ActiveAlarm(Document):
             uplinks=self.uplinks,
             rca_neighbors=self.rca_neighbors,
             rca_type=self.rca_type,
-            tags=self.tags,
+            labels=self.labels,
+            effective_labels=self.effective_labels,
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
@@ -818,6 +826,15 @@ class ActiveAlarm(Document):
         for a in self.iter_consequences():
             if a.escalation_tt:
                 yield a
+
+    def iter_effective_labels(self):
+        return set(self.managed_object.labels or []) | set(
+            self.managed_object.object_profile.labels or []
+        )
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, "enable_alarm")
 
 
 # Avoid circular references

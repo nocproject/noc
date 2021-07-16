@@ -10,13 +10,27 @@ import re
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
-from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
 from noc.core.mib import mib
 
 
 class Script(BaseScript):
     name = "Huawei.VRP.get_capabilities"
 
+    CHECK_SNMP_GETNEXT = {
+        "Huawei | MIB | ENTITY-EXTENT-MIB": mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityStateEntry"],
+        "Huawei | OID | hwCBQoSClassifierStatisticsTable": mib[
+            "HUAWEI-CBQOS-MIB::hwCBQoSClassifierMatchedPackets"
+        ],
+        "Huawei | OID | hwCBQoSPolicyStatisticsClassifierTable": mib[
+            "HUAWEI-CBQOS-MIB::hwCBQoSPolicyStatClassifierMatchedPassPackets"
+        ],
+    }
+
+    CHECK_SNMP_GET = {
+        "Huawei | MIB | HUAWEI-CBQOS-MIB": mib["HUAWEI-CBQOS-MIB::hwCBQoSClassifierIndexNext", 0],
+        "BRAS | PPPoE": "1.3.6.1.4.1.2011.5.2.1.14.1.2.0",
+    }
     rx_stp = re.compile(r"Protocol Status\s+:\s*Enabled")
 
     @false_on_cli_error
@@ -89,6 +103,16 @@ class Script(BaseScript):
         r = self.cli("display mpls ldp")
         return "Global LDP is not enabled" not in r or "Instance Status         : Active " not in r
 
+    @false_on_snmp_error
+    def has_ip_sla_responder_snmp(self):
+        r = self.snmp.get(mib["NQA-MIB::nqaSupportServerType", 0])
+        return r != 2
+
+    @false_on_snmp_error
+    def get_ip_sla_probes_snmp(self):
+        r = self.snmp.count(mib["NQA-MIB::nqaAdminCtrlStatus"])
+        return r
+
     @false_on_cli_error
     def has_stack(self):
         """
@@ -140,16 +164,6 @@ class Script(BaseScript):
         r = self.cli("display lacp statistics eth-trunk")
         return r
 
-    def has_mibs(self):
-        r = []
-        if self.has_snmp():
-            try:
-                self.snmp.getnext("1.3.6.1.4.1.2011.5.25.31.1.1.1.1", bulk=False, only_first=True)
-                r += ["Huawei | MIB | ENTITY-EXTENT-MIB"]
-            except (self.snmp.SNMPError, self.snmp.TimeOutError):
-                pass
-        return r
-
     def get_modules(self):
         modules = set()
         if self.has_snmp():
@@ -182,8 +196,16 @@ class Script(BaseScript):
         mod = self.get_modules()
         if mod:
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
-        for m in self.has_mibs():
-            caps[m] = True
+        # Check IP SLA status
+        sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
+        if sla_v:
+            # IP SLA responder
+            if self.has_ip_sla_responder_snmp():
+                caps["Huawei | NQA | Responder"] = True
+            # IP SLA Probes
+            np = self.get_ip_sla_probes_snmp()
+            if np:
+                caps["Huawei | NQA | Probes"] = np
 
     def execute_platform_snmp(self, caps):
         sl = self.has_slot()
@@ -193,6 +215,12 @@ class Script(BaseScript):
         mod = self.get_modules()
         if mod:
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
-        hm = self.has_mibs()
-        for m in hm:
-            caps[m] = True
+        # Check IP SLA status
+        # sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
+        # IP SLA Probes
+        np = self.get_ip_sla_probes_snmp()
+        if np:
+            caps["Huawei | NQA | Probes"] = np
+            # IP SLA responder
+            # if self.has_ip_sla_responder_snmp():
+            #     caps["Huawei | NQA | Responder"] = True

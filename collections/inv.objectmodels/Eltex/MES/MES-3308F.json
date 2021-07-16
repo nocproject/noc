@@ -1,0 +1,240 @@
+{
+    "name": "Eltex | MES | MES-3308F",
+    "$collection": "inv.objectmodels",
+    "uuid": "4705661d-2dd3-4e5b-b560-01bc79cadf58",
+    "vendor__code": "ELTEX",
+    "description": "20 х 100/1000BASE-X (SFP), 4 х 10/100/1000BASE-T/1000BASE-X/100BASE-FX (Combo), 4 х 10G Base-X/1000Base-X(SFP+/SFP)",
+    "connection_rule__name": "Eltex | MES",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
+    "connections": [
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "gigabitethernet 1/0/1 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi1_sfp",
+            "name": "gigabitethernet 1/0/1",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/2 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi2_sfp",
+            "name": "gigabitethernet 1/0/2",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "gigabitethernet 1/0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "gigabitethernet 1/0/3",
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gigabitethernet 1/0/3_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "combo": "gigabitethernet 1/0/3",
+            "description": "gigabitethernet 1/0/3 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi3_sfp",
+            "name": "gigabitethernet 1/0/3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "gigabitethernet 1/0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "gigabitethernet 1/0/4",
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gigabitethernet 1/0/4_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "combo": "gigabitethernet 1/0/4",
+            "description": "gigabitethernet 1/0/4 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi4_sfp",
+            "name": "gigabitethernet 1/0/4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/5 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi5_sfp",
+            "name": "gigabitethernet 1/0/5",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/6 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi6_sfp",
+            "name": "gigabitethernet 1/0/6",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "gigabitethernet 1/0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "gigabitethernet 1/0/7",
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gigabitethernet 1/0/7_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "combo": "gigabitethernet 1/0/7",
+            "description": "gigabitethernet 1/0/7 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi7_sfp",
+            "name": "gigabitethernet 1/0/7_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "s",
+            "name": "gigabitethernet 1/0/8",
+            "protocols": ["10BASET", "100BASETX", "1000BASET", "TransEth100M", "TransEth1G"],
+            "type__name": "Combined"
+        },
+        {
+            "combo": "gigabitethernet 1/0/8",
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "gigabitethernet 1/0/8_rj",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "combo": "gigabitethernet 1/0/8",
+            "description": "gigabitethernet 1/0/8 port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "gi8_sfp",
+            "name": "gigabitethernet 1/0/8_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "tengigabitethernet 1/0/1 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te1_sfp+",
+            "name": "tengigabitethernet 1/0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/2 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te2_sfp+",
+            "name": "tengigabitethernet 1/0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/3 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te3_sfp+",
+            "name": "tengigabitethernet 1/0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "tengigabitethernet 1/0/4 SFP port",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "te4_sfp+",
+            "name": "tengigabitethernet 1/0/4",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "Power slot main",
+            "direction": "i",
+            "gender": "f",
+            "name": "Main_psu",
+            "type__name": "Eltex | MES | PSU"
+        },
+        {
+            "description": "Power slot redundant",
+            "direction": "i",
+            "gender": "f",
+            "name": "Redundant_psu",
+            "type__name": "Eltex | MES | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MES-3308F"]
+        },
+        "dimensions": {
+            "depth": 275,
+            "height": 44,
+            "width": 430
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 25.0
+        },
+        "rackmount": {
+            "units": 1.0
+        },
+        "stack": {
+            "stackable": true
+        },
+        "weight": {
+            "is_recursive": true,
+            "weight": 3.15
+        }
+    }
+}

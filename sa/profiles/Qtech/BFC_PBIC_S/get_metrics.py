@@ -66,9 +66,10 @@ class Script(GetMetricsScript):
                 else:
                     if status > 0:
                         value = 0
-
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
-                id=("Environment | Sensor Status", metric.path),
+                id=("Environment | Sensor Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )
 
@@ -77,9 +78,10 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if metric.ifindex == 21:
                 value = self.snmp.get("1.3.6.1.3.55.1.2.1.0")
+                port = metric.labels[0].rsplit("::", 1)[-1]
                 self.set_metric(
-                    id=("Environment | Temperature", metric.path),
-                    path=["", "", metric.path[3], metric.path[3]],
+                    id=("Environment | Temperature", metric.labels),
+                    labels=[f"noc::module::{port}", f"noc::sensor::{port}"],
                     value=value,
                     multi=True,
                 )
@@ -88,9 +90,10 @@ class Script(GetMetricsScript):
     def get_voltage(self, metrics):
         for metric in metrics:
             value = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
-                id=("Environment | Voltage", metric.path),
-                path=["", "", metric.path[3], metric.path[3]],
+                id=("Environment | Voltage", metric.labels),
+                labels=[f"noc::module::{port}", f"noc::sensor::{port}"],
                 value=value,
                 scale=scale(0.001, 2),
                 multi=True,
@@ -102,9 +105,10 @@ class Script(GetMetricsScript):
             s_type = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % metric.ifindex)
             if s_type == 2:
                 value = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % metric.ifindex)
+                port = metric.labels[0].rsplit("::", 1)[-1]
                 self.set_metric(
-                    id=("Environment | Pulse", metric.path),
-                    path=["", "", "", metric.path[3]],
+                    id=("Environment | Pulse", metric.labels),
+                    labels=[f"noc::sensor::{port}"],
                     value=value,
                 )
 
@@ -128,7 +132,9 @@ class Script(GetMetricsScript):
                     value = 0
                 elif invert == 1 and status == 1:
                     value = 0
+            port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
-                id=("Environment | Power | Input | Status", metric.path),
+                id=("Environment | Power | Input | Status", metric.labels),
+                labels=[f"noc::sensor::{port}"],
                 value=value,
             )

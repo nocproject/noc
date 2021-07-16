@@ -6,7 +6,7 @@
     "description": "6 slot chassis",
     "connection_rule__name": "Ericsson | SmartEdge",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Alarm card slot",

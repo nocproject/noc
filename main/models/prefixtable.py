@@ -14,13 +14,16 @@ from noc.core.model.base import NOCModel
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.label import Label
 
 
+@Label.match_labels(category="prefixfilter")
 @on_delete_check(
     check=[
         # ("inv.InterfaceClassificationMatch", "prefix_table"),
         ("sa.ManagedObjectSelector", "filter_prefix")
-    ]
+    ],
+    clean_lazy_labels="prefixfilter",
 )
 class PrefixTable(NOCModel):
     class Meta(object):
@@ -57,6 +60,16 @@ class PrefixTable(NOCModel):
         "prefix" in table
         """
         return self.match(other)
+
+    @classmethod
+    def iter_lazy_labels(cls, prefix: str):
+        p = IP.prefix(prefix)
+        for pt in PrefixTablePrefix.objects.filter(afi=p.afi).extra(
+            where=["%s <<= prefix"], params=[prefix]
+        ):
+            yield f"noc::prefixfilter::{pt.table.name}::<"
+            if prefix == pt.prefix:
+                yield f"noc::prefixfilter::{pt.table.name}::="
 
 
 class PrefixTablePrefix(NOCModel):

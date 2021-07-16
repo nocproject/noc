@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import time
-from collections import namedtuple
 import csv
 from io import BytesIO, TextIOWrapper
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -24,12 +23,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
-from noc.lib.app.reportdatasources.report_metrics import (
-    ReportInterfaceMetrics,
-    ReportCPUMetrics,
-    ReportMemoryMetrics,
-    ReportPingMetrics,
-)
+from noc.lib.app.reportdatasources.loader import loader
 from noc.lib.app.reportdatasources.report_container import ReportContainerData
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.extapplication import ExtApplication, view
@@ -38,7 +32,6 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
-from noc.bi.models.mac import MAC as MACDBC
 
 
 def get_column_width(name):
@@ -64,11 +57,21 @@ def get_column_width(name):
 class ReportMetricsDetailApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Load Metrics")
     title = _("Load Metrics")
-    metric_source = {
-        "load_interfaces": ReportInterfaceMetrics,
-        "load_cpu": ReportCPUMetrics,
-        "load_memory": ReportMemoryMetrics,
-        "ping": ReportPingMetrics,
+    report_map = {
+        "load_interfaces": {
+            "url": "%(path)s?title=interface&biid=%(biid)s"
+            "&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s",
+            "datasource": "reportinterfacemetrics",
+            "aggregated_source": "reportinterfacemetricsagg",
+        },
+        "load_cpu": {
+            "url": """%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
+            "datasource": "reportobjectmetrics",
+        },
+        "ping": {
+            "url": """%(path)s?title=ping&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
+            "datasource": "reportavailability",
+        },
     }
 
     @view(
@@ -87,7 +90,8 @@ class ReportMetricsDetailApplication(ExtApplication):
             "segment": StringParameter(required=False),
             "selector": StringParameter(required=False),
             "interface_profile": StringParameter(required=False),
-            "exclude_zero": BooleanParameter(required=False),
+            "exclude_zero": StringParameter(required=False),
+            "use_aggregated_source": StringParameter(required=False),
             "filter_default": BooleanParameter(required=False),
             "columns": StringParameter(required=False),
             "o_format": StringParameter(choices=["csv", "csv_zip", "xlsx"]),
@@ -102,6 +106,7 @@ class ReportMetricsDetailApplication(ExtApplication):
         object_profile=None,
         filter_default=None,
         exclude_zero=None,
+        use_aggregated_source=None,
         interface_profile=None,
         selector=None,
         administrative_domain=None,
@@ -110,8 +115,6 @@ class ReportMetricsDetailApplication(ExtApplication):
         enable_autowidth=False,
         **kwargs,
     ):
-        def translate_row(row, cmap):
-            return [row[i] for i in cmap]
 
         map_table = {
             "load_interfaces": r"/Interface\s\|\sLoad\s\|\s[In|Out]/",
@@ -119,98 +122,6 @@ class ReportMetricsDetailApplication(ExtApplication):
             "errors": r"/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
             "ping": r"/Ping\s\|\sRTT/",
         }
-        cols = [
-            "id",
-            "object_name",
-            "object_address",
-            "object_platform",
-            "object_adm_domain",
-            "object_segment",
-            "object_container",
-            # "object_hostname",
-            # "object_status",
-            # "profile_name",
-            # "object_profile",
-            # "object_vendor",
-            "iface_name",
-            "iface_description",
-            "iface_speed",
-            "load_in",
-            "load_in_p",
-            "load_out",
-            "load_out_p",
-            "octets_in_sum",
-            "octets_out_sum",
-            "errors_in",
-            "errors_in_sum",
-            "errors_out",
-            "errors_out_sum",
-            "discards_in",
-            "discards_in_sum",
-            "discards_out",
-            "discards_out_sum",
-            "lastchange",
-            "status_oper",
-            "mac_counter",
-            "interface_load_url",
-            "slot",
-            "cpu_usage",
-            "memory_usage",
-            "ping_rtt",
-            "ping_attempts",
-            "interface_flap",
-        ]
-
-        header_row = [
-            "ID",
-            "OBJECT_NAME",
-            "OBJECT_ADDRESS",
-            "OBJECT_PLATFORM",
-            "OBJECT_ADM_DOMAIN",
-            "OBJECT_SEGMENT",
-            "OBJECT_CONTAINER",
-            "IFACE_NAME",
-            "IFACE_DESCRIPTION",
-            "IFACE_SPEED",
-            "LOAD_IN (bit/s)",
-            "LOAD_IN_P (%)",
-            "LOAD_OUT (bit/s)",
-            "LOAD_OUT_P (%)",
-            "OCTETS_IN_SUM (MB)",
-            "OCTETS_OUT_SUM (MB)",
-            "ERRORS_IN",
-            "ERRORS_IN_SUM",
-            "ERRORS_OUT",
-            "ERRORS_OUT_SUM",
-            "DISCARDS_IN",
-            "DISCARDS_IN_SUM",
-            "DISCARDS_OUT",
-            "DISCARDS_OUT_SUM",
-            "INTERFACE_LASTCHANGE",
-            "INTERFACE_OPERATION_STATUS",
-            "MAC_COUNTER",
-            "INTERFACE_LOAD_URL",
-            "SLOT",
-            "CPU_USAGE",
-            "MEMORY_USAGE",
-            "PING_RTT",
-            "PING_ATTEMPTS",
-            "INTERFACE_FLAP",
-        ]
-
-        if columns:
-            cmap = []
-            for c in columns.split(","):
-                try:
-                    cmap += [cols.index(c)]
-                except ValueError:
-                    continue
-        else:
-            cmap = list(range(len(cols)))
-        columns_order = columns.split(",")
-        columns_filter = set(columns_order)
-        r = [translate_row(header_row, cmap)]
-        object_columns = [c for c in columns_order if c.startswith("object")]
 
         # Date Time Block
         if not from_date:
@@ -239,42 +150,6 @@ class ReportMetricsDetailApplication(ExtApplication):
             )
         if object_profile:
             mos = mos.filter(object_profile=object_profile)
-        # iface_dict = {}
-
-        if "mac_counter" in columns_order:
-            macdb = MACDBC()
-            ts_cur_date = int(time.time())
-            if ts_cur_date - ts_to_date < 0:
-                offset = 0
-            else:
-                offset = round((ts_cur_date - ts_to_date) / 86400)
-            mac_aggregate = {}
-            for mo in mos:
-                mac_responce = macdb.mac_filter(
-                    {"managed_object": mo.bi_id}, offset=offset, limit=20000000
-                )
-                for record in mac_responce:
-                    for record in mac_responce:
-                        if record["managed_object"] in mac_aggregate.keys():
-                            if (
-                                record["interface"]
-                                in mac_aggregate[record["managed_object"]].keys()
-                            ):
-                                mac_aggregate[record["managed_object"]][record["interface"]].add(
-                                    record["mac"]
-                                )
-                            else:
-                                mac_aggregate[record["managed_object"]].update(
-                                    {record["interface"]: {record["mac"]}}
-                                )
-                        elif mac_aggregate == {}:
-                            mac_aggregate = {
-                                record["managed_object"]: {record["interface"]: {record["mac"]}}
-                            }
-                        else:
-                            mac_aggregate.update(
-                                {record["managed_object"]: {record["interface"]: {record["mac"]}}}
-                            )
 
         d_url = {
             "path": "/ui/grafana/dashboard/script/report.js",
@@ -287,166 +162,96 @@ class ReportMetricsDetailApplication(ExtApplication):
             "iname": "",
         }
 
-        report_map = {
-            "load_interfaces": {
-                "url": "%(path)s?title=interface&biid=%(biid)s"
-                "&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s",
-                "q_group": ["interface"],
-                "q_select": {
-                    (0, "managed_object", "id"): "managed_object",
-                    (1, "path", "iface_name"): "arrayStringConcat(path)",
-                },
-            },
-            "errors": {
-                "url": """%(path)s?title=errors&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
-                "q_group": ["interface"],
-            },
-            "load_cpu": {
-                "url": """%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "q_select": {
-                    (0, "managed_object", "id"): "managed_object",
-                    (1, "path", "slot"): "arrayStringConcat(path)",
-                },
-            },
-            "ping": {
-                "url": """%(path)s?title=ping&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "q_select": {(0, "managed_object", "id"): "managed_object"},
-            },
-        }
-
-        query_map = {
-            # "iface_description": ('', 'iface_description', "''"),
-            "iface_description": (
-                "",
-                "iface_description",
-                "dictGetString('interfaceattributes','description' , (managed_object, arrayStringConcat(path)))",
-            ),
-            "iface_speed": (
-                "speed",
-                "iface_speed",
-                "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
-                "(managed_object, arrayStringConcat(path))), max(speed))",
-            ),
-            "load_in": ("load_in", "l_in", "round(quantile(0.90)(load_in), 0)"),
-            "load_in_p": (
-                "load_in",
-                "l_in_p",
-                "replaceOne(toString(round(quantile(0.90)(load_in) / "
-                "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
-                "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
-            ),
-            "load_out": ("load_out", "l_out", "round(quantile(0.90)(load_out), 0)"),
-            "load_out_p": (
-                "load_out",
-                "l_out_p",
-                "replaceOne(toString(round(quantile(0.90)(load_out) / "
-                "if(max(speed) = 0, dictGetUInt64('interfaceattributes', 'in_speed', "
-                "(managed_object, arrayStringConcat(path))), max(speed)), 4) * 100), '.', ',')",
-            ),
-            "octets_in_sum": (
-                "load_in",
-                "octets_in_sum",
-                "round((sum(load_in * time_delta) / 8) / 1048576)",
-            ),
-            "octets_out_sum": (
-                "load_out",
-                "octets_out_sum",
-                "round((sum(load_out * time_delta) / 8) / 1048576)",
-            ),
-            "errors_in": ("errors_in", "err_in", "quantile(0.90)(errors_in)"),
-            "errors_in_sum": ("errors_in_delta", "err_in_d", "sum(errors_in_delta)"),
-            "errors_out": ("errors_out", "err_out", "quantile(0.90)(errors_out)"),
-            "errors_out_sum": ("errors_out_delta", "err_out_d", "sum(errors_out_delta)"),
-            "discards_in": ("discards_in", "disc_in", "quantile(0.90)(discards_in)"),
-            "discards_in_sum": ("discards_in_delta", "disc_in_d", "sum(discards_in_delta)"),
-            "discards_out": ("discards_out", "disc_out", "quantile(0.90)(discards_out)"),
-            "discards_out_sum": ("discards_out_delta", "disc_out_d", "sum(discards_out_delta)"),
-            "lastchange": ("lastchange", "l_change", "anyLast(lastchange)"),
-            "status_oper": ("status_oper", "status_oper", "anyLast(status_oper)"),
-            "interface_flap": (
-                "interface_flap",
-                "flap_count",
-                "countEqual(arrayMap((a,p) -> a + p, arrayPushFront(groupArray(status_oper),"
-                "groupArray(status_oper)[1]), arrayPushBack(groupArray(status_oper),"
-                "groupArray(status_oper)[-1])), 1)",
-            ),
-            "cpu_usage": ("usage", "cpu_usage", "quantile(0.90)(usage)"),
-            "ping_rtt": ("rtt", "ping_rtt", "round(quantile(0.90)(rtt) / 1000, 2)"),
-            "ping_attempts": ("attempts", "ping_attempts", "avg(attempts)"),
-        }
-        query_fields = []
-        for c in report_map[reporttype]["q_select"]:
-            query_fields += [c[2]]
-        field_shift = len(query_fields)  # deny replacing field
-        for c in columns.split(","):
-            if c not in query_map:
-                continue
-            field, alias, func = query_map[c]
-            report_map[reporttype]["q_select"][
-                (columns_order.index(c) + field_shift, field, alias)
-            ] = func
-            query_fields += [c]
-        metrics_attrs = namedtuple("METRICSATTRs", query_fields)
-
-        mo_attrs = namedtuple("MOATTRs", [c for c in cols if c.startswith("object")])
+        url = self.report_map[reporttype]["url"]
+        columns = columns.split(",")
         containers_address = {}
-        if "object_container" in columns_filter:
+        if "object_container" in columns:
             containers_address = ReportContainerData(set(mos.values_list("id", flat=True)))
             containers_address = dict(list(containers_address.extract()))
-        moss = {}
+
+        object_data = {}
         for row in mos.values_list(
             "bi_id", "name", "address", "platform", "administrative_domain__name", "segment", "id"
         ):
-            moss[row[0]] = mo_attrs(
-                *[
-                    row[1],
-                    row[2],
-                    smart_text(Platform.get_by_id(row[3]) if row[3] else ""),
-                    row[4],
-                    smart_text(NetworkSegment.get_by_id(row[5])) if row[5] else "",
-                    containers_address.get(row[6], "") if containers_address and row[6] else "",
-                ]
-            )
-        url = report_map[reporttype].get("url", "")
-        report_metric = self.metric_source[reporttype](
-            tuple(sorted(moss)), from_date, to_date, columns=None
-        )
-        report_metric.SELECT_QUERY_MAP = report_map[reporttype]["q_select"]
-        if exclude_zero and reporttype == "load_interfaces":
-            report_metric.CUSTOM_FILTER["having"] += ["max(load_in) != 0 AND max(load_out) != 0"]
-        if interface_profile:
+            object_data[row[0]] = {
+                "object_name": row[1],
+                "object_address": row[2],
+                "object_platform": Platform.get_by_id(row[3]).full_name if row[3] else "",
+                "object_adm_domain": row[4],
+                "object_segment": NetworkSegment.get_by_id(row[5]) if row[5] else "",
+                # "object_segment": "",
+                "object_container": containers_address.get(row[6], "")
+                if containers_address and row[6]
+                else "",
+                # "object_container": "",
+            }
+        datasource = self.report_map[reporttype]["datasource"]
+        report = loader[datasource]
+
+        if (
+            use_aggregated_source
+            and self.report_map[reporttype].get("aggregated_source")
+            and loader[self.report_map[reporttype]["aggregated_source"]]
+        ):
+            agg_map = {"errors_in": "errors_in_avg", "errors_out": "errors_out_avg"}
+            columns = [agg_map.get(c, c) for c in columns]
+            datasource = "reportinterfacemetricsagg"
+            report = loader[datasource]
+
+        fields = ["managed_object"]
+        group = ["managed_object"]
+        if reporttype == "load_interfaces":
+            fields += ["iface_name"]
+            group += ["iface_name"]
+
+        header = []
+        for c in columns:
+            fields += [c]
+            for ff in report.FIELDS:
+                if ff.name == c:
+                    header += [ff.label]
+                    break
+            else:
+                header += [c]
+        r = [header]
+        columns_filter = set(fields)
+        filters = []
+        if reporttype == "load_interfaces" and interface_profile:
             interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
-            report_metric.CUSTOM_FILTER["having"] += [
-                "dictGetString('interfaceattributes', 'profile', "
-                "(managed_object, arrayStringConcat(path))) = '%s'" % interface_profile.name
+            filters += [{"name": "interface_profile", "value": [interface_profile.name]}]
+        if reporttype == "load_interfaces" and not use_aggregated_source and exclude_zero:
+            # Op - operand (function) - default IN
+            filters += [
+                {"name": "max(load_in)", "value": [0], "op": "!="},
+                {"name": "max(load_out)", "value": [0], "op": "!="},
             ]
-        # OBJECT_PLATFORM, ADMIN_DOMAIN, SEGMENT, OBJECT_HOSTNAME
-        for row in report_metric.do_query():
-            mm = metrics_attrs(*row)
-            mo = moss[int(mm.id)]
+        elif reporttype == "load_interfaces" and use_aggregated_source and exclude_zero:
+            filters += [
+                {"name": "maxMerge(load_in_max)", "value": [0], "op": "!="},
+                {"name": "maxMerge(load_out_max)", "value": [0], "op": "!="},
+            ]
+
+        data = report(
+            fields=fields,
+            allobjectids=False,
+            objectids=list(object_data.keys()),
+            start=from_date,
+            end=to_date,
+            groups=group,
+            filters=filters,
+        )
+
+        for row in data.extract():
+            row.update(object_data[int(row["managed_object"])])
+            if "interface_load_url" in columns_filter:
+                d_url["biid"] = row["managed_object"]
+                d_url["oname"] = row["object_name"]
+                row["interface_load_url"] = url % d_url
             res = []
-            for y in columns_order:
-                if y in object_columns:
-                    res += [getattr(mo, y)]
-                elif y == "interface_load_url":
-                    d_url["biid"] = mm.id
-                    d_url["oname"] = mo[2].replace("#", "%23")
-                    # res += [url % d_url, interval]$:
-                    res.insert(columns_order.index("interface_load_url"), url % d_url)
-                elif y == "mac_counter":
-                    if getattr(mm, "id") in mac_aggregate.keys():
-                        if getattr(mm, "iface_name") in mac_aggregate[getattr(mm, "id")].keys():
-                            mac_counter = len(
-                                mac_aggregate[getattr(mm, "id")][getattr(mm, "iface_name")]
-                            )
-                        else:
-                            mac_counter = 0
-                    else:
-                        mac_counter = 0
-                    res.insert(columns_order.index("mac_counter"), mac_counter)
-                else:
-                    res += [getattr(mm, y)]
-            r += [res]
+            for y in columns:
+                res.append(row.get(y, ""))
+            r.append(res)
+
         filename = "metrics_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
             response = HttpResponse(content_type="text/csv")

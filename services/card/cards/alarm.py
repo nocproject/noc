@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Alarm card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
-from noc.maintenance.models.maintenance import Maintenance, MaintenanceObject
+from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
 from noc.core.perf import metrics
 
 
@@ -61,12 +61,12 @@ class AlarmCard(BaseCard):
         if self.object.log:
             log = [
                 {
-                    "timestamp": l.timestamp,
-                    "from_status": l.from_status,
-                    "to_status": l.to_status,
-                    "message": l.message,
+                    "timestamp": lg.timestamp,
+                    "from_status": lg.from_status,
+                    "to_status": lg.to_status,
+                    "message": lg.message,
                 }
-                for l in self.object.log
+                for lg in self.object.log
             ]
         # Build alarm tree
         alarms = self.get_alarms()
@@ -76,11 +76,18 @@ class AlarmCard(BaseCard):
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers),
         }
         # Maintenance
+        m_id = [
+            m.id
+            for m in AffectedObjects.objects.filter(
+                affected_objects__object=self.object.managed_object.id
+            ).values_list("maintenance")
+        ]
         mainteinance = Maintenance.objects.filter(
             is_completed=False,
             start__lte=datetime.datetime.now(),
-            affected_objects__in=[MaintenanceObject(object=self.object.managed_object)],
-        )
+            stop__gte=datetime.datetime.now(),
+            id__in=m_id,
+        ).order_by("start")
         mo = self.object.managed_object
         # Build result
         r = {

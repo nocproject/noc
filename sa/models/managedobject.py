@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,9 +14,10 @@ import re
 import operator
 from threading import Lock
 import datetime
-from typing import Tuple
+from typing import Tuple, Iterable, List
 
 # Third-party modules
+from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
     Q,
     CharField,
@@ -41,6 +42,8 @@ from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
+from noc.main.models.regexplabel import RegexpLabel
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
@@ -50,7 +53,6 @@ from noc.project.models.project import Project
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from noc.core.model.fields import (
     INETField,
-    TagsField,
     DocumentReferenceField,
     CachedForeignKey,
     ObjectIDArrayField,
@@ -75,8 +77,8 @@ from noc.core.script.caller import SessionContext, ScriptCaller
 from noc.core.bi.decorator import bi_sync
 from noc.core.script.scheme import SCHEME_CHOICES
 from noc.core.matcher import match
-from noc.core.datastream.decorator import datastream
-from noc.core.datastream.change import change_tracker
+from noc.core.change.decorator import change
+from noc.core.change.policy import change_tracker
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
@@ -90,7 +92,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 26
+MANAGEDOBJECT_CACHE_VERSION = 29
 CREDENTIAL_CACHE_VERSION = 3
 
 Credentials = namedtuple(
@@ -103,12 +105,16 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
+@Label.dynamic_classification(
+    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
+)
 @bi_sync
 @on_init
 @on_save
 @on_delete
-@datastream
+@change
 @resourcegroup
+@Label.model
 @on_delete_check(
     check=[
         # ("cm.ValidationRule.ObjectItem", ""),
@@ -498,13 +504,21 @@ class ManagedObject(NOCModel):
         choices=[("P", "Profile"), ("D", "Disable"), ("E", "Enable")],
         default="P",
     )
+    # Dynamic Profile Classification
+    dynamic_classification_policy = CharField(
+        "Dynamic Classification Policy",
+        max_length=1,
+        choices=[("P", "Profile"), ("D", "Disable"), ("R", "By Rule")],
+        default="P",
+    )
     # Resource groups
     static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     static_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     effective_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
     #
-    tags = TagsField("Tags", null=True, blank=True)
+    labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -842,7 +856,7 @@ class ManagedObject(NOCModel):
                 content += [config[:10000000]]
             else:
                 content += [config]
-        r = {"title": self.name, "content": "\n".join(content), "card": card, "tags": self.tags}
+        r = {"title": self.name, "content": "\n".join(content), "card": card, "tags": self.labels}
         return r
 
     @classmethod
@@ -1092,9 +1106,9 @@ class ManagedObject(NOCModel):
             self.write_config(data)
         # Apply mirroring settings
         self.mirror_config(data, changed)
-        # Rebuild datastream if necessary
+        # Apply changes if necessary
         if changed:
-            change_tracker.register([("managedobject", self.id)])
+            change_tracker.register("update", "sa.ManagedObject", str(self.id), fields=[])
         return changed
 
     def notify_config_changes(self, is_new, data, diff):
@@ -1606,6 +1620,11 @@ class ManagedObject(NOCModel):
             return self.object_profile.periodic_discovery_running_policy
         return self.periodic_discovery_running_policy
 
+    def get_dynamic_classification_policy(self):
+        if self.dynamic_classification_policy == "P":
+            return self.object_profile.dynamic_classification_policy
+        return self.dynamic_classification_policy
+
     def get_full_fqdn(self):
         if not self.fqdn:
             return None
@@ -1775,6 +1794,39 @@ class ManagedObject(NOCModel):
         pool = self.get_effective_fm_pool().name
         return "events.%s" % pool, 0
 
+    @classmethod
+    def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
+        yield list(instance.labels or [])
+        yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
+        yield list(Pool.iter_lazy_labels(instance.pool))
+        yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
+        yield RegexpLabel.get_effective_labels("managedobject_name", instance.name)
+        lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
+        yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
+        if instance.vendor:
+            lazy_vendor_labels = list(Vendor.iter_lazy_labels(instance.vendor))
+            yield Label.ensure_labels(lazy_vendor_labels, enable_managedobject=True)
+        if instance.platform:
+            lazy_platform_labels = list(Platform.iter_lazy_labels(instance.platform))
+            yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
+        if instance.address:
+            yield list(PrefixTable.iter_lazy_labels(instance.address))
+            yield RegexpLabel.get_effective_labels("managedobject_address", instance.address)
+        if instance.description:
+            yield RegexpLabel.get_effective_labels(
+                "managedobject_description", instance.description
+            )
+        if instance.vrf:
+            yield list(VRF.iter_lazy_labels(instance.vrf))
+        if instance.vc_domain:
+            yield list(VCDomain.iter_lazy_labels(instance.vc_domain))
+        if instance.tt_system:
+            yield list(TTSystem.iter_lazy_labels(instance.tt_system))
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, "enable_managedobject")
+
 
 @on_save
 class ManagedObjectAttribute(NOCModel):
@@ -1896,3 +1948,5 @@ from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
+from noc.main.models.prefixtable import PrefixTable
+from noc.ip.models.vrf import VRF

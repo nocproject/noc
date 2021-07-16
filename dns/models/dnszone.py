@@ -14,6 +14,7 @@ import operator
 
 # Third-party modules
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 import cachetools
 
 # NOC modules
@@ -22,13 +23,13 @@ from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.systemnotification import SystemNotification
+from noc.main.models.label import Label
 from noc.project.models.project import Project
-from noc.core.model.fields import TagsField
 from noc.core.ip import IPv6
 from noc.core.validators import is_ipv4, is_ipv6
 from noc.core.rpsl import rpsl_format
 from noc.core.gridvcs.manager import GridVCSField
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
 from .dnszoneprofile import DNSZoneProfile
@@ -42,8 +43,9 @@ ZONE_REVERSE_IPV4 = "4"
 ZONE_REVERSE_IPV6 = "6"
 
 
+@Label.model
 @on_init
-@datastream
+@change
 @on_delete_check(check=[("dns.DNSZoneRecord", "zone")])
 class DNSZone(NOCModel):
     """
@@ -92,7 +94,11 @@ class DNSZone(NOCModel):
         on_delete=models.CASCADE,
     )
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    #
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
 
     # Managers
     objects = models.Manager()
@@ -404,3 +410,7 @@ class DNSZone(NOCModel):
     @property
     def is_reverse_ipv6(self):
         return self.type == ZONE_REVERSE_IPV6
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_dnszone")

@@ -6,7 +6,7 @@
     "description": "8X 10/100/1000 copper + 2X 100/ 1G SFP DD ",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "1",

@@ -6,5 +6,7 @@
     "field_name": "xdsl_line_errors_loss_delta",
     "field_type": "UInt32",
     "description": "Count of the number of Loss of Signal failures since agent reset.",
-    "measure": "count"
+    "measure": "count",
+    "units__code": "1",
+    "scale__code": "1"
 }

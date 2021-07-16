@@ -10,8 +10,23 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metr
 from noc.core.text import parse_table
 
 
+def convert_string(v):
+    return float(v)
+
+
 class Script(GetMetricsScript):
     name = "Alstec.24xx.get_metrics"
+
+    SENSOR_OID_SCALE = {
+        "1.3.6.1.4.1.27142.1.2.45.1.5.6.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.3.8.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.3.9.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.8.0": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.1": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.2": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.3": convert_string,
+        "1.3.6.1.4.1.27142.1.2.45.1.4.10.1.2.4": convert_string,
+    }
 
     @metrics(["CPU | Load | 1min"], volatile=False, access="C")  # CLI version
     def get_cpu_metrics(self, metrics):
@@ -56,7 +71,7 @@ class Script(GetMetricsScript):
             for m in metric_map:
                 if m not in v[iface]:
                     continue
-                self.set_metric(id=(metric_map[m], ["", "", "", "0/0"]), value=int(v[iface][m]))
+                self.set_metric(id=(metric_map[m], ["noc::interface::0/0"]), value=int(v[iface][m]))
 
     @metrics(
         [
@@ -87,7 +102,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Temperature", None),
                         metric="Environment | Temperature",
-                        path=["", "", "", "Temperature_%s" % module],
+                        labels=["noc::sensor::Temperature_%s" % module],
                         value=float(v.split()[0]),
                         multi=True,
                     )
@@ -95,7 +110,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Voltage", None),
                         metric="Environment | Voltage",
-                        path=["", "", "", "Voltage_%s" % module],
+                        labels=["noc::sensor::Voltage_%s" % module],
                         value=float(v.split()[0]),
                         multi=True,
                     )
@@ -103,7 +118,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Electric current", None),
                         metric="Environment | Electric current",
-                        path=["", "", "", "ElectricCurrent_%s" % module],
+                        labels=["noc::sensor::ElectricCurrent_%s" % module],
                         value=float(v.split()[0]) * 1000.0,
                         multi=True,
                     )
@@ -111,7 +126,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Sensor Status", None),
                         metric="Environment | Sensor Status",
-                        path=["", "", "", "State_Door"],
+                        labels=["noc::sensor::State_Door"],
                         value=bool("Open" in v),
                         multi=True,
                     )
@@ -119,7 +134,7 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Environment | Sensor Status", None),
                         metric="Environment | Sensor Status",
-                        path=["", "", "", "State_Batteries"],
+                        labels=["noc::sensor::State_Batteries"],
                         value=bool("On" in v),
                         multi=True,
                     )

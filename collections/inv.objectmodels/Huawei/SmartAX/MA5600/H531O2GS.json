@@ -6,7 +6,7 @@
     "description": "Huawei 2-port GE Optical Interface Pinch Board ",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "SUBBOARD",
-    "tags": ["port"],
+    "labels": ["noc::inv::port"],
     "connections": [
         {
             "description": "Board connector",

@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 from django import template
-from noc.lib.widgets import tags_list
+from noc.core.html import tags_list
 
 register = template.Library()
 

@@ -10,7 +10,7 @@ Ext.define("NOC.fm.reportalarmcomments.Application", {
     requires: [
         "NOC.core.ReportControl",
         "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.fm.alarm.view.grids.Tagfield"
+        "NOC.core.tagfield.Tagfield"
     ],
 
     items: {

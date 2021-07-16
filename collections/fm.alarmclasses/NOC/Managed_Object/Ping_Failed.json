@@ -30,6 +30,15 @@
             }
         },
         {
+            "name": "Total Power Loss",
+            "root__name": "Environment | Total Power Loss",
+            "window": 30,
+            "condition": "True",
+            "match_condition": {
+                "managed_object": "alarm.managed_object.id"
+            }
+        },
+        {
             "name": "System Reboot",
             "root__name": "System | Reboot",
             "window": 120,

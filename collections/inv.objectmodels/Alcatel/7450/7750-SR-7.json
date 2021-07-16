@@ -6,7 +6,7 @@
     "description": "7750 SR-7 7 ports router",
     "connection_rule__name": "Alcatel | 7450",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "IO slot 1",

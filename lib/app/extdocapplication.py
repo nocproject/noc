@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ class ExtDocApplication(ExtApplication):
         None  # Set of sensitive fields. "secret" permission is required to show of modify
     )
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
-    ignored_fields = {"id", "bi_id"}
+    ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
 
     rx_oper_splitter = re.compile(r"^(?P<field>\S+?)(?P<f_num>\d+)__in")
@@ -291,12 +291,10 @@ class ExtDocApplication(ExtApplication):
     def has_field_editable(self, field):
         return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
-    def instance_to_dict(self, o, fields=None, exclude_fields=None, nocustom=False):
+    def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
         for n, f in o._fields.items():
             if fields and n not in fields:
-                continue
-            if exclude_fields and n in exclude_fields:
                 continue
             v = getattr(o, n)
             if v is not None:
@@ -327,7 +325,12 @@ class ExtDocApplication(ExtApplication):
                         v = str(v.id)
                     else:
                         v = str(v)
-                elif isinstance(f, ListField) and f.name == "labels":
+                elif (
+                    f.name in {"labels", "effective_labels"}
+                    and isinstance(f, ListField)
+                    and isinstance(f.field, StringField)
+                ):
+                    # isinstance(f.field, StringField) for exclude pm.scope labels
                     v = [
                         {
                             "id": ll.name,
@@ -335,12 +338,12 @@ class ExtDocApplication(ExtApplication):
                             "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
                             "name": ll.name,
                             "value": ll.name.split("::")[-1],
-                            "bg_color1": "#%x" % ll.bg_color1,
-                            "fg_color1": "#%x" % ll.fg_color1,
-                            "bg_color2": "#%x" % ll.bg_color2,
-                            "fg_color2": "#%x" % ll.fg_color2,
+                            "bg_color1": f"#{ll.bg_color1:06x}",
+                            "fg_color1": f"#{ll.fg_color1:06x}",
+                            "bg_color2": f"#{ll.bg_color2:06x}",
+                            "fg_color2": f"#{ll.fg_color2:06x}",
                         }
-                        for ll in Label.objects.filter(name__in=v)
+                        for ll in Label.objects.filter(name__in=v).order_by("display_order")
                     ]
                 elif isinstance(f, ListField):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
@@ -447,9 +450,11 @@ class ExtDocApplication(ExtApplication):
         """
         Returns dict with object's fields and values
         """
-        try:
-            o = self.queryset(request).get(**{self.pk: id})
-        except self.model.DoesNotExist:
+        qs = self.queryset(request).filter(**{self.pk: id})
+        if self.exclude_fields:
+            qs = qs.exclude(*self.exclude_fields)
+        o = qs.first()
+        if not o:
             return HttpResponse("", status=self.NOT_FOUND)
         only = request.GET.get(self.only_param)
         if only:
@@ -468,9 +473,11 @@ class ExtDocApplication(ExtApplication):
         except ValueError as e:
             self.logger.info("Bad request: %r (%s)", request.body, e)
             return self.response(str(e), status=self.BAD_REQUEST)
-        try:
-            o = self.queryset(request).get(**{self.pk: id})
-        except self.model.DoesNotExist:
+        qs = self.queryset(request).filter(**{self.pk: id})
+        if self.exclude_fields:
+            qs = qs.exclude(*self.exclude_fields)
+        o = qs.first()
+        if not o:
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()

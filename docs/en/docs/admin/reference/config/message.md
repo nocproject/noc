@@ -1,30 +1,47 @@
 # [message] section
+
 Message service configuration
 
 ## enable_alarm
 
-Default value
-:   False
+Issue [alarms](../../../user/reference/mx/alarm.md) mx messages.
 
-YAML Path
-:   message.enable_alarm
-
-Key-Value Path
-:   message/enable_alarm
-
-Environment
-:   NOC_MESSAGE_ENABLE_ALARM
+|                |                            |
+| -------------- | -------------------------- |
+| Default value  | `False`                    |
+| YAML Path      | `message.enable_alarm`     |
+| Key-Value Path | `message/enable_alarm`     |
+| Environment    | `NOC_MESSAGE_ENABLE_ALARM` |
 
 ## enable_managedobject
 
-Default value
-:   False
+Issue [managedobject](../../../user/reference/mx/managedobject.md) mx messages.
 
-YAML Path
-:   message.enable_managedobject
+|                |                                    |
+| -------------- | ---------------------------------- |
+| Default value  | `False`                            |
+| YAML Path      | `message.enable_managedobject`     |
+| Key-Value Path | `message/enable_managedobject`     |
+| Environment    | `NOC_MESSAGE_ENABLE_MANAGEDOBJECT` |
 
-Key-Value Path
-:   message/enable_managedobject
+## enable_reboot
 
-Environment
-:   NOC_MESSAGE_ENABLE_MANAGEDOBJECT
+Issue [reboot](../../../user/reference/mx/reboot.md) mx messages.
+
+|                |                             |
+| -------------- | --------------------------- |
+| Default value  | `False`                     |
+| YAML Path      | `message.enable_reboot`     |
+| Key-Value Path | `message/enable_reboot`     |
+| Environment    | `NOC_MESSAGE_ENABLE_REBOOT` |
+
+## enable_metrics
+
+Issue [metrics](../../../user/reference/mx/metrics.md) mx messages.
+
+|                |                              |
+| -------------- | ---------------------------- |
+| Default value  | `False`                      |
+| YAML Path      | `message.enable_metrics`     |
+| Key-Value Path | `message/enable_metrics`     |
+| Environment    | `NOC_MESSAGE_ENABLE_METRICS` |

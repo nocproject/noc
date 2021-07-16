@@ -8,6 +8,19 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.slot import SlotRule
+from noc.core.mib import mib
+from noc.core.script.metrics import scale
+
+SLA_METRICS_MAP = {
+    "SLA | Packets": "JUNIPER-RPM-MIB::jnxRpmResSumSent",
+    "SLA | Packets | Loss | Out": "JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
+    # "SLA | Packets | Loss | In": "JUNIPER-RPM-MIB::jnxRpmResSumReceived",
+    "SLA | Jitter | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
+    "SLA | Jitter | Out | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
+    "SLA | Jitter | In | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 7),
+    "SLA | RTT | Min": ("JUNIPER-RPM-MIB::jnxRpmResCalcMin", 1),
+    "SLA | RTT | Max": ("JUNIPER-RPM-MIB::jnxRpmResCalcMax", 1),
+}
 
 
 class Script(GetMetricsScript):
@@ -31,14 +44,128 @@ class Script(GetMetricsScript):
                     port += chr(int(x))
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    path=("0", "", "", str(port)),
+                    labels=("noc::chassis::0", f"noc::interface::{str(port)}"),
                     value=int(v),
                     multi=True,
                 )
         metric = self.snmp.get("1.3.6.1.4.1.2636.3.64.1.1.1.2.0")
         self.set_metric(
             id=("Subscribers | Summary", None),
-            path=("0", "", "", ""),
+            labels=("noc::chassis::0",),
             value=int(metric),
             multi=True,
         )
+
+    @metrics(
+        [
+            "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | Out",
+            "Interface | CBQOS | Octets | Out | Delta",
+            "Interface | CBQOS | Packets | Out",
+            "Interface | CBQOS | Packets | Out | Delta",
+        ],
+        volatile=False,
+        has_capability="Juniper | OID | jnxCosIfqStatsTable",
+        access="S",  # CLI version
+    )
+    def get_interface_cbqos_metrics_snmp(self, metrics):
+        ifaces = {str(m.ifindex): m.labels for m in metrics if m.ifindex}
+        for ifindex in ifaces:
+            for index, packets, octets, discards in self.snmp.get_tables(
+                [
+                    mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
+                    mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],
+                    mib["JUNIPER-COS-MIB::jnxCosIfqTailDropPkts", ifindex],
+                ]
+            ):
+                # ifindex, traffic_class = index.split(".", 1)
+                # if ifindex not in ifaces:
+                #    continue
+                traffic_class = "".join([chr(int(x)) for x in index.split(".")[1:]])
+                ts = self.get_ts()
+                for metric, value in [
+                    ("Interface | CBQOS | Drops | Out | Delta", discards),
+                    ("Interface | CBQOS | Octets | Out | Delta", octets),
+                    ("Interface | CBQOS | Octets | Out", octets),
+                    ("Interface | CBQOS | Packets | Out | Delta", packets),
+                    ("Interface | CBQOS | Packets | Out", packets),
+                ]:
+                    scale = 1
+                    self.set_metric(
+                        id=(metric, ifaces[ifindex]),
+                        metric=metric,
+                        value=float(value),
+                        ts=ts,
+                        labels=ifaces[ifindex] + [f"noc::traffic_class::{traffic_class}"],
+                        multi=True,
+                        type="delta" if metric.endswith("Delta") else "gauge",
+                        scale=scale,
+                    )
+
+    def collect_profile_metrics(self, metrics):
+        # SLA Metrics
+        if self.has_capability("Juniper | RPM | Probes"):
+            self.get_ip_sla_udp_jitter_metrics_snmp(
+                [m for m in metrics if m.metric in SLA_METRICS_MAP]
+            )
+
+    # @metrics(
+    #     list(SLA_METRICS_MAP.keys()),
+    #     has_capability="Huawei | NQA | Probes",
+    #     volatile=True,
+    #     access="S",  # CLI version
+    # )
+    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+        """
+        Returns collected ip sla metrics in form
+        probe id -> {
+            rtt: RTT in seconds
+        }
+        :return:
+        """
+        oids = {}
+        # stat_index = 250
+        for m in metrics:
+            if m.metric not in SLA_METRICS_MAP:
+                continue
+            if len(m.labels) < 2:
+                continue
+            _, name = m.labels[0].rsplit("::", 1)
+            _, group = m.labels[1].rsplit("::", 1)
+            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            base = SLA_METRICS_MAP[m.metric]
+            if not isinstance(base, tuple):
+                oid = mib[
+                    base,
+                    key,
+                    2,
+                ]
+            else:
+                oid = mib[
+                    base[0],
+                    key,
+                    2,
+                    base[1],
+                ]
+            oids[oid] = m
+
+        results = self.snmp.get_chunked(
+            oids=list(oids),
+            chunk_size=self.get_snmp_metrics_get_chunk(),
+            timeout_limits=self.get_snmp_metrics_get_timeout(),
+        )
+        ts = self.get_ts()
+        for r in results:
+            if results[r] is None:
+                continue
+            m = oids[r]
+            self.set_metric(
+                id=m.id,
+                metric=m.metric,
+                value=float(results[r]),
+                ts=ts,
+                labels=m.labels,
+                multi=True,
+                type="gauge",
+                scale=1 if m.metric != "SLA | Packets | Loss | Out" else scale(0.000001),
+            )

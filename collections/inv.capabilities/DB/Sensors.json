@@ -1,0 +1,8 @@
+{
+    "name": "DB | Sensors",
+    "$collection": "inv.capabilities",
+    "uuid": "90eebc0f-6d99-42d1-ad53-701bcfaf37bc",
+    "description": "Number of discovered sensors",
+    "type": "int",
+    "card_template": null
+}

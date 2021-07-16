@@ -6,7 +6,7 @@
     "description": null,
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "DC Power",

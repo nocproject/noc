@@ -1,0 +1,20 @@
+{
+    "name": "Byte",
+    "$collection": "pm.measurementunits",
+    "uuid": "c78335e8-540b-4843-9fde-65baed385c9d",
+    "code": "byte",
+    "description": "Bytes, or multiples thereof, are almost always used to specify the sizes of computer files and the capacity of storage units",
+    "label": "byte",
+    "dashboard_label": "bytes",
+    "convert_from": [
+        {
+            "expr": "x * 8",
+            "unit__code": "bit"
+        },
+        {
+            "expr": "(x / 8 ) * time_delta",
+            "unit__code": "bit/s"
+        }
+    ],
+    "base_unit__code": "bit"
+}

@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "Juniper SFP BX10-U transceiver",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

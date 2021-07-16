@@ -6,13 +6,27 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField
+from noc.inv.models.subinterface import SubInterface
+from noc.core.text import ch_escape
 
 
-class InterfaceDescription(Dictionary):
+class InterfaceDescription(DictionaryModel):
     class Meta(object):
         name = "interfacedescription"
-        layout = "flat"
+        layout = "complex_key_hashed"
+        source_model = "inv.SubInterface"
+        primary_key = ("bi_id", "name")
+        incremental_update = True
 
+    name = StringField()
     description = StringField()
+
+    @classmethod
+    def extract(cls, item: "SubInterface"):
+        return {
+            "bi_id": item.managed_object.bi_id,
+            "name": item.name,
+            "description": ch_escape(item.description or ""),
+        }

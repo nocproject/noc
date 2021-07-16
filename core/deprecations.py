@@ -20,7 +20,7 @@ class RemovedInNOC2003Warning(PendingDeprecationWarning):
     """
 
 
-class RemovedInNOC2004Warning(PendingDeprecationWarning):
+class RemovedInNOC2102Warning(PendingDeprecationWarning):
     """
-    Features to be removed in NOC 20.4
+    Features to be removed in NOC 21.2
     """

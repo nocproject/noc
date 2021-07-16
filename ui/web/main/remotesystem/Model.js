@@ -33,6 +33,10 @@ Ext.define("NOC.main.remotesystem.Model", {
         },
 
         {
+            name: "enable_address",
+            type: "boolean"
+        },
+        {
             name: "enable_admdiv",
             type: "boolean"
         },
@@ -42,6 +46,10 @@ Ext.define("NOC.main.remotesystem.Model", {
         },
         {
             name: "enable_authprofile",
+            type: "boolean"
+        },
+        {
+            name: "enable_building",
             type: "boolean"
         },
         {
@@ -98,6 +106,14 @@ Ext.define("NOC.main.remotesystem.Model", {
         },
         {
             name: "enable_project",
+            type: "boolean"
+        },
+        {
+            name: "enable_label",
+            type: "boolean"
+        },
+        {
+            name: "enable_street",
             type: "boolean"
         }
     ]

@@ -249,6 +249,13 @@ class ArrayField(BaseField):
         return [self.field_type.to_python(x.strip("'\" ")) for x in value[1:-1].split(",")]
 
 
+class MaterializedField(BaseField):
+    def __init__(self, field_type, expression, description=None):
+        super().__init__(description=description, low_cardinality=True)
+        self.field_type = field_type
+        self.expression = expression
+
+
 class ReferenceField(BaseField):
     db_type = "UInt64"
     default_value = 0
@@ -317,25 +324,38 @@ class IPv6Field(BaseField):
 
 
 class AggregatedField(BaseField):
-    def __init__(self, field_type, agg_functions, description=None, f_expr=""):
+    def __init__(
+        self, source_field, field_type, agg_function, params=None, description=None, f_expr=None
+    ):
         super().__init__(description=description)
+        self.source_field = source_field
         self.field_type = field_type
         self.is_agg = True
-        self.agg_functions = agg_functions
+        self.agg_function = agg_function
         self.f_expr = f_expr
+        self.params = params
 
     def to_json(self, value):
         return self.field_type.to_json(value)
 
     @property
     def db_type(self):
+        if isinstance(self.field_type, tuple):
+            return ",".join(x.db_type for x in self.field_type)
         return self.field_type.db_type
 
     def get_create_sql(self):
-        pass
+        field_type = self.field_type
+        if isinstance(field_type, tuple):
+            field_type = ", ".join(self.field_type)
+        return f"`{self.name}` AggregateFunction({self.agg_function}, {field_type})"
 
-    def get_expr(self, function, f_param):
-        return self.f_expr.format(p={"field": self.name, "function": function, "f_param": f_param})
+    def get_expr(self):
+        if self.f_expr:
+            self.f_expr(self.name)
+        return self.source_field
+        # return self.f_expr.format(p={"field": self.name, "function": function, "f_param": f_param})
+        # return "{p[function]}Merge({p[field]}_{p[function]})"
 
 
 class NestedField(ArrayField):

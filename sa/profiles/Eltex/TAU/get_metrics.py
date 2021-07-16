@@ -18,13 +18,16 @@ class Script(GetMetricsScript):
         access="S",
     )
     def get_cpu_usage(self, metrics):
-        cpu_usage = float(self.snmp.get("1.3.6.1.4.1.35265.1.9.8.0", cached=True))
+        cpu_usage = self.snmp.get("1.3.6.1.4.1.35265.1.9.8.0", cached=True)
         if cpu_usage:
-            self.set_metric(
-                id=("CPU | Usage", None),
-                value=int(cpu_usage),
-                multi=True,
-            )
+            try:
+                self.set_metric(
+                    id=("CPU | Usage", None),
+                    value=int(cpu_usage.split(".")[0]),
+                    multi=True,
+                )
+            except ValueError:
+                pass
 
     @metrics(
         ["Memory | Usage"],
@@ -51,7 +54,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 1"],
+                labels=["noc::sensor::Temperature 1"],
                 value=v,
                 multi=True,
             )
@@ -59,7 +62,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 2"],
+                labels=["noc::sensor::Temperature 2"],
                 value=v,
                 multi=True,
             )
@@ -67,7 +70,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 3"],
+                labels=["noc::sensor::Temperature 3"],
                 value=v,
                 multi=True,
             )
@@ -75,7 +78,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Temperature", None),
-                path=["", "", "", "Temperature 4"],
+                labels=["noc::sensor::Temperature 4"],
                 value=v,
                 multi=True,
             )
@@ -90,7 +93,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Sensor Status", None),
-                path=["", "", "", "Fan State"],
+                labels=["noc::sensor::Fan State"],
                 value=v,
                 multi=True,
             )
@@ -98,7 +101,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Sensor Status", None),
-                path=["", "", "", "Fan 1 Rotate"],
+                labels=["noc::sensor::Fan 1 Rotate"],
                 value=v,
                 multi=True,
             )
@@ -106,7 +109,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Sensor Status", None),
-                path=["", "", "", "Fan 2 Rotate"],
+                labels=["noc::sensor::Fan 2 Rotate"],
                 value=v,
                 multi=True,
             )
@@ -114,7 +117,7 @@ class Script(GetMetricsScript):
         if v:
             self.set_metric(
                 id=("Environment | Sensor Status", None),
-                path=["", "", "", "Device Power (ac/dc)"],
+                labels=["noc::sensor::Device Power (ac/dc)"],
                 value=v,
                 multi=True,
             )

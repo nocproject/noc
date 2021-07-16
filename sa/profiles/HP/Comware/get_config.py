@@ -15,6 +15,11 @@ class Script(BaseScript):
     name = "HP.Comware.get_config"
     interface = IGetConfig
 
+    def to_reuse_cli_session(self):
+        if self.is_bad_release:
+            return False
+        return self.reuse_cli_session
+
     def execute_cli(self, policy="r"):
         assert policy in ("r", "s")
         self.cli("undo terminal monitor")

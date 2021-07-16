@@ -1,0 +1,9 @@
+{
+    "name": "centi",
+    "$collection": "pm.scales",
+    "uuid": "2762ce32-5084-4d75-9fa4-72b381f4f4a7",
+    "code": "c",
+    "label": "c",
+    "base": 10,
+    "exp": -2
+}

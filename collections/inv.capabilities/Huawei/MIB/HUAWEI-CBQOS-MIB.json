@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | MIB | HUAWEI-CBQOS-MIB",
+    "$collection": "inv.capabilities",
+    "uuid": "4e6d5e26-d74d-4a57-b265-937f9105901a",
+    "description": "Huawei supported OIDs from HUAWEI-CBQOS-MIB.",
+    "type": "bool",
+    "card_template": null
+}

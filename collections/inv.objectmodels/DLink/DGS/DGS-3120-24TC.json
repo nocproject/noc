@@ -6,7 +6,7 @@
     "description": "DGS-3120-24TC L3 Managed Switch witch 20 ports 10/100/1000BASE-T and 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 10G CX4",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "SD card slot",

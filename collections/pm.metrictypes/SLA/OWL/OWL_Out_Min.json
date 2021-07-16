@@ -1,0 +1,12 @@
+{
+    "name": "SLA | OneWayLatency | In | Max",
+    "$collection": "pm.metrictypes",
+    "uuid": "fc1300b3-0d5f-44ab-a4f8-632c60eb5918",
+    "scope__name": "SLA",
+    "field_name": "owl_in_max",
+    "field_type": "UInt32",
+    "description": " The maximum of all OWD (One Way Delay) from destination to source.",
+    "measure": "*",
+    "units__code": "s",
+    "scale__code": "u"
+}

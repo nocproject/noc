@@ -72,6 +72,7 @@ class ServiceSummary(Document):
     }
     managed_object = IntField()
     interface = ObjectIdField()
+    subinterface = ObjectIdField()
     service = ListField(EmbeddedDocumentField(SummaryItem))
     subscriber = ListField(EmbeddedDocumentField(SummaryItem))
 
@@ -84,12 +85,14 @@ class ServiceSummary(Document):
             interface None means unbound or box-wise services
         """
         from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
         from noc.sa.models.service import Service
+        from noc.wf.models.state import State
 
         def iter_services(sd):
             yield sd
             for cs in Service._get_collection().find(
-                {"parent": sd["_id"], "logical_status": "R"},
+                {"parent": sd["_id"], "state": {"$in": productive_states}},
                 {"_id": 1, "subscriber": 1, "profile": 1},
             ):
                 yield from iter_services(cs)
@@ -104,6 +107,9 @@ class ServiceSummary(Document):
             for k in d2:
                 d1[k] = d1.get(k, 0) + d2[k]
 
+        # Productive states
+        productive_states = list(State.objects.filter(is_productive=True).values_list("id"))
+
         # service -> interface bindings
         svc_interface = {
             x["service"]: x["_id"]
@@ -113,11 +119,24 @@ class ServiceSummary(Document):
                 comment="[servicesummary.build_summary_for_object] Getting services for interfaces",
             )
         }
+        # service -> subinterface bindings
+        svc_subinterface = {}
+        for x in SubInterface._get_collection().find(
+            {"managed_object": managed_object, "service": {"$exists": True}},
+            {"_id": 1, "interface": 1, "service": 1},
+            comment="[servicesummary.build_summary_for_object] Getting services for subinterface",
+        ):
+            svc_interface[x["service"]] = x["interface"]
+            svc_subinterface[x["service"]] = x["_id"]
+
         # Iterate over object's services
         # And walk underlying tree
         ri = {}
         for svc in Service._get_collection().find(
-            {"managed_object": managed_object, "logical_status": "R"},
+            {
+                "$or": [{"managed_object": managed_object}, {"_id": {"$in": list(svc_interface)}}],
+                "state": {"$in": productive_states},
+            },
             {"_id": 1, "subscriber": 1, "profile": 1},
             comment="[servicesummary.build_summary_for_object] Getting object services for object",
         ):

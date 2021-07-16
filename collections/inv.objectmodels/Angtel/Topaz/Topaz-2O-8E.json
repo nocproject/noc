@@ -6,7 +6,7 @@
     "description": "8 х 10/100Base-TX, 2х 1000M/Gigabits Combo(SFP/GT) ",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "fa1/1/1",

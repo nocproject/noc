@@ -5,7 +5,7 @@
     "vendor__code": "ALSTEC",
     "description": "16xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "psu"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::psu"],
     "connections": [
         {
             "description": "FE port 1",

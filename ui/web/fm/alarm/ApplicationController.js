@@ -47,12 +47,14 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             view.setHistoryHash(prefix.split("/")[1]);
             this.openForm();
         } else {
-            if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
-                this.deserialize(queryStr, viewModel);
-            } else {  // restore from local store
-                var filter = window.localStorage.getItem("fm-alarm-filter");
-                if(filter) {
-                    this.deserialize(filter, viewModel);
+            if(url[0] === "fm.alarm") {
+                if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
+                    this.deserialize(queryStr, viewModel);
+                } else {  // restore from local store
+                    var filter = window.localStorage.getItem("fm-alarm-filter");
+                    if(filter) {
+                        this.deserialize(filter, viewModel);
+                    }
                 }
             }
         }
@@ -365,6 +367,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         } else { // restore from url
             id = Ext.History.getHash().split(/[/?]/)[1];
         }
+        this.getView().down("[reference=fm-alarm-form-tab-panel]").setActiveTab(0);
         this.getAlarmDetail(id);
     },
     getAlarmDetail: function(alarmId) {

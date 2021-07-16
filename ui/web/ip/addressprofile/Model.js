@@ -28,7 +28,7 @@ Ext.define("NOC.ip.addressprofile.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

@@ -14,14 +14,13 @@ import itertools
 import functools
 import errno
 import logging
-from time import perf_counter
-
-# Third-party modules
-from tornado.ioloop import IOLoop
-from tornado.concurrent import Future
+from time import perf_counter_ns
+from typing import Optional, Tuple
+from abc import ABCMeta, abstractmethod
+from asyncio import get_event_loop, get_running_loop
 
 # NOC modules
-from noc.speedup.ip import build_icmp_echo_request
+from noc.speedup.ip import build_icmp_echo_request_ts
 from noc.core.perf import metrics
 from noc.config import config
 
@@ -36,32 +35,32 @@ ICMPv6_PROTO = socket.IPPROTO_ICMPV6
 ICMPv6_ECHO = 128
 ICMPv6_ECHOREPLY = 129
 MAX_RECV = 1500
+NS = 1_000_000_000.0
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 
 IPv4_STRUCT = struct.Struct("!BBHHHBBHII")
 ICMP_STRUCT = struct.Struct("!BBHHH")
-TS_STRUCT = struct.Struct("!d")
+TS_STRUCT = struct.Struct("!Q")
 
 IGNORABLE_ERRORS = (EINTR, EAGAIN)
+T_SID = Tuple[str, int, int]
 
 
-class PingSocket(object):
+class PingSocket(object, metaclass=ABCMeta):
     """
     IPv4/IPv6 ping socket base
     """
 
-    ECHO_TYPE = None
-    HEADER_SIZE = None
-    SNDBUF = config.ping.send_buffer
-    RCVBUF = config.ping.receive_buffer
+    ECHO_TYPE: int
+    HEADER_SIZE: int
 
     def __init__(self, tos=None):
-        self.socket = None
+        self.socket: Optional[socket.socket] = None
         self._ready = False
         self.tos = tos
         self.create_socket()
         self._ready = True
-        IOLoop.current().add_handler(self.socket.fileno(), self.on_read, IOLoop.READ)
+        get_event_loop().add_reader(self.socket.fileno(), self.on_read)
         self.sessions = {}  # (address, request_id, seq) -> future
         self.out_buffer = []  # [(address, msg)]
         self.writing = False
@@ -73,8 +72,12 @@ class PingSocket(object):
         """
         return self._ready
 
+    @abstractmethod
     def create_socket(self):
-        raise NotImplementedError
+        """
+        Create raw socket
+        :return:
+        """
 
     def adjust_buffers(self):
         """
@@ -90,32 +93,35 @@ class PingSocket(object):
                 except OSError:
                     s >>= 2
 
-        send_size = set_buffer_size(self.socket, socket.SO_SNDBUF, self.SNDBUF)
-        recv_size = set_buffer_size(self.socket, socket.SO_RCVBUF, self.RCVBUF)
+        send_size = set_buffer_size(self.socket, socket.SO_SNDBUF, config.ping.send_buffer)
+        recv_size = set_buffer_size(self.socket, socket.SO_RCVBUF, config.ping.receive_buffer)
         logger.info("Adjust ping socket buffers: send=%s, recv=%s", send_size, recv_size)
 
-    def ping(self, address, timeout, size, request_id, seq):
+    def ping(self, address: str, timeout: float, size: int, request_id: int, seq: int):
         """
         Send echo request and returns future
         """
         # @todo: Check timeout
         logger.debug("[%s] Ping (req=%s, seq=%s, timeout=%sms)", address, request_id, seq, timeout)
-        msg = self.build_echo_request(size, request_id, seq)
+        msg = build_icmp_echo_request_ts(
+            request_id, seq, perf_counter_ns(), size - self.HEADER_SIZE - 8
+        )
         sid = (address, request_id, seq)
-        f = Future()
+        loop = get_running_loop()
+        f = loop.create_future()
         f.sid = sid
         self.sessions[sid] = f
         self.send(address, msg)
-        IOLoop.current().call_later(timeout / 1000.0, functools.partial(self.on_timeout, f))
+        loop.call_later(timeout / 1000.0, functools.partial(self.on_timeout, f))
         return f
 
-    def parse_reply(self, msg, ip):
+    @abstractmethod
+    def parse_reply(self, msg: bytes, addr: str) -> Optional[Tuple[T_SID, Optional[int]]]:
         """
-        Returns status, address, request_id, sequence
+        Returns status, request_id, sequence, rtt
         """
-        raise NotImplementedError
 
-    def on_read(self, fd, events):
+    def on_read(self):
         try:
             msg, addr = self.socket.recvfrom(MAX_RECV)
         except OSError as e:
@@ -124,14 +130,21 @@ class PingSocket(object):
                 return  # Exit silently
             metrics["ping_recvfrom_errors"] += 1
             raise e
-        status, address, req_id, seq, rtt = self.parse_reply(msg, addr[0])
-        if status is None:
+        r = self.parse_reply(msg, addr[0])
+        if r is None:
             metrics["ping_unknown_icmp_packets"] += 1
             return
+        sid, t0 = r
+        if t0:
+            rtt = float(perf_counter_ns() - t0) / NS
+            status = True
+        else:
+            rtt = None
+            status = False
+        address, req_id, seq = sid
         logger.debug(
             "[%s] Reply (req=%s, seq=%s, status=%s, rtt=%s)", address, req_id, seq, status, rtt
         )
-        sid = (address, req_id, seq)
         if sid in self.sessions:
             f = self.sessions.pop(sid)
             # Check for negative RTT
@@ -139,7 +152,7 @@ class PingSocket(object):
                 metrics["ping_time_stepbacks"] += 1
                 logger.info(
                     "[%s] Negative RTT detected (%s). Possible timer stepback. Check system time synchronization",
-                    address,
+                    sid[0],
                     rtt,
                 )
                 rtt = None
@@ -158,33 +171,6 @@ class PingSocket(object):
                 del self.sessions[future.sid]
             future.set_result(None)
 
-    def get_checksum(self, msg):
-        """
-        Calculate checksum
-        (RFC-1071)
-        """
-        lm = len(msg)
-        lh = lm // 2
-        # Calculate the sum of network-ordered shorts
-        s = sum(struct.unpack("!" + "H" * lh, msg[: 2 * lh]))
-        if lm < lh:
-            # Add remaining octet
-            s += ord(msg[-1])
-        # Truncate to 32 bits
-        s &= 0xFFFFFFFF
-        # Fold 32 bits to 16 bits
-        s = (s >> 16) + (s & 0xFFFF)  # Add high 16 bits to low 16 bits
-        s += s >> 16
-        return ~s & 0xFFFF
-
-    def build_echo_request(self, size, request_id, seq):
-        # Pad to size
-        ts = perf_counter()
-        payload = (TS_STRUCT.pack(ts) + b"A" * (size - self.HEADER_SIZE - 8))[
-            : size - self.HEADER_SIZE
-        ]
-        return build_icmp_echo_request(request_id, seq, payload)
-
     def send(self, address, msg):
         self.out_buffer += [(address, msg)]
         self.on_send()
@@ -201,14 +187,13 @@ class PingSocket(object):
                 else:
                     logger.error("[%s] Failed to send request: %s", a, e)
         self.out_buffer = new_buffer
+        loop = get_running_loop()
         if new_buffer:
             if not self.writing:
-                IOLoop.current().add_handler(
-                    self.socket.fileno(), self.on_send, IOLoop.current().WRITE
-                )
+                loop.add_writer(self.socket.fileno(), self.on_send)
                 self.writing = True
         elif self.writing:
-            IOLoop.current().remove_handler(self.socket.fileno())
+            loop.remove_writer(self.socket.fileno())
             self.writing = False
 
 
@@ -226,32 +211,30 @@ class Ping4Socket(PingSocket):
             self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
         self.adjust_buffers()
 
-    def parse_reply(self, msg, addr):
+    def parse_reply(self, msg: bytes, addr: str) -> Optional[Tuple[T_SID, Optional[int]]]:
         """
-        Returns status, address, request_id, sequence
+        Returns sid, ts
         """
         ip_header = msg[:20]
         (ver, tos, plen, pid, flags, ttl, proto, checksum, src_ip, dst_ip) = IPv4_STRUCT.unpack(
             ip_header
         )
         if proto != ICMPv4_PROTO:
-            return
+            return None
         icmp_header = msg[20:28]
         (icmp_type, icmp_code, icmp_checksum, req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
         if icmp_type == ICMPv4_ECHOREPLY:
-            rtt = None
-            if len(msg) > 36:
-                t0 = TS_STRUCT.unpack(msg[28:36])[0]
-                rtt = perf_counter() - t0
-            return True, addr, req_id, seq, rtt
-        elif icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED):
-            if plen >= 48:
-                _, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip = IPv4_STRUCT.unpack(msg[28:48])
-                if o_proto == ICMPv4_PROTO:
-                    o_icmp_type, _, _, o_req_id, _ = ICMP_STRUCT.unpack(msg[48:56])
-                    if o_icmp_type == ICMPv4_ECHO:
-                        return False, addr, req_id, seq, None
-        return None, None, None, None, None
+            if len(msg) <= 36:
+                return None
+            t0 = TS_STRUCT.unpack(msg[28:36])[0]
+            return (addr, req_id, seq), t0
+        if icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED) and plen >= 48:
+            _, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip = IPv4_STRUCT.unpack(msg[28:48])
+            if o_proto == ICMPv4_PROTO:
+                o_icmp_type, _, _, o_req_id, _ = ICMP_STRUCT.unpack(msg[48:56])
+                if o_icmp_type == ICMPv4_ECHO:
+                    return (addr, req_id, seq), None
+        return None
 
 
 class Ping6Socket(PingSocket):
@@ -268,9 +251,9 @@ class Ping6Socket(PingSocket):
             self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_TOS, self.tos)
         self.adjust_buffers()
 
-    def parse_reply(self, msg, addr):
+    def parse_reply(self, msg: bytes, addr: str) -> Optional[Tuple[T_SID, int]]:
         """
-        Returns status, address, request_id, sequence, rtt
+        Returns sid, ts
         """
         # (ver_tc_flow, plen, hdr, ttl) = struct.unpack("!IHBB", msg[:8])
         # src_ip = msg[64: 192]
@@ -281,14 +264,10 @@ class Ping6Socket(PingSocket):
         icmp_header = msg[:8]
         (icmp_type, icmp_code, icmp_checksum, req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
         payload = msg[8:]
-        rtt = None
-        if len(payload) >= 8:
+        if icmp_type == ICMPv6_ECHOREPLY and len(payload) >= 8:
             t0 = TS_STRUCT.unpack(payload[:8])[0]
-            rtt = perf_counter() - t0
-        if icmp_type == ICMPv6_ECHOREPLY:
-            return True, addr, req_id, seq, rtt
-        else:
-            return None, None, None, None, None
+            return (addr, req_id, seq), t0
+        return None
 
 
 class Ping(object):
@@ -302,7 +281,7 @@ class Ping(object):
         self.ping6 = None
         self.tos = tos
 
-    def get_socket(self, address):
+    def get_socket(self, address) -> Optional[PingSocket]:
         """
         Return PingSocket instance
         """
@@ -311,10 +290,9 @@ class Ping(object):
                 if not self.ping6:
                     self.ping6 = Ping6Socket(tos=self.tos)
                 return self.ping6
-            else:
-                if not self.ping4:
-                    self.ping4 = Ping4Socket(tos=self.tos)
-                return self.ping4
+            if not self.ping4:
+                self.ping4 = Ping4Socket(tos=self.tos)
+            return self.ping4
         except OSError as e:
             logger.error("Failed to create ping socket: %s", e)
             return None
@@ -330,13 +308,13 @@ class Ping(object):
             first success. CHECK_ALL - return True when all checks succeded
         :returns: Ping status as boolean
         """
-        socket = self.get_socket(address)
-        if not socket:
+        sock = self.get_socket(address)
+        if not sock:
             return None
         req_id = next(self.iter_request) & 0xFFFF
         result = policy == self.CHECK_ALL and count > 0
         for seq in range(count):
-            r = await socket.ping(address, timeout, size, req_id, seq)
+            r = await sock.ping(address, timeout, size, req_id, seq)
             if r and policy == self.CHECK_FIRST:
                 result = True
                 break
@@ -383,6 +361,5 @@ class Ping(object):
                 metrics["ping_check_recover"] += 1
             logger.debug("[%s] Result: success, rtt=%s, attempt=%d", address, rtt, attempt)
             return rtt, attempt
-        else:
-            logger.debug("[%s] Result: failed", address)
-            return None, attempt
+        logger.debug("[%s] Result: failed", address)
+        return None, attempt

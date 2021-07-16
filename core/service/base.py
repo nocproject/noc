@@ -15,7 +15,6 @@ import argparse
 import threading
 from time import perf_counter
 import asyncio
-import random
 from typing import (
     Optional,
     Dict,
@@ -26,7 +25,6 @@ from typing import (
     TypeVar,
     NoReturn,
     Awaitable,
-    Iterable,
 )
 
 # Third-party modules
@@ -45,15 +43,15 @@ from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
-from noc.core.nsq.topic import TopicQueue
-from noc.core.nsq.pub import mpub
-from noc.core.nsq.error import NSQPubError
 from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
 from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
+from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE, MX_SHARDING_KEY
+from noc.core.comp import smart_bytes
 from .rpc import RPCProxy
 from .loader import set_service
 
@@ -70,22 +68,13 @@ class BaseService(object):
     # Service name
     name = None
     # Leader lock name
-    # Only one active instace per leader lock can be active
+    # Only one active instance per leader lock can be active
     # at given moment
     # Config variables can be expanded as %(varname)s
     leader_lock_name = None
-
-    # Leader group name
-    # Only one service in leader group can be running at a time
-    # Config variables can be expanded as %(varname)s
-    # @todo: Deprecated, must be removed
-    leader_group_name = None
     # Pooled service are used to distribute load between services.
     # Pool name set in NOC_POOL parameter or --pool option.
-    # May be used in conjunction with leader_group_name
-    # to allow only one instance of services per node or datacenter
     pooled = False
-
     # Format string to set process name
     # config variables can be expanded as %(name)s
     process_name = "noc-%(name).10s"
@@ -116,15 +105,8 @@ class BaseService(object):
         "info": logging.INFO,
         "debug": logging.DEBUG,
     }
-
     DEFAULT_SHARDING_KEY = "managed_object"
-
     SHARDING_KEYS = {"span": "ctx"}
-
-    # Timeout to wait NSQ writer is to close
-    NSQ_WRITER_CLOSE_TRY_TIMEOUT = 0.25
-    # Times to try to close NSQ writer
-    NSQ_WRITER_CLOSE_RETRIES = 5
 
     class RegistrationError(Exception):
         pass
@@ -149,18 +131,23 @@ class BaseService(object):
         self.is_active = False
         # Can be initialized in subclasses
         self.scheduler = None
-        # NSQ Topics
-        # name -> TopicQueue()
-        self.topic_queues: Dict[str, TopicQueue] = {}
-        self.topic_queue_lock = threading.Lock()
         # Liftbridge publisher
         self.publish_queue: Optional[LiftBridgeQueue] = None
         self.publisher_start_lock = threading.Lock()
+        # Metrics publisher buffer
+        self.metrics_queue: Optional[QBuffer] = None
+        # MX metrics publisher buffer
+        self.mx_metrics_queue: Optional[QBuffer] = None
+        self.mx_metrics_scopes: Dict[str, Callable] = {}
+        self.mx_partitions: int = 0
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
         # Metrics partitions
         self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
+        #
+        self.metrics_key_lock = threading.Lock()
+        self.metrics_key_seq: int = 0
 
     def create_parser(self) -> argparse.ArgumentParser:
         """
@@ -402,6 +389,9 @@ class BaseService(object):
 
         await self.init_api()
         #
+        if config.message.enable_metrics:
+            self.mx_partitions = await self.get_stream_partitions("message")
+        #
         if self.use_telemetry:
             self.start_telemetry_callback()
         self.loop.create_task(self.on_register())
@@ -430,8 +420,6 @@ class BaseService(object):
         await self.shutdown_executors()
         # Custom deactivation
         await self.on_deactivate()
-        # Shutdown NSQ topics
-        await self.shutdown_topic_queues()
         # Shutdown Liftbridge publisher
         await self.shutdown_publisher()
         # Continue deactivation
@@ -535,8 +523,6 @@ class BaseService(object):
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
-        for topic in self.topic_queues:
-            self.topic_queues[topic].apply_metrics(r)
         if self.publish_queue:
             self.publish_queue.apply_metrics(r)
         apply_hists(r)
@@ -560,9 +546,66 @@ class BaseService(object):
         ],
         start_timestamp: Optional[float] = None,
         start_position: StartPosition = StartPosition.RESUME,
+        cursor_id: Optional[str] = None,
+        auto_set_cursor: bool = True,
+        async_cursor: bool = False,
     ) -> None:
         # @todo: Restart on failure
+        async def set_cursor_sync(offset: int) -> None:
+            """
+            Synchronous version of cursor setter.
+            Blocks until the cursor is really set.
+            :param offset:
+            :return:
+            """
+            await client.set_cursor(
+                stream=stream,
+                partition=partition,
+                cursor_id=cursor_id,
+                offset=offset,
+            )
+
+        async def set_cursor_async(offset: int) -> None:
+            """
+            Asynchronous version of cursor setter. Doesn't block subscriber loop,
+            though committed cursor position may lag behind the really processed one.
+            :param offset:
+            :return:
+            """
+            nonlocal cursor_cond, cursor_offset
+            async with cursor_cond:
+                cursor_offset = offset
+                cursor_cond.notify_all()
+
+        async def cursor_setter() -> None:
+            nonlocal cursor_cond, cursor_offset
+            offset: int = -1
+            while True:
+                # Wait for change
+                async with cursor_cond:
+                    await cursor_cond.wait()
+                    changed = cursor_offset > offset
+                    offset = cursor_offset
+                # Set cursor
+                if changed:
+                    await set_cursor_sync(offset)
+                if self.subscriber_shutdown_waiter:
+                    break
+
         self.logger.info("Subscribing %s:%s", stream, partition)
+        cursor_id = cursor_id or self.name
+        # Setup cursor setter
+        if auto_set_cursor and cursor_id:
+            if async_cursor:
+                set_cursor = set_cursor_async
+                cursor_cond = asyncio.Condition()
+                cursor_offset: int = -1
+                asyncio.get_running_loop().create_task(cursor_setter())
+            else:
+                set_cursor = set_cursor_sync
+        else:
+            set_cursor = None
+        # Main subscriber loop
         try:
             async with LiftBridgeClient() as client:
                 self.active_subscribers += 1
@@ -577,9 +620,8 @@ class BaseService(object):
                         await handler(msg)
                     except Exception as e:
                         self.logger.error("Failed to process message: %s", e)
-                    await client.set_cursor(
-                        stream=stream, partition=partition, cursor_id=self.name, offset=msg.offset
-                    )
+                    if set_cursor:
+                        await set_cursor(msg.offset)
                     if self.subscriber_shutdown_waiter:
                         break
         finally:
@@ -676,7 +718,19 @@ class BaseService(object):
             if self.publish_queue:
                 return  # Created in concurrent thread
             self.publish_queue = LiftBridgeQueue(self.loop)
+            self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
+            self.loop.create_task(self.publish_metrics(self.metrics_queue))
+            if config.message.enable_metrics:
+                from noc.main.models.metricstream import MetricStream
+
+                for mss in MetricStream.objects.filter():
+                    if mss.is_active and mss.scope.table_name in set(
+                        config.message.enable_metric_scopes
+                    ):
+                        self.mx_metrics_scopes[mss.scope.table_name] = mss.to_mx
+                self.mx_metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
+                self.loop.create_task(self.publish_metrics(self.mx_metrics_queue))
 
     def publish(
         self,
@@ -707,13 +761,6 @@ class BaseService(object):
         )
         self.publish_queue.put(req)
 
-    async def publisher_guard(self):
-        while not self.publish_queue.to_shutdown:
-            try:
-                await self.publisher()
-            except Exception as e:
-                self.logger.error("Unhandled exception in liftbridge publisher: %s", e)
-
     async def publisher(self):
         async with LiftBridgeClient() as client:
             while not self.publish_queue.to_shutdown:
@@ -727,70 +774,6 @@ class BaseService(object):
                     self.logger.error("Retry message")
                     await asyncio.sleep(1)
                     self.publish_queue.put(req, fifo=False)
-
-    def get_topic_queue(self, topic: str) -> TopicQueue:
-        q = self.topic_queues.get(topic)
-        if q:
-            return q
-        # Create when necessary
-        with self.topic_queue_lock:
-            q = self.topic_queues.get(topic)
-            if q:
-                return q  # Created in concurrent task
-            q = TopicQueue(topic)
-            self.topic_queues[topic] = q
-            self.loop.create_task(self.nsq_publisher_guard(q))
-            return q
-
-    async def nsq_publisher_guard(self, queue: TopicQueue):
-        while not queue.to_shutdown:
-            try:
-                await self.nsq_publisher(queue)
-            except Exception as e:
-                self.logger.error("Unhandled exception in NSQ publisher, restarting: %s", e)
-
-    async def nsq_publisher(self, queue: TopicQueue):
-        """
-        Publisher for NSQ topic
-
-        :return:
-        """
-        topic = queue.topic
-        self.logger.info("[nsq|%s] Starting NSQ publisher", topic)
-        while not queue.to_shutdown or not queue.is_empty():
-            # Message throttling. Wait and allow to collect more messages
-            await queue.wait(timeout=10, rate=config.nsqd.topic_mpub_rate)
-            # Get next batch up to `mpub_messages` messages or up to `mpub_size` size
-            messages = list(
-                queue.iter_get(
-                    n=config.nsqd.mpub_messages,
-                    size=config.nsqd.mpub_size,
-                    total_overhead=4,
-                    message_overhead=4,
-                )
-            )
-            if not messages:
-                continue
-            try:
-                self.logger.debug("[nsq|%s] Publishing %d messages", topic, len(messages))
-                await mpub(topic, messages, dcs=self.dcs)
-            except NSQPubError:
-                if queue.to_shutdown:
-                    self.logger.debug(
-                        "[nsq|%s] Failed to publish during shutdown. Dropping messages", topic
-                    )
-                else:
-                    # Return to queue
-                    self.logger.info(
-                        "[nsq|%s] Failed to publish. %d messages returned to queue",
-                        topic,
-                        len(messages),
-                    )
-                    queue.return_messages(messages)
-            del messages  # Release memory
-        self.logger.info("[nsq|%s] Stopping NSQ publisher", topic)
-        # Queue is shut down and empty, notify
-        queue.notify_shutdown()
 
     async def shutdown_executors(self):
         if self.executors:
@@ -822,52 +805,6 @@ class BaseService(object):
                 )
             self.publish_queue.shutdown()
 
-    async def shutdown_topic_queues(self):
-        # Issue shutdown
-        with self.topic_queue_lock:
-            has_topics = bool(self.topic_queues)
-            if has_topics:
-                self.logger.info("Shutting down topic queues")
-            for topic in self.topic_queues:
-                self.topic_queues[topic].shutdown()
-        # Wait for shutdown
-        while has_topics:
-            with self.topic_queue_lock:
-                topic = next(iter(self.topic_queues.keys()))
-                queue = self.topic_queues[topic]
-                del self.topic_queues[topic]
-                has_topics = bool(self.topic_queues)
-            try:
-                self.logger.info("Waiting shutdown of topic queue %s", topic)
-                await queue.wait_for_shutdown(5.0)
-            except asyncio.TimeoutError:
-                self.logger.info("Failed to shutdown topic queue %s: Timed out", topic)
-
-    def pub(self, topic, data, raw=False):
-        """
-        Publish message to topic
-        :param topic: Topic name
-        :param data: Message to send. Message will be automatically
-          converted to JSON if *raw* is False, or passed as-is
-          otherwise
-        :param raw: True - pass message as-is, False - convert to JSON
-        """
-        q = self.get_topic_queue(topic)
-        if raw:
-            q.put(data)
-        else:
-            for chunk in q.iter_encode_chunks(data):
-                q.put(chunk)
-
-    def mpub(self, topic, messages):
-        """
-        Publish multiple messages to topic
-        """
-        q = self.get_topic_queue(topic)
-        for m in messages:
-            for chunk in q.iter_encode_chunks(m):
-                q.put(chunk)
-
     def get_executor(self, name: str) -> ThreadPoolExecutor:
         """
         Return or start named executor
@@ -889,41 +826,51 @@ class BaseService(object):
         executor = self.get_executor(name)
         return executor.submit(fn, *args, **kwargs)
 
-    @staticmethod
-    def _iter_metrics_raw_chunks(metrics: List[Dict[str, Any]]) -> Iterable[bytes]:
-        r: List[bytes] = []
-        size = 0
-        for mi in metrics:
-            jm = orjson.dumps(mi)
-            ljm = len(jm)
-            if size + ljm + 1 >= config.liftbridge.max_message_size:
-                yield b"\n".join(r)
-                r = []
-                size = 0
-            r.append(jm)
-            if size:
-                size += 1 + ljm
-            else:
-                size += ljm
-        if r:
-            yield b"\n".join(r)
+    async def publish_metrics(self, queue: QBuffer) -> None:
+        while not (self.publish_queue.to_shutdown and queue.is_empty()):
+            t0 = perf_counter()
+            for stream, partititon, chunk in queue.iter_slice():
+                self.publish(chunk, stream=stream, partition=partititon)
+            if not self.publish_queue.to_shutdown:
+                to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
+                if to_sleep > 0:
+                    await asyncio.sleep(to_sleep)
 
-    def register_metrics(self, table: str, metrics: List[Dict[str, Any]]):
+    def register_metrics(
+        self, table: str, metrics: List[Dict[str, Any]], key: Optional[int] = None
+    ):
         """
-        Send collected metrics to `table`
+        Schedule metrics to be sent to the `table`.
 
-        Register metrics to send in non-clustered configuration.
-        Must be used via register_metrics only
-
-        :param fields: Table name
+        :param table: Table name
         :param metrics: List of dicts containing metrics records
+        :param key: Sharding key, None for round-robin distribution
         :return:
         """
-        for chunk in self._iter_metrics_raw_chunks(metrics):
+        if key is None:
+            with self.metrics_key_lock:
+                key = self.metrics_key_seq
+                self.metrics_key_seq += 1
+        if not self.publish_queue:
+            self._init_publisher()
+        self.metrics_queue.put(
+            stream=f"ch.{table}", partition=key % self.n_metrics_partitions, data=metrics
+        )
+        # Mirror to MX
+        if (
+            config.message.enable_metrics
+            and self.mx_metrics_scopes
+            and table in self.mx_metrics_scopes
+        ):
+            n_partitions = get_mx_partitions()
             self.publish(
-                chunk,
-                stream=f"ch.{table}",
-                partition=random.randint(0, self.n_metrics_partitions - 1),
+                value=orjson.dumps([self.mx_metrics_scopes[table](m) for m in metrics]),
+                stream=MX_STREAM,
+                partition=key % n_partitions,
+                headers={
+                    MX_MESSAGE_TYPE: b"metrics",
+                    MX_SHARDING_KEY: smart_bytes(key),
+                },
             )
 
     def start_telemetry_callback(self) -> None:

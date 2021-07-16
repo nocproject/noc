@@ -9,12 +9,13 @@ console.debug("Defining NOC.sa.serviceprofile.Application");
 Ext.define("NOC.sa.serviceprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.label.LabelField",
         "NOC.sa.serviceprofile.Model",
         "NOC.main.ref.glyph.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
-        "NOC.inv.capability.LookupField"
+        "NOC.inv.capability.LookupField",
+        "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
     search: true,
@@ -47,6 +48,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     text: __("Code"),
                     dataIndex: "code",
                     width: 100
+                },
+                {
+                    text: __("Workflow"),
+                    dataIndex: "workflow",
+                    width: 150,
+                    renderer: NOC.render.Lookup("workflow")
                 },
                 {
                     text: __("Summary"),
@@ -88,6 +95,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     fieldLabel: __("Title Template"),
                     uiStyle: "extra",
                     allowBlank: true
+                },
+                {
+                    name: "workflow",
+                    xtype: "wf.workflow.LookupField",
+                    fieldLabel: __("Workflow"),
+                    allowBlank: false
                 },
                 {
                     name: "glyph",
@@ -155,11 +168,14 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
                     allowBlank: true,
-                    uiStyle: "extra"
+                    uiStyle: "extra",
+                    query: {
+                        "enable_serviceprofile": true
+                    }
                 },
                 {
                     name: "caps",

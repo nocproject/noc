@@ -6,7 +6,7 @@
     "description": "IES-2000 main chassis with 6 slots, 1 for management and switching card (MSC) and 5 for line cards, DC power input",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Linecard 1 slot",

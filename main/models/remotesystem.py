@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -49,6 +49,10 @@ class EnvItem(EmbeddedDocument):
         ("crm.Supplier", "remote_system"),
         ("crm.SupplierProfile", "remote_system"),
         ("fm.TTSystem", "remote_system"),
+        ("gis.Address", "remote_system"),
+        ("gis.Building", "remote_system"),
+        ("gis.Division", "remote_system"),
+        ("gis.Street", "remote_system"),
         ("inv.AllocationGroup", "remote_system"),
         ("inv.InterfaceProfile", "remote_system"),
         ("inv.NetworkSegment", "remote_system"),
@@ -57,6 +61,7 @@ class EnvItem(EmbeddedDocument):
         ("inv.Object", "remote_system"),
         ("ip.AddressProfile", "remote_system"),
         ("ip.PrefixProfile", "remote_system"),
+        ("main.Label", "remote_system"),
         ("sa.ManagedObject", "remote_system"),
         ("sa.AdministrativeDomain", "remote_system"),
         ("sa.ManagedObjectProfile", "remote_system"),
@@ -83,9 +88,11 @@ class RemoteSystem(Document):
     # Environment variables
     environment = ListField(EmbeddedDocumentField(EnvItem))
     # Enable extractors/loaders
+    enable_address = BooleanField()
     enable_admdiv = BooleanField()
     enable_administrativedomain = BooleanField()
     enable_authprofile = BooleanField()
+    enable_building = BooleanField()
     enable_container = BooleanField()
     enable_link = BooleanField()
     enable_managedobject = BooleanField()
@@ -95,11 +102,13 @@ class RemoteSystem(Document):
     enable_object = BooleanField()
     enable_service = BooleanField()
     enable_serviceprofile = BooleanField()
+    enable_street = BooleanField()
     enable_subscriber = BooleanField()
     enable_subscriberprofile = BooleanField()
     enable_resourcegroup = BooleanField()
     enable_ttsystem = BooleanField()
     enable_project = BooleanField()
+    enable_label = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
@@ -157,10 +166,9 @@ class RemoteSystem(Document):
             error_report()
             error = str(e)
         self.last_extract = datetime.datetime.now()
-        if error:
-            self.extract_error = error
-        else:
+        if not error:
             self.last_successful_extract = self.last_extract
+        self.extract_error = error
         self.save()
 
     def load(self, extractors=None, quiet=False):
@@ -174,10 +182,9 @@ class RemoteSystem(Document):
             error_report()
             error = str(e)
         self.last_load = datetime.datetime.now()
-        if error:
-            self.load_error = error
-        else:
+        if not error:
             self.last_successful_load = self.last_load
+        self.load_error = error
         self.save()
 
     def check(self, extractors=None):

@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Jitter | Out | Avg",
+    "$collection": "pm.metrictypes",
+    "uuid": "cd77ce8b-10ff-491d-87dd-dd4f0ae3b3c3",
+    "scope__name": "SLA",
+    "field_name": "jitter_out_avg",
+    "field_type": "Int32",
+    "description": "The average of positive and negative jitter values from source to destination for latest operation.",
+    "measure": "μs",
+    "units__code": "s",
+    "scale__code": "u"
+}

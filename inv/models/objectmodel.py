@@ -29,6 +29,7 @@ from pymongo import InsertOne, DeleteOne
 
 # NOC modules
 from noc.main.models.doccategory import category
+from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
@@ -88,7 +89,7 @@ class ObjectModelConnection(EmbeddedDocument):
             "gender": self.gender,
         }
         if self.combo:
-            r["combo"] = self.group
+            r["combo"] = self.combo
         if self.group:
             r["group"] = self.group
         if self.cross:
@@ -133,7 +134,7 @@ class ObjectModelSensor(EmbeddedDocument):
         r = {"name": self.name}
         if self.description:
             r["description"] = self.description
-        r["units__name"] = self.units.name
+        r["units__code"] = self.units.code
         if self.modbus_register:
             r["modbus_register"] = self.modbus_register
         if self.snmp_oid:
@@ -170,7 +171,9 @@ class ObjectModel(Document):
     connections = ListField(EmbeddedDocumentField(ObjectModelConnection))
     sensors = ListField(EmbeddedDocumentField(ObjectModelSensor))
     plugins = ListField(StringField(), required=False)
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -328,8 +331,8 @@ class ObjectModel(Document):
             r["cr_context"] = self.cr_context
         if self.plugins:
             r["plugins"] = self.plugins
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["labels"] = self.labels
         return r
 
     def to_json(self):
@@ -344,7 +347,7 @@ class ObjectModel(Document):
                 "connection_rule__name",
                 "cr_context",
                 "plugins",
-                "tags",
+                "labels",
             ],
         )
 
@@ -365,6 +368,13 @@ class ObjectModel(Document):
                 if isinstance(vendor, str):
                     vendor = Vendor.get_by_id(vendor)
                 UnknownModel.clear_unknown(vendor.code, part_no)
+
+    def iter_effective_labels(self):
+        return []
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, "enable_objectmodel")
 
 
 class ModelConnectionsCache(Document):

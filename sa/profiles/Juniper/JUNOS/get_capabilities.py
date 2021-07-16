@@ -16,6 +16,9 @@ from noc.core.comp import smart_text
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_capabilities"
 
+    CHECK_SNMP_GETNEXT = {
+        "Juniper | OID | jnxCosIfqStatsTable": mib["JUNIPER-COS-MIB::jnxCosIfqQedPkts"],
+    }
     CHECK_SNMP_GET = {"Metrics | Subscribers": "1.3.6.1.4.1.2636.3.64.1.1.1.2.0"}
 
     @false_on_cli_error

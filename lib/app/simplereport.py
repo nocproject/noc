@@ -18,7 +18,7 @@ from django.utils.dateformat import DateFormat
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.config import config
-from noc.lib.widgets import tags_list
+from noc.core.html import tags_list
 from noc.core.comp import smart_text
 from .reportapplication import ReportApplication
 

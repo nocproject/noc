@@ -336,7 +336,7 @@ class Script(BaseScript):
             if int(enc_type) != 4:
                 # not dot1Q
                 continue
-            vlans_bank = b"".join([vlans_base, vlans_2k, vlans_3k, vlans_4k])
+            vlans_bank = b"".join([vlans_base, vlans_2k or b"", vlans_3k or b"", vlans_4k or b""])
             result[int(ifindex)]["tagged_vlans"] += list(
                 compress(
                     range(0, 4096),

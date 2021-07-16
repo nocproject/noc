@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "LH/LX transceiver without DOM support",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

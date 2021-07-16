@@ -11,6 +11,7 @@ import os
 import re
 import itertools
 import operator
+from typing import Union, Optional, List, Tuple, Callable, Dict
 from collections import defaultdict
 
 # Third-party modules
@@ -32,6 +33,7 @@ from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
 from noc.config import config
 from noc.core.perf import metrics as noc_metrics
+from noc.core.mib import mib
 
 NS = 1000000000.0
 SNMP_OVERLOAD_VALUE = 18446744073709551615  # '0xffffffffffffffff' for 64-bit counter
@@ -39,27 +41,28 @@ PROFILES_PATH = os.path.join("sa", "profiles")
 
 
 class MetricConfig(object):
-    __slots__ = ("id", "metric", "path", "ifindex", "sla_type")
+    __slots__ = ("id", "metric", "labels", "oid", "ifindex", "sla_type")
 
-    def __init__(self, id, metric, path=None, ifindex=None, sla_type=None):
-        self.id = id
-        self.metric = metric
-        self.path = path
-        self.ifindex = ifindex
-        self.sla_type = sla_type
+    def __init__(self, id, metric, labels=None, oid=None, ifindex=None, sla_type=None):
+        self.id: int = id
+        self.metric: str = metric
+        self.labels: List[str] = labels
+        self.oid: str = oid
+        self.ifindex: int = ifindex
+        self.sla_type: str = sla_type
 
     def __repr__(self):
         return "<MetricConfig #%s %s>" % (self.id, self.metric)
 
 
 class BatchConfig(object):
-    __slots__ = ("id", "metric", "path", "type", "scale")
+    __slots__ = ("id", "metric", "labels", "type", "scale")
 
-    def __init__(self, id, metric, path, type, scale):
-        self.id = id
-        self.metric = metric
-        self.path = path
-        self.type = type
+    def __init__(self, id, metric, labels, type, scale):
+        self.id: int = id
+        self.metric: str = metric
+        self.labels: List[str] = labels
+        self.type: str = type
         self.scale = scale
 
 
@@ -273,25 +276,25 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.metrics = []
-        self.ts = None
+        self.ts: Optional[int] = None
         # SNMP batch to be collected by collect_snmp_metrics
         # oid -> BatchConfig
-        self.snmp_batch = defaultdict(list)
+        self.snmp_batch: Dict[str, List[BatchConfig]] = defaultdict(list)
         # Collected metric ids
         self.seen_ids = set()
-        # get_path_hash(metric type, path) -> metric config
-        self.paths = {}
+        # get_labels_hash(metric type, labels) -> metric config
+        self.labels: Dict[str, List[MetricConfig]] = {}
         # metric type -> [metric config]
-        self.metric_configs = defaultdict(list)
+        self.metric_configs: Dict[str, List[MetricConfig]] = defaultdict(list)
 
-    def get_snmp_metrics_get_timeout(self):
+    def get_snmp_metrics_get_timeout(self) -> int:
         """
         Timeout for snmp GET request
         :return:
         """
         return self.profile.snmp_metrics_get_timeout
 
-    def get_snmp_metrics_get_chunk(self):
+    def get_snmp_metrics_get_chunk(self) -> int:
         """
         Aggregate up to *snmp_metrics_get_chunk* oids
         to one SNMP GET request
@@ -300,9 +303,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         return self.profile.snmp_metrics_get_chunk
 
     @staticmethod
-    def get_path_hash(metric, path):
-        if path:
-            return "\x00".join([metric] + [str(x) for x in path])
+    def get_labels_hash(metric: str, labels: List[str]):
+        if labels:
+            return "\x00".join([metric] + labels)
         else:
             return metric
 
@@ -311,14 +314,15 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         Metrics is a list of:
         * id -- Opaque id, must be returned back
         * metric -- Metric type
-        * path -- metric path
+        * labels -- metric labels
+        * oid -- optional oid
         * ifindex - optional ifindex
         * sla_test - optional sla test inventory
         """
         # Generate list of MetricConfig from input parameters
-        metrics = [MetricConfig(**m) for m in metrics]
+        metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
         # Split by metric types
-        self.paths = {self.get_path_hash(m.metric, m.path): m for m in metrics}
+        self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in metrics}
         for m in metrics:
             self.metric_configs[m.metric] += [m]
         # Process metrics collection
@@ -395,9 +399,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         :return:
         """
         for m in self.metric_configs[metric]:
-            for oid, vtype, scale, path in rule.iter_oids(self, m):
+            for oid, vtype, scale, labels in rule.iter_oids(self, m):
                 self.snmp_batch[oid] += [
-                    BatchConfig(id=m.id, metric=m.metric, path=path, type=vtype, scale=scale)
+                    BatchConfig(id=m.id, metric=m.metric, labels=labels, type=vtype, scale=scale)
                 ]
                 # Mark as seen to stop further processing
                 self.seen_ids.add(m.id)
@@ -467,7 +471,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     metric=bv.metric,
                     value=v,
                     ts=ts,
-                    path=bv.path,
+                    labels=bv.labels,
                     type=bv.type,
                     scale=bv.scale,
                 )
@@ -475,7 +479,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def get_ifindex(self, name):
         return self.ifindexes.get(name)
 
-    def get_ts(self):
+    def get_ts(self) -> int:
         """
         Returns current timestamp in nanoseconds
         """
@@ -484,19 +488,27 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         return self.ts
 
     def set_metric(
-        self, id, metric=None, value=0, ts=None, path=None, type="gauge", scale=1, multi=False
+        self,
+        id: Union[int, Tuple[str, None]],
+        metric: str = None,
+        value: Union[int, float] = 0,
+        ts: Optional[int] = None,
+        labels: Optional[Union[List[str], Tuple[str]]] = None,
+        type: str = "gauge",
+        scale: Union[float, int, Callable] = 1,
+        multi: bool = False,
     ):
         """
         Append metric to output
         :param id:
             Opaque id, as in request.
-            May be tuple of (metric, path), then it will be resolved automatically
-            and *metric* and *path* parameters may be ommited
+            May be tuple of (metric, labels), then it will be resolved automatically
+            and *metric* and *labels* parameters may be ommited
         :param metric: Metric type as string.
             When None, try to get metric type from id tuple
         :param value: Measured value
         :param ts: Timestamp (nanoseconds precision)
-        :param path: Path. Either as requested, or refined.
+        :param labels: labels. Either as requested, or refined.
             When None, try to get from id tuple
         :param type:
             Measure type. Possible values:
@@ -506,8 +518,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             "bool"
         :param scale: Metric scale (Multiplier to be applied after all processing).
             When callable, function will be called, passing value as positional argument
-        :param multi: True if single request can return several different paths.
-            When False - only first call with composite path for same path will be returned
+        :param multi: True if single request can return several different labels.
+            When False - only first call with composite labels for same labels will be returned
         """
         if value == SNMP_OVERLOAD_VALUE:
             self.logger.debug("SNMP Counter is full. Skipping value...")
@@ -519,12 +531,12 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             value = scale(*value)
             scale = 1
         if isinstance(id, tuple):
-            # Composite id, extract type and path and resolve
+            # Composite id, extract type and labels and resolve
             if not metric:
                 metric = id[0]
-            if not path:
-                path = id[1]
-            mc = self.paths.get(self.get_path_hash(*id))
+            if not labels:
+                labels = id[1]
+            mc = self.labels.get(self.get_labels_hash(*id))
             if not mc:
                 # Not requested, ignoring
                 self.logger.info("Not requesting, ignoring")
@@ -537,7 +549,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "id": id,
                 "ts": ts or self.get_ts(),
                 "metric": metric,
-                "path": path or [],
+                "labels": labels or [],
                 "value": value,
                 "type": type,
                 "scale": scale,
@@ -564,7 +576,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     )
     def get_interface_lastchange(self, metrics):
         uptime = self.snmp.get("1.3.6.1.2.1.1.3.0")
-        oids = {"1.3.6.1.2.1.2.2.1.9." + str(m.ifindex): m for m in metrics if m.ifindex}
+        oids = {mib["IF-MIB::ifLastChange", str(m.ifindex)]: m for m in metrics if m.ifindex}
         result = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -578,8 +590,30 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 metric=mc.metric,
                 value=(int(int(uptime - result[r]) / 8640000)),
                 ts=ts,
-                path=mc.path,
+                labels=mc.labels,
             )
+
+    SENSOR_OID_SCALE: Dict[str, Union[int, Callable]] = {}  # oid -> scale
+
+    @metrics(
+        ["Sensor | Value"],
+        access="S",
+        volatile=False,
+    )
+    def collect_sensor_metrics(self, metrics: List[MetricConfig]):
+        for m in metrics:
+            if m.oid:
+                try:
+                    value = self.snmp.get(m.oid)
+                    self.set_metric(
+                        id=m.id,
+                        metric=m.metric,
+                        labels=m.labels,
+                        value=float(value),
+                        scale=self.SENSOR_OID_SCALE.get(m.oid, 1),
+                    )
+                except Exception:
+                    continue
 
     # @metrics(
     #     [

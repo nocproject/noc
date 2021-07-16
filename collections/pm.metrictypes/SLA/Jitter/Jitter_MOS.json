@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Jitter | MOS",
+    "$collection": "pm.metrictypes",
+    "uuid": "719b6c5e-5266-4018-878b-c3ea08053e30",
+    "scope__name": "SLA",
+    "field_name": "jitter_mos",
+    "field_type": "Int16",
+    "description": "The MOS (Mean Opinion Score) value for the latest jitter test. ",
+    "measure": "*",
+    "units__code": "1",
+    "scale__code": "1"
+}

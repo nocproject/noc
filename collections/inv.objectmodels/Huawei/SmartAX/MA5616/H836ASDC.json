@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "Huawei MA5616 Analog Subscriber DSP Card",
     "cr_context": "DAUGHTERBOARD",
-    "tags": ["dsp"],
+    "labels": ["noc::inv::dsp"],
     "connections": [
         {
             "description": "Voice Board connector",

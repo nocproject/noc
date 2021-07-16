@@ -6,5 +6,7 @@
     "field_name": "qos_packets_in",
     "field_type": "UInt64",
     "description": "Packets on input interface queue",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__code": "pps",
+    "scale__code": "1"
 }

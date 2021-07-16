@@ -52,6 +52,7 @@ class Script(BaseScript):
         "nterfaceName": LLDP_PORT_SUBTYPE_NAME,
         "local": LLDP_PORT_SUBTYPE_LOCAL,
         "ifName": LLDP_PORT_SUBTYPE_NAME,
+        "ifAlias": LLDP_PORT_SUBTYPE_NAME,
     }
 
     def execute_cli(self, **kwargs):

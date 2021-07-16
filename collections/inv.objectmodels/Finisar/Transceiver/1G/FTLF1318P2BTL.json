@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "Fiber Optic Transceiver Module Ethernet 1.25Gbps 1310nm 3V ~ 3.6V LC Duplex Pluggable, SFP",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

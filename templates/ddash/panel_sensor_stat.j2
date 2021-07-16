@@ -1,0 +1,112 @@
+{% macro sensors(sensor, lindex) -%}
+{
+  "datasource": null,
+  "type": {% if sensor.units.dashboard_label == "percent" %}"gauge"{% else %}"stat"{% endif %},
+  "title": "{{ sensor.local_id }} {{ sensor.profile.name }}",
+  "id": {{lindex + 1130000}},
+  "span": 3,
+  "timeFrom": null,
+  "timeShift": null,
+  "options": {
+    "graphMode": "area",
+    "colorMode": "value",
+    "justifyMode": "auto",
+    "fieldOptions": {
+      "values": false,
+      "calcs": [
+        "lastNotNull"
+      ],
+      "defaults": {
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+               {% if sensor.units.dashboard_label == "percent" %}
+                  {
+                     "color": "dark-green",
+                     "value": null
+                   },
+                   {
+                     "value": 0,
+                     "color": "dark-red"
+                   },
+                   {
+                     "value": 25,
+                     "color": "dark-orange"
+                   },
+                   {
+                     "value": 50,
+                     "color": "light-yellow"
+                   },
+                   {
+                     "value": 75,
+                     "color": "light-green"
+                   }
+                {% elif sensor.units.name == "StatusEnum" %}
+                   {
+                   "color": "dark-green",
+                   "value": null
+                   },
+                   {
+                   "color": "dark-red",
+                   "value": 1
+                   }
+               {% else %}
+
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+            {% endif %}
+          ]
+        },
+
+        "mappings": [
+            {% if sensor.units.name == "StatusEnum" %}
+              {
+                "id": 1,
+                "operator": "",
+                "value": "1",
+                "text": "Fail",
+                "type": 1,
+                "from": "",
+                "to": ""
+              },
+              {
+                "id": 2,
+                "operator": "",
+                "value": "0",
+                "text": "OK",
+                "type": 1,
+                "from": "",
+                "to": ""
+              }
+            {% endif %}
+    ],
+        "unit": "{{ sensor.units.dashboard_label }}",
+        "nullValueMode": "connected",
+        "decimals": 2
+      },
+      "overrides": []
+    },
+    "orientation": "horizontal"
+  },
+  "pluginVersion": "6.7.0",
+  "targets": [
+    {
+      "refId": "A",
+      "format": "time_series",
+      "dateTimeType": "DATETIME",
+      "round": "0s",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, argMax(value, t) FROM $table WHERE sensor= {{ sensor.bi_id }} and $timeFilter GROUP BY t ORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "sensor",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "",
+      "dateTimeColDataType": "ts"
+    }
+  ]
+}
+{%- endmacro %}

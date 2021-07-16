@@ -48,10 +48,10 @@
   "targets": [
     {
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(optical_rx_dbm) as `Rx Power`,avg(optical_tx_dbm) as `Tx Power` FROM $table WHERE managed_object = $bi_id and path[4]=toString('{{dom.name}}') and $timeFilter and (optical_tx_dbm != -32555 and optical_rx_dbm != -32555) GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(optical_rx_dbm) as `Rx Power`,avg(optical_tx_dbm) as `Tx Power` FROM $table WHERE managed_object = $bi_id and interface=toString('{{dom.name}}') and $timeFilter and (optical_tx_dbm != -32555 and optical_rx_dbm != -32555) GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "interface",
       "dateLoading": false,

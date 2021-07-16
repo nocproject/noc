@@ -24,11 +24,13 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
 
 id_lock = threading.Lock()
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "version"),

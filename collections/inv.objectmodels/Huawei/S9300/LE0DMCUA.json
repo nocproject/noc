@@ -6,7 +6,7 @@
     "description": "S9303 Main Control Unit A,(Optional Clock),1*1",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "MPU",
-    "tags": ["sup"],
+    "labels": ["noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connector",

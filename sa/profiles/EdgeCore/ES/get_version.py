@@ -77,6 +77,7 @@ class Script(BaseScript):
         "1.3.6.1.4.1.259.10.1.24.102": "ECS4510-28P",
         "1.3.6.1.4.1.259.10.1.24.103": "ECS4510-28F",
         "1.3.6.1.4.1.259.10.1.24.104": "ECS4510-52T",
+        "1.3.6.1.4.1.259.10.1.10": "ECS4660-28F",
         "1.3.6.1.4.1.259.6.10.50": "ES3526X",
     }
 
@@ -107,6 +108,8 @@ class Script(BaseScript):
                 raise self.NotSupportedError(platform)
         elif "3510MA" in platform:
             platform = "ES3510MA"
+        elif "ECS3510-" in platform:
+            pass
         elif "3510" in platform:
             platform = "ES3510"
         elif "3552M" in platform:

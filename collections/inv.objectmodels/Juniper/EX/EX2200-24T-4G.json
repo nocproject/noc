@@ -6,7 +6,7 @@
     "description": "EX 2200, 24-port 10/100/1000BaseT with 4 SFP uplink ports\n",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console port",

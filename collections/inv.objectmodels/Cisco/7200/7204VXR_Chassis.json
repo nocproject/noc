@@ -6,7 +6,7 @@
     "description": "Cisco 7204VXR, 4-slot chassis",
     "connection_rule__name": "Cisco | 7200",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Supervisor slot",

@@ -14,7 +14,7 @@ from .base import BaseCard
 from noc.sa.models.service import Service
 from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.maintenance.models.maintenance import Maintenance
+from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
 
 
 class ServiceCard(BaseCard):
@@ -48,11 +48,13 @@ class ServiceCard(BaseCard):
             if not interface.full_duplex:
                 errors += ["Half-Duplex"]
             # Maintenance
-            for m in Maintenance.objects.filter(
-                affected_objects__object=managed_object.id,
-                is_completed=False,
-                start__lte=now + datetime.timedelta(hours=1),
-            ):
+            for ao in AffectedObjects.objects.filter(affected_objects__object=managed_object.id):
+
+                m = Maintenance.objects.filter(
+                    id=ao.maintenance,
+                    is_completed=False,
+                    start__lte=now + datetime.timedelta(hours=1),
+                ).first()
                 maintenance += [
                     {
                         "maintenance": m,
@@ -69,7 +71,7 @@ class ServiceCard(BaseCard):
         r = {
             "id": self.object.id,
             "service": self.object,
-            "current_duration": now - self.object.logical_status_start,
+            "current_duration": now - self.object.state_changed,
             "services": services,
             "interface": interface,
             "managed_object": managed_object,

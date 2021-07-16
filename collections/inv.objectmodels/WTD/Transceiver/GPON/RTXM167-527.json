@@ -5,7 +5,7 @@
     "vendor__code": "WTD",
     "description": "RTXM167-527 GPON OLT Class C+ 40km DDM SFP optical module",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

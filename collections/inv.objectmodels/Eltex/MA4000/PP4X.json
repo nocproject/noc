@@ -6,7 +6,7 @@
     "description": "Eltex MA4000 плата управления и коммутации PP4X 4x10GBase-X(SFP+), 2x (10/100/1000Base-T/1000Base-X (SFP))",
     "connection_rule__name": "Eltex | MA4000",
     "cr_context": "SUP",
-    "tags": ["lc", "sup", "fabric", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",

@@ -6,7 +6,7 @@
     "description": "8x 10/100/1000Base-T, 2x 10GBase-R (SFP+)/1000Base-X (SFP)",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console port",

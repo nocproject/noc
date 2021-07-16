@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.core.mongo.connection import get_db
-from noc.core.defer import call_later
+from noc.core.defer import defer
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
@@ -599,7 +599,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o.is_managed = False
         o.description = "Wiping! Do not touch!"
         o.save()
-        call_later("noc.sa.wipe.managedobject.wipe", o=o.id)
+        defer("noc.sa.wipe.managedobject.wipe", key=o.id, o=o.id)
         return HttpResponse(orjson.dumps({"status": True}), status=self.DELETED)
 
     @view(

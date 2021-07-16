@@ -6,7 +6,7 @@
     "description": "Cisco 7201 Chassis, 1GB Memory, Dual P/S, 256MB Flash",
     "connection_rule__name": "Cisco | 7200",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Supervisor slot",

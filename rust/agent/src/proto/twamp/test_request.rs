@@ -5,8 +5,9 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use super::{NTPTimeStamp, UTCDateTime};
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use super::{NtpTimeStamp, UtcDateTime};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, BytesMut};
 
 /// ## Test-Request structure
@@ -33,7 +34,7 @@ use bytes::{Buf, BufMut, BytesMut};
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TestRequest {
     pub seq: u32,
-    pub timestamp: UTCDateTime,
+    pub timestamp: UtcDateTime,
     pub err_estimate: u16,
     // Padding to size, excluding IP + UDP
     pub pad_to: usize,
@@ -43,12 +44,12 @@ impl FrameReader for TestRequest {
     fn min_size() -> usize {
         14
     }
-    fn parse(s: &mut BytesMut) -> Result<TestRequest, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<TestRequest, AgentError> {
         let pad_to = s.len();
         // Sequence number, 4 octets
         let seq = s.get_u32();
         // Timestamp, 8 octets
-        let ts = NTPTimeStamp::new(s.get_u32(), s.get_u32());
+        let ts = NtpTimeStamp::new(s.get_u32(), s.get_u32());
         // Err estimate, 2 octets
         let err_estimate = s.get_u16();
         // Skip padding
@@ -70,11 +71,11 @@ impl FrameWriter for TestRequest {
         self.pad_to
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Sequence number, 4 octets
         s.put_u32(self.seq);
         // Timestamp, 8 octets
-        let ts: NTPTimeStamp = self.timestamp.into();
+        let ts: NtpTimeStamp = self.timestamp.into();
         s.put_u32(ts.secs());
         s.put_u32(ts.fracs());
         // Err estimate, 2 octets
@@ -122,7 +123,8 @@ mod tests {
         let expected = get_test_request();
         let res = TestRequest::parse(&mut buf);
         assert_eq!(buf.remaining(), 0);
-        assert_eq!(res, Ok(expected));
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

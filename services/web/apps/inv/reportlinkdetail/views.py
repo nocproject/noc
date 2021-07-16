@@ -263,7 +263,7 @@ class ReportLinkDetailApplication(ExtApplication):
                 "address",
                 "segment",
                 "platform",
-                "tags",
+                "labels",
             )
         }
 

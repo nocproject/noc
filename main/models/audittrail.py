@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # AuditTrail model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,8 +17,8 @@ from mongoengine.fields import StringField, DateTimeField, ListField, EmbeddedDo
 # NOC modules
 from noc.config import config
 from noc.core.middleware.tls import get_user
-from noc.lib.utils import get_model_id
 from noc.core.comp import smart_text
+from noc.models import get_model_id
 
 logger = logging.getLogger(__name__)
 

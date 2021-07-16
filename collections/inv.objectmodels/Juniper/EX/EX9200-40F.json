@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "40x1GE Enhanced DPC for EX9200",
     "cr_context": "FPC",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "MIC0 slot",
@@ -32,7 +32,7 @@
     "data": {
         "asset": {
             "order_part_no": ["EX9200-40F"],
-            "part_no": ["750-049766"]
+            "part_no": ["750-049766", "750-064570"]
         }
     }
 }

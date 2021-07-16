@@ -9,13 +9,19 @@ console.debug("Defining NOC.sa.service.Application");
 Ext.define("NOC.sa.service.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.StateField",
         "NOC.sa.service.Model",
         "NOC.sa.service.LookupField",
+        "NOC.sa.service.TreeCombo",
         "NOC.sa.serviceprofile.LookupField",
         "NOC.crm.subscriber.LookupField",
+        "NOC.crm.supplier.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.sa.managedobject.LookupField",
-        "NOC.inv.capability.LookupField"
+        "NOC.inv.capability.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
+        "NOC.core.label.LabelField",
+        "Ext.ux.form.GridField"
     ],
     model: "NOC.sa.service.Model",
     search: true,
@@ -44,19 +50,10 @@ Ext.define("NOC.sa.service.Application", {
                     renderer: NOC.render.Lookup("subscriber")
                 },
                 {
-                    text: __("Logical Status"),
-                    dataIndex: "logical_status",
-                    width: 120,
-                    renderer: NOC.render.Choices({
-                        P: __("Planned"),
-                        p: __("Provisioning"),
-                        T: __("Testing"),
-                        R: __("Ready"),
-                        S: __("Suspended"),
-                        r: __("Removing"),
-                        C: __("Closed"),
-                        U: __("Unknown")
-                    })
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 200,
+                    renderer: NOC.render.Lookup("state")
                 },
                 {
                     text: __("Parent"),
@@ -73,21 +70,18 @@ Ext.define("NOC.sa.service.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "logical_status",
-                    xtype: "combobox",
-                    fieldLabel: __("Logical Status"),
-                    allowBlank: false,
-                    store: [
-                        ["P", "Planned"],
-                        ["p", "Provisioning"],
-                        ["T", "Testing"],
-                        ["R", "Ready"],
-                        ["S", "Suspended"],
-                        ["r", "Removing"],
-                        ["C", "Closed"],
-                        ["U", "Unknown"]
-                    ],
-                    uiStyle: "medium"
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
+                },
+                {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    query: {
+                        "enable_service": true
+                    },
                 },
                 {
                     name: "parent",
@@ -99,7 +93,13 @@ Ext.define("NOC.sa.service.Application", {
                     name: "subscriber",
                     xtype: "crm.subscriber.LookupField",
                     fieldLabel: __("Subscriber"),
-                    allowBlank: false
+                    allowBlank: true
+                },
+                {
+                    name: "supplier",
+                    xtype: "crm.supplier.LookupField",
+                    fieldLabel: __("Supplier"),
+                    allowBlank: true
                 },
                 {
                     name: "description",
@@ -171,6 +171,81 @@ Ext.define("NOC.sa.service.Application", {
                 },
                 {
                     xtype: "fieldset",
+                    title: __("Resource Groups"),
+                    layout: "column",
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: {
+                        columnWidth: 0.5,
+                        padding: 10
+                    },
+                    collapsible: true,
+                    collapsed: false,
+                    items: [
+                        {
+                            name: "static_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_service_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Service Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "static_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Static Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            name: "effective_client_groups",
+                            xtype: "gridfield",
+                            columns: [
+                                {
+                                    dataIndex: "group",
+                                    text: __("Effective Client Groups"),
+                                    width: 350,
+                                    renderer: NOC.render.Lookup("group"),
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),
                     defaults: {
@@ -234,6 +309,12 @@ Ext.define("NOC.sa.service.Application", {
 
     filters: [
         {
+            title: __("By Service"),
+            name: "parent",
+            ftype: "tree",
+            lookup: "sa.service"
+        },
+        {
             title: __("By Profile"),
             name: "profile",
             ftype: "lookup",
@@ -246,19 +327,16 @@ Ext.define("NOC.sa.service.Application", {
             lookup: "crm.subscriber"
         },
         {
+            title: __("By Supplier"),
+            name: "supplier",
+            ftype: "lookup",
+            lookup: "crm.supplier"
+        },
+        {
             title: __("By State"),
-            name: "logical_status",
-            ftype: "choices",
-            store: [
-                ["P", "Planned"],
-                ["p", "Provisioning"],
-                ["T", "Testing"],
-                ["R", "Ready"],
-                ["S", "Suspended"],
-                ["r", "Removing"],
-                ["C", "Closed"],
-                ["U", "Unknown"]
-            ]
+            name: "state",
+            ftype: "lookup",
+            lookup: "wf.state"
         }
     ],
 

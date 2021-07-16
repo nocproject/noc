@@ -1,0 +1,57 @@
+{
+    "name": "Juniper | EX | EX-UM-4SFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "f58bc491-fa13-4f3f-9c55-b1d97688d584",
+    "vendor__code": "JUNIPER",
+    "description": "4-Port 1G SFP Uplink Module for EX4200 and EX3200",
+    "cr_context": "PIC",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | Uplink"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/2",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/3",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["4x 1G SFP"],
+            "order_part_no": ["EX-UM-4SFP"],
+            "part_no": ["711-021270"]
+        }
+    }
+}

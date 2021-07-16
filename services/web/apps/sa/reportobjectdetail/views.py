@@ -306,19 +306,19 @@ class ReportObjectDetailApplication(ExtApplication):
             caps_columns = list(object_caps.ATTRS.values())
             ccc = iter(object_caps)
             r[-1].extend(caps_columns)
-        if "object_tags" in columns_filter:
-            r[-1].extend([_("OBJECT_TAGS")])
-        if "sorted_tags" in columns_filter:
-            tags = set()
+        if "object_labels" in columns_filter:
+            r[-1].extend([_("OBJECT_LABELS")])
+        if "sorted_labels" in columns_filter:
+            labels = set()
             for s in (
                 ManagedObject.objects.filter()
-                .exclude(tags=None)
-                .values_list("tags", flat=True)
+                .exclude(labels=None)
+                .values_list("labels", flat=True)
                 .distinct()
             ):
-                tags.update(set(s))
-            tags_o = sorted([t for t in tags if "{" not in t])
-            r[-1].extend(tags_o)
+                labels.update(set(s))
+            labels_o = sorted([t for t in labels if "{" not in t])
+            r[-1].extend(labels_o)
         if "discovery_problem" in columns.split(","):
             discovery_result = ReportDiscoveryResult(mos_id)
             discovery_result.safe_output = True
@@ -342,7 +342,7 @@ class ReportObjectDetailApplication(ExtApplication):
             vendor,
             platform,
             version,
-            tags,
+            labels,
         ) in (
             mos.values_list(
                 "id",
@@ -357,7 +357,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 "vendor",
                 "platform",
                 "version",
-                "tags",
+                "labels",
             )
             .order_by("id")
             .iterator()
@@ -417,17 +417,17 @@ class ReportObjectDetailApplication(ExtApplication):
                 r[-1].extend(next(iss)[0])
             if "object_caps" in columns_filter:
                 r[-1].extend(next(ccc)[0])
-            if "object_tags" in columns_filter:
-                r[-1].append(",".join(tags if tags else []))
-            if "sorted_tags" in columns_filter:
-                out_tags = [""] * len(tags_o)
+            if "object_labels" in columns_filter:
+                r[-1].append(",".join(labels if labels else []))
+            if "sorted_labels" in columns_filter:
+                out_labels = [""] * len(labels_o)
                 try:
-                    if tags:
-                        for m in tags:
-                            out_tags[tags_o.index(m)] = m
+                    if labels:
+                        for m in labels:
+                            out_labels[labels_o.index(m)] = m
                 except ValueError:
                     logger.warning("Bad value for tag: %s", m)
-                r[-1].extend(out_tags)
+                r[-1].extend(out_labels)
             if "discovery_problem" in columns_filter:
                 r[-1].extend(next(dp)[0])
             if not icount:

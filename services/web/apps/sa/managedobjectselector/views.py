@@ -48,7 +48,7 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
                 "administrative_domain": smart_text(mo.administrative_domain),
                 "address": mo.address,
                 "description": mo.description,
-                "tags": mo.tags,
+                "labels": mo.labels,
             }
             for mo in o.managed_objects
         ]

@@ -29,7 +29,9 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
-from noc.core.defer import call_later
+from noc.core.defer import defer
+from noc.core.hash import hash_int
+from noc.core.change.decorator import change
 from noc.models import get_model_id
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 
 
 @bi_sync
+@change
 @on_delete_check(
     check=[
         ("wf.Transition", "from_state"),
@@ -51,6 +54,9 @@ STATE_JOB = "noc.core.wf.transition.state_job"
         ("ip.VRF", "state"),
         ("phone.PhoneNumber", "state"),
         ("phone.PhoneRange", "state"),
+        ("pm.Agent", "state"),
+        ("sa.Service", "state"),
+        ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),
     ]
@@ -152,8 +158,12 @@ class State(Document):
                 logger.error("Error import state job handler: %s" % e)
                 h = None
             if h:
-                call_later(
-                    STATE_JOB, handler=self.job_handler, model=get_model_id(obj), object=str(obj.pk)
+                defer(
+                    STATE_JOB,
+                    key=hash_int(obj.pk),
+                    handler=self.job_handler,
+                    model=get_model_id(obj),
+                    object=str(obj.pk),
                 )
             else:
                 logger.debug(

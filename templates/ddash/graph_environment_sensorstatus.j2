@@ -8,9 +8,9 @@
     {
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((sensor, State)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(sensor_status) as `State` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        and like(path[4],'State%')\n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t, \n    groupArray((sensor, State)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        sensor, \n        avg(sensor_status) as `State` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n        and like(sensor,'State%')\n    GROUP BY sensor, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "environment",
       "dateLoading": false,

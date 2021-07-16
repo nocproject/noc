@@ -30,8 +30,10 @@ class AdmDomainDataStream(DataStream):
         r = {"id": str(ad.id), "name": qs(ad.name)}
         if ad.parent:
             r["parent"] = str(ad.parent.id)
-        if ad.tags:
-            r["tags"] = [qs(t) for t in ad.tags]
+        if ad.labels:
+            r["labels"] = [qs(t) for t in ad.labels]
+            # Alias for compat
+            r["tags"] = [qs(t) for t in ad.labels]
         cls._apply_remote_system(ad, r)
         return r
 

@@ -4,7 +4,7 @@
     "uuid": "586ea21e-c3c4-47db-9211-3d28f570984c",
     "vendor__code": "HUAWEI",
     "description": "Interface card with 2 PCI-E 12G stacking ports",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "Rear slot",

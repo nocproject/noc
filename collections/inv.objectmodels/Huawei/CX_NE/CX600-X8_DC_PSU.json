@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "CX600-X8 48V DC Power Entry Module",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connector",

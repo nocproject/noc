@@ -5,7 +5,7 @@
     "vendor__code": "ARISTA",
     "description": "1000Base-T",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "1000Base-T port",

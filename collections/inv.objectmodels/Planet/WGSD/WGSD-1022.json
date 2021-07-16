@@ -6,7 +6,7 @@
     "description": "8-port 10/100, 2-port Gigabit (Combo port)",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "e1",

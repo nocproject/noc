@@ -6,7 +6,7 @@
     "description": "MX240 High Capacity fantray (upper or lower)",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Chassis connection",
@@ -19,7 +19,7 @@
     "data": {
         "asset": {
             "order_part_no": ["FFANTRAY-MX240-HC-S"],
-            "part_no": ["711-059360"]
+            "part_no": ["711-059360", "710-030216"]
         }
     }
 }

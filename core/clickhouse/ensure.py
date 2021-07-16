@@ -11,6 +11,7 @@ import logging
 # NOC modules
 from noc.config import config
 from .loader import loader
+from ..bi.dictionaries.loader import loader as bi_dictionary_loader
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,22 @@ def ensure_bi_models(connect=None):
             continue
         logger.info("Ensure table %s" % model._meta.db_table)
         changed |= model.ensure_table(connect=connect)
+    return changed
+
+
+def ensure_dictionary_models(connect=None):
+    logger.info("Ensuring Dictionaries:")
+    # Ensure fields
+    changed = False
+    for name in bi_dictionary_loader:
+        model = bi_dictionary_loader[name]
+        if not model:
+            continue
+        logger.info("Ensure dictionary %s" % model._meta.db_table)
+        changed |= model.ensure_table(connect=connect)
+        if changed:
+            model.detach_dictionary(connect=connect)
+        changed |= model.ensure_dictionary(connect=connect)
     return changed
 
 

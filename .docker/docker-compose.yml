@@ -52,6 +52,15 @@ services:
       timeout: 3s
       retries: 100
 
+  liftbridge:
+    image: liftbridge/liftbridge:latest
+    entrypoint: liftbridge --data-dir=/tmp/lift --embedded-nats --raft-bootstrap-seed
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: "512M"
+
   pytests:
     build:
       context: ../
@@ -65,6 +74,8 @@ services:
       mongodb-repl-set-init:
         condition: service_healthy
       clickhouse:
+        condition: service_started
+      liftbridge:
         condition: service_started
       nsqd:
         condition: service_started

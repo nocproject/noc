@@ -6,10 +6,12 @@
 // ---------------------------------------------------------------------
 
 pub mod agent;
-pub mod cmd;
+pub mod cli;
 pub mod collectors;
-pub mod nvram;
+pub mod config;
+pub mod error;
+mod feature;
 pub mod proto;
-pub mod registry;
+pub mod state;
+pub mod sysid;
 pub mod timing;
-pub mod zk;

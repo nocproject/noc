@@ -10,10 +10,12 @@ Ext.define("NOC.sla.slaprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sla.slaprofile.Model",
+        "NOC.core.label.LabelField",
         "NOC.main.style.LookupField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
+        "NOC.wf.workflow.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.sla.slaprofile.Model",
@@ -27,6 +29,12 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     text: __("Name"),
                     dataIndex: "name",
                     flex: 1
+                },
+                {
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
+                    width: 100
                 }
             ],
 
@@ -45,10 +53,26 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "workflow",
+                    xtype: "wf.workflow.LookupField",
+                    fieldLabel: __("WorkFlow"),
+                    allowBlank: false
+                },
+                {
                     name: "style",
                     xtype: "main.style.LookupField",
                     fieldLabel: __("Style"),
                     allowBlank: true
+                },
+                {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    uiStyle: "medium",
+                    query: {
+                        "enable_slaprofile": true
+                    },
                 },
                 {
                     name: "metrics",
@@ -58,8 +82,13 @@ Ext.define("NOC.sla.slaprofile.Application", {
                         {
                             text: __("Metric Type"),
                             dataIndex: "metric_type",
-                            flex: 1,
-                            editor: "pm.metrictype.LookupField",
+                            width: 200,
+                            editor: {
+                                xtype: "pm.metrictype.LookupField",
+                                query: {
+                                    "name__startswith": "SLA"
+                                }
+                            },
                             renderer: NOC.render.Lookup("metric_type")
                         },
                         {

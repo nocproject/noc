@@ -29,13 +29,12 @@ def get_model_id(object):
     """
     if is_document(object):
         # Document
-        return "%s.%s" % (object.__module__.split(".")[1], object._class_name)
+        app = object.__module__.split(".")[1]
+        model = object._class_name
     else:
-        # Model
-        return "%s.%s" % (
-            object._meta.app_label if object._meta.app_label != "auth" else "main",
-            object._meta.object_name,
-        )
+        app = object._meta.app_label if object._meta.app_label != "auth" else "main"
+        model = object._meta.object_name
+    return f"{app}.{model}"
 
 
 def get_model(model_id):
@@ -107,6 +106,7 @@ _MODELS = {
     "main.Handler": "noc.main.models.handler.Handler",
     "main.Language": "noc.main.models.language.Language",
     "main.MessageRoute": "noc.main.models.messageroute.MessageRoute",
+    "main.MetricStream": "noc.main.models.metricstream.MetricStream",
     "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",
@@ -118,6 +118,7 @@ _MODELS = {
     "main.RefBook": "noc.main.models.refbook.RefBook",
     "main.RefBookData": "noc.main.models.refbookdata.RefBookData",
     "main.RefBookField": "noc.main.models.refbookfield.RefBookField",
+    "main.RegexpLabel": "noc.main.models.regexplabel.RegexpLabel",
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
@@ -243,6 +244,9 @@ _MODELS = {
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     "fm.Uptime": "noc.fm.models.uptime.Uptime",
     # pm models
+    "pm.Agent": "noc.pm.models.agent.Agent",
+    "pm.AgentProfile": "noc.pm.models.agent.AgentProfile",
+    "pm.Scale": "noc.pm.models.scale.Scale",
     "pm.MeasurementUnits": "noc.pm.models.measurementunits.MeasurementUnits",
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
@@ -304,6 +308,7 @@ _MODELS = {
     "kb.KBUserBookmark": "noc.kb.models.kbuserbookmark.KBUserBookmark",
     # Maintenance
     "maintenance.Maintenance": "noc.maintenance.models.maintenance.Maintenance",
+    "maintenance.AffectedObjects": "noc.maintenance.models.maintenance.AffectedObjects",
     "maintenance.MaintenanceType": "noc.maintenance.models.maintenancetype.MaintenanceType",
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
@@ -342,10 +347,10 @@ COLLECTIONS = [
     "dev.Spec",
     "sa.Action",
     "inv.Capability",
+    "pm.Scale",
     "pm.MeasurementUnits",
     "pm.MetricScope",
     "pm.MetricType",
-    "pm.ThresholdProfile",
     "fm.Enumeration",
     "inv.ConnectionRule",
     "inv.ConnectionType",
@@ -367,7 +372,62 @@ COLLECTIONS = [
     "fm.EventClassificationRule",
     "fm.CloneClassificationRule",
     "sa.ProfileCheckRule",
+    "pm.ThresholdProfile",
     "bi.DashboardLayout",
     "bi.Dashboard",
     "cm.ConfDBQuery",
 ]
+
+# Model -> Setting
+LABEL_MODELS = {
+    "pm.Agent": "enable_agent",
+    "sa.Service": "enable_service",
+    "sa.ServiceProfile": "enable_serviceprofile",
+    "sa.ManagedObject": "enable_managedobject",
+    "sa.ManagedObjectProfile": "enable_managedobjectprofile",
+    "sa.AdministrativeDomain": "enable_administrativedomain",
+    "sa.AuthProfile": "enable_authprofile",
+    "sa.CommandSnippet": "enable_commandsnippet",
+    #
+    "inv.AllocationGroup": "enable_allocationgroup",
+    "inv.NetworkSegment": "enable_networksegment",
+    "inv.Object": "enable_object",
+    "inv.ObjectModel": "enable_objectmodel",
+    "inv.Platform": "enable_platform",
+    "inv.ResourceGroup": "enable_resourcegroup",
+    "inv.Sensor": "enable_sensor",
+    "inv.SensorProfile": "enable_sensorprofile",
+    #
+    "crm.Subscriber": "enable_subscriber",
+    "crm.SubscriberProfile": "enable_subscriberprofile",
+    "crm.Supplier": "enable_supplier",
+    "crm.SupplierProfile": "enable_supplierprofile",
+    #
+    "dns.DNSZone": "enable_dnszone",
+    "dns.DNSZoneRecord": "enable_dnszonerecord",
+    #
+    "gis.Division": "enable_division",
+    "kb.KBEntry": "enable_kbentry",
+    #
+    "ip.Address": "enable_ipaddress",
+    "ip.AddressProfile": "enable_addressprofile",
+    "ip.AddressRange": "enable_ipaddressrange",
+    "ip.Prefix": "enable_ipprefix",
+    "ip.PrefixProfile": "enable_prefixprofile",
+    "ip.VRF": "enable_vrf",
+    "ip.VRFGroup": "enable_vrfgroup",
+    #
+    "peer.AS": "enable_asn",
+    "peer.ASSet": "enable_assetpeer",
+    "peer.Peer": "enable_peer",
+    #
+    "vc.VC": "enable_vc",
+    "vc.VLAN": "enable_vlan",
+    "vc.VLANProfile": "enable_vlanprofile",
+    "vc.VPN": "enable_vpn",
+    "vc.VPNProfile": "enable_vpnprofile",
+    #
+    "sla.SLAProbe": "enable_slaprobe",
+    "sla.SLAProfile": "enable_slaprofile",
+    "fm.ActiveAlarm": "enable_alarm",
+}

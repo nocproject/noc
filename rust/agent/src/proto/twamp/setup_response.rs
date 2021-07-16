@@ -5,7 +5,8 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-use crate::proto::frame::{FrameError, FrameReader, FrameWriter};
+use crate::error::AgentError;
+use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::{Buf, BufMut, Bytes, BytesMut};
 
 /// ## Setup-Response structure
@@ -47,7 +48,7 @@ impl FrameReader for SetupResponse {
     fn min_size() -> usize {
         164
     }
-    fn parse(s: &mut BytesMut) -> Result<Self, FrameError> {
+    fn parse(s: &mut BytesMut) -> Result<Self, AgentError> {
         // Mode, 4 octets
         let mode = s.get_u32();
         // Key ID, 80 octets
@@ -70,22 +71,24 @@ impl FrameWriter for SetupResponse {
         164
     }
     /// Serialize frame to buffer
-    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), FrameError> {
+    fn write_bytes(&self, s: &mut BytesMut) -> Result<(), AgentError> {
         // Mode, 4 octets
         s.put_u32(self.mode);
         // Key ID, 80 octets
         if self.key_id.len() != 80 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Key-ID must be of 80 octets".into()));
         }
         s.put(&*self.key_id);
         // Token, 64 octets
         if self.token.len() != 64 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError("Token must be of 64 octets".into()));
         }
         s.put(&*self.token);
         // Client IV: 16 octets
         if self.client_iv.len() != 16 {
-            return Err(FrameError);
+            return Err(AgentError::FrameError(
+                "Client-IV must be of 16 octets".into(),
+            ));
         }
         s.put(&*self.client_iv);
         Ok(())
@@ -157,7 +160,8 @@ mod tests {
         let mut buf = BytesMut::from(SETUP_RESPONSE1);
         let expected = get_setup_response();
         let res = SetupResponse::parse(&mut buf);
-        assert_eq!(res, Ok(expected))
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap(), expected);
     }
 
     #[test]

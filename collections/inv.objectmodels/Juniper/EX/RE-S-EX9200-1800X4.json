@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "Routing engine with Quad Core 1800Ghz with 16G Memory",
     "cr_context": "RE",
-    "tags": ["lc", "sup"],
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
             "description": "AUX serial port",

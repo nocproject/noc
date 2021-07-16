@@ -6,11 +6,18 @@
 // ---------------------------------------------------------------------
 
 pub mod base;
-#[cfg(feature = "dns")]
+pub mod block_io;
+pub mod cpu;
 pub mod dns;
-#[cfg(feature = "test")]
+pub mod fs;
+pub mod http;
+pub mod memory;
+pub mod network;
+mod registry;
 pub mod test;
-#[cfg(feature = "twamp-reflector")]
 pub mod twamp_reflector;
-#[cfg(feature = "twamp-sender")]
 pub mod twamp_sender;
+pub mod uptime;
+
+pub use base::{Collectable, Collector, NoConfig, Runnable, Schedule, Status, StubCollector};
+pub use registry::{CollectorConfig, Collectors};

@@ -37,6 +37,15 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             defaultValue: 100
         },
         {
+            name: "workflow",
+            type: "string"
+        },
+        {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "code",
             type: "string"
         },
@@ -76,7 +85,7 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

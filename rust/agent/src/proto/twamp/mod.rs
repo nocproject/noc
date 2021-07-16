@@ -12,6 +12,8 @@ pub const MODE_UNAUTHENTICATED: u32 = 1;
 pub const MODE_AUTHENTICATED: u32 = 2;
 pub const MODE_ENCRYPTED: u32 = 4;
 
+pub const PAD_UNAUTHENTICATED: u32 = 27;
+
 pub const DEFAULT_COUNT: u32 = 1024;
 
 pub const CMD_START_SESSIONS: u8 = 2;
@@ -44,8 +46,8 @@ mod test_request;
 mod test_response;
 
 pub use accept_session::AcceptSession;
-pub use ntp::{NTPTimeStamp, UTCDateTime};
-pub use request_tw_session::RequestTWSession;
+pub use ntp::{NtpTimeStamp, UtcDateTime};
+pub use request_tw_session::{IpVn, RequestTwSession};
 pub use server_greeting::ServerGreeting;
 pub use server_start::ServerStart;
 pub use setup_response::SetupResponse;

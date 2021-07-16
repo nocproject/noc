@@ -12,6 +12,7 @@ from threading import Lock
 # Third-party modules
 from noc.core.translation import ugettext as _
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 import cachetools
 
 # NOC modules
@@ -19,24 +20,27 @@ from noc.config import config
 from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.validators import check_rd
-from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.textindex import full_text_search
+from noc.main.models.label import Label
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 
 
 id_lock = Lock()
 
 
+@Label.match_labels("ipvrf", allowed_op={"="})
+@Label.model
 @full_text_search
 @on_init
 @workflow
-@datastream
+@change
 @on_delete_check(
     check=[
         ("ip.Address", "vrf"),
@@ -47,7 +51,8 @@ id_lock = Lock()
         ("sa.ManagedObject", "vrf"),
         ("sa.ManagedObjectSelector", "filter_vrf"),
         ("vc.VCBindFilter", "vrf"),
-    ]
+    ],
+    clean_lazy_labels="ipvrf",
 )
 class VRF(NOCModel):
     """
@@ -94,7 +99,11 @@ class VRF(NOCModel):
     )
     description = models.TextField(_("Description"), blank=True, null=True)
     tt = models.IntegerField(_("TT"), blank=True, null=True, help_text=_("Ticket #"))
-    tags = TagsField(_("Tags"), null=True, blank=True)
+    # Labels
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
     state = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
@@ -224,8 +233,8 @@ class VRF(NOCModel):
             "content": "\n".join(content),
             "card": card,
         }
-        if self.tags:
-            r["tags"] = self.tags
+        if self.labels:
+            r["tags"] = self.labels
         return r
 
     @classmethod
@@ -243,3 +252,11 @@ class VRF(NOCModel):
     @property
     def is_global(self):
         return self.vpn_id == self.GLOBAL_RD
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_vrf")
+
+    @classmethod
+    def iter_lazy_labels(cls, vrf: "VRF"):
+        yield f"noc::ipvrf::{vrf.name}::="

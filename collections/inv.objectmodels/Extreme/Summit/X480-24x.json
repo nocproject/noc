@@ -6,7 +6,7 @@
     "description": "Управляемый коммутатор уровня 3, 12 портов 1000Base-X (SFP), 12 комбо-портов 1000Base-T/SFP, 2 порта 10G Base (XFP),1 слот для установки модулей",
     "connection_rule__name": "Extreme | XOS",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "USB Port",

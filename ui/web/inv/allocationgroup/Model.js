@@ -41,7 +41,7 @@ Ext.define("NOC.inv.allocationgroup.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]

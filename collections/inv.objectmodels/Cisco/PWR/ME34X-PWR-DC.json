@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "80 Watt DC PSU for Cisco ME3400E Series switches",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU connect to switch",

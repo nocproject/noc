@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "The GT8P module provides 8 × 1000 Mbps Ethernet electrical ports and 4 SFP ports.",
     "cr_context": "LSB",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connector",

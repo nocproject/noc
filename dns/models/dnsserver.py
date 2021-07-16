@@ -14,11 +14,11 @@ from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
 from noc.config import config
 from noc.core.model.fields import INETField
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 
 
 @on_init
-@datastream
+@change
 class DNSServer(NOCModel):
     """
     DNS Server is an database object representing real DNS server.
@@ -40,6 +40,13 @@ class DNSServer(NOCModel):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_by_id(cls, id):
+        dnsserver = DNSServer.objects.filter(id=id)[:1]
+        if dnsserver:
+            return dnsserver[0]
+        return None
 
     def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:

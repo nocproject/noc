@@ -6,7 +6,7 @@
     "description": "IES-1248 enclosure with 48-port Annex A ADSL2+ line and splitter over POTS,",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "USER 1-24",

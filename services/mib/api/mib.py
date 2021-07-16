@@ -7,13 +7,11 @@
 
 # Python modules
 import os
+import shutil
 import subprocess
 import re
 from importlib.machinery import SourceFileLoader
 import datetime
-
-# Third-party modules
-from typing import Optional, List
 
 # NOC modules
 from noc.config import config
@@ -35,7 +33,6 @@ class MIBAPI(API):
     rx_illegal_subtype = re.compile(b"{subtype-enumeration-illegal}.*`([^']+)'")
     rx_object_identifier_unknown = re.compile(b"{object-identifier-unknown}.*`([^']+)'")
     rx_oid = re.compile(r"^\d+(\.\d+)+")
-    TRY_ENCODINGS = ["utf-8", "big5"]
 
     SMI_ENV = {"SMIPATH": config.path.mib_path}
 
@@ -60,22 +57,6 @@ class MIBAPI(API):
                 return {"status": True, "data": f.read()}
         return {"status": False, "msg": "Not found", "code": ERR_MIB_NOT_FOUND}
 
-    def guess_encoding(self, s: bytes, encodings: Optional[List[str]] = None) -> str:
-        """
-        Try to guess encoding
-        :param s:
-        :param encodings:
-        :return:
-        """
-        encodings = encodings or self.TRY_ENCODINGS
-        exc = None
-        for enc in encodings:
-            try:
-                return s.decode(enc)
-            except UnicodeDecodeError as e:
-                exc = e
-        raise exc
-
     @api
     def compile(self, data):
         """
@@ -83,31 +64,42 @@ class MIBAPI(API):
         :param data: MIB text
         :return:
         """
-        if not config.path.smilint or not os.path.exists(config.path.smilint):
-            return {"status": False, "msg": "smilint is missed", "error": ERR_MIB_TOOL_MISSED}
-        if not config.path.smilint or not os.path.exists(config.path.smidump):
-            return {"status": False, "msg": "smidump is missed", "error": ERR_MIB_TOOL_MISSED}
+        if config.path.smilint and os.path.exists(config.path.smilint):
+            smilint_path = config.path.smilint
+        else:
+            smilint_path = shutil.which("smilint")
+            if not smilint_path:
+                self.logger.error("Can't find smilint executable")
+                return {"status": False, "msg": "smilint is missed", "error": ERR_MIB_TOOL_MISSED}
+        if config.path.smidump and os.path.exists(config.path.smidump):
+            smidump_path = config.path.smidump
+        else:
+            smidump_path = shutil.which("smidump")
+            if not smidump_path:
+                self.logger.error("Can't find smidump executable")
+                return {"status": False, "msg": "smidump is missed", "error": ERR_MIB_TOOL_MISSED}
         # Normalize input
         if isinstance(data, bytes):
-            data = self.guess_encoding(data)
+            data = MIB.guess_encoding(data)
         # Put data to temporary file
         with temporary_file(data) as tmp_path:
             # Pass MIB through smilint to detect missed modules
-            self.logger.debug("Pass MIB through smilint to detect missed modules")
+            self.logger.info("Pass MIB through smilint to detect missed modules")
             f = subprocess.Popen(
-                [config.path.smilint, "-m", tmp_path], stderr=subprocess.PIPE, env=self.SMI_ENV
+                [smilint_path, "-m", tmp_path], stderr=subprocess.PIPE, env=self.SMI_ENV
             ).stderr
-            for l in f:
-                match = self.rx_module_not_found.search(l.strip())
+            for line in f:
+                match = self.rx_module_not_found.search(line.strip())
                 if match:
+                    self.logger.error("Required MIB missed: %s", smart_text(match.group(1)))
                     return {
                         "status": False,
                         "msg": "Required MIB missed: %s" % smart_text(match.group(1)),
                         "code": ERR_MIB_MISSED,
                     }
-                match = self.rx_macro_not_imported.search(l.strip())
+                match = self.rx_macro_not_imported.search(line.strip())
                 if match:
-                    self.logger.debug(
+                    self.logger.error(
                         "Macro '%s' (%s) has not been imported",
                         smart_text(match.group(1)),
                         smart_text(match.group(2)),
@@ -118,14 +110,14 @@ class MIBAPI(API):
                     #         smart_text(match.group(1)), smart_text(match.group(2))),
                     #     "code": ERR_MIB_MISSED,
                     # }
-                match = self.rx_illegal_subtype.search(l.strip())
+                match = self.rx_illegal_subtype.search(line.strip())
                 if match:
                     return {
                         "status": False,
                         "msg": "Illegal subtype: %s" % smart_text(match.group(1)),
                         "code": ERR_MIB_MISSED,
                     }
-                match = self.rx_object_identifier_unknown.search(l.strip())
+                match = self.rx_object_identifier_unknown.search(line.strip())
                 if match:
                     self.logger.warning(
                         "Object Identifier unknown: %s" % smart_text(match.group(1))
@@ -139,7 +131,7 @@ class MIBAPI(API):
             # Convert MIB to python module and load
             with temporary_file() as py_path:
                 subprocess.check_call(
-                    [config.path.smidump, "-k", "-q", "-f", "python", "-o", py_path, tmp_path],
+                    [smidump_path, "-k", "-q", "-f", "python", "-o", py_path, tmp_path],
                     env=self.SMI_ENV,
                 )
                 with open(py_path) as f:

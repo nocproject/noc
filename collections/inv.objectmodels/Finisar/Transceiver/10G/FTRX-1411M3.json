@@ -5,7 +5,7 @@
     "vendor__code": "FINISAR",
     "description": "10GBASE-LR, XFP Module, 1310nm Transmitter Wavelength, LC Connector, up to 10km reach",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "TX",

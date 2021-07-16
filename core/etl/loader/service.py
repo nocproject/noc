@@ -21,6 +21,7 @@ class ServiceLoader(BaseLoader):
     data_model = Service
 
     discard_deferred = True
+    workflow_state_sync = True
 
     def find_object(self, v):
         """

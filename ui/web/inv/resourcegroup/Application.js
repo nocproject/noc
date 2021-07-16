@@ -9,11 +9,13 @@ console.debug("Defining NOC.inv.resourcegroup.Application");
 Ext.define("NOC.inv.resourcegroup.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.TagsField",
+        "NOC.core.label.LabelField",
+        "NOC.core.ListFormField",
         "NOC.inv.resourcegroup.Model",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.inv.technology.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+
     ],
     model: "NOC.inv.resourcegroup.Model",
     search: true,
@@ -83,6 +85,44 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true
                 },
                 {
+                name: "dynamic_service_labels",
+                xtype: "listform",
+                fieldLabel: __("Dynamic Service Labels"),
+                items: [
+                    {
+                      name: "labels",
+                      xtype: "labelfield",
+                      fieldLabel: __("Match Labels"),
+                      allowBlank: false,
+                      isTree: true,
+                      pickerPosition: "down",
+                      uiStyle: "extra",
+                      query: {
+                        "allow_matched": true
+                      }
+                    },
+                  ]
+                },
+                {
+                name: "dynamic_client_labels",
+                xtype: "listform",
+                fieldLabel: __("Dynamic Service Labels"),
+                items: [
+                    {
+                      name: "labels",
+                      xtype: "labelfield",
+                      fieldLabel: __("Match Labels"),
+                      allowBlank: false,
+                      isTree: true,
+                      pickerPosition: "down",
+                      uiStyle: "extra",
+                      query: {
+                        "allow_matched": true
+                      }
+                    },
+                  ]
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),
@@ -114,11 +154,14 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     ]
                 },
                 {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
                     allowBlank: true,
-                    uiStyle: "extra"
+                    uiStyle: "extra",
+                    query: {
+                        "enable_resourcegroup": true
+                    },
                 }
             ],
             formToolbar: [

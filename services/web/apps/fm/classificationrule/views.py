@@ -228,6 +228,6 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 if k not in self.IGNORED_OIDS and not is_oid(k):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
-            {"key_re": "^%s$" % k, "value_re": "^%s$" % patterns[k]} for k in patterns
+            {"key_re": "^%s$" % k, "value_re": "^%s$" % patterns[k].strip()} for k in patterns
         ]
         return data

@@ -4,7 +4,7 @@
     "uuid": "fc5e1f1a-3bb2-4990-9cb4-4e3937c22a98",
     "vendor__code": "HUAWEI",
     "description": "Huawei Quidway S5300 AC Power Supply Unit",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PSU slot",

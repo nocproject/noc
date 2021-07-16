@@ -26,16 +26,26 @@ import cachetools
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
-from noc.core.defer import call_later
+from noc.core.defer import defer
+from noc.core.hash import hash_int
 from noc.inv.models.capsitem import CapsItem
+from noc.wf.models.workflow import Workflow
+from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
+
 
 id_lock = Lock()
 
 
+@Label.model
 @bi_sync
+@change
 @on_save
+@on_delete_check(check=[("sa.Service", "profile")])
 class ServiceProfile(Document):
     meta = {"collection": "noc.serviceprofiles", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
@@ -50,6 +60,7 @@ class ServiceProfile(Document):
     display_order = IntField(default=100)
     # Show in total summary
     show_in_summary = BooleanField(default=True)
+    workflow = PlainReferenceField(Workflow)
     # Auto-assign interface profile when service binds to interface
     interface_profile = ReferenceField(InterfaceProfile)
     # Alarm weight
@@ -63,8 +74,9 @@ class ServiceProfile(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    # Tags
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -78,11 +90,16 @@ class ServiceProfile(Document):
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interface_profile" in self._changed_fields:
-            call_later(
+            defer(
                 "noc.sa.models.serviceprofile.refresh_interface_profiles",
-                sp_id=self.id,
-                ip_id=self.interface_profile.id if self.interface_profile else None,
+                key=hash_int(self.id),
+                sp_id=str(self.id),
+                ip_id=str(self.interface_profile.id) if self.interface_profile else None,
             )
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, "enable_serviceprofile")
 
 
 def refresh_interface_profiles(sp_id, ip_id):

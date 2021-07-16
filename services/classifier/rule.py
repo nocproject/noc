@@ -249,24 +249,29 @@ class Rule(object):
             c += ["return e_vars"]
         else:
             c += ["return {}"]
-        c = ["    " + l for l in c]
+        c = ["    " + x for x in c]
 
         cc = ["# %s" % self.name]
         cc += ["def match(self, event, vars):"]
         cc += c
         cc += ["rule.match = types.MethodType(match, rule)"]
         self.code = "\n".join(cc)
-        code = compile(self.code, "<string>", "exec")
-        exec(
-            code,
-            {
-                "rule": self,
-                "types": types,
-                "logging": logging,
-                "fm_unescape": fm_unescape,
-                "smart_text": smart_text,
-            },
-        )
+        try:
+            code = compile(self.code, "<string>", "exec")
+            exec(
+                code,
+                {
+                    "rule": self,
+                    "types": types,
+                    "logging": logging,
+                    "fm_unescape": fm_unescape,
+                    "smart_text": smart_text,
+                },
+            )
+        except SyntaxError:
+            logging.error(
+                f"!!!!!!!!!! The rule '{self.name}' is wrong. You should check format this rule."
+            )
 
     def clone(self, rules):
         """

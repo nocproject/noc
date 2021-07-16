@@ -28,14 +28,14 @@ class CapabilityListRule(OIDRule):
         separator=",",
         strip=True,
         default=None,
-        path=None,
+        labels=None,
     ):
         super().__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator
         self.strip = strip
         self.default = default
-        self.path = path
+        self.labels = labels
 
     def iter_oids(self, script, cfg):
         if self.capability and script.has_capability(self.capability):
@@ -45,14 +45,17 @@ class CapabilityListRule(OIDRule):
                 if not i:
                     continue
                 oid = self.expand_oid(item=i)
-                path = cfg.path
-                if self.path is not None and "item" in self.path:
-                    path = self.path[:]
-                    path[self.path.index("item")] = i
+                labels = cfg.labels
+                if self.labels is not None:
+                    item = [i for i in self.labels if "item" in i]
+                    if item:
+                        item = item[0]
+                        labels = self.labels[:]
+                        labels[self.labels.index(item)] = item.replace("item", i)
                 if oid:
-                    yield oid, self.type, self.scale, path
+                    yield oid, self.type, self.scale, labels
         else:
             if self.default is not None:
                 oid = self.expand_oid(item=self.default)
                 if oid:
-                    yield oid, self.type, self.scale, cfg.path
+                    yield oid, self.type, self.scale, cfg.labels

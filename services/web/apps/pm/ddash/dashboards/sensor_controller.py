@@ -6,28 +6,20 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
-from django.db.models import Q
 from collections import defaultdict
 
 # NOC modules
-from .jinja import JinjaDashboard
+from .mo import MODashboard
 from noc.inv.models.interface import Interface
 from noc.pm.models.metrictype import MetricType
-from noc.sa.models.managedobject import ManagedObject
 
 TITLE_BAD_CHARS = '"\\\n\r'
 
 
-class SensorControllerDashboard(JinjaDashboard):
+class SensorControllerDashboard(MODashboard):
     name = "sensor_controller"
     template = "dash_sensor_controller.j2"
-
-    def resolve_object(self, object):
-        o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
-        if not o:
-            raise self.NotFound()
-        else:
-            return o[0]
+    has_capability = "Sensor | Controller"
 
     def resolve_object_data(self, object):
         def interface_profile_has_metrics(object):

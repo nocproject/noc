@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ThresholdProfile model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -184,12 +184,12 @@ class ThresholdProfile(Document):
                 "$collection": self._meta["json_collection"],
                 "uuid": str(self.uuid),
                 "description": self.description,
-                "umbrella_filter_handler": self.umbrella_filter_handler,
+                "umbrella_filter_handler__handler": self.umbrella_filter_handler.handler,
                 "window_type": self.window_type,
                 "window": self.window,
                 "window_function": self.window_function,
                 "window_config": self.window_config,
-                "value_handler": self.value_handler,
+                "value_handler__handler": self.value_handler.handler,
                 "thresholds": [thrh.to_json() for thrh in self.thresholds],
             },
             order=["name", "uuid", "thresholds"],

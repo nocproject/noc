@@ -6,7 +6,7 @@
     "description": "L2+ switch with, 48 ports 10/100BASE-T, 2 ports 100/1000BASE-X SFP, 2 ports 10/100/1000BASE-T",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "1",

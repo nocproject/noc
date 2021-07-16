@@ -9,7 +9,7 @@ use lazy_static::lazy_static;
 use std::collections::HashMap;
 
 lazy_static! {
-    static ref DSCP_MAP: HashMap<&'static str, u8> = {
+    static ref DSCP_TO_TOS_MAP: HashMap<&'static str, u8> = {
         let mut m = HashMap::new();
         m.insert("be", 0);
         m.insert("cp1", 1);
@@ -77,13 +77,82 @@ lazy_static! {
         m.insert("cp63", 63);
         m
     };
+    static ref TOS_TO_DSCP_MAP: HashMap<u8, &'static str> = {
+        let mut m = HashMap::new();
+        m.insert(0, "be");
+        m.insert(1, "cp1");
+        m.insert(2, "cp2");
+        m.insert(3, "cp3");
+        m.insert(4, "cp4");
+        m.insert(5, "cp5");
+        m.insert(6, "cp6");
+        m.insert(7, "cp7");
+        m.insert(8, "cs1");
+        m.insert(9, "cp9");
+        m.insert(10, "af11");
+        m.insert(11, "cp11");
+        m.insert(12, "af12");
+        m.insert(13, "cp13");
+        m.insert(14, "af13");
+        m.insert(15, "cp15");
+        m.insert(16, "cs2");
+        m.insert(17, "cp17");
+        m.insert(18, "af21");
+        m.insert(19, "cp19");
+        m.insert(20, "af22");
+        m.insert(21, "cp21");
+        m.insert(22, "af23");
+        m.insert(23, "cp23");
+        m.insert(24, "cs3");
+        m.insert(25, "cp25");
+        m.insert(26, "af31");
+        m.insert(27, "cp27");
+        m.insert(28, "af32");
+        m.insert(29, "cp29");
+        m.insert(30, "af33");
+        m.insert(31, "cp31");
+        m.insert(32, "cs4");
+        m.insert(33, "cp33");
+        m.insert(34, "af41");
+        m.insert(35, "cp35");
+        m.insert(36, "af42");
+        m.insert(37, "cp37");
+        m.insert(38, "af43");
+        m.insert(39, "cp39");
+        m.insert(40, "cs5");
+        m.insert(41, "cp41");
+        m.insert(42, "cp42");
+        m.insert(43, "cp43");
+        m.insert(44, "cp44");
+        m.insert(45, "cp45");
+        m.insert(46, "ef");
+        m.insert(47, "cp47");
+        m.insert(48, "nc1");
+        m.insert(49, "cp49");
+        m.insert(50, "cp50");
+        m.insert(51, "cp51");
+        m.insert(52, "cp52");
+        m.insert(53, "cp53");
+        m.insert(54, "cp54");
+        m.insert(55, "cp55");
+        m.insert(56, "nc2");
+        m.insert(57, "cp57");
+        m.insert(58, "cp58");
+        m.insert(59, "cp59");
+        m.insert(60, "cp60");
+        m.insert(61, "cp61");
+        m.insert(62, "cp62");
+        m.insert(63, "cp63");
+        m
+    };
 }
 
 pub fn dscp_to_tos(dscp: String) -> Option<u8> {
-    match DSCP_MAP.get(dscp.as_str()) {
-        Some(x) => Some(*x),
-        None => None,
-    }
+    DSCP_TO_TOS_MAP.get(dscp.as_str()).copied()
+}
+
+pub fn tos_to_dscp(tos: u8) -> Option<&'static str> {
+    TOS_TO_DSCP_MAP.get(&tos).copied()
 }
 
 #[cfg(test)]

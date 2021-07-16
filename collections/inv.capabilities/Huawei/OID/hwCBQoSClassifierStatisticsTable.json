@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | OID | hwCBQoSClassifierStatisticsTable",
+    "$collection": "inv.capabilities",
+    "uuid": "837acdbb-98b6-424b-afb7-20e5c123f929",
+    "description": "Supported CBQoS stat on hwCBQoSClassifierStatisticsTable OIDs",
+    "type": "bool",
+    "card_template": null
+}

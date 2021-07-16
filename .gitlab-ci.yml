@@ -1,6 +1,7 @@
 ---
 stages:
   - Lint
+  - Prebuild
   - Test
   - Build
   - Upload
@@ -8,8 +9,10 @@ stages:
 include:
   - project: "noc/common-jobs"
     ref: stable
-    file: "/templates/upload.yml"
-  - local: "/ansible/.ansible-ci.yml"
+    file:
+      - /templates/upload.yml
+      - /templates/build_rust.yml
+  - local: /ansible/.ansible-ci.yml
 
 workflow:
   rules:
@@ -23,7 +26,7 @@ check labels:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-py-lint:master
   script:
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA)
+    - FLIST=$(git --no-pager diff --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA)
     - python ./scripts/check-labels.py --verbose --junit-report=build/reports/labels-junit.xml $FLIST
   only:
     - merge_requests
@@ -179,6 +182,7 @@ py:test:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     # see docker/docker-compose.yml for complete list of migrations
+    - ls -al
     - >
       docker-compose
       -f .docker/docker-compose.yml
@@ -220,7 +224,7 @@ py:test:
       junit: ./build/reports/py-test-junit.xml
     expire_in: 7 days
 
-build:Docs:
+build:Docs:en:
   stage: Test
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
@@ -240,7 +244,27 @@ build:Docs:
       - "docs/en/*"
       - "docs/en/**/*"
 
-build:Master Docs:
+build:Docs:ru:
+  stage: Test
+  environment: docs
+  image: registry.getnoc.com/infrastructure/mkdocs:master
+  script:
+    - set -x
+    - mkdocs build --config-file=docs/ru/mkdocs.yml
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/ru
+    expire_in: 2 hours
+  only:
+    refs:
+      - merge_requests
+    changes:
+      - "docs/ru/*"
+      - "docs/ru/**/*"
+
+build:Master Docs:en:
   stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
@@ -252,6 +276,24 @@ build:Master Docs:
   artifacts:
     paths:
       - build/docs/en
+    expire_in: 2 hours
+  only:
+    refs:
+      - master
+      - /^release-\d+\.\d+/
+
+build:Master Docs:ru:
+  stage: Build
+  environment: docs
+  image: registry.getnoc.com/infrastructure/mkdocs:master
+  script:
+    - set -x
+    - mkdocs build --config-file=docs/ru/mkdocs.yml
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/docs/ru
     expire_in: 2 hours
   only:
     refs:
@@ -317,29 +359,33 @@ build:web:
       - dist/ui/pkg/web
       - dist/ui/pkg/web.debug
 
-build:rust:
+Prebuild ip.so:
+  stage: Prebuild
+  image: registry.getnoc.com/infrastructure/build/rust-centos7:master
+  extends: .build_rust
+  variables:
+    BUILD_TARGET: pyip
+  artifacts:
+    paths:
+      - build/rust/release/libip.so
+
+Build dnssync:
   stage: Build
-  image: rust:1.50
-  script:
-    - set -x
-    - cd rust/
-    - export CARGO_TARGET_DIR=../build/rust
-    - cargo test
-    - cargo build --release
-  tags:
-    - docker
-  only:
-    refs:
-      - merge_requests
-      - master
-    changes:
-      - "rust/**"
-      - "rust/**/*"
+  extends: .build_rust
+  variables:
+    BUILD_TARGET: dnssync
+  artifacts:
+    paths:
+      - build/rust/release/noc-dns-sync
+
+Build agent:
+  stage: Build
+  extends: .build_rust
+  variables:
+    BUILD_TARGET: agent
   artifacts:
     paths:
       - build/rust/release/noc-agent
-      - build/rust/release/noc-dns-sync
-    expire_in: 7 days
 
 upload docs:
   stage: Upload
@@ -352,6 +398,20 @@ upload docs:
     refs:
       - master
       - /^release-\d+\.\d+/
+
+upload rust libs:
+  stage: Upload
+  environment: libs
+  extends: .upload
+  variables:
+    SOURCE: build/rust/release/libip.so
+    DEST: cdn/$S3_BUCKET/libs/
+    BUILD_TARGET: pyip
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - rust/$BUILD_TARGET/*
+        - rust/$BUILD_TARGET/**/*
 
 gemnasium-python-dependency_scanning:
   stage: Test

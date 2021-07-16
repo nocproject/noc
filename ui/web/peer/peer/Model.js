@@ -126,8 +126,8 @@ Ext.define("NOC.peer.peer.Model", {
             type: "string"
         },
         {
-            name: "tags",
-            type: "string"
+            name: "labels",
+            type: "auto"
         }
     ]
 });

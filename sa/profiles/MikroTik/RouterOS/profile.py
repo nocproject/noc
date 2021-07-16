@@ -51,8 +51,8 @@ class Profile(BaseProfile):
         self.add_script_method(script, "cli_detail", self.cli_detail)
 
     def setup_session(self, script):
-        # MikroTik Remove duplicates prompt
-        script.cli("\n")
+        # Remove duplicates prompt. Do not remove this.
+        script.cli("")
 
     def cli_detail(self, script, cmd, cached=False):
         """
@@ -63,11 +63,18 @@ class Profile(BaseProfile):
         :return:
         """
         if cached:
-            return self.parse_detail(script.cli(cmd, cached=True))
+            c = script.cli(cmd, cached=True)
+            if c == "":  # Remove duplicates prompt. Do not remove this.
+                c = script.cli("")
+                c = script.cli(cmd)  # Already without the flag 'cached'
         else:
-            return self.parse_detail(script.cli(cmd))
+            c = script.cli(cmd)
+            if c == "":  # Remove duplicates prompt. Do not remove this.
+                c = script.cli("")
+                c = script.cli(cmd)
+        return self.parse_detail(c)
 
-    rx_p_new = re.compile(r"^\s*(?P<line>\d+)\s+")
+    rx_p_new = re.compile(r"^\s{0,1}(?P<line>\d+)\s+")
     rx_key = re.compile(r"([0-9a-zA-Z\-]+)=")
 
     def parse_detail(self, s):
@@ -78,34 +85,34 @@ class Profile(BaseProfile):
         # Normalize
         ns = []
         flags = []
-        for l in s.splitlines():
-            if not l:
+        for line in s.splitlines():
+            if not line:
                 continue
-            if not flags and l.startswith("Flags:"):
+            if not flags and line.startswith("Flags:"):
                 # Parse flags from line like
                 # Flags: X - disabled, I - invalid, D - dynamic
-                flags = [f.split("-", 1)[0].strip() for f in l[6:].split(",")]
+                flags = [f.split("-", 1)[0].strip() for f in line[6:].split(",")]
                 continue
-            match = self.rx_p_new.search(l)
+            match = self.rx_p_new.search(line)
             if match:
                 # New item
-                if ";;;" in l:
-                    ns += [l.partition(";;;")[0].strip()]
+                if ";;;" in line:
+                    ns += [line.partition(";;;")[0].strip()]
                 else:
-                    ns += [l]
+                    ns += [line]
             elif ns:
-                ns[-1] += " %s" % l.strip()
+                ns[-1] += " %s" % line.strip()
         # Parse
         f = "".join(flags)
         # Some commands do not show flags
         if not f:
             f = "X"
         rx = re.compile(
-            r"^\s*(?P<line>\d+)\s+" r"(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?" r"(?P<rest>.+)$" % (f, f)
+            r"^\s{0,1}(?P<line>\d+)\s+(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?(?P<rest>.+)$" % (f, f)
         )
         r = []
-        for l in ns:
-            match = rx.match(l)
+        for ll in ns:
+            match = rx.match(ll)
             if match:
                 n = int(match.group("line"))
                 f = match.group("flags")

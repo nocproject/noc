@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst 3650E/3750E Metro AC Power supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Internal Power slot",

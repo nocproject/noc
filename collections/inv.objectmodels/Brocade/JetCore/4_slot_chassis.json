@@ -6,7 +6,7 @@
     "description": "BigIron 4000 Router/FastIron 400 Router/Switch",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "Backplane connector",

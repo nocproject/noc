@@ -42,7 +42,7 @@ Ext.define("NOC.vc.vlanprofile.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

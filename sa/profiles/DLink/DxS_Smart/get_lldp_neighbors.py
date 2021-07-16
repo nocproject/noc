@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class Script(BaseScript):
         for v in self.snmp.get_tables(
             [
                 "1.0.8802.1.1.2.1.3.7.1.2",  # LLDP-MIB::lldpLocPortIdSubtype
-                "1.0.8802.1.1.2.1.3.7.1.4",  # LLDP-MIB::lldpLocPortDesc
+                "1.0.8802.1.1.2.1.3.7.1.3",  # LLDP-MIB::lldpLocPortId
             ]
         ):
             local_ports[v[0]] = {
@@ -88,6 +88,8 @@ class Script(BaseScript):
                 neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
             if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
+            else:
+                neigh["remote_port"] = neigh["remote_port"].decode("utf8")
             for i in neigh:
                 if isinstance(neigh[i], str):
                     neigh[i] = neigh[i].rstrip(smart_text("\x00"))

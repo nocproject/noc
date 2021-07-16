@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules\
+from typing import Optional
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -22,7 +25,7 @@ from noc.inv.models.object import Object
 from noc.core.mongo.fields import PlainReferenceField
 from noc.gis.models.layer import Layer
 from noc.core.comp import smart_text
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.config import config
 
 
@@ -37,7 +40,7 @@ class ObjectConnectionItem(EmbeddedDocument):
         return "%s: %s" % (smart_text(self.object), self.name)
 
 
-@datastream
+@change
 class ObjectConnection(Document):
     """
     Inventory object connections
@@ -60,6 +63,10 @@ class ObjectConnection(Document):
 
     def __str__(self):
         return "<%s>" % ", ".join(smart_text(c) for c in self.connection)
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ObjectConnection"]:
+        return ObjectConnection.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

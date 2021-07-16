@@ -123,7 +123,7 @@ class Command(BaseCommand):
         fstats = db.command("collstats", files.name)
         cstats = db.command("collstats", chunks.name)
         ssize = fstats["storageSize"] + cstats["storageSize"]
-        self.print(f"%s repo summary:" % self.repo)
+        self.print(f"%s repo summary: {self.repo}")
         self.print(f"Objects  : {obj_count}")
         self.print(f"Revisions: {rev_count} (%.2f rev/object)" % (float(rev_count) / obj_count))
         self.print(f"Chunks   : {chunks_count}")

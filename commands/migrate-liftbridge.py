@@ -18,10 +18,12 @@ from noc.core.mongo.connection import connect
 from noc.core.service.loader import get_dcs
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
+from noc.core.bi.dictionaries.loader import loader as bi_dict_loader
 from noc.config import config
 
 
 class Command(BaseCommand):
+    _slots = None
     # List of single-partitioned streams
     STREAMS = [
         "revokedtokens",
@@ -31,8 +33,10 @@ class Command(BaseCommand):
         # slot name, stream name
         ("mx", "message"),
         ("kafkasender", "kafkasender"),
+        ("metrics", "metrics"),
+        ("worker", "jobs"),
     ]
-    # Pool-basend streams, depending on slots
+    # Pool-based streams, depending on slots
     POOLED_SLOT_STREAMS = [
         # slot name, stream name
         ("classifier-%s", "events.%s"),
@@ -41,11 +45,23 @@ class Command(BaseCommand):
     CURSOR_STREAM = {
         "events": "classifier",
         "dispose": "correlator",
-        "mx": "mx",
+        "message": "mx",
         "kafkasender": "kafkasender",
+        "jobs": "worker",
     }
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--slots",
+            dest="slots",
+            type=int,
+            required=False,
+            help="Static slot count (used for tests)",
+        )
+
+    def handle(self, slots=None, *args, **options):
+        if slots:
+            self._slots = slots
         changed = False
         # Get liftbridge metadata
         meta = self.get_meta()
@@ -82,6 +98,8 @@ class Command(BaseCommand):
     def iter_limits(self) -> Tuple[str, int]:
         async def get_slot_limits():
             nonlocal slot_name
+            if self._slots:
+                return self._slots
             return await dcs.get_slot_limit(slot_name)
 
         dcs = get_dcs()
@@ -103,6 +121,11 @@ class Command(BaseCommand):
             if not bi_model:
                 continue
             yield f"ch.{bi_model._meta.db_table}", n_ch_shards
+        # BI Dictionary models
+        for name in bi_dict_loader:
+            bi_dict_model = bi_dict_loader[name]
+            if bi_dict_model:
+                yield f"ch.{bi_dict_model._meta.db_table}", n_ch_shards
 
     def apply_stream_settings(self, meta: Metadata, stream: str, partitions: int, rf: int) -> bool:
         def delete_stream(name: str):

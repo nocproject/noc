@@ -10,6 +10,7 @@ from collections import defaultdict
 
 # Third-party modules
 from django.db.models import ForeignKey
+from mongoengine.fields import ReferenceField
 import pytest
 
 # NOC modules
@@ -19,6 +20,11 @@ from noc.models import is_document, iter_model_id, get_model
 
 
 def iter_references():
+    def q_self(m, ref):
+        if ref == "self":
+            return m
+        return ref
+
     for model_id in iter_model_id():
         model = get_model(model_id)
         if not model:
@@ -28,7 +34,9 @@ def iter_references():
             for fn in model._fields:
                 f = model._fields[fn]
                 if isinstance(f, PlainReferenceField):
-                    yield f.document_type, model_id, fn
+                    yield q_self(model, f.document_type), model_id, fn
+                if isinstance(f, ReferenceField):
+                    yield q_self(model, f.document_type_obj), model_id, fn
                 elif isinstance(f, ForeignKeyField):
                     yield f.document_type, model_id, fn
         else:

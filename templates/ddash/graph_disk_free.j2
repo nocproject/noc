@@ -10,7 +10,7 @@
       "intervalFactor": 1,
       "query": "SELECT \n  $timeSeries as t, \n  avg(disk_free_b) as `Disk | Free`\n  FROM \n  $table \n  WHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
       "refId": "A",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "disk",
       "dateLoading": false,

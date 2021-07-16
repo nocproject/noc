@@ -32,7 +32,7 @@
   "targets": [
     {
       "query": "SELECT $timeSeries as t, avg(rtt) `Ping | RTT`,  avg(attempts) `Ping | Attempts` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "ping",
       "dateLoading": false,

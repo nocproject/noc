@@ -31,7 +31,7 @@ async def revoke(req: RevokeRequest, svc: LoginService = Depends(get_service)):
         await svc.revoke_token(req.access_token, audience="auth")
     if req.refresh_token:
         try:
-            get_user_from_jwt(req.refresh_token, audience="auth")
+            get_user_from_jwt(req.refresh_token, audience="refresh")
         except ValueError:
             return StatusResponseError(
                 error="invalid_request", error_description="Invalid refresh token"

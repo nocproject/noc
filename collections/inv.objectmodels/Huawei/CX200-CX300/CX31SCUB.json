@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "General Switch Control Unit B(24G Switch Capacity)",
     "cr_context": "SCU",
-    "tags": ["lc", "sup", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::sup", "noc::inv::fabric"],
     "connections": [
         {
             "description": null,

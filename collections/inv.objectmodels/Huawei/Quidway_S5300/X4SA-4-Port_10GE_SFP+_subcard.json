@@ -6,7 +6,7 @@
     "description": "4-Port GE SFP or 10GE SFP+ Optical Interface Card (Used In HI Series), 1*2",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CARD",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Extension slot",

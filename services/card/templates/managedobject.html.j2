@@ -468,7 +468,7 @@
                             {% if i["service"] %}
                                 <td></td> <!-- not implement -->
                                 <td>
-                                    <span class="small">{{ i["service"].logical_status | logical_status }}</span>
+                                    <span class="small">{{ i["service"].state.name }}</span>
                                     <span class="small">{{ i["service"].stage_name }}</span>
                                 </td>
                             {% else %}
@@ -482,6 +482,8 @@
                                         <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id or i["service"].code or i["service"].profile.name}}</a>:
                                         {% if i["service"].subscriber %}
                                             <span class="small">{{ i["service"].subscriber.name }}</span>
+                                        {% elif i["service"].supplier %}
+                                            <span class="small">{{ i["service"].supplier.name }}</span>
                                         {% endif %}
                                         {% if i["service"].address %}
                                             <span class="small">{{ i["service"].address }}</span>
@@ -492,7 +494,6 @@
                                     </td>
                                 </tr>
                             {% endif %}
-                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>

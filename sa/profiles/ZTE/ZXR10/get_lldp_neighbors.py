@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXR10.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ class Script(BaseScript):
     port_subtype = {
         "mac address": LLDP_PORT_SUBTYPE_MAC,
         "interface name": LLDP_PORT_SUBTYPE_NAME,
+        "interface alias": LLDP_PORT_SUBTYPE_NAME,
     }
 
     chassis_subtype = {"mac address": LLDP_CHASSIS_SUBTYPE_MAC}

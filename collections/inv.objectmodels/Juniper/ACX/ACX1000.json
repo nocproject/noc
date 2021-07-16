@@ -6,7 +6,7 @@
     "description": "8-port T1/E1, 8-port 10/100/1000BaseT and 4 GbE combination fiber/copper ports",
     "connection_rule__name": "Juniper | ACX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console port",

@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "MA5610&MA5616 Fan Tray Assembly",
     "cr_context": "FAN",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Fan connection",

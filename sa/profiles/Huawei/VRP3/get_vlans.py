@@ -19,8 +19,10 @@ class Script(BaseScript):
     rx_vlan2 = re.compile(r"^\s+\d+\s+(?P<vlanid>\d+)\s+\d+\s+\d+", re.MULTILINE | re.DOTALL)
     rx_vlan3 = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
+        if self.is_ma5103:
+            return r
         try:
             c = self.cli("show vlan all")
             for match in self.rx_vlan1.finditer(c):

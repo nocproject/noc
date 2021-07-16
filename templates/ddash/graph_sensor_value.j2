@@ -1,0 +1,106 @@
+{% macro sensors(sensor, lindex) -%}
+{
+  "title": "{{ sensor.dashboard_label or sensor.label}}",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": {{sensor.id + lindex + 31300}},
+  "legend": {
+    "alignAsTable": true,
+    "avg": false,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "minSpan": 6,
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "repeat": "{{sensor.local_id}}",
+  "scopedVars": {
+    "{{sensor.local_id}}": {
+      "selected": true,
+      "text": "{{sensor.name}}({{sensor.label}})",
+      "value": "{{sensor.label}}"
+    }
+  },
+ {%if sensor.units.dashboard_sr_color %}
+  "seriesOverrides": [
+    {
+      "alias": "/.*/",
+      "color": "#{{'%06x' % sensor.units.dashboard_sr_color }}"
+    }
+  ],
+ {% endif %}
+  "span": 4,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "intervalFactor": 1,
+      "query": "SELECT t,  groupArray((name, Value)) AS groupArr FROM ( SELECT $timeSeries as t, argMax(value, t) as Value, any(name) as name FROM $table WHERE sensor = {{sensor.bi_id}} and $timeFilter GROUP BY t ORDER BY t) GROUP BY t  ORDER BY t ASC",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "database": "{{ noc_db_metrics }}",
+      "tableLoading": false,
+      "table": "sensor",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "{{sensor.units.dashboard_label}}",
+      "label": "",
+      "logBase": 1,
+      "max": null,
+      "min": {% if sensor.units.enum %} "0" {% else %} null {% endif %},
+      "show": true,
+      "decimals": {% if sensor.units.enum %} "0" {% else %} null {% endif %}
+    },
+    {
+      "logBase": 1,
+      "show": false,
+      "max": null,
+      "format": "short",
+      "min": null,
+      "label": null
+    }
+  ]
+}
+{%- endmacro %}

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Escalation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018, The NOC Project
+# Copyright (C) 2007-2021, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -47,6 +47,7 @@ def escalate(
     escalation_delay,
     login="correlator",
     timestamp_policy="a",
+    force=None,
     *args,
     **kwargs,
 ):
@@ -54,6 +55,14 @@ def escalate(
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
         alarm.log_message(msg, to_save=True)
+
+    def can_do(mo, e_type, force):
+        if force:
+            return True
+        elif e_type == "E":
+            return mo.can_escalate()
+        elif e_type == "N":
+            return mo.can_notify()
 
     def summary_to_list(summary, model):
         r = []
@@ -173,7 +182,7 @@ def escalate(
                 "has_merged_downlinks": has_merged_downlinks,
             }
             # Escalate to TT
-            if a.create_tt and mo.can_escalate():
+            if a.create_tt and can_do(mo, "E", force):
                 tt_id = None
                 if alarm.escalation_tt:
                     log("Already escalated with TT #%s", alarm.escalation_tt)
@@ -289,7 +298,7 @@ def escalate(
                             log("Failed to add comment to %s: Invalid TT system", ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
             # Send notification
-            if a.notification_group and mo.can_notify():
+            if a.notification_group and can_do(mo, "N", force):
                 subject = a.template.render_subject(**ctx)
                 body = a.template.render_body(**ctx)
                 logger.debug("[%s] Notification message:\nSubject: %s\n%s", alarm_id, subject, body)

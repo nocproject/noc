@@ -5,7 +5,7 @@
     "vendor__code": "PROLABS",
     "description": "Prolabs SFP LH/LX transceiver with DOM support",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

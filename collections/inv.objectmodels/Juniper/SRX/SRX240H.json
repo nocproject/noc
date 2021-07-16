@@ -4,7 +4,7 @@
     "uuid": "eab18269-21e4-40fc-b6d1-e5b28cd0672a",
     "vendor__code": "JUNIPER",
     "description": "SRX services gateway 240 with 16 x GE ports, 4xmini-PIM slots, and high memory (1GB RAM, 1GB FLASH)",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Console",

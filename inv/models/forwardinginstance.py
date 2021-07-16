@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # Forwarding Instance model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -12,12 +15,12 @@ from mongoengine.fields import StringField, ListField
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 from noc.config import config
 
 
-@datastream
+@change
 @on_delete_check(ignore=[("inv.SubInterface", "forwarding_instance")])
 class ForwardingInstance(Document):
     """
@@ -28,7 +31,7 @@ class ForwardingInstance(Document):
         "collection": "noc.forwardinginstances",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["managed_object"],
+        "indexes": ["managed_object", "name"],
     }
     managed_object = ForeignKeyField(ManagedObject)
     type = StringField(
@@ -45,6 +48,10 @@ class ForwardingInstance(Document):
 
     def __str__(self):
         return "%s: %s" % (self.managed_object.name, self.name if self.name else "default")
+
+    @classmethod
+    def get_by_id(cls, id) -> Optional["ForwardingInstance"]:
+        return ForwardingInstance.objects.filter(id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:

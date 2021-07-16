@@ -9,6 +9,8 @@
 import re
 from threading import Lock
 import operator
+from collections import defaultdict
+from typing import List, Optional
 
 # Third-party modules
 from django.db import models
@@ -17,11 +19,17 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
+from noc.main.models.label import Label
+from noc.core.text import ranges_to_list
 
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
 id_lock = Lock()
+match_lock = Lock()
+
+MATCHED_SCOPES = {"untagged", "tagged"}
 
 
+@Label.match_labels(category="vcfilter")
 @on_delete_check(
     check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")]
 )
@@ -42,6 +50,7 @@ class VCFilter(NOCModel):
     description = models.TextField("Description", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _match_cache = cachetools.TTLCache(maxsize=10, ttl=30)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -118,3 +127,31 @@ class VCFilter(NOCModel):
             return "TRUE"
         else:
             return "(%s)" % " OR ".join(s)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_match_cache"), lock=lambda _: match_lock)
+    def get_matcher(cls):
+        r = defaultdict(list)
+        for vc in VCFilter.objects.filter():
+            r[frozenset(ranges_to_list(vc.expression))] += [vc.name]
+        return r
+
+    @classmethod
+    def iter_lazy_labels(cls, vcs: List[int], match_scope: Optional[str] = None):
+        if match_scope and match_scope not in MATCHED_SCOPES:
+            return
+        vcs = set(vcs)
+        match_scope = match_scope or ""
+        if match_scope:
+            match_scope += "::"
+        match_expressions = cls.get_matcher()
+        for expr, vc_name in match_expressions.items():
+            r = vcs.intersection(expr)
+            if r and vcs == expr:
+                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}="
+            if r and not vcs - expr:
+                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}>"
+            if r and not expr - vcs:
+                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}<"
+            if r:
+                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}&"

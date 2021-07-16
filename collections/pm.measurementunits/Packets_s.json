@@ -1,0 +1,13 @@
+{
+    "name": "Packets/s",
+    "$collection": "pm.measurementunits",
+    "uuid": "1c1f8f7e-b513-4eea-bdf1-cb4428519420",
+    "code": "pps",
+    "description": "Packets per second (pps) is a measure of throughput",
+    "label": "pps",
+    "dashboard_label": "pps",
+    "convert_from": [{
+        "expr": "delta / time_delta",
+        "unit__code": "pkt"
+    }]
+}

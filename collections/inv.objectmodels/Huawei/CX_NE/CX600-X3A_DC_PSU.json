@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "CX600-X3A -48V,60A,1,2880,DC Power Entry Module",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connector",

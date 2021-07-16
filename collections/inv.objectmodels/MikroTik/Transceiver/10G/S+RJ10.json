@@ -5,7 +5,7 @@
     "vendor__code": "MIKROTIK",
     "description": "10G BASE-T, SFP+, Copper, RJ45 Connector, up to 30 meter reach",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP+ Connector",

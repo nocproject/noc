@@ -53,7 +53,7 @@ Ext.define("NOC.ip.ipam.model.VRF", {
             type: "int"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

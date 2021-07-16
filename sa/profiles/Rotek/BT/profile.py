@@ -17,6 +17,11 @@ class Profile(BaseProfile):
     # Timeout for snmp GET request
     snmp_metrics_get_timeout = 3
 
+    matchers = {
+        "is_4250": {"platform": {"$regex": r"4250LSR"}},
+        "is_6037_v1": {"platform": {"$regex": r"6037.+[Vv]1"}},
+    }
+
     PORT_TYPE = {
         1: "Порт датчика двери",
         2: "Порт датчика температуры",

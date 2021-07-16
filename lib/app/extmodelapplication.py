@@ -25,6 +25,7 @@ from django.db.models.fields import (
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
+from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.sa.interfaces.base import (
@@ -45,6 +46,7 @@ from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from noc.aaa.models.permission import Permission
 from noc.aaa.models.modelprotectionprofile import ModelProtectionProfile
+from noc.main.models.label import Label
 from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
 from noc.models import get_model_id
@@ -69,7 +71,7 @@ class ExtModelApplication(ExtApplication):
     )
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
-    ignored_fields = {"id", "bi_id"}
+    ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
     file_fields_mask = None
 
@@ -372,6 +374,23 @@ class ExtModelApplication(ExtApplication):
                     v = stencil_registry.get(o.shape)
                     r[f.name] = v.id
                     r["%s__label" % f.name] = smart_text(v.title)
+            elif f.name in {"labels", "effective_labels"} and isinstance(f, ArrayField):
+                r[f.name] = [
+                    {
+                        "id": ll.name,
+                        "is_protected": ll.is_protected,
+                        "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
+                        "name": ll.name,
+                        "value": ll.name.split("::")[-1],
+                        "bg_color1": f"#{ll.bg_color1:06x}",
+                        "fg_color1": f"#{ll.fg_color1:06x}",
+                        "bg_color2": f"#{ll.bg_color2:06x}",
+                        "fg_color2": f"#{ll.fg_color2:06x}",
+                    }
+                    for ll in Label.objects.filter(name__in=getattr(o, f.name, [])).order_by(
+                        "display_order"
+                    )
+                ]
             elif hasattr(f, "document"):
                 # DocumentReferenceField
                 v = getattr(o, f.name)
@@ -426,6 +445,13 @@ class ExtModelApplication(ExtApplication):
             q[None] += [tq]
         else:
             q[None] = [tq]
+
+    def lookup_labels(self, q, name, value):
+        if not value:
+            return
+        if isinstance(value, str):
+            value = [value]
+        q["labels__contains"] = value
 
     def update_m2m(self, o, name, values):
         if values is None:

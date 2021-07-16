@@ -20,9 +20,8 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "logical_status",
-            type: "string",
-            defaultValue: "U"
+            name: "state",
+            type: "string"
         },
         {
             name: "ts",
@@ -72,6 +71,15 @@ Ext.define("NOC.sa.service.Model", {
             persist: false
         },
         {
+            name: "supplier",
+            type: "string"
+        },
+        {
+            name: "supplier__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "profile",
             type: "string"
         },
@@ -117,7 +125,7 @@ Ext.define("NOC.sa.service.Model", {
             type: "string"
         },
         {
-            name: "logical_status_start",
+            name: "state_changed",
             type: "auto"
         },
         {
@@ -136,6 +144,24 @@ Ext.define("NOC.sa.service.Model", {
         {
             name: "caps",
             type: "auto"
+        },
+        {
+            name: "static_service_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_service_groups",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "static_client_groups",
+            type: "auto"
+        },
+        {
+            name: "effective_client_groups",
+            type: "auto",
+            persist: false
         },
         {
             name: "labels",

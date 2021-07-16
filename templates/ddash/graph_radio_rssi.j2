@@ -38,13 +38,13 @@
     {
       "dateTimeColDataType": "ts",
       "datetimeLoading": false,
-      "database": "noc",
+      "database": "{{ noc_db_metrics }}",
       "dateLoading": false,
       "tableLoading": false,
       "dateColDataType": "date",
       "table": "interface",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((iface, RSSI)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as iface, \n        avg(rssi) as `RSSI` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t, \n    groupArray((interface, RSSI)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        interface, \n        avg(rssi) as `RSSI` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY interface, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
       "interval": "$discovery_interval"

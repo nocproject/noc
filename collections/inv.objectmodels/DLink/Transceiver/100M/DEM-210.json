@@ -5,7 +5,7 @@
     "vendor__code": "DLINK",
     "description": "100Base-FX SFP Transciever 15km",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

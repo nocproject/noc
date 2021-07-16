@@ -6,7 +6,7 @@
     "description": null,
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "SIC slot #1",

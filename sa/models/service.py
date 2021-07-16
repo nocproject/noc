@@ -8,7 +8,9 @@
 # Python modules
 import datetime
 import logging
-from typing import Any, Dict
+import operator
+from threading import Lock
+from typing import Any, Dict, Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -19,54 +21,78 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
     LongField,
+    ObjectIdField,
 )
+import cachetools
 
 # NOC modules
 from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
+from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.mongo.fields import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
+from noc.core.resourcegroup.decorator import resourcegroup
+from noc.wf.models.state import State
+from noc.core.wf.decorator import workflow
 from noc.inv.models.capsitem import CapsItem
+from noc.main.models.label import Label
+from noc.pm.models.agent import Agent
 
 logger = logging.getLogger(__name__)
 
+id_lock = Lock()
+_path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
+
+@Label.model
 @bi_sync
 @on_save
+@resourcegroup
+@workflow
 @on_delete
-@on_delete_check(clean=[("phone.PhoneNumber", "service"), ("inv.Interface", "service")])
+@on_delete_check(
+    clean=[
+        ("phone.PhoneNumber", "service"),
+        ("inv.Interface", "service"),
+        ("inv.SubInterface", "service"),
+        ("sa.Service", "parent"),
+        ("sla.SLAProbe", "service"),
+    ]
+)
 class Service(Document):
     meta = {
         "collection": "noc.services",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["subscriber", "managed_object", "parent", "order_id"],
+        "indexes": [
+            "subscriber",
+            "supplier",
+            "managed_object",
+            "parent",
+            "order_id",
+            "agent",
+            "static_service_groups",
+            "effective_service_groups",
+            "static_client_groups",
+            "effective_client_groups",
+        ],
     }
     profile = ReferenceField(ServiceProfile, required=True)
     # Creation timestamp
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
-    logical_status = StringField(
-        choices=[
-            ("P", "Planned"),
-            ("p", "Provisioning"),
-            ("T", "Testing"),
-            ("R", "Ready"),
-            ("S", "Suspended"),
-            ("r", "Removing"),
-            ("C", "Closed"),
-            ("U", "Unknown"),
-        ],
-        default="U",
-    )
-    logical_status_start = DateTimeField()
+    state = PlainReferenceField(State)
+    # Last state change
+    state_changed = DateTimeField()
     # Parent service
     parent = ReferenceField("self", required=False)
     # Subscriber information
     subscriber = ReferenceField(Subscriber)
+    # Supplier information
+    supplier = ReferenceField(Supplier)
     description = StringField()
     #
     agreement_id = StringField()
@@ -90,6 +116,8 @@ class Service(Document):
     cpe_group = StringField()
     # Capabilities
     caps = ListField(EmbeddedDocumentField(CapsItem))
+    # Link to agent
+    agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -97,8 +125,21 @@ class Service(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
+    # Resource groups
+    static_service_groups = ListField(ObjectIdField())
+    effective_service_groups = ListField(ObjectIdField())
+    static_client_groups = ListField(ObjectIdField())
+    effective_client_groups = ListField(ObjectIdField())
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["Service"]:
+        return Service.objects.filter(id=id).first()
 
     def __str__(self):
         return str(self.id) if self.id else "new service"
@@ -136,3 +177,29 @@ class Service(Document):
 
     def get_caps(self) -> Dict[str, Any]:
         return CapsItem.get_caps(self.caps, self.profile.caps)
+
+    @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
+    def get_path(self):
+        """
+        Returns list of parent segment ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        return [self.id]
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, "enable_service")
+
+    def get_effective_agent(self) -> Optional[Agent]:
+        """
+        Find effective agent for service
+        :return:
+        """
+        svc = self
+        while svc:
+            if svc.agent:
+                return svc.agent
+            svc = svc.parent
+        return None

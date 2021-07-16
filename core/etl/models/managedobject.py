@@ -44,7 +44,7 @@ class ManagedObject(BaseModel):
     snmp_ro: Optional[str]
     description: Optional[str]
     auth_profile: Optional[Reference["AuthProfile"]]
-    tags: List[str]
+    labels: Optional[List[str]]
     tt_system: Optional[Reference["TTSystem"]]
     tt_queue: Optional[str]
     tt_system_id: Optional[str]
@@ -54,6 +54,10 @@ class ManagedObject(BaseModel):
     def address_must_ipaddress(cls, v):  # pylint: disable=no-self-argument
         IPvAnyAddress().validate(v)
         return str(v)
+
+    class Config:
+        fields = {"labels": "tags"}
+        allow_population_by_field_name = True
 
     _csv_fields = [
         "id",
@@ -77,7 +81,7 @@ class ManagedObject(BaseModel):
         "snmp_ro",
         "description",
         "auth_profile",
-        "tags",
+        "labels",
         "tt_system",
         "tt_queue",
         "tt_system_id",

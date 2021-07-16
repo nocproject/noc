@@ -24,18 +24,28 @@
             "label": "noc::chassis::*"
         },
         {
-            "is_order_key": false,
+            "is_order_key": true,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::slot::*"
+            "label": "noc::slot::*",
+            "view_column": "slot"
         },
         {
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::module::*"
+            "label": "noc::module::*",
+            "view_column": "module"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::interface::*",
+            "view_column": "interface"
         }
     ]
 }

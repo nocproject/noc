@@ -214,8 +214,11 @@ class LiftBridgeClient(object):
                 # Use random existing channel
                 broker = random.choice(self.open_brokers)
             else:
+                # Getting addresses from config directly will block the loop on resolve() method.
+                # So get parameter via .find_parameter() and resolve explicitly.
+                addresses = await config.find_parameter("liftbridge.addresses").async_get()
                 # Use random broker from seed
-                svc = random.choice(config.liftbridge.addresses)
+                svc = random.choice(addresses)
                 broker = "%s:%s" % (svc.host, svc.port)
         channel = self.channels.get(broker)
         if not channel:

@@ -59,7 +59,7 @@ class ContainerLoader(BaseLoader):
             name=v["name"],
             container=self.get_container(v["path"]).id,
             model=self.get_model(v["model"]),
-            tags=self.tags,
+            labels=self.tags,
         )
         if v.get("lon") and v.get("lat"):
             o.set_data("geopoint", "x", v["lon"])
@@ -76,7 +76,7 @@ class ContainerLoader(BaseLoader):
         o.save()
         return o
 
-    def change_object(self, object_id, v):
+    def change_object(self, object_id, v, change_object=None):
         o = self.model.objects.get(pk=object_id)
         if v.get("name"):
             o.name = v.get("name")

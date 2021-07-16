@@ -38,7 +38,7 @@ Ext.define("NOC.kb.kbentry.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {

@@ -6,7 +6,7 @@
     "description": "Supertel K23 22-port 1000 SFP; 2-port Combo 1000 SFP or 10/100/100 Ethernet Switch",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Gi1/0/1",

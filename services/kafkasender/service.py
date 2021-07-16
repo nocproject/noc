@@ -34,7 +34,9 @@ class KafkaSenderService(FastAPIService):
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
-        await self.subscribe_stream(KAFKASENDER_STREAM, self.slot_number, self.on_message)
+        await self.subscribe_stream(
+            KAFKASENDER_STREAM, self.slot_number, self.on_message, async_cursor=True
+        )
 
     async def on_message(self, msg: Message) -> None:
         """
@@ -49,7 +51,7 @@ class KafkaSenderService(FastAPIService):
         dst = msg.headers.get(MX_TO)
         if not dst:
             self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
-            metrics["message_drops"] += 1
+            metrics["messages_drops"] += 1
             return
         await self.send_to_kafka(smart_text(dst), msg.value, msg.headers.get(MX_SHARDING_KEY))
         metrics["messages_processed"] += 1
@@ -65,10 +67,11 @@ class KafkaSenderService(FastAPIService):
         self.logger.debug("Sending to topic %s", topic)
         producer = await self.get_producer()
         try:
-            await producer.send_and_wait(topic, data, key=key)
-            metrics["messages_sent", topic] += 1
-            metrics["bytes_sent", topic] += len(data)
+            await producer.send(topic, data, key=key)
+            metrics["messages_sent_ok", ("topic", topic)] += 1
+            metrics["bytes_sent", ("topic", topic)] += len(data)
         except KafkaError as e:
+            metrics["messages_sent_error", ("topic", topic)] += 1
             self.logger.error("Failed to send to topic %s: %s", topic, e)
 
     async def get_producer(self) -> AIOKafkaProducer:
@@ -82,6 +85,7 @@ class KafkaSenderService(FastAPIService):
             self.producer = AIOKafkaProducer(
                 bootstrap_servers=bootstrap,
                 acks="all",
+                max_batch_size=config.kafkasender.max_batch_size,
                 sasl_mechanism=config.kafkasender.sasl_mechanism,
                 security_protocol=config.kafkasender.security_protocol,
                 sasl_plain_username=config.kafkasender.username,

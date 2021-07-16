@@ -32,11 +32,29 @@ class SlotRule(OIDRule):
         for i in r:
             if self.is_complex:
                 gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
-                path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
+                labels = (
+                    ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
+                    if "CPU" in metric.metric
+                    else [
+                        "noc::chassis::0",
+                        f"noc::slot::{i}",
+                        "noc::module::0",
+                        f"noc::cpu::CPU Slot {i}",
+                    ]
+                )
                 if gen:
-                    yield tuple(gen), self.type, self.scale, path
+                    yield tuple(gen), self.type, self.scale, labels
             else:
                 oid = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
-                path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
+                labels = (
+                    ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
+                    if "CPU" in metric.metric
+                    else [
+                        "noc::chassis::0",
+                        f"noc::slot::{i}",
+                        "noc::module::0",
+                        f"noc::cpu::CPU Slot {i}",
+                    ]
+                )
                 if oid:
-                    yield oid, self.type, self.scale, path
+                    yield oid, self.type, self.scale, labels

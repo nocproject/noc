@@ -30,7 +30,7 @@ from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.text import alnum_key, list_to_ranges
-from noc.maintenance.models.maintenance import Maintenance
+from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
@@ -421,21 +421,25 @@ class ManagedObjectCard(BaseCard):
 
         # Maintenance
         maintenance = []
-        for m in Maintenance.objects.filter(
-            affected_objects__object=self.object.id,
-            is_completed=False,
-            start__lte=now + datetime.timedelta(hours=1),
+        for ao in AffectedObjects._get_collection().find(
+            {"affected_objects": {"object": self.object.id}}
         ):
-            maintenance += [
-                {
-                    "maintenance": m,
-                    "id": m.id,
-                    "subject": m.subject,
-                    "start": m.start,
-                    "stop": m.stop,
-                    "in_progress": m.start <= now,
-                }
-            ]
+            m = Maintenance.objects.filter(
+                id=ao["maintenance"],
+                is_completed=False,
+                start__lte=now + datetime.timedelta(hours=1),
+            ).first()
+            if m:
+                maintenance += [
+                    {
+                        "maintenance": m,
+                        "id": m.id,
+                        "subject": m.subject,
+                        "start": m.start,
+                        "stop": m.stop,
+                        "in_progress": m.start <= now,
+                    }
+                ]
         # Get Inventory
         inv = []
         for p in self.object.get_inventory():
@@ -505,7 +509,7 @@ class ManagedObjectCard(BaseCard):
         Returns a list of (service profile name, glyph)
         """
         r = []
-        if service.logical_status in ("T", "R", "S"):
+        if service.state.name in ("Testing", "Ready", "Suspended"):
             if service.profile.glyph:
                 r += [(service.profile.name, service.profile.glyph)]
             for svc in Service.objects.filter(parent=service):

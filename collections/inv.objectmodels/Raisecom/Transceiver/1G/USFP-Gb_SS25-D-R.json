@@ -5,7 +5,7 @@
     "vendor__code": "RAISECOM",
     "description": "Wavelength: 1550 nm DFB; RX sensitivity:< -23 dBm; TX power: -3~3 dBm; Distance: 40 km; DDMI; RoHS;Bitrate: 1.25G, LC",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

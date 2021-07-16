@@ -1,0 +1,9 @@
+{
+    "name": "milli",
+    "$collection": "pm.scales",
+    "uuid": "3e6796b0-1e72-412e-963a-39a934faa93c",
+    "code": "m",
+    "label": "m",
+    "base": 10,
+    "exp": -3
+}

@@ -82,6 +82,39 @@ Ext.define("NOC.inv.capability.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Card Template"),
                     allowBlank: true
+                },
+                {
+                    xtype: "container",
+                    layout: "hbox",
+                    defaults: {
+                      padding: "0 8 0 0"
+                    },
+                    items: [
+                        {
+                            name: "agent_collector",
+                            xtype: "combobox",
+                            uiStyle: "medium",
+                            fieldLabel: __("Agent Collector"),
+                            store: [
+                                ["cpu", "CPU"],
+                                ["memory", "Memory"],
+                                ["dns", "DNS"],
+                                ["fs", "FS"],
+                                ["http", "HTTP"],
+                                ["network", "Network"],
+                                ["twamp_reflector", "TWAMP Reflector"],
+                                ["twamp_sender", "TWAMP Sender"],
+                                ["block_io", "Block IO"]
+                            ]
+                        },
+                        {
+                            name: "agent_param",
+                            xtype: "textfield",
+                            uiStyle: "medium",
+                            fieldLabel: __("Agent Param"),
+                            allowBlank: true
+                        }
+                    ]
                 }
             ],
 

@@ -6,7 +6,7 @@
     "description": "B2x10G - 2 port 10G fiber module(2 XenPak)",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "XENPAK port 1",

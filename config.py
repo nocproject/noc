@@ -133,6 +133,9 @@ class Config(BaseConfig):
     class clickhouse(ConfigSection):
         rw_addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
+        db_dictionaries = StringParameter(
+            default="noc_dict", help="Database for store Dictionary Table"
+        )
         rw_user = StringParameter(default="default")
         rw_password = SecretParameter()
         ro_addresses = ServiceParameter(service="clickhouse", wait=True)
@@ -310,6 +313,9 @@ class Config(BaseConfig):
         security_protocol = StringParameter(
             choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
         )
+        max_batch_size = BytesParameter(
+            default=16384, help="Maximum size of buffered data per partition"
+        )
 
     language = StringParameter(default="en")
     language_code = StringParameter(default="en")
@@ -396,6 +402,12 @@ class Config(BaseConfig):
         stream_ch_replication_factor = IntParameter(
             default=1, help="Replicaton factor for clickhouse streams"
         )
+        stream_jobs_retention_max_age = SecondsParameter(default="24h")
+        stream_jobs_retention_max_bytes = BytesParameter(default=0)
+        stream_jobs_segment_max_age = SecondsParameter(default="1h")
+        stream_jobs_segment_max_bytes = BytesParameter(default=0)
+        stream_jobs_auto_pause_time = SecondsParameter(default=0)
+        metrics_send_delay = FloatParameter(default=0.25)
 
     listen = StringParameter(default="auto:0")
 
@@ -441,6 +453,9 @@ class Config(BaseConfig):
         enable_alarm = BooleanParameter(default=False)
         enable_managedobject = BooleanParameter(default=False)
         enable_reboot = BooleanParameter(default=False)
+        enable_metrics = BooleanParameter(default=False)
+        # Comma-separated list of metric scopes
+        enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
@@ -508,7 +523,7 @@ class Config(BaseConfig):
         card_template_path = StringParameter(default="services/card/templates/card.html.j2")
         pm_templates = StringParameter(default="templates/ddash/")
         custom_path = StringParameter()
-        mib_path = StringParameter(default="/var/mib")
+        mib_path = StringParameter(default="/var/lib/noc/mibs/")
 
     class pg(ConfigSection):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
@@ -527,14 +542,6 @@ class Config(BaseConfig):
         receive_buffer = IntParameter(default=4 * 1048576)
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
-
-    class pmwriter(ConfigSection):
-        batch_size = IntParameter(default=2500)
-        metrics_buffer = IntParameter(default=50000)
-        read_from = StringParameter(default="pmwriter")
-        write_to = StringParameter(default="influxdb")
-        write_to_port = IntParameter(default=8086)
-        max_delay = FloatParameter(default="1.0")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
@@ -646,9 +653,13 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=10)
         macdb_window = IntParameter(default=4 * 86400)
         enable_remote_system_last_extract_info = BooleanParameter(default=False)
+        heatmap_lon = StringParameter(default="108.567849")
+        heatmap_lat = StringParameter(default="66.050063")
+        heatmap_zoom = StringParameter(default="4")
 
     class ui(ConfigSection):
         max_avatar_size = BytesParameter(default="256K")
+        max_rest_limit = IntParameter(default=100)
 
     class datasource(ConfigSection):
         chunk_size = IntParameter(default=1000)

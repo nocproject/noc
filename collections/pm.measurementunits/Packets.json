@@ -1,0 +1,13 @@
+{
+    "name": "Packets",
+    "$collection": "pm.measurementunits",
+    "uuid": "fa757cfd-621e-4dad-a8fe-3350ff44e46a",
+    "code": "pkt",
+    "description": "Network packet is a formatted unit of data carried by a packet-switched network.",
+    "label": "packets",
+    "dashboard_label": "packets",
+    "convert_from": [{
+        "expr": "x * time_delta",
+        "unit__code": "pps"
+    }]
+}

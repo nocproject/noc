@@ -5,7 +5,7 @@
     "vendor__code": "NONAME",
     "description": "NoName SFP BX100-U (tx 1310nm) transceiver",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

@@ -8,7 +8,9 @@
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sla.models.slaprobe import SLAProbe
+from noc.sla.models.slaprofile import SLAProfile
 from noc.core.profile.loader import GENERIC_PROFILE
+from noc.main.models.label import Label
 
 
 class SLACheck(DiscoveryCheck):
@@ -23,6 +25,7 @@ class SLACheck(DiscoveryCheck):
         #
         "Cisco.IOS": {"Cisco | IP | SLA | Probes"},
         "Juniper.JUNOS": {"Juniper | RPM | Probes"},
+        "Huawei.VRP": {"Huawei | NQA | Probes"},
         "OneAccess.TDRE": {"OneAccess | IP | SLA | Probes"},
         # Fallback
         GENERIC_PROFILE: set(),
@@ -49,6 +52,8 @@ class SLACheck(DiscoveryCheck):
         new_probes = {}
         for p in self.object.scripts.get_sla_probes():
             new_probes[p.get("group", ""), p["name"]] = p
+            for ll in p.get("tags", []):
+                Label.ensure_label(ll, enable_slaprobe=True)
         # Check existing probes
         for p in SLAProbe.objects.filter(managed_object=self.object.id):
             group = p.group or ""
@@ -56,7 +61,7 @@ class SLACheck(DiscoveryCheck):
             if not new_data:
                 # Remove stale probe
                 self.logger.info("[%s|%s] Removing probe", group, p.name)
-                p.delete()
+                p.fire_event("missed")
                 continue
             self.update_if_changed(
                 p,
@@ -65,9 +70,19 @@ class SLACheck(DiscoveryCheck):
                     "type": new_data["type"],
                     "target": new_data["target"],
                     "hw_timestamp": new_data.get("hw_timestamp", False),
-                    "tags": new_data.get("tags", []),
+                    "labels": [
+                        ll
+                        for ll in new_data.get("tags", [])
+                        if Label.get_effective_setting(ll, "enable_slaprobe")
+                    ],
                 },
             )
+            p.fire_event("seen")
+            if not new_data["status"]:
+                p.fire_event("down")
+            else:
+                p.fire_event("up")
+            p.touch()
             del new_probes[group, p.name]
         # Add remaining probes
         for group, name in new_probes:
@@ -76,11 +91,14 @@ class SLACheck(DiscoveryCheck):
             probe = SLAProbe(
                 managed_object=self.object,
                 name=name,
+                profile=SLAProfile.get_default_profile(),
                 group=group,
                 description=new_data.get("description"),
                 type=new_data["type"],
                 target=new_data["target"],
                 hw_timestamp=new_data.get("hw_timestamp", False),
-                tags=new_data.get("tags", []),
+                labels=new_data.get("tags", []),
             )
             probe.save()
+            if not new_data["status"]:
+                probe.fire_event("down")

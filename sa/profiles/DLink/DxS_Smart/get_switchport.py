@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from builtins import range
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+from noc.core.snmp.render import render_bin
 
 
 class Script(BaseScript):
@@ -44,7 +45,7 @@ class Script(BaseScript):
                 "1110",
                 "1111",
             ]
-            ports = ["%02x" % ord(c) for c in ports]
+            ports = ["%02x" % c for c in ports]
             p = ""
             for c in ports:
                 for i in range(len(c)):
@@ -57,7 +58,12 @@ class Script(BaseScript):
         if pmib is None:
             raise NotImplementedError()
         for v in self.snmp.get_tables(
-            [pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"], bulk=True
+            [pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"],
+            bulk=True,
+            display_hints={
+                pmib + ".7.6.1.2": render_bin,
+                pmib + ".7.6.1.4": render_bin,
+            },
         ):
             tagged = v[2]
             untagged = v[3]
@@ -73,7 +79,6 @@ class Script(BaseScript):
                         port_vlans.update({iface: {"tagged": [], "untagged": ""}})
                     port_vlans[iface]["untagged"] = v[0]
                     un += [str(i + 1)]
-                # s = self.hex_to_bin(tagged)
             s = hex2bin(tagged)
             for i in range(len(s)):
                 if s[i] == "1" and str(i + 1) not in un:

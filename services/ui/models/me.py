@@ -33,6 +33,10 @@ class MeResponse(BaseModel):
     avatar_label: str = Field(
         title="Avatar Label", description="Letters to be used when avatar is missed or empty"
     )
+    avatar_label_fg: str = Field(
+        title="Avatar Label Foreground",
+        description="CSS background to be used along with avatar_label",
+    )
     avatar_label_bg: str = Field(
         title="Avatar Label Background",
         description="CSS background to be used along with avatar_label",

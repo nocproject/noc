@@ -21,14 +21,17 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^--More\(Enter: next line, spacebar: next page, " r"any other key: quit\)--", " "),
         (r"\[<frameId/slotId>\]", "\n"),
+        (r"\{ <cr>(\|\S+\<K\>|frameid/slotid\<S\>\<1,15\>|spm\<K\>)+ \}:", "\n"),
+        (r"\{ ((groupindex|vlan)\<K\>\|)+<cr> \}:", "\n"),
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\(y/n\) \[y\]", "y\n"),
         (r"\[to\]\:", "\n"),
+        (r"{\s+ifNo.<U><1,4>\s+}:", "\n"),
     ]
     # Do not match this line: "\r\n>>User name: "
     pattern_unprivileged_prompt = r"^[^>]\S+?>"
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
-    pattern_syntax_error = r"Invalid parameter|Incorrect command"
+    pattern_syntax_error = r"Invalid parameter|Incorrect command|\%\s*Unknown command"
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "length 0"
@@ -36,7 +39,11 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "save\ny\n"
-
+    matchers = {
+        "is_ma5103": {
+            "platform": {"$in": ["MA5103"]},
+        }
+    }
     rx_interface_name = re.compile(r"^(?P<type>\S+)\s+(?P<number>\S.*)", re.MULTILINE)
 
     def convert_interface_name(self, s):

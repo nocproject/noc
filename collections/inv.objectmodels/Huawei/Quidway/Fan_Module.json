@@ -4,7 +4,7 @@
     "uuid": "ae0df0b7-e0a1-46db-a4f9-126134bbf2d4",
     "vendor__code": "HUAWEI",
     "description": "Huawei Quidway Fan Module",
-    "tags": ["fan"],
+    "labels": ["noc::inv::fan"],
     "connections": [
         {
             "description": "Fan Slot",

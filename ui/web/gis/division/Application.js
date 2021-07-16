@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // gis.division application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.gis.division.Application");
@@ -47,6 +47,18 @@ Ext.define("NOC.gis.division.Application", {
                 {
                     text: __("Parent"),
                     dataIndex: "full_parent",
+                    flex: 1,
+                    sort: false
+                },
+                {
+                    text: __("Remote System"),
+                    dataIndex: "remote_system",
+                    flex: 1,
+                    sort: false
+                },
+                {
+                    text: __("Remote Id"),
+                    dataIndex: "remote_id",
                     flex: 1,
                     sort: false
                 }

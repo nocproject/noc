@@ -6,7 +6,7 @@
     "description": "Cisco 2900 Series Integrated Services Routers with K9 Encryption",
     "connection_rule__name": "Cisco | 2900",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "2901 Motherboard",

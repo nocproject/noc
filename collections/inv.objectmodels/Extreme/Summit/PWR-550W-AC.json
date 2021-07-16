@@ -5,7 +5,7 @@
     "vendor__code": "EXTREME",
     "description": "550W AC Power Supply module for Summit switches, Front-to-Back airflow",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "",

@@ -1,6 +1,6 @@
 [package]
 name = "agent"
-version = "0.2.0"
+version = "0.6.0"
 authors = ["The NOC Project"]
 edition = "2018"
 description = "NOC Agent"
@@ -10,9 +10,46 @@ name = "noc-agent"
 path = "src/main.rs"
 
 [features]
-default = ["dns", "test", "twamp-sender", "twamp-reflector"]
+default = [
+    # Collectors, in sorted order
+    "block-io",
+    "cpu",
+    "dns",
+    "fs",
+    "http",
+    "memory",
+    "network",
+    "test",
+    "twamp-sender",
+    "twamp-reflector",
+    "uptime",
+    # Config
+    "config-static",
+    "config-zk",
+    "config-file",
+    "config-http",
+    "config-json",
+    "config-yaml",
+]
+
+#
+# Collectors
+#
+
+# block-io collector
+block-io = ["systemstat"]
+# cpu collector
+cpu = ["systemstat"]
 # dns collector
 dns = ["trust-dns-proto"]
+# fs collector
+fs = ["systemstat"]
+# http collector
+http = ["reqwest"]
+# memory collector
+memory = ["systemstat"]
+# network collector
+network = ["systemstat"]
 # test collector
 test = []
 # modbus_serial collector
@@ -21,22 +58,47 @@ test = []
 twamp-sender = []
 # twamp-reflector collector
 twamp-reflector = []
+# uptime collector
+uptime = ["systemstat"]
+
+#
+# Config
+#
+
+# Static resolver
+config-static = []
+# ZeroConf resolver
+config-zk = ["trust-dns-proto", "trust-dns-resolver", "systemstat"]
+# File reader
+config-file = []
+# HTTP reader
+config-http = ["reqwest"]
+# JSON parser
+config-json = []
+# YAML parser
+config-yaml = ["serde_yaml"]
 
 [dependencies]
-clap = "2.33"
+chrono = "0.4"
+clap = { version = "2.33", default-features = false }
 log = "0.4"
 env_logger = "0.8"
-tokio = { version = "1.2", features = ["full"] }
+tokio = { version = "1.7", features = ["full"] }
 bytes = "1.0"
-trust-dns-resolver = "0.20"
 serde = {version = "1.0", features=["derive"]}
-serde_json = "1.0"
 async-trait = "0.1"
+cfg-if = "1.0"
+enum_dispatch = "0.3"
 rand = "0.8"
 lazy_static = "1.4"
-chrono = "0.4"
+thiserror = "1.0"
+serde_json = "1.0"
 # Optional dependencies
 trust-dns-proto = {version = "0.20", optional = true}
+trust-dns-resolver = {version = "0.20", optional = true}
+serde_yaml = {version = "0.8", optional = true}
+systemstat = {version = "0.1", optional = true}
+reqwest = { version = "0.11", features = ["rustls-tls", "gzip", "deflate", "trust-dns"], optional = true }
 
 [dev-dependencies]
 criterion = "0.3"

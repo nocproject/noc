@@ -4,7 +4,7 @@ site_author: The NOC Project
 repo_url: https://code.getnoc.com/noc/noc/
 repo_name: Gitlab
 edit_uri: -/edit/master/docs/en/docs
-copyright: 2007-2020, The NOC Project
+copyright: 2007-2021, The NOC Project
 nav:
   - Home: index.md
   - User's Guide:
@@ -13,6 +13,7 @@ nav:
           - Overview: user/tutorial/index.md
       - How-to Guides:
           - Overview: user/howto/index.md
+          - Loading GIS data with etl command: user/howto/fias/index.md
       - Background:
           - Overview: user/background/index.md
       - Reference:
@@ -406,6 +407,7 @@ nav:
               - Sumavision:
                   - Overview: user/reference/profiles/Sumavision/index.md
                   - Sumavision.EMR: user/reference/profiles/Sumavision/Sumavision.EMR.md
+                  - Sumavision.IPQAM: user/reference/profiles/Sumavision/Sumavision.IPQAM.md
               - Sun:
                   - Overview: user/reference/profiles/Sun/index.md
                   - Sun.iLOM3: user/reference/profiles/Sun/Sun.iLOM3.md
@@ -1276,6 +1278,7 @@ nav:
               - Overview: user/reference/mx/index.md
               - alarm: user/reference/mx/alarm.md
               - managedobject: user/reference/mx/managedobject.md
+              - metrics: user/reference/mx/metrics.md
               - reboot: user/reference/mx/reboot.md
           - Technologies:
               - Group: user/reference/technology/group.md
@@ -1316,6 +1319,7 @@ nav:
               - tgsender: admin/reference/services/tgsender.md
               - trapcollector: admin/reference/services/trapcollector.md
               - web: admin/reference/services/web.md
+              - worker: admin/reference/services/worker.md
               - ui: admin/reference/services/ui.md
           - Configuration:
               - Configuration System Overview: admin/reference/config/index.md
@@ -1369,7 +1373,6 @@ nav:
               - "[peer] section": admin/reference/config/peer.md
               - "[pg] section": admin/reference/config/pg.md
               - "[ping] section": admin/reference/config/ping.md
-              - "[pmwriter] section": admin/reference/config/pmwriter.md
               - "[proxy] section": admin/reference/config/proxy.md
               - "[redis] section": admin/reference/config/redis.md
               - "[rpc] section": admin/reference/config/rpc.md
@@ -1498,12 +1501,27 @@ nav:
               - test: admin/reference/man/test.md
               - todos: admin/reference/man/todos.md
               - translation: admin/reference/man/translation.md
-              - update-addr: admin/reference/man/update-addr.md
               - user: admin/reference/man/user.md
               - verify-model: admin/reference/man/verify-model.md
               - whois: admin/reference/man/whois.md
               - wipe: admin/reference/man/wipe.md
               - workflow: admin/reference/man/workflow.md
+          - noc-agent:
+              - Overview: admin/reference/agent/index.md
+              - Collectors:
+                  - Overview: admin/reference/agent/collectors/index.md
+                  - block_io: admin/reference/agent/collectors/block_io.md
+                  - cpu: admin/reference/agent/collectors/cpu.md
+                  - dns: admin/reference/agent/collectors/dns.md
+                  - http: admin/reference/agent/collectors/http.md
+                  - fs: admin/reference/agent/collectors/fs.md
+                  - memory: admin/reference/agent/collectors/memory.md
+                  - network: admin/reference/agent/collectors/network.md
+                  - test: admin/reference/agent/collectors/test.md
+                  - twamp_reflector: admin/reference/agent/collectors/twamp_reflector.md
+                  - twamp_sender: admin/reference/agent/collectors/twamp_sender.md
+                  - uptime: admin/reference/agent/collectors/uptime.md
+              - Compilation Features: admin/reference/agent/compilation-features.md
   - Developer's Guide:
       - Overview: dev/index.md
       - Get Started:
@@ -1648,6 +1666,7 @@ nav:
               - container: dev/reference/model-interface/container.md
               - cpu: dev/reference/model-interface/cpu.md
               - dimensions: dev/reference/model-interface/dimensions.md
+              - hwlimits: dev/reference/model-interface/hwlimits.md
               - geopoint: dev/reference/model-interface/geopoint.md
               - length: dev/reference/model-interface/length.md
               - management: dev/reference/model-interface/management.md
@@ -2226,6 +2245,7 @@ nav:
               - dispose.POOL: dev/reference/streams/dispose.md
               - events.POOL: dev/reference/streams/events.md
               - kafkasender: dev/reference/streams/kafkasender.md
+              - jobs: dev/reference/streams/jobs.md
               - mx: dev/reference/streams/mx.md
           - Tools:
               - Overview: dev/reference/tools/index.md
@@ -2243,6 +2263,7 @@ nav:
           - How-to Guides: about/style/howto.md
           - References: about/style/references.md
           - Explanations: about/style/explanations.md
+      - Supported Standards: about/standards.md
       - Releases:
           - NOC Release and Tagging Policy: about/releases/policy.md
           - NOC 20.4 Generation:
@@ -2335,7 +2356,14 @@ theme:
     - navigation.tabs
     - navigation.instant
   palette:
-    scheme: slate
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
   logo: _static/logo.svg
 extra_css:
   - _static/extra.css

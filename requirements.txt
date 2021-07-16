@@ -15,7 +15,7 @@
 # * testing
 # * sender-kafka
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,24 +28,24 @@ Pygments==2.2.0
 XlsxWriter==0.9.3
 atomicl==0.1.1
 blinker==1.4
-bsdiff4==1.2.0
+bsdiff4==1.2.1
 cachetools==4.2.1
 crontab==0.22.9
 csiphash==0.0.5
 demjson==2.2.4
-fs==2.4.12
+fs==2.4.13
 geojson==2.5.0
-geopy==0.97
+geopy==2.1.0
 grpcio==1.36
 http-parser==0.9.0
 manhole==1.6.0
 markerlib==0.6.0
 mongoengine==0.22.1
-networkx==2.5
-numpy==1.20.1
-orjson==3.5.0
+networkx==2.5.1
+numpy==1.20.2
+orjson==3.5.2
 progressbar2==3.53.1
-protobuf==3.15.3
+protobuf==3.15.8
 psycopg2==2.8.6
 pydantic==1.7.1
 pymongo==3.11.3
@@ -64,7 +64,7 @@ typing-extensions==3.7.4.3; python_version < '3.8'
 uvicorn==0.13.3
 yappi==1.3.2
 # Activator requirements
-ssh2-python==0.23.0; extra == "activator"
+ssh2-python==0.26.0; extra == "activator"
 # Classifier
 bitarray==0.8.1; extra == "classifier"
 # Cache-Redis
@@ -98,3 +98,5 @@ pytest-dependency==0.5.1; extra == "testing"
 Cython==0.29.21; extra == "cython"
 # Kafka
 aiokafka==0.6.0; extra == "sender-kafka"
+# etl/extractor
+dbf==0.99.1; extra == "testing"

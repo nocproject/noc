@@ -60,21 +60,15 @@ class Script(BaseScript):
     @staticmethod
     def fixport(port, port_type):
         # fix alcatel encode port like hex string
-        remote_port = "u"
         if port_type == "5" and "\n " in port:
-            remote_port = port.replace("\n                        ", "")
-            remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = smart_text(codecs.decode(remote_port, "hex"))
-        elif port_type == "5" and "\n" in port:
-            remote_port = port.replace("\n", "")
-            remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = smart_text(codecs.decode(remote_port, "hex"))
-        elif port_type == "5" and "\n " not in port:
-            remote_port = remote_port.replace(":", "").replace("\n", "")
-            remote_port = smart_text(codecs.decode(remote_port, "hex"))
+            # PortId Subtype        : 5 (interfaceName)
+            # Port Id               : 65:73:61:74:2D:32:2F:31:2F:32:31
+            #                         "esat-2/1/21"
+            remote_port_name1, remote_port__name2 = port.split("\n", 1)
+            return smart_text(codecs.decode(remote_port_name1.strip().replace(":", ""), "hex"))
         elif port_type == "7":
             return port.replace("\n", "")
-        return remote_port
+        return port
 
     def get_port_info(self, port):
         try:

@@ -5,7 +5,7 @@
     "vendor__code": "HUAWEI",
     "description": "Double DC power Board",
     "cr_context": "PWR",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "3V3 power connector",

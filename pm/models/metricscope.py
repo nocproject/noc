@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional
+from typing import Optional, List, Callable
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -29,6 +29,10 @@ from noc.core.model.decorator import on_delete_check
 from noc.main.models.label import Label
 
 id_lock = Lock()
+to_path_code = {}
+code_lock = Lock()
+
+OLD_PM_SCHEMA_TABLE = "noc_old"
 
 
 class KeyField(EmbeddedDocument):
@@ -97,7 +101,7 @@ class LabelItem(EmbeddedDocument):
         return r
 
 
-@on_delete_check(check=[("pm.MetricType", "scope")])
+@on_delete_check(check=[("pm.MetricType", "scope"), ("main.MetricStream", "scope")])
 @on_save
 class MetricScope(Document):
     meta = {
@@ -130,7 +134,10 @@ class MetricScope(Document):
     def on_save(self):
         for label in self.labels:
             Label.ensure_label(
-                label.label, description="Auto-created for PM scope", is_protected=True
+                label.label,
+                description="Auto-created for PM scope",
+                is_protected=True,
+                expose_metric=True,
             )
 
     @property
@@ -218,7 +225,7 @@ class MetricScope(Document):
             "AS %s "
             "ENGINE = Distributed(%s, %s, %s)"
             % (
-                self.table_name,
+                self._get_distributed_db_table(),
                 self._get_raw_db_table(),
                 config.clickhouse.cluster,
                 config.clickhouse.db,
@@ -243,12 +250,18 @@ class MetricScope(Document):
             v_path = f"[{l_exp}] AS path, "
         # view columns
         vc_expr = ""
-        view_columns = [label for label in self.labels if label.view_column]
+        view_columns = []
+        for label in self.labels:
+            if label.view_column and label.store_column:
+                view_columns += [f"{label.store_column} AS {label.view_column}"]
+            elif label.store_column:
+                view_columns += [f"{label.store_column}"]
+            elif label.view_column:
+                view_columns += [
+                    f"splitByString('::', arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels))[-1] AS {label.view_column} "
+                ]
         if view_columns:
-            vc_expr = ", ".join(
-                f"splitByString('::', arrayFirst(x -> startsWith(x, '{x.field_name}'), labels))[-1] AS {x.view_column} "
-                for x in view_columns
-            )
+            vc_expr = ", ".join(view_columns)
             vc_expr += ", "
         return f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}* FROM {src}"
 
@@ -329,10 +342,10 @@ class MetricScope(Document):
             ch.rename_table(table, raw_table)
             changed = True
         # Old schema
-        if ensure_column(raw_table, "path"):
-            # Old schema, data table will be rename to old_ for save data.
-            ch.rename_table(raw_table, f"old_{self.table_name}")
-            pass
+        if ch.has_table(raw_table) and not ensure_column(raw_table, "labels"):
+            # Old schema, data table will be move to old_noc db for save data.
+            ch.ensure_db(OLD_PM_SCHEMA_TABLE)
+            ch.rename_table(raw_table, f"{OLD_PM_SCHEMA_TABLE}.{raw_table}")
         # Ensure raw_* table
         if ch.has_table(raw_table):
             # raw_* table exists, check columns
@@ -349,7 +362,60 @@ class MetricScope(Document):
                 ch.execute(post=self.get_create_distributed_sql())
                 changed = True
         # Synchronize view
-        if changed or not ch.has_table(table):
-            ch.execute(post=self.get_create_view_sql())
-            changed = True
+        ch.execute(post=self.get_create_view_sql())
         return changed
+
+    def _get_to_path_code(self) -> str:
+        """
+        Generate to_path() body
+        :return:
+        """
+        p_labels = [(label.label, label.is_required) for label in self.labels if label.is_path]
+        r = ["def thunk(labels):"]
+        if not p_labels:
+            # No path
+            r += ["    return []"]
+            return "\n".join(r)
+        r += [
+            "    pc = {}",
+            "    max_p = -1",
+            "    for label in labels:",
+            f"        if len(pc) >= {len(p_labels)}:",
+            "            continue",
+        ]
+        for pn, (ln, is_required) in enumerate(p_labels):
+            prefix = ln[:-1]  # Strip trailing `*`
+            p_len = len(prefix)
+            r += [
+                f'        if label.startswith("{prefix}"):',
+                f"            pc[{pn}] = label[{p_len}:]",
+                f"            max_p = max(max_p, {pn})",
+                "            continue",
+            ]
+        r += [
+            "    if not pc:",
+            "        return []",
+            '    return [pc.get(i) or "" for i in range(max_p + 1)]',
+        ]
+        return "\n".join(r)
+
+    def _get_to_path(self) -> Callable[[List[str]], List[str]]:
+        """
+        Generate label -> path function for scope
+        :return:
+        """
+        fn = to_path_code.get(self.name)
+        if not fn:
+            with code_lock:
+                fn = to_path_code.get(self.name)
+                if fn:
+                    return fn
+                # Compile
+                code = self._get_to_path_code()
+                eval(compile(code, "<string>", "exec"))
+                fn = locals()["thunk"]
+                to_path_code[self.name] = fn
+        return fn
+
+    def to_path(self, labels: List[str]) -> List[str]:
+        return self._get_to_path()(labels)

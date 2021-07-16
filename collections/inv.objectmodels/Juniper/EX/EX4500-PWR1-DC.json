@@ -5,7 +5,7 @@
     "vendor__code": "JUNIPER",
     "description": "PS 1000W/1200W DC Front to back airflow",
     "cr_context": "PEM",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "-48V",

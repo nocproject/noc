@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ class Script(BaseScript):
                 continue
             else:
                 try:
-                    v = self.cli("show int trans " + i.group("int"))
+                    v = self.cli("show int transceiver " + i.group("int"))
                     for t in v.split("Ethernet"):
                         pid = ""
                         # Parsing

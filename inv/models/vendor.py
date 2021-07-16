@@ -19,6 +19,7 @@ import cachetools
 # NOC modules
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
@@ -26,6 +27,7 @@ id_lock = threading.Lock()
 
 @bi_sync
 @on_save
+@change
 @on_delete_check(
     check=[
         ("inv.ObjectModel", "vendor"),
@@ -33,7 +35,8 @@ id_lock = threading.Lock()
         ("inv.Firmware", "vendor"),
         ("sa.ManagedObject", "vendor"),
         ("sa.ManagedObjectSelector", "filter_vendor"),
-    ]
+    ],
+    clean_lazy_labels="vendor",
 )
 class Vendor(Document):
     """
@@ -146,3 +149,7 @@ class Vendor(Document):
                 return vendor
             except NotUniqueError:
                 pass  # Already created by concurrent process, reread
+
+    @classmethod
+    def iter_lazy_labels(cls, vendor: "Vendor"):
+        yield f"noc::vendor::{vendor.name}::="

@@ -70,7 +70,8 @@ Ext.define("NOC.wf.transition.Model", {
         },
         {
             name: "bi_id",
-            type: "int"
+            type: "int",
+            persist: false
         },
         {
             name: "event",

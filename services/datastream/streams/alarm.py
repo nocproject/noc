@@ -15,6 +15,7 @@ from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.core.datastream.base import DataStream
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.utils import get_alarm
+from noc.main.models.label import Label
 from noc.core.comp import smart_bytes
 from noc.core.mx import MX_PROFILE_ID
 
@@ -35,8 +36,13 @@ class AlarmDataStream(DataStream):
             "timestamp": cls.qs(alarm.timestamp),
             "severity": alarm.severity,
             "reopens": alarm.reopens,
-            "tags": alarm.tags,
+            "labels": [],
+            "tags": [],  # Alias for compat
         }
+        for label in alarm.labels:
+            if Label.get_effective_setting(label=label, setting="expose_datastream"):
+                r["labels"].append(label)
+                r["tags"].append(label)
         if alarm.root:
             r["root"] = str(alarm.root)
         if alarm.status == "C":

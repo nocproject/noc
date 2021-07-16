@@ -5,7 +5,7 @@
     "vendor__code": "ZYXEL",
     "description": "Zyxel SFP BX-U 10km transceiver",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

@@ -6,7 +6,7 @@
     "description": "2 порта 10/100/1000 Base-T (SFP)\n2 порта 10/100/1000 Base-T (RG-45)\n4 порта 10/100/1000 Base-T (RG-45) PoE/PoE+\n4 комбо-порта 10/100/1000 Base-T/1000 Base-X (SFP)",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "port", "fan"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::port", "noc::inv::fan"],
     "connections": [
         {
             "description": "Power outlet",

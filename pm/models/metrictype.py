@@ -9,6 +9,7 @@
 import os
 import operator
 from threading import Lock
+from typing import Callable
 
 # Third-party modules
 from mongoengine.document import Document
@@ -17,6 +18,8 @@ import cachetools
 
 # NOC Modules
 from .metricscope import MetricScope
+from .measurementunits import MeasurementUnits
+from .scale import Scale
 from noc.inv.models.capability import Capability
 from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.doccategory import category
@@ -68,8 +71,13 @@ class MetricType(Document):
     )
     # Text description
     description = StringField(required=False)
+    # Measurement units
+    units = PlainReferenceField(MeasurementUnits)
+    # Scale
+    scale = PlainReferenceField(Scale)
     # Measure name, like 'kbit/s'
     # Compatible to Grafana
+    # @todo: Should we remove id?
     measure = StringField()
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
@@ -96,6 +104,8 @@ class MetricType(Document):
             "field_type": self.field_type,
             "description": self.description,
             "measure": self.measure,
+            "units__code": self.units.code,
+            "scale__code": self.scale.code,
         }
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
@@ -113,6 +123,8 @@ class MetricType(Document):
                 "field_type",
                 "description",
                 "measure",
+                "units__code",
+                "scale__code",
                 "vector_tag",
             ],
         )
@@ -142,7 +154,10 @@ class MetricType(Document):
         )
 
     def clean_value(self, value):
-        return getattr(self, "clean_%s" % self.field_type)(value)
+        return getattr(self, f"clean_{self.field_type}")(value)
+
+    def get_cleaner(self) -> Callable:
+        return getattr(self, f"clean_{self.field_type}", None)
 
     @staticmethod
     def clean_UInt8(value):

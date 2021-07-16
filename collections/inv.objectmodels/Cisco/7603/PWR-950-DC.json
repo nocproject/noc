@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "950 Watt DC Power Supply for Cisco 7603/6503",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "PEM version 1",

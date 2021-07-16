@@ -5,7 +5,7 @@
     "vendor__code": "CARELINK",
     "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx)",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

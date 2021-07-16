@@ -9,10 +9,13 @@ console.debug("Defining NOC.inv.sensorprofile.Application");
 Ext.define("NOC.inv.sensorprofile.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.TagsField",
+    "NOC.core.label.LabelField",
+    "NOC.core.ListFormField",
+    "NOC.main.handler.LookupField",
     "NOC.inv.sensorprofile.Model",
     "NOC.wf.workflow.LookupField",
-    "NOC.main.style.LookupField"
+    "NOC.main.style.LookupField",
+    "NOC.pm.measurementunits.LookupField"
   ],
   model: "NOC.inv.sensorprofile.Model",
   search: true,
@@ -28,9 +31,9 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           flex: 1
         },
         {
-          text: __("Tags"),
-          dataIndex: "tags",
-          renderer: NOC.render.Tags,
+          text: __("Labels"),
+          dataIndex: "labels",
+          renderer: NOC.render.LabelField,
           width: 100
         }
       ],
@@ -63,6 +66,30 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           allowBlank: true
         },
         {
+          name: "units",
+          xtype: "pm.measurementunits.LookupField",
+          fieldLabel: __("Sensor Measurement Units"),
+          allowBlank: true
+        },
+        {
+          name: "dynamic_classification_policy",
+          xtype: "combobox",
+          fieldLabel: __("Dynamic Classification Policy"),
+          allowBlank: false,
+          queryMode: "local",
+          displayField: "label",
+          valueField: "id",
+          store: {
+            fields: ["id", "label"],
+            data: [
+                {id: "D", label: "Disable"},
+                {id: "R", label: "By Rule"},
+            ]
+          },
+          defaultValue: "R",
+          uiStyle: "medium"
+        },
+        {
           name: "enable_collect",
           xtype: "checkbox",
           boxLabel: __("Enable Collect"),
@@ -76,11 +103,51 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           uiStyle: "medium"
         },
         {
-          name: "tags",
-          fieldLabel: __("Tags"),
-          xtype: "tagsfield",
-          allowBlank: true
-        }
+          name: "labels",
+          xtype: "labelfield",
+          fieldLabel: __("Labels"),
+          allowBlank: true,
+          query: {
+            "enable_sensorprofile": true
+          }
+          },
+          {
+            name: "match_rules",
+            xtype: "listform",
+            fieldLabel: __("Match Rules"),
+            items: [
+                {
+                  name: "dynamic_order",
+                  xtype: "numberfield",
+                  fieldLabel: __("Dynamic Order"),
+                  allowBlank: true,
+                  defaultValue: 0,
+                  uiStyle: "small"
+                },
+                {
+                  name: "labels",
+                  xtype: "labelfield",
+                  fieldLabel: __("Match Labels"),
+                  allowBlank: false,
+                  isTree: true,
+                  pickerPosition: "down",
+                  uiStyle: "extra",
+                  query: {
+                    "allow_matched": true
+                  }
+                },
+                {
+                  name: "handler",
+                  xtype: "main.handler.LookupField",
+                  fieldLabel: __("Match Handler"),
+                  allowBlank: true,
+                  uiStyle: "medium",
+                  query: {
+                    "allow_match_rule": true
+                }
+                }
+              ]
+          }
       ]
     });
     me.callParent();

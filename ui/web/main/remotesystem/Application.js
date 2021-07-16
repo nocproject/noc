@@ -59,6 +59,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                     title: __("Extractors/Loaders"),
                     items: [
                         {
+                            name: "enable_address",
+                            xtype: "checkbox",
+                            boxLabel: __("Address")
+                        },
+                        {
                             name: "enable_admdiv",
                             xtype: "checkbox",
                             boxLabel: __("Administrative-Territorial Division")
@@ -72,6 +77,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_authprofile",
                             xtype: "checkbox",
                             boxLabel: __("Auth Profile")
+                        },
+                        {
+                            name: "enable_building",
+                            xtype: "checkbox",
+                            boxLabel: __("Building")
                         },
                         {
                             name: "enable_container",
@@ -119,6 +129,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             boxLabel: __("Service Profile")
                         },
                         {
+                            name: "enable_street",
+                            xtype: "checkbox",
+                            boxLabel: __("Street")
+                        },
+                        {
                             name: "enable_subscriber",
                             xtype: "checkbox",
                             boxLabel: __("Subscriber")
@@ -142,6 +157,11 @@ Ext.define("NOC.main.remotesystem.Application", {
                             name: "enable_project",
                             xtype: "checkbox",
                             boxLabel: __("Project")
+                        },
+                        {
+                            name: "enable_label",
+                            xtype: "checkbox",
+                            boxLabel: __("Labels")
                         }
                     ]
                 },

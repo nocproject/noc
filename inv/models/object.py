@@ -28,16 +28,17 @@ import cachetools
 from typing import Iterable, Tuple
 
 # NOC modules
-from noc.gis.models.layer import Layer
+from noc.gis.models.layer import Layer, DEFAULT_ZOOM
 from noc.core.mongo.fields import PlainReferenceField
-from noc.lib.utils import deep_merge
+from noc.core.copy import deep_merge
 from noc.core.middleware.tls import get_user
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
 from .objectmodel import ObjectModel
@@ -73,9 +74,10 @@ class ObjectAttr(EmbeddedDocument):
         return "%s.%s = %s" % (self.interface, self.attr, self.value)
 
 
+@Label.model
 @bi_sync
 @on_save
-@datastream
+@change
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "container"),
@@ -111,8 +113,9 @@ class Object(Document):
     point = PointField(auto_index=True)
     # Additional connection data
     connections = ListField(EmbeddedDocumentField(ObjectConnectionData))
-    #
-    tags = ListField(StringField())
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -193,7 +196,7 @@ class Object(Document):
             mos = get_coordless_objects(self)
             if mos:
                 ManagedObject.objects.filter(container__in=mos).update(
-                    x=x, y=y, default_zoom=self.layer.default_zoom
+                    x=x, y=y, default_zoom=self.layer.default_zoom if self.layer else DEFAULT_ZOOM
                 )
         if self._created:
             if self.container:
@@ -232,6 +235,20 @@ class Object(Document):
         if self.container:
             return self.container.get_path() + [self.id]
         return [self.id]
+
+    @property
+    def level(self) -> int:
+        """
+        Return level
+        :return:
+        """
+        if not self.container:
+            return 0
+        return len(self.get_path()) - 1  # self
+
+    @property
+    def has_children(self) -> bool:
+        return bool(Object.objects.filter(container=self.id))
 
     def get_nested_ids(self):
         """
@@ -694,7 +711,7 @@ class Object(Document):
         while c:
             if c.point and c.layer:
                 x, y = c.get_data_tuple("geopoint", ("x", "y"))
-                zoom = c.layer.default_zoom or 11
+                zoom = c.layer.default_zoom or DEFAULT_ZOOM
                 return x, y, zoom
             if c.container:
                 c = Object.get_by_id(c.container.id)
@@ -877,6 +894,10 @@ class Object(Document):
         else:
             q["value"] = address
         yield from cls.objects.filter(data__match=q)
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_object")
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

@@ -5,7 +5,7 @@
     "vendor__code": "ELTEX",
     "description": "PM100-48/12 (48V DC, 100W) Power Supply",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "internal Power slot",

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,23 +12,26 @@ from itertools import chain
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
-from typing import Optional
+from typing import Optional, List
+from pydantic import BaseModel
 
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
-from noc.core.model.fields import TagsField, PickledField, DocumentReferenceField
+from noc.core.model.fields import PickledField, DocumentReferenceField, PydanticField
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
+from noc.main.models.label import Label
 from noc.core.scheduler.job import Job
-from noc.core.defer import call_later
+from noc.core.defer import call_later, defer
 from noc.sa.interfaces.base import DictListParameter, ObjectIdParameter, BooleanParameter
 from noc.core.bi.decorator import bi_sync
 from noc.ip.models.prefixprofile import PrefixProfile
@@ -36,13 +39,23 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.main.models.extstorage import ExtStorage
 from noc.main.models.template import Template
-from noc.core.datastream.decorator import datastream
+from noc.core.change.decorator import change
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
+
+
+class MatchRule(BaseModel):
+    dynamic_order: int = 0
+    labels: List[str] = []
+    handler: Optional[str]
+
+
+class MatchRules(BaseModel):
+    __root__: List[MatchRule]
 
 
 m_valid = DictListParameter(
@@ -58,17 +71,20 @@ m_valid = DictListParameter(
 id_lock = Lock()
 
 
+@Label.match_labels("managedobjectprofile", allowed_op={"="})
+@Label.model
 @on_init
 @on_save
 @bi_sync
-@datastream
+@change
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "object_profile"),
         ("sa.ManagedObjectProfile", "cpe_profile"),
         ("sa.ManagedObjectSelector", "filter_object_profile"),
         ("inv.FirmwarePolicy", "object_profile"),
-    ]
+    ],
+    clean_lazy_labels="managedobjectprofile",
 )
 class ManagedObjectProfile(NOCModel):
     class Meta(object):
@@ -591,7 +607,26 @@ class ManagedObjectProfile(NOCModel):
     #
     metrics = PickledField(blank=True)
     #
-    tags = TagsField("Tags", null=True, blank=True)
+    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(
+        models.CharField(max_length=250), blank=True, null=True, default=list
+    )
+    # Dynamic Profile Classification
+    dynamic_classification_policy = models.CharField(
+        _("Dynamic Classification Policy"),
+        max_length=1,
+        choices=[("D", "Disable"), ("R", "By Rule")],
+        default="R",
+    )
+    match_rules = PydanticField(
+        _("Match Dynamic Rules"),
+        schema=MatchRules,
+        blank=True,
+        null=True,
+        default=list,
+        # ? Internal validation not worked with JSON Field
+        # validators=[match_rules_validate],
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -626,7 +661,7 @@ class ManagedObjectProfile(NOCModel):
                 "enable_box_discovery",
                 "enable_periodic_discovery",
                 "enable_ping",
-                "tags",
+                "labels",
             }
         ):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
@@ -687,8 +722,9 @@ class ManagedObjectProfile(NOCModel):
         )
 
         if box_changed or periodic_changed:
-            call_later(
+            defer(
                 "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
+                key=self.id,
                 profile_id=self.id,
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
@@ -739,6 +775,9 @@ class ManagedObjectProfile(NOCModel):
                 self.metrics = m_valid.clean(self.metrics)
             except ValueError as e:
                 raise ValueError(e)
+        if self.match_rules:
+            # Not calling validate(). Probably on NOCModel
+            MatchRules.parse_obj(self.match_rules)
         super().save(*args, **kwargs)
 
     @classmethod
@@ -762,6 +801,14 @@ class ManagedObjectProfile(NOCModel):
                     r.add(mop.periodic_discovery_interval)
         return max(r) if r else 0
 
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_managedobjectprofile")
+
+    @classmethod
+    def iter_lazy_labels(cls, object_profile: "ManagedObjectProfile"):
+        yield f"noc::managedobjectprofile::{object_profile.name}::="
+
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
@@ -771,6 +818,9 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
             "id", "is_managed", "pool"
         ):
             yield o_id, is_managed, pool_cache[pool_id]
+
+    # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
+    from .managedobject import ManagedObject  # noqa
 
     try:
         profile = ManagedObjectProfile.objects.get(id=profile_id)

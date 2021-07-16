@@ -6,7 +6,7 @@
     "description": "Alcatel 7750 Control Forwarding Module (CFM)",
     "connection_rule__name": "Alcatel | 7450",
     "cr_context": "CFM",
-    "tags": ["chassis", "sup"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup"],
     "connections": [
         {
             "description": "Chassis connection",

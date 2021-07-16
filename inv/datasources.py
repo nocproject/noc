@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Inventory module datasources
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ from noc.lib.datasource import DataSource
 from noc.inv.models.interface import Interface
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.sa.interfaces.base import MACAddressParameter
 
 
@@ -60,17 +61,33 @@ class InterfaceDS(DataSource):
 class ChassisDS(DataSource):
     _name = "inv.ChassisDS"
 
-    def __init__(self, mac=None, ipv4=None):
-        super().__init__()
+    def __init__(self, mac=None, ipv4=None, vrf=None):
         self._object = None
         if mac:
             mac = MACAddressParameter.clean(mac)
             self._object = DiscoveryID.find_object(mac)
         if ipv4:
-            if SubInterface.objects.filter(ipv4_addresses=ipv4).count() == 1:
-                self._object = (
-                    SubInterface.objects.filter(ipv4_addresses=ipv4).first().managed_object
-                )
+            if vrf is None or vrf == "default":
+                if SubInterface.objects.filter(ipv4_addresses=ipv4).count() == 1:
+                    self._object = (
+                        SubInterface.objects.filter(ipv4_addresses=ipv4).first().managed_object
+                    )
+            else:
+                if ForwardingInstance.objects.filter(name=vrf).count() == 1:
+                    forw_inst = ForwardingInstance.objects.filter(name=vrf).first()
+                    if (
+                        SubInterface.objects.filter(
+                            ipv4_addresses=ipv4, forwarding_instance=forw_inst
+                        ).count()
+                        == 1
+                    ):
+                        self._object = (
+                            SubInterface.objects.filter(
+                                ipv4_addresses=ipv4, forwarding_instance=forw_inst
+                            )
+                            .first()
+                            .managed_object
+                        )
 
     @property
     def object(self):

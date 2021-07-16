@@ -6,5 +6,7 @@
     "field_name": "summary",
     "field_type": "UInt32",
     "description": "Total active sessions on the box",
-    "measure": "sessions"
+    "measure": "sessions",
+    "units__code": "1",
+    "scale__code": "1"
 }

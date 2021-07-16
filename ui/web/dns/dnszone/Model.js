@@ -70,7 +70,7 @@ Ext.define("NOC.dns.dnszone.Model", {
             persist: false
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         }
     ]

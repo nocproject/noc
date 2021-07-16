@@ -5,7 +5,7 @@
     "vendor__code": "CISCO",
     "description": "Cisco ME 3600X/ME 3800X Series field- replaceable DC power supply and fan module",
     "cr_context": "PSU",
-    "tags": ["psu"],
+    "labels": ["noc::inv::psu"],
     "connections": [
         {
             "description": "Chassis connection",

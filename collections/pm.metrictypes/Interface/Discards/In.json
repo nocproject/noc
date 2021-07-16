@@ -6,5 +6,7 @@
     "field_name": "discards_in",
     "field_type": "UInt32",
     "description": "Discard packet on input interface",
-    "measure": "packet/s"
+    "measure": "packet/s",
+    "units__code": "pps",
+    "scale__code": "1"
 }

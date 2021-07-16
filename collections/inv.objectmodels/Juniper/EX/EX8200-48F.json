@@ -4,7 +4,7 @@
     "uuid": "2036098a-8959-457e-b00c-f46739eda52b",
     "vendor__code": "JUNIPER",
     "description": "48-port 100/1000BASE-F line card",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "ge-X/0/0 port",

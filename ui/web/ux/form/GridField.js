@@ -123,7 +123,7 @@ Ext.define("Ext.ux.form.GridField", {
     getSubmitData: function() {
         var me = this,
             data = null;
-        if(!me.disabled && me.submitValue) {
+        if (!me.disabled && me.submitValue) {
             data = {};
             data[me.getName()] = me.getValue();
         }

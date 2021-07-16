@@ -6,7 +6,7 @@
     "description": "S8508",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "LSB Slot#1",

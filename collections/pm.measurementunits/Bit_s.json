@@ -1,0 +1,19 @@
+{
+    "name": "Bit/s",
+    "$collection": "pm.measurementunits",
+    "uuid": "ae068b8b-1c6b-4949-afc0-0e5010a777a4",
+    "code": "bit/s",
+    "description": "Bit rate (bitrate or as a variable R) is the number of bits that are conveyed or processed per unit of time",
+    "label": "bit/s",
+    "dashboard_label": "bps",
+    "convert_from": [
+        {
+            "expr": "delta / time_delta",
+            "unit__code": "bit"
+        },
+        {
+            "expr": "delta * 8 / time_delta",
+            "unit__code": "byte"
+        }
+    ]
+}

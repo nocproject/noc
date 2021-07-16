@@ -4,7 +4,7 @@
     "uuid": "2a4a146d-8b8c-4509-b026-b25ff398e5b7",
     "vendor__code": "FORCE10",
     "description": "2-port 10 GbE XFP module",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "XFP Port 0",

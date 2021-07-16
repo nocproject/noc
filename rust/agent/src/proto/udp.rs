@@ -5,36 +5,36 @@
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
+use crate::error::AgentError;
 use crate::proto::frame::{FrameReader, FrameWriter};
 use bytes::BytesMut;
-use std::error::Error;
 use std::net::SocketAddr;
 use tokio::net::{ToSocketAddrs, UdpSocket};
 
 #[derive(Debug)]
-pub struct UDPConnection {
+pub struct UdpConnection {
     socket: UdpSocket,
     buffer: BytesMut,
 }
 
 const UDP_BUFF_CAPACITY: usize = 16384;
 
-impl UDPConnection {
-    pub async fn bind<A: ToSocketAddrs>(addr: A) -> std::io::Result<UDPConnection> {
+impl UdpConnection {
+    pub async fn bind<A: ToSocketAddrs>(addr: A) -> std::io::Result<UdpConnection> {
         let socket = UdpSocket::bind(addr).await?;
-        Ok(UDPConnection {
+        Ok(UdpConnection {
             socket,
             buffer: BytesMut::with_capacity(UDP_BUFF_CAPACITY),
         })
     }
-    pub fn local_port(&self) -> Result<u16, Box<dyn Error>> {
+    pub fn local_port(&self) -> Result<u16, AgentError> {
         Ok(self.socket.local_addr()?.port())
     }
-    pub fn set_ttl(&self, ttl: u32) -> Result<(), Box<dyn Error>> {
+    pub fn set_ttl(&self, ttl: u32) -> Result<(), AgentError> {
         self.socket.set_ttl(ttl)?;
         Ok(())
     }
-    pub async fn recv_from<T: FrameReader>(&mut self) -> Result<(T, SocketAddr), Box<dyn Error>> {
+    pub async fn recv_from<T: FrameReader>(&mut self) -> Result<(T, SocketAddr), AgentError> {
         self.buffer.clear();
         loop {
             self.socket.readable().await?;
@@ -47,7 +47,7 @@ impl UDPConnection {
                     continue;
                 }
                 Err(e) => {
-                    return Err(Box::new(e));
+                    return Err(AgentError::NetworkError(e.to_string()));
                 }
             }
         }
@@ -56,7 +56,7 @@ impl UDPConnection {
         &mut self,
         frame: &T,
         addr: SocketAddr,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), AgentError> {
         self.buffer.clear();
         frame.write_bytes(&mut self.buffer)?;
         self.socket.send_to(&self.buffer, addr).await?;

@@ -5,6 +5,8 @@
     "scope__name": "Interface",
     "field_name": "status_admin",
     "field_type": "UInt8",
-    "description": "Interface admin status",
-    "measure": ""
+    "description": "Interface admin state",
+    "measure": "",
+    "units__code": "ifaceoper",
+    "scale__code": "1"
 }

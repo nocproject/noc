@@ -4,7 +4,7 @@
     "uuid": "8e8f10cc-8a08-4ab7-ae68-d8f9c6322080",
     "vendor__code": "HUAWEI",
     "description": "CX22ETPB,Extend Channel Card,1*1",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "Rear slot",

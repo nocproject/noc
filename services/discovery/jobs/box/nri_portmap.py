@@ -65,6 +65,8 @@ class NRIPortmapperCheck(DiscoveryCheck):
             self.logger.debug("[%s] Port mapping %s <-> %s", nri, d["name"], nri_name)
             if not nri_name:
                 self.logger.info("[%s] Cannot map port name '%s'", nri, d["name"])
+                if d.get("nri_name"):
+                    bulk += [UpdateOne({"_id": d["_id"]}, {"$unset": {"nri_name": 1}})]
             elif d.get("nri_name") != nri_name:
                 self.logger.info("[%s] Mapping '%s' to '%s'", nri, nri_name, d["name"])
                 bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"nri_name": nri_name}})]

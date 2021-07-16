@@ -4,7 +4,7 @@
     "uuid": "3bcd0afb-5352-44e3-b47f-ac1679c6090f",
     "vendor__code": "JUNIPER",
     "description": "8-port 10GbE SFP+ line card",
-    "tags": ["lc", "port"],
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "xe-X/0/0",

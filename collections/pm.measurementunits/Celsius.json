@@ -2,26 +2,20 @@
     "name": "Celsius",
     "$collection": "pm.measurementunits",
     "uuid": "1485097a-e3c8-46f9-bf62-bf676df36150",
+    "code": "C",
     "description": "Temperature measurement",
     "label": "C",
-    "dashboard_label": "C",
-    "scale_type": "d",
-    "alt_units": [
+    "dashboard_label": "celsius",
+    "dashboard_sr_color": 16440874,
+    "convert_from": [
         {
-            "dashboard_label": "K",
-            "description": "Kelvin degree",
-            "from_primary": "x + 273",
-            "label": "K",
-            "name": "Kelvin",
-            "to_primary": "x - 273"
+            "expr": "x - 273.15",
+            "unit__code": "K"
         },
         {
-            "dashboard_label": "F",
-            "description": "Farenheit degreee",
-            "from_primary": "(x - 32.0) * 5.0 / 9.0",
-            "label": "F",
-            "name": "Farenheit",
-            "to_primary": "x * 9.0 / 5.0 + 32.0"
+            "expr": "(x - 32) * 5 / 9",
+            "unit__code": "F"
         }
-    ]
+    ],
+    "base_unit__code": "K"
 }

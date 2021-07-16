@@ -63,6 +63,7 @@ class Script(BaseScript):
         cmd = self.snmp.get(mib["HUAWEI-XPON-MIB::hwGponDeviceDbaAssignmentMode", 0])
         return bool(cmd)
 
+    @false_on_snmp_error
     def has_slot_temperature(self):
         r = []
         for oid, value in self.snmp.getnext("1.3.6.1.4.1.2011.6.3.3.2.1.13"):

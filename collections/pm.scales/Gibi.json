@@ -1,0 +1,9 @@
+{
+    "name": "Gibi",
+    "$collection": "pm.scales",
+    "uuid": "854ca217-fe81-4c0e-a450-7ba8e002396e",
+    "code": "Gi",
+    "label": "Gi",
+    "base": 2,
+    "exp": 30
+}

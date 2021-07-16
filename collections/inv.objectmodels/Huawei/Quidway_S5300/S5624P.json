@@ -6,7 +6,7 @@
     "description": "S5624P Layer 3 Ethernet switch with 24 10/100/1000 BASE-TX ports and 4*1000 BASE-X SFP(Combo) (AC 110/220V, RPS DC -48V)",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
-    "tags": ["chassis", "sup", "psu", "fabric", "fan", "port"],
+    "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],
     "connections": [
         {
             "description": "Power outlet",

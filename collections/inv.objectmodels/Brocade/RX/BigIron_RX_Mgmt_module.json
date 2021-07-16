@@ -6,7 +6,7 @@
     "description": "0 port management module\n",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
-    "tags": ["lc", "sup"],
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
     "connections": [
         {
             "description": "mgmt connector",

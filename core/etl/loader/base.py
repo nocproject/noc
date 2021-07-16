@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
 import os
 import logging
 import re
@@ -73,6 +74,14 @@ class BaseLoader(object):
     discard_deferred = False
     # Ignore auto-generated unique fields
     ignore_unique = {"bi_id"}
+    # Array fields need merge values
+    incremental_change = {"labels", "static_client_groups", "static_service_groups"}
+    # Workflow fields
+    workflow_state_sync = False
+    workflow_fields = {"state", "state_changed", "event"}
+    workflow_event_model = False
+    workflow_add_event = "seen"
+    workflow_delete_event = "missed"
 
     REPORT_INTERVAL = 1000
 
@@ -88,6 +97,7 @@ class BaseLoader(object):
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(self.import_dir, "mappings.csv")
         self.mappings = {}
+        self.wf_state_mappings = {}
         self.new_state_path = None
         self.c_add = 0
         self.c_change = 0
@@ -124,6 +134,8 @@ class BaseLoader(object):
         else:
             self.unique_field = None
         self.has_remote_system: bool = hasattr(self.model, "remote_system")
+        if self.workflow_state_sync:
+            self.load_wf_state_mappings()
 
     @property
     def is_document(self):
@@ -149,6 +161,13 @@ class BaseLoader(object):
             for k, v in reader:
                 self.mappings[self.clean_str(k)] = v
         self.logger.info("%d mappings restored", len(self.mappings))
+
+    def load_wf_state_mappings(self):
+        from noc.wf.models.state import State
+
+        self.logger.info("Loading Workflow states")
+        for ws in State.objects.filter():
+            self.wf_state_mappings[(str(ws.workflow.id), ws.name)] = ws
 
     def get_new_state(self) -> Optional[TextIOWrapper]:
         """
@@ -328,11 +347,6 @@ class BaseLoader(object):
         data structures
         """
         self.logger.debug("Create object")
-        for k, nv in v.items():
-            if k == "tags":
-                # Merge tags
-                nv = sorted("%s:%s" % (self.system.name, x) for x in nv)
-                v[k] = nv
         o = self.model(**v)
         try:
             o.save()
@@ -350,7 +364,9 @@ class BaseLoader(object):
             o.save()
         return o
 
-    def change_object(self, object_id: str, v: Dict[str, Any]):
+    def change_object(
+        self, object_id: str, v: Dict[str, Any], inc_changes: Dict[str, Dict[str, List]] = None
+    ):
         """
         Change object with attributes
         """
@@ -362,17 +378,9 @@ class BaseLoader(object):
             self.logger.error("Cannot change %s:%s: Does not exists", self.name, object_id)
             return None
         for k, nv in v.items():
-            if k == "tags":
-                # Merge tags
-                ov = o.tags or []
-                nv = sorted(
-                    [
-                        x
-                        for x in ov
-                        if not (x.startswith(self.system.name + ":") or x == "remote:deleted")
-                    ]
-                    + ["%s:%s" % (self.system.name, x) for x in nv]
-                )
+            if inc_changes and k in inc_changes:
+                ov = getattr(o, k, [])
+                nv = list(set(ov).union(set(inc_changes[k]["add"])) - set(inc_changes[k]["remove"]))
             setattr(o, k, nv)
         o.save()
         return o
@@ -383,9 +391,10 @@ class BaseLoader(object):
         """
         self.logger.debug("Add: %s", item.json())
         v = self.clean(item)
-        # @todo: Check record is already exists
         if "id" in v:
             del v["id"]
+        for fn in set(v).intersection(self.workflow_fields):
+            del v[fn]
         o = self.find_object(v)
         if o:
             self.c_change += 1
@@ -397,10 +406,16 @@ class BaseLoader(object):
                     continue
                 if getattr(o, fn) != nv:
                     vv[fn] = nv
-            self.change_object(o.id, vv)
+            o = self.change_object(o.id, vv)
         else:
             self.c_add += 1
             o = self.create_object(v)
+            if self.workflow_event_model:
+                o.fire_event(self.workflow_add_event)
+        if self.workflow_state_sync:
+            self.change_workflow(
+                o, getattr(item, "state", None), getattr(item, "state_changed", None)
+            )
         self.set_mappings(item.id, o.id)
 
     def on_change(self, o: BaseModel, n: BaseModel):
@@ -411,15 +426,25 @@ class BaseLoader(object):
         self.c_change += 1
         nv = self.clean(n)
         changes = {"remote_system": nv["remote_system"], "remote_id": nv["remote_id"]}
+        incremental_changes = {}
         ov = self.clean(o)
         for fn in self.data_model.__fields__:
-            if fn == "id":
+            if fn == "id" or fn in self.workflow_fields:
                 continue
             if ov[fn] != nv[fn]:
                 self.logger.debug("   %s: %s -> %s", fn, ov[fn], nv[fn])
                 changes[fn] = nv[fn]
+                if fn in self.incremental_change:
+                    incremental_changes[fn] = {
+                        "add": list(set(nv[fn]) - set(ov[fn])),
+                        "remove": list(set(ov[fn]) - set(nv[fn])),
+                    }
         if n.id in self.mappings:
-            self.change_object(self.mappings[n.id], changes)
+            o = self.change_object(self.mappings[n.id], changes, inc_changes=incremental_changes)
+            if self.workflow_state_sync:
+                self.change_workflow(
+                    o, getattr(n, "state", None), getattr(n, "state_changed", None)
+                )
         else:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
 
@@ -428,6 +453,14 @@ class BaseLoader(object):
         Delete record
         """
         self.pending_deletes += [(item.id, item)]
+
+    def change_workflow(self, o, state: str, changed_date: Optional[datetime.datetime] = None):
+        if not o:
+            return
+        state = self.clean_wf_state(o.profile.workflow, state)
+        if state and o.state != state:
+            self.logger.debug("Change workflow state: %s -> %s", o.state, state)
+            o.set_state(state, changed_date)
 
     def purge(self):
         """
@@ -438,7 +471,10 @@ class BaseLoader(object):
             self.c_delete += 1
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
-                obj.delete()
+                if self.workflow_event_model:
+                    obj.fire_event(self.workflow_delete_event)
+                else:
+                    obj.delete()
             except ValueError as e:  # Referred Error
                 self.logger.error("%s", str(e))
                 self.referred_errors += [(r_id, msg)]
@@ -517,7 +553,7 @@ class BaseLoader(object):
         return value
 
     def clean_bool(self, value: str) -> Optional[bool]:
-        if value == "":
+        if value == "" or value is None:
             return None
         try:
             return int(value) != 0
@@ -553,6 +589,15 @@ class BaseLoader(object):
                 self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
                 raise self.Deferred()
             return self.chain.cache[r_model, value]
+
+    def clean_wf_state(self, workflow, state: str):
+        if not state:
+            return None
+        try:
+            return self.wf_state_mappings[(str(workflow.id), state)]
+        except KeyError:
+            self.logger.error("Unknown Workflow state value %s:%s", workflow, state)
+            raise ValueError(f"Unknown Workflow state value {workflow}:{state}", workflow, state)
 
     def set_mappings(self, rv, lv):
         self.logger.debug("Set mapping remote: %s, local: %s", rv, lv)

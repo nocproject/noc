@@ -32,7 +32,7 @@ class Script(GetMetricsScript):
             for q in range(1, 8):
                 oids[
                     f"1.3.6.1.4.1.35265.1.23.1.8.1.2.1.1.1.{self.QOS_OIDS_MAP[mc.metric][0]}.{mc.ifindex}.{q}.0"
-                ] = (mc, list(mc.path) + [str(q), "0"])
+                ] = (mc, list(mc.labels) + [f"noc::queue::{str(q)}", "noc::traffic_class::0"])
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -42,14 +42,14 @@ class Script(GetMetricsScript):
         for r in results:
             if not results[r]:
                 continue
-            mc, path = oids[r]
+            mc, labels = oids[r]
             _, mtype, scale = self.QOS_OIDS_MAP[mc.metric]
             self.set_metric(
-                id=(mc.metric, mc.path),
+                id=(mc.metric, mc.labels),
                 metric=mc.metric,
                 value=float(results[r]),
                 ts=ts,
-                path=path,
+                labels=labels,
                 multi=True,
                 type=mtype,
                 scale=scale,

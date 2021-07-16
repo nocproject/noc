@@ -8,7 +8,7 @@ console.debug("Defining NOC.pm.measurementunits.Application");
 
 Ext.define("NOC.pm.measurementunits.Application", {
   extend: "NOC.core.ModelApplication",
-  requires: ["NOC.pm.measurementunits.Model"],
+  requires: ["NOC.pm.measurementunits.Model", "Ext.ux.form.ColorField", "NOC.pm.measurementunits.LookupField"],
   model: "NOC.pm.measurementunits.Model",
   search: true,
 
@@ -26,8 +26,23 @@ Ext.define("NOC.pm.measurementunits.Application", {
     Ext.apply(me, {
       columns: [
         {
-          text: "Name",
+          text: __("Name"),
           dataIndex: "name",
+          width: 100
+        },
+        {
+          text: __("Code"),
+          dataIndex: "code",
+          width: 100
+        },
+        {
+          text: __("Base"),
+          dataIndex: "base_unit",
+          renderer: NOC.render.Lookup("base_unit")
+        },
+        {
+          text: __("Description"),
+          dataIndex: "description",
           flex: 1
         }
       ],
@@ -46,11 +61,24 @@ Ext.define("NOC.pm.measurementunits.Application", {
           allowBlank: true
         },
         {
+          name: "base_unit",
+          xtype: "pm.measurementunits.LookupField",
+          fieldLabel: __("Base Measurement Units"),
+          allowBlank: true
+        },
+        {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
           allowBlank: true,
           uiStyle: "extra"
+        },
+        {
+          name: "code",
+          xtype: "textfield",
+          fieldLabel: __("Code"),
+          allowBlank: false,
+          uiStyle: "medium"
         },
         {
           name: "label",
@@ -63,56 +91,33 @@ Ext.define("NOC.pm.measurementunits.Application", {
           name: "dashboard_label",
           xtype: "textfield",
           fieldLabel: __("Dashboard Label"),
-          allowBlank: false,
           uiStyle: "medium"
         },
         {
-          name: "scale_type",
-          xtype: "combobox",
-          fieldLabel: __("Scale Type"),
-          allowBlank: false,
-          uiStyle: "medium",
-          store: [["d", __("Decimal Scale")], ["b", __("Binary Scale")]]
+          name: "dashboard_sr_color",
+          xtype: "colorfield",
+          fieldLabel: __("Dashboard Series Color"),
+          allowBlank: true,
+          uiStyle: "medium"
         },
         {
-          name: "alt_units",
+          name: "convert_from",
           xtype: "gridfield",
-          fieldLabel: __("Alternative Units"),
+          fieldLabel: __("Convert form for BaseUnit"),
           allowBlank: true,
           columns: [
             {
-              text: __("Name"),
-              dataIndex: "name",
-              width: 100,
-              editor: "textfield"
+              text: __("Measurment Unit"),
+              dataIndex: "unit",
+              width: 200,
+              editor: {
+                xtype: "pm.measurementunits.LookupField"
+              },
+              renderer: NOC.render.Lookup("unit")
             },
             {
-              text: __("Description"),
-              dataIndex: "description",
-              width: 250,
-              editor: "textfield"
-            },
-            {
-              text: __("Label"),
-              dataIndex: "label",
-              width: 75,
-              editor: "textfield"
-            },
-            {
-              text: __("Dash. Label"),
-              dataIndex: "dashboard_label",
-              width: 75,
-              editor: "textfield"
-            },
-            {
-              text: __("From Primary"),
-              dataIndex: "from_primary",
-              flex: 1,
-              editor: "textfield"
-            },
-            {
-              text: __("To Primary"),
-              dataIndex: "to_primary",
+              text: __("Expresseion"),
+              dataIndex: "expr",
               flex: 1,
               editor: "textfield"
             }

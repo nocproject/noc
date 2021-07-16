@@ -320,7 +320,7 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
-            name: "tags",
+            name: "labels",
             type: "auto"
         },
         {
@@ -485,6 +485,11 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "confdb_raw_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "dynamic_classification_policy",
             type: "string",
             defaultValue: "P"
         },

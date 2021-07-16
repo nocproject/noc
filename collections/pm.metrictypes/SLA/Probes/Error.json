@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Probes | Error",
+    "$collection": "pm.metrictypes",
+    "uuid": "96dc2388-5f30-48e3-b4dd-ba447bd4854a",
+    "scope__name": "SLA",
+    "field_name": "probes_error",
+    "field_type": "UInt32",
+    "description": "The number of occasions when a jitter operation could not be initiated because an internal error",
+    "measure": "*",
+    "units__code": "1",
+    "scale__code": "1"
+}

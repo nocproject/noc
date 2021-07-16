@@ -4,7 +4,7 @@
     "uuid": "4e7a1977-8603-4882-9bef-442a725c8a2b",
     "vendor__code": "JUNIPER",
     "description": "Switch Fabric for EX8216",
-    "tags": ["lc", "fabric"],
+    "labels": ["noc::inv::lc", "noc::inv::fabric"],
     "connections": [
         {
             "description": "Chassis connection",

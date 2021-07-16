@@ -14,21 +14,37 @@
             "model": "inv.Object"
         }
     ],
-    "enable_timedelta": false,
+    "enable_timedelta": true,
     "labels": [
         {
             "is_order_key": false,
             "is_path": true,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::probe::*"
+            "label": "noc::sla::group::*",
+            "store_column": "group"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::sla::name::*",
+            "store_column": "name"
         },
         {
             "is_order_key": false,
-            "is_path": true,
+            "is_path": false,
             "is_primary_key": false,
             "is_required": false,
-            "label": "noc::test::*"
+            "label": "noc::sla::tag::*"
+        },
+        {
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::sla::target::*"
         }
     ]
 }

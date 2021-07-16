@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ from noc.sa.interfaces.base import (
     StringParameter,
     StringListParameter,
 )
-from noc.maintenance.models.maintenance import Maintenance
+from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
@@ -411,7 +411,7 @@ class AlarmApplication(ExtApplication):
                 d["address_path"] = None
             else:
                 d["address_path"] = ", ".join(self.location(mo.container.id))
-        d["tags"] = mo.tags
+        d["tags"] = mo.labels
         # Log
         if alarm.log:
             d["log"] = [
@@ -712,14 +712,35 @@ class AlarmApplication(ExtApplication):
         r = [x for x in r if x]
         return "".join(r)
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/escalate/", method=["GET"], api=True, access="escalate")
-    def api_escalation_alarm(self, request, id):
-        alarm = get_alarm(id)
-        if alarm.status == "A":
-            AlarmEscalation.watch_escalations(alarm)
-            return {"status": True}
-        else:
-            return {"status": False, "error": "The alarm is not active at the moment"}
+    @view(
+        url=r"^escalate/",
+        method=["POST"],
+        api=True,
+        access="escalate",
+        validate={"ids": StringListParameter(required=True)},
+    )
+    def api_escalation_alarm(self, request, ids):
+        alarms = list(ActiveAlarm.objects.filter(id__in=ids))
+        if not alarms:
+            return self.response_not_found()
+        for alarm in alarms:
+            if alarm.escalation_tt:
+                alarm.log_message(
+                    "Already escalated with TT #%s" % alarm.escalation_tt,
+                    source=request.user.username,
+                )
+            elif alarm.root:
+                alarm.log_message(
+                    "Alarm is not root cause, skipping escalation",
+                    source=request.user.username,
+                )
+            else:
+                alarm.log_message(
+                    "Alarm has been escalated by %s" % request.user.username,
+                    source=request.user.username,
+                )
+                AlarmEscalation.watch_escalations(alarm, force=True)
+        return {"status": True}
 
     def location(self, id):
         """
@@ -803,22 +824,17 @@ class AlarmApplication(ExtApplication):
             for x in data:
                 x["isInMaintenance"] = x["managed_object"] in mtc
         else:
-            mos = [x["managed_object"] for x in data]
-            pipeline = [
-                {"$match": {"affected_objects.object": {"$in": mos}}},
-                {"$unwind": "$affected_objects"},
-                {
-                    "$project": {
-                        "_id": 0,
-                        "managed_object": "$affected_objects.object",
-                        "interval": ["$start", "$stop"],
-                    }
-                },
-                {"$group": {"_id": "$managed_object", "intervals": {"$push": "$interval"}}},
-            ]
-            mtc = {
-                x["_id"]: x["intervals"] for x in Maintenance._get_collection().aggregate(pipeline)
-            }
+            mos = set([x["managed_object"] for x in data])
+            mtc = {}
+            for mo in list(mos):
+                interval = []
+                for ao in AffectedObjects._get_collection().find(
+                    {"affected_objects.object": {"$eq": mo}}, {"_id": 0, "maintenance": 1}
+                ):
+                    m = Maintenance.get_by_id(ao["maintenance"])
+                    interval += [(m.start, m.stop)]
+                if interval:
+                    mtc[mo] = interval
             for x in data:
                 if x["managed_object"] in mtc:
                     left, right = list(zip(*mtc[x["managed_object"]]))

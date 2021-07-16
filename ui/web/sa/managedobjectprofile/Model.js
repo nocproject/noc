@@ -815,6 +815,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
 
         },
         {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
             name: "beef_storage",
             type: "string"
         },
@@ -895,6 +900,14 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "abduct_detection_threshold",
             type: "integer",
             defaultValue: 0
+        },
+        {
+            name: "labels",
+            type: "auto"
+        },
+        {
+            name: "match_rules",
+            type: "auto"
         }
     ]
 });

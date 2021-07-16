@@ -9,12 +9,12 @@
 import pytest
 
 # NOC modules
-from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.bi.dictionaries.loader import loader
 
 
-@pytest.fixture(params=list(Dictionary.iter_cls()))
+@pytest.fixture(params=list(loader.iter_classes()))
 def dictionary(request):
-    return request.param
+    return loader[request.param]
 
 
 @pytest.mark.dependency(name="test_dictionary_meta")

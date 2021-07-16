@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -43,12 +43,12 @@ class Script(BaseScript):
                 descriptions[ifname] = descr
         ip_addresses = {}
         c = self.cli("show ip interfaces", cached=True)
-        for ip, ifname, itype in parse_table(c):
-            ip_addresses[ifname] = ip
+        for line in parse_table(c):
+            ip_addresses[line[1]] = line[0]
         ipv6_addresses = {}
         c = self.cli("show ipv6 interfaces", cached=True)
-        for ip, ifname, itype in parse_table(c):
-            ipv6_addresses[ifname] = ip
+        for line in parse_table(c):
+            ipv6_addresses[line[1]] = line[0]
         interfaces = []
         c = self.cli("show interfaces status", cached=True)
         # ESR-12V ver.1.0.9 produce random empty lines

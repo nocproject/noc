@@ -201,7 +201,7 @@ class EventApplication(ExtApplication):
         d["managed_object_version"] = mo.version.version if mo.version else ""
         d["segment"] = mo.segment.name
         d["segment_id"] = str(mo.segment.id)
-        d["tags"] = mo.tags
+        d["tags"] = mo.labels
         # Log
         if event.log:
             dd["log"] = [

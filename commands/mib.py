@@ -268,7 +268,7 @@ class Command(BaseCommand):
         with open(path, "rb") as f:
             data = f.read()
         try:
-            r = self.svc.compile(data)
+            r = self.svc.compile(MIB.guess_encoding(data))
             if r.get("status"):
                 return True
             if r.get("code") == ERR_MIB_MISSED:

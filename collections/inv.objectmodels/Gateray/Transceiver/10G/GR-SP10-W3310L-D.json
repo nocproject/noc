@@ -5,7 +5,7 @@
     "vendor__code": "GATERAY",
     "description": "GateRay SFP+ WDM transceiver 10km (1270 rx, 1330 tx) with ddm",
     "cr_context": "XCVR",
-    "tags": ["xcvr"],
+    "labels": ["noc::inv::xcvr"],
     "connections": [
         {
             "description": "SFP Connector",

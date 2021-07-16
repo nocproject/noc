@@ -6,7 +6,7 @@
     "description": "12-port ADSL2+ Compact DSLAM",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
-    "tags": ["chassis"],
+    "labels": ["noc::inv::chassis"],
     "connections": [
         {
             "description": "USER 1-12 PSTN 1-12",

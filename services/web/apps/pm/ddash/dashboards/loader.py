@@ -22,6 +22,15 @@ class PMDashboardLoader(BaseLoader):
     base_cls = BaseDashboard
     base_path = ("services", "web", "apps", "pm", "ddash", "dashboards")
     ignored_names = {"base", "loader", "jinja"}
+    caps_map = {}
+
+    def __init__(self):
+        super().__init__()
+        for name in self.find_classes():
+            r = self[name]
+            caps = getattr(r, "has_capability", None)
+            if caps:
+                self.caps_map[caps] = r
 
 
 # Create singleton object

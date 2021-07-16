@@ -14,7 +14,6 @@ from noc.core.scheduler.scheduler import Scheduler
 
 class SchedulerService(TornadoService):
     name = "scheduler"
-    leader_group_name = "scheduler"
     leader_lock_name = "scheduler"
     use_mongo = True
 

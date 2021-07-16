@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Base Remote System
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2021, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class BaseRemoteSystem(object):
     extractors = {}
 
     extractors_order = [
-        "admdiv",
+        "label",
         "networksegmentprofile",
         "networksegment",
         "object",
@@ -35,6 +35,10 @@ class BaseRemoteSystem(object):
         "subscriber",
         "serviceprofile",
         "service",
+        "admdiv",
+        "street",
+        "building",
+        "address",
     ]
 
     def __init__(self, remote_system):
