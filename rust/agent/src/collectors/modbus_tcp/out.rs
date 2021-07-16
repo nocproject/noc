@@ -1,14 +1,13 @@
 // ---------------------------------------------------------------------
-// Agent proto module
+// ModbusTcpOut
 // ---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 // ---------------------------------------------------------------------
 
-pub mod connection;
-pub mod frame;
-pub mod modbus;
-pub mod pktmodel;
-pub mod tos;
-pub mod twamp;
-pub mod udp;
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct ModbusTcpOut {
+    pub value: f64,
+}
