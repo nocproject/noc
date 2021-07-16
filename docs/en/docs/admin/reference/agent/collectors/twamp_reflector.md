@@ -19,3 +19,23 @@ probes.
 ## Compilation Features
 
 Enable `twamp-reflector` feature during compiling the agent (Enabled by default).
+
+## Configuring senders
+
+### noc-agent
+
+```yaml
+collectors:
+  - id: TWAMP G.711 Test
+    type: twamp_sender
+    interval: 10
+    server: 10.0.0.1
+    port: 862
+    dscp: ef
+    n_packets: 250
+    model: g711
+    test_timeout: 3
+```
+
+For details on packet models and configuration and parameters refer to
+the [twamp_sender](twamp_sender.md) documentation.
