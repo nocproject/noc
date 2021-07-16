@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,11 @@ class Script(BaseScript):
         pmib = self.profile.get_pmib(self.scripts.get_version())
         if pmib is None:
             raise NotImplementedError()
-        for oid, v in self.snmp.getnext(pmib + ".7.6.1.1", bulk=True):  # dot1qVlanFdbId
+        # DXS-1210-10TS has different OID for vlans
+        f_oid = pmib + ".7.6.1.1"
+        if pmib == "1.3.6.1.4.1.171.10.139.2.1":
+            f_oid = pmib + ".4.2.2.1.1"
+        for oid, v in self.snmp.getnext(f_oid, bulk=True):  # dot1qVlanFdbId
             r += [{"vlan_id": oid.split(".")[-1], "name": v}]
         return r
 

@@ -57,12 +57,20 @@ class Script(BaseScript):
         pmib = self.profile.get_pmib(self.scripts.get_version())
         if pmib is None:
             raise NotImplementedError()
+        oid1 = pmib + ".7.6.1.1"
+        oid2 = pmib + ".7.6.1.2"
+        oid3 = pmib + ".7.6.1.4"
+        # For DXS-1210-10TS
+        if pmib == "1.3.6.1.4.1.171.10.139.2.1":
+            oid1 = pmib + ".4.2.2.1.1"
+            oid2 = pmib + ".4.2.2.1.3"
+            oid3 = pmib + ".4.2.2.1.4"
         for v in self.snmp.get_tables(
-            [pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"],
+            [oid1, oid2, oid3],
             bulk=True,
             display_hints={
-                pmib + ".7.6.1.2": render_bin,
-                pmib + ".7.6.1.4": render_bin,
+                oid2: render_bin,
+                oid3: render_bin,
             },
         ):
             tagged = v[2]
