@@ -412,8 +412,9 @@ class Interface(Document):
         yield RegexpLabel.get_effective_labels("interface_description", instance.name)
         if instance.managed_object:
             yield list(instance.managed_object.effective_labels)
-        if instance.is_linked:
-            yield ["noc::interface::linked::="]
+        # if instance.is_linked:
+        # Idle Discovery When create Aggregate interface
+        #     yield ["noc::interface::linked::="]
         for si in instance.parent.subinterface_set.filter(enabled_afi__in=["BRIDGE", "IPv4"]):
             if si.tagged_vlans:
                 lazy_tagged_vlans_labels = list(
