@@ -20,7 +20,7 @@ class SubscriberProfile(DictionaryModel):
 
     id = StringField()
     name = StringField()
-    desription = StringField()
+    description = StringField()
     glyph = StringField()
 
     @classmethod
@@ -29,6 +29,6 @@ class SubscriberProfile(DictionaryModel):
         return {
             "id": str(item.id),
             "name": item.name,
-            "desription": item.description or "",
+            "description": item.description or "",
             "glyph": item.glyph or "",
         }

@@ -9,6 +9,7 @@
 from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField
 from noc.sa.models.cpestatus import CPEStatus
+from noc.core.text import ch_escape
 
 
 class CPEAttributes(DictionaryModel):
@@ -41,17 +42,17 @@ class CPEAttributes(DictionaryModel):
             "bi_id": item.managed_object.bi_id,
             "cpe_id": item.global_id,
             "interface": item.interface,
-            "local_id": item.local_id,
-            "global_id": item.global_id,
-            "name": item.name,
+            "local_id": ch_escape(item.local_id),
+            "global_id": ch_escape(item.global_id),
+            "name": ch_escape(item.name),
             "type": item.type,
             "vendor": item.vendor,
-            "model": item.model,
+            "model": ch_escape(item.model),
             "version": item.version,
-            "serial": item.serial,
+            "serial": ch_escape(item.serial),
             "ip": item.ip,
             "mac": item.mac,
-            "description": item.description,
-            "location": item.location,
+            "description": ch_escape(item.description),
+            "location": ch_escape(item.location),
             "distance": item.distance,
         }
