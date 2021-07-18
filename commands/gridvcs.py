@@ -160,7 +160,7 @@ class Command(BaseCommand):
                         o = ManagedObject.objects.get(id=o)
                     self.print(f"Object:  {o}")
             else:
-                self.print("Ids: ".join(bucket["objects"]))
+                self.print("Ids: ", ",".join(str(x) for x in bucket["objects"]))
 
     def get_bucket(self, min_size=None, buckets=5):
         return self.vcs.fs._GridFS__files.aggregate(

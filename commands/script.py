@@ -190,6 +190,7 @@ class Command(BaseCommand):
         creds = obj.credentials
 
         credentials = {
+            "name": obj.name,
             "address": obj.address,
             "user": creds.user,
             "password": creds.password,

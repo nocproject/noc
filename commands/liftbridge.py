@@ -8,6 +8,7 @@
 # Python modules
 from typing import Optional
 from time import perf_counter
+import datetime
 import functools
 import argparse
 from dateutil.parser import parse
@@ -17,6 +18,8 @@ from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
 from noc.core.liftbridge.base import LiftBridgeClient, Metadata, PartitionMetadata
 from noc.core.text import alnum_key
+
+TS_NS = 1000_0000_00
 
 
 class Command(BaseCommand):
@@ -165,7 +168,7 @@ class Command(BaseCommand):
                             msg.subject,
                             msg.partition,
                             msg.offset,
-                            msg.timestamp,
+                            f"{msg.timestamp} ({datetime.datetime.fromtimestamp(msg.timestamp / TS_NS)})",
                             msg.key,
                             msg.headers,
                         )
