@@ -14,7 +14,7 @@ Ext.define("NOC.core.label.TreePickerController", {
     ],
     // tree panel events
     onClosePanel: function() {
-        this.getView().hide();
+        this.getView().fireEvent("closeTreePicker");
     },
     onItemClick: function(view, record) {
         this.selectItem(record);
@@ -27,7 +27,7 @@ Ext.define("NOC.core.label.TreePickerController", {
     },
     onLeaveFocusTreePicker: function() {
         this.getView().scope.setEditable(true);
-        this.getView().hide();
+        this.getView().fireEvent("closeTreePicker");
     },
     selectItem: function(record) {
         if(!record.get("leaf")) {

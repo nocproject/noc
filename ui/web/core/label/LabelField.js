@@ -96,6 +96,10 @@ Ext.define("NOC.core.label.LabelField", {
                 displayField: me.displayField,
                 query: me.query,
                 scope: me,
+                listeners: {
+                    scope: me,
+                    closeTreePicker: this.onCloseTreePicker,
+                }
             });
         }
         Ext.apply(me, {
@@ -373,4 +377,8 @@ Ext.define("NOC.core.label.LabelField", {
             Ext.form.field.Tag.prototype.onTriggerClick.apply(this, arguments);
         }
     },
+    onCloseTreePicker: function() {
+        this.treePicker.hide();
+        this.validate();
+    }
 });
