@@ -336,11 +336,16 @@ class MetricsCheck(DiscoveryCheck):
             SLAProbe._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
-                {"managed_object": self.object.id}, {"name": 1, "group": 1, "profile": 1, "type": 1}
+                {"managed_object": self.object.id},
+                {"name": 1, "state": 1, "group": 1, "profile": 1, "type": 1},
             )
         ):
             if not p.get("profile"):
                 self.logger.debug("Probe %s has no profile. Skipping", p["name"])
+                continue
+            state = State.get_by_id(p["state"])
+            if not state.is_productive:
+                self.logger.debug("[%s] SLA Probe is not productive state. Skipping", p["name"])
                 continue
             pm = self.get_slaprofile_metrics(p["profile"])
             if not pm:
@@ -898,7 +903,6 @@ class MetricsCheck(DiscoveryCheck):
     def get_umbrella_alarm_cfg(self, metric_config, threshold, path, value):
         """
         Get configuration for umbrella alarm
-        :param threshold_profile:
         :param threshold:
         :param metric_config:
         :param value:
