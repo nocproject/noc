@@ -61,20 +61,26 @@ class MetricsService(FastAPIService):
         for item in data:
             scope = item.get("scope")
             if not scope:
+                self.logger.debug("Discard metric without scope: %s", item)
                 return  # Discard metric without scope
             si = self.scopes.get(scope)
             if not si:
+                self.logger.debug("Unknown scope: %s", item)
                 return  # Unknown scope
             labels = item.get("labels")
             if si.key_labels and not labels:
+                self.logger.debug("No labels: %s", item)
                 return  # No labels
             mk = self.get_key(si, item)
             if si.key_fields and not mk[1]:
+                self.logger.debug("No key fields: %s", item)
                 return  # No key fields
             if si.key_labels and len(mk[2]) != len(si.key_labels):
+                self.logger.debug("Missed key label: %s", item)
                 return  # Missed key label
             card = self.get_card(mk)
             if not card:
+                self.logger.debug("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
             self.activate_card(card, si, item)
 
