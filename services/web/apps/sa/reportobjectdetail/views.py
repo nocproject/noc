@@ -41,6 +41,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.platform import Platform
+from noc.project.models.project import Project
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
 
@@ -200,7 +201,8 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count",
-            "last_config_ts"
+            "last_config_ts",
+            "project",
             # "discovery_problem"
             # "object_tags"
             # "sorted_tags"
@@ -231,6 +233,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "PHYS_INTERFACE_COUNT",
             "LINK_COUNT",
             "LAST_CONFIG_TS",
+            "PROJECT",
         ]
         # "DISCOVERY_PROBLEM"
         # "ADM_PATH
@@ -343,6 +346,7 @@ class ReportObjectDetailApplication(ExtApplication):
             platform,
             version,
             labels,
+            project,
         ) in (
             mos.values_list(
                 "id",
@@ -358,6 +362,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 "platform",
                 "version",
                 "labels",
+                "project",
             )
             .order_by("id")
             .iterator()
@@ -406,6 +411,7 @@ class ReportObjectDetailApplication(ExtApplication):
                             next(iface_count)[0],
                             next(link_count)[0],
                             next(rc)[0],
+                            Project.get_by_id(project) if project else "",
                         ]
                     ),
                     cmap,
