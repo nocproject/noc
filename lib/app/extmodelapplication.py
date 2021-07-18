@@ -9,7 +9,6 @@
 import datetime
 from collections import defaultdict
 from functools import reduce
-import re
 
 # Third-party modules
 from django.http import HttpResponse
@@ -74,8 +73,6 @@ class ExtModelApplication(ExtApplication):
     ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
     file_fields_mask = None
-
-    rx_oper_splitter = re.compile(r"^(?P<field>\S+?)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

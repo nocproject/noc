@@ -9,7 +9,6 @@
 import uuid
 from functools import reduce
 import os
-import re
 
 # Third-party modules
 from django.http import HttpResponse
@@ -71,8 +70,6 @@ class ExtDocApplication(ExtApplication):
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = {"id", "bi_id", "state"}
     SECRET_MASK = "********"
-
-    rx_oper_splitter = re.compile(r"^(?P<field>\S+?)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

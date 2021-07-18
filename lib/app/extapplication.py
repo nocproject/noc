@@ -9,6 +9,7 @@
 from builtins import str
 from typing import Optional, List  # noqa
 import os
+import re
 
 # Third-party modules
 from django.http import HttpResponse
@@ -53,6 +54,8 @@ class ExtApplication(Application):
     fav_status = "fav_status"
     default_ordering = []
     exclude_fields: Optional[List[str]] = []
+
+    rx_oper_splitter = re.compile(r"^(?P<field>\S+?)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -7,7 +7,6 @@
 
 # Python modules
 import os
-import re
 import bisect
 import inspect
 import datetime
@@ -93,8 +92,6 @@ class AlarmApplication(ExtApplication):
     }
 
     DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
-
-    rx_oper_splitter = re.compile(r"^(?P<field>\S+)(?P<f_num>\d+)__in")
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
