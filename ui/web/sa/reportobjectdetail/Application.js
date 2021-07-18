@@ -83,7 +83,8 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
             ["object_caps", __("Object capabilities"), false],
             ["object_labels", __("Object Labels"), false],
             ["sorted_labels", __("Sorted Labels"), false],
-            ["discovery_problem", __("Discovery Problem"), false]
+            ["discovery_problem", __("Discovery Problem"), false],
+            ["project", __("Project"), false]
         ]
     }
 });
