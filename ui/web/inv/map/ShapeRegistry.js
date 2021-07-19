@@ -58,7 +58,8 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                         ref: 'image',
                         'ref-x': '50%',
                         'ref-dy': 3,
-                        'text-anchor': 'middle'
+                        'text-anchor': 'middle',
+                        'font-weight': 'bold'
                     }
                 }
             }, joint.shapes.basic.Generic.prototype.defaults),
