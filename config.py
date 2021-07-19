@@ -617,11 +617,13 @@ class Config(BaseConfig):
         token = SecretParameter()
         retry_timeout = IntParameter(default=2)
         use_proxy = BooleanParameter(default=False)
+        proxy_address = StringParameter()
 
     class tgsender(ConfigSection):
         token = SecretParameter()
         retry_timeout = IntParameter(default=2)
         use_proxy = BooleanParameter(default=False)
+        proxy_address = StringParameter()
 
     class threadpool(ConfigSection):
         idle_timeout = SecondsParameter(default="30s")

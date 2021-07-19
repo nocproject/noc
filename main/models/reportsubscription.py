@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ReportSubscription model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,7 +23,6 @@ from noc.lib.app.site import site
 from noc.core.debug import error_report
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.scheduler.job import Job
-from noc.core.service.pub import pub
 
 logger = logging.getLogger(__name__)
 
@@ -130,14 +129,13 @@ class ReportSubscription(Document):
             data = f.read()
         for a in addresses:
             logger.info("[%s] Sending to %s", self.file_name, a)
-            pub(
-                "mailsender",
-                {
-                    "address": a,
-                    "subject": self.subject,
-                    "body": "",
-                    "attachments": [{"filename": self.file_name, "data": data}],
-                },
+            nf = NotificationGroup()
+            nf.send_notification(
+                "mail",
+                a,
+                self.subject,
+                "",
+                attachments=[{"filename": self.file_name, "data": data}],
             )
 
     def on_save(self):

@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # mailsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+import orjson
 import datetime
 import smtplib
 from email.mime.text import MIMEText
@@ -19,13 +20,17 @@ from email.header import Header
 import pytz
 
 # NOC modules
-from noc.config import config
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
+from noc.core.liftbridge.message import Message
+from noc.core.mx import MX_TO
 from noc.core.perf import metrics
+from noc.config import config
 from noc.core.comp import smart_text
 
+MAILSENDER_STREAM = "mailsender"
 
-class MailSenderService(TornadoService):
+
+class MailSenderService(FastAPIService):
     name = "mailsender"
 
     def __init__(self, *args, **kwargs):
@@ -34,43 +39,41 @@ class MailSenderService(TornadoService):
 
     async def on_activate(self):
         self.tz = pytz.timezone(config.timezone)
-        await self.subscribe(topic=self.name, channel="sender", handler=self.on_message)
+        self.slot_number, self.total_slots = await self.acquire_slot()
+        await self.subscribe_stream(MAILSENDER_STREAM, self.slot_number, self.on_message)
 
-    def on_message(self, message, address, subject, body, attachments=None, **kwargs):
-        message_id = smart_text(message.id)
-        self.logger.info(
-            "[%s] Receiving message: %s (%s) [%s, attempt %d]",
-            message_id,
-            subject,
-            address,
-            datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
-            message.attempts,
-        )
-        return self.send_mail(message_id, address, subject, body, attachments)
+    async def on_message(self, msg: Message) -> None:
+        """
+        Process incoming message. Usually forwarded by `mx` service.
+        Message MUST have `To` header, containing target Mail topic.
 
-    def send_mail(self, message_id, address, subject, body, attachments=None):
+        :param msg:
+        :return:
         """
-        Send mail message
-        :param message_id: NSQ Message id
-        :param address: Mail address
-        :param subject: Mail subject
-        :param body: mail body
-        :param attachments: List of dict with filename and data keys
-        :returns: sending status as boolean
-        """
-        attachments = attachments or []
+        metrics["messages"] += 1
+        self.logger.debug("[%d] Receiving message %s", msg.offset, msg.headers)
+        dst = msg.headers.get(MX_TO)
+        if not dst:
+            self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
+            metrics["messages_drops"] += 1
+            return
+        metrics["messages_processed"] += 1
+        return self.send_mail(smart_text(dst), orjson.loads(msg.value))
+
+    def send_mail(self, message_id: str, data: str) -> None:
+        attachments = data["attachments"] or []
         self.tz = pytz.timezone(config.timezone)
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
-        if isinstance(address, str):
-            address = [address]
+        if isinstance(data["address"], str):
+            address = [data["address"]]
         from_address = config.mailsender.from_address
         message = MIMEMultipart()
         message["From"] = from_address
         message["To"] = ", ".join(address)
         message["Date"] = md
-        message["Subject"] = Header(subject, "utf-8")
-        message.attach(MIMEText(body, _charset="utf-8"))
+        message["Subject"] = Header(smart_text(data["subject"]), "utf-8")
+        message.attach(MIMEText(smart_text(data["body"]), _charset="utf-8"))
         for a in attachments:
             part = MIMEBase("application", "octet-stream")
             if "transfer-encoding" in a:

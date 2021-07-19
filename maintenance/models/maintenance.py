@@ -36,7 +36,7 @@ from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.core.defer import call_later
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.service.pub import pub
+from noc.main.models.notificationgroup import NotificationGroup
 
 id_lock = Lock()
 
@@ -308,6 +308,12 @@ def stop(maintenance_id):
             subject = mai.template.render_subject(**ctx)
             body = mai.template.render_body(**ctx)
             for mail in contacts:
-                pub("mailsender", {"address": mail, "subject": subject, "body": body})
+                nf = NotificationGroup()
+                nf.send_notification(
+                    "mail",
+                    mail,
+                    subject,
+                    body,
+                )
     Maintenance._get_collection().update({"_id": maintenance_id}, {"$set": {"is_completed": True}})
     AffectedObjects._get_collection().remove({"maintenance": maintenance_id})
