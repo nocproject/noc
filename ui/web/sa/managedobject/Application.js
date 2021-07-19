@@ -264,6 +264,31 @@ Ext.define("NOC.sa.managedobject.Application", {
         Ext.apply(me, {
             columns: [
                 {
+                    text: __("S"),
+                    dataIndex: "oper_state",
+                    sortable: false,
+                    width: 30,
+                    renderer: function(value, metaData) {
+                        var color = "grey";
+                        metaData.tdAttr = "data-qtip='<table style=\"font-size: 11px;\">" +
+                            "<tr><td style=\"padding-right: 10px;\"><div class=\"noc-object-oper-state\" style=\"background-color: grey;\"></div></td><td>" + __("Unmanaged or ping is disabled") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: red;\"></div></td><td>" + __("Ping fail") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: yellow;\"></div></td><td>" + __("Device has alarm") + "</td></tr>" +
+                            "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: green;\"></div></td><td>" + __("Device is normal") + "</td></tr>" +
+                            "</table>'";
+
+                        console.log(metaData.tdAttr);
+                        if(value === "failed") {
+                            color = "red";
+                        } else if(value === "degraded") {
+                            color = "yellow";
+                        } else if(value === "full") {
+                            color = "green";
+                        }
+                        return "<div class='noc-object-oper-state' style='background-color: " + color + "'></div>";
+                    }
+                },
+                {
                     text: __("Name"),
                     dataIndex: "name",
                     width: 130
@@ -1002,9 +1027,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "combobox",
                             fieldLabel: __("Raw Policy"),
                             store: [
-                                    ["P", __("Profile")],
-                                    ["E", __("Enable")],
-                                    ["D", __("Disable")]
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
                             ],
                             allowBlank: false,
                             groupEdit: true
