@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
 from noc.core.timepattern import TimePatternList
-from noc.core.service.pub import pub
+from noc.core.mx import send_message, MX_TO
 from noc.core.model.decorator import on_delete_check
 from noc.core.comp import smart_bytes
 from .timepattern import TimePattern
@@ -148,14 +148,16 @@ class NotificationGroup(NOCModel):
             logging.error("Unknown notification method: %s", method)
             return
         logging.debug("Sending notification to %s via %s", address, method)
-        pub(
-            topic,
-            {
-                "address": address,
-                "subject": subject,
-                "body": body,
-                "attachments": attachments or [],
-            },
+        data = {
+            "address": address,
+            "subject": subject,
+            "body": body,
+            "attachments": attachments or [],
+        }
+        send_message(
+            data,
+            message_type="notification",
+            headers={MX_TO: smart_bytes(topic)},
         )
 
     def notify(self, subject, body, link=None, attachments=None):

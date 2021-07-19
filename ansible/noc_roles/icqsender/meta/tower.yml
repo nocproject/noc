@@ -28,6 +28,13 @@ forms:
     token:
       label: Token
       type: str
+    use_proxy:
+      label: "Use Proxy"
+      type: bool
+      default: false
+    proxy_address:
+      label: "Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)"
+      type: str
 
 services:
   icqsender:

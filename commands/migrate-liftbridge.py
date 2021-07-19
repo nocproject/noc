@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Liftbridge streams synchronization tool
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -32,6 +32,9 @@ class Command(BaseCommand):
     SLOT_STREAMS = [
         # slot name, stream name
         ("mx", "message"),
+        ("tgsender", "tgsender"),
+        ("icqsender", "icqsender"),
+        ("mailsender", "mailsender"),
         ("kafkasender", "kafkasender"),
         ("metrics", "metrics"),
         ("worker", "jobs"),
@@ -46,6 +49,9 @@ class Command(BaseCommand):
         "events": "classifier",
         "dispose": "correlator",
         "message": "mx",
+        "tgsender": "tgsender",
+        "icqsender": "icqsender",
+        "mailsender": "mailsender",
         "kafkasender": "kafkasender",
         "jobs": "worker",
     }
