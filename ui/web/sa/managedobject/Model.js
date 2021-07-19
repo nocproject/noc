@@ -329,6 +329,16 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "oper_state",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "oper_state__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "link_count",
             type: "int",
             persist: false

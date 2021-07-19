@@ -18,6 +18,7 @@ from mongoengine.queryset import Q as MQ
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -52,6 +53,8 @@ from noc.core.defer import defer
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.sa.models.objectstatus import ObjectStatus
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -161,6 +164,37 @@ class ManagedObjectApplication(ExtModelApplication):
             x["interface_count"] = ifcount.get(x["id"]) or 0
         return data
 
+    def bulk_field_oper_state(self, data):
+        """
+        Apply oper_state field
+        :param data:
+        :return:
+        """
+        mo_ids = [x["id"] for x in data]
+        if not mo_ids:
+            return data
+        alarms = list(ActiveAlarm.objects.filter(managed_object=mo_ids))
+        os = ObjectStatus.get_statuses(mo_ids)
+        disabled = set(
+            ManagedObjectProfile.objects.filter(enable_ping=False).values_list("id", flat=True)
+        )
+        # Apply oper_state
+        for x in data:
+            if not x["is_managed"] or x["id"] in disabled:
+                # possibly exclude degradated state
+                x["oper_state"] = "disabled"
+                x["oper_state__label"] = _("Disable")
+            elif not os.get(x["id"], True):
+                x["oper_state"] = "failed"
+                x["oper_state__label"] = _("Down")
+            elif alarms:
+                x["oper_state"] = "degraded"
+                x["oper_state__label"] = _("Warning")
+            else:
+                x["oper_state"] = "full"
+                x["oper_state__label"] = _("Up")
+        return data
+
     def bulk_field_link_count(self, data):
         """
         Apply link_count fields
@@ -227,7 +261,7 @@ class ManagedObjectApplication(ExtModelApplication):
         if geoaddr:
             scope, query = geoaddr.split(":", 1)
             geocoder = geocoder_loader.get_class(scope)()
-            addr_ids = {r.id for r in geocoder.iter_recursive_query(query)}
+            addr_ids = set([r.id for r in geocoder.iter_recursive_query(query)][:1])
             addr_mo = set()
             for o in Object.iter_by_address_id(list(addr_ids), scope):
                 addr_mo |= set(o.iter_managed_object_id())
