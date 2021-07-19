@@ -30,6 +30,7 @@ class ManagedObject(DictionaryModel):
     administrative_domain = StringField()
     administrative_domain_id = StringField()
     location_address = StringField()
+    project = StringField()
 
     @classmethod
     def extract(cls, item: "ManagedObjectModel"):
@@ -47,4 +48,5 @@ class ManagedObject(DictionaryModel):
             "location_address": item.container.get_data("address", "text")
             if item.container
             else "",
+            "project": item.project.name if item.project else "",
         }

@@ -162,6 +162,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             ["object_admdomain", __("Administrative Domain"), true],
             ["object_platform", __("Platform"), true],
             ["object_version", __("Version"), true],
+            ["object_project", __("Project"), true],
             ["alarm_class", __("Alarm Class"), true],
             ["alarm_subject", __("Alarm Subject"), false],
             ["maintenance", __("Maintenance"), true],
