@@ -39,7 +39,7 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
         }
         // Shape class
         sc = joint.shapes.basic.Generic.extend({
-            markup: '<g class="scalable"><image/></g><g class="rotatable"><text filter="url(#solid)"/></g>',
+            markup: '<g class="scalable"><image/></g><g class="rotatable"><text/></g>',
             defaults: joint.util.deepSupplement({
                 type: typeName,
                 size: {
@@ -58,8 +58,7 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                         ref: 'image',
                         'ref-x': '50%',
                         'ref-dy': 3,
-                        'text-anchor': 'middle',
-                        'font-weight': 'bold'
+                        'text-anchor': 'middle'
                     }
                 }
             }, joint.shapes.basic.Generic.prototype.defaults),
