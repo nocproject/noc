@@ -411,7 +411,7 @@ class ReportObjectDetailApplication(ExtApplication):
                             next(iface_count)[0],
                             next(link_count)[0],
                             next(rc)[0],
-                            Project.get_by_id(project) if project else "",
+                            Project.get_by_id(project).name if project else "",
                         ]
                     ),
                     cmap,

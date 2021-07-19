@@ -101,6 +101,7 @@ class AlarmsExtractor(ArchivingExtractor):
                 administrative_domain=mo.administrative_domain,
                 segment=mo.segment,
                 container=mo.container,
+                project=mo.project,
                 x=mo.x,
                 y=mo.y,
                 reboots=n_reboots,

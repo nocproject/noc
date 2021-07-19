@@ -32,6 +32,7 @@ from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
 from noc.core.bi.dictionaries.pool import Pool
+from noc.core.bi.dictionaries.project import Project
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
@@ -85,6 +86,7 @@ class Alarms(Model):
     administrative_domain = ReferenceField(AdministrativeDomain, description=_("Admin. Domain"))
     segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
     container = ReferenceField(Container, description=_("Container"))
+    project = ReferenceField(Project, description=_("Project"))
     # Coordinates
     x = Float64Field(description=_("Longitude"))
     y = Float64Field(description=_("Latitude"))

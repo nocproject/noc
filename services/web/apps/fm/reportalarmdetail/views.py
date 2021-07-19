@@ -35,6 +35,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.project.models.project import Project
 from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -45,7 +46,7 @@ from noc.config import config
 
 LONG_ARCHIVE_QUERY = f"""SELECT
   alarm_id,
-  dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as sova_id,
+  dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as sova_id,
   dictGetString('{config.clickhouse.db_dictionaries}.objectprofile', 'name', object_profile) as op,
   dictGetString('{config.clickhouse.db_dictionaries}.vendor', 'name', vendor) as vendor,
   dictGetString('{config.clickhouse.db_dictionaries}.platform', 'name', platform) as platform,
@@ -55,6 +56,7 @@ LONG_ARCHIVE_QUERY = f"""SELECT
   dictGetString('{config.clickhouse.db_dictionaries}.administrativedomain', 'name', administrative_domain) as adm_domain,
   dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'name', managed_object) as mo_name,
   IPv4NumToString(ip) as ip,
+  dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'project', managed_object) as mo_project,
   escalation_tt,  duration,  severity,  reboots  %s FROM alarms
   WHERE date >= '%s' AND date < '%s' AND alarm_class = %d AND root == ''"""
 
@@ -92,7 +94,7 @@ class ReportAlarmObjects(object):
         query = "select sa.id, sa.name, sa.address, sa.is_managed, "
         query += "profile, op.name as object_profile, sa.container, "
         query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.labels, ';'), "
-        query += "platform, version "
+        query += "platform, version, sa.project_id "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         if mos_id:
             query += (
@@ -219,6 +221,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "object_admdomain",
                 "object_platform",
                 "object_version",
+                "object_project",
                 "alarm_class",
                 "alarm_subject",
                 "maintenance",
@@ -247,6 +250,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 _("OBJECT_ADMDOMAIN"),
                 _("OBJECT_PLATFORM"),
                 _("OBJECT_VERSION"),
+                _("OBJECT_PROJECT"),
                 _("ALARM_CLASS"),
                 _("ALARM_SUBJECT"),
                 _("MAINTENANCE"),
@@ -421,6 +425,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                                 )
                                 if moss[a["managed_object"]][10]
                                 else "",
+                                smart_text(Project.get_by_id(moss[a["managed_object"]][11]).name)
+                                if moss[a["managed_object"]][11]
+                                else "",
                                 AlarmClass.get_by_id(a["alarm_class"]).name,
                                 ArchivedAlarm.objects.get(id=a["_id"]).subject if subject else "",
                                 "",
@@ -522,6 +529,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                                 )
                                 if moss[a["managed_object"]][10]
                                 else "",
+                                smart_text(Project.get_by_id(moss[a["managed_object"]][11]).name)
+                                if moss[a["managed_object"]][11]
+                                else "",
                                 AlarmClass.get_by_id(a["alarm_class"]).name,
                                 ActiveAlarm.objects.get(id=a["_id"]).subject if subject else None,
                                 "Yes" if a["managed_object"] in maintenance else "No",
@@ -565,6 +575,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "ADM_DOMAIN",
                 "MO_NAME",
                 "IP",
+                "PROJECT",
                 "ESCALATION_TT",
                 "DURATION",
                 "SEVERITY",
