@@ -34,11 +34,12 @@ class Script(BaseScript):
         ]
         # Optron input for 1 to 6
         for i in range(1, 6):
-            mode = self.snmp.get(f"1.3.6.1.4.1.35419.20.1.{110 + i}.0")
+            # Trap settings
+            # mode = self.snmp.get(f"1.3.6.1.4.1.35419.20.1.{110 + i}.0")
             r += [
                 {
                     "name": f"in{i}",
-                    "status": bool(mode),
+                    "status": True,
                     "description": f"Цифровой вход номер {i}",
                     "measurement": "Scalar",
                     "snmp_oid": f"1.3.6.1.4.1.35419.20.1.{100 + i}.0",
