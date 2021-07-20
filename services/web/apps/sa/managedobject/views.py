@@ -170,7 +170,9 @@ class ManagedObjectApplication(ExtModelApplication):
         :param data:
         :return:
         """
-        mo_ids = [x["id"] for x in data]
+        # IsManaged check if lookup field. Possibly extract if for id
+        # Or Disable Bulk for lookup
+        mo_ids = [x["id"] for x in data if x.get("is_managed") is not None]
         if not mo_ids:
             return data
         alarms = list(ActiveAlarm.objects.filter(managed_object=mo_ids))
