@@ -1513,10 +1513,12 @@ nav:
                   - block_io: admin/reference/agent/collectors/block_io.md
                   - cpu: admin/reference/agent/collectors/cpu.md
                   - dns: admin/reference/agent/collectors/dns.md
-                  - http: admin/reference/agent/collectors/http.md
                   - fs: admin/reference/agent/collectors/fs.md
+                  - http: admin/reference/agent/collectors/http.md
                   - memory: admin/reference/agent/collectors/memory.md
                   - network: admin/reference/agent/collectors/network.md
+                  - modbus_rtu: admin/reference/agent/collectors/modbus_rtu.md
+                  - modbus_tcp: admin/reference/agent/collectors/modbus_tcp.md
                   - test: admin/reference/agent/collectors/test.md
                   - twamp_reflector: admin/reference/agent/collectors/twamp_reflector.md
                   - twamp_sender: admin/reference/agent/collectors/twamp_sender.md

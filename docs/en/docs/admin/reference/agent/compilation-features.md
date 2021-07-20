@@ -43,6 +43,8 @@ Disabled probes are ignored.
 | `dns`             | {{ yes }} | [`dns`](collectors/dns.md)                         |
 | `fs`              | {{ yes }} | [`fs`](collectors/fs.md)                           |
 | `memory`          | {{ yes }} | [`memory`](collectors/memory.md)                   |
+| `modbus_rtu`      | {{ yes }} | [`modbus_rtu`](collectors/modbus_rtu.md)           |
+| `modbus_tcp`      | {{ yes }} | [`modbus_tcp`](collectors/modbus_tcp.md)           |
 | `network`         | {{ yes }} | [`network`](collectors/network.md)                 |
 | `test`            | {{ yes }} | [`test`](collectors/test.md)                       |
 | `twamp-sender`    | {{ yes }} | [`twamp_sender`](collectors/twamp_sender.md)       |

@@ -31,7 +31,6 @@ impl TryFrom<&ZkConfigCollector> for ModbusTcpCollectorConfig {
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
         match &value.config {
             CollectorConfig::ModbusTcp(config) => {
-                log::debug!("@@@ {:?}", config);
                 let addr = format!("{}:{}", config.address, config.port)
                     .parse()
                     .map_err(|_| AgentError::ParseError("cannot parse address".to_string()))?;
