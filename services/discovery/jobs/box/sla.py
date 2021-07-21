@@ -68,6 +68,7 @@ class SLACheck(DiscoveryCheck):
                 {
                     "description": new_data.get("description"),
                     "type": new_data["type"],
+                    "tos": new_data.get("tos", 0),
                     "target": new_data["target"],
                     "hw_timestamp": new_data.get("hw_timestamp", False),
                     "labels": [
@@ -95,6 +96,7 @@ class SLACheck(DiscoveryCheck):
                 group=group,
                 description=new_data.get("description"),
                 type=new_data["type"],
+                tos=new_data.get("tos", 0),
                 target=new_data["target"],
                 hw_timestamp=new_data.get("hw_timestamp", False),
                 labels=new_data.get("tags", []),

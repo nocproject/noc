@@ -13,7 +13,7 @@ from noc.core.script.metrics import scale
 
 SLA_METRICS_MAP = {
     "SLA | Packets": "JUNIPER-RPM-MIB::jnxRpmResSumSent",
-    "SLA | Packets | Loss | Out": "JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
+    "SLA | Packets | Loss | Ratio": "JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
     # "SLA | Packets | Loss | In": "JUNIPER-RPM-MIB::jnxRpmResSumReceived",
     "SLA | Jitter | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
     "SLA | Jitter | Out | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
