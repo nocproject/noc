@@ -110,6 +110,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
                         ["icmp-echo", "icmp-echo"],
                         ["path-jitter", "path-jitter"],
                         ["udp-echo", "udp-echo"],
+                        ["udp-jitter", "udp-jitter"],
                         ["http-get", "http-get"],
                         ["dns", "dns"],
                         ["ftp", "ftp"],
@@ -117,6 +118,14 @@ Ext.define("NOC.sla.slaprobe.Application", {
                         ["owamp", "OWAMP"],
                         ["twamp", "TWAMP"]
                     ]
+                },
+                {
+                    name: "tos",
+                    fieldLabel: __("TOS"),
+                    xtype: "numberfield",
+                    allowBlank: true,
+                    defaultValue: 0,
+                    uiStyle: "small"
                 },
                 {
                     name: "target",

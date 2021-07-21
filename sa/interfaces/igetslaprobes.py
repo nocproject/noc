@@ -7,7 +7,13 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from .base import DictListParameter, StringParameter, StringListParameter, BooleanParameter
+from .base import (
+    DictListParameter,
+    StringParameter,
+    StringListParameter,
+    BooleanParameter,
+    IntParameter,
+)
 
 
 class IGetSLAProbes(BaseInterface):
@@ -30,6 +36,10 @@ class IGetSLAProbes(BaseInterface):
             # True - Active
             # False - NonOperational
             "status": BooleanParameter(default=True),
+            # VRF Name
+            "vrf": StringParameter(required=False),
+            # TOS
+            "tos": IntParameter(required=False),
             "type": StringParameter(
                 choices=[
                     "icmp-echo",

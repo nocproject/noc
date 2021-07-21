@@ -14,6 +14,7 @@ from noc.core.mib import mib
 
 SLA_METRICS_MAP = {
     "SLA | Packets": "NQA-MIB::nqaJitterStatsSentProbes",
+    "SLA | Packets | Loss | Ratio": "NQA-MIB::nqaJitterCollectStatsPacketLossRatio",
     "SLA | Packets | Loss | Out": "NQA-MIB::nqaJitterStatsPacketLossSD",
     "SLA | Packets | Loss | In": "NQA-MIB::nqaJitterStatsPacketLossDS",
     "SLA | Packets | Disordered": "NQA-MIB::nqaJitterStatsPktDisorderNum",

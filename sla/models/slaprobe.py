@@ -19,6 +19,7 @@ from mongoengine.fields import (
     ListField,
     DateTimeField,
     LongField,
+    IntField,
     ReferenceField,
 )
 import cachetools
@@ -55,7 +56,7 @@ class SLAProbe(Document):
     # Probe name (<managed object>, <group>, <name> triple must be unique
     name = StringField()
     # Probe profile
-    profile = PlainReferenceField(SLAProfile)
+    profile = PlainReferenceField(SLAProfile, default=SLAProfile.get_default_profile)
     # Probe group (Owner)
     group = StringField()
     # Optional description
@@ -69,6 +70,8 @@ class SLAProbe(Document):
     first_discovered = DateTimeField(default=datetime.datetime.now)
     # Probe type
     type = StringField(choices=[(x, x) for x in PROBE_TYPES])
+    #
+    tos = IntField(min=0, max=64)
     # IP address or URL, depending on type
     target = StringField()
     # Hardware timestamps

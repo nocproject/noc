@@ -54,6 +54,10 @@ Ext.define("NOC.sla.slaprobe.Model", {
             type: "string"
         },
         {
+            name: "tos",
+            type: "int"
+        },
+        {
             name: "target",
             type: "string"
         },
