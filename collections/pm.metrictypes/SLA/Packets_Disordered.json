@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Packets | Disordered",
+    "$collection": "pm.metrictypes",
+    "uuid": "34692fb6-4106-4afb-904c-586ddd120036",
+    "scope__name": "SLA",
+    "field_name": "packets_disordered_count",
+    "field_type": "UInt32",
+    "description": "The number of packets arrived out of sequence.",
+    "measure": "pp",
+    "units__code": "pkt",
+    "scale__code": "1"
+}
