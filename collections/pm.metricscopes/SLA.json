@@ -12,6 +12,10 @@
         {
             "field_name": "object",
             "model": "inv.Object"
+        },
+        {
+            "field_name": "sla_probe",
+            "model": "sla.SLAProbe"
         }
     ],
     "enable_timedelta": true,
