@@ -18,14 +18,14 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
-        r"^(?P<interface>\S\S\d+).+?" r"(?P<status>connected|notconnect)"
+        r"^(?P<interface>\S\S[\/\d]+).+?" r"(?P<status>connected|notconnect)"
     )
 
     def execute(self, interface=None):
         r = []
         v = self.cli("show interfaces status")
-        for l in v.splitlines():
-            match = self.rx_interface_status.match(l)
+        for line in v.splitlines():
+            match = self.rx_interface_status.match(line)
             if match:
                 r += [
                     {
