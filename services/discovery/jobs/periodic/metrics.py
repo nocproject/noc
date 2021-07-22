@@ -144,6 +144,8 @@ class MetricsCheck(DiscoveryCheck):
         self.id_ctx: Dict[str, Dict[str, Any]] = {}
         # MetricID -> SensorId Map
         self.sensors_metrics: Dict[str, int] = {}
+        # MetricID -> SLAId Map
+        self.sla_probe_metrics: Dict[str, int] = {}
 
     @staticmethod
     @cachetools.cached({})
@@ -337,7 +339,7 @@ class MetricsCheck(DiscoveryCheck):
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
                 {"managed_object": self.object.id},
-                {"name": 1, "state": 1, "group": 1, "profile": 1, "type": 1},
+                {"name": 1, "state": 1, "group": 1, "profile": 1, "type": 1, "bi_id": 1},
             )
         ):
             if not p.get("profile"):
@@ -374,6 +376,7 @@ class MetricsCheck(DiscoveryCheck):
                     }
                 ]
                 self.id_metrics[m_id] = pm[metric]
+                self.sla_probe_metrics[m_id] = p["bi_id"]
         if not metrics:
             self.logger.info("SLA metrics are not configured. Skipping")
         return metrics
@@ -523,6 +526,8 @@ class MetricsCheck(DiscoveryCheck):
                         record["labels"] = labels
                     if m.id in self.sensors_metrics:
                         record["sensor"] = self.sensors_metrics[m.id]
+                    if m.id in self.sla_probe_metrics:
+                        record["sla_probe"] = self.sla_probe_metrics[m.id]
                     data[cfg.metric_type.scope.table_name][item_hash] = record
                 field = cfg.metric_type.field_name
                 try:
