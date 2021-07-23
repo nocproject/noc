@@ -1,0 +1,12 @@
+{
+    "name": "SLA | RTT | Min",
+    "$collection": "pm.metrictypes",
+    "uuid": "03100eec-9e15-4516-a4ab-cf73f303cf30",
+    "scope__name": "SLA",
+    "field_name": "rtt_min",
+    "field_type": "UInt32",
+    "description": "The minimum of RTT's that were successfully measured",
+    "measure": "μs",
+    "units__code": "s",
+    "scale__code": "u"
+}

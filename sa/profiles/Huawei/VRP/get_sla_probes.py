@@ -51,14 +51,28 @@ class Script(BaseScript):
             }
             if tag:
                 probes[index]["tags"] = [f"noc::sla::tag::{tag}"]
-        for oid, target in self.snmp.getnext(mib["NQA-MIB::nqaAdminParaTargetAddress"]):
-            index = oid.split(".", 14)[-1]
+        for index, target, target_port, tos, vrf in self.snmp.get_tables(
+            [
+                mib["NQA-MIB::nqaAdminParaTargetAddress"],
+                mib["NQA-MIB::nqaAdminParaTargetPort"],
+                mib["NQA-MIB::nqaAdminParaDSField"],
+                mib["NQA-MIB::nqaAdminParaVrfName"],
+            ]
+        ):
+            # index = oid.split(".", 14)[-1]
+
             if index not in probes:
                 continue
             elif not target:
                 self.logger.info("[%s] Probe without target", index)
                 del probes[index]
                 continue
+            if target_port:
+                target = f"{target}:{target_port}"
+            if tos:
+                probes[index]["tos"] = tos >> 2
+            if vrf:
+                probes[index]["vrf"] = vrf
             probes[index]["target"] = target
 
         return list(probes.values())
