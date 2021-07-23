@@ -82,6 +82,7 @@ all:
           has_svc_mailsender: true
           has_svc_memcached: true
           has_svc_mongod: true
+          has_svc_metrics: true
           has_svc_mrt: true
           has_svc_mx: true
           has_svc_nats: true
@@ -98,7 +99,9 @@ all:
           has_svc_scheduler: true
           has_svc_syslogcollector: true
           has_svc_trapcollector: true
+          has_svc_ui: true
           has_svc_web: true
+          has_svc_worker: true
           install_method: git
           installation_type: eval
           login_language: en-us
@@ -784,6 +787,68 @@ all:
                   stopwaitsecs: 2
               name: web
               pool: null
+            - config:
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                  - nginx
+                level: global
+                supervisord:
+                  command: ./services/ui/service.py
+                  oom_score_adj: 300
+                  priority: 50
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 2
+              name: ui
+              pool: null
+            - config:
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/metrics/service.py
+                  oom_score_adj: 300
+                  priority: 50
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 2
+              name: metrics
+              pool: null
+            - config:
+                backup_power: 1
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/worker/service.py
+                  oom_score_adj: 300
+                  priority: 50
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 2
+              name: worker
+              pool: null
           noc_user: noc
           noc_version: microservices
           noc_web_host: noc-node-centos7
@@ -1201,6 +1266,15 @@ all:
             noc-node-centos7: {}
         svc-web-read: {}
     svc-web-exec:
+      hosts:
+        noc-node-centos7: {}
+    svc-metrics-exec:
+      hosts:
+        noc-node-centos7: {}
+    svc-worker-exec:
+      hosts:
+        noc-node-centos7: {}
+    svc-ui-exec:
       hosts:
         noc-node-centos7: {}
     ungrouped: {}

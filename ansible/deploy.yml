@@ -53,6 +53,11 @@
     - role: bi
     - role: datastream
     - role: nbi
+    - role: worker
+    - role: metrics
+    - role: ui
+    - role: mx
+    - role: kafkasender
 
 
 - import_playbook: additional_roles/custom/service.yml

@@ -2,6 +2,6 @@ command:
   {{ noc_root }}/noc ctl status |grep worker:
     exit-status: 0
     stdout:
-    - /ui:.+RUNNING/
+    - /worker:.+RUNNING/
     stderr: []
     timeout: 10000

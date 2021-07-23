@@ -465,3 +465,93 @@
       tags: [goss]
       vars:
         goss_service_name: bi
+
+- name: Install NOC worker
+  hosts: svc-worker-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - worker
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  roles:
+    - role: worker
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: worker
+
+- name: Install NOC metrics
+  hosts: svc-metrics-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - metrics
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  roles:
+    - role: metrics
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: metrics
+
+- name: Install NOC ui
+  hosts: svc-ui-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - ui
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  roles:
+    - role: ui
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: ui
+
+- name: Install NOC mx
+  hosts: svc-mx-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - mx
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  roles:
+    - role: mx
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: mx
+
+- name: Install NOC kafkasender
+  hosts: svc-kafkasender-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - kafkasender
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
+  roles:
+    - role: kafkasender
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: kafkasender

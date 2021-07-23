@@ -2,6 +2,6 @@ command:
   {{ noc_root }}/noc ctl status |grep metrics:
     exit-status: 0
     stdout:
-    - /ui:.+RUNNING/
+    - /metrics:.+RUNNING/
     stderr: []
     timeout: 10000
