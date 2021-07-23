@@ -1,0 +1,12 @@
+{
+    "name": "SLA | Packets | Loss | In | Ratio",
+    "$collection": "pm.metrictypes",
+    "uuid": "3ee451e5-557f-4288-89d2-12593640d14b",
+    "scope__name": "SLA",
+    "field_name": "packets_loss_in_ratio",
+    "field_type": "UInt16",
+    "description": "The ratio of the packets lost to all packets sent from destination to source.",
+    "measure": "%",
+    "units__code": "%",
+    "scale__code": "1"
+}

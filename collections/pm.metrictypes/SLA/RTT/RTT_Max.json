@@ -1,0 +1,12 @@
+{
+    "name": "SLA | RTT | Max",
+    "$collection": "pm.metrictypes",
+    "uuid": "afcd1c07-b84c-43b4-aa0b-1612e7fc5b11",
+    "scope__name": "SLA",
+    "field_name": "rtt_max",
+    "field_type": "UInt32",
+    "description": "The maximum of RTT's that were successfully measured",
+    "measure": "μs",
+    "units__code": "s",
+    "scale__code": "u"
+}

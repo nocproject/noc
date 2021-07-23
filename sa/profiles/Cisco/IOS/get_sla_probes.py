@@ -36,9 +36,19 @@ class Script(BaseScript):
 
     rx_target1 = re.compile(r"Target address: (?P<target>\S+)", re.MULTILINE)
 
+    rx_target_port = re.compile(r"Target port/Source port\s*: (?P<target>[^/]+)/", re.MULTILINE)
+
     rx_tag = re.compile(r"Tag: *(?P<tag>[^\n]+)\n", re.MULTILINE)
 
     rx_owner = re.compile(r"Owner: *(?P<owner>[^\n]+)\n", re.MULTILINE)
+
+    rx_tos = re.compile(r"Type Of Service parameter: *(?P<tos>[^\n]+)\n", re.MULTILINE)
+
+    rx_vrf = re.compile(r"Vrf Name: *(?P<vrf>[^\n]+)\n", re.MULTILINE)
+
+    rx_status = re.compile(
+        r"Status of entry \(SNMP RowStatus\)\s*: *(?P<status>[^\n]+)\n", re.MULTILINE
+    )
 
     # IOS to interface type conversion
     # @todo: Add other types
@@ -72,11 +82,25 @@ class Script(BaseScript):
                 self.logger.error("Unknown test type %s for IP SLA probe %s. Ignoring", type, name)
             type = self.TEST_TYPES[type]
             target = match.group("target")
+            match = self.rx_target_port.search(config)
+            if match and match.group("target") != "0":
+                target += f':{match.group("target").strip()}'
             match = self.rx_owner.search(config)
             group = ""
             if match:
                 group = match.group("owner").strip()
-            r += [{"name": name, "group": group, "type": type, "target": target}]
+            status = True
+            match = self.rx_status.search(config)
+            self.logger.debug("[%s:%s] Status: %s", type, name, match)
+            if match:
+                status = match.group("status").strip() == "Active"
+            r += [{"name": name, "group": group, "type": type, "target": target, "status": status}]
+            match = self.rx_tos.search(config)
+            if match:
+                r[-1]["tos"] = int(match.group("tos").strip(), 16) >> 2
+            match = self.rx_vrf.search(config)
+            if match:
+                r[-1]["vrf"] = match.group("vrf").strip()
             match = self.rx_tag.search(config)
             if match:
                 tag = match.group("tag").strip()
@@ -114,15 +138,27 @@ class Script(BaseScript):
             if tag:
                 probes[index]["tags"] = [f"noc::sla::tag::{tag}"]
         # Getting target
-        for oid, target in self.snmp.getnext(
-            mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddress"],
+        for index, target, target_port, tos, vrf in self.snmp.get_tables(
+            [
+                mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddress"],
+                mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetPort"],
+                mib["CISCO-RTTMON-MIB::rttMonEchoAdminTOS"],
+                mib["CISCO-RTTMON-MIB::rttMonEchoAdminVrfName"],
+            ],
             display_hints={mib["CISCO-RTTMON-MIB::rttMonEchoAdminTargetAddress"]: render_bin},
         ):
-            key = oid.rsplit(".", 1)[-1]
-            if key not in probes:
-                self.logger.debug("[%s] Probe not in probes config. Skipping target", key)
+            # key = oid.rsplit(".", 1)[-1]
+            if index not in probes:
+                self.logger.debug("[%s] Probe not in probes config. Skipping target", index)
                 continue
-            probes[key]["target"] = ".".join(str(int(x)) for x in target)
+            target = ".".join(str(int(x)) for x in target)
+            if target_port:
+                target += f":{target_port}"
+            probes[index]["target"] = target
+            if vrf:
+                probes[index]["vrf"] = vrf
+            if tos:
+                probes[index]["tos"] = tos >> 2
         # Getting Schedule
         for oid, ptime in self.snmp.getnext(
             mib["CISCO-RTTMON-MIB::rttMonScheduleAdminRttStartTime"]
