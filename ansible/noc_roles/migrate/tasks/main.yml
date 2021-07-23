@@ -57,6 +57,15 @@
   become_user: "{{ noc_user }}"
   changed_when: "False"
 
+- name: migrate liftbridge partitions
+  command: ./noc migrate-liftbridge
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+  become: "True"
+  register: migrate_lb_out
+  changed_when: "'CHANGED' in migrate_lb_out.stdout"
+
 - name: Apply pools
   command: "{{ noc_root }}/scripts/deploy/apply-pools"
   args:
@@ -119,12 +128,3 @@
   changed_when: "'CHANGED' in migrate_ch.stdout"
   when:
     - "'svc-chwriter-exec' in groups"
-
-- name: migrate liftbridge partitions
-  command: ./noc migrate-liftbridge
-  args:
-    chdir: "{{ noc_root }}"
-  become_user: "{{ noc_user }}"
-  become: "True"
-  register: migrate_lb_out
-  changed_when: "'CHANGED' in migrate_lb_out.stdout"

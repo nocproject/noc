@@ -18,14 +18,14 @@ resource "yandex_compute_instance" "vm-1" {
 
   resources {
     cores         = 4
-    memory        = 4
+    memory        = 8
     core_fraction = 100
   }
 
   platform_id = "standard-v2"
 
   scheduling_policy {
-    preemptible = false
+    preemptible = true
   }
 
   boot_disk {
