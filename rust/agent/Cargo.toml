@@ -109,7 +109,7 @@ tokio-modbus = { git = "https://github.com/MoixaEnergy/tokio-modbus.git", defaul
   "rtu",
   "tcp"
 ], optional = true }
-tokio-serial = { version = "5.4.0-beta1", optional = true }
+tokio-serial = { version = "5.4.0-beta4", optional = true }
 
 [dev-dependencies]
 criterion = "0.3"

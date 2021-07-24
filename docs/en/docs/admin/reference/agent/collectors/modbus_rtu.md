@@ -26,13 +26,33 @@ to collect performance data.
 ## Response Format
 
 Modbus' response is as an array of 16-bit integers. Actual data encoding
-may be set as `format` parameter. Some encodings may require reading of
+should be set as `format` parameter. Some encodings may require reading of
 2 or 4 registers (`count` must be set to 2 or 4).
 
-| Format   | Count | Description                          |
-| -------- | ----- | ------------------------------------ |
-| `i16_be` | 1     | 16-bit signed integer, big-endian.   |
-| `u16_be` | 1     | 16-bit unsigned integer, big-endian. |
+| Format   | Count | Description                                  |
+| -------- | ----- | -------------------------------------------- |
+| `i16_be` | 1     | 16-bit signed integer, big-endian.           |
+| `u16_be` | 1     | 16-bit unsigned integer, big-endian.         |
+| `i32_be` | 2     | 32-bit signed integer, big-endian            |
+| `i32_le` | 2     | 32-bit signed integer, low-endian            |
+| `i32_bs` | 2     | 32-bit signed integer, big-endian, swapped   |
+| `i32_ls` | 2     | 32-bit signed integer, low-endian, swapped   |
+| `u32_be` | 2     | 32-bit unsigned integer, big-endian          |
+| `u32_le` | 2     | 32-bit unsigned integer, low-endian          |
+| `u32_bs` | 2     | 32-bit unsigned integer, big-endian, swapped |
+| `u32_ls` | 2     | 32-bit unsigned integer, low-endian, swapped |
+
+### Big/Low/Swapped endian
+
+32-bit integer `0x01020304` stored as a sequence of 4 octets. 4 different
+approaches widely used between modbus devices:
+
+| Format                   |   1 |   2 |   3 |   4 |
+| ------------------------ | --: | --: | --: | --: |
+| Big-endian (be)          |  01 |  02 |  03 |  04 |
+| Low-endian (le)          |  04 |  03 |  02 |  01 |
+| Big-endian, swapped (bs) |  02 |  01 |  04 |  03 |
+| Low-endian, swapped (ls) |  03 |  04 |  01 |  02 |
 
 ## Collected Metrics
 

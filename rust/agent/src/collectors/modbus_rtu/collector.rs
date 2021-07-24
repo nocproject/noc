@@ -114,7 +114,7 @@ impl Collectable for ModbusRtuCollector {
             .data_bits(self.data.data_bits)
             .parity(self.data.parity)
             .stop_bits(self.data.stop_bits)
-            .open_async()
+            .open_native_async()
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
         // Sending request
         log::debug!(
@@ -143,6 +143,7 @@ impl Collectable for ModbusRtuCollector {
                 .map(|v| if *v { 1 } else { 0 })
                 .collect(),
         };
+        log::debug!("[{}] Modbus response: {:?}", self.id, data);
         // Process input value
         let value = self.data.format.modbus_try_from(data)?;
         //
