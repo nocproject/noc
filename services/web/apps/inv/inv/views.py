@@ -27,7 +27,7 @@ from noc.sa.interfaces.base import (
 from noc.core.translation import ugettext as _
 
 
-pattern = re.compile(r"Wire\s\S:(.+)\s<->\s\S:(.+)")
+pattern = re.compile(r"Wire\s\S+:(.+)\s<->\s\S+:(.+)")
 
 
 class InvApplication(ExtApplication):
@@ -341,11 +341,13 @@ class InvApplication(ExtApplication):
                     }
                 ]
         wires = []
+        devices_names = []
         if lcs and rcs:
             for w in Object.objects.filter(container=lo.container.id):
                 result = pattern.fullmatch(w.name)
                 if result:
                     wires.append((result.group(1), result.group(2)))
+            devices_names = (lo.name, ro.name)
         # Forming cable
         return {
             "left": {"connections": lcs},
@@ -353,6 +355,7 @@ class InvApplication(ExtApplication):
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": lcs and rcs and left_filter and right_filter,
             "wires": wires,
+            "devices_names": devices_names,
         }
 
     @view(
