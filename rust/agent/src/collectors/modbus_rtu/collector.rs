@@ -53,12 +53,6 @@ impl TryFrom<&ZkConfigCollector> for ModbusRtuCollectorConfig {
                     2 => StopBits::Two,
                     _ => return Err(AgentError::ParseError("invalid stop_bits".to_string())),
                 };
-                let min_count = config.format.min_count();
-                let count = if config.count >= min_count {
-                    config.count
-                } else {
-                    min_count
-                };
                 Ok(Self {
                     serial_path: config.serial_path.clone(),
                     slave: Slave::from(config.slave),
@@ -67,7 +61,7 @@ impl TryFrom<&ZkConfigCollector> for ModbusRtuCollectorConfig {
                     parity,
                     stop_bits,
                     register: config.register,
-                    count,
+                    count: config.format.min_count(),
                     register_type: config.register_type.clone(),
                     format: config.format,
                 })

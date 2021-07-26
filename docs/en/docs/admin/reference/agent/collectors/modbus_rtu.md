@@ -19,15 +19,14 @@ to collect performance data.
 | `parity`        | String           | `none`        | Serial port parity, either `none`, `even` or `odd`                                          |
 | `stop_bits`     | Integer          |               | Serial port stop bits, either `1` or `2`                                                    |
 | `register`      | Integer          |               | Starting register of modbus request                                                         |
-| `count`         | Integer          | `1`           | Amount of 16-bit registers to read                                                          |
 | `register_type` | String           | `holding`     | Modbus request type. Either `holding`, `input` or `coil`                                    |
 | `format`        | String           |               | Expected response format. See [Response format](#response-format) for details               |
 
 ## Response Format
 
 Modbus' response is as an array of 16-bit integers. Actual data encoding
-should be set as `format` parameter. Some encodings may require reading of
-2 or 4 registers (`count` must be set to 2 or 4).
+should be set as `format` parameter. Some encodings may require reading
+2 or 4 adjacent registers.
 
 | Format   | Count | Description                                  |
 | -------- | ----- | -------------------------------------------- |
@@ -41,6 +40,10 @@ should be set as `format` parameter. Some encodings may require reading of
 | `u32_le` | 2     | 32-bit unsigned integer, low-endian          |
 | `u32_bs` | 2     | 32-bit unsigned integer, big-endian, swapped |
 | `u32_ls` | 2     | 32-bit unsigned integer, low-endian, swapped |
+| `f32_be` | 2     | 32-bit floating point, big-endian            |
+| `f32_le` | 2     | 32-bit floating point, low-endian            |
+| `f32_bs` | 2     | 32-bit floating point, big-endian, swapped   |
+| `f32_ls` | 2     | 32-bit floating point, low-endian, swapped   |
 
 ### Big/Low/Swapped endian
 

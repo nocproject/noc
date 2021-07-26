@@ -34,16 +34,10 @@ impl TryFrom<&ZkConfigCollector> for ModbusTcpCollectorConfig {
                 let addr = format!("{}:{}", config.address, config.port)
                     .parse()
                     .map_err(|_| AgentError::ParseError("cannot parse address".to_string()))?;
-                let min_count = config.format.min_count();
-                let count = if config.count >= min_count {
-                    config.count
-                } else {
-                    min_count
-                };
                 Ok(Self {
                     addr,
                     register: config.register,
-                    count,
+                    count: config.format.min_count(),
                     register_type: config.register_type.clone(),
                     format: config.format,
                 })

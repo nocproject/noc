@@ -14,7 +14,6 @@
 | `address`       | String           |               | IP address of Modbus TCP server                                                             |
 | `port`          | Integer          |               | Port of Modbus TCP server                                                                   |
 | `register`      | Integer          |               | Starting register of modbus request                                                         |
-| `count`         | Integer          | `1`           | Amount of 16-bit registers to read                                                          |
 | `register_type` | String           | `holding`     | Modbus request type. Either `holding`, `input` or `coil`                                    |
 | `format`        | String           |               | Expected response format. See [Response format](modbus_rtu.md#response-format) for details  |
 

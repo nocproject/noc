@@ -32,21 +32,33 @@ pub enum ModbusFormat {
     U32Bs,
     #[serde(rename = "u32_ls")]
     U32Ls,
+    #[serde(rename = "f32_be")]
+    F32Be,
+    #[serde(rename = "f32_le")]
+    F32Le,
+    #[serde(rename = "f32_bs")]
+    F32Bs,
+    #[serde(rename = "f32_ls")]
+    F32Ls,
 }
 
 impl ModbusFormat {
     pub fn modbus_try_from(self, v: Vec<u16>) -> Result<f64, AgentError> {
         match self {
-            ModbusFormat::I16Be => ModbusFormat::from_i16_be(v),
-            ModbusFormat::U16Be => ModbusFormat::from_u16_be(v),
-            ModbusFormat::I32Be => ModbusFormat::from_i32_be(v),
-            ModbusFormat::I32Le => ModbusFormat::from_i32_le(v),
-            ModbusFormat::I32Bs => ModbusFormat::from_i32_bs(v),
-            ModbusFormat::I32Ls => ModbusFormat::from_i32_ls(v),
-            ModbusFormat::U32Be => ModbusFormat::from_u32_be(v),
-            ModbusFormat::U32Le => ModbusFormat::from_u32_le(v),
-            ModbusFormat::U32Bs => ModbusFormat::from_u32_bs(v),
-            ModbusFormat::U32Ls => ModbusFormat::from_u32_ls(v),
+            ModbusFormat::I16Be => Ok(ModbusFormat::read_16be(v)? as i16 as f64),
+            ModbusFormat::U16Be => Ok(ModbusFormat::read_16be(v)? as f64),
+            ModbusFormat::I32Be => Ok(ModbusFormat::read_32be(v)? as i32 as f64),
+            ModbusFormat::I32Le => Ok(ModbusFormat::read_32le(v)? as i32 as f64),
+            ModbusFormat::I32Bs => Ok(ModbusFormat::read_32bs(v)? as i32 as f64),
+            ModbusFormat::I32Ls => Ok(ModbusFormat::read_32ls(v)? as i32 as f64),
+            ModbusFormat::U32Be => Ok(ModbusFormat::read_32be(v)? as f64),
+            ModbusFormat::U32Le => Ok(ModbusFormat::read_32le(v)? as f64),
+            ModbusFormat::U32Bs => Ok(ModbusFormat::read_32bs(v)? as f64),
+            ModbusFormat::U32Ls => Ok(ModbusFormat::read_32ls(v)? as f64),
+            ModbusFormat::F32Be => Ok(f32::from_bits(ModbusFormat::read_32be(v)?) as f64),
+            ModbusFormat::F32Le => Ok(f32::from_bits(ModbusFormat::read_32le(v)?) as f64),
+            ModbusFormat::F32Bs => Ok(f32::from_bits(ModbusFormat::read_32bs(v)?) as f64),
+            ModbusFormat::F32Ls => Ok(f32::from_bits(ModbusFormat::read_32ls(v)?) as f64),
         }
     }
     pub fn min_count(self) -> u16 {
@@ -61,27 +73,26 @@ impl ModbusFormat {
             ModbusFormat::U32Le => 2,
             ModbusFormat::U32Bs => 2,
             ModbusFormat::U32Ls => 2,
+            ModbusFormat::F32Be => 2,
+            ModbusFormat::F32Le => 2,
+            ModbusFormat::F32Bs => 2,
+            ModbusFormat::F32Ls => 2,
         }
     }
-    fn from_i16_be(v: Vec<u16>) -> Result<f64, AgentError> {
+    // Layouts
+    fn read_16be(v: Vec<u16>) -> Result<u16, AgentError> {
         if v.is_empty() {
             return Err(AgentError::ParseError("empty data".to_string()));
         }
-        Ok(v[0] as i16 as f64)
+        Ok(v[0])
     }
-    fn from_u16_be(v: Vec<u16>) -> Result<f64, AgentError> {
-        if v.is_empty() {
-            return Err(AgentError::ParseError("empty data".to_string()));
-        }
-        Ok(v[0] as f64)
-    }
-    fn from_i32_be(v: Vec<u16>) -> Result<f64, AgentError> {
+    fn read_32be(v: Vec<u16>) -> Result<u32, AgentError> {
         if v.len() < 2 {
             return Err(AgentError::ParseError("short data".to_string()));
         }
-        Ok(((((v[0] as u32) << 16) + v[1] as u32) as i32) as f64)
+        Ok(((v[0] as u32) << 16) + v[1] as u32)
     }
-    fn from_i32_le(v: Vec<u16>) -> Result<f64, AgentError> {
+    fn read_32le(v: Vec<u16>) -> Result<u32, AgentError> {
         if v.len() < 2 {
             return Err(AgentError::ParseError("short data".to_string()));
         }
@@ -89,10 +100,9 @@ impl ModbusFormat {
         let o2 = ((v[1] >> 8) & 0xff) as u32;
         let o3 = (v[0] & 0xff) as u32;
         let o4 = ((v[0] >> 8) & 0xff) as u32;
-        let r = (o1 << 24) + (o2 << 16) + (o3 << 8) + o4;
-        Ok((r as i32) as f64)
+        Ok((o1 << 24) + (o2 << 16) + (o3 << 8) + o4)
     }
-    fn from_i32_bs(v: Vec<u16>) -> Result<f64, AgentError> {
+    fn read_32bs(v: Vec<u16>) -> Result<u32, AgentError> {
         if v.len() < 2 {
             return Err(AgentError::ParseError("short data".to_string()));
         }
@@ -100,10 +110,9 @@ impl ModbusFormat {
         let o2 = ((v[0] >> 8) & 0xff) as u32;
         let o3 = (v[1] & 0xff) as u32;
         let o4 = ((v[1] >> 8) & 0xff) as u32;
-        let r = (o1 << 24) + (o2 << 16) + (o3 << 8) + o4;
-        Ok((r as i32) as f64)
+        Ok((o1 << 24) + (o2 << 16) + (o3 << 8) + o4)
     }
-    fn from_i32_ls(v: Vec<u16>) -> Result<f64, AgentError> {
+    fn read_32ls(v: Vec<u16>) -> Result<u32, AgentError> {
         if v.len() < 2 {
             return Err(AgentError::ParseError("short data".to_string()));
         }
@@ -111,53 +120,14 @@ impl ModbusFormat {
         let o2 = (v[1] & 0xff) as u32;
         let o3 = ((v[0] >> 8) & 0xff) as u32;
         let o4 = (v[0] & 0xff) as u32;
-        let r = (o1 << 24) + (o2 << 16) + (o3 << 8) + o4;
-        Ok((r as i32) as f64)
-    }
-    fn from_u32_be(v: Vec<u16>) -> Result<f64, AgentError> {
-        if v.len() < 2 {
-            return Err(AgentError::ParseError("short data".to_string()));
-        }
-        Ok((((v[0] as u32) << 16) + v[1] as u32) as f64)
-    }
-    fn from_u32_le(v: Vec<u16>) -> Result<f64, AgentError> {
-        if v.len() < 2 {
-            return Err(AgentError::ParseError("short data".to_string()));
-        }
-        let o1 = (v[1] & 0xff) as u32;
-        let o2 = ((v[1] >> 8) & 0xff) as u32;
-        let o3 = (v[0] & 0xff) as u32;
-        let o4 = ((v[0] >> 8) & 0xff) as u32;
-        let r = (o1 << 24) + (o2 << 16) + (o3 << 8) + o4;
-        Ok(r as f64)
-    }
-    fn from_u32_bs(v: Vec<u16>) -> Result<f64, AgentError> {
-        if v.len() < 2 {
-            return Err(AgentError::ParseError("short data".to_string()));
-        }
-        let o1 = (v[0] & 0xff) as u32;
-        let o2 = ((v[0] >> 8) & 0xff) as u32;
-        let o3 = (v[1] & 0xff) as u32;
-        let o4 = ((v[1] >> 8) & 0xff) as u32;
-        let r = (o1 << 24) + (o2 << 16) + (o3 << 8) + o4;
-        Ok(r as f64)
-    }
-    fn from_u32_ls(v: Vec<u16>) -> Result<f64, AgentError> {
-        if v.len() < 2 {
-            return Err(AgentError::ParseError("short data".to_string()));
-        }
-        let o1 = ((v[1] >> 8) & 0xff) as u32;
-        let o2 = (v[1] & 0xff) as u32;
-        let o3 = ((v[0] >> 8) & 0xff) as u32;
-        let o4 = (v[0] & 0xff) as u32;
-        let r = (o1 << 24) + (o2 << 16) + (o3 << 8) + o4;
-        Ok(r as f64)
+        Ok((o1 << 24) + (o2 << 16) + (o3 << 8) + o4)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::ModbusFormat;
+    use assert_approx_eq::assert_approx_eq;
     use std::iter::FromIterator;
 
     // Convert vec of u8 to modbus-style vec of registers
@@ -332,5 +302,33 @@ mod tests {
         let msg = into_vec16(&data);
         let result = ModbusFormat::U32Ls.modbus_try_from(msg).unwrap();
         assert_eq!(result, 4294901244.0);
+    }
+    #[test]
+    fn test_f32_be_1() {
+        let data = [0x3fu8, 0x80u8, 0x37u8, 0x4du8];
+        let msg = into_vec16(&data);
+        let result = ModbusFormat::F32Be.modbus_try_from(msg).unwrap();
+        assert_approx_eq!(result, 1.0016876, 1e-6);
+    }
+    #[test]
+    fn test_f32_le_1() {
+        let data = [0x4du8, 0x37u8, 0x80u8, 0x3fu8];
+        let msg = into_vec16(&data);
+        let result = ModbusFormat::F32Le.modbus_try_from(msg).unwrap();
+        assert_approx_eq!(result, 1.0016876, 1e-6);
+    }
+    #[test]
+    fn test_f32_bs_1() {
+        let data = [0x80u8, 0x3fu8, 0x4du8, 0x37u8];
+        let msg = into_vec16(&data);
+        let result = ModbusFormat::F32Bs.modbus_try_from(msg).unwrap();
+        assert_approx_eq!(result, 1.0016876, 1e-6);
+    }
+    #[test]
+    fn test_f32_ls_1() {
+        let data = [0x37u8, 0x4du8, 0x3fu8, 0x80u8];
+        let msg = into_vec16(&data);
+        let result = ModbusFormat::F32Ls.modbus_try_from(msg).unwrap();
+        assert_approx_eq!(result, 1.0016876, 1e-6);
     }
 }

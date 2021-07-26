@@ -14,8 +14,6 @@ pub struct ModbusTcpConfig {
     #[serde(default = "default_502")]
     pub port: u16,
     pub register: u16,
-    #[serde(default = "default_1")]
-    pub count: u16,
     // #[serde(flatten)]
     #[serde(default = "default_holding")]
     pub register_type: RegisterType,
@@ -29,10 +27,6 @@ pub enum RegisterType {
     Holding,
     Input,
     Coil,
-}
-
-fn default_1() -> u16 {
-    1
 }
 
 fn default_502() -> u16 {

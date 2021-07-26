@@ -113,6 +113,7 @@ tokio-serial = { version = "5.4.0-beta4", optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
+assert_approx_eq = "1.1"
 
 [[bench]]
 name = "twamp_benchmark"

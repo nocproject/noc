@@ -18,8 +18,6 @@ pub struct ModbusRtuConfig {
     pub parity: CfgParity,
     pub stop_bits: usize, // 1, 2
     pub register: u16,
-    #[serde(default = "default_1")]
-    pub count: u16,
     #[serde(default = "default_holding")]
     pub register_type: RegisterType,
     pub format: ModbusFormat,
@@ -41,10 +39,6 @@ pub enum CfgParity {
     None,
     Odd,
     Even,
-}
-
-fn default_1() -> u16 {
-    1
 }
 
 fn default_holding() -> RegisterType {
