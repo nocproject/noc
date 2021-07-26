@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | Link | DOM | Warning: Out of Threshold #1 (SYSLOG)",
+    "uuid": "9310e60b-9909-4e3f-8877-8c808a852db9",
+    "description": "link 0/0/0 SFP receive power low  warning set",
+    "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "link (?P<interface>\\d+/\\d+/\\d+) SFP (?P<sensor>.+) (?P<threshold>low|high)\\s+warning set"
+        }
+    ]
+}

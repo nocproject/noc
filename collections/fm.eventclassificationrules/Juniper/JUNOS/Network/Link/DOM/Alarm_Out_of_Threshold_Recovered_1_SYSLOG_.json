@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | Link | DOM | Alarm: Out of Threshold Recovered #1 (SYSLOG)",
+    "uuid": "8e644189-75d2-4667-8f74-a9356421303e",
+    "description": "link 0/0/0 SFP receive power low  alarm cleared",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "link (?P<interface>\\d+/\\d+/\\d+) SFP (?P<sensor>.+) (?P<threshold>low|high)\\s+alarm cleared"
+        }
+    ]
+}
