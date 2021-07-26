@@ -9,6 +9,7 @@
 import inspect
 import os
 import re
+import ctypes
 from typing import Optional, Dict, List, Any
 
 # NOC modules
@@ -25,6 +26,7 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
 )
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 pattern = re.compile(r"Wire\s\S+:(.+)\s<->\s\S+:(.+)")
@@ -267,6 +269,7 @@ class InvApplication(ExtApplication):
         ro: Optional[Object] = None
         if o2:
             ro = self.get_object_or_404(Object, id=o2)
+        id_ports_left = {}
         lcs: List[Dict[str, Any]] = []
         cable: Optional[ObjectModel] = None
         # Getting cable
@@ -291,8 +294,10 @@ class InvApplication(ExtApplication):
                     [c for c in lo.model.get_connection_proposals(c.name) if c[0] == ro.model.id]
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
+            left_id = ctypes.c_size_t(hash(c.name)).value
             lcs += [
                 {
+                    "id": left_id,
                     "name": c.name,
                     "type": str(c.type.id),
                     "type__label": c.type.name,
@@ -304,6 +309,8 @@ class InvApplication(ExtApplication):
                     "disable_reason": disable_reason,
                 }
             ]
+            id_ports_left[c.name] = left_id
+        id_ports_right = {}
         rcs: List[Dict[str, Any]] = []
         if ro:
             for c in ro.model.connections:
@@ -327,8 +334,10 @@ class InvApplication(ExtApplication):
                         ]
                     )
                 oc, oo, _ = ro.get_p2p_connection(c.name)
+                right_id = ctypes.c_size_t(hash(c.name)).value
                 rcs += [
                     {
+                        "id": right_id,
                         "name": c.name,
                         "type": str(c.type.id),
                         "type__label": c.type.name,
@@ -340,14 +349,22 @@ class InvApplication(ExtApplication):
                         "disable_reason": disable_reason,
                     }
                 ]
+                id_ports_right[c.name] = right_id
         wires = []
-        devices_names = []
+        devices_names = ()
         if lcs and rcs:
             for w in Object.objects.filter(container=lo.container.id):
                 result = pattern.fullmatch(w.name)
                 if result:
-                    wires.append((result.group(1), result.group(2)))
-            devices_names = (lo.name, ro.name)
+                    name_left = result.group(1)
+                    name_right = result.group(2)
+                    wires.append(
+                        (
+                            (id_ports_left.get(name_left, 0), name_left),
+                            (id_ports_right.get(name_right, 0), name_right),
+                        )
+                    )
+            devices_names = ((smart_text(lo.id), lo.name), (smart_text(ro.id), ro.name))
         # Forming cable
         return {
             "left": {"connections": lcs},
