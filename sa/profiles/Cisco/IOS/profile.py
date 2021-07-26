@@ -146,7 +146,8 @@ class Profile(BaseProfile):
         if il.startswith("service-engine"):
             return "Service-Engine %s" % il[14:].strip()
         # Serial0/1/0:15-Signaling -> Serial0/1/0:15
-        if il.startswith("se") and "-" in interface:
+        # GigabitEthernet0/1.100-802.1Q vLAN subif -> GigabitEthernet0/1.100
+        if (il.startswith("se") or il.endswith("vlan subif")) and "-" in interface:
             interface = interface.split("-")[0]
         # Control Plane Interface
         # @todo: Does it relates to CPP?
