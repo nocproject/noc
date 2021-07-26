@@ -1,0 +1,30 @@
+{
+    "name": "NoName | Patch | Naked Cable 5m",
+    "$collection": "inv.objectmodels",
+    "uuid": "b89b3273-c354-49db-9fb2-689c108b1c55",
+    "vendor__code": "NONAME",
+    "description": "Naked Cable, 5 meter",
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "m",
+            "name": "A1",
+            "protocols": [">RS485", "<RS485"],
+            "type__name": "Power | Naked"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "m",
+            "name": "A2",
+            "protocols": [">RS485", "<RS485"],
+            "type__name": "Power | Naked"
+        }
+    ],
+    "data": {
+        "length": {
+            "length": 5.0
+        }
+    }
+}

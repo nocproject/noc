@@ -1,0 +1,8 @@
+{
+    "name": "Moxa",
+    "uuid": "eb1aaea1-33fb-46de-83f4-b19ba8404a38",
+    "full_name": "MOXA Inc",
+    "code": ["MOXA"],
+    "site": "https://moxa.pro",
+    "$collection": "inv.vendors"
+}

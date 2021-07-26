@@ -1,0 +1,117 @@
+{
+    "name": "Moxa | UC-8112-LX-STK",
+    "$collection": "inv.objectmodels",
+    "uuid": "7c5ffd70-daeb-4cce-84ff-f4445ce4e018",
+    "vendor__code": "MOXA",
+    "description": null,
+    "connections": [
+        {
+            "description": "Ethernet 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["<USB11", "<USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "Shielded Ground",
+            "direction": "s",
+            "gender": "f",
+            "name": "GND",
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": " power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "V+",
+            "protocols": ["<+24VDC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "V-",
+            "protocols": ["<+24VDC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "RS-232/422/485",
+            "direction": "s",
+            "gender": "f",
+            "group": "M0",
+            "name": "1",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        },
+        {
+            "description": "RS-232/422/485",
+            "direction": "s",
+            "gender": "f",
+            "group": "M0",
+            "name": "2",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        },
+        {
+            "description": "RS-232/422/485",
+            "direction": "s",
+            "gender": "f",
+            "group": "M0",
+            "name": "3",
+            "protocols": ["<RS232", "<RS485-B"],
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        },
+        {
+            "description": "RS-232/422/485",
+            "direction": "s",
+            "gender": "f",
+            "group": "M0",
+            "name": "4",
+            "protocols": ["<RS232", "<RS485-A"],
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        },
+        {
+            "description": "RS-232/422/485",
+            "direction": "s",
+            "gender": "f",
+            "group": "M0",
+            "name": "5",
+            "protocols": ["<RS232"],
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
+        }
+    ],
+    "data": {
+        "dimensions": {
+            "depth": 128,
+            "height": 101,
+            "width": 27
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 5.4
+        },
+        "weight": {
+            "weight": 2.24
+        }
+    }
+}

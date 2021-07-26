@@ -101,7 +101,7 @@
         {
             "description": "Power outlet",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "power",
             "protocols": [">12VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"

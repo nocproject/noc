@@ -255,7 +255,7 @@
         {
             "description": "M4 ground",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "ground",
             "type__name": "Power | M4 Pin"
         },

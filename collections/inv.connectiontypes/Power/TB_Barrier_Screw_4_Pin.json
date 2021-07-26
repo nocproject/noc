@@ -3,6 +3,6 @@
     "$collection": "inv.connectiontypes",
     "uuid": "5e68584f-84c3-4e34-a685-ac8c740550c1",
     "description": "4 Pin Barrier Screw Terminal Block",
-    "c_group": [],
-    "genders": "m"
+    "c_group": ["power_naked"],
+    "genders": "f"
 }

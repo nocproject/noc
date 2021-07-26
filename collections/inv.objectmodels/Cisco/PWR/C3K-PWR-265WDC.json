@@ -10,7 +10,7 @@
         {
             "description": "DC A input Positive contact",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC1+",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"
@@ -18,7 +18,7 @@
         {
             "description": "DC A input Negative contact",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC1-",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"
@@ -26,7 +26,7 @@
         {
             "description": "DC B input Positive contact",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC2+",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"
@@ -34,7 +34,7 @@
         {
             "description": "DC B input Negative contact",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC2-",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"

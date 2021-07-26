@@ -28,7 +28,7 @@
             "gender": "f",
             "group": "1",
             "name": "rs485_a",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": null,
@@ -36,7 +36,7 @@
             "gender": "f",
             "group": "1",
             "name": "rs485_b",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "дискретные вход",
@@ -44,7 +44,7 @@
             "gender": "f",
             "group": "2",
             "name": "in",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "цифровой выход 0/3,3В для управления внешней розеткой",
@@ -52,7 +52,7 @@
             "gender": "f",
             "group": "2",
             "name": "out",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "вход подключения датчика температуры",
@@ -60,7 +60,7 @@
             "gender": "f",
             "group": "2",
             "name": "temp",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "вход наличия сетевого напряжения",
@@ -68,7 +68,7 @@
             "gender": "f",
             "group": "3",
             "name": "L",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "вход наличия сетевого напряжения",
@@ -76,7 +76,7 @@
             "gender": "f",
             "group": "3",
             "name": "N",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         }
     ],
     "data": {

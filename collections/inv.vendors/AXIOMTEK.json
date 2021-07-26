@@ -1,0 +1,8 @@
+{
+    "name": "Axiomtek",
+    "uuid": "5e5d5f1b-1aed-4526-9215-cd357a48f33d",
+    "full_name": "Axiomtek Co., Ltd.",
+    "code": ["AXIOMTEK"],
+    "site": "https://www.axiomtek.com",
+    "$collection": "inv.vendors"
+}

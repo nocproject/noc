@@ -48,7 +48,7 @@
         {
             "description": "BATRET A",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC1+",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"
@@ -56,7 +56,7 @@
         {
             "description": "-48V BAT A",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC1-",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"
@@ -64,7 +64,7 @@
         {
             "description": "BATRET B",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC2+",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"
@@ -72,7 +72,7 @@
         {
             "description": "-48V BAT B",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC2-",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 4 Pin"

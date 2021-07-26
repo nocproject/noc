@@ -9,7 +9,7 @@
         {
             "description": "-48V",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "group": "0",
             "name": "-48V",
             "protocols": [">-48VDC"],
@@ -18,7 +18,7 @@
         {
             "description": "RTN (+)",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "group": "0",
             "name": "RTN",
             "protocols": [">-48VDC"],

@@ -1,0 +1,276 @@
+{
+    "name": "ОВЕН | InputModule | МВ210-101",
+    "$collection": "inv.objectmodels",
+    "uuid": "0127d227-3759-4b55-9fc6-2470e657f6c0",
+    "vendor__code": "OWEN",
+    "description": "Модуль аналогового ввода МВ210-101 предназначен для измерения и преобразования температуры (при использовании в качестве первичных преобразователей термопреобразователей сопротивления или термоэлектрических преобразователей), а также других физических величин (давления, влажности, расхода, уровня и т. п.), значение которых первичными преобразователями (датчиками) может быть преобразовано в напряжение постоянного тока или унифицированный электрический сигнал силы тока постоянного напряжения, в единицах измерения физической величины или в процентах от максимального значения диапазона измерений, а также передачи этих данных к программируемым логическим контроллерам, панельным контроллерам, ПК, удаленному облачному сервису или иным управляющим устройствам по интерфейсу Ethernet.",
+    "connections": [
+        {
+            "description": "PWR-",
+            "direction": "s",
+            "gender": "f",
+            "name": "PWR-",
+            "protocols": [">-48VDC", ">220VAC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "PWR+",
+            "direction": "s",
+            "gender": "f",
+            "name": "PWR+",
+            "protocols": [">+24VDC", ">220VAC"],
+            "type__name": "Power | MSTB 2.5/3-ST-5.08"
+        },
+        {
+            "description": "Ethernet 1",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet 2",
+            "direction": "s",
+            "gender": "f",
+            "name": "eth2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Вход 1–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI1-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 1–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI1-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 2–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI2-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 2–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI2-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 3–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI3-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 3–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI3-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 4–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI4-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 4–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI4-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 5–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI5-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 5–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI5-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 6–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI6-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 6–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI6-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 7–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI7-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 7–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI7-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 8–1",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI8-1",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход 8–2",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI8-2",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        },
+        {
+            "description": "Вход R",
+            "direction": "s",
+            "gender": "f",
+            "name": "AI-R",
+            "type__name": "Power | TB Barrier Screw 24 Pin"
+        }
+    ],
+    "data": {
+        "dimensions": {
+            "depth": 83,
+            "height": 124,
+            "width": 42
+        },
+        "modbus": {
+            "slave_id": 16,
+            "type": "TCP"
+        },
+        "power": {
+            "power": 4.0
+        },
+        "weight": {
+            "weight": 0.5
+        }
+    },
+    "sensors": [
+        {
+            "description": "Вход 1",
+            "modbus_register": 4000,
+            "name": "in1",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 2",
+            "modbus_register": 4003,
+            "name": "in2",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 3",
+            "modbus_register": 4006,
+            "name": "in3",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 4",
+            "modbus_register": 4009,
+            "name": "in4",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 5",
+            "modbus_register": 4012,
+            "name": "in5",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 6",
+            "modbus_register": 4015,
+            "name": "in6",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 7",
+            "modbus_register": 4018,
+            "name": "in7",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_register": 4021,
+            "name": "in8",
+            "units__code": "1"
+        }
+    ]
+}

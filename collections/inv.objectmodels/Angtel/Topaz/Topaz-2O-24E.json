@@ -227,7 +227,7 @@
         {
             "description": "Power outlet",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"

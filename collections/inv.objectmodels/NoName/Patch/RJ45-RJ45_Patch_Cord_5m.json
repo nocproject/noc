@@ -1,0 +1,30 @@
+{
+    "name": "NoName | Patch | RJ45-RJ45 Patch Cord 5m",
+    "$collection": "inv.objectmodels",
+    "uuid": "149a1f94-736b-4376-a0bf-fc34c7c9e526",
+    "vendor__code": "NONAME",
+    "description": "Patch-Cord Cable, 5 meter",
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "m",
+            "name": "A1",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "m",
+            "name": "A2",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "length": {
+            "length": 5.0
+        }
+    }
+}

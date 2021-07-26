@@ -88,7 +88,10 @@ def test_connection_checklist(model):
 # * direction - list of possible directions
 # * protocols - list of possible protocols. At least one protocol must be met
 CONNECTION_CHECKLIST = {
-    "Electrical | DB9": {"directions": "s", "protocols": [">RS232", ">DryContact"]},
+    "Electrical | DB9": {
+        "directions": "s",
+        "protocols": [">RS232", ">DryContact", "<RS232", "<RS485-A", "<RS485-B"],
+    },
     "Electrical | RJ45": {
         "directions": "s",
         "protocols": [
