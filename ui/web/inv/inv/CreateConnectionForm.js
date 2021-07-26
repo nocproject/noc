@@ -160,7 +160,9 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                     maxPins = Math.max(data.left.connections.length, data.right.connections.length),
                     isValid = function(pins, name) {
                         return Ext.each(pins, function(pin) {
-                            return pin.valid;
+                            if (pin.name === name) {
+                                return pin.valid;
+                            }
                         });
                     };
 
