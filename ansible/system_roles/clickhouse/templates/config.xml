@@ -118,7 +118,6 @@
     <!-- Configuration of external dictionaries. See:
                  https://clickhouse.yandex/reference_en.html#External%20Dictionaries
     -->
-    <dictionaries_config>{{ ch_dictionaries_path }}/*.xml</dictionaries_config>
 
 
     <!-- Uncomment if you want data to be compressed 30-100% better.
