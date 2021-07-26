@@ -24,8 +24,11 @@ class Script(BaseScript):
         else:
             config = self.cli("show running-config")
         try:
-            i = config.index("!")
-            config = config[i:]
+            i = config.index("e1 unit-1")
         except ValueError:
-            pass
+            try:
+                i = config.index("!")
+                config = config[i:]
+            except ValueError:
+                pass
         return self.cleaned_config(config)
