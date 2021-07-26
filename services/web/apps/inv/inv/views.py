@@ -340,20 +340,19 @@ class InvApplication(ExtApplication):
                         "disable_reason": disable_reason,
                     }
                 ]
-        wares = []
+        wires = []
         if lcs and rcs:
             for w in Object.objects.filter(container=lo.container.id):
                 result = pattern.fullmatch(w.name)
                 if result:
-                    wares.append((result.group(1), result.group(2)))
-        print(wares)
+                    wires.append((result.group(1), result.group(2)))
         # Forming cable
         return {
             "left": {"connections": lcs},
             "right": {"connections": rcs},
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": lcs and rcs and left_filter and right_filter,
-            "wares": wares,
+            "wires": wires,
         }
 
     @view(
