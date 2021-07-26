@@ -48,20 +48,6 @@
   tags:
     - config
 
-- name: place clickhouse ct template
-  include_role:
-    name: consul-template
-    tasks_from: service
-  vars:
-    ct_service_name: "{{ item[:-10]| basename }}"
-    ct_service_source: "{{ item | basename }}"
-    ct_service_dest: "{{ ch_dictionaries_path }}/{{ item[:-6] |basename }}"
-    ct_service_source_template: "False"
-  with_fileglob:
-    - "*.ctmpl"
-  tags:
-    - config
-
 - name: install config overrides
   template:
     src: "noc.xml"
