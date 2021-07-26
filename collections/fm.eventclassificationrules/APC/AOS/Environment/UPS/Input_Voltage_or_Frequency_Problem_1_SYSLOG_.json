@@ -1,9 +1,9 @@
 {
-    "name": "APC | AOS | Environment | UPS | Input Power Failed #3 (SYSLOG)",
+    "name": "APC | AOS | Environment | UPS | Input Voltage or Frequency Problem #1 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
-    "uuid": "aba16c3d-ddbc-41d4-ab91-c6b165fee1e0",
+    "uuid": "3535c565-3ca0-41d5-9eb1-01ceada0ce7b",
     "description": "UPS: An input voltage or frequency problem prevents switching to bypass mode. 0x020F",
-    "event_class__name": "Environment | UPS | Input Power Failed",
+    "event_class__name": "Environment | UPS | Input Voltage or Frequency Problem",
     "preference": 1000,
     "patterns": [
         {

@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Environment | UPS | Self-Test Started #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2647e638-d137-4afe-a63f-a171169e1369",
+    "description": "UPS: Self-Test started by automatic timer. 0x0137",
+    "event_class__name": "Environment | UPS | Self-Test Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Self-Test started by automatic timer. 0x0137"
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Environment | UPS | Input Voltage or Frequency Problem",
+    "$collection": "fm.alarmclasses",
+    "uuid": "051cbdbe-a209-4314-bb30-6c432c5a6da9",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "MAJOR",
+    "vars": [
+
+    ],
+    "subject_template": "Input Voltage or Frequency Problem",
+    "body_template": "Input Voltage or Frequency Problem",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
