@@ -1,0 +1,8 @@
+{
+    "name": "Овен",
+    "uuid": "327bd119-d8c9-48bb-93be-b452450d1b0a",
+    "full_name": "ОВЕН",
+    "code": ["OWEN"],
+    "site": "https://owen.ru",
+    "$collection": "inv.vendors"
+}

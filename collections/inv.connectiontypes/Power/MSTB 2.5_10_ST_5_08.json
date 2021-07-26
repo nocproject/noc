@@ -1,0 +1,8 @@
+{
+    "name": "Power | MSTB 2.5/10-ST-5.08",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b5297918-9e65-442c-811d-2723231ec165",
+    "description": "Terminal block connector, 10 pins",
+    "c_group": ["power_naked"],
+    "genders": "f"
+}

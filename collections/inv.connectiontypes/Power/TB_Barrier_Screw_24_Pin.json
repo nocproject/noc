@@ -1,0 +1,8 @@
+{
+    "name": "Power | TB Barrier Screw 24 Pin",
+    "$collection": "inv.connectiontypes",
+    "uuid": "9984e3ef-1b85-4cd3-b8b7-c112dd5091c2",
+    "description": "24 Pin Barrier Screw Terminal Block",
+    "c_group": ["power_naked"],
+    "genders": "f"
+}

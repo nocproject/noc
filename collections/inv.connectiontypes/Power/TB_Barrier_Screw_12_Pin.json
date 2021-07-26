@@ -1,0 +1,8 @@
+{
+    "name": "Power | TB Barrier Screw 12 Pin",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6eb662ea-b3a9-443f-84e7-452e4243d1d6",
+    "description": "12 Pin Barrier Screw Terminal Block",
+    "c_group": ["power_naked"],
+    "genders": "f"
+}

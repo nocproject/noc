@@ -1,0 +1,162 @@
+{
+    "name": "ОВЕН | InputModule | МЭ110-224.1М",
+    "$collection": "inv.objectmodels",
+    "uuid": "d96a3a0c-195d-4475-8d3a-4cf0f14ed92c",
+    "vendor__code": "OWEN",
+    "description": "Прибор предназначен  для  измерения  параметров однофазной электрической сети, таких как  напряжение,  ток,  частота,  полная,  активная  и  реактивная  мощности  и  коэффициент  мощности  (cos φ),  преобразования  его  в  цифровой  код  и  передачи  результатов  измерений  в сеть RS-485.",
+    "connections": [
+        {
+            "description": "RS-485 A",
+            "direction": "s",
+            "gender": "f",
+            "name": "A",
+            "protocols": [">RS485-A"],
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "PWR-",
+            "direction": "s",
+            "gender": "f",
+            "name": "PWR-",
+            "protocols": [">+24VDC", ">220VAC"],
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Factory Settings",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "RS-485 B",
+            "direction": "s",
+            "gender": "f",
+            "name": "B",
+            "protocols": [">RS485-B"],
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "PWR+",
+            "direction": "s",
+            "gender": "f",
+            "name": "PWR+",
+            "protocols": [">+24VDC", ">220VAC"],
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Factory Settings",
+            "direction": "s",
+            "gender": "f",
+            "name": "6",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Not Used",
+            "direction": "s",
+            "gender": "f",
+            "name": "7",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Not Used",
+            "direction": "s",
+            "gender": "f",
+            "name": "8",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Not Used",
+            "direction": "s",
+            "gender": "f",
+            "name": "9",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Вход \"I\"",
+            "direction": "s",
+            "gender": "f",
+            "name": "I",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Common (Общий)",
+            "direction": "s",
+            "gender": "f",
+            "name": "C",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        },
+        {
+            "description": "Вход \"U\"",
+            "direction": "s",
+            "gender": "f",
+            "name": "U",
+            "type__name": "Power | TB Barrier Screw 3 Pin"
+        }
+    ],
+    "data": {
+        "dimensions": {
+            "depth": 76,
+            "height": 110,
+            "width": 27
+        },
+        "modbus": {
+            "bits": 8,
+            "parity": false,
+            "slave_id": 16,
+            "speed": 115200,
+            "stop": 0,
+            "type": "RTU"
+        },
+        "power": {
+            "power": 5.0
+        },
+        "weight": {
+            "weight": 0.5
+        }
+    },
+    "sensors": [
+        {
+            "description": "Напряжение сети",
+            "modbus_register": 49,
+            "name": "volt",
+            "units__code": "VAC"
+        },
+        {
+            "description": "Ток сети",
+            "modbus_register": 51,
+            "name": "current",
+            "units__code": "A"
+        },
+        {
+            "description": "Полная мощность",
+            "modbus_register": 53,
+            "name": "full_power",
+            "units__code": "W"
+        },
+        {
+            "description": "Активная мощность",
+            "modbus_register": 55,
+            "name": "real_power",
+            "units__code": "W"
+        },
+        {
+            "description": "Реактивная мощность",
+            "modbus_register": 57,
+            "name": "reactive_power",
+            "units__code": "W"
+        },
+        {
+            "description": "Коэффициент мощности",
+            "modbus_register": 59,
+            "name": "power_factor",
+            "units__code": "1"
+        },
+        {
+            "description": "Частота сети",
+            "modbus_register": 61,
+            "name": "reactive_power",
+            "units__code": "hz"
+        }
+    ]
+}

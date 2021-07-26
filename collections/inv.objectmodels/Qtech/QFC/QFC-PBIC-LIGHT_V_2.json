@@ -20,7 +20,7 @@
             "gender": "f",
             "group": "1",
             "name": "+in1",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "оптронный вход, срабатывающий от замыкания на +48В",
@@ -28,7 +28,7 @@
             "gender": "f",
             "group": "1",
             "name": "+in2",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "оптронный вход, срабатывающий от замыкания на GND",
@@ -36,7 +36,7 @@
             "gender": "f",
             "group": "1",
             "name": "-in3",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "оптронный вход, срабатывающий от замыкания на GND",
@@ -44,7 +44,7 @@
             "gender": "f",
             "group": "1",
             "name": "-in4",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "",
@@ -52,7 +52,7 @@
             "gender": "f",
             "group": "1",
             "name": "GND",
-            "type__name": "Electrical | MSTB 2,5/5-ST-5.08"
+            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
             "description": "вход подключения внешнего датчика температуры",

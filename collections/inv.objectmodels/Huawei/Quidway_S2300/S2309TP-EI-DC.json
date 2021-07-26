@@ -11,7 +11,7 @@
         {
             "description": "-48V",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "-48",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
@@ -19,7 +19,7 @@
         {
             "description": "RTN (+)",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "RTN",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"

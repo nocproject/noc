@@ -18,7 +18,7 @@
         {
             "description": "DC input Positive contact",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC+",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
@@ -26,7 +26,7 @@
         {
             "description": "DC input Negative contact",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "DC-",
             "protocols": [">-48VDC"],
             "type__name": "Power | TB Barrier Screw 2 Pin"
