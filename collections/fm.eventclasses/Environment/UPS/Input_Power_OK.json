@@ -24,6 +24,12 @@
             "condition": "True",
             "action": "clear",
             "alarm_class__name": "Environment | UPS | Input Power Low"
+        },
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | UPS | Input Voltage or Frequency Problem"
         }
     ]
 }

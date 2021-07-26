@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Voltage or Frequency Problem #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "b8677cad-98bc-49f2-80eb-2fb566fa3d6e",
+    "description": "UPS: On battery power in response to distorted input. 0x0109",
+    "event_class__name": "Environment | UPS | Input Voltage or Frequency Problem",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: On battery power in response to distorted input. 0x0109"
+        }
+    ]
+}

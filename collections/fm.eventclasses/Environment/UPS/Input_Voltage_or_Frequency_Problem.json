@@ -1,0 +1,23 @@
+{
+    "name": "Environment | UPS | Input Voltage or Frequency Problem",
+    "$collection": "fm.eventclasses",
+    "uuid": "1e855ed2-ce1f-44c1-aae2-af629c3d98c1",
+    "description": "Input Voltage or Frequency Problem",
+    "action": "A",
+    "vars": [
+
+    ],
+    "subject_template": "Input Voltage or Frequency Problem",
+    "body_template": "Input Voltage or Frequency Problem",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Environment | UPS | Input Voltage or Frequency Problem"
+        }
+    ]
+}
