@@ -10,6 +10,7 @@ use super::dns::{DnsCollector, DnsConfig};
 use super::fs::{FsCollector, FsConfig};
 use super::http::{HttpCollector, HttpConfig};
 use super::memory::{MemoryCollector, MemoryConfig};
+use super::modbus_rtu::{ModbusRtuCollector, ModbusRtuConfig};
 use super::modbus_tcp::{ModbusTcpCollector, ModbusTcpConfig};
 use super::network::{NetworkCollector, NetworkConfig};
 use super::test::{TestCollector, TestConfig};
@@ -45,6 +46,8 @@ pub enum CollectorConfig {
     Memory(MemoryConfig),
     #[serde(rename = "modbus_tcp")]
     ModbusTcp(ModbusTcpConfig),
+    #[serde(rename = "modbus_rtu")]
+    ModbusRtu(ModbusRtuConfig),
     #[serde(rename = "network")]
     Network(NetworkConfig),
     #[serde(rename = "test")]
@@ -68,6 +71,7 @@ pub enum Collectors {
     Http(HttpCollector),
     Memory(MemoryCollector),
     ModbusTcp(ModbusTcpCollector),
+    ModbusRtu(ModbusRtuCollector),
     Network(NetworkCollector),
     Test(TestCollector),
     TwampReflector(TwampReflectorCollector),
@@ -90,6 +94,9 @@ impl TryFrom<&ZkConfigCollector> for Collectors {
             CollectorConfig::Memory(_) => Collectors::Memory(MemoryCollector::try_from(value)?),
             CollectorConfig::ModbusTcp(_) => {
                 Collectors::ModbusTcp(ModbusTcpCollector::try_from(value)?)
+            }
+            CollectorConfig::ModbusRtu(_) => {
+                Collectors::ModbusRtu(ModbusRtuCollector::try_from(value)?)
             }
             CollectorConfig::Network(_) => Collectors::Network(NetworkCollector::try_from(value)?),
             CollectorConfig::Test(_) => Collectors::Test(TestCollector::try_from(value)?),

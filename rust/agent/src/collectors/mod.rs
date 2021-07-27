@@ -12,6 +12,7 @@ pub mod dns;
 pub mod fs;
 pub mod http;
 pub mod memory;
+pub mod modbus_rtu;
 pub mod modbus_tcp;
 pub mod network;
 mod registry;
