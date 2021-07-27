@@ -62,6 +62,15 @@ class InvApplication(ExtApplication):
     def get_plugin_data(self, name):
         return {"name": name, "xtype": self.plugins[name].js}
 
+    def get_remote_slot(self, left_slot, lo, ro):
+        """
+        Determing right device's slot with find_path method
+        :return:
+        """
+        for path in find_path(lo, left_slot.name, left_slot.protocols):
+            if path.obj == ro:
+                return path
+
     @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
         children = []
@@ -351,18 +360,17 @@ class InvApplication(ExtApplication):
                 id_ports_right[c.name] = right_id
         wires = []
         for p in checking_ports:
-            for path in find_path(lo, p.name, p.protocols):
-                if path.obj == ro:
-                    print(path.obj, path.connection)
-                    wires.append(
-                        {
-                            "left": {"id": id_ports_left.get(p.name), "name": p.name},
-                            "right": {
-                                "id": id_ports_right.get(path.connection),
-                                "name": path.connection,
-                            },
-                        }
-                    )
+            remote = self.get_remote_slot(p, lo, ro)
+            if remote:
+                wires.append(
+                    {
+                        "left": {"id": id_ports_left.get(p.name), "name": p.name},
+                        "right": {
+                            "id": id_ports_right.get(remote.connection),
+                            "name": remote.connection,
+                        },
+                    }
+                )
         # Forming cable
         return {
             "left": {"connections": lcs, "device": {"id": smart_text(lo.id), "name": lo.name}},
