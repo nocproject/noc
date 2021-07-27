@@ -9,7 +9,6 @@
 import inspect
 import os
 import re
-import ctypes
 from typing import Optional, Dict, List, Any
 
 # NOC modules
@@ -294,7 +293,7 @@ class InvApplication(ExtApplication):
                     [c for c in lo.model.get_connection_proposals(c.name) if c[0] == ro.model.id]
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
-            left_id = ctypes.c_size_t(hash(c.name)).value
+            left_id = f"{smart_text(ro.id)}{c.name}"
             lcs += [
                 {
                     "id": left_id,
@@ -334,7 +333,7 @@ class InvApplication(ExtApplication):
                         ]
                     )
                 oc, oo, _ = ro.get_p2p_connection(c.name)
-                right_id = ctypes.c_size_t(hash(c.name)).value
+                right_id = f"{smart_text(ro.id)}{c.name}"
                 rcs += [
                     {
                         "id": right_id,
@@ -351,7 +350,6 @@ class InvApplication(ExtApplication):
                 ]
                 id_ports_right[c.name] = right_id
         wires = []
-        devices_names = ()
         if lcs and rcs:
             for w in Object.objects.filter(container=lo.container.id):
                 result = pattern.fullmatch(w.name)
@@ -364,15 +362,13 @@ class InvApplication(ExtApplication):
                             (id_ports_right.get(name_right, 0), name_right),
                         )
                     )
-            devices_names = ((smart_text(lo.id), lo.name), (smart_text(ro.id), ro.name))
         # Forming cable
         return {
-            "left": {"connections": lcs},
-            "right": {"connections": rcs},
+            "left": {"connections": lcs, "device": {"id": smart_text(lo.id), "name": lo.name}},
+            "right": {"connections": rcs, "device": {"id": smart_text(ro.id), "name": ro.name}},
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": lcs and rcs and left_filter and right_filter,
             "wires": wires,
-            "devices_names": devices_names,
         }
 
     @view(
