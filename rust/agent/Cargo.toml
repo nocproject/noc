@@ -1,6 +1,6 @@
 [package]
 name = "agent"
-version = "0.6.1"
+version = "0.6.2"
 authors = ["The NOC Project"]
 edition = "2018"
 description = "NOC Agent"
@@ -19,6 +19,7 @@ default = [
   "http",
   "memory",
   "modbus-tcp",
+  "modbus-rtu",
   "network",
   "test",
   "twamp-sender",
@@ -49,6 +50,8 @@ http = ["reqwest"]
 memory = ["systemstat"]
 # modbus-tcp collector
 modbus-tcp = ["tokio-modbus"]
+# modbus-tcp collector
+modbus-rtu = ["tokio-modbus", "tokio-serial"]
 # network collector
 network = ["systemstat"]
 # test collector
@@ -106,9 +109,11 @@ tokio-modbus = { git = "https://github.com/MoixaEnergy/tokio-modbus.git", defaul
   "rtu",
   "tcp"
 ], optional = true }
+tokio-serial = { version = "5.4.0-beta4", optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
+assert_approx_eq = "1.1"
 
 [[bench]]
 name = "twamp_benchmark"

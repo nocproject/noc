@@ -1,13 +1,13 @@
 # http collector
 
-`http` collector performs HTTP request and collects response performance data
+`http` collector performs HTTP request and collects the response performance data.
 
 ## Configuration
 
 | Parameter  | Type             | Default       | Description                                                                                 |
 | ---------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------- |
 | `id`       | String           |               | Collector's ID. Must be unique per agent instance. Will be returned along with the metrics. |
-| `type`     | String           |               | Must be `dns`                                                                               |
+| `type`     | String           |               | Must be `http`                                                                              |
 | `service`  | String           | Equal to `id` | Service id for output metrics                                                               |
 | `interval` | Integer          |               | Repetition interval in seconds                                                              |
 | `labels`   | Array of Strings |               | List of additional labels. Will be returned along with metrics                              |
