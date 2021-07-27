@@ -300,7 +300,7 @@ class InvApplication(ExtApplication):
                     [c for c in lo.model.get_connection_proposals(c.name) if c[0] == ro.model.id]
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
-            left_id = f"{smart_text(ro.id)}{c.name}"
+            left_id = f"{smart_text(lo.id)}{c.name}"
             if bool(oc):
                 checking_ports.append(c)
             lcs += [
@@ -359,22 +359,29 @@ class InvApplication(ExtApplication):
                 ]
                 id_ports_right[c.name] = right_id
         wires = []
-        for p in checking_ports:
-            remote = self.get_remote_slot(p, lo, ro)
-            if remote:
-                wires.append(
-                    {
-                        "left": {"id": id_ports_left.get(p.name), "name": p.name},
-                        "right": {
-                            "id": id_ports_right.get(remote.connection),
-                            "name": remote.connection,
-                        },
-                    }
-                )
+        device_left = {}
+        device_right = {}
+        if lcs and rcs:
+            device_left["id"] = smart_text(lo.id)
+            device_left["name"] = lo.name
+            device_right["id"] = smart_text(ro.id)
+            device_right["name"] = ro.name
+            for p in checking_ports:
+                remote = self.get_remote_slot(p, lo, ro)
+                if remote:
+                    wires.append(
+                        {
+                            "left": {"id": id_ports_left.get(p.name), "name": p.name},
+                            "right": {
+                                "id": id_ports_right.get(remote.connection),
+                                "name": remote.connection,
+                            },
+                        }
+                    )
         # Forming cable
         return {
-            "left": {"connections": lcs, "device": {"id": smart_text(lo.id), "name": lo.name}},
-            "right": {"connections": rcs, "device": {"id": smart_text(ro.id), "name": ro.name}},
+            "left": {"connections": lcs, "device": device_left},
+            "right": {"connections": rcs, "device": device_right},
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": lcs and rcs and left_filter and right_filter,
             "wires": wires,
