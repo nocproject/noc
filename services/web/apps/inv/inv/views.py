@@ -8,7 +8,6 @@
 # Python modules
 import inspect
 import os
-import re
 from typing import Optional, Dict, List, Any
 
 # NOC modules
@@ -24,11 +23,9 @@ from noc.sa.interfaces.base import (
     ListOfParameter,
     BooleanParameter,
 )
+from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
-
-
-pattern = re.compile(r"Wire\s\S+:(.+)\s<->\s\S+:(.+)")
 
 
 class InvApplication(ExtApplication):
@@ -269,6 +266,7 @@ class InvApplication(ExtApplication):
         if o2:
             ro = self.get_object_or_404(Object, id=o2)
         id_ports_left = {}
+        checking_ports = []
         lcs: List[Dict[str, Any]] = []
         cable: Optional[ObjectModel] = None
         # Getting cable
@@ -294,6 +292,8 @@ class InvApplication(ExtApplication):
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
             left_id = f"{smart_text(ro.id)}{c.name}"
+            if bool(oc):
+                checking_ports.append(c)
             lcs += [
                 {
                     "id": left_id,
@@ -350,17 +350,18 @@ class InvApplication(ExtApplication):
                 ]
                 id_ports_right[c.name] = right_id
         wires = []
-        if lcs and rcs:
-            for w in Object.objects.filter(container=lo.container.id):
-                result = pattern.fullmatch(w.name)
-                if result:
-                    name_left = result.group(1)
-                    name_right = result.group(2)
+        for p in checking_ports:
+            for path in find_path(lo, p.name, p.protocols):
+                if path.obj == ro:
+                    print(path.obj, path.connection)
                     wires.append(
-                        (
-                            (id_ports_left.get(name_left, 0), name_left),
-                            (id_ports_right.get(name_right, 0), name_right),
-                        )
+                        {
+                            "left": {"id": id_ports_left.get(p.name), "name": p.name},
+                            "right": {
+                                "id": id_ports_right.get(path.connection),
+                                "name": path.connection,
+                            },
+                        }
                     )
         # Forming cable
         return {
