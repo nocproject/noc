@@ -71,6 +71,15 @@ class InvApplication(ExtApplication):
             if path.obj == ro:
                 return path
 
+    def get_remote_device(self, slot, o):
+        """
+        Determing remote device with find_path method
+        :return:
+        """
+        for path in find_path(o, slot.name, slot.protocols):
+            if path.obj != o and not path.obj.name.startswith("Wire"):
+                return path
+
     @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
         children = []
