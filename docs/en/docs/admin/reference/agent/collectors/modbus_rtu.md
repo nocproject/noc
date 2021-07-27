@@ -18,9 +18,15 @@ to collect performance data.
 | `data_bits`     | Integer          |               | Serial port data bits: 5, 6, 7 or 8                                                         |
 | `parity`        | String           | `none`        | Serial port parity, either `none`, `even` or `odd`                                          |
 | `stop_bits`     | Integer          |               | Serial port stop bits, either `1` or `2`                                                    |
-| `register`      | Integer          |               | Starting register of modbus request                                                         |
+| `register`      | Integer          |               | Starting register of modbus request, zero-based                                             |
 | `register_type` | String           | `holding`     | Modbus request type. Either `holding`, `input` or `coil`                                    |
 | `format`        | String           |               | Expected response format. See [Response format](#response-format) for details               |
+
+!!! warning "Check address notation"
+
+    Take note the starting register address is zero-based, while vendors
+    can document the registers starting from 1. Refer to the vendor documentation
+    and subtract 1 when necessary.
 
 ## Response Format
 
