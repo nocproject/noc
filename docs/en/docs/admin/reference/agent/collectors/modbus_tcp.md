@@ -13,9 +13,15 @@
 | `labels`        | Array of Strings |               | List of additional labels. Will be returned along with metrics                              |
 | `address`       | String           |               | IP address of Modbus TCP server                                                             |
 | `port`          | Integer          |               | Port of Modbus TCP server                                                                   |
-| `register`      | Integer          |               | Starting register of modbus request                                                         |
+| `register`      | Integer          |               | Starting register of modbus request, zero-based                                             |
 | `register_type` | String           | `holding`     | Modbus request type. Either `holding`, `input` or `coil`                                    |
 | `format`        | String           |               | Expected response format. See [Response format](modbus_rtu.md#response-format) for details  |
+
+!!! warning "Check address notation"
+
+    Take note the starting register address is zero-based, while vendors
+    can document the registers starting from 1. Refer to the vendor documentation
+    and subtract 1 when necessary.
 
 ## Collected Metrics
 
