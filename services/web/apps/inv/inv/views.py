@@ -301,7 +301,8 @@ class InvApplication(ExtApplication):
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
             left_id = f"{smart_text(lo.id)}{c.name}"
-            if bool(oc):
+            is_employed = bool(oc)
+            if is_employed:
                 checking_ports.append(c)
             lcs += [
                 {
@@ -312,7 +313,7 @@ class InvApplication(ExtApplication):
                     "gender": c.gender,
                     "direction": c.direction,
                     "protocols": c.protocols,
-                    "free": not bool(oc),
+                    "free": not is_employed,
                     "valid": valid,
                     "disable_reason": disable_reason,
                 }
@@ -371,9 +372,9 @@ class InvApplication(ExtApplication):
                 if remote:
                     wires.append(
                         {
-                            "left": {"id": id_ports_left.get(p.name), "name": p.name},
+                            "left": {"id": id_ports_left.get(p.name, 0), "name": p.name},
                             "right": {
-                                "id": id_ports_right.get(remote.connection),
+                                "id": id_ports_right.get(remote.connection, 0),
                                 "name": remote.connection,
                             },
                         }
