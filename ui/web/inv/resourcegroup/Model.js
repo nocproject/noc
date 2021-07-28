@@ -38,7 +38,7 @@ Ext.define("NOC.inv.resourcegroup.Model", {
         },
         {
             name: "bi_id",
-            type: "int",
+            type: "string",
             persist: false
         },
         {

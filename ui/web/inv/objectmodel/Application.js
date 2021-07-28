@@ -300,6 +300,30 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             editor: "numberfield"
                         },
                         {
+                            text: __("Modbus Value Format"),
+                            dataIndex: "modbus_format",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["i16_be", "16-bit signed integer, big-endian"],
+                                    ["u16_be", "16-bit unsigned integer, big-endian"],
+                                    ["i32_be", "32-bit signed integer, big-endian"],
+                                    ["i32_le", "32-bit signed integer, low-endian"],
+                                    ["i32_bs", "32-bit signed integer, big-endian, swapped"],
+                                    ["i32_ls", "32-bit signed integer, low-endian, swapped"],
+                                    ["u32_be", "32-bit unsigned integer, big-endian"],
+                                    ["u32_le", "32-bit unsigned integer, low-endian"],
+                                    ["u32_bs", "32-bit unsigned integer, big-endian, swapped"],
+                                    ["u32_ls", "32-bit unsigned integer, low-endian, swapped"],
+                                    ["f32_be", "32-bit floating point, big-endian"],
+                                    ["f32_le", "32-bit floating point, low-endian"],
+                                    ["f32_bs", "32-bit floating point, big-endian, swapped"],
+                                    ["f32_ls", "32-bit floating point, low-endian, swapped"],
+                                ]
+                            }
+                        },
+                        {
                             text: __("SNMP OID"),
                             dataIndex: "snmp_oid",
                             flex: 1,

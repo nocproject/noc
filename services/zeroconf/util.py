@@ -13,6 +13,7 @@ from collections import defaultdict
 from noc.pm.models.agent import Agent
 from noc.sa.models.service import Service
 from noc.inv.models.capability import Capability
+from noc.inv.models.sensor import Sensor
 from noc.main.models.label import Label
 from .models.zk import ZkConfig, ZkConfigConfig, ZkConfigConfigZeroconf, ZkConfigCollector
 
@@ -86,6 +87,16 @@ def get_config(agent: Agent, level: int = 0) -> ZkConfig:
 
 
 def iter_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
+    yield from iter_service_collectors(agent)
+    yield from iter_sensor_collectors(agent)
+
+
+def iter_service_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
+    """
+    Iterate over service settings
+    :param agent:
+    :return:
+    """
     coll = Service._get_collection()
     for doc in coll.aggregate(
         [
@@ -165,3 +176,43 @@ def iter_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
                 labels=labels,
                 **e_cfg,
             )
+
+
+def iter_sensor_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
+    """
+    Iterate over sensor settings
+    :param agent:
+    :return:
+    """
+    for sensor in Sensor.objects.filter(agent=agent.id):
+        if sensor.protocol == "modbus_rtu":
+            yield from iter_modbus_rtu_collectors(sensor)
+
+
+def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
+    """
+    Generate modbus_rtu collectors for sensor
+    :param sensor:
+    :return:
+    """
+    if not sensor.modbus_register or not sensor.modbus_format:
+        return
+    m_data = {
+        d.attr: d.value for d in sensor.object.get_effective_data() if d.interface == "modbus"
+    }
+    yield ZkConfigCollector(
+        id=f"zk:{sensor.bi_id}:modbus_rtu",
+        type="modbus_rtu",
+        service=sensor.bi_id,
+        interval=sensor.profile.collect_interval,
+        labels=Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        serial_path="/dev/ttyM0",
+        slave=m_data["slave_id"],
+        baud_rate=m_data["speed"],
+        data_bits=m_data["bits"],
+        # parity='None',
+        stop_bits=m_data["stop"],
+        register=sensor.modbus_register,
+        # register_type
+        format=sensor.modbus_format,
+    )

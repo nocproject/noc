@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,6 +41,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
+from noc.pm.models.agent import Agent
 from .objectmodel import ObjectModel
 from .modelinterface import ModelInterface
 from .objectlog import ObjectLog
@@ -898,6 +899,42 @@ class Object(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_object")
+
+    @classmethod
+    def get_agent(cls, agent):
+        """
+        Get Object managed by managed object
+        :param agent: Agent instance or id
+        :returns: Objects managed by managed object, or empty list
+        """
+        if hasattr(agent, "id"):
+            agent = str(agent.id)
+        return cls.objects.filter(
+            data__match={"interface": "management", "attr": "managed_object", "value": agent}
+        )
+
+    def get_effective_agent(self) -> Optional[Agent]:
+        """
+        Find effective agent for object
+        :return:
+        """
+        from noc.core.inv.path import find_path
+
+        agent = self.get_data("agent", "agent")
+        modbus = self.get_data("modbus", "type")
+        if modbus and modbus in {"RTU", "ASCII"}:
+            for name, remote_object, remote_name in self.iter_connections("s"):
+                print(name, remote_object, remote_name)
+                path = find_path(self, name, target_protocols=["<RS485-A", "<RS485-B"])
+                if not path:
+                    continue
+                *_, lp = path
+                agent = lp.obj.get_data("agent", "agent")
+                if agent:
+                    break
+        if agent:
+            agent = Agent.get_by_id(agent)
+        return agent
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

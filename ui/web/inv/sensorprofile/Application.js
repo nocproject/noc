@@ -96,6 +96,15 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           allowBlank: true
         },
         {
+          name: "collect_interval",
+          xtype: "numberfield",
+          fieldLabel: __("Collect interval"),
+          allowBlank: true,
+          uiStyle: "medium",
+          minValue: 20,
+          maxValue: 3600
+        },
+        {
           name: "bi_id",
           xtype: "displayfield",
           fieldLabel: __("BI ID"),

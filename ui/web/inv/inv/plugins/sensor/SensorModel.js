@@ -34,6 +34,10 @@ Ext.define("NOC.inv.inv.plugins.sensor.SensorModel", {
             type: "string"
         },
         {
+            name: "modbus_format",
+            type: "string"
+        },
+        {
             name: "protocol",
             type: "string"
         },

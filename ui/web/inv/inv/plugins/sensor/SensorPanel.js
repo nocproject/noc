@@ -57,7 +57,11 @@ Ext.define("NOC.inv.inv.plugins.sensor.SensorPanel", {
                 },
                 {
                     dataIndex: "modbus_register",
-                    text: __("modbus_register"),
+                    text: __("Modbus Register"),
+                },
+                {
+                    dataIndex: "modbus_format",
+                    text: __("Modbus Format"),
                 },
                 {
                     dataIndex: "protocol",
@@ -65,7 +69,7 @@ Ext.define("NOC.inv.inv.plugins.sensor.SensorPanel", {
                 },
                 {
                     dataIndex: "snmp_oid",
-                    text: __("snmp_oid"),
+                    text: __("SNMP OID"),
                     width: 200,
                 }
             ],

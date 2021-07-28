@@ -33,6 +33,7 @@ class SensorPlugin(InvPlugin):
                 "dashboard_label": None,
                 "protocol": s.protocol,
                 "modbus_register": s.modbus_register,
+                "modbus_format": s.modbus_format,
                 "snmp_oid": s.snmp_oid or None,
                 "bi_id": str(s.bi_id),
                 "id": str(s.id),

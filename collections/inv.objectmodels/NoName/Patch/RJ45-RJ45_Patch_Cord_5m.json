@@ -10,7 +10,6 @@
             "direction": "s",
             "gender": "m",
             "name": "A1",
-            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         },
         {
@@ -18,7 +17,6 @@
             "direction": "s",
             "gender": "m",
             "name": "A2",
-            "protocols": ["10BASET", "100BASETX", "1000BASET"],
             "type__name": "Electrical | RJ45"
         }
     ],
