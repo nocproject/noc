@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MetricType model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,14 +12,19 @@ from threading import Lock
 from typing import Callable
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, ObjectIdField, LongField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    ObjectIdField,
+    LongField,
+    ListField,
+    EmbeddedDocumentField,
+)
 import cachetools
 
 # NOC Modules
-from .metricscope import MetricScope
-from .measurementunits import MeasurementUnits
-from .scale import Scale
+from noc.config import config
 from noc.inv.models.capability import Capability
 from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.doccategory import category
@@ -28,11 +33,28 @@ from noc.core.prettyjson import to_json
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
+from .metricscope import MetricScope
+from .measurementunits import MeasurementUnits
+from .scale import Scale
+
 
 id_lock = Lock()
 
 
+class AgentMappingItem(EmbeddedDocument):
+    collector = StringField()
+    field = StringField()
+
+    def __str__(self):
+        return f"{self.collector}.{self.field}"
+
+    def json_data(self):
+        return {"collector": self.collector, "field": self.field}
+
+
 @on_save
+@change
 @bi_sync
 @category
 class MetricType(Document):
@@ -79,6 +101,8 @@ class MetricType(Document):
     # Compatible to Grafana
     # @todo: Should we remove id?
     measure = StringField()
+    # Agent mappings
+    agent_mappings = ListField(EmbeddedDocumentField(AgentMappingItem))
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
     # Object id in BI, used for counter context hashing
@@ -107,6 +131,8 @@ class MetricType(Document):
             "units__code": self.units.code,
             "scale__code": self.scale.code,
         }
+        if self.agent_mappings:
+            r["agent_mappings"] = [m.json_data() for m in self.agent_mappings]
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
         return r
@@ -125,7 +151,8 @@ class MetricType(Document):
                 "measure",
                 "units__code",
                 "scale__code",
-                "vector_tag",
+                "agent_mappings",
+                "required_capability__name",
             ],
         )
 
@@ -250,3 +277,7 @@ class MetricType(Document):
     @staticmethod
     def clean_String(value):
         return str(value)
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmentricscollector:
+            yield "cfgmetrics", self.id

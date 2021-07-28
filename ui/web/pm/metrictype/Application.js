@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // pm.metrictype application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.pm.metrictype.Application");
@@ -121,6 +121,26 @@ Ext.define("NOC.pm.metrictype.Application", {
                   xtype: "pm.scale.LookupField",
                   fieldLabel: __("Metric Scale"),
                   allowBlank: false
+                },
+                {
+                    name: "agent_mappings",
+                    xtype: "gridfield",
+                    fieldLabel: __("Agent Mappings"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Collector"),
+                            dataIndex: "collector",
+                            editor: "textfield",
+                            width: 100
+                        },
+                        {
+                            text: __("Field"),
+                            dataIndex: "field",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
                 }
             ],
             formToolbar: [

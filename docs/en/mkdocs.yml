@@ -1309,6 +1309,7 @@ nav:
               - kafkasender: admin/reference/services/kafkasender.md
               - login: admin/reference/services/login.md
               - mailsender: admin/reference/services/mailsender.md
+              - metricscollector: admin/reference/services/metricscollector.md
               - mrt: admin/reference/services/mrt.md
               - mx: admin/reference/services/mx.md
               - nbi: admin/reference/services/nbi.md
@@ -1546,6 +1547,7 @@ nav:
                   - address: dev/reference/api/datastream/address.md
                   - administrativedomain: dev/reference/api/datastream/administrativedomain.md
                   - alarm: dev/reference/api/datastream/alarm.md
+                  - cfgmetrics: dev/reference/api/datastream/cfgmetrics.md
                   - cfgping: dev/reference/api/datastream/cfgping.md
                   - cfgsyslog: dev/reference/api/datastream/cfgsyslog.md
                   - cfgtrap: dev/reference/api/datastream/cfgtrap.md
