@@ -686,6 +686,15 @@ class Config(BaseConfig):
             default="14d",
             help="Removing datastream alarm records older days",
         )
+        enable_cfgmentricscollector = BooleanParameter(default=True)
+        enable_cfgmentricscollector_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgMetricsCollector datastream (Mongo greater 3.6 needed)",
+        )
+        cfgmentricscollector_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream cfgmetricscollector records older days",
+        )
         enable_cfgping = BooleanParameter(default=True)
         enable_cfgping_wait = BooleanParameter(
             default=True,

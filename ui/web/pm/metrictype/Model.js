@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // pm.metrictype Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.pm.metrictype.Model");
@@ -66,6 +66,10 @@ Ext.define("NOC.pm.metrictype.Model", {
             name: "scale__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "agent_mappings",
+            type: "auto"
         },
         {
             name: "is_builtin",

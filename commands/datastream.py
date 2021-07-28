@@ -32,6 +32,7 @@ class Command(BaseCommand):
     MODELS = {
         "managedobject": "sa.ManagedObject",
         "administrativedomain": "sa.AdministrativeDomain",
+        "cfgmetrics": "pm.MetricType",
         "cfgping": "sa.ManagedObject",
         "cfgsyslog": "sa.ManagedObject",
         "cfgtrap": "sa.ManagedObject",

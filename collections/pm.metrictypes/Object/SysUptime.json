@@ -8,5 +8,9 @@
     "description": "Object  RFC1213-MIB:SysUptime ",
     "measure": "sec",
     "units__code": "s",
-    "scale__code": "1"
+    "scale__code": "1",
+    "agent_mappings": [{
+        "collector": "uptime",
+        "field": "uptime"
+    }]
 }
