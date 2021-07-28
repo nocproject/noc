@@ -33,7 +33,7 @@ class Script(BaseScript):
         r"^ChassisIdSubtype:\s+(?P<chassis_subtype>\S+)\s*\n"
         r"^ChassisId:\s+(?P<chassis_id>\S+)\s*\n"
         r"^PortIdSubtype:\s+(?P<port_subtype>\S+)\s*\n"
-        r"^PortId:\s+(?P<port_id>\S+)\s*\n"
+        r"^PortId:\s+(?P<port_id>.+?)\s*\n"
         r"^PortDesc:(?P<port_descr>.*?)\n"
         r"^SysName:(?P<system_name>.*?)\n"
         r"^SysDesc:(?P<system_descr>.*?)\n"
