@@ -71,14 +71,54 @@ class InvApplication(ExtApplication):
             if path.obj == ro:
                 return path
 
-    def get_remote_device(self, slot, o):
+    def get_remote_device(self, slot, protocols, o):
         """
         Determing remote device with find_path method
         :return:
         """
-        for path in find_path(o, slot.name, slot.protocols):
+        for path in find_path(o, slot, protocols):
             if path.obj != o and not path.obj.name.startswith("Wire"):
                 return path
+
+    def get_cs_item(
+        self,
+        id,
+        name,
+        type,
+        type__label,
+        gender,
+        direction,
+        protocols,
+        free,
+        valid,
+        disable_reason,
+        o,
+    ):
+        """
+        Creating member of cs dict
+        :return:
+        """
+        cs = {
+            "id": id,
+            "name": name,
+            "type": type,
+            "type__label": type__label,
+            "gender": gender,
+            "direction": direction,
+            "protocols": protocols,
+            "free": free,
+            "valid": valid,
+            "disable_reason": disable_reason,
+        }
+        if not free:
+            rd = self.get_remote_device(name, protocols, o)
+            if rd:
+                cs["remote_device"] = {
+                    "name": rd.obj.name,
+                    "id": smart_text(rd.obj.id),
+                    "slot": rd.connection,
+                }
+        return cs
 
     @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
@@ -314,18 +354,19 @@ class InvApplication(ExtApplication):
             if is_employed:
                 checking_ports.append(c)
             lcs += [
-                {
-                    "id": left_id,
-                    "name": c.name,
-                    "type": str(c.type.id),
-                    "type__label": c.type.name,
-                    "gender": c.gender,
-                    "direction": c.direction,
-                    "protocols": c.protocols,
-                    "free": not is_employed,
-                    "valid": valid,
-                    "disable_reason": disable_reason,
-                }
+                self.get_cs_item(
+                    left_id,
+                    c.name,
+                    str(c.type.id),
+                    c.type.name,
+                    c.gender,
+                    c.direction,
+                    c.protocols,
+                    not is_employed,
+                    valid,
+                    disable_reason,
+                    lo,
+                )
             ]
             id_ports_left[c.name] = left_id
         id_ports_right = {}
@@ -354,18 +395,19 @@ class InvApplication(ExtApplication):
                 oc, oo, _ = ro.get_p2p_connection(c.name)
                 right_id = f"{smart_text(ro.id)}{c.name}"
                 rcs += [
-                    {
-                        "id": right_id,
-                        "name": c.name,
-                        "type": str(c.type.id),
-                        "type__label": c.type.name,
-                        "gender": c.gender,
-                        "direction": c.direction,
-                        "protocols": c.protocols,
-                        "free": not bool(oc),
-                        "valid": valid,
-                        "disable_reason": disable_reason,
-                    }
+                    self.get_cs_item(
+                        right_id,
+                        c.name,
+                        str(c.type.id),
+                        c.type.name,
+                        c.gender,
+                        c.direction,
+                        c.protocols,
+                        not bool(oc),
+                        valid,
+                        disable_reason,
+                        ro,
+                    )
                 ]
                 id_ports_right[c.name] = right_id
         wires = []
