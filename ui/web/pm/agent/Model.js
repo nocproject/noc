@@ -58,8 +58,8 @@ Ext.define("NOC.pm.agent.Model", {
         },
         {
             name: "bi_id",
-            type: "int",
-            persist: true
+            type: "string",
+            persist: false
         }
     ]
 });

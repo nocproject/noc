@@ -10,7 +10,6 @@
             "direction": "s",
             "gender": "m",
             "name": "A1",
-            "protocols": [">RS485", "<RS485"],
             "type__name": "Power | Naked"
         },
         {
@@ -18,7 +17,6 @@
             "direction": "s",
             "gender": "m",
             "name": "A2",
-            "protocols": [">RS485", "<RS485"],
             "type__name": "Power | Naked"
         }
     ],

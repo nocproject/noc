@@ -54,6 +54,7 @@ class SensorProfile(Document):
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
     enable_collect = BooleanField(default=False)
+    collect_interval = IntField(default=60)
     units = PlainReferenceField(MeasurementUnits)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(

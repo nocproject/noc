@@ -123,6 +123,8 @@ class ObjectModelSensor(EmbeddedDocument):
     units = PlainReferenceField(MeasurementUnits)
     # Register address for modbus access
     modbus_register = IntField()
+    # Register address for modbus access
+    modbus_format = StringField()
     # OID for SNMP access
     snmp_oid = StringField()
 
@@ -137,6 +139,7 @@ class ObjectModelSensor(EmbeddedDocument):
         r["units__code"] = self.units.code
         if self.modbus_register:
             r["modbus_register"] = self.modbus_register
+            r["modbus_format"] = self.modbus_format
         if self.snmp_oid:
             r["snmp_oid"] = self.snmp_oid
         return r

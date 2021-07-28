@@ -38,14 +38,14 @@ Ext.define("NOC.pm.agent.Application", {
                 {
                     text: __("Profile"),
                     dataIndex: "profile",
-                    flex: 1,
+                    width: 150,
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
                     text: __("Labels"),
                     dataIndex: "labels",
                     renderer: NOC.render.LabelField,
-                    width: 100
+                     flex: 1,
                 }
             ],
 
@@ -92,6 +92,13 @@ Ext.define("NOC.pm.agent.Application", {
                     query: {
                         "enable_agent": true
                     }
+                },
+                {
+                    name: "bi_id",
+                    xtype: "displayfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
                 },
                 {
                     name: "key",

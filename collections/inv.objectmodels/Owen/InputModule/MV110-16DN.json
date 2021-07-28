@@ -189,7 +189,7 @@
             "parity": false,
             "slave_id": 16,
             "speed": 115200,
-            "stop": 0,
+            "stop": 1,
             "type": "RTU"
         },
         "power": {
@@ -202,50 +202,114 @@
     "sensors": [
         {
             "description": "Вход 1",
-            "modbus_register": 4,
+            "modbus_format": "i16_be",
+            "modbus_register": 64,
             "name": "in1",
             "units__code": "1"
         },
         {
             "description": "Вход 2",
-            "modbus_register": 10,
+            "modbus_format": "i16_be",
+            "modbus_register": 65,
             "name": "in2",
             "units__code": "1"
         },
         {
             "description": "Вход 3",
-            "modbus_register": 16,
+            "modbus_format": "i16_be",
+            "modbus_register": 66,
             "name": "in3",
             "units__code": "1"
         },
         {
             "description": "Вход 4",
-            "modbus_register": 22,
+            "modbus_format": "i16_be",
+            "modbus_register": 67,
             "name": "in4",
             "units__code": "1"
         },
         {
             "description": "Вход 5",
-            "modbus_register": 28,
+            "modbus_format": "i16_be",
+            "modbus_register": 68,
             "name": "in5",
             "units__code": "1"
         },
         {
             "description": "Вход 6",
-            "modbus_register": 34,
+            "modbus_format": "i16_be",
+            "modbus_register": 69,
             "name": "in6",
             "units__code": "1"
         },
         {
             "description": "Вход 7",
-            "modbus_register": 40,
+            "modbus_format": "i16_be",
+            "modbus_register": 70,
             "name": "in7",
             "units__code": "1"
         },
         {
             "description": "Вход 8",
-            "modbus_register": 46,
+            "modbus_format": "i16_be",
+            "modbus_register": 71,
             "name": "in8",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 72,
+            "name": "in9",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 73,
+            "name": "in10",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 74,
+            "name": "in11",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 75,
+            "name": "in12",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 76,
+            "name": "in13",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 77,
+            "name": "in14",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 78,
+            "name": "in15",
+            "units__code": "1"
+        },
+        {
+            "description": "Вход 8",
+            "modbus_format": "i16_be",
+            "modbus_register": 79,
+            "name": "in16",
             "units__code": "1"
         }
     ]

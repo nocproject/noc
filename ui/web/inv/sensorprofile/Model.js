@@ -45,6 +45,11 @@ Ext.define("NOC.inv.sensorprofile.Model", {
             type: "boolean"
         },
         {
+            name: "collect_interval",
+            type: "int",
+            defaultValue: 60
+        },
+        {
             name: "labels",
             type: "auto"
         },

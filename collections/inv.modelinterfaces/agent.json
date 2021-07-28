@@ -1,0 +1,22 @@
+{
+    "name": "agent",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "986f3c9a-7483-46f8-a5e3-8594ceb2676d",
+    "description": "Agent binding",
+    "attrs": [
+        {
+            "name": "is_agent",
+            "type": "bool",
+            "description": "Object can be bind to the Agent",
+            "required": false,
+            "is_const": true
+        },
+        {
+            "name": "agent",
+            "type": "objectid",
+            "description": "Agent id",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

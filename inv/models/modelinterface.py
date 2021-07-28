@@ -26,6 +26,7 @@ import cachetools
 from .error import ModelDataError
 from noc.core.copy import deep_copy
 from noc.core.escape import json_escape as q
+from noc.core.validators import is_objectid
 from noc.sa.interfaces.base import (
     StringParameter,
     BooleanParameter,
@@ -94,6 +95,12 @@ class ModelInterfaceAttr(EmbeddedDocument):
             return v != 0
         except ValueError:
             return False
+
+    def clean_objectid(self, value):
+        value = value.lower()
+        if is_objectid(value):
+            return value
+        raise ValueError(f"Value {value} is not ObjectID")
 
 
 class ModelInterface(Document):

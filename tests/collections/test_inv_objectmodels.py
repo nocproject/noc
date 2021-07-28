@@ -79,7 +79,8 @@ def test_connection_checklist(model):
         if c.direction and "directions" in checklist:
             with pytest.assume:
                 check_direction(c, checklist["directions"])
-        if "protocols" in checklist:
+        if "protocols" in checklist and not model.get_data("length", "length"):
+            # Empty protocols on Ware
             with pytest.assume:
                 check_protocols(c, checklist["protocols"])
 

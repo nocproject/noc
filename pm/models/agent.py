@@ -61,7 +61,7 @@ def gen_key() -> str:
 @workflow
 @bi_sync
 @Label.model
-@on_delete_check(check=[("sa.Service", "agent")])
+@on_delete_check(check=[("sa.Service", "agent"), ("inv.Sensor", "agent")])
 class Agent(Document):
     meta = {
         "collection": "agents",

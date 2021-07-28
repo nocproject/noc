@@ -9,7 +9,7 @@
             "type": "str",
             "description": "Modbus type: RTU, ASCII or TCP",
             "required": true,
-            "is_const": false
+            "is_const": true
         },
         {
             "name": "slave_id",
@@ -23,32 +23,28 @@
             "type": "int",
             "description": "Bus speed, baud/s",
             "required": false,
-            "is_const": false,
-            "default": 9600
+            "is_const": false
         },
         {
             "name": "bits",
             "type": "int",
             "description": "Bus baud size",
             "required": false,
-            "is_const": false,
-            "default": 8
+            "is_const": false
         },
         {
             "name": "parity",
             "type": "bool",
             "description": "Bus parity",
             "required": false,
-            "is_const": false,
-            "default": false
+            "is_const": false
         },
         {
             "name": "stop",
             "type": "int",
             "description": "Bus stop bits",
             "required": false,
-            "is_const": false,
-            "default": 1
+            "is_const": false
         }
     ]
 }

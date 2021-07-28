@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Sensor model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,15 +18,16 @@ from mongoengine.fields import StringField, IntField, LongField, ListField, Date
 import cachetools
 
 # NOC modules
-from noc.wf.models.state import State
-from noc.main.models.label import Label
-from noc.main.models.regexplabel import RegexpLabel
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.main.models.label import Label
+from noc.main.models.regexplabel import RegexpLabel
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.measurementunits import MeasurementUnits
+from noc.pm.models.agent import Agent
+from noc.wf.models.state import State
 from .sensorprofile import SensorProfile
 
 SOURCES = {"objectmodel", "asset", "etl", "manual"}
@@ -34,17 +35,28 @@ SOURCES = {"objectmodel", "asset", "etl", "manual"}
 id_lock = Lock()
 logger = logging.getLogger(__name__)
 
+MODBUS_FORMAT = ["i16_be", "u16_be"]
+for dt in ["i32", "u32", "f32"]:
+    for df in ["be", "le", "bs"]:
+        MODBUS_FORMAT.append(f"{dt}_{df}")
+
 
 @Label.dynamic_classification(profile_model_id="inv.SensorProfile")
 @Label.model
 @bi_sync
 @workflow
 class Sensor(Document):
-    meta = {"collection": "sensors", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "sensors",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": ["agent"],
+    }
 
     profile = PlainReferenceField(SensorProfile, default=SensorProfile.get_default_profile)
     object = PlainReferenceField(Object)
     managed_object = ForeignKeyField(ManagedObject)
+    agent = PlainReferenceField(Agent)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("P", "Profile"), ("R", "By Rule"), ("D", "Disable")],
@@ -65,6 +77,7 @@ class Sensor(Document):
     first_discovered = DateTimeField(default=datetime.datetime.now)
     protocol = StringField(choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi"])
     modbus_register = IntField()
+    modbus_format = StringField(choices=MODBUS_FORMAT)
     snmp_oid = StringField()
     ipmi_id = StringField()
     bi_id = LongField(unique=True)
@@ -153,29 +166,33 @@ class Sensor(Document):
             for d in obj.get_effective_data()
             if d.interface == "modbus" and d.attr == "type"
         ] or ["rtu"]
+        agent = obj.get_effective_agent()
         # Create new sensors
         for sensor in obj.model.sensors:
             if sensor.name in obj_sensors:
-                obj_sensors[sensor.name].seen("objectmodel")
-                del obj_sensors[sensor.name]
-                continue
-            #
-            logger.info(
-                "[%s|%s] Creating new sensor '%s'", obj.name if obj else "-", "-", sensor.name
-            )
-            s = Sensor(
-                profile=SensorProfile.get_default_profile(),
-                object=obj,
-                local_id=sensor.name,
-                units=sensor.units,
-                label=sensor.description,
-            )
+                s = obj_sensors.pop(sensor.name)
+            else:
+                logger.info(
+                    "[%s|%s] Creating new sensor '%s'", obj.name if obj else "-", "-", sensor.name
+                )
+                s = Sensor(
+                    profile=SensorProfile.get_default_profile(),
+                    object=obj,
+                    local_id=sensor.name,
+                )
+            if s.agent != agent:
+                s.agent = agent
+            if s.units != sensor.units:
+                s.units = sensor.units
+            if s.label != sensor.description:
+                s.label = sensor.description
             # Get sensor protocol
             if sensor.modbus_register:
                 if not m_proto:
                     continue
                 s.protocol = "modbus_%s" % m_proto[0].lower()
                 s.modbus_register = sensor.modbus_register
+                s.modbus_format = sensor.modbus_format or "u16_be"
             elif sensor.snmp_oid:
                 s.protocol = "snmp"
                 s.snmp_oid = sensor.snmp_oid
