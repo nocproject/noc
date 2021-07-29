@@ -12,18 +12,19 @@ import zlib
 # Third-party modules
 from django.http import HttpResponse
 import orjson
+import cachetools
 from mongoengine.queryset import Q as MQ
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.profile import Profile
 from noc.sa.models.cpestatus import CPEStatus
+from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -37,7 +38,6 @@ from noc.lib.app.repoinline import RepoInline
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.core.text import alnum_key
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -54,6 +54,7 @@ from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.geocoder.loader import loader as geocoder_loader
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.objectstatus import ObjectStatus
 
 
@@ -139,6 +140,11 @@ class ManagedObjectApplication(ExtModelApplication):
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
     ]
 
+    @staticmethod
+    @cachetools.cached({})
+    def get_ac_object_down():
+        return AlarmClass.get_by_name("NOC | Managed Object | Ping Failed")
+
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
@@ -175,10 +181,19 @@ class ManagedObjectApplication(ExtModelApplication):
         mo_ids = [x["id"] for x in data if x.get("is_managed") is not None]
         if not mo_ids:
             return data
-        alarms = list(ActiveAlarm.objects.filter(managed_object=mo_ids))
+        ac = self.get_ac_object_down()
+        alarms = set(
+            mo["managed_object"]
+            for mo in ActiveAlarm._get_collection().find(
+                {"alarm_class": {"$ne": ac.id}, "managed_object": {"$in": mo_ids}},
+                {"managed_object": 1},
+            )
+        )
         os = ObjectStatus.get_statuses(mo_ids)
         disabled = set(
-            ManagedObjectProfile.objects.filter(enable_ping=False).values_list("id", flat=True)
+            ManagedObject.objects.filter(object_profile__enable_ping=False).values_list(
+                "id", flat=True
+            )
         )
         # Apply oper_state
         for x in data:
@@ -189,7 +204,7 @@ class ManagedObjectApplication(ExtModelApplication):
             elif not os.get(x["id"], True):
                 x["oper_state"] = "failed"
                 x["oper_state__label"] = _("Down")
-            elif alarms:
+            elif x["id"] in alarms:
                 x["oper_state"] = "degraded"
                 x["oper_state__label"] = _("Warning")
             else:
