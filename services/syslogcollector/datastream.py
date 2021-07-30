@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Syslog DataStream client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,3 +15,6 @@ class SysologDataStreamClient(DataStreamClient):
 
     async def on_delete(self, data):
         await self.service.delete_source(data["id"])
+
+    async def on_ready(self):
+        self.service.logger.info("Initial object mappings are ready")

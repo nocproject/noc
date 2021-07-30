@@ -132,7 +132,7 @@ class SyslogCollectorService(TornadoService):
                 await client.query(
                     limit=config.syslogcollector.ds_limit,
                     filters=["pool(%s)" % config.pool],
-                    block=1,
+                    block=True,
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)

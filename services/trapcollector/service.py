@@ -105,7 +105,9 @@ class TrapCollectorService(TornadoService):
         while True:
             try:
                 await client.query(
-                    limit=config.trapcollector.ds_limit, filters=["pool(%s)" % config.pool], block=1
+                    limit=config.trapcollector.ds_limit,
+                    filters=["pool(%s)" % config.pool],
+                    block=True,
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)

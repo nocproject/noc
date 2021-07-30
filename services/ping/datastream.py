@@ -15,3 +15,6 @@ class PingDataStreamClient(DataStreamClient):
 
     async def on_delete(self, data):
         await self.service.delete_probe(data["id"])
+
+    async def on_ready(self):
+        self.service.logger.info("Initial object mappings are ready")

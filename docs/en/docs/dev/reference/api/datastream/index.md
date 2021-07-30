@@ -66,23 +66,25 @@ due to timeout. Client should retry request immediately.
 
 limit
 : Limit amount of records returned per one request. Note
-  that DataStream service also applies its own configured limits.
+that DataStream service also applies its own configured limits.
 
 block
 : Enable/Disable long polling:
-  - `0`: do not block. Return empty list if no more changes available (default).
-  - `1`: block until more changes became available.
+
+- `0`: do not block. Return empty list if no more changes available (default).
+- `1`: block until more changes became available.
 
 from
 : Return only results with greater [Change ID](#change-id).
-  Start from beginning if missed.
-  ISO 8601 timestamp (i.e. YYYY-MM-DDTHH:MM:SS) may be used for time-based references.
+Start from beginning if missed.
+ISO 8601 timestamp (i.e. YYYY-MM-DDTHH:MM:SS) may be used for time-based references.
 
 filter
 : Apply filter function. May be set multiple times.
-  Filter functions may be global or datastream-specific. Examples:
-  - `filter=id(123)`
-  - `filter=pool(default)&filter=shard(0,4)`
+Filter functions may be global or datastream-specific. Examples:
+
+- `filter=id(123)`
+- `filter=pool(default)&filter=shard(0,4)`
 
 ### Request Headers
 
@@ -102,6 +104,9 @@ X-NOC-DataStream-Last-Change
 
 X-NOC-DataStream-Total
 : Total amount of changes in response
+
+X-NOC-DataStream-More
+: Set only if DataStream has more data to query just now
 
 ### HTTP Status Codes
 
@@ -194,6 +199,7 @@ id
 : Object id
 
 ### shard(instance, n_instances)
+
 Perform stream sharding, splitting stream to `n_instances`
 independent parts
 
