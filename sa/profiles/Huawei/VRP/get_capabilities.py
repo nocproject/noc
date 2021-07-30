@@ -197,15 +197,15 @@ class Script(BaseScript):
         if mod:
             caps["Huawei | SNMP | ModuleIndex"] = " | ".join(mod)
         # Check IP SLA status
-        sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
-        if sla_v:
-            # IP SLA responder
-            if self.has_ip_sla_responder_snmp():
-                caps["Huawei | NQA | Responder"] = True
-            # IP SLA Probes
-            np = self.get_ip_sla_probes_snmp()
-            if np:
-                caps["Huawei | NQA | Probes"] = np
+        # sla_v = self.snmp.get(mib["NQA-MIB::nqaEnable", 0])
+        # if sla_v:
+        # IP SLA responder
+        if self.has_ip_sla_responder_snmp():
+            caps["Huawei | NQA | Responder"] = True
+        # IP SLA Probes
+        np = self.get_ip_sla_probes_snmp()
+        if np:
+            caps["Huawei | NQA | Probes"] = np
 
     def execute_platform_snmp(self, caps):
         sl = self.has_slot()

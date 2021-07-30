@@ -147,6 +147,8 @@ class Script(GetMetricsScript):
         self.logger.debug("Use hwCBQoSPolicyStatisticsClassifierTable for collected metrics")
         ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
         direction_map = {"1": "In", "2": "Out"}
+        class_tos_map = self.get_classifier_tos()
+        self.logger.debug("Class TOS map: %s", class_tos_map)
         for index, packets, bytes, discards in self.snmp.get_tables(
             [
                 mib["HUAWEI-CBQOS-MIB::hwCBQoSPolicyStatClassifierMatchedPassPackets"],
@@ -172,12 +174,19 @@ class Script(GetMetricsScript):
                 mtype, scale = "gauge", 1
                 if metric.endswith("Delta"):
                     mtype = "delta"
+                if traffic_class in class_tos_map:
+                    labels = [
+                        f"noc::traffic_class::{traffic_class}",
+                        f"noc::tos::{class_tos_map[traffic_class]}",
+                    ]
+                else:
+                    labels = [f"noc::traffic_class::{traffic_class}"]
                 self.set_metric(
                     id=(metric, ifaces[ifindex]),
                     metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=ifaces[ifindex] + [f"noc::traffic_class::{traffic_class}"],
+                    labels=ifaces[ifindex] + labels,
                     multi=True,
                     type=mtype,
                     scale=scale,
@@ -207,7 +216,7 @@ class Script(GetMetricsScript):
         oids = {}
         # stat_index = 250
         stat_index = {}
-        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"], only_first=True):
+        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"]):
             key = ".".join(oid.split(".")[14:-1])
             stat_index[key] = oid.rsplit(".", 1)[-1]
         for m in metrics:
@@ -244,6 +253,26 @@ class Script(GetMetricsScript):
                 type="gauge",
                 scale=1,
             )
+
+    def get_classifier_tos(self):
+        r = {}  # classifier name -> tos map
+        behavior_tos = {}
+        for index, value in self.snmp.getnext(mib["HUAWEI-CBQOS-MIB::hwCBQoSRemarkValue"]):
+            if not index.endswith("2"):
+                continue
+            _, b_id, b_type = index.rsplit(".", 2)
+            behavior_tos[int(b_id)] = value
+
+        for index, classifier, behavior_index in self.snmp.get_tables(
+            [
+                mib["HUAWEI-CBQOS-MIB::hwCBQoSPolicyClassClassifierName"],
+                mib["HUAWEI-CBQOS-MIB::hwCBQoSPolicyClassBehaviorIndex"],
+            ]
+        ):
+            if behavior_index not in behavior_tos:
+                continue
+            r[classifier] = behavior_tos[behavior_index]
+        return r
 
     # @metrics(
     #     ["Interface | Errors | CRC", "Interface | Errors | Frame"],
