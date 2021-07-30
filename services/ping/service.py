@@ -97,7 +97,7 @@ class PingService(FastAPIService):
                         "pool(%s)" % config.pool,
                         "shard(%d,%d)" % (self.slot_number, self.total_slots),
                     ],
-                    block=1,
+                    block=True,
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)

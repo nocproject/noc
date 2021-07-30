@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # DataSteam client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import asyncio
 import logging
+from typing import Optional
 
 # Third-party modules
 import orjson
@@ -26,6 +27,7 @@ class DataStreamClient(object):
     def __init__(self, name, service=None):
         self.name = name
         self.service = service
+        self._is_ready = False
 
     async def on_change(self, data):
         """
@@ -41,22 +43,37 @@ class DataStreamClient(object):
         :return:
         """
 
-    async def query(self, change_id=None, filters=None, block=False, limit=None):
+    async def on_ready(self):
+        """
+        Called when initial data is ready and processed.
+        :return:
+        """
+
+    async def query(
+        self,
+        change_id: Optional[str] = None,
+        filters=None,
+        block: bool = False,
+        limit: Optional[int] = None,
+    ):
         """
         Query datastream
+        :param change_id:
         :param filters:
+        :param block:
+        :param limit:
         :return:
         """
         # Basic URL and query
-        base_url = "http://datastream/api/datastream/%s" % self.name
+        base_url = f"http://datastream/api/datastream/{self.name}"
         base_qs = []
         if filters:
-            base_qs += ["filter=%s" % x for x in filters]
+            base_qs += [f"filter={x}" for x in filters]
         if block:
             base_qs += ["block=1"]
         if limit:
-            base_qs += ["limit=%d" % limit]
-        req_headers = {"X-NOC-API-Access": "datastream:%s" % self.name}
+            base_qs += [f"limit={limit}"]
+        req_headers = {"X-NOC-API-Access": f"datastream:{self.name}"}
         loop = asyncio.get_running_loop()
         # Continue until finish
         while True:
@@ -64,9 +81,10 @@ class DataStreamClient(object):
             # *datastream* host name will be resolved with *resolve* method
             qs = base_qs[:]
             if change_id:
-                qs += ["from=%s" % change_id]
+                qs += [f"from={change_id}"]
             if qs:
-                url = "%s?%s" % (base_url, "&".join(qs))
+                jqs = "&".join(qs)
+                url = f"{base_url}?{jqs}"
             else:
                 url = base_url
             # Get data
@@ -94,11 +112,16 @@ class DataStreamClient(object):
                     await self.on_delete(item)
                 else:
                     await self.on_change(item)
+            #
+            if not self._is_ready and "X-NOC-DataStream-More" not in headers:
+                await self.on_ready()
+                self._is_ready = True
             # Continue from last change
             if "X-NOC-DataStream-Last-Change" in headers:
                 change_id = headers["X-NOC-DataStream-Last-Change"]
-            elif not block:
-                break  # Empty batch, stop if non-blocking mode
+                continue
+            if not block:
+                break  # No data, Stop if non-blocking mode
 
     async def resolve(self, host):
         try:

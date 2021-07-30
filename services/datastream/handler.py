@@ -24,7 +24,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         self.datastream = datastream
 
     def get_access_tokens_set(self):
-        tokens = {"datastream:*", "datastream:%s" % self.datastream.name}
+        tokens = {"datastream:*", f"datastream:{self.datastream.name}"}
         fmt = self.get_arguments("format")
         if fmt:
             role = get_format_role(self.datastream, fmt[0])
@@ -34,15 +34,11 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
 
     @authenticated
     async def get(self, *args, **kwargs):
-        # Get limits
-        p_limit = self.get_arguments("limit")
-        if p_limit:
-            limit = int(p_limit[0])
-        else:
-            limit = 0
-        if not limit:
-            limit = self.datastream.DEFAULT_LIMIT
-        limit = min(limit, self.datastream.DEFAULT_LIMIT)
+        # Get limits.
+        p_limit = self.get_arguments("limit") or [0]
+        limit = int(p_limit[0]) or self.datastream.DEFAULT_LIMIT
+        # Increase limit by 1 to detect datastream has more data
+        limit = min(limit, self.datastream.DEFAULT_LIMIT) + 1
         # Collect filters
         filters = self.get_arguments("filter") or []
         ids = self.get_arguments("id") or None
@@ -65,6 +61,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
         to_block = bool(p_block) and bool(int(p_block[0]))
         first_change = None
         last_change = None
+        nr = 1
         while True:
             r = []
             try:
@@ -75,6 +72,9 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
                         first_change = change_id
                     last_change = change_id
                     r += [data]
+                    nr += 1
+                    if nr == limit:
+                        break  # Skip last additional item
             except ValueError:
                 raise tornado.web.HTTPError(400)
             if to_block and not r:
@@ -89,4 +89,7 @@ class DataStreamRequestHandler(APIAccessRequestHandler):
             self.set_header("X-NOC-DataStream-First-Change", str(first_change))
         if last_change:
             self.set_header("X-NOC-DataStream-Last-Change", str(last_change))
-        self.write("[%s]" % ",".join(r))
+        if nr == limit:
+            self.set_header("X-NOC-DataStream-More", "1")
+        resp = ",".join(r)
+        self.write(f"[{resp}]")
