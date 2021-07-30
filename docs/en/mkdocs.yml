@@ -1309,6 +1309,7 @@ nav:
               - kafkasender: admin/reference/services/kafkasender.md
               - login: admin/reference/services/login.md
               - mailsender: admin/reference/services/mailsender.md
+              - metrics: admin/reference/services/metrics.md
               - metricscollector: admin/reference/services/metricscollector.md
               - mrt: admin/reference/services/mrt.md
               - mx: admin/reference/services/mx.md
@@ -2249,6 +2250,7 @@ nav:
               - dispose.POOL: dev/reference/streams/dispose.md
               - events.POOL: dev/reference/streams/events.md
               - kafkasender: dev/reference/streams/kafkasender.md
+              - metrics: dev/reference/streams/metrics.md
               - jobs: dev/reference/streams/jobs.md
               - mx: dev/reference/streams/mx.md
           - Tools:

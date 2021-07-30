@@ -444,6 +444,9 @@ class Config(BaseConfig):
         smtp_user = StringParameter()
         smtp_password = SecretParameter()
 
+    class metricscollector(ConfigSection):
+        ds_limit = IntParameter(default=1000)
+
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True, full_result=True)
         pool_size = IntParameter(default=8)
@@ -686,12 +689,12 @@ class Config(BaseConfig):
             default="14d",
             help="Removing datastream alarm records older days",
         )
-        enable_cfgmentricscollector = BooleanParameter(default=True)
-        enable_cfgmentricscollector_wait = BooleanParameter(
+        enable_cfgmetrics = BooleanParameter(default=True)
+        enable_cfgmetrics_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for CfgMetricsCollector datastream (Mongo greater 3.6 needed)",
         )
-        cfgmentricscollector_ttl = SecondsParameter(
+        cfgmetrics_ttl = SecondsParameter(
             default="0",
             help="Removing datastream cfgmetricscollector records older days",
         )
