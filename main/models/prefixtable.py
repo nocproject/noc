@@ -7,6 +7,7 @@
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from typing import Union, List
 from django.db import models
 
 # NOC Modules
@@ -62,14 +63,15 @@ class PrefixTable(NOCModel):
         return self.match(other)
 
     @classmethod
-    def iter_lazy_labels(cls, prefix: str):
-        p = IP.prefix(prefix)
-        for pt in PrefixTablePrefix.objects.filter(afi=p.afi).extra(
-            where=["%s <<= prefix"], params=[prefix]
-        ):
+    def iter_lazy_labels(cls, prefixes: Union[str, List[str]]):
+        if isinstance(prefixes, str):
+            prefixes = [prefixes]
+        pp = [IP.prefix(prefix) for prefix in prefixes]
+        match_prefixes = PrefixTablePrefix.objects.filter(afi=pp[0].afi).extra(
+            where=[" OR ".join(["%s <<= prefix"] * len(prefixes))], params=prefixes
+        )
+        for pt in match_prefixes:
             yield f"noc::prefixfilter::{pt.table.name}::<"
-            if prefix == pt.prefix:
-                yield f"noc::prefixfilter::{pt.table.name}::="
 
 
 class PrefixTablePrefix(NOCModel):

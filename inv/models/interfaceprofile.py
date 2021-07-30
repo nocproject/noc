@@ -40,6 +40,15 @@ from .ifdescpatterns import IfDescPatterns
 id_lock = Lock()
 
 
+class MatchRule(EmbeddedDocument):
+    dynamic_order = IntField(default=0)
+    labels = ListField(StringField())
+    handler = StringField()
+
+    def __str__(self):
+        return f'{self.dynamic_order}: {", ".join(self.labels)}'
+
+
 class InterfaceProfileMetrics(EmbeddedDocument):
     meta = {"strict": False}
     metric_type = ReferenceField(MetricType, required=True)
@@ -127,6 +136,13 @@ class InterfaceProfile(Document):
     ifdesc_handler = PlainReferenceField(Handler)
     # Enable abduct detection on interface
     enable_abduct_detection = BooleanField(default=False)
+    # Dynamic Profile Classification
+    dynamic_classification_policy = StringField(
+        choices=[("R", "By Rule"), ("D", "Disable")],
+        default="R",
+    )
+    #
+    match_rules = ListField(EmbeddedDocumentField(MatchRule))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)

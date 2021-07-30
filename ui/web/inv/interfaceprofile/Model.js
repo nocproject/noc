@@ -134,6 +134,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "enable_abduct_detection",
             type: "bool"
         },
+        {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "R"
+        },
         // CSS
         {
             name: "row_class",
@@ -145,6 +150,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "style__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "match_rules",
+            type: "auto"
         }
     ]
 });

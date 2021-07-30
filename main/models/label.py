@@ -243,7 +243,7 @@ class Label(Document):
             for label in labels:
                 if label in seen:
                     continue
-                elif "::" in label:
+                elif "::" in label and not label[-1] in MATCH_OPS:
                     scope = label.rsplit("::", 1)[0]
                     if scope in seen_scopes:
                         continue
