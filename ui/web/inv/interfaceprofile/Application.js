@@ -9,6 +9,8 @@ console.debug("Defining NOC.inv.interfaceprofile.Application");
 Ext.define("NOC.inv.interfaceprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.label.LabelField",
+        "NOC.core.ListFormField",
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
@@ -327,7 +329,61 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 renderer: NOC.render.Lookup("threshold_profile")
                             }
                         ]
-
+                    },
+                    {
+                      name: "dynamic_classification_policy",
+                      xtype: "combobox",
+                      fieldLabel: __("Dynamic Classification Policy"),
+                      allowBlank: false,
+                      queryMode: "local",
+                      displayField: "label",
+                      valueField: "id",
+                      store: {
+                        fields: ["id", "label"],
+                        data: [
+                            {id: "D", label: "Disable"},
+                            {id: "R", label: "By Rule"},
+                        ]
+                      },
+                      defaultValue: "R",
+                      uiStyle: "medium"
+                    },
+                    {
+                      name: "match_rules",
+                      xtype: "listform",
+                      fieldLabel: __("Match Rules"),
+                      items: [
+                          {
+                            name: "dynamic_order",
+                            xtype: "numberfield",
+                            fieldLabel: __("Dynamic Order"),
+                            allowBlank: true,
+                            defaultValue: 0,
+                            uiStyle: "small"
+                          },
+                        {
+                          name: "labels",
+                          xtype: "labelfield",
+                          fieldLabel: __("Match Labels"),
+                          allowBlank: false,
+                          isTree: true,
+                          pickerPosition: "down",
+                          uiStyle: "extra",
+                          query: {
+                            "allow_matched": true
+                          }
+                          },
+                        {
+                          name: "handler",
+                          xtype: "main.handler.LookupField",
+                          fieldLabel: __("Match Handler"),
+                          allowBlank: true,
+                          uiStyle: "medium",
+                          query: {
+                            "allow_match_rule": true
+                          }
+                        }
+                     ]
                     }
                 ],
                 formToolbar: [

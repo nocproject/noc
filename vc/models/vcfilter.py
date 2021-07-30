@@ -145,13 +145,13 @@ class VCFilter(NOCModel):
         if match_scope:
             match_scope += "::"
         match_expressions = cls.get_matcher()
-        for expr, vc_name in match_expressions.items():
+        for expr, vc_names in match_expressions.items():
             r = vcs.intersection(expr)
             if r and vcs == expr:
-                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}="
+                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}=" for vc_name in vc_names)
             if r and not vcs - expr:
-                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}>"
+                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}>" for vc_name in vc_names)
             if r and not expr - vcs:
-                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}<"
+                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}<" for vc_name in vc_names)
             if r:
-                yield f"noc::vcfilter::{vc_name[0]}::{match_scope}&"
+                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}&" for vc_name in vc_names)

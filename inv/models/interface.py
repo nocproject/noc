@@ -54,6 +54,7 @@ logger = logging.getLogger(__name__)
 
 
 @on_delete
+@Label.dynamic_classification(profile_model_id="inv.InterfaceProfile")
 @change
 @resourcegroup
 @Label.model
@@ -411,7 +412,7 @@ class Interface(Document):
         yield RegexpLabel.get_effective_labels("interface_name", instance.name)
         yield RegexpLabel.get_effective_labels("interface_description", instance.name)
         if instance.managed_object:
-            yield list(instance.managed_object.effective_labels)
+            yield from ManagedObject.iter_effective_labels(instance.managed_object)
         # if instance.is_linked:
         # Idle Discovery When create Aggregate interface
         #     yield ["noc::interface::linked::="]
@@ -423,11 +424,11 @@ class Interface(Document):
                 yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
             if si.untagged_vlan:
                 lazy_untagged_vlans_labels = list(
-                    VCFilter.iter_lazy_labels(si.tagged_vlans, "untagged")
+                    VCFilter.iter_lazy_labels([si.untagged_vlan], "untagged")
                 )
                 yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
             if si.ipv4_addresses:
-                yield list(PrefixTable.iter_lazy_labels(si.ipv4_addresses[0]))
+                yield list(PrefixTable.iter_lazy_labels(si.ipv4_addresses))
 
 
 # Avoid circular references
