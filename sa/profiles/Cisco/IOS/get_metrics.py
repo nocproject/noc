@@ -178,6 +178,13 @@ class Script(GetMetricsScript):
                 "direction": {1: "In", 2: "Out"}[direction],
                 "ifindex": ifindex,
             }
+        class_tos_map = {}
+        # DSCP collect
+        for oid, dscp in self.snmp.getnext(
+            mib["CISCO-CLASS-BASED-QOS-MIB::cbQosSetCfgIpDSCPValue"]
+        ):
+            _, index = oid.rsplit(".", 1)
+            class_tos_map[int(index)] = dscp
         config_cmap = {}
         for entry_index, config_index, object_type, parent in self.snmp.get_tables(
             [
@@ -197,6 +204,8 @@ class Script(GetMetricsScript):
                 "cmap_name": class_map[str(config_index)],
                 "cmap_index": config_index,
             }
+            if config_index in class_tos_map:
+                config_cmap[object_index]["tos"] = class_tos_map[config_index]
             config_cmap[object_index].update(policy_map[policy_index])
         return config_cmap
 
@@ -246,11 +255,14 @@ class Script(GetMetricsScript):
         for c, item in config.items():
             if item["ifindex"] in ifaces:
                 for metric, mc in self.CBQOS_OIDS_MAP[item["direction"]].items():
+                    labels = ifaces[item["ifindex"]] + [f'noc::traffic_class::{item["cmap_name"]}']
+                    if "tos" in item:
+                        labels.append(f'noc::tos::{item["tos"]}')
                     oids[mib[mc[0], item["pmap_index"], c]] = [
                         metric,
                         mc,
                         ifaces[item["ifindex"]],
-                        ifaces[item["ifindex"]] + [f'noc::traffic_class::{item["cmap_name"]}'],
+                        labels,
                     ]
         results = self.snmp.get_chunked(
             oids=list(oids),
@@ -292,11 +304,6 @@ class Script(GetMetricsScript):
         :return:
         """
         oids = {}
-        # stat_index = 250
-        stat_index = {}
-        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"], only_first=True):
-            key = ".".join(oid.split(".")[14:-1])
-            stat_index[key] = oid.rsplit(".", 1)[-1]
         for m in metrics:
             if m.metric not in SLA_METRICS_MAP:
                 continue
@@ -304,12 +311,12 @@ class Script(GetMetricsScript):
                 continue
             _, name = m.labels[0].rsplit("::", 1)
             _, group = m.labels[1].rsplit("::", 1)
-            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
             oid = mib[
                 SLA_METRICS_MAP[m.metric],
                 name,
             ]
             oids[oid] = m
+            # key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -330,3 +337,4 @@ class Script(GetMetricsScript):
                 type="gauge",
                 scale=1,
             )
+        #

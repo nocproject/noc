@@ -71,6 +71,14 @@
             "is_required": false,
             "label": "noc::traffic_class::*",
             "store_column": "traffic_class"
+        },
+        {
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::tos::*",
+            "store_column": "tos"
         }
     ]
 }
