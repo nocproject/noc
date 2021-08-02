@@ -65,8 +65,9 @@ class MailSenderService(FastAPIService):
         self.tz = pytz.timezone(config.timezone)
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
-        if isinstance(data["address"], str):
-            address = [data["address"]]
+        address = data["address"]
+        if isinstance(address, str):
+            address = [address]
         from_address = config.mailsender.from_address
         message = MIMEMultipart()
         message["From"] = from_address
