@@ -37,12 +37,17 @@ class Script(BaseScript):
     def execute_snmp(self):
         interfaces = {}
         ss = {}
-        for soid, sname in self.snmp.getnext("1.3.6.1.4.1.41752.3.10.1.2.1.1.4"):
+        ent_oid = 41752
+        check_oid = self.snmp.getnext(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.4", only_first=True)
+        if not check_oid:
+            self.logger.info("Bad devices, use %s as Ent OID", 451752)
+            ent_oid = 451752
+        for soid, sname in self.snmp.getnext(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.4"):
             sifindex = int(soid.split(".")[-1])
-            ieee_mode = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.2.%s" % sifindex)
-            freq = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.6.%s" % sifindex)
-            channel = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.7.%s" % sifindex)
-            broadcast = self.snmp.get("1.2.840.10036.1.1.1.7.%s" % sifindex)
+            ieee_mode = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.2.{sifindex}")
+            freq = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.6.{sifindex}")
+            channel = self.snmp.get(f"1.3.6.1.4.1.{ent_oid}.3.10.1.2.1.1.7.{sifindex}")
+            broadcast = self.snmp.get(f"1.2.840.10036.1.1.1.7.{sifindex}")
             ss[sifindex] = {
                 "ssid": sname,
                 "ieee_mode": ieee_mode,
