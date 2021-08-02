@@ -1,0 +1,8 @@
+{
+    "name": "SNMP | OID | sysObjectID",
+    "$collection": "inv.capabilities",
+    "uuid": "a6b47561-0289-4b76-a10a-a4eb438d2e1b",
+    "description": "This field contains the vendor's identification of an SNMP managed object type. It represents the type of device and can also indicate the model number.",
+    "type": "str",
+    "card_template": null
+}
