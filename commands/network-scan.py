@@ -286,7 +286,7 @@ class Command(BaseCommand):
             }
         # добавить в список мо с remote:deleted
         moall = ManagedObject.objects.filter(is_managed=False).exclude(
-            labels__contains="remote:deleted"
+            labels__contains=["remote:deleted"]
         )
         if pool:
             moall = moall.filter(pool=self.pool)
@@ -407,13 +407,19 @@ class Command(BaseCommand):
                     row += 1
                 wb.close()
                 response.seek(0)
-                attach = [{"filename": f, "data": response.getvalue()}]
+                attach = [
+                    {"filename": f, "data": response.getvalue(), "transfer-encoding": "base64"}
+                ]
                 response.close()
             ms = MailSenderService()
             ms.logger = logging.getLogger("network_scan")
-            ms.send_mail(
-                "11", email, "Отчет о расхождениях (%s)" % pool, bodymessage, attachments=attach
-            )
+            msg = {
+                "address": email,
+                "subject": "Отчет о расхождениях (%s)" % pool,
+                "body": bodymessage,
+                "attachments": attach,
+            }
+            ms.send_mail("11", msg)
         else:
             print(data)
 
@@ -421,7 +427,7 @@ class Command(BaseCommand):
         while True:
             a = await queue.get()
             if a:
-                rtt, attempts = await self.ping.ping_check_rtt(a, count=1, timeout=500)
+                rtt = await self.ping.ping_check(a, count=3, timeout=500)
                 if rtt:
                     self.enable_ping.add(a)
             queue.task_done()
