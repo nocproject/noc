@@ -100,7 +100,7 @@
               "refId": "A",
               "resultFormat": "time_series",
               "intervalFactor": 1,
-              "query": "SELECT \n    t, \n    groupArray((concat('Probe rtt ', name), d)) AS groupArr\nFROM \n    ( SELECT \n        $timeSeries t, \n       group, name , \n        avg(icmp_rtt) d \n        from noc.sla \n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id \n        GROUP BY t, group\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+              "query": "SELECT \n    t, \n    groupArray((concat('Probe rtt ', name), d)) AS groupArr\nFROM \n    ( SELECT \n        $timeSeries t, \n       group, name , \n        avg(rtt_min) d \n        from noc.sla \n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id \n        GROUP BY t, group, name\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
               "database": "{{ noc_db_metrics }}",
               "tableLoading": false,
               "table": "sla",
@@ -113,7 +113,7 @@
               "refId": "B",
               "resultFormat": "time_series",
               "intervalFactor": 1,
-              "query": "SELECT \n    t, \n    groupArray((concat('Probe jitter ',name), d)) AS groupArr\nFROM \n    ( SELECT \n        $timeSeries t, \n        group, name, \n        avg(jitter) d \n        from noc.sla \n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id \n        GROUP BY t, group, name\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+              "query": "SELECT \n    t, \n    groupArray((concat('Probe jitter ',name), d)) AS groupArr\nFROM \n    ( SELECT \n        $timeSeries t, \n        group, name, \n        avg(jitter_avg) d \n        from noc.sla \n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id \n        GROUP BY t, group, name\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
               "database": "{{ noc_db_metrics }}",
               "tableLoading": false,
               "table": "sla",
@@ -202,7 +202,7 @@
               "dateTimeColDataType": "ts",
               "datetimeLoading": false,
               "intervalFactor": 1,
-              "query": "SELECT \n    $timeSeries as t, \n    avg(icmp_rtt), \n    avg(jitter) \nFROM $table \nWHERE \n    managed_object=$bi_id \n    and $timeFilter \n    and name=toString($probe)\nGROUP BY t \nORDER BY t",
+              "query": "SELECT \n    $timeSeries as t, \n    avg(rtt_min), \n    avg(jitter_avg) \nFROM $table \nWHERE \n  $timeFilter \n    and sla_probe=$probe\nGROUP BY t \nORDER BY t",
               "refId": "C",
               "resultFormat": "time_series",
               "table": "sla",
@@ -228,7 +228,7 @@
           },
           "yaxes": [
             {
-              "format": "short",
+              "format": "ms",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -268,6 +268,204 @@
               "text": "530",
               "value": "530"
             }
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "span": 6,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 7,
+            "w": 18,
+            "x": 0,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 14,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "database": "noc",
+              "dateColDataType": "date",
+              "dateLoading": false,
+              "dateTimeColDataType": "ts",
+              "datetimeLoading": false,
+              "intervalFactor": 1,
+              "query": "SELECT \n    $timeSeries as t, \n    avg(rtt_min), \n    avg(rtt_max) \nFROM $table \nWHERE \n  $timeFilter \n    and sla_probe=$probe\nGROUP BY t \nORDER BY t",
+              "refId": "C",
+              "resultFormat": "time_series",
+              "table": "sla",
+              "tableLoading": false
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "$device $probe",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": null,
+          "editable": true,
+          "error": false,
+          "span": 6,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 7,
+            "w": 18,
+            "x": 0,
+            "y": 16
+          },
+          "hiddenSeries": false,
+          "id": 15,
+          "legend": {
+            "avg": false,
+            "current": false,
+            "max": false,
+            "min": false,
+            "show": true,
+            "total": false,
+            "values": false
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "connected",
+          "options": {
+            "dataLinks": []
+          },
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "database": "noc",
+              "dateColDataType": "date",
+              "dateLoading": false,
+              "dateTimeColDataType": "ts",
+              "datetimeLoading": false,
+              "intervalFactor": 1,
+              "query": "SELECT \n    $timeSeries as t, \n    avg(jitter_out_avg), \n    avg(jitter_in_avg), \n    avg(jitter_avg) \nFROM $table \nWHERE \n  $timeFilter \n    and sla_probe=$probe\nGROUP BY t \nORDER BY t",
+              "refId": "C",
+              "resultFormat": "time_series",
+              "table": "sla",
+              "tableLoading": false
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "$device $probe",
+          "tooltip": {
+            "msResolution": false,
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "ms",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
           }
         }
       ],

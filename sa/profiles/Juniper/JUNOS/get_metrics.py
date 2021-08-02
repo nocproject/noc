@@ -5,21 +5,50 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python Modules
+import enum
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 from .oidrules.slot import SlotRule
 from noc.core.mib import mib
 from noc.core.script.metrics import scale
 
+
+class RPMMeasurement(enum.Enum):
+    roundTripTime = 1
+    posRttJitter = 2
+    negRttJitter = 3
+    egress = 4
+    posEgressJitter = 5
+    negEgressJitter = 6
+    ingress = 7
+    posIngressJitter = 8
+    negIngressJitter = 9
+
+
+class RPMResultCollection(enum.Enum):
+    currentTest = (1,)
+    lastCompletedTest = 2
+    movingAverage = 3
+    allTests = 4
+
+
 SLA_METRICS_MAP = {
     "SLA | Packets": "JUNIPER-RPM-MIB::jnxRpmResSumSent",
     "SLA | Packets | Loss | Ratio": "JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
     # "SLA | Packets | Loss | In": "JUNIPER-RPM-MIB::jnxRpmResSumReceived",
     "SLA | Jitter | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
-    "SLA | Jitter | Out | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
-    "SLA | Jitter | In | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 7),
-    "SLA | RTT | Min": ("JUNIPER-RPM-MIB::jnxRpmResCalcMin", 1),
-    "SLA | RTT | Max": ("JUNIPER-RPM-MIB::jnxRpmResCalcMax", 1),
+    "SLA | Jitter | Out | Avg": (
+        "JUNIPER-RPM-MIB::jnxRpmResCalcAverage",
+        RPMMeasurement.egress.value,
+    ),
+    "SLA | Jitter | In | Avg": (
+        "JUNIPER-RPM-MIB::jnxRpmResCalcAverage",
+        RPMMeasurement.ingress.value,
+    ),
+    "SLA | RTT | Min": ("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
+    "SLA | RTT | Max": ("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
 }
 
 
@@ -128,23 +157,31 @@ class Script(GetMetricsScript):
         for m in metrics:
             if m.metric not in SLA_METRICS_MAP:
                 continue
-            if len(m.labels) < 2:
+            name = next(
+                iter([m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::name::")]),
+                None,
+            )
+            group = next(
+                iter(
+                    [m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::group::")]
+                ),
+                None,
+            )
+            if not name or not group:
                 continue
-            _, name = m.labels[0].rsplit("::", 1)
-            _, group = m.labels[1].rsplit("::", 1)
             key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
             base = SLA_METRICS_MAP[m.metric]
             if not isinstance(base, tuple):
                 oid = mib[
                     base,
                     key,
-                    2,
+                    RPMResultCollection.lastCompletedTest.value,
                 ]
             else:
                 oid = mib[
                     base[0],
                     key,
-                    2,
+                    RPMResultCollection.lastCompletedTest.value,
                     base[1],
                 ]
             oids[oid] = m
@@ -167,5 +204,5 @@ class Script(GetMetricsScript):
                 labels=m.labels,
                 multi=True,
                 type="gauge",
-                scale=1 if m.metric != "SLA | Packets | Loss | Out" else scale(0.000001),
+                scale=1 if m.metric != "SLA | Packets | Loss | Ratio" else scale(0.000001),
             )

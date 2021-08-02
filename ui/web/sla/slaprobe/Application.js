@@ -16,18 +16,13 @@ Ext.define("NOC.sla.slaprobe.Application", {
         "NOC.sla.slaprofile.LookupField"
     ],
     model: "NOC.sla.slaprobe.Model",
+    search: true,
     rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
             columns: [
-                {
-                    text: __("Managed Object"),
-                    dataIndex: "managed_object",
-                    width: 200,
-                    renderer: NOC.render.Lookup("managed_object")
-                },
                 {
                     text: __("Group"),
                     dataIndex: "group",
@@ -41,7 +36,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
                 {
                     text: __("State"),
                     dataIndex: "state",
-                    width: 200,
+                    width: 150,
                     renderer: NOC.render.Lookup("state")
                 },
                 {
@@ -59,6 +54,12 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     dataIndex: "profile",
                     width: 150,
                     renderer: NOC.render.Lookup("profile")
+                },
+                {
+                    text: __("Managed Object"),
+                    dataIndex: "managed_object",
+                    width: 200,
+                    renderer: NOC.render.Lookup("managed_object")
                 },
                 {
                     text: __("Description"),

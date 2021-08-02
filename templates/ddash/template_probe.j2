@@ -1,7 +1,7 @@
 {
   "current": {
       "selected": true,
-      "text": "{{probes[0].name}}",
+      "text": "{{probes[0].label}}",
       "value": "{{probes[0].value}}"
   },
   "datasource": null,
@@ -19,12 +19,12 @@
     {%for probe in probes -%}
     {{ comma() }}{
       "selected": false,
-      "text": "{{probe.value}}",
-      "value": "{{probe.name}}"
+      "text": "{{probe.label}}",
+      "value": "{{probe.value}}"
     }
     {%- endfor %}
    ],
-  "query": "{%- for probe in probes %}{{probe.name}},{% endfor %}",
+  "query": "{%- for probe in probes %}{{probe.label}},{% endfor %}",
   "refresh": 0,
   "type": "custom"
 }

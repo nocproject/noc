@@ -30,6 +30,21 @@ SLA_METRICS_MAP = {
     "SLA | RTT | Max": "NQA-MIB::nqaJitterStatsRTTMax",
 }
 
+SCALE_METRICS = {
+    "SLA | OneWayLatency | Out | Max",
+    "SLA | OneWayLatency | In | Max",
+    "SLA | Jitter | Avg",
+    "SLA | Jitter | Out | Avg",
+    "SLA | Jitter | In | Avg",
+    "SLA | RTT | Min",
+    "SLA | RTT | Max",
+}
+
+SLA_ICMP_METRIC_MAP = {
+    "SLA | Packets | Loss | Ratio": "NQA-MIB::nqaResultsLostPacketRatio",
+    "SLA | RTT | Max": "NQA-MIB::nqaResultsRttAvg",
+}
+
 
 class Script(GetMetricsScript):
     name = "Huawei.VRP.get_metrics"
@@ -195,9 +210,25 @@ class Script(GetMetricsScript):
     def collect_profile_metrics(self, metrics):
         # SLA Metrics
         if self.has_capability("Huawei | NQA | Probes"):
-            self.get_ip_sla_udp_jitter_metrics_snmp(
-                [m for m in metrics if m.metric in SLA_METRICS_MAP]
-            )
+            jitter_metrics = []
+            icmp_metrics = []
+            for m in metrics:
+                if m.metric not in SLA_METRICS_MAP:
+                    continue
+                if m.sla_type == "icmp-echo" and m.metric in SLA_ICMP_METRIC_MAP:
+                    icmp_metrics.append(m)
+                else:
+                    jitter_metrics.append(m)
+            if icmp_metrics:
+                self.get_ip_sla_udp_jitter_metrics_snmp(
+                    icmp_metrics, metric_map=SLA_ICMP_METRIC_MAP
+                )
+            if jitter_metrics:
+                self.get_ip_sla_udp_jitter_metrics_snmp(
+                    jitter_metrics,
+                    metric_map=SLA_METRICS_MAP,
+                    status_oid="NQA-MIB::nqaJitterStatsCompletions",
+                )
 
     # @metrics(
     #     list(SLA_METRICS_MAP.keys()),
@@ -205,7 +236,9 @@ class Script(GetMetricsScript):
     #     volatile=True,
     #     access="S",  # CLI version
     # )
-    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+    def get_ip_sla_udp_jitter_metrics_snmp(
+        self, metrics, metric_map, status_oid="NQA-MIB::nqaResultsCompletions"
+    ):
         """
         Returns collected ip sla metrics in form
         probe id -> {
@@ -216,22 +249,56 @@ class Script(GetMetricsScript):
         oids = {}
         # stat_index = 250
         stat_index = {}
-        for oid, r in self.snmp.getnext(mib["NQA-MIB::nqaJitterStatsCompletions"]):
-            key = ".".join(oid.split(".")[14:-1])
-            stat_index[key] = oid.rsplit(".", 1)[-1]
+        scale = 1000
+        ts = self.get_ts()
+        for oid, value in self.snmp.getnext(mib[status_oid]):
+            if status_oid == "NQA-MIB::nqaResultsCompletions":
+                *key, resindex, addindex = oid.split(".")
+            else:
+                *key, resindex = oid.split(".")
+            key = key[14:]
+            fi = int(key[0])
+            owner, test_name = key[1 : fi + 1], key[fi + 2 :]
+            if ".".join(key) in stat_index:
+                continue
+            stat_index[".".join(key)] = resindex
+            self.set_metric(
+                id=(
+                    "SLA | Test | Status",
+                    [f"noc::sla::name::{test_name}", f"noc::sla::group::{owner}"],
+                ),
+                metric="SLA | Test | Status",
+                value=float(value),
+                ts=ts,
+                labels=[f"noc::sla::name::{test_name}", f"noc::sla::group::{owner}"],
+                multi=True,
+                type="gauge",
+                scale=1,
+            )
         for m in metrics:
-            if m.metric not in SLA_METRICS_MAP:
+            name = next(
+                iter([m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::name::")]),
+                None,
+            )
+            group = next(
+                iter(
+                    [m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::group::")]
+                ),
+                None,
+            )
+            if not name or not group:
                 continue
-            if len(m.labels) < 2:
-                continue
-            _, name = m.labels[0].rsplit("::", 1)
-            _, group = m.labels[1].rsplit("::", 1)
             key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
-            oid = mib[
-                SLA_METRICS_MAP[m.metric],
-                key,
-                stat_index[key],
-            ]
+            if key not in stat_index:
+                continue
+            if status_oid == "NQA-MIB::nqaResultsCompletions":
+                oid = mib[metric_map[m.metric], key, stat_index[key], 1]
+            else:
+                oid = mib[
+                    metric_map[m.metric],
+                    key,
+                    stat_index[key],
+                ]
             oids[oid] = m
         results = self.snmp.get_chunked(
             oids=list(oids),
@@ -251,7 +318,7 @@ class Script(GetMetricsScript):
                 labels=m.labels,
                 multi=True,
                 type="gauge",
-                scale=1,
+                scale=scale if m.metric in SCALE_METRICS else 1,
             )
 
     def get_classifier_tos(self):
