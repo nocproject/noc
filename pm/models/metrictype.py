@@ -279,5 +279,5 @@ class MetricType(Document):
         return str(value)
 
     def iter_changed_datastream(self, changed_fields=None):
-        if config.datastream.enable_cfgmentricscollector:
+        if config.datastream.enable_cfgmetrics:
             yield "cfgmetrics", self.id
