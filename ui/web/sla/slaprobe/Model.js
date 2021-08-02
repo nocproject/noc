@@ -77,8 +77,8 @@ Ext.define("NOC.sla.slaprobe.Model", {
         },
         {
             name: "bi_id",
-            type: "int",
-            persist: true
+            type: "string",
+            persist: false
         }
     ]
 });

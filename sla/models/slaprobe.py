@@ -102,7 +102,13 @@ class SLAProbe(Document):
 
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self):
-        mo = ManagedObject.objects.filter(address=self.target)[:1]
+        address = self.target
+        if ":" in address:
+            # port
+            address, port = self.target.split(":")
+        print("Search address", address)
+        # @todo SubInterface search
+        mo = ManagedObject.objects.filter(address=address)[:1]
         if mo:
             return mo[0]
         return None

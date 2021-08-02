@@ -31,6 +31,21 @@ SLA_METRICS_MAP = {
     "SLA | RTT | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
 }
 
+SCALE_METRICS = {
+    "SLA | OneWayLatency | Out | Max",
+    "SLA | OneWayLatency | In | Max",
+    "SLA | Jitter | Avg",
+    "SLA | Jitter | Out | Avg",
+    "SLA | Jitter | In | Avg",
+    "SLA | RTT | Min",
+    "SLA | RTT | Max",
+}
+
+SLA_ICMP_METRIC_MAP = {
+    "SLA | RTT | Min": "CISCO-RTTMON-MIB::rttMonStatsCaptureCompletionTimeMin",
+    "SLA | RTT | Max": "CISCO-RTTMON-MIB::rttMonStatsCaptureCompletionTimeMax",
+}
+
 
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
@@ -291,9 +306,71 @@ class Script(GetMetricsScript):
     def collect_profile_metrics(self, metrics):
         # SLA Metrics
         if self.has_capability("Cisco | IP | SLA | Probes"):
-            self.get_ip_sla_udp_jitter_metrics_snmp(
-                [m for m in metrics if m.metric in SLA_METRICS_MAP]
-            )
+            probe_status = {}
+            for oid, oper_status in self.snmp.getnext(
+                mib["CISCO-RTTMON-MIB::rttMonLatestRttOperSense"]
+            ):
+                _, name = oid.rsplit(".", 1)
+                probe_status[name] = oper_status
+                self.set_metric(
+                    id=("SLA | Test | Status", [f"noc::sla::name::{name}"]),
+                    metric="SLA | Test | Status",
+                    value=float(oper_status),
+                    ts=0,
+                    labels=[f"noc::sla::name::{name}"],
+                    multi=True,
+                    type="gauge",
+                    scale=1,
+                )
+            jitter_metrics = []
+            icmp_metrics = {}
+            for m in metrics:
+                if m.metric not in SLA_METRICS_MAP:
+                    continue
+                name = next(
+                    iter(
+                        [
+                            m.rsplit("::", 1)[-1]
+                            for m in (m.labels or [])
+                            if m.startswith("noc::sla::name::")
+                        ]
+                    ),
+                    None,
+                )
+                if not name:
+                    self.logger.warning("Unknown name for probe. Skipping")
+                    continue
+                if probe_status[name] != 1:
+                    self.logger.debug("[%s] Test is not success. Skipping", name)
+                    continue
+                if m.sla_type == "icmp-echo" and m.metric in SLA_ICMP_METRIC_MAP:
+                    icmp_metrics[(name, m.metric)] = m
+                    continue
+                jitter_metrics.append(m)
+            if icmp_metrics:
+                self.get_ip_sla_icmp_metrics_snmp(icmp_metrics)
+            if jitter_metrics:
+                self.get_ip_sla_udp_jitter_metrics_snmp(jitter_metrics)
+
+    def get_ip_sla_icmp_metrics_snmp(self, metrics):
+        scale = 1000
+        ts = self.get_ts()
+        for metric, m_oid in SLA_ICMP_METRIC_MAP.items():
+            for oid, value in self.snmp.getnext(mib[m_oid]):
+                _, name, timestamp, path, hop, dist = oid.rsplit(".", 5)
+                if (name, metric) not in metrics:
+                    continue
+                m = metrics[(name, metric)]
+                self.set_metric(
+                    id=m.id,
+                    metric=m.metric,
+                    value=float(value),
+                    ts=ts,
+                    labels=m.labels,
+                    multi=True,
+                    type="gauge",
+                    scale=scale if m.metric in SCALE_METRICS else 1,
+                )
 
     def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
         """
@@ -303,20 +380,19 @@ class Script(GetMetricsScript):
         }
         :return:
         """
+        #
+        scale = 1000
         oids = {}
         for m in metrics:
-            if m.metric not in SLA_METRICS_MAP:
-                continue
-            if len(m.labels) < 2:
-                continue
-            _, name = m.labels[0].rsplit("::", 1)
-            _, group = m.labels[1].rsplit("::", 1)
+            name = next(
+                iter([m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::name::")]),
+                None,
+            )
             oid = mib[
                 SLA_METRICS_MAP[m.metric],
                 name,
             ]
             oids[oid] = m
-            # key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -335,6 +411,6 @@ class Script(GetMetricsScript):
                 labels=m.labels,
                 multi=True,
                 type="gauge",
-                scale=1,
+                scale=scale if m.metric in SCALE_METRICS else 1,
             )
         #

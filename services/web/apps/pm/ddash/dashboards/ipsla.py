@@ -33,7 +33,11 @@ class IPSLADashboard(JinjaDashboard):
             "bi_id": self.object.bi_id,
             "segment": self.object.segment.id,
             "probes": [
-                {"name": self.str_cleanup(probe.name), "value": probe.target}
+                {
+                    "label": f"{probe.profile}:{probe.target}",
+                    "name": self.str_cleanup(probe.name),
+                    "value": probe.bi_id,
+                }
                 for probe in SLAProbe.objects.filter(managed_object=self.object.id)
             ],
         }

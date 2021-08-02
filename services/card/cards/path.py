@@ -23,6 +23,7 @@ class PathCard(BaseCard):
 
     def get_data(self):
         mo1, mo2 = self.id.split("-")
+        print(self.id)
         mo1 = ManagedObject.get_by_id(int(mo1)) if mo1 else None
         mo2 = ManagedObject.get_by_id(int(mo2)) if mo2 else None
         s_path = [mo1]

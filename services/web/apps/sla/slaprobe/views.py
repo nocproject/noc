@@ -20,6 +20,7 @@ class SLAProbeApplication(ExtDocApplication):
 
     title = "SLA Probe"
     menu = _("SLA Probes")
+    query_fields = ["name__icontains", "target__icontains", "description__icontains"]
     model = SLAProbe
 
     def field_row_class(self, o):

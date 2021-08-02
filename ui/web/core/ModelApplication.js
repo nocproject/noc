@@ -331,7 +331,7 @@ Ext.define("NOC.core.ModelApplication", {
                         var url = '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.openDashboard.type + '&id=' + record.get('managed_object');
 
                         if('ipsla' === me.openDashboard.type) {
-                            url += '&var-probe=' + record.get('name')
+                            url += '&var-probe=' + record.get('bi_id')
                         }
                         window.open(url);
                     }
