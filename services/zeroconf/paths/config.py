@@ -26,6 +26,8 @@ def config(
     mac: Optional[List[str]] = Query(None),
     ip: Optional[List[str]] = Query(None),
     x_noc_agent_key: Optional[str] = Header(None),
+    host: Optional[str] = Header(None),
+    x_forwarded_proto: Optional[str] = Header(None),
 ):
     if agent_id and not x_noc_agent_key:
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
@@ -47,6 +49,11 @@ def config(
         agent.fire_event("fail")
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
     auth_level = min(req_level, agent.auth_level)
-    cfg = get_config(agent, level=auth_level)
+    # Base url
+    scheme = x_forwarded_proto if x_forwarded_proto else "http"
+    host = host or "localhost"
+    base = f"{scheme}://{host}"
+    #
+    cfg = get_config(agent, level=auth_level, base=base)
     agent.fire_event("seen")
     return cfg

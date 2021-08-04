@@ -15,7 +15,13 @@ from noc.sa.models.service import Service
 from noc.inv.models.capability import Capability
 from noc.inv.models.sensor import Sensor
 from noc.main.models.label import Label
-from .models.zk import ZkConfig, ZkConfigConfig, ZkConfigConfigZeroconf, ZkConfigCollector
+from .models.zk import (
+    ZkConfig,
+    ZkConfigConfig,
+    ZkConfigConfigZeroconf,
+    ZkConfigMetrics,
+    ZkConfigCollector,
+)
 
 
 def find_agent(
@@ -64,7 +70,7 @@ def find_agent(
     return None
 
 
-def get_config(agent: Agent, level: int = 0) -> ZkConfig:
+def get_config(agent: Agent, level: int = 0, base: str = "") -> ZkConfig:
     """
     Generate agent config
     :param agent:
@@ -80,7 +86,11 @@ def get_config(agent: Agent, level: int = 0) -> ZkConfig:
                 id=agent.bi_id if level > 0 else None,
                 key=agent.key if level > 0 else None,
                 interval=300 if is_disabled else check_interval,
-            )
+            ),
+            metrics=ZkConfigMetrics(
+                type="metricscollector",
+                url=f"{base}/api/metricscollector/send",
+            ),
         ),
         collectors=list(iter_collectors(agent)) if level >= 2 else [],
     )
