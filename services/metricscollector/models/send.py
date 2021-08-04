@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
 from typing import Any, Optional, List, Dict
 
 # Third-party modules
@@ -13,7 +14,7 @@ from pydantic import BaseModel, root_validator
 
 
 class SendRequestItem(BaseModel):
-    ts: int
+    ts: datetime.datetime
     labels: Optional[List[str]]
     service: int
     collector: str

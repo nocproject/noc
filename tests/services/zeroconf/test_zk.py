@@ -19,7 +19,8 @@ ZK = """{
       "id": 12345,
       "key": "COFQI6Q3C23L5KUJKHYXEEBFEAOQJCUN",
       "interval": 300
-    }
+    },
+    "metrics": null
   },
   "collectors": [
     {

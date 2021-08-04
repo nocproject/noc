@@ -21,5 +21,7 @@ pub mod twamp_reflector;
 pub mod twamp_sender;
 pub mod uptime;
 
-pub use base::{Collectable, Collector, NoConfig, Runnable, Schedule, Status, StubCollector};
+pub use base::{
+    Collectable, Collector, MetricSender, NoConfig, Runnable, Schedule, Status, StubCollector,
+};
 pub use registry::{CollectorConfig, Collectors};

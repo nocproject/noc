@@ -21,6 +21,7 @@ pub struct ZkConfig {
 #[derive(Deserialize, Debug)]
 pub struct ZkConfigConfig {
     pub zeroconf: ZkConfigConfigZeroconf,
+    pub metrics: Option<ZkConfigMetrics>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -28,6 +29,16 @@ pub struct ZkConfigConfigZeroconf {
     pub id: Option<u64>,     // Agent id
     pub key: Option<String>, // Agent auth key
     pub interval: u64,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct ZkConfigMetrics {
+    #[serde(rename = "type")]
+    pub _type: String, // must be metricscollector
+    pub url: String,
+    pub batch_size: Option<usize>,
+    pub send_delay_ms: Option<u64>,
+    pub retry_timeout_ms: Option<u64>,
 }
 
 #[derive(Deserialize, Debug)]

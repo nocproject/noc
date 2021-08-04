@@ -12,6 +12,7 @@ pub mod config;
 pub mod error;
 mod feature;
 pub mod proto;
+pub mod sender;
 pub mod state;
 pub mod sysid;
 pub mod timing;

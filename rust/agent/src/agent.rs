@@ -6,14 +6,15 @@
  * ---------------------------------------------------------------------
  */
 use crate::cli::CliArgs;
-use crate::collectors::{Collectors, Runnable};
+use crate::collectors::{Collectors, MetricSender, Runnable};
 use crate::config::{ConfigResolver, Reader, Resolver};
 use crate::config::{ZkConfig, ZkConfigCollector};
 use crate::error::AgentError;
+use crate::sender::{Sender, SenderCommand};
 use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::sync::Arc;
-use tokio::{runtime::Runtime, task::JoinHandle};
+use tokio::{runtime::Runtime, sync::mpsc, task::JoinHandle};
 
 pub struct RunningCollector {
     #[allow(dead_code)]
@@ -24,6 +25,8 @@ pub struct RunningCollector {
 pub struct Agent {
     resolver: ConfigResolver,
     collectors: HashMap<String, RunningCollector>,
+    sender_tx: Option<mpsc::Sender<SenderCommand>>,
+    disable_cert_validation: bool,
 }
 
 impl TryFrom<CliArgs> for Agent {
@@ -40,9 +43,12 @@ impl TryFrom<CliArgs> for Agent {
             })
             .init();
         // Build agent
+        let disable_cert_validation = args.disable_cert_validation;
         Ok(Self {
             resolver: ConfigResolver::try_from(args)?,
             collectors: HashMap::new(),
+            sender_tx: None,
+            disable_cert_validation,
         })
     }
 }
@@ -58,6 +64,13 @@ impl Agent {
 
     async fn bootstrap(&mut self) -> Result<(), AgentError> {
         self.resolver.bootstrap().await?;
+        // Spawn sender
+        let mut sender = Sender::new();
+        self.sender_tx = Some(sender.get_tx());
+        tokio::spawn(async move {
+            sender.run().await;
+        });
+        //
         loop {
             let reader = self.resolver.get_reader()?;
             let status = match reader.get_config().await {
@@ -85,7 +98,28 @@ impl Agent {
         Ok(())
     }
     async fn apply(&mut self, cfg: &ZkConfig) -> Result<(), AgentError> {
-        //
+        // Configure sender
+        if let Some(tx) = &self.sender_tx {
+            // Cert validation
+            tx.send(SenderCommand::SetDisableCertValidation(
+                self.disable_cert_validation,
+            ))
+            .await
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+            // key
+            if let Some(key) = &cfg.config.zeroconf.key {
+                tx.send(SenderCommand::SetKey(key.clone()))
+                    .await
+                    .map_err(|e| AgentError::InternalError(e.to_string()))?;
+            }
+            // config
+            if let Some(x) = &cfg.config.metrics {
+                tx.send(SenderCommand::SetConfig(x.clone()))
+                    .await
+                    .map_err(|e| AgentError::InternalError(e.to_string()))?;
+            }
+        }
+        // Configure collectors
         for collector_cfg in cfg.collectors.iter() {
             let collector_id: String = String::from(&collector_cfg.id);
             if collector_cfg.disabled {
@@ -93,8 +127,8 @@ impl Agent {
                 continue;
             }
             let r = match self.collectors.get(&collector_id) {
-                Some(_) => self.update_collector(&collector_cfg).await,
-                None => self.spawn_collector(&collector_cfg).await,
+                Some(_) => self.update_collector(collector_cfg).await,
+                None => self.spawn_collector(collector_cfg).await,
             };
             if let Err(e) = r {
                 log::error!("Failed to initialize collector {}: {:?}", &collector_id, e)
@@ -105,7 +139,11 @@ impl Agent {
     }
     async fn spawn_collector(&mut self, config: &ZkConfigCollector) -> Result<(), AgentError> {
         log::debug!("Starting collector: {}", &config.id);
-        let collector = Arc::new(Collectors::try_from(config)?);
+        let mut c = Collectors::try_from(config)?;
+        if let Some(tx) = &self.sender_tx {
+            c.with_sender_tx(tx.clone());
+        }
+        let collector = Arc::new(c);
         let movable_collector = Arc::clone(&collector);
         let handle = tokio::spawn(async move { movable_collector.run().await });
         self.collectors

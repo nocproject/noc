@@ -18,8 +18,14 @@ class ZkConfigConfigZeroconf(BaseModel):
     interval: int
 
 
+class ZkConfigMetrics(BaseModel):
+    type: str
+    url: str
+
+
 class ZkConfigConfig(BaseModel):
     zeroconf: ZkConfigConfigZeroconf
+    metrics: Optional[ZkConfigMetrics]
 
 
 class ZkConfigCollector(BaseModel):

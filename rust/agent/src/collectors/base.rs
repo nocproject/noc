@@ -7,6 +7,7 @@
 
 use crate::config::ZkConfigCollector;
 use crate::error::AgentError;
+use crate::sender::SenderCommand;
 use async_trait::async_trait;
 use chrono::{DateTime, SecondsFormat, Utc};
 use enum_dispatch::enum_dispatch;
@@ -15,6 +16,7 @@ use serde::Serialize;
 use std::convert::TryFrom;
 use std::marker::PhantomData;
 use std::time::SystemTime;
+use tokio::sync::mpsc;
 use tokio::time::Duration;
 
 #[derive(Debug)]
@@ -38,7 +40,7 @@ pub trait Runnable {
 /// .collect() method for implicit implementation.
 /// Must be used along with Id and Repeatable traits
 #[async_trait]
-pub trait Collectable: Schedule {
+pub trait Collectable: Schedule + MetricSender {
     const NAME: &'static str;
     type Output: Serialize + Sync;
 
@@ -67,9 +69,27 @@ pub trait Collectable: Schedule {
         };
         let out =
             serde_json::to_string(&r).map_err(|e| AgentError::SerializationError(e.to_string()))?;
-        log::debug!("Out: {}", out);
+        match self.get_tx() {
+            Some(tx) => {
+                log::debug!("Collected: {}", out);
+                tx.send(SenderCommand::Send(out))
+                    .await
+                    .map_err(|e| AgentError::InternalError(e.to_string()))?;
+            }
+            None => {
+                log::debug!("No sender. Dropped value: {}", out);
+            }
+        }
         Ok(())
     }
+}
+
+#[enum_dispatch(Collectors)]
+pub trait MetricSender {
+    // Sender channel
+    fn with_sender_tx(&mut self, tx: tokio::sync::mpsc::Sender<SenderCommand>);
+    //
+    fn get_tx(&self) -> Option<&tokio::sync::mpsc::Sender<SenderCommand>>;
 }
 
 /// Collector's schedule attributes
@@ -120,6 +140,7 @@ pub struct Collector<T> {
     pub service: u64,
     pub interval: u64,
     pub labels: Vec<String>,
+    pub tx: Option<mpsc::Sender<SenderCommand>>,
     pub data: T,
 }
 
@@ -135,6 +156,7 @@ where
             service: value.get_service(),
             interval: value.get_interval(),
             labels: value.get_labels(),
+            tx: None,
             data: T::try_from(value)?,
         })
     }
@@ -153,6 +175,15 @@ impl<T> Schedule for Collector<T> {
     }
     fn get_labels(&self) -> Vec<String> {
         self.labels.clone()
+    }
+}
+
+impl<T> MetricSender for Collector<T> {
+    fn with_sender_tx(&mut self, tx: mpsc::Sender<SenderCommand>) {
+        self.tx = Some(tx);
+    }
+    fn get_tx(&self) -> Option<&mpsc::Sender<SenderCommand>> {
+        self.tx.as_ref()
     }
 }
 
@@ -207,5 +238,12 @@ where
             "[{}] Collector is not included in this build of agent. Skipping",
             self.id
         );
+    }
+}
+
+impl<TCfg> MetricSender for StubCollector<TCfg> {
+    fn with_sender_tx(&mut self, _tx: mpsc::Sender<SenderCommand>) {}
+    fn get_tx(&self) -> Option<&mpsc::Sender<SenderCommand>> {
+        None
     }
 }
