@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ class Script(BaseScript):
     rx_oam = re.compile(
         r"^(?P<port>(?:Gi|2.5G|10G)\S+)\s+(?P<port_num>\S+)\s+enabled", re.MULTILINE
     )
+    rx_descr = re.compile("Description: (?P<descr>.+)")
     rx_switchport = re.compile(
         r"^Name: (?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n"
         r"^Administrative mode: (?P<mode>\S+)\s*\n"
@@ -87,7 +88,7 @@ class Script(BaseScript):
             return []
         return []
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
         gvrp = self.get_gvrp()
         stp = self.get_stp()
@@ -103,9 +104,15 @@ class Script(BaseScript):
                     "ifname": row[2].strip(),
                 }
             ]
-        v = self.cli("show interface * status")
+        v = self.cli("show interface * status").replace("\n\n", "\n")
         for row in parse_table(v, max_width=85):
             ifname = row[0]
+            if ifname.startswith("Description:"):
+                descr = "".join(row)
+                match = self.rx_descr.search(descr)
+                if match and match.group("descr").strip() != "":
+                    interfaces[-1]["description"] = match.group("descr").strip()
+                continue
             iface = {
                 "name": ifname,
                 "type": "physical",
