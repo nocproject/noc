@@ -1,0 +1,13 @@
+{
+    "name": "ZTE | ZXR10 | C220 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "eb569721-e75c-440a-a116-ceae61d12398",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3902.1015.3.1.220.1.2",
+    "action": "match",
+    "profile__name": "ZTE.ZXR10"
+}
