@@ -52,6 +52,11 @@ Ext.define("NOC.pm.agent.Model", {
             type: "auto"
         },
         {
+            name: "effective_labels",
+            type: "auto",
+            persist: false
+        },
+        {
             name: "key",
             type: "string",
             persist: true

@@ -53,6 +53,7 @@ def document_set_state(self, state, state_changed: datetime.datetime = None):
     """
     # Direct update arguments
     set_op = {"state": state.id}
+    prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
     # Set start field
@@ -68,7 +69,25 @@ def document_set_state(self, state, state_changed: datetime.datetime = None):
         set_op["expired"] = self.expired
     # Update database directly
     # to avoid full save
-    self._get_collection().update_one({"_id": self.id}, {"$set": set_op})
+    bulk = [UpdateOne({"_id": self.id}, {"$set": set_op})]
+    # Update effective labels
+    if hasattr(self, "effective_labels") and prev_labels:
+        bulk += [UpdateOne({"_id": self.id}, {"$pullAll": {"effective_labels": prev_labels}})]
+    if hasattr(self, "effective_labels") and state.labels:
+        bulk += [
+            UpdateOne(
+                {"_id": self.id},
+                {
+                    "$addToSet": {
+                        "effective_labels": {
+                            "$each": [ll for ll in state.labels if self.can_set_label(ll)]
+                        }
+                    }
+                },
+            )
+        ]
+    # Write bulk
+    self._get_collection().bulk_write(bulk)
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:

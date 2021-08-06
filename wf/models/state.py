@@ -33,6 +33,7 @@ from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
 from noc.models import get_model_id
+from noc.main.models.label import Label
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -41,6 +42,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 
 
 @bi_sync
+@Label.model
 @change
 @on_delete_check(
     check=[
@@ -97,6 +99,9 @@ class State(Document):
     # WFEditor coordinates
     x = IntField(default=0)
     y = IntField(default=0)
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -221,3 +226,7 @@ class State(Document):
             self.fire_transition(t, obj)
         else:
             logger.debug("[%s|%s] No event handler for '%s'. Skipping", obj, self.name, event)
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_workflowstate")

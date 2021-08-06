@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List
+from typing import Optional, List, Iterable
 
 # Third-party modules
 from mongoengine import Document, EmbeddedDocument
@@ -153,3 +153,9 @@ class Agent(Document):
         if "noc::agent::auth::pre" in self.effective_labels:
             return 1
         return 0
+
+    @classmethod
+    def iter_effective_labels(cls, instance: "Agent") -> Iterable[List[str]]:
+        yield list(instance.labels or [])
+        if instance.state.labels:
+            yield list(instance.state.labels)
