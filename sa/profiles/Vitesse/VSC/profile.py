@@ -3,7 +3,7 @@
 # OS:     VSC
 # URL: http://www.microsemi.com/products/ethernet-solutions/ethernet-switches
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal length 0"
     command_submit = "\r"
     username_submit = "\r"
-    password_submit = "\r"
+    password_submit = "\r\n"
     pattern_more = [(r"-- more --, next page: Space, continue: g, quit:", "g\n")]
     command_enter_config = "configure terminal"
     command_leave_config = "end"
@@ -35,6 +35,8 @@ class Profile(BaseProfile):
         '2.5GigabitEthernet 1/2'
         >>> Profile().convert_interface_name("10G 1/1")
         '10GigabitEthernet 1/1'
+        >>> Profile().convert_interface_name("VLAN 1")
+        'VLAN1'
         """
         s = s.strip()
         if s.startswith("Gi "):
@@ -43,4 +45,6 @@ class Profile(BaseProfile):
             return "2.5GigabitEthernet %s" % s[5:].strip()
         if s.startswith("10G G "):
             return "10GigabitEthernet %s" % s[4:].strip()
+        if s.startswith("VLAN "):
+            return "VLAN%s" % s[5:].strip()
         return s
