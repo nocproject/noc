@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -114,6 +114,9 @@ class Script(BaseScript):
         for oid, stack_num in self.snmp.getnext(
             mib["RADLAN-STACK-MIB::rlStackActiveUnitIdAfterReset"]
         ):
+            # In some rare cases, returned 0, if only one device in stack
+            if stack_num == 0:
+                stack_num = 1
             r += [str(stack_num)]
         return r
 
