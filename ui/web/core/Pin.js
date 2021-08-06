@@ -16,7 +16,10 @@ Ext.define("NOC.core.Pin", {
                 pinColor: "string",
                 pinName: "string",
                 labelAlign: "string",
+                remoteId: "string",
+                remoteName: "string",
                 isSelected: "bool",
+                labelBold: "bool",
                 enabled: "bool",
                 x: "number",
                 y: "number",
@@ -26,7 +29,10 @@ Ext.define("NOC.core.Pin", {
                 pinColor: "recalculate",
                 pinName: "recalculate",
                 labelAlign: "recalculate",
+                remoteId: "recalculate",
+                remoteName: "recalculate",
                 isSelected: "recalculate",
+                labelBold: "recalculate",
                 x: "translate",
                 y: "translate",
                 scale: "rescale"
@@ -34,14 +40,17 @@ Ext.define("NOC.core.Pin", {
             defaults: {
                 pinColor: "#2c3e50",
                 pinName: "Undefined",
+                remoteId: "none",
+                remoteName: "none",
                 isSelected: false,
+                labelBold: false,
                 enabled: true,
                 labelAlign: "left", // "left" | "right"
                 scale: 1
             },
             updaters: {
                 recalculate: function(attr) {
-                    var me = this, fontWeight = attr.isSelected ? "bold" : "normal";
+                    var me = this, fontWeight = (attr.isSelected || attr.labelBold) ? "bold" : "normal";
 
                     me.createSprites();
                     me.box.setAttributes({

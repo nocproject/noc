@@ -23,7 +23,9 @@ from noc.sa.interfaces.base import (
     ListOfParameter,
     BooleanParameter,
 )
+from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
+from noc.core.comp import smart_text
 
 
 class InvApplication(ExtApplication):
@@ -59,6 +61,64 @@ class InvApplication(ExtApplication):
 
     def get_plugin_data(self, name):
         return {"name": name, "xtype": self.plugins[name].js}
+
+    def get_remote_slot(self, left_slot, lo, ro):
+        """
+        Determing right device's slot with find_path method
+        :return:
+        """
+        for path in find_path(lo, left_slot.name, left_slot.protocols):
+            if path.obj == ro:
+                return path
+
+    def get_remote_device(self, slot, protocols, o):
+        """
+        Determing remote device with find_path method
+        :return:
+        """
+        for path in find_path(o, slot, protocols):
+            if path.obj != o and not path.obj.name.startswith("Wire"):
+                return path
+
+    def get_cs_item(
+        self,
+        id,
+        name,
+        type,
+        type__label,
+        gender,
+        direction,
+        protocols,
+        free,
+        valid,
+        disable_reason,
+        o,
+    ):
+        """
+        Creating member of cs dict
+        :return:
+        """
+        cs = {
+            "id": id,
+            "name": name,
+            "type": type,
+            "type__label": type__label,
+            "gender": gender,
+            "direction": direction,
+            "protocols": protocols,
+            "free": free,
+            "valid": valid,
+            "disable_reason": disable_reason,
+        }
+        if not free:
+            rd = self.get_remote_device(name, protocols, o)
+            if rd:
+                cs["remote_device"] = {
+                    "name": rd.obj.name,
+                    "id": smart_text(rd.obj.id),
+                    "slot": rd.connection,
+                }
+        return cs
 
     @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
@@ -263,6 +323,8 @@ class InvApplication(ExtApplication):
         ro: Optional[Object] = None
         if o2:
             ro = self.get_object_or_404(Object, id=o2)
+        id_ports_left = {}
+        checking_ports = []
         lcs: List[Dict[str, Any]] = []
         cable: Optional[ObjectModel] = None
         # Getting cable
@@ -287,19 +349,27 @@ class InvApplication(ExtApplication):
                     [c for c in lo.model.get_connection_proposals(c.name) if c[0] == ro.model.id]
                 )
             oc, oo, _ = lo.get_p2p_connection(c.name)
+            left_id = f"{smart_text(lo.id)}{c.name}"
+            is_employed = bool(oc)
+            if is_employed:
+                checking_ports.append(c)
             lcs += [
-                {
-                    "name": c.name,
-                    "type": str(c.type.id),
-                    "type__label": c.type.name,
-                    "gender": c.gender,
-                    "direction": c.direction,
-                    "protocols": c.protocols,
-                    "free": not bool(oc),
-                    "valid": valid,
-                    "disable_reason": disable_reason,
-                }
+                self.get_cs_item(
+                    left_id,
+                    c.name,
+                    str(c.type.id),
+                    c.type.name,
+                    c.gender,
+                    c.direction,
+                    c.protocols,
+                    not is_employed,
+                    valid,
+                    disable_reason,
+                    lo,
+                )
             ]
+            id_ports_left[c.name] = left_id
+        id_ports_right = {}
         rcs: List[Dict[str, Any]] = []
         if ro:
             for c in ro.model.connections:
@@ -323,25 +393,50 @@ class InvApplication(ExtApplication):
                         ]
                     )
                 oc, oo, _ = ro.get_p2p_connection(c.name)
+                right_id = f"{smart_text(ro.id)}{c.name}"
                 rcs += [
-                    {
-                        "name": c.name,
-                        "type": str(c.type.id),
-                        "type__label": c.type.name,
-                        "gender": c.gender,
-                        "direction": c.direction,
-                        "protocols": c.protocols,
-                        "free": not bool(oc),
-                        "valid": valid,
-                        "disable_reason": disable_reason,
-                    }
+                    self.get_cs_item(
+                        right_id,
+                        c.name,
+                        str(c.type.id),
+                        c.type.name,
+                        c.gender,
+                        c.direction,
+                        c.protocols,
+                        not bool(oc),
+                        valid,
+                        disable_reason,
+                        ro,
+                    )
                 ]
+                id_ports_right[c.name] = right_id
+        wires = []
+        device_left = {}
+        device_right = {}
+        if lcs and rcs:
+            device_left["id"] = smart_text(lo.id)
+            device_left["name"] = lo.name
+            device_right["id"] = smart_text(ro.id)
+            device_right["name"] = ro.name
+            for p in checking_ports:
+                remote = self.get_remote_slot(p, lo, ro)
+                if remote:
+                    wires.append(
+                        {
+                            "left": {"id": id_ports_left.get(p.name, 0), "name": p.name},
+                            "right": {
+                                "id": id_ports_right.get(remote.connection, 0),
+                                "name": remote.connection,
+                            },
+                        }
+                    )
         # Forming cable
         return {
-            "left": {"connections": lcs},
-            "right": {"connections": rcs},
+            "left": {"connections": lcs, "device": device_left},
+            "right": {"connections": rcs, "device": device_right},
             "cable": [{"name": c.name, "available": True} for c in cables],
             "valid": lcs and rcs and left_filter and right_filter,
+            "wires": wires,
         }
 
     @view(
@@ -375,16 +470,15 @@ class InvApplication(ExtApplication):
         if cable:
             cable = ObjectModel.get_by_name(cable)
             cable_o = Object(
-                name="Wire %s:%s <-> %s:%s" % (lo.name, name, ro.name, remote_name),
+                name=f"Wire {lo.name}:{name} <-> {ro.name}:{remote_name}",
                 model=cable,
                 container=lo.container.id,
             )
             cable_o.save()
-        print(lo, ro, cable_o)
         try:
             if cable_o:
                 c1, c2 = cable_o.model.connections[:2]
-                self.logger.debug("Wired connect c1:c2", c1, c2)
+                self.logger.debug("Wired connect %s:%s", c1, c2)
                 lo.connect_p2p(name, cable_o, c1.name, {}, reconnect=reconnect)
                 ro.connect_p2p(remote_name, cable_o, c2.name, {}, reconnect=reconnect)
                 lo.save()
