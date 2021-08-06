@@ -430,4 +430,6 @@ LABEL_MODELS = {
     "sla.SLAProbe": "enable_slaprobe",
     "sla.SLAProfile": "enable_slaprofile",
     "fm.ActiveAlarm": "enable_alarm",
+    #
+    "wf.State": "enable_workflowstate",
 }

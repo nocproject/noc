@@ -42,10 +42,16 @@ Ext.define("NOC.pm.agent.Application", {
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 150,
+                    renderer: NOC.render.Lookup("state")
+                },
+                {
                     text: __("Labels"),
-                    dataIndex: "labels",
+                    dataIndex: "effective_labels",
                     renderer: NOC.render.LabelField,
-                     flex: 1,
+                     width: 300,
                 }
             ],
 

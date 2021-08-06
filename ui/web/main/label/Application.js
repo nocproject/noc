@@ -172,6 +172,9 @@ Ext.define("NOC.main.label.Application", {
             if (item.data.enable_slaprofile) {
               r.push(__("SLA Profile"));
             }
+            if (item.data.enable_workflowstate) {
+              r.push(__("Workflow State"));
+            }
             return r.join(", ");
           }
         },
@@ -546,6 +549,11 @@ Ext.define("NOC.main.label.Application", {
               name: "enable_kbentry",
               xtype: "checkbox",
               boxLabel: __("KB Entry")
+            },
+            {
+              name: "enable_workflowstate",
+              xtype: "checkbox",
+              boxLabel: __("Workflow State")
             }
           ]
           }

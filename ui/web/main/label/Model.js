@@ -227,6 +227,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_workflowstate",
+            type: "boolean"
+        },
+        {
             name: "expose_metric",
             type: "boolean"
         },

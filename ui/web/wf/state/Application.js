@@ -10,6 +10,7 @@ Ext.define("NOC.wf.state.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.wf.state.Model",
+        "NOC.core.label.LabelField",
         "NOC.wf.workflow.LookupField",
         "NOC.main.remotesystem.LookupField",
         "Ext.ux.form.StringsField"
@@ -60,6 +61,12 @@ Ext.define("NOC.wf.state.Application", {
                     width: 50,
                     align: "right",
                     renderer: NOC.render.Duration
+                },
+                {
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    width: 200,
+                    renderer: NOC.render.LabelField
                 }
             ],
 
@@ -82,6 +89,15 @@ Ext.define("NOC.wf.state.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_workflowstate": true
+                    },
                 },
                 {
                     name: "is_default",

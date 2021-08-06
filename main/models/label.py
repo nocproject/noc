@@ -104,6 +104,8 @@ class Label(Document):
     enable_slaprofile = BooleanField()
     # FM
     enable_alarm = BooleanField()
+    # Enable Workflow State
+    enable_workflowstate = BooleanField()
     # Exposition scope
     expose_metric = BooleanField()
     expose_datastream = BooleanField()
