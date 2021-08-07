@@ -8,5 +8,15 @@
     "description": "Numeric value of the sensor",
     "measure": "c",
     "units__code": "1",
-    "scale__code": "1"
+    "scale__code": "1",
+    "agent_mappings": [
+        {
+            "collector": "modbus-rtu",
+            "field": "value"
+        },
+        {
+            "collector": "modbus-tcp",
+            "field": "value"
+        }
+    ]
 }

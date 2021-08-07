@@ -74,6 +74,8 @@ def get_config(agent: Agent, level: int = 0, base: str = "") -> ZkConfig:
     """
     Generate agent config
     :param agent:
+    :param level: Authorization level
+    :param base: Base url
     :return:
     """
     check_interval = agent.get_effective_check_interval()
@@ -195,8 +197,12 @@ def iter_sensor_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
     :return:
     """
     for sensor in Sensor.objects.filter(agent=agent.id):
+        if not sensor.profile.enable_collect or not sensor.state.is_productive:
+            continue
         if sensor.protocol == "modbus_rtu":
             yield from iter_modbus_rtu_collectors(sensor)
+        elif sensor.protocol == "modbus_tcp" and sensor.managed_object:
+            yield from iter_modbus_tcp_collectors(sensor)
 
 
 def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
@@ -215,7 +221,8 @@ def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         type="modbus_rtu",
         service=sensor.bi_id,
         interval=sensor.profile.collect_interval,
-        labels=Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        labels=[f"noc::sensor::{sensor.local_id}"]
+        + Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
         serial_path="/dev/ttyM0",
         slave=m_data["slave_id"],
         baud_rate=m_data["speed"],
@@ -223,6 +230,26 @@ def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         # parity='None',
         stop_bits=m_data["stop"],
         register=sensor.modbus_register,
-        # register_type
+        format=sensor.modbus_format,
+    )
+
+
+def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
+    """
+    Generate modbus_tcp collectors for sensor
+    :param sensor:
+    :return:
+    """
+    if not sensor.modbus_register or not sensor.modbus_format:
+        return
+    yield ZkConfigCollector(
+        id=f"zk:{sensor.bi_id}:modbus_tcp",
+        type="modbus_tcp",
+        service=sensor.bi_id,
+        interval=sensor.profile.collect_interval,
+        labels=[f"noc::sensor::{sensor.local_id}"]
+        + Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        address=sensor.managed_object.address,
+        register=sensor.modbus_register,
         format=sensor.modbus_format,
     )

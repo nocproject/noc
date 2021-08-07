@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 MODBUS_FORMAT = ["i16_be", "u16_be"]
 for dt in ["i32", "u32", "f32"]:
-    for df in ["be", "le", "bs"]:
+    for df in ["be", "le", "bs", "ls"]:
         MODBUS_FORMAT.append(f"{dt}_{df}")
 
 
@@ -167,6 +167,9 @@ class Sensor(Document):
             if d.interface == "modbus" and d.attr == "type"
         ] or ["rtu"]
         agent = obj.get_effective_agent()
+        mo = obj.get_data("management", "managed_object")
+        if mo:
+            mo = ManagedObject.get_by_id(mo)
         # Create new sensors
         for sensor in obj.model.sensors:
             if sensor.name in obj_sensors:
@@ -182,6 +185,8 @@ class Sensor(Document):
                 )
             if s.agent != agent:
                 s.agent = agent
+            if s.managed_object != mo:
+                s.managed_object = mo
             if s.units != sensor.units:
                 s.units = sensor.units
             if s.label != sensor.description:

@@ -16,6 +16,10 @@
         {
             "field_name": "object",
             "model": "inv.Object"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
         }
     ],
     "enable_timedelta": true,

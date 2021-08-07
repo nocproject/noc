@@ -174,7 +174,7 @@ class MetricsCollectorService(FastAPIService):
             for coll_field, value in item.metrics.items():
                 for map_item in self.mappings.get((item.collector, coll_field)):
                     metrics["values"] += 1
-                    if not is_matched(item.labels, map_item.labels):
+                    if not is_matched(map_item.labels, item.labels):
                         self.logger.info("Labels %s is not match. Skipping metric", item.labels)
                         continue
                     # Matched rule found
