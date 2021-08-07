@@ -55,50 +55,48 @@
         {
             "description": "RS-232/422/485",
             "direction": "s",
+            "gender": "s",
+            "name": "S0",
+            "protocols": ["<RS232", "<RS485", "<RS485-A", "<RS485-B"],
+            "type__name": "Combined"
+        },
+        {
+            "description": "RS-232",
+            "direction": "s",
             "gender": "f",
-            "group": "M0",
-            "name": "1",
+            "name": "S0_232",
             "protocols": ["<RS232"],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
-            "description": "RS-232/422/485",
+            "description": "RS-485, 4-wired",
             "direction": "s",
             "gender": "f",
-            "group": "M0",
-            "name": "2",
-            "protocols": ["<RS232"],
+            "name": "S0_485",
+            "protocols": ["<RS485"],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
-            "description": "RS-232/422/485",
+            "description": "RS-485, 2-wired A line",
             "direction": "s",
             "gender": "f",
-            "group": "M0",
-            "name": "3",
-            "protocols": ["<RS232", "<RS485-B"],
+            "name": "S0_485_A",
+            "protocols": ["<RS485-A"],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         },
         {
-            "description": "RS-232/422/485",
+            "description": "RS-485, 2-wired B line",
             "direction": "s",
             "gender": "f",
-            "group": "M0",
-            "name": "4",
-            "protocols": ["<RS232", "<RS485-A"],
-            "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
-        },
-        {
-            "description": "RS-232/422/485",
-            "direction": "s",
-            "gender": "f",
-            "group": "M0",
-            "name": "5",
-            "protocols": ["<RS232"],
+            "name": "S0_485_B",
+            "protocols": ["<RS485-B"],
             "type__name": "Electrical | MSTB 2.5/5-ST-5.08"
         }
     ],
     "data": {
+        "agent": {
+            "is_agent": true
+        },
         "dimensions": {
             "depth": 128,
             "height": 101,

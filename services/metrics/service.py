@@ -17,6 +17,7 @@ import orjson
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.core.liftbridge.message import Message
+from noc.core.perf import metrics
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
@@ -62,25 +63,30 @@ class MetricsService(FastAPIService):
             scope = item.get("scope")
             if not scope:
                 self.logger.debug("Discard metric without scope: %s", item)
+                metrics["discard", ("reason", "without_scope")] += 1
                 return  # Discard metric without scope
             si = self.scopes.get(scope)
             if not si:
                 self.logger.debug("Unknown scope: %s", item)
+                metrics["discard", ("reason", "unknown_scope")] += 1
                 return  # Unknown scope
             labels = item.get("labels")
             if si.key_labels and not labels:
                 self.logger.debug("No labels: %s", item)
+                metrics["discard", ("reason", "no_labels")] += 1
                 return  # No labels
             mk = self.get_key(si, item)
             if si.key_fields and not mk[1]:
                 self.logger.debug("No key fields: %s", item)
+                metrics["discard", ("reason", "no_keyfields")] += 1
                 return  # No key fields
             if si.key_labels and len(mk[2]) != len(si.key_labels):
                 self.logger.debug("Missed key label: %s", item)
+                metrics["discard", ("reason", "missed_keylabel")] += 1
                 return  # Missed key label
             card = self.get_card(mk)
             if not card:
-                self.logger.debug("Cannot instantiate card: %s", item)
+                self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
             self.activate_card(card, si, item)
 
