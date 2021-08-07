@@ -8,7 +8,7 @@
 # Python modules
 import inspect
 import os
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, Tuple
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -26,6 +26,8 @@ from noc.sa.interfaces.base import (
 from noc.core.inv.path import find_path
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+
+translation_map = str.maketrans("<>", "><")
 
 
 class InvApplication(ExtApplication):
@@ -62,64 +64,6 @@ class InvApplication(ExtApplication):
     def get_plugin_data(self, name):
         return {"name": name, "xtype": self.plugins[name].js}
 
-    def get_remote_slot(self, left_slot, lo, ro):
-        """
-        Determing right device's slot with find_path method
-        :return:
-        """
-        for path in find_path(lo, left_slot.name, left_slot.protocols):
-            if path.obj == ro:
-                return path
-
-    def get_remote_device(self, slot, protocols, o):
-        """
-        Determing remote device with find_path method
-        :return:
-        """
-        for path in find_path(o, slot, protocols):
-            if path.obj != o and not path.obj.name.startswith("Wire"):
-                return path
-
-    def get_cs_item(
-        self,
-        id,
-        name,
-        type,
-        type__label,
-        gender,
-        direction,
-        protocols,
-        free,
-        valid,
-        disable_reason,
-        o,
-    ):
-        """
-        Creating member of cs dict
-        :return:
-        """
-        cs = {
-            "id": id,
-            "name": name,
-            "type": type,
-            "type__label": type__label,
-            "gender": gender,
-            "direction": direction,
-            "protocols": protocols,
-            "free": free,
-            "valid": valid,
-            "disable_reason": disable_reason,
-        }
-        if not free:
-            rd = self.get_remote_device(name, protocols, o)
-            if rd:
-                cs["remote_device"] = {
-                    "name": rd.obj.name,
-                    "id": smart_text(rd.obj.id),
-                    "slot": rd.connection,
-                }
-        return cs
-
     @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
         children = []
@@ -139,7 +83,7 @@ class InvApplication(ExtApplication):
                         {"data.container.container": True}, {"_id": 1}
                     )
                 ]
-                children = [
+                children: List[Tuple[str, "Object"]] = [
                     (o.name, o)
                     for o in Object.objects.filter(
                         __raw__={"container": None, "model": {"$in": cmodels}}
@@ -187,6 +131,9 @@ class InvApplication(ExtApplication):
                 self.get_plugin_data("file"),
                 self.get_plugin_data("log"),
             ]
+            if o.get_data("container", "container"):
+                n["plugins"] += [self.get_plugin_data("sensor")]
+            n["plugins"] += [self.get_plugin_data("crossing")]
             # Process disabled plugins
             n["plugins"] = [p for p in n["plugins"] if p["name"] not in disabled_plugins]
             r += [n]
@@ -489,3 +436,66 @@ class InvApplication(ExtApplication):
             self.logger.warning("Connection Error: %s", str(e))
             return self.render_json({"status": False, "text": str(e)})
         return True
+
+    def get_remote_slot(self, left_slot, lo, ro):
+        """
+        Determing right device's slot with find_path method
+        :return:
+        """
+        for path in (
+            find_path(
+                lo, left_slot.name, [p.translate(translation_map) for p in left_slot.protocols]
+            )
+            or []
+        ):
+            if path.obj == ro:
+                return path
+
+    def get_remote_device(self, slot, protocols, o):
+        """
+        Determing remote device with find_path method
+        :return:
+        """
+        for path in find_path(o, slot, [p.translate(translation_map) for p in protocols]) or []:
+            if path.obj != o and not path.obj.get_data("length", "length"):
+                return path
+
+    def get_cs_item(
+        self,
+        id,
+        name,
+        type,
+        type__label,
+        gender,
+        direction,
+        protocols,
+        free,
+        valid,
+        disable_reason,
+        o,
+    ):
+        """
+        Creating member of cs dict
+        :return:
+        """
+        cs = {
+            "id": id,
+            "name": name,
+            "type": type,
+            "type__label": type__label,
+            "gender": gender,
+            "direction": direction,
+            "protocols": protocols,
+            "free": free,
+            "valid": valid,
+            "disable_reason": disable_reason,
+        }
+        if not free:
+            rd = self.get_remote_device(name, protocols, o)
+            if rd:
+                cs["remote_device"] = {
+                    "name": rd.obj.name,
+                    "id": smart_text(rd.obj.id),
+                    "slot": rd.connection,
+                }
+        return cs

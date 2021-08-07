@@ -243,12 +243,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
 
             if(!port.free) {
                 color = me.OCCUPIED_COLOR;
-                remoteId = port.remote_device.id;
-                remoteName = port.remote_device.name;
-                if(labelAlign === "left") {
-                    name = port.remote_device.name + "/" + port.remote_device.slot + " <= " + port.name;
-                } else {
-                    name += " => " + port.remote_device.name + "/" + port.remote_device.slot;
+                if(port.remote_device) {
+                    remoteId = port.remote_device.id;
+                    remoteName = port.remote_device.name;
+                    if (labelAlign === "left") {
+                        name = port.remote_device.name + "/" + port.remote_device.slot + " <= " + port.name;
+                    } else {
+                        name += " => " + port.remote_device.name + "/" + port.remote_device.slot;
+                    }
                 }
             }
             if(!port.valid) {

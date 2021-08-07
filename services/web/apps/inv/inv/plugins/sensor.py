@@ -17,7 +17,7 @@ class SensorPlugin(InvPlugin):
     name = "sensor"
     js = "NOC.inv.inv.plugins.sensor.SensorPanel"
 
-    def get_data(self, request, o: "Sensor"):
+    def get_data(self, request, o):
         return [
             {
                 "profile__label": s.profile.name,
@@ -38,7 +38,7 @@ class SensorPlugin(InvPlugin):
                 "bi_id": str(s.bi_id),
                 "id": str(s.id),
             }
-            for s in Sensor.objects.filter(object=o.id)
+            for s in Sensor.objects.filter(object__in=o.get_nested_ids())
         ]
 
     def init_plugin(self):
