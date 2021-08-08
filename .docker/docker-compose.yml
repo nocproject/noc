@@ -77,8 +77,6 @@ services:
         condition: service_started
       liftbridge:
         condition: service_started
-      nsqd:
-        condition: service_started
       telnetd:
         condition: service_started
       sshd:
@@ -99,27 +97,6 @@ services:
       - type: volume
         source: build
         target: /opt/noc/build
-
-  nsqlookupd:
-    image: nsqio/nsq:v1.1.0
-    command: /nsqlookupd
-    healthcheck:
-      test: "wget --quiet --tries=1 --spider http://0.0.0.0:4161/ping || exit 1"
-      interval: 3s
-      timeout: 3s
-      retries: 100
-
-  nsqd:
-    image: nsqio/nsq:v1.1.0
-    depends_on:
-      nsqlookupd:
-        condition: service_healthy
-    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160 --mem-queue-size=10000
-    healthcheck:
-      test: "wget --quiet --tries=1 --spider http://0.0.0.0:4151/ping || exit 1"
-      interval: 3s
-      timeout: 3s
-      retries: 100
 
   clickhouse:
     image: yandex/clickhouse-server:latest

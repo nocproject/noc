@@ -28,9 +28,7 @@ class Command(BaseCommand):
         # load command
         load_parser = subparsers.add_parser("load")
         load_parser.add_argument("--fields", help="Data fields: <table>.<field1>.<fieldN>")
-        load_parser.add_argument(
-            "--chunk", type=int, default=config.nsqd.ch_chunk_size, help="Size on chunk"
-        )
+        load_parser.add_argument("--chunk", type=int, default=100_000, help="Size on chunk")
         load_parser.add_argument("--rm", action="store_true", help="Remove file after uploading")
         load_parser.add_argument("input", nargs=argparse.REMAINDER, help="Input files")
 

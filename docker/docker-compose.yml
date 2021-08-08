@@ -26,12 +26,6 @@ volumes:
       device: ${COMPOSEPATH}/etc/clickhouse/etc
       o: bind
       type: bind
-  nsq_data:
-    driver: local
-    driver_opts:
-      device: ${COMPOSEPATH}/var/${COMPOSEPREFIX}-nsq
-      o: bind
-      type: bind
   redis_data:
     driver: local
     driver_opts:
@@ -215,8 +209,6 @@ services:
     depends_on:
       - consul
       - clickhouse
-      - nsqlookupd
-      - nsqd
     command: /usr/local/bin/python3 /opt/noc/services/chwriter/service.py
     mem_limit: 90m
     working_dir: /opt/noc
@@ -831,7 +823,6 @@ services:
     hostname: syslogcollector-default
     restart: "always"
     depends_on:
-      - nsqd
       - datastream
     command: /usr/local/bin/python3 /opt/noc/services/syslogcollector/service.py
     mem_limit: 80m
@@ -858,8 +849,6 @@ services:
     hostname: tgsender
     restart: "always"
     mem_limit: 52m
-    depends_on:
-      - nsqd
     command: /usr/local/bin/python3 /opt/noc/services/tgsender/service.py
     working_dir: /opt/noc
     env_file:
@@ -882,7 +871,6 @@ services:
     hostname: trapcollector-default
     restart: "always"
     depends_on:
-      - nsqd
       - datastream
     command: /usr/local/bin/python3 /opt/noc/services/trapcollector/service.py
     mem_limit: 80m
@@ -1178,54 +1166,6 @@ services:
       options:
         max-size: ${COMPOSE_LOG_MAX_SIZE}
         max-file: ${COMPOSE_LOG_MAX_FILE}
-
-  nsqd:
-    image: nsqio/nsq:v1.2.0
-    hostname: nsqd
-    depends_on:
-      - nsqlookupd
-    command: >
-             /nsqd
-             --lookupd-tcp-address=nsqlookupd:4160
-             --mem-queue-size=10000
-             --data-path=/data
-             --log-level=${NSQ_LOG_LEVEL}
-    volumes:
-      - nsq_data:/data
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "localhost:4151/ping"]
-      interval: 10s
-      timeout: 2s
-      retries: 3
-      start_period: 3s
-    logging:
-      driver: ${COMPOSE_LOG_DRIVER}
-      options:
-        max-size: ${COMPOSE_LOG_MAX_SIZE}
-        max-file: ${COMPOSE_LOG_MAX_FILE}
-    labels:
-      traefik.enable: false
-
-  nsqlookupd:
-    image: nsqio/nsq:v1.2.0
-    hostname: nsqlookupd
-    command: >
-             /nsqlookupd
-             --broadcast-address=nsqlookupd:4160
-             --log-level=${NSQ_LOG_LEVEL}
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "localhost:4161/ping"]
-      interval: 10s
-      timeout: 2s
-      retries: 3
-      start_period: 3s
-    logging:
-      driver: ${COMPOSE_LOG_DRIVER}
-      options:
-        max-size: ${COMPOSE_LOG_MAX_SIZE}
-        max-file: ${COMPOSE_LOG_MAX_FILE}
-    labels:
-      traefik.enable: false
 
   postgres:
     image: postgres:${PG_VERSION_TAG}

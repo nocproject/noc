@@ -33,14 +33,13 @@ import orjson
 
 # NOC modules
 from noc.config import config
-from noc.core.debug import excepthook, error_report, ErrorReport
+from noc.core.debug import excepthook, error_report
 from noc.core.log import ErrorFormatter
-from noc.core.perf import metrics, apply_metrics
+from noc.core.perf import apply_metrics
 from noc.core.hist.monitor import apply_hists
 from noc.core.quantile.monitor import apply_quantiles
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
-from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
 from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
@@ -120,8 +119,6 @@ class BaseService(object):
         self.executors = {}
         self.start_time = perf_counter()
         self.pid = os.getpid()
-        self.nsq_readers = {}  # handler -> Reader
-        self.nsq_writer = None
         self.startup_ts = None
         self.telemetry_callback = None
         self.dcs = None
@@ -628,86 +625,6 @@ class BaseService(object):
             self.active_subscribers -= 1
         if self.subscriber_shutdown_waiter and not self.active_subscribers:
             self.subscriber_shutdown_waiter.set()
-
-    async def subscribe(self, topic, channel, handler, raw=False, **kwargs):
-        """
-        Subscribe message to channel
-        """
-
-        def call_json_handler(message):
-            metrics[metric_in] += 1
-            try:
-                data = orjson.loads(message.body)
-            except ValueError as e:
-                metrics[metric_decode_fail] += 1
-                self.logger.debug("Cannot decode JSON message: %s", e)
-                return True  # Broken message
-            if isinstance(data, dict):
-                with ErrorReport():
-                    r = handler(message, **data)
-            else:
-                with ErrorReport():
-                    r = handler(message, data)
-            if r:
-                metrics[metric_processed] += 1
-            elif message.is_async():
-                message.on("finish", on_finish)
-            else:
-                metrics[metric_deferred] += 1
-            return r
-
-        def call_raw_handler(message):
-            metrics[metric_in] += 1
-            with ErrorReport():
-                r = handler(message, message.body)
-            if r:
-                metrics[metric_processed] += 1
-            elif message.is_async():
-                message.on("finish", on_finish)
-            else:
-                metrics[metric_deferred] += 1
-            return r
-
-        def on_finish(*args, **kwargs):
-            metrics[metric_processed] += 1
-
-        t = topic.replace(".", "_")
-        metric_in = "nsq_msg_in_%s" % t
-        metric_decode_fail = "nsq_msg_decode_fail_%s" % t
-        metric_processed = "nsq_msg_processed_%s" % t
-        metric_deferred = "nsq_msg_deferred_%s" % t
-        lookupd = [str(a) for a in config.nsqlookupd.http_addresses]
-        self.logger.info("Subscribing to %s/%s (lookupd: %s)", topic, channel, ", ".join(lookupd))
-        self.nsq_readers[handler] = NSQReader(
-            message_handler=call_raw_handler if raw else call_json_handler,
-            topic=topic,
-            channel=channel,
-            lookupd_http_addresses=lookupd,
-            snappy=config.nsqd.compression == "snappy",
-            deflate=config.nsqd.compression == "deflate",
-            deflate_level=config.nsqd.compression_level
-            if config.nsqd.compression == "deflate"
-            else 6,
-            **kwargs,
-        )
-
-    def suspend_subscription(self, handler):
-        """
-        Suspend subscription for handler
-        :param handler:
-        :return:
-        """
-        self.logger.info("Suspending subscription for handler %s", handler)
-        self.nsq_readers[handler].set_max_in_flight(0)
-
-    def resume_subscription(self, handler):
-        """
-        Resume subscription for handler
-        :param handler:
-        :return:
-        """
-        self.logger.info("Resuming subscription for handler %s", handler)
-        self.nsq_readers[handler].set_max_in_flight(config.nsqd.max_in_flight)
 
     def _init_publisher(self):
         """

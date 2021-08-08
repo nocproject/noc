@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # FailedEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import time
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentField, ListField
+import orjson
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
@@ -43,7 +44,7 @@ class FailedEvent(Document):
         """
         Move to unclassified queue
         """
-        from noc.core.nsq.pub import nsq_pub
+        from noc.core.service.pub import publish
 
         data = {"source": self.source}
         data.update(self.raw_vars)
@@ -53,7 +54,13 @@ class FailedEvent(Document):
             "object": self.managed_object.id,
             "data": data,
         }
-        nsq_pub("events.%s" % self.managed_object.get_effective_fm_pool().name, msg)
+        stream, partition = self.managed_object.events_stream_and_partition
+        publish(
+            orjson.dumps(msg),
+            stream=stream,
+            partition=partition,
+        )
+
         self.delete()
 
     def log_message(self, message):
