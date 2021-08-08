@@ -7,9 +7,9 @@
 
 # Python modules
 import datetime
-import time
 from threading import Lock
 from typing import Any, Optional
+import time
 
 # Third-party modules
 from django.template import Template, Context

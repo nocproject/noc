@@ -482,28 +482,6 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=10)
         objectmetrics_max_interval = SecondsParameter(default="3h")
 
-    class nsqd(ConfigSection):
-        addresses = ServiceParameter(service="nsqd", wait=True, near=True, full_result=False)
-        http_addresses = ServiceParameter(
-            service="nsqdhttp", wait=True, near=True, full_result=False
-        )
-        pub_retries = IntParameter(default=5)
-        pub_retry_delay = FloatParameter(default=1)
-        mpub_messages = IntParameter(default=10000)
-        mpub_size = IntParameter(default=1048576)
-        topic_mpub_rate = IntParameter(default=10)
-        ch_chunk_size = IntParameter(default=4000)
-        connect_timeout = SecondsParameter(default="3s")
-        request_timeout = SecondsParameter(default="30s")
-        reconnect_interval = IntParameter(default=15)
-        compression = StringParameter(choices=["", "deflate", "snappy"], default="")
-        compression_level = IntParameter(default=6)
-        max_in_flight = IntParameter(default=1)
-
-    class nsqlookupd(ConfigSection):
-        addresses = ServiceParameter(service="nsqlookupd", wait=True, near=True, full_result=False)
-        http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True, full_result=False)
-
     class path(ConfigSection):
         smilint = StringParameter()
         smidump = StringParameter()

@@ -8,9 +8,9 @@
 # Python modules
 import time
 import datetime
+import orjson
 
 # NOC modules
-from noc.core.nsq.pub import nsq_pub
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
@@ -91,5 +91,10 @@ class AlarmsCheck(DiscoveryCheck):
         d = datetime.datetime.strptime(raw_vars["ts"], "%Y-%m-%dT%H:%M:%S")
         ts = time.mktime(d.timetuple())
         msg = {"ts": ts, "object": mo_id, "source": "other", "data": raw_vars}
-        self.logger.info("Pub Event: %s", msg)
-        nsq_pub("events.%s" % pool_name, msg)
+        self.logger.debug("Pub Event: %s", msg)
+        stream, partition = self.object.events_stream_and_partition
+        self.service.publish(
+            orjson.dumps(msg),
+            stream=stream,
+            partition=partition,
+        )
