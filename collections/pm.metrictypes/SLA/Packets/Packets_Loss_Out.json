@@ -1,4 +1,4 @@
-  {
+{
     "name": "SLA | Packets | Loss | Out",
     "$collection": "pm.metrictypes",
     "uuid": "db5773d6-74b2-41da-960b-e20b2d6760f5",
@@ -8,5 +8,9 @@
     "description": "The number of packets lost when sent from source to destination.",
     "measure": "pp",
     "units__code": "pkt",
-    "scale__code": "1"
+    "scale__code": "1",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "out_loss"
+    }]
 }

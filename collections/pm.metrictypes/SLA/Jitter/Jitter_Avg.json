@@ -8,5 +8,9 @@
     "description": "The average of positive and negative jitter values in SD and DS direction for latest operation.",
     "measure": "μs",
     "units__code": "s",
-    "scale__code": "u"
+    "scale__code": "u",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "rt_avg_delay"
+    }]
 }

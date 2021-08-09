@@ -171,7 +171,16 @@ class MetricsCollectorService(FastAPIService):
         for item in data:
             metrics["items"] += 1
             out: Dict[str, Dict[str, Any]] = {}
+            units = item.metrics.get("_units", {})
             for coll_field, value in item.metrics.items():
+                if coll_field == "_units":
+                    continue
+                if (item.collector, coll_field) not in self.mappings:
+                    # Not Mapped metric
+                    self.logger.debug(
+                        "[%s] Not mapped value: %s. Skipping", item.collector, coll_field
+                    )
+                    continue
                 for map_item in self.mappings.get((item.collector, coll_field)):
                     metrics["values"] += 1
                     if not is_matched(map_item.labels, item.labels):
@@ -184,8 +193,11 @@ class MetricsCollectorService(FastAPIService):
                             "scope": map_item.ch_table,
                             "labels": item.labels,
                             "service": item.service,
+                            "_units": {},
                         }
                     out[map_item.ch_table][map_item.ch_field] = value
+                    if coll_field in units:
+                        out[map_item.ch_table]["_units"][map_item.ch_field] = units[coll_field]
                     metrics["mapped_values"] += 1
                     break
             # Spool data

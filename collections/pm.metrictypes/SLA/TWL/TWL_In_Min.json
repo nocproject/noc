@@ -1,0 +1,16 @@
+{
+    "name": "SLA | TwoWayLatency | In | Min",
+    "$collection": "pm.metrictypes",
+    "uuid": "eb465428-076f-456a-963d-e0a9b08223ae",
+    "scope__name": "SLA",
+    "field_name": "twl_in_min",
+    "field_type": "UInt64",
+    "description": "The minimum of all TWD (Two Way Delay) from destination to source.",
+    "measure": "*",
+    "units__code": "s",
+    "scale__code": "u",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "in_min_delay"
+    }]
+}

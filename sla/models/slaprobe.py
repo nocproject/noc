@@ -28,12 +28,13 @@ import cachetools
 from .slaprofile import SLAProfile
 from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
+from noc.sa.models.service import Service
+from noc.pm.models.agent import Agent
 from noc.main.models.label import Label
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
-from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
-from noc.sa.models.service import Service
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
 
@@ -53,6 +54,7 @@ class SLAProbe(Document):
     }
 
     managed_object = ForeignKeyField(ManagedObject)
+    agent = PlainReferenceField(Agent)
     # Probe name (<managed object>, <group>, <name> triple must be unique
     name = StringField()
     # Probe profile

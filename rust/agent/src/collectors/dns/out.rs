@@ -12,8 +12,8 @@ pub struct DnsOut {
     pub total: usize,
     pub success: usize,
     pub failed: usize,
-    pub min_ns: u64,
-    pub max_ns: u64,
-    pub avg_ns: u64,
-    pub jitter_ns: u64,
+    pub min: u64,
+    pub max: u64,
+    pub avg: u64,
+    pub jitter: u64,
 }

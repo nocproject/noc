@@ -49,6 +49,15 @@ impl TryFrom<&ZkConfigCollector> for DnsCollectorConfig {
 #[async_trait]
 impl Collectable for DnsCollector {
     const NAME: &'static str = "dns";
+    const UNITS: &'static str = r###"{
+        "total": "1",
+        "success": "1",
+        "failed": "1",
+        "min": "n,s",
+        "max": "n,s",
+        "avg": "n,s",
+        "jitter": "n,s"
+        }"###;
     type Output = DnsOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
@@ -95,10 +104,10 @@ impl Collectable for DnsCollector {
                 total,
                 success,
                 failed,
-                min_ns: timing.min_ns,
-                max_ns: timing.max_ns,
-                avg_ns: timing.avg_ns,
-                jitter_ns: timing.jitter_ns,
+                min: timing.min_ns,
+                max: timing.max_ns,
+                avg: timing.avg_ns,
+                jitter: timing.jitter_ns,
             },
         )
         .await?;

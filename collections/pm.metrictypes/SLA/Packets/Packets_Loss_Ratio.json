@@ -8,5 +8,9 @@
     "description": "The ratio of the packets lost to all packets sent in a test.",
     "measure": "%",
     "units__code": "%",
-    "scale__code": "1"
+    "scale__code": "1",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "rt_loss"
+    }]
 }

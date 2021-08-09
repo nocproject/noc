@@ -64,6 +64,32 @@ impl TryFrom<&ZkConfigCollector> for TwampSenderCollectorConfig {
 #[async_trait]
 impl Collectable for TwampSenderCollector {
     const NAME: &'static str = "twamp_sender";
+    const UNITS: &'static str = r###"{
+            "tx_packets": "pkt",
+            "rx_packets": "pkt",
+            "tx_bytes": "byte",
+            "rx_bytes": "byte",
+            "duration": "n,s",
+            "tx_pps": "pps",
+            "rx_pps": "pps",
+            "tx_bitrate": "bit/s",
+            "rx_bitrate": "bit/s",
+            "in_min_delay": "n,s",
+            "in_max_delay": "n,s",
+            "in_avg_delay": "n,s",
+            "in_jitter": "n,s",
+            "in_loss": "pkt",
+            "out_min_delay": "n,s",
+            "out_max_delay": "n,s",
+            "out_avg_delay": "n,s",
+            "out_jitter": "n,s",
+            "out_loss": "pkt",
+            "rt_min_delay": "n,s",
+            "rt_max_delay": "n,s",
+            "rt_avg_delay": "n,s",
+            "rt_jitter": "n,s",
+            "rt_loss": "pkt"
+        }"###;
     type Output = TwampSenderOut;
 
     async fn collect(&self) -> Result<Status, AgentError> {
@@ -638,28 +664,28 @@ impl TestSession {
             rx_packets: r_stats.pkt_received,
             tx_bytes: s_stats.out_octets,
             rx_bytes: r_stats.in_octets,
-            duration_ns: s_stats.time_ns,
+            duration: s_stats.time_ns,
             tx_pps: out_pps,
             rx_pps: in_pps,
             tx_bitrate: out_bitrate,
             rx_bitrate: in_bitrate,
             // Inbound
-            in_min_delay_ns: r_stats.in_timing.min_ns,
-            in_max_delay_ns: r_stats.in_timing.max_ns,
-            in_avg_delay_ns: r_stats.in_timing.avg_ns,
-            in_jitter_ns: r_stats.in_timing.jitter_ns,
+            in_min_delay: r_stats.in_timing.min_ns,
+            in_max_delay: r_stats.in_timing.max_ns,
+            in_avg_delay: r_stats.in_timing.avg_ns,
+            in_jitter: r_stats.in_timing.jitter_ns,
             in_loss: r_stats.in_loss,
             // Outbound
-            out_min_delay_ns: r_stats.out_timing.min_ns,
-            out_max_delay_ns: r_stats.out_timing.max_ns,
-            out_avg_delay_ns: r_stats.out_timing.avg_ns,
-            out_jitter_ns: r_stats.out_timing.jitter_ns,
+            out_min_delay: r_stats.out_timing.min_ns,
+            out_max_delay: r_stats.out_timing.max_ns,
+            out_avg_delay: r_stats.out_timing.avg_ns,
+            out_jitter: r_stats.out_timing.jitter_ns,
             out_loss: r_stats.out_loss,
             // Round-trip
-            rt_min_delay_ns: r_stats.rt_timing.min_ns,
-            rt_max_delay_ns: r_stats.rt_timing.max_ns,
-            rt_avg_delay_ns: r_stats.rt_timing.avg_ns,
-            rt_jitter_ns: r_stats.rt_timing.jitter_ns,
+            rt_min_delay: r_stats.rt_timing.min_ns,
+            rt_max_delay: r_stats.rt_timing.max_ns,
+            rt_avg_delay: r_stats.rt_timing.avg_ns,
+            rt_jitter: r_stats.rt_timing.jitter_ns,
             rt_loss: r_stats.rt_loss,
         }
     }

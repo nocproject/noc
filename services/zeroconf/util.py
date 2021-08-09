@@ -10,11 +10,13 @@ from typing import Optional, List, Iterable
 from collections import defaultdict
 
 # NOC modules
+from noc.core.tos import DSCP
 from noc.pm.models.agent import Agent
 from noc.sa.models.service import Service
 from noc.inv.models.capability import Capability
 from noc.inv.models.sensor import Sensor
 from noc.main.models.label import Label
+from noc.sla.models.slaprobe import SLAProbe
 from .models.zk import (
     ZkConfig,
     ZkConfigConfig,
@@ -101,6 +103,7 @@ def get_config(agent: Agent, level: int = 0, base: str = "") -> ZkConfig:
 def iter_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
     yield from iter_service_collectors(agent)
     yield from iter_sensor_collectors(agent)
+    yield from iter_sla_collectors(agent)
 
 
 def iter_service_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
@@ -197,7 +200,7 @@ def iter_sensor_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
     :return:
     """
     for sensor in Sensor.objects.filter(agent=agent.id):
-        if not sensor.profile.enable_collect or not sensor.state.is_productive:
+        if not sensor.profile.enable_collect:
             continue
         if sensor.protocol == "modbus_rtu":
             yield from iter_modbus_rtu_collectors(sensor)
@@ -231,6 +234,7 @@ def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         stop_bits=m_data["stop"],
         register=sensor.modbus_register,
         format=sensor.modbus_format,
+        disabled=not sensor.state.is_productive,
     )
 
 
@@ -252,4 +256,36 @@ def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         address=sensor.managed_object.address,
         register=sensor.modbus_register,
         format=sensor.modbus_format,
+        disabled=not sensor.state.is_productive,
     )
+
+
+def iter_sla_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
+    """
+
+    :param agent:
+    :return:
+    """
+    for slaprobe in SLAProbe.objects.filter(agent=agent.id):
+        server, port = slaprobe.target, 862
+        if ":" in slaprobe.target:
+            server, port = slaprobe.split(":")
+
+        if slaprobe.type == "twamp":
+            yield ZkConfigCollector(
+                id=f"zk:{slaprobe.bi_id}:twamp_sender",
+                type="twamp_sender",
+                service=slaprobe.bi_id,
+                interval=slaprobe.profile.collect_interval,
+                labels=[f"noc::sla::name::{slaprobe.name}"]
+                + Label.filter_labels(slaprobe.effective_labels or [], lambda x: x.expose_metric),
+                server=server,
+                port=port,
+                dscp=DSCP(slaprobe.tos).name,
+                model="g711",
+                # model="cbr",
+                # model_bandwidth=1000000,
+                # model_size=500,
+                n_packets=slaprobe.profile.test_packets_num,
+                disabled=not slaprobe.state.is_productive,
+            )

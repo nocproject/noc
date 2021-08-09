@@ -1,0 +1,16 @@
+{
+    "name": "SLA | Duration",
+    "$collection": "pm.metrictypes",
+    "uuid": "19cf2e01-3897-4927-9797-dc8b73bcb2e1",
+    "scope__name": "SLA",
+    "field_name": "test_duration",
+    "field_type": "UInt64",
+    "description": "Test duration time",
+    "measure": "s",
+    "units__code": "s",
+    "scale__code": "u",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "duration"
+    }]
+}

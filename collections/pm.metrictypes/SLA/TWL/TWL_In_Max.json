@@ -1,0 +1,16 @@
+{
+    "name": "SLA | TwoWayLatency | In | Max",
+    "$collection": "pm.metrictypes",
+    "uuid": "96e7e600-98b1-4a56-9ee2-2ab6d7ca73fc",
+    "scope__name": "SLA",
+    "field_name": "twl_in_max",
+    "field_type": "UInt64",
+    "description": "The maximum of all TWD (Two Way Delay) from destination to source.",
+    "measure": "*",
+    "units__code": "s",
+    "scale__code": "u",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "in_max_delay"
+    }]
+}

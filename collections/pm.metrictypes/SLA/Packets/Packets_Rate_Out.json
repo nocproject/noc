@@ -1,0 +1,16 @@
+{
+    "name": "SLA | Packets | Rate | Out",
+    "$collection": "pm.metrictypes",
+    "uuid": "f51c56c2-24cf-4615-b38f-500c0543c2f0",
+    "scope__name": "SLA",
+    "field_name": "packets_rate_out",
+    "field_type": "UInt64",
+    "description": "SLA test packets output throughput",
+    "measure": "bit/s",
+    "units__code": "pps",
+    "scale__code": "1",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "tx_pps"
+    }]
+}
