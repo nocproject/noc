@@ -13,6 +13,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
         "NOC.core.label.LabelField",
         "NOC.sla.slaprobe.Model",
         "NOC.sa.managedobject.LookupField",
+        "NOC.pm.agent.LookupField",
         "NOC.sla.slaprofile.LookupField"
     ],
     model: "NOC.sla.slaprobe.Model",
@@ -79,7 +80,13 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     name: "managed_object",
                     xtype: "sa.managedobject.LookupField",
                     fieldLabel: __("Managed Object"),
-                    allowBlank: false
+                    allowBlank: true
+                },
+                {
+                    name: "agent",
+                    xtype: "pm.agent.LookupField",
+                    fieldLabel: __("Agent"),
+                    allowBlank: true
                 },
                 {
                     name: "name",

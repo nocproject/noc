@@ -18,6 +18,7 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentField,
     LongField,
+    IntField,
 )
 import cachetools
 
@@ -60,6 +61,10 @@ class SLAProfile(Document):
     #
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style, required=False)
+    # Agent collected intervale
+    collect_interval = IntField(default=120)
+    # Test packets Number
+    test_packets_num = IntField(default=10, min_value=1, max_value=60000)
     # Object id in BI
     bi_id = LongField(unique=True)
     # Interface profile metrics

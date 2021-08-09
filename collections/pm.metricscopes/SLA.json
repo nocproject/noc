@@ -16,6 +16,10 @@
         {
             "field_name": "sla_probe",
             "model": "sla.SLAProbe"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
         }
     ],
     "enable_timedelta": true,

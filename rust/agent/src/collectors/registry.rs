@@ -23,6 +23,7 @@ use crate::error::AgentError;
 use crate::sender::SenderCommand;
 use enum_dispatch::enum_dispatch;
 use serde::Deserialize;
+use serde_json::value::RawValue;
 use std::convert::TryFrom;
 
 /// Collector config variants.

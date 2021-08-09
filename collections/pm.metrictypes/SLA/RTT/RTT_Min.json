@@ -8,5 +8,9 @@
     "description": "The minimum of RTT's that were successfully measured",
     "measure": "μs",
     "units__code": "s",
-    "scale__code": "u"
+    "scale__code": "u",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "rt_min_delay"
+    }]
 }

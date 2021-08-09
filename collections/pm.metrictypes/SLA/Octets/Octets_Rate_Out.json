@@ -1,0 +1,16 @@
+{
+    "name": "SLA | Rate | Out",
+    "$collection": "pm.metrictypes",
+    "uuid": "d1fa9ad5-9a2b-4bd6-a43f-b6568feeee08",
+    "scope__name": "SLA",
+    "field_name": "rate_out",
+    "field_type": "UInt64",
+    "description": "SLA test output throughput",
+    "measure": "bit/s",
+    "units__code": "bit/s",
+    "scale__code": "1",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "tx_bitrate"
+    }]
+}

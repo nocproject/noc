@@ -42,6 +42,15 @@ Ext.define("NOC.sla.slaprobe.Model", {
             persist: false
         },
         {
+            name: "agent",
+            type: "string"
+        },
+        {
+            name: "agent__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "name",
             type: "string"
         },

@@ -17,6 +17,7 @@ use async_trait::async_trait;
 use bytes::Bytes;
 use chrono::Utc;
 use rand::Rng;
+use serde_json::value::RawValue;
 use std::convert::TryFrom;
 use std::net::SocketAddr;
 use std::time::Duration;
@@ -44,6 +45,26 @@ impl TryFrom<&ZkConfigCollector> for TwampReflectorCollectorConfig {
             }),
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
         }
+    }
+}
+
+impl TryFrom<&ZkConfigCollector> for TwampReflectorCollector {
+    type Error = AgentError;
+
+    fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
+        // Compile units. Decode and encode back to check syntax and minimize
+        let units = RawValue::from_string("{}".to_string())
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        //
+        Ok(Self {
+            id: value.get_id(),
+            service: value.get_service(),
+            interval: value.get_interval(),
+            labels: value.get_labels(),
+            tx: None,
+            units,
+            data: TwampReflectorCollectorConfig::try_from(value)?,
+        })
     }
 }
 

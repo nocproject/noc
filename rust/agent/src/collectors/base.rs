@@ -13,6 +13,8 @@ use chrono::{DateTime, SecondsFormat, Utc};
 use enum_dispatch::enum_dispatch;
 use rand::Rng;
 use serde::Serialize;
+use serde_json::value::RawValue;
+use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::marker::PhantomData;
 use std::time::SystemTime;
@@ -42,6 +44,7 @@ pub trait Runnable {
 #[async_trait]
 pub trait Collectable: Schedule + MetricSender {
     const NAME: &'static str;
+    const UNITS: &'static str = r###"{}"###;
     type Output: Serialize + Sync;
 
     fn get_name() -> &'static str {
@@ -64,6 +67,7 @@ pub trait Collectable: Schedule + MetricSender {
             ts,
             service: self.get_service(),
             collector: Self::get_name(),
+            units: self.get_units(),
             labels,
             data,
         };
@@ -90,6 +94,8 @@ pub trait MetricSender {
     fn with_sender_tx(&mut self, tx: tokio::sync::mpsc::Sender<SenderCommand>);
     //
     fn get_tx(&self) -> Option<&tokio::sync::mpsc::Sender<SenderCommand>>;
+    //
+    fn get_units(&self) -> &RawValue;
 }
 
 /// Collector's schedule attributes
@@ -141,22 +147,33 @@ pub struct Collector<T> {
     pub interval: u64,
     pub labels: Vec<String>,
     pub tx: Option<mpsc::Sender<SenderCommand>>,
+    pub units: Box<RawValue>,
     pub data: T,
 }
 
 impl<T> TryFrom<&ZkConfigCollector> for Collector<T>
 where
     T: for<'a> TryFrom<&'a ZkConfigCollector, Error = AgentError>,
+    Collector<T>: Collectable,
 {
     type Error = AgentError;
 
     fn try_from(value: &ZkConfigCollector) -> Result<Self, Self::Error> {
+        // Compile units. Decode and encode back to check syntax and minimize
+        let hm: HashMap<String, String> = serde_json::from_str(Self::UNITS)
+            .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        let units = RawValue::from_string(
+            serde_json::to_string(&hm).map_err(|e| AgentError::InternalError(e.to_string()))?,
+        )
+        .map_err(|e| AgentError::InternalError(e.to_string()))?;
+        //
         Ok(Self {
             id: value.get_id(),
             service: value.get_service(),
             interval: value.get_interval(),
             labels: value.get_labels(),
             tx: None,
+            units,
             data: T::try_from(value)?,
         })
     }
@@ -185,6 +202,9 @@ impl<T> MetricSender for Collector<T> {
     fn get_tx(&self) -> Option<&mpsc::Sender<SenderCommand>> {
         self.tx.as_ref()
     }
+    fn get_units(&self) -> &RawValue {
+        &self.units
+    }
 }
 
 // Empty config for collector
@@ -199,7 +219,7 @@ impl<T> TryFrom<&ZkConfigCollector> for NoConfig<T> {
 }
 
 #[derive(Serialize)]
-pub struct Output<'a, T>
+pub struct Output<'a, 'b, T>
 where
     T: Serialize + Sync,
 {
@@ -207,6 +227,8 @@ where
     pub service: u64,
     pub collector: &'static str,
     pub labels: Vec<String>,
+    #[serde(rename = "_units")]
+    pub units: &'b RawValue,
     #[serde(flatten)]
     pub data: &'a T,
 }
@@ -245,5 +267,9 @@ impl<TCfg> MetricSender for StubCollector<TCfg> {
     fn with_sender_tx(&mut self, _tx: mpsc::Sender<SenderCommand>) {}
     fn get_tx(&self) -> Option<&mpsc::Sender<SenderCommand>> {
         None
+    }
+    fn get_units(&self) -> &RawValue {
+        // Cannot be here
+        panic!("Cannot be here")
     }
 }

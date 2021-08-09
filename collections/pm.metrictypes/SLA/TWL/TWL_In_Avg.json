@@ -1,0 +1,16 @@
+{
+    "name": "SLA | TwoWayLatency | In | Avg",
+    "$collection": "pm.metrictypes",
+    "uuid": "2f502f23-0e54-4d1c-b369-a0210be05757",
+    "scope__name": "SLA",
+    "field_name": "twl_in_avg",
+    "field_type": "UInt64",
+    "description": "The average of all TWD (Two Way Delay) from destination to source.",
+    "measure": "*",
+    "units__code": "s",
+    "scale__code": "u",
+    "agent_mappings": [{
+        "collector": "twamp_sender",
+        "field": "in_avg_delay"
+    }]
+}

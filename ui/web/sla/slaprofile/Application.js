@@ -75,6 +75,24 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     },
                 },
                 {
+                  name: "collect_interval",
+                  xtype: "numberfield",
+                  fieldLabel: __("Collect interval"),
+                  allowBlank: true,
+                  uiStyle: "medium",
+                  minValue: 20,
+                  maxValue: 3600
+                },
+                {
+                  name: "test_packets_num",
+                  xtype: "numberfield",
+                  fieldLabel: __("Number Packets on Test"),
+                  allowBlank: true,
+                  uiStyle: "medium",
+                  minValue: 1,
+                  maxValue: 60000
+                },
+                {
                     name: "metrics",
                     xtype: "gridfield",
                     fieldLabel: __("Metrics"),
