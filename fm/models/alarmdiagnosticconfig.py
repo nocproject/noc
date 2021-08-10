@@ -24,6 +24,7 @@ from noc.sa.models.selectorcache import SelectorCache
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
+from noc.inv.models.resourcegroup import ResourceGroup
 from .alarmclass import AlarmClass
 from .alarmdiagnostic import AlarmDiagnostic
 from .utils import get_alarm
@@ -48,6 +49,7 @@ class AlarmDiagnosticConfig(Document):
     is_active = BooleanField(default=True)
     description = StringField()
     alarm_class = ReferenceField(AlarmClass)
+    resource_group = ReferenceField(ResourceGroup)
     selector = ForeignKeyField(ManagedObjectSelector)
     # Process only on root cause
     only_root = BooleanField(default=True)
@@ -96,6 +98,11 @@ class AlarmDiagnosticConfig(Document):
         p_cfg = defaultdict(list)
         for c in cls.get_class_diagnostics(alarm.alarm_class):
             if c.selector and not SelectorCache.is_in_selector(alarm.managed_object, c.selector):
+                continue
+            if (
+                c.resource_group
+                and str(c.resource_group.id) not in alarm.managed_object.effective_service_groups
+            ):
                 continue
             if c.only_root and alarm.root:
                 continue
@@ -161,6 +168,11 @@ class AlarmDiagnosticConfig(Document):
         cfg = defaultdict(list)
         for c in cls.get_class_diagnostics(alarm.alarm_class):
             if c.selector and not SelectorCache.is_in_selector(alarm.managed_object, c.selector):
+                continue
+            if (
+                c.resource_group
+                and str(c.resource_group.id) not in alarm.managed_object.effective_service_groups
+            ):
                 continue
             if c.only_root and alarm.root:
                 continue

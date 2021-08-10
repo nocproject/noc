@@ -32,6 +32,7 @@ from noc.main.models.template import Template
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.selectorcache import SelectorCache
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.defer import call_later
 
@@ -55,6 +56,7 @@ class EscalationItem(EmbeddedDocument):
     # Match part
     administrative_domain = ForeignKeyField(AdministrativeDomain)
     selector = ForeignKeyField(ManagedObjectSelector)
+    resource_group = ReferenceField(ResourceGroup)
     time_pattern = ForeignKeyField(TimePattern)
     min_severity = IntField(default=0)
     # Action part

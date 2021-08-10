@@ -10,8 +10,10 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.fields import DocumentReferenceField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.comp import smart_text
 from .vcdomain import VCDomain
 from .vcfilter import VCFilter
@@ -33,6 +35,7 @@ class VCDomainProvisioningConfig(NOCModel):
     selector = models.ForeignKey(
         ManagedObjectSelector, verbose_name="Managed Object Selector", on_delete=models.CASCADE
     )
+    resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     is_enabled = models.BooleanField("Is Enabled", default=True)
     vc_filter = models.ForeignKey(
         VCFilter, verbose_name="VC Filter", null=True, blank=True, on_delete=models.CASCADE

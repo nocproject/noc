@@ -12,6 +12,7 @@ Ext.define("NOC.fm.eventtrigger.Application", {
         "NOC.fm.eventtrigger.Model",
         "NOC.main.timepattern.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
+        "NOC.inv.resourcegroup.TreeCombo",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.template.LookupField"
     ],
@@ -106,6 +107,19 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
             fieldLabel: __("Managed Object Selector"),
+            allowBlank: true
+        },
+        {
+            name: "resource_group",
+            xtype: "inv.resourcegroup.TreeCombo",
+            fieldLabel: __("Resource Group"),
+            labelWidth: 100,
+            uiStyle: "large",
+            labelAlign: "left",
+            listAlign: "left",
+            minWidth: 300,
+            padding: "0 0 6 0",
+            maxWidth: 400,
             allowBlank: true
         },
         {

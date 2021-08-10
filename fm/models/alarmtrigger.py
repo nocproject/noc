@@ -10,10 +10,12 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
+from noc.core.model.fields import DocumentReferenceField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
+from noc.inv.models.resourcegroup import ResourceGroup
 
 
 class AlarmTrigger(NOCModel):
@@ -38,6 +40,7 @@ class AlarmTrigger(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
+    resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     notification_group = models.ForeignKey(
         NotificationGroup,
         verbose_name="Notification Group",

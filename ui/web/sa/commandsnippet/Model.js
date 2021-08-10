@@ -21,6 +21,15 @@ Ext.define("NOC.sa.commandsnippet.Model", {
             persist:false
         },
         {
+            name: "resource_group",
+            type: "string"
+        },
+        {
+            name: "resource_group__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "name",
             type: "string"
         },
