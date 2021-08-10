@@ -9,6 +9,9 @@
 import re
 import logging
 
+# NOC Modules
+from noc.core.handler import get_handler
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,10 +22,11 @@ class Trigger(object):
         self.condition = compile(t.condition, "<string>", "eval")
         self.time_pattern = t.time_pattern
         self.selector = t.selector
+        self.resource_group = t.resource_group
         # Action
         self.notification_group = t.notification_group
         self.template = t.template
-        self.handler = t.handler
+        self.handler = get_handler(t.handler)
 
     def match(self, alarm):
         """
@@ -32,12 +36,18 @@ class Trigger(object):
             eval(self.condition, {}, {"alarm": alarm, "re": re})
             and (self.time_pattern.match(alarm.timestamp) if self.time_pattern else True)
             and (self.selector.match(alarm.managed_object) if self.selector else True)
+            and (
+                str(self.resource_group.id) in alarm.managed_object.effective_service_groups
+                if self.resource_group
+                else True
+            )
         )
 
     def call(self, alarm):
         if not self.match(alarm):
             return
-        logger.debug("Calling trigger '%s'" % self.name)
+        print(self.resource_group)
+        logger.info("Calling trigger '%s'" % self.name)
         # Notify if necessary
         if self.notification_group and self.template:
             self.notification_group.notify(

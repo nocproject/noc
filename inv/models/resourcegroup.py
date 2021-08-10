@@ -67,6 +67,16 @@ class MatchLabels(EmbeddedDocument):
         ("sa.Service", "effective_service_groups"),
         ("sa.Service", "static_client_groups"),
         ("sa.Service", "effective_client_groups"),
+        # SA
+        ("sa.CommandSnippet", "resource_group"),
+        ("sa.ObjectNotification", "resource_group"),
+        # FM
+        ("fm.AlarmDiagnosticConfig", "resource_group"),
+        ("fm.AlarmEscalation", "escalations__resource_group"),
+        ("fm.AlarmTrigger", "resource_group"),
+        ("fm.EventTrigger", "resource_group"),
+        #
+        ("vc.VCDomainProvisioningConfig", "resource_group"),
     ]
 )
 class ResourceGroup(Document):

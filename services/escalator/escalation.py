@@ -18,6 +18,7 @@ from noc.sa.models.selectorcache import SelectorCache
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -106,7 +107,7 @@ def escalate(
     with Span(client="escalator", sample=sample) as ctx:
         alarm.set_escalation_context()
         # Evaluate escalation chain
-        mo = alarm.managed_object
+        mo: ManagedObject = alarm.managed_object
         for a in escalation.escalations:
             if a.delay != escalation_delay:
                 continue  # Try other type
@@ -118,6 +119,9 @@ def escalate(
                 continue
             # Check selector
             if a.selector and not SelectorCache.is_in_selector(mo, a.selector):
+                continue
+            # Check resource group
+            if a.resource_group and str(a.resource_group.id) not in mo.effective_service_groups:
                 continue
             # Check time pattern
             if a.time_pattern and not a.time_pattern.match(alarm.timestamp):

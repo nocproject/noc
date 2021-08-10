@@ -13,7 +13,8 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
         "NOC.fm.alarmclass.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.ref.script.LookupField",
-        "NOC.sa.action.LookupField"
+        "NOC.sa.action.LookupField",
+        "NOC.inv.resourcegroup.TreeCombo"
     ],
     model: "NOC.fm.alarmdiagnosticconfig.Model",
     initComponent: function() {
@@ -82,6 +83,19 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                     xtype: "sa.managedobjectselector.LookupField",
                                     fieldLabel: __("Selector"),
                                     uiStyle: "large",
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "resource_group",
+                                    xtype: "inv.resourcegroup.TreeCombo",
+                                    fieldLabel: __("Resource Group"),
+                                    labelWidth: 100,
+                                    uiStyle: "large",
+                                    labelAlign: "left",
+                                    listAlign: "left",
+                                    minWidth: 300,
+                                    padding: "0 0 6 0",
+                                    maxWidth: 400,
                                     allowBlank: true
                                 },
                                 {

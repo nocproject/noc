@@ -17,6 +17,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
         "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.timepattern.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.alarmescalation.Model",
@@ -117,6 +118,13 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             editor: "sa.managedobjectselector.LookupField",
                             width: 150,
                             renderer: NOC.render.Lookup("selector")
+                        },
+                        {
+                            text: __("Resource Group"),
+                            dataIndex: "resource_group",
+                            editor: "inv.resourcegroup.LookupField",
+                            width: 150,
+                            renderer: NOC.render.Lookup("resource_group")
                         },
                         {
                             text: __("Time Pattern"),

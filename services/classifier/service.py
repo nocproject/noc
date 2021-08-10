@@ -170,6 +170,7 @@ class ClassifierService(TornadoService):
                         t.handler
                         and t.condition == "True"
                         and t.selector is None
+                        and t.resource_group is None
                         and t.time_pattern is None
                         and t.template is None
                         and t.notification_group is None

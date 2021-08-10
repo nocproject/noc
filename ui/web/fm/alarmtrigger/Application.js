@@ -12,6 +12,7 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
         "NOC.fm.alarmtrigger.Model",
         "NOC.main.timepattern.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.template.LookupField"
     ],
@@ -45,6 +46,11 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
             text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector")
+        },
+        {
+            text: __("Resource Group"),
+            dataIndex: "resource_group",
+            renderer: NOC.render.Lookup("resource_group")
         },
         {
             text: __("Notification Group"),
@@ -103,6 +109,19 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
             fieldLabel: __("Managed Object Selector"),
+            allowBlank: true
+        },
+        {
+            name: "resource_group",
+            xtype: "inv.resourcegroup.LookupField",
+            fieldLabel: __("Resource Group"),
+            labelWidth: 100,
+            uiStyle: "large",
+            labelAlign: "left",
+            listAlign: "left",
+            minWidth: 300,
+            padding: "0 0 6 0",
+            maxWidth: 400,
             allowBlank: true
         },
         {

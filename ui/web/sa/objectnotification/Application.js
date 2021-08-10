@@ -11,6 +11,7 @@ Ext.define("NOC.sa.objectnotification.Application", {
     requires: [
         "NOC.sa.objectnotification.Model",
         "NOC.sa.managedobjectselector.LookupField",
+        "NOC.inv.resourcegroup.TreeCombo",
         "NOC.main.notificationgroup.LookupField"
     ],
     model: "NOC.sa.objectnotification.Model",
@@ -19,6 +20,12 @@ Ext.define("NOC.sa.objectnotification.Application", {
             text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector"),
+            width: 200
+        },
+        {
+            text: __("Resource Group"),
+            dataIndex: "resource_group",
+            renderer: NOC.render.Lookup("resourcegroup"),
             width: 200
         },
         {
@@ -94,6 +101,19 @@ Ext.define("NOC.sa.objectnotification.Application", {
             xtype: "sa.managedobjectselector.LookupField",
             fieldLabel: __("Selector"),
             allowBlank: false
+        },
+        {
+            name: "resource_group",
+            xtype: "inv.resourcegroup.TreeCombo",
+            fieldLabel: __("Resource Group"),
+            labelWidth: 100,
+            uiStyle: "large",
+            labelAlign: "left",
+            listAlign: "left",
+            minWidth: 300,
+            padding: "0 0 6 0",
+            maxWidth: 400,
+            allowBlank: true
         },
         {
             name: "notification_group",

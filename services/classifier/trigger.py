@@ -11,6 +11,7 @@ import logging
 
 # Python modules
 from noc.core.debug import error_report
+from noc.core.handler import get_handler
 
 
 class Trigger(object):
@@ -20,10 +21,11 @@ class Trigger(object):
         self.condition = compile(t.condition, "<string>", "eval")
         self.time_pattern = t.time_pattern
         self.selector = t.selector
+        self.resource_group = t.resource_group
         # Action
         self.notification_group = t.notification_group
         self.template = t.template
-        self.handler = handler
+        self.handler = get_handler(handler)
 
     def match(self, event):
         """
@@ -33,6 +35,11 @@ class Trigger(object):
             eval(self.condition, {}, {"event": event, "re": re})
             and (self.time_pattern.match(event.timestamp) if self.time_pattern else True)
             and (self.selector.match(event.managed_object) if self.selector else True)
+            and (
+                str(self.resource_group.id) in event.managed_object.effective_service_groups
+                if self.resource_group
+                else True
+            )
         )
 
     def call(self, event):

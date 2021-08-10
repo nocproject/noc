@@ -11,6 +11,7 @@ import shlex
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from noc.core.model.fields import DocumentReferenceField
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.template import Template, Context
@@ -19,6 +20,7 @@ from django.template import Template, Context
 from noc.core.model.base import NOCModel
 from noc.aaa.models.permission import Permission
 from noc.main.models.label import Label
+from noc.inv.models.resourcegroup import ResourceGroup
 from .managedobjectselector import ManagedObjectSelector
 
 
@@ -42,6 +44,7 @@ class CommandSnippet(NOCModel):
     selector = models.ForeignKey(
         ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE
     )
+    resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"), default=False)
