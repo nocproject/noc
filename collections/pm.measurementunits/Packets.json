@@ -6,8 +6,14 @@
     "description": "Network packet is a formatted unit of data carried by a packet-switched network.",
     "label": "packets",
     "dashboard_label": "packets",
-    "convert_from": [{
-        "expr": "x * time_delta",
-        "unit__code": "pps"
-    }]
+    "convert_from": [
+        {
+            "expr": "x * time_delta",
+            "unit__code": "pps"
+        },
+        {
+            "expr": "x",
+            "unit__code": "1"
+        }
+    ]
 }
