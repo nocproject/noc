@@ -13,7 +13,7 @@ from collections import defaultdict
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
-from noc.sa.interfaces.base import StringParameter, UnicodeParameter
+from noc.sa.interfaces.base import StringParameter
 from .base import InvPlugin
 
 
@@ -43,7 +43,7 @@ class DataPlugin(InvPlugin):
             validate={
                 "interface": StringParameter(),
                 "key": StringParameter(),
-                "value": UnicodeParameter(),
+                "value": StringParameter(default="", required=False),
             },
         )
 
