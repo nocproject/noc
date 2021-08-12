@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
+    "uuid": "1deb5da3-97f7-41b1-9946-f787a0212b07",
+    "description": "craftd[920]: Major alarm set, FPC 0 Fan 2 not spinning",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Major alarm set, (?P<name>.+) not spinning"
+        }
+    ]
+}
