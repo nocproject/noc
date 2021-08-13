@@ -20,6 +20,18 @@
             "description": "Path to component raising alarm"
         },
         {
+            "name": "labels",
+            "description": "Metric labels"
+        },
+        {
+            "name": "sensor",
+            "description": "Sensor BI_ID for sensor alarm"
+        },
+        {
+            "name": "sla_probe",
+            "description": "SLA Probe BI_ID for SLA threshold"
+        },
+        {
             "name": "value",
             "description": "Metric value"
         },
