@@ -546,11 +546,11 @@ class MetricsCheck(DiscoveryCheck):
                 if not path.endswith(m_path):
                     path = "%s | %s" % (path, m_path)
             if cfg.threshold_profile and m.abs_value is not None:
-                alarm, event = self.process_thresholds(m, cfg, path)
+                alarm, event = self.process_thresholds(m, cfg, path, labels)
                 alarms += alarm
                 events += event
             elif self.job.context["active_thresholds"].get(path):
-                alarm, event = self.clear_process_thresholds(m, cfg, path)
+                alarm, event = self.clear_process_thresholds(m, cfg, path, labels)
                 alarms += alarm
                 events += event
             else:
@@ -717,11 +717,13 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.error("Cannot calculate thresholds for %s (%s): %s", m.metric, m.labels, e)
             return None
 
-    def clear_process_thresholds(self, m, cfg, path):
+    def clear_process_thresholds(self, m, cfg, path, labels=None):
         """
         Check thresholds
         :param m: dict with metric result
         :param cfg: MetricConfig
+        :param path:
+        :param labels:
         :return: List of umbrella alarm details
         """
         alarms = []
@@ -749,6 +751,7 @@ class MetricsCheck(DiscoveryCheck):
                     threshold.close_event_class.name,
                     path,
                     m.value,
+                    labels=labels,
                 )
             if threshold.close_handler:
                 if threshold.close_handler.allow_threshold:
@@ -762,12 +765,15 @@ class MetricsCheck(DiscoveryCheck):
                     self.logger.warning("Handler is not allowed for Thresholds")
         return alarms, events
 
-    def process_thresholds(self, m: MData, cfg: MetricConfig, path: str):
+    def process_thresholds(
+        self, m: MData, cfg: MetricConfig, path: str, labels: Optional[List[str]] = None
+    ):
         """
         Check thresholds
         :param m: dict with metric result
         :param cfg: MetricConfig
         :param path: Metric path
+        :param labels: Metric labels
         :return: List of umbrella alarm details
         """
         alarms = []
@@ -802,6 +808,9 @@ class MetricsCheck(DiscoveryCheck):
                         threshold.close_event_class.name,
                         path,
                         w_value,
+                        labels=labels,
+                        sensor=self.sensors_metrics.get(m.id),
+                        sla_probe=self.sla_probe_metrics.get(m.id),
                     )
                 if threshold.close_handler:
                     if threshold.close_handler.allow_threshold:
@@ -815,7 +824,15 @@ class MetricsCheck(DiscoveryCheck):
                         self.logger.warning("Handler is not allowed for Thresholds")
                 elif threshold.alarm_class:
                     # Remain umbrella alarm
-                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
+                    alarms += self.get_umbrella_alarm_cfg(
+                        cfg,
+                        threshold,
+                        path,
+                        w_value,
+                        labels=labels,
+                        sensor=self.sensors_metrics.get(m.id),
+                        sla_probe=self.sla_probe_metrics.get(m.id),
+                    )
             elif threshold:
                 if threshold.is_clear_match(w_value):
                     # Close Event
@@ -829,6 +846,9 @@ class MetricsCheck(DiscoveryCheck):
                             threshold.close_event_class.name,
                             path,
                             w_value,
+                            labels=labels,
+                            sensor=self.sensors_metrics.get(m.id),
+                            sla_probe=self.sla_probe_metrics.get(m.id),
                         )
                     if threshold.close_handler:
                         if threshold.close_handler.allow_threshold:
@@ -842,7 +862,15 @@ class MetricsCheck(DiscoveryCheck):
                             self.logger.warning("Handler is not allowed for Thresholds")
                 if threshold.alarm_class:
                     # Remain umbrella alarm
-                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
+                    alarms += self.get_umbrella_alarm_cfg(
+                        cfg,
+                        threshold,
+                        path,
+                        w_value,
+                        labels=labels,
+                        sensor=self.sensors_metrics.get(m.id),
+                        sla_probe=self.sla_probe_metrics.get(m.id),
+                    )
             else:
                 # Threshold has been reconfigured or deleted
                 if active.get("close_event_class"):
@@ -853,6 +881,9 @@ class MetricsCheck(DiscoveryCheck):
                         active["close_event_class"].name,
                         path,
                         w_value,
+                        labels=labels,
+                        sensor=self.sensors_metrics.get(m.id),
+                        sla_probe=self.sla_probe_metrics.get(m.id),
                     )
                 if active.get("close_handler"):
                     if active["close_handler"].allow_threshold:
@@ -887,6 +918,9 @@ class MetricsCheck(DiscoveryCheck):
                         threshold.open_event_class.name,
                         path,
                         w_value,
+                        labels=labels,
+                        sensor=self.sensors_metrics.get(m.id),
+                        sla_probe=self.sla_probe_metrics.get(m.id),
                     )
                 if threshold.open_handler:
                     if threshold.open_handler.allow_threshold:
@@ -901,24 +935,40 @@ class MetricsCheck(DiscoveryCheck):
                         self.logger.warning("Handler is not allowed for Thresholds")
                 if threshold.alarm_class:
                     # Raise umbrella alarm
-                    alarms += self.get_umbrella_alarm_cfg(cfg, threshold, path, w_value)
+                    alarms += self.get_umbrella_alarm_cfg(
+                        cfg,
+                        threshold,
+                        path,
+                        w_value,
+                        labels=labels,
+                        sensor=self.sensors_metrics.get(m.id),
+                        sla_probe=self.sla_probe_metrics.get(m.id),
+                    )
                 break
         return alarms, events
 
-    def get_umbrella_alarm_cfg(self, metric_config, threshold, path, value):
+    def get_umbrella_alarm_cfg(
+        self, metric_config, threshold, path, value, labels=None, sensor=None, sla_probe=None
+    ):
         """
         Get configuration for umbrella alarm
         :param threshold:
+        :param path:
         :param metric_config:
         :param value:
+        :param labels:
+        :param sensor:
+        :param sla_probe:
         :return: List of dicts or empty list
         """
+        self.logger.info("Get Umbrella Alarm CFG: %s", metric_config)
         alarm_cfg = {
             "alarm_class": threshold.alarm_class,
             "path": path,
             "severity": threshold.alarm_class.default_severity.severity,
             "vars": {
                 "path": path,
+                "labels": ";".join(labels or []),
                 "metric": metric_config.metric_type.name,
                 "value": value,
                 "window_type": metric_config.threshold_profile.window_type,
@@ -926,6 +976,10 @@ class MetricsCheck(DiscoveryCheck):
                 "window_function": metric_config.threshold_profile.window_function,
             },
         }
+        if sensor:
+            alarm_cfg["vars"]["sensor"] = str(sensor)
+        if sla_probe:
+            alarm_cfg["vars"]["sla_probe"] = str(sla_probe)
         if metric_config.threshold_profile.umbrella_filter_handler:
             if metric_config.threshold_profile.umbrella_filter_handler.allow_threshold_handler:
                 try:
@@ -940,14 +994,29 @@ class MetricsCheck(DiscoveryCheck):
                 self.logger.warning("Umbrella filter Handler is not allowed for Thresholds")
         return [alarm_cfg]
 
-    def get_event_cfg(self, metric_config, threshold_profile, threshold, event_class, path, value):
+    def get_event_cfg(
+        self,
+        metric_config,
+        threshold_profile,
+        threshold,
+        event_class,
+        path,
+        value,
+        labels=None,
+        sensor=None,
+        sla_probe=None,
+    ):
         """
         Get configuration for umbrella alarm
         :param metric_config:
+        :param threshold_profile:
         :param threshold:
         :param event_class:
         :param path:
         :param value:
+        :param labels:
+        :param sensor:
+        :param sla_probe:
         :return: List of dicts or empty list
         """
         full_path = path
@@ -956,6 +1025,7 @@ class MetricsCheck(DiscoveryCheck):
         result = False
         raw_vars = {
             "path": path.strip(),
+            "labels": ";".join(labels or []),
             "full_path": full_path,
             "threshold": threshold,
             "metric": metric_config.metric_type.name,
@@ -964,6 +1034,10 @@ class MetricsCheck(DiscoveryCheck):
             "window": str(threshold_profile.window),
             "window_function": threshold_profile.window_function,
         }
+        if sensor:
+            raw_vars["sensor"] = str(sensor)
+        if sla_probe:
+            raw_vars["sla_probe"] = str(sla_probe)
         if threshold_profile.umbrella_filter_handler:
             if threshold_profile.umbrella_filter_handler.allow_threshold_handler:
                 try:
