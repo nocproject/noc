@@ -54,6 +54,14 @@ Ext.define("NOC.inv.inv.Application", {
             handler: me.onCreateConnection
         });
 
+        me.dashboardButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.line_chart,
+            tooltip: __("Open Dashboard"),
+            scope: me,
+            disabled: true,
+            handler: me.onOpenDashboard
+        });
+
         me.removeButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.minus,
             tooltip: __("Remove group"),
@@ -80,12 +88,14 @@ Ext.define("NOC.inv.inv.Application", {
                     "-",
                     me.addButton,
                     me.removeButton,
-                    me.createConnectionButton
+                    me.createConnectionButton,
+                    me.dashboardButton
                 ]
             }],
             listeners: {
                 scope: me,
-                select: me.onSelectNav
+                select: me.onSelectNav,
+                deselect: me.onDeselect,
             },
             viewConfig: {
                 plugins: {
@@ -197,12 +207,18 @@ Ext.define("NOC.inv.inv.Application", {
             plugins = record.get("plugins");
         me.addButton.setDisabled(!record.get("can_add"));
         me.removeButton.setDisabled(!record.get("can_delete"));
+        me.dashboardButton.setDisabled(false);
         me.invPlugins = {};
         me.tabPanel.removeAll();
         Ext.each(plugins, function(p) {
             me.runPlugin(objectId, p);
         });
         me.setHistoryHash(objectId);
+    },
+    //
+    onDeselect: function() {
+        var me = this;
+        me.dashboardButton.setDisabled(true);
     },
     // Expand nav tree to object
     showObject: function(objectId, reload) {
@@ -323,5 +339,20 @@ Ext.define("NOC.inv.inv.Application", {
             me.mainPanel.remove(me.mainPanel.items.items[2], false);
         }
         me.mainPanel.add(me.connectionPanel);
+    },
+    //
+    onOpenDashboard: function() {
+        var me = this,
+            sm = me.navTree.getSelectionModel(),
+            sel = sm.getSelection(),
+            container = null;
+
+        if(sel.length > 0) {
+            container = sel[0];
+        }
+
+        if(container) {
+            window.open("/ui/grafana/dashboard/script/noc.js?dashboard=container&id=" + container.get("id") + "&orgId=1");
+        }
     }
 });

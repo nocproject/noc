@@ -66,6 +66,42 @@
         {% include "panel_container.j2" with context -%}
       ]
     }
+    {% if sensor_enum %}
+        ,
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "100px",
+          "showTitle": false,
+          "title": "Sensors Status",
+          "internal_comment": "status_row",
+          "panels": [
+            {% include "graph_sensor_enum.j2" with context -%}
+        ]
+        }
+    {% endif %}
+    {%if sensor_types %}
+    ,
+        {% set comma = joiner(",") -%}
+        {% for stype in sensor_types -%}
+            {{ comma() }}
+            {
+              "collapse": true,
+              "editable": false,
+              "height": "250px",
+              "showTitle": true,
+              "title": "Датчики: {{stype}}",
+              "internal_comment": "sensor_row",
+              "panels": [
+                 {% from "graph_sensor_value.j2" import sensors -%}
+                {% for sensor in sensor_types[stype] -%}
+                        {{sensors(sensor, loop.index)}}
+                                        {{ comma() }}
+                    {%- endfor %}
+              ]
+            }
+        {%- endfor %}
+    {% endif %}
     {% if bi_ids %}
     ,{
       "collapse": false,
