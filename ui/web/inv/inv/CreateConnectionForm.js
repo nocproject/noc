@@ -174,7 +174,6 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 mainPanel.unmask();
                 NOC.msg.complete(__("The data was successfully loaded"));
                 mainPanel.drawPanel.getSurface().removeAll();
-                mainPanel.drawPanel.getSurface("wires").removeAll();
                 if(!isValid(data.right.connections, rightSelected)) {
                     mainPanel.getViewModel().set("rightSelectedPin", null);
                     mainPanel.getViewModel().set("rightSelectedPinId", null);
@@ -194,7 +193,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                         mainPanel.drawObject(data.right.connections,
                             mainPanel.getWidth() / 2 + 100,
                             "right", maxPins));
-                    mainPanel.drawPanel.getSurface("wires").add(mainPanel.drawWire(data.wires));
+                    mainPanel.drawPanel.getSurface().add(mainPanel.drawWire(data.wires));
                 }
                 mainPanel.drawPanel.renderFrame();
             },
@@ -308,7 +307,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 toX: rightPort.x + rightPort.box.width / 2,
                 toY: rightPort.y + rightPort.box.height / 2,
                 strokeStyle: mainPanel.WIRE_COLOR,
-                lineWidth: 2
+                lineWidth: 2,
+                zIndex: 10,
             });
         });
         return sprites;
@@ -376,14 +376,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 scale: 1.02,
                 labelBold: true,
             });
-            Ext.each(me.drawPanel.getSurface("wires").getItems(), function(sprite) {
+            Ext.each(me.drawPanel.getSurface().getItems(), function(sprite) {
                 if(sprite.config.leftPortId === pin.sprite.id || sprite.config.rightPortId === pin.sprite.id) {
                     sprite.setAttributes({
                         strokeStyle: me.SELECTED_WIRE_COLOR,
                         lineWidth: 4,
                         zIndex: 100,
                     });
-                    me.drawPanel.getSurface("wires").renderFrame();
+                    me.drawPanel.getSurface().renderFrame();
                     return false;
                 }
             });
@@ -397,14 +397,14 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
                 scale: 1,
                 labelBold: false,
             });
-            Ext.each(me.drawPanel.getSurface("wires").getItems(), function(sprite) {
+            Ext.each(me.drawPanel.getSurface().getItems(), function(sprite) {
                 if(sprite.config.leftPortId === pin.sprite.id || sprite.config.rightPortId === pin.sprite.id) {
                     sprite.setAttributes({
                         strokeStyle: me.WIRE_COLOR,
                         lineWidth: 2,
-                        zIndex: 0,
+                        zIndex: 10,
                     });
-                    me.drawPanel.getSurface("wires").renderFrame();
+                    me.drawPanel.getSurface().renderFrame();
                 }
             });
         }
@@ -454,10 +454,8 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
         me.getViewModel().set("leftSelectedPinId", null);
         me.getViewModel().set("rightSelectedPin", null);
         me.getViewModel().set("rightSelectedPinId", null);
-        me.drawPanel.getSurface("wires").removeAll(true);
-        me.drawPanel.getSurface().removeAll(true);
-        me.drawPanel.getSurface().renderFrame();
-        me.drawPanel.getSurface("wires").renderFrame();
+        me.drawPanel.removeAll(true);
+        me.drawPanel.renderFrame();
     },
     onReload: function() {
         this.load();
@@ -487,7 +485,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
             jsonData: param,
             scope: me,
             success: function() {
-                this.drawPanel.getSurface("wires").add(this.drawWire([
+                this.drawPanel.getSurface().add(this.drawWire([
                     {
                         left: {id: leftPinId}, right: {id: rightPinId}
                     }
