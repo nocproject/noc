@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.objectnotification application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.objectnotification.Application");
@@ -11,8 +11,8 @@ Ext.define("NOC.sa.objectnotification.Application", {
     requires: [
         "NOC.sa.objectnotification.Model",
         "NOC.sa.managedobjectselector.LookupField",
-        "NOC.inv.resourcegroup.TreeCombo",
-        "NOC.main.notificationgroup.LookupField"
+        "NOC.main.notificationgroup.LookupField",
+        "NOC.core.combotree.ComboTree"
     ],
     model: "NOC.sa.objectnotification.Model",
     columns: [
@@ -104,7 +104,8 @@ Ext.define("NOC.sa.objectnotification.Application", {
         },
         {
             name: "resource_group",
-            xtype: "inv.resourcegroup.TreeCombo",
+            xtype: "noc.core.combotree",
+            restUrl: "/inv/resourcegroup/",
             fieldLabel: __("Resource Group"),
             labelWidth: 100,
             uiStyle: "large",
