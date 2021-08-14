@@ -223,7 +223,7 @@ Ext.define("NOC.core.ListFormField", {
                 },
                 afterrender: function(self) {
                     var me = this;
-                    me.panel.setMaxHeight((self.getHeight() + 6) * me.rows + 6);
+                    me.panel.setHeight((self.getHeight() + 6) * me.rows + 6);
                 }
             }
         });
