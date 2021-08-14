@@ -12,7 +12,6 @@ Ext.define("NOC.inv.inv.plugins.sensor.SensorPanel", {
     closable: false,
     layout: "fit",
     requires: [
-        "NOC.inv.inv.plugins.sensor.SensorPanel",
         "NOC.core.StateField",
         "NOC.inv.sensorprofile.LookupField",
         "NOC.pm.measurementunits.LookupField",

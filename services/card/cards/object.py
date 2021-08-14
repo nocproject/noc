@@ -40,7 +40,7 @@ class ObjectCard(BaseCard):
 
         # Get path
         path = [{"id": self.object.id, "name": self.object.name}]
-        c = self.object.container.id
+        c = getattr(self.object.container, "id", None)
         while c:
             try:
                 c = Object.get_by_id(c)
@@ -199,7 +199,7 @@ class ObjectCard(BaseCard):
         mmm = set()
         op_fields_map = defaultdict(list)
         for op in ManagedObjectProfile.objects.filter(id__in=object_profiles):
-            for mt in op.metrics:
+            for mt in op.metrics or []:
                 mmm.add(mts[mt["metric_type"]])
                 op_fields_map[op.id] += [mts[mt["metric_type"]][1]]
 
