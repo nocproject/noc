@@ -11,7 +11,7 @@ Ext.define("NOC.sa.commandsnippet.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.sa.commandsnippet.Model",
-        "NOC.inv.resourcegroup.TreeCombo",
+        "NOC.core.combotree.ComboTree",
         "NOC.sa.managedobjectselector.LookupField"
     ],
     model: "NOC.sa.commandsnippet.Model",
@@ -107,16 +107,13 @@ Ext.define("NOC.sa.commandsnippet.Application", {
         },
         {
             name: "resource_group",
-            xtype: "inv.resourcegroup.TreeCombo",
+            xtype: "noc.core.combotree",
+            restUrl: "/inv/resourcegroup/",
             fieldLabel: __("Resource Group"),
-            labelWidth: 100,
-            uiStyle: "large",
+            listWidth: 1,
+            listAlign: 'left',
             labelAlign: "left",
-            listAlign: "left",
-            minWidth: 300,
-            padding: "0 0 6 0",
-            maxWidth: 400,
-            allowBlank: true
+            width: 500
         },
         {
             name: "is_enabled",

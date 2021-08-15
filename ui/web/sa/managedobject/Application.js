@@ -1602,13 +1602,13 @@ Ext.define("NOC.sa.managedobject.Application", {
         {
             title: __("By Service Group"),
             name: "effective_service_groups",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "inv.resourcegroup"
         },
         {
             title: __("By Client Group"),
             name: "effective_client_groups",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "inv.resourcegroup"
         },
         {

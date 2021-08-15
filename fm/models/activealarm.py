@@ -243,6 +243,8 @@ class ActiveAlarm(Document):
         :param force: Clear ever if wait_tt seg
         :param source: Source clear alarm
         """
+        from .alarmdiagnosticconfig import AlarmDiagnosticConfig
+
         ts = ts or datetime.datetime.now()
         if self.wait_tt and not force:
             # Wait for escalated tt to close
@@ -840,4 +842,3 @@ class ActiveAlarm(Document):
 # Avoid circular references
 from .archivedalarm import ArchivedAlarm
 from .utils import get_alarm
-from .alarmdiagnosticconfig import AlarmDiagnosticConfig

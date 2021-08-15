@@ -321,6 +321,9 @@ class ExtModelApplication(ExtApplication):
                 # Custom lookup
                 getattr(self, "lookup_%s" % lt)(nq, np, v)
                 continue
+            elif np in {"effective_service_groups", "effective_client_groups"} and v:
+                nq[f"{np}__contains"] = v
+                continue
             elif np in self.fk_fields and lt:
                 # dereference
                 try:
@@ -725,6 +728,8 @@ class ExtModelApplication(ExtApplication):
             return self.render_json(
                 {"success": False, "message": "Integrity error"}, status=self.CONFLICT
             )
+        except ValidationError as e:
+            return self.response({"success": False, "message": str(e)}, status=self.BAD_REQUEST)
         if request.is_extjs:
             r = {"success": True, "data": self.instance_to_dict(o)}
         else:

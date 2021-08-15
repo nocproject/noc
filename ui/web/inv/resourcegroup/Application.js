@@ -12,7 +12,7 @@ Ext.define("NOC.inv.resourcegroup.Application", {
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
         "NOC.inv.resourcegroup.Model",
-        "NOC.inv.resourcegroup.LookupField",
+        "NOC.core.combotree.ComboTree",
         "NOC.inv.technology.LookupField",
         "NOC.main.remotesystem.LookupField",
 
@@ -68,8 +68,13 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                 },
                 {
                     name: "parent",
-                    xtype: "inv.resourcegroup.LookupField",
-                    fieldLabel: __("Parent"),
+                    xtype: "noc.core.combotree",
+                    restUrl: "/inv/resourcegroup/",
+                    fieldLabel: __("Resource Group"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
                     allowBlank: true
                 },
                 {
@@ -170,20 +175,26 @@ Ext.define("NOC.inv.resourcegroup.Application", {
         });
         me.callParent();
     },
-    levelFilter: {
-        icon: NOC.glyph.level_down,
-        color: NOC.colors.level_down,
-        filter: 'parent',
-        tooltip: __('Parent filter')
-    },
     filters: [
         {
             title: __("By Technology"),
             name: "technology",
             ftype: "lookup",
             lookup: "inv.technology"
-        }
+        },
+        {
+            title: __("By ResourceGroup"),
+            name: "parent",
+            ftype: "tree",
+            lookup: "inv.resourcegroup"
+        },
     ],
+    levelFilter: {
+        icon: NOC.glyph.level_down,
+        color: NOC.colors.level_down,
+        filter: 'parent',
+        tooltip: __('Parent filter')
+    },
     //
     onCard: function() {
         var me = this;
