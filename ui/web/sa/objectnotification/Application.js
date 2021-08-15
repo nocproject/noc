@@ -107,14 +107,10 @@ Ext.define("NOC.sa.objectnotification.Application", {
             xtype: "noc.core.combotree",
             restUrl: "/inv/resourcegroup/",
             fieldLabel: __("Resource Group"),
-            labelWidth: 100,
-            uiStyle: "large",
+            listWidth: 1,
+            listAlign: 'left',
             labelAlign: "left",
-            listAlign: "left",
-            minWidth: 300,
-            padding: "0 0 6 0",
-            maxWidth: 400,
-            allowBlank: true
+            width: 500
         },
         {
             name: "notification_group",

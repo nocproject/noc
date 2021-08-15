@@ -11,8 +11,10 @@ import threading
 from typing import List
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
+from mongoengine.errors import ValidationError
 from pymongo import UpdateMany
 import cachetools
 
@@ -28,6 +30,12 @@ from noc.main.models.label import Label
 from .technology import Technology
 
 id_lock = threading.Lock()
+_path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+
+def check_rg_parent(parent: "ResourceGroup"):
+    if not parent.technology.allow_children:
+        raise ValidationError("Parent technology is not allowed children")
 
 
 class MatchLabels(EmbeddedDocument):
@@ -35,6 +43,9 @@ class MatchLabels(EmbeddedDocument):
 
     def __str__(self):
         return ", ".join(self.labels)
+
+    def get_labels(self):
+        return list(Label.objects.filter(name__in=self.labels))
 
 
 @Label.model
@@ -99,7 +110,7 @@ class ResourceGroup(Document):
     # Group | Name
     name = StringField()
     technology = PlainReferenceField(Technology)
-    parent = PlainReferenceField("inv.ResourceGroup")
+    parent = PlainReferenceField("inv.ResourceGroup", validation=check_rg_parent)
     description = StringField()
     dynamic_service_labels = ListField(EmbeddedDocumentField(MatchLabels))
     dynamic_client_labels = ListField(EmbeddedDocumentField(MatchLabels))
@@ -117,6 +128,7 @@ class ResourceGroup(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
         return "%s (%s)" % (self.name, self.technology.name)
@@ -131,6 +143,25 @@ class ResourceGroup(Document):
     def get_by_bi_id(cls, id):
         return ResourceGroup.objects.filter(bi_id=id).first()
 
+    @classmethod
+    def _reset_caches(cls, id):
+        try:
+            del cls._id_cache[
+                str(id),  # Tuple
+            ]
+        except KeyError:
+            pass
+
+    @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
+    def get_path(self):
+        """
+        Returns list of parent segment ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        return [self.id]
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_resourcegroup:
             yield "resourcegroup", self.id
@@ -140,10 +171,38 @@ class ResourceGroup(Document):
         return bool(ResourceGroup.objects.filter(parent=self.id).only("id").first())
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_nested_cache"), lock=lambda _: id_lock)
+    def get_nested_ids(cls, resource_group):
+        """
+        Return id of this and all nested segments
+        :return:
+        """
+        if hasattr(resource_group, "id"):
+            resource_group = resource_group.id
+        elif isinstance(resource_group, str):
+            resource_group = bson.ObjectId(resource_group)
+
+        # $graphLookup hits 100Mb memory limit. Do not use it
+        seen = {resource_group}
+        wave = {resource_group}
+        max_level = 10
+        coll = ResourceGroup._get_collection()
+        for _ in range(max_level):
+            # Get next wave
+            wave = (
+                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
+            )
+            if not wave:
+                break
+            seen |= wave
+        return list(seen)
+
+    @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_resourcegroup")
 
     def on_save(self):
+        self._reset_caches(self.id)
         if (
             hasattr(self, "_changed_fields")
             and "dynamic_service_labels" in self._changed_fields

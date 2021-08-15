@@ -219,6 +219,7 @@ _MODELS = {
     "fm.AlarmClassCategory": "noc.fm.models.alarmclasscategory.AlarmClassCategory",
     "fm.AlarmClassConfig": "noc.fm.models.alarmclassconfig.AlarmClassConfig",
     "fm.AlarmDiagnosticConfig": "noc.fm.models.alarmdiagnosticconfig.AlarmDiagnosticConfig",
+    "fm.AlarmEscalation": "noc.fm.models.alarmescalation.AlarmEscalation",
     "fm.AlarmSeverity": "noc.fm.models.alarmseverity.AlarmSeverity",
     "fm.AlarmTrigger": "noc.fm.models.alarmtrigger.AlarmTrigger",
     "fm.ArchivedAlarm": "noc.fm.models.archivedalarm.ArchivedAlarm",
