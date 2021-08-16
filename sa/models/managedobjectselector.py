@@ -45,19 +45,8 @@ id_lock = Lock()
 @on_delete
 @on_delete_check(
     check=[
-        # ("cm.SelectorItem", "selector"),
-        ("fm.AlarmDiagnosticConfig", "selector"),
-        # ("fm.EscalationItem", "selector"),
-        ("fm.AlarmTrigger", "selector"),
-        ("fm.EventTrigger", "selector"),
         ("inv.InterfaceClassificationRule", "selector"),
-        ("inv.NetworkSegment", "selector"),
-        ("sa.CommandSnippet", "selector"),
-        ("sa.GroupAccess", "selector"),
         ("sa.ManagedObjectSelectorByAttribute", "selector"),
-        ("sa.ObjectNotification", "selector"),
-        ("sa.UserAccess", "selector"),
-        ("vc.VCDomainProvisioningConfig", "selector"),
     ]
 )
 class ManagedObjectSelector(NOCModel):

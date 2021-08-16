@@ -10,22 +10,15 @@ Ext.define("NOC.sa.objectnotification.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.objectnotification.Model",
-        "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.core.combotree.ComboTree"
     ],
     model: "NOC.sa.objectnotification.Model",
     columns: [
         {
-            text: __("Selector"),
-            dataIndex: "selector",
-            renderer: NOC.render.Lookup("selector"),
-            width: 200
-        },
-        {
             text: __("Resource Group"),
             dataIndex: "resource_group",
-            renderer: NOC.render.Lookup("resourcegroup"),
+            renderer: NOC.render.Lookup("resource_group"),
             width: 200
         },
         {
@@ -96,12 +89,6 @@ Ext.define("NOC.sa.objectnotification.Application", {
         }
     ],
     fields: [
-        {
-            name: "selector",
-            xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: __("Selector"),
-            allowBlank: false
-        },
         {
             name: "resource_group",
             xtype: "noc.core.combotree",

@@ -99,15 +99,6 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Model", {
             defaultValue: true
         },
         {
-            name: "selector",
-            type: "int"
-        },
-        {
-            name: "selector__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "resource_group",
             type: "string"
         },

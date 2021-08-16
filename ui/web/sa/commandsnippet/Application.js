@@ -11,8 +11,7 @@ Ext.define("NOC.sa.commandsnippet.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.sa.commandsnippet.Model",
-        "NOC.core.combotree.ComboTree",
-        "NOC.sa.managedobjectselector.LookupField"
+        "NOC.core.combotree.ComboTree"
     ],
     model: "NOC.sa.commandsnippet.Model",
     search: true,
@@ -27,14 +26,9 @@ Ext.define("NOC.sa.commandsnippet.Application", {
             renderer: NOC.render.Bool
         },
         {
-            text: __("Object Selector"),
-            dataIndex: "selector",
-            renderer: NOC.render.Lookup("selector")
-        },
-        {
             text: __("Resource Group"),
             dataIndex: "resource_group",
-            renderer: NOC.render.Lookup("resourcegroup"),
+            renderer: NOC.render.Lookup("resource_group"),
             width: 200
         },
         {
@@ -98,12 +92,6 @@ Ext.define("NOC.sa.commandsnippet.Application", {
             name: "change_configuration",
             xtype: "checkboxfield",
             boxLabel: __("Change configuration")
-        },
-        {
-            name: "selector",
-            xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: __("Object Selector"),
-            allowBlank: false
         },
         {
             name: "resource_group",

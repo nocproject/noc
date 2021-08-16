@@ -15,7 +15,6 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.networksegment.EffectiveSettingsPanel",
         "NOC.inv.networksegmentprofile.LookupField",
-        "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.vc.vcfilter.LookupField",
         "NOC.vc.vlan.LookupField",
@@ -79,12 +78,6 @@ Ext.define("NOC.inv.networksegment.Application", {
                     dataIndex: "labels",
                     width: 100,
                     renderer: NOC.render.LabelField
-                },
-                {
-                    text: __("Selector"),
-                    dataIndex: "selector",
-                    width: 100,
-                    renderer: NOC.render.Lookup("selector")
                 },
                 {
                     text: __("Redundant"),
@@ -157,13 +150,6 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "settings",
                     xtype: "dictfield",
                     fieldLabel: __("Settings")
-                },
-                {
-                    name: "selector",
-                    xtype: "sa.managedobjectselector.LookupField",
-                    fieldLabel: __("Selector"),
-                    uiStyle: "large",
-                    allowBlank: true
                 },
                 {
                     name: "max_shown_downlinks",

@@ -43,7 +43,8 @@ Ext.define("NOC.sa.actioncommands.Application", {
                 {
                     text: __("Profile"),
                     dataIndex: "profile",
-                    width: 100
+                    width: 100,
+                    renderer: NOC.render.Lookup("profile")
                 },
                 {
                     text: __("Preference"),

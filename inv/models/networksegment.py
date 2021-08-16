@@ -28,7 +28,6 @@ from pymongo.errors import OperationFailure
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check, on_save
@@ -102,9 +101,6 @@ class NetworkSegment(Document):
 
     settings = DictField(default=lambda: {}.copy())
     labels = ListField(StringField())
-    # Selectors for fake segments
-    # Transition only, should not be used
-    selector = ForeignKeyField(ManagedObjectSelector)
     # Sibling segment, if part of larger structure with
     # horizontal links
     sibling = ReferenceField("self")
@@ -259,15 +255,12 @@ class NetworkSegment(Document):
     def managed_objects(self):
         from noc.sa.models.managedobject import ManagedObject
 
-        if self.selector:
-            return self.selector.managed_objects
+        siblings = self.get_siblings()
+        if len(siblings) == 1:
+            q = {"segment": str(siblings.pop().id)}
         else:
-            siblings = self.get_siblings()
-            if len(siblings) == 1:
-                q = {"segment": str(siblings.pop().id)}
-            else:
-                q = {"segment__in": [str(s.id) for s in siblings]}
-            return ManagedObject.objects.filter(**q)
+            q = {"segment__in": [str(s.id) for s in siblings]}
+        return ManagedObject.objects.filter(**q)
 
     def get_siblings(self, seen=None):
         seen = seen or set()

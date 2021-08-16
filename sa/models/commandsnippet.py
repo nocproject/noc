@@ -21,7 +21,6 @@ from noc.core.model.base import NOCModel
 from noc.aaa.models.permission import Permission
 from noc.main.models.label import Label
 from noc.inv.models.resourcegroup import ResourceGroup
-from .managedobjectselector import ManagedObjectSelector
 
 
 @Label.model
@@ -41,10 +40,7 @@ class CommandSnippet(NOCModel):
     description = models.TextField(_("Description"))
     snippet = models.TextField(_("Snippet"), help_text=_("Code snippet template"))
     change_configuration = models.BooleanField(_("Change configuration"), default=False)
-    selector = models.ForeignKey(
-        ManagedObjectSelector, verbose_name=_("Object Selector"), on_delete=models.CASCADE
-    )
-    resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
+    resource_group = DocumentReferenceField(ResourceGroup)
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"), default=False)

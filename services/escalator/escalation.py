@@ -14,7 +14,6 @@ import threading
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
-from noc.sa.models.selectorcache import SelectorCache
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -116,9 +115,6 @@ def escalate(
                 continue
             # Check severity
             if a.min_severity and alarm.severity < a.min_severity:
-                continue
-            # Check selector
-            if a.selector and not SelectorCache.is_in_selector(mo, a.selector):
                 continue
             # Check resource group
             if a.resource_group and str(a.resource_group.id) not in mo.effective_service_groups:

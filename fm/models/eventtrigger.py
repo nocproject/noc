@@ -11,7 +11,6 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import DocumentReferenceField
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
@@ -32,13 +31,6 @@ class EventTrigger(NOCModel):
     condition = models.CharField("Condition", max_length=256, default="True")
     time_pattern = models.ForeignKey(
         TimePattern, verbose_name="Time Pattern", null=True, blank=True, on_delete=models.CASCADE
-    )
-    selector = models.ForeignKey(
-        ManagedObjectSelector,
-        verbose_name="Managed Object Selector",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
     )
     resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
     notification_group = models.ForeignKey(

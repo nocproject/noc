@@ -16,11 +16,6 @@ Ext.define("NOC.sa.commandsnippet.Model", {
             type: "string"
         },
         {
-            name: "selector__label",
-            type: "string",
-            persist:false
-        },
-        {
             name: "resource_group",
             type: "string"
         },
@@ -45,10 +40,6 @@ Ext.define("NOC.sa.commandsnippet.Model", {
             name: "change_configuration",
             type: "boolean",
             defaultValue: false
-        },
-        {
-            name: "selector",    
-            type: "string"
         },
         {
             name: "is_enabled", 

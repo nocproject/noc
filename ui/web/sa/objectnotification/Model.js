@@ -16,15 +16,6 @@ Ext.define("NOC.sa.objectnotification.Model", {
             type: "string"
         },
         {
-            name: "selector",
-            type: "int"
-        },
-        {
-            name: "selector__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "resource_group",
             type: "string"
         },
