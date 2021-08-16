@@ -21,6 +21,7 @@ Ext.define("NOC.fm.alarm.Application", {
         "NOC.fm.alarm.ApplicationModel",
         "NOC.fm.alarm.ApplicationController"
     ],
+    reference: "fm-alarm",
     bind: {
         activeItem: "{activeItem}"
     },

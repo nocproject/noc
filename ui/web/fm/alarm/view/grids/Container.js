@@ -84,7 +84,10 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
             reference: "fm-alarm-sidebar",
             region: "east",
             width: "20%",
-            split: true
+            split: true,
+            listeners: {
+                fmAlarmSidebarResetSelection: "onActiveResetSelection"
+            }
         }
     ]
 });
