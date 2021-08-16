@@ -179,7 +179,7 @@ class ReportContainerData(BaseReportColumn):
         r = {}
         for v in value:
             cid = str(v["_id"])
-            if "child_cont" in v and "parent_address" in v:
+            if "child_cont" in v and "parent_address" in v and str(v["child_cont"]["_id"]) not in r:
                 # ccid = str(v["child_cont"]["_id"])
                 r[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
             if cid not in r and "parent_address" in v:

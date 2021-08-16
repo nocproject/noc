@@ -988,11 +988,11 @@ class ManagedObject(NOCModel):
         :param delay: Notification delay in seconds
         :param tag: Notification tag
         """
-        # Get cached selectors
-        selectors = SelectorCache.get_object_selectors(self)
         # Find notification groups
         groups = set()
-        for o in ObjectNotification.objects.filter(**{event_id: True, "selector__in": selectors}):
+        for o in ObjectNotification.objects.filter(
+            **{event_id: True, "resource_group__in": self.effective_service_groups}
+        ):
             groups.add(o.notification_group)
         if not groups:
             return  # Nothing to notify
