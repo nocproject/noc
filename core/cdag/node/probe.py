@@ -9,6 +9,7 @@
 from typing import Optional, Dict, Callable, Iterable, Tuple
 from threading import Lock
 import inspect
+import logging
 
 # Third-party modules
 from pydantic import BaseModel
@@ -23,6 +24,8 @@ MAX31 = 0x7FFFFFFF
 MAX32 = 0xFFFFFFFF
 MAX64 = 0xFFFFFFFFFFFFFFFF
 NS = 1_000_000_000
+
+logger = logging.getLogger(__name__)
 
 
 class ProbeNodeState(BaseModel):
@@ -85,6 +88,10 @@ class ProbeNode(BaseCDAGNode):
         # No translation
         if unit == self.config.unit:
             return upscale(x)
+        # No conversation. Skipping
+        if unit not in self.convert:
+            logger.warning("Not conversation rule from unit %s to %s", unit, self.config.unit)
+            return None
         fn = self.convert[unit]
         kwargs = {}
         if fn.has_x:
