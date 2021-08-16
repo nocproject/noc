@@ -13,25 +13,43 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
         total: {
             alarmsTotal: 0,
             selected: [],
+            selectionFiltered: [],
+            objects: 0,
+            objectsFiltered: 0,
             activeAlarmsSelected: null
         }
     },
     formulas: {
-        totalCount: function(get) {
+        alarmsTotal: function(get) {
+            return __("Total: ") + get("total.alarmsTotal");
+        },
+        summaryTotal: function(get) {
             var selected = get("total.selected"),
-                displayFilter = get("displayFilter.hasProfiles"),
-                summary = this.getView().getController().generateSummaryHtml(
-                    selected.filter(function(item) {
-                        return item.summary > 0;
-                    }),
-                    displayFilter,
-                    true
-                );
-            summary = "<div>" + summary + "</div>";
-            return "<div style='display: flex; justify-content: space-between'>"
-                + summary
-                + "<div>" + __("Total: ") + get("total.alarmsTotal") + "</div>"
-                + "</div>";
+                displayFilter = get("displayFilter.hasProfiles");
+            return this.getView().getController().generateSummaryHtml(
+                selected.filter(function(item) {
+                    return item.summary > 0;
+                }),
+                displayFilter,
+                true
+            );
+        },
+        summaryFiltered: function(get) {
+            var selected = get("total.selectionFiltered"),
+                displayFilter = get("displayFilter.hasProfiles");
+            return this.getView().getController().generateSummaryHtml(
+                selected.filter(function(item) {
+                    return item.summary > 0;
+                }),
+                displayFilter,
+                true
+            );
+        },
+        showSummaryTotal: function(get) {
+            var selected = get("total.selected");
+            return selected.filter(function(item) {
+                return item.summary > 0;
+            }).length > 0;
         },
         isActiveAlarmsSelected: function(get) {
             return get("total.activeAlarmsSelected") == null;

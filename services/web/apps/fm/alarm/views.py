@@ -15,6 +15,7 @@ import operator
 
 # Third-party modules
 import bson
+import orjson
 from pymongo import ReadPreference
 from mongoengine.errors import DoesNotExist
 
@@ -190,14 +191,16 @@ class AlarmApplication(ExtApplication):
                 q["managed_object__in"] = s
             q.pop("managedobjectselector")
         if "cleared_after" in q:
-            q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(
-                seconds=int(q["cleared_after"])
-            )
+            if status == "C":
+                q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(
+                    seconds=int(q["cleared_after"])
+                )
             q.pop("cleared_after")
         #
         if "wait_tt" in q:
-            q["wait_tt__exists"] = True
-            q["wait_ts__exists"] = False
+            if status == "A":
+                q["wait_tt__exists"] = True
+                q["wait_ts__exists"] = False
             del q["wait_tt"]
         #
         if "collapse" in q:
@@ -348,11 +351,24 @@ class AlarmApplication(ExtApplication):
             d = {k: d[k] for k in fields}
         return d
 
+    def get_request_status(self, request) -> str:
+        status = "A"
+        ctype = request.META.get("CONTENT_TYPE")
+        if request.GET and "status" in request.GET:
+            status = request.GET.get("status", "A")
+        elif request.POST and "status" in request.POST:
+            # Form Data
+            status = request.POST.get("status", "A")
+        elif request.body and ctype and self.site.is_json(ctype):
+            # Request data in body
+            status = orjson.loads(request.body).get("status", "A")
+        return status
+
     def queryset(self, request, query=None):
         """
         Filter records for lookup
         """
-        status = request.GET.get("status", "A")
+        status = self.get_request_status(request)
         if status not in self.model_map:
             raise Exception("Invalid status")
         model = self.model_map[status]
@@ -363,7 +379,7 @@ class AlarmApplication(ExtApplication):
                 adm_path__in=UserAccess.get_domains(request.user),
             ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
-    @view(url=r"^$", access="launch", method=["GET"], api=True)
+    @view(method=["GET", "POST"], url=r"^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 

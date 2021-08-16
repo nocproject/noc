@@ -103,5 +103,8 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarController", {
             });
         }
         this.lastCheckTS = ts;
+    },
+    onResetStatuses: function(){
+        this.fireViewEvent("fmAlarmSidebarResetSelection");
     }
 });

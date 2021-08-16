@@ -102,6 +102,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
                 grid.unmask();
             }
         });
+        this.activeSelectionFiltered(data);
         this.updateHash(false);
     },
     onChangeRecentParams: function(data) {
@@ -395,6 +396,67 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         activeStore.reload({
             callback: function() {
                 panel.unmask();
+            }
+        });
+    },
+    activeSelectionFiltered: function(filter) {
+        var alarmListModel = this.lookup("fm-alarm-list").getViewModel(),
+            grid = this.getView().down("[reference=fm-alarm-active]");
+
+        if(grid.getSelection().length > 0) {
+            this.selectionFilter(grid.getSelection(), filter);
+        }
+    },
+    selectionFilter: function(data, filter) {
+        if(!filter) {
+            filter = this.getViewModel().get("activeFilter");
+        }
+        Ext.Ajax.request({
+            url: "/fm/alarm/",
+            method: "POST",
+            scope: this,
+            jsonData: Ext.merge({
+                id__in: Ext.Array.map(data, function(item) {
+                    return item.id;
+                })
+            }, this.serialize(filter)),
+            success: function(response) {
+                var selectionSummary, summary, selection,
+                    selectionFiltered = Ext.decode(response.responseText),
+                    alarmListModel = this.lookup("fm-alarm-list").getViewModel(),
+                    selected = alarmListModel.get("total.selectionFiltered");
+
+                if(selectionFiltered.length) {
+                    selection = Ext.Array.flatten(Ext.Array.map(selectionFiltered, function(item) {
+                        return item.total_subscribers.concat(item.total_services)
+                    }));
+                    selectionSummary = Ext.Array.reduce(selection, function(prev, item) {
+                        if(prev.hasOwnProperty(item.profile)) {
+                            prev[item.profile] += item.summary
+                        } else {
+                            prev[item.profile] = item.summary
+                        }
+                        return prev;
+                    }, {});
+
+                    summary = Ext.Array.map(selected, function(item) {
+                        return Ext.merge(item, {
+                            summary: (selectionSummary.hasOwnProperty(item.id)) ? selectionSummary[item.id] : 0
+                        });
+                    });
+                } else {
+                    summary = Ext.Array.map(selected, function(item) {
+                        return Ext.merge(item, {summary: 0});
+                    });
+                }
+                alarmListModel.set("total.selectionFiltered", summary);
+                alarmListModel.set("total.objectsFiltered", Ext.Array.reduce(selectionFiltered, function(prev, item) {
+                    return prev + item.total_objects;
+                }, 0));
+            },
+            failure: function() {
+                var message = "Error";
+                NOC.error(message)
             }
         });
     }

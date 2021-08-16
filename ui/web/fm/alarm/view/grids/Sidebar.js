@@ -25,10 +25,10 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
     ],
     reference: "fm-alarm-filter",
     bind: {
-        title: "{totalCount}"
+        title: "{alarmsTotal}"
     },
     titleAlign: "right",
-    minWidth: 330,
+    minWidth: 350,
     scrollable: {
         indicators: false,
         x: false,
@@ -41,6 +41,24 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
         collapsible: true
     },
     items: [
+        {
+            title: __("Summary"),
+            bind: {hidden: "{isActiveAlarmsSelected}"},
+
+            items: [
+                {
+                    layout: "column",
+                    border: false,
+                    items: [
+                        {xtype: 'displayfield', columnWidth: 1, bind: {value: "{summaryTotal}"}},
+                        {xtype: 'displayfield', width: 30, bind: {value: "{total.objects}"}},
+                        {xtype: 'displayfield', columnWidth: 1, bind: {value: "{summaryFiltered}"}},
+                        {xtype: 'displayfield', width: 30, bind: {value: "{total.objectsFiltered}"}},
+                    ]
+                },
+                {xtype: 'button', text: __('Reset'), width: 50, margin: "0 0 5 0", handler: "onResetStatuses"}
+            ]
+        },
         {
             title: __("Control"),
             detaults: {

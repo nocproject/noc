@@ -13,8 +13,11 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         profiles.load({
             scope: this,
             callback: function(records) {
-                this.getViewModel().set("total.selected", Ext.Array.map(records, function(item) {
-                    return Ext.merge(item.data, {summary: 0});
+                this.getViewModel().set("total.selected", Ext.Array.map(records, function(record) {
+                    return Ext.merge(record.clone().data, {summary: 0});
+                }, this));
+                this.getViewModel().set("total.selectionFiltered", Ext.Array.map(records, function(record) {
+                    return Ext.merge(record.clone().data, {summary: 0});
                 }, this));
             }
         });
@@ -28,8 +31,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     onSelectAlarm: function(grid, record) {
         this.fireViewEvent("fmAlarmSelectItem", record);
     },
-    onStoreSelectionChange: function(store) {
-        var selection = Ext.Array.flatten(Ext.Array.map(store.getSelection(), function(item) {
+    onStoreSelectionChange: function(grid) {
+        var selection = Ext.Array.flatten(Ext.Array.map(grid.getSelection(), function(item) {
                 return item.get("total_subscribers").concat(item.get("total_services"))
             })),
             selectionSummary = Ext.Array.reduce(selection, function(prev, item) {
@@ -41,6 +44,10 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                 return prev;
             }, {}),
             selected = this.getViewModel().get("total.selected");
+        this.getView().up('[reference=fm-alarm]').getController().activeSelectionFiltered();
+        this.getViewModel().set("total.objects", Ext.Array.reduce(grid.getSelection(), function(prev, item) {
+            return prev + item.get("total_objects");
+        }, 0));
         this.getViewModel().set("total.selected", Ext.Array.map(selected, function(item) {
             return Ext.merge(item, {
                 summary: (selectionSummary.hasOwnProperty(item.id)) ? selectionSummary[item.id] : 0
@@ -197,5 +204,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                 NOC.error(__("Escalate failed"));
             }
         });
+    },
+    onActiveResetSelection: function() {
+        this.getView().lookup("fm-alarm-active").setSelection(null);
     }
 });
