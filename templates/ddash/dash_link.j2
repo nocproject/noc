@@ -40,10 +40,12 @@
         "includeAll": false,
         "multi": false,
         "name": "bi_id_a",
-        "options": {
-          "text": "{{bi_id_a}}",
-          "value": "{{bi_id_a}}"
-        },
+        "options": [
+          {
+            "text": "{{bi_id_a}}",
+            "value": "{{bi_id_a}}"
+          }
+        ],
         "query": "{{bi_id_a}}",
         "refresh": 0,
         "type": "custom"
@@ -58,10 +60,12 @@
         "includeAll": false,
         "multi": false,
         "name": "bi_id_b",
-        "options": {
-          "text": "{{bi_id_b}}",
-          "value": "{{bi_id_b}}"
-        },
+        "options": [
+          {
+            "text": "{{bi_id_b}}",
+            "value": "{{bi_id_b}}"
+          }
+        ],
         "query": "{{bi_id_b}}",
         "refresh": 0,
         "type": "custom"
@@ -76,10 +80,12 @@
         "includeAll": false,
         "multi": false,
         "name": "device_a",
-        "options": {
-          "text": "{{device_a}}",
-          "value": "{{device_a}}"
-        },
+        "options": [
+          {
+            "text": "{{device_a}}",
+            "value": "{{device_a}}"
+          }
+        ],
         "query": "{{device_a}}",
         "refresh": 0,
         "type": "custom"
@@ -94,10 +100,12 @@
         "includeAll": false,
         "multi": false,
         "name": "device_b",
-        "options": {
-          "text": "{{device_b}}",
-          "value": "{{device_b}}"
-        },
+        "options": [
+          {
+            "text": "{{device_b}}",
+            "value": "{{device_b}}"
+          }
+        ],
         "query": "{{device_b}}",
         "refresh": 0,
         "type": "custom"
@@ -135,7 +143,7 @@
         "multi": false,
         "name": "interface_b",
         "options": [
-           {
+          {
             "text": "{{interface_b.descr}}",
             "value": "{{interface_b.name}}"
           }
@@ -237,7 +245,7 @@
       "panels": [
         {% from "graph_interface_pps.j2" import pps -%}
         {{pps("$interface_a", "$bi_id_a", "$device_a", 7)}},
-        {{pps("$interface_b", "$bi_id_a", "$device_b", 8)}}
+        {{pps("$interface_b", "$bi_id_b", "$device_b", 8)}}
       ]
     }
   ]
