@@ -51,6 +51,11 @@ Ext.define("NOC.aaa.group.ApplicationPermission", {
             type: "expand",
             itemId: "expandTool",
             callback: "togglePanel"
+        },
+        {
+            type: "plus",
+            tooltip: __("Set all permissions"),
+            callback: "setAllPermission"
         }
     ],
     eventLoop: function(evt) {
@@ -70,6 +75,15 @@ Ext.define("NOC.aaa.group.ApplicationPermission", {
                 p.status = !p.status;
                 return false;
             }
+        });
+        this.setData(data);
+    },
+    setAllPermission: function() {
+        var data = this.getData();
+        Ext.Object.each(data, function(name, app) {
+            Ext.each(app.perms, function(perm) {
+                perm.status = true;
+            });
         });
         this.setData(data);
     },
