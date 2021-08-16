@@ -97,7 +97,8 @@ Ext.define("NOC.sa.objectnotification.Application", {
             listWidth: 1,
             listAlign: 'left',
             labelAlign: "left",
-            width: 500
+            width: 500,
+            allowBlank: false
         },
         {
             name: "notification_group",
