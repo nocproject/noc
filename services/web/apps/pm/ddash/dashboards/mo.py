@@ -257,5 +257,6 @@ class MODashboard(JinjaDashboard):
             "extra_vars": self.extra_vars,
             "selected_types": self.object_data["selected_types"],
             "ping_interval": self.object.object_profile.ping_interval,
-            "discovery_interval": self.object.object_profile.periodic_discovery_interval,
+            "discovery_interval": "%ss"
+            % int(self.object.object_profile.periodic_discovery_interval / 2),
         }
