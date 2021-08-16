@@ -638,7 +638,7 @@ class BaseService(object):
             self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
-            if config.message.enable_metrics:
+            if config.message.enable_metrics and self.use_mongo:
                 from noc.main.models.metricstream import MetricStream
 
                 for mss in MetricStream.objects.filter():
