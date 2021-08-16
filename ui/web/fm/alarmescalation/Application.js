@@ -11,7 +11,6 @@ Ext.define("NOC.fm.alarmescalation.Application", {
     requires: [
         "NOC.fm.alarmescalation.Model",
         "NOC.sa.administrativedomain.LookupField",
-        "NOC.sa.managedobjectselector.LookupField",
         "NOC.fm.alarmclass.LookupField",
         "NOC.fm.ttsystem.LookupField",
         "NOC.main.template.LookupField",
@@ -111,13 +110,6 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             editor: "sa.administrativedomain.LookupField",
                             width: 150,
                             renderer: NOC.render.Lookup("administrative_domain")
-                        },
-                        {
-                            text: __("Selector"),
-                            dataIndex: "selector",
-                            editor: "sa.managedobjectselector.LookupField",
-                            width: 150,
-                            renderer: NOC.render.Lookup("selector")
                         },
                         {
                             text: __("Resource Group"),

@@ -30,8 +30,6 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.sa.models.selectorcache import SelectorCache
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.defer import call_later
@@ -55,7 +53,6 @@ class EscalationItem(EmbeddedDocument):
     delay = IntField()
     # Match part
     administrative_domain = ForeignKeyField(AdministrativeDomain)
-    selector = ForeignKeyField(ManagedObjectSelector)
     resource_group = ReferenceField(ResourceGroup)
     time_pattern = ForeignKeyField(TimePattern)
     min_severity = IntField(default=0)
@@ -130,9 +127,11 @@ class AlarmEscalation(Document):
                 # Check severity
                 if e_item.min_severity and alarm.severity < e_item.min_severity:
                     continue
-                # Check selector
-                if e_item.selector and not SelectorCache.is_in_selector(
-                    alarm.managed_object, e_item.selector
+                # Check ResourceGroup
+                if (
+                    e_item.resource_group
+                    and str(e_item.resource_group)
+                    not in alarm.managed_object.effective_service_groups
                 ):
                     continue
                 logger.debug("[%s] Watch for %s after %s seconds", alarm.id, esc.name, e_item.delay)

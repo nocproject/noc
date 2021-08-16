@@ -248,7 +248,7 @@ Ext.define("NOC.main.label.Application", {
         {
           xtype: "fieldset",
           layout: "hbox",
-          title: __("Scoped Colors"),
+          title: __("Scoped Value Colors"),
           defaults: {
             padding: 4,
             labelAlign: "right"

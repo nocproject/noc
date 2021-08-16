@@ -43,15 +43,6 @@ Ext.define("NOC.fm.eventtrigger.Model", {
             persist: false
         },
         {
-            name: "selector",
-            type: "int"
-        },
-        {
-            name: "selector__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "resource_group",
             type: "string"
         },

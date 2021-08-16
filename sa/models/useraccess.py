@@ -16,7 +16,6 @@ from django.db.models import Q
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
-from .managedobjectselector import ManagedObjectSelector
 from .groupaccess import GroupAccess
 from .administrativedomain import AdministrativeDomain
 
@@ -30,10 +29,6 @@ class UserAccess(NOCModel):
         ordering = ["user"]
 
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
-    # Legacy interface
-    selector = models.ForeignKey(
-        ManagedObjectSelector, null=True, blank=True, on_delete=models.CASCADE
-    )
     #
     administrative_domain = models.ForeignKey(
         AdministrativeDomain, null=True, blank=True, on_delete=models.CASCADE
@@ -41,8 +36,6 @@ class UserAccess(NOCModel):
 
     def __str__(self):
         r = ["user=%s" % self.user.username]
-        if self.selector:
-            r += ["selector=%s" % self.selector.name]
         if self.administrative_domain:
             r += ["domain=%s" % self.administrative_domain.name]
         return "(%s)" % ", ".join(r)
@@ -61,14 +54,10 @@ class UserAccess(NOCModel):
         uq = []
         domains = set()
         for a in UserAccess.objects.filter(user=user):
-            if a.selector:
-                uq += [a.selector.Q]
-            elif a.administrative_domain:
+            if a.administrative_domain:
                 domains.update(AdministrativeDomain.get_nested_ids(a.administrative_domain))
         for a in GroupAccess.objects.filter(group__in=user.groups.all()):
-            if a.selector:
-                uq += [a.selector.Q]
-            elif a.administrative_domain:
+            if a.administrative_domain:
                 domains.update(AdministrativeDomain.get_nested_ids(a.administrative_domain))
         if domains:
             uq += [Q(administrative_domain__in=list(domains))]

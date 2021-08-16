@@ -11,7 +11,6 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
     requires: [
         "NOC.fm.alarmdiagnosticconfig.Model",
         "NOC.fm.alarmclass.LookupField",
-        "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.ref.script.LookupField",
         "NOC.sa.action.LookupField",
         "NOC.core.combotree.ComboTree"
@@ -77,13 +76,6 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                     name: "only_root",
                                     xtype: "checkbox",
                                     boxLabel: __("Only Root")
-                                },
-                                {
-                                    name: "selector",
-                                    xtype: "sa.managedobjectselector.LookupField",
-                                    fieldLabel: __("Selector"),
-                                    uiStyle: "large",
-                                    allowBlank: true
                                 },
                                 {
                                     name: "resource_group",

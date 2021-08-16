@@ -11,7 +11,6 @@ Ext.define("NOC.sa.useraccess.Application", {
     requires: [
         "NOC.sa.useraccess.Model",
         "NOC.aaa.user.LookupField",
-        "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.administrativedomain.LookupField"
     ],
     model: "NOC.sa.useraccess.Model",
@@ -20,11 +19,6 @@ Ext.define("NOC.sa.useraccess.Application", {
             text: __("User"),
             dataIndex: "user",
             renderer: NOC.render.Lookup("user")
-        },
-        {
-            text: __("Selector"),
-            dataIndex: "selector",
-            renderer: NOC.render.Lookup("selector")
         },
         {
             text: __("Adm. Domain"),
@@ -40,12 +34,6 @@ Ext.define("NOC.sa.useraccess.Application", {
             allowBlank: false
         },
         {
-            name: "selector",
-            xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: __("Object Selector"),
-            allowBlank: true
-        },
-        {
             name: "administrative_domain",
             xtype: "sa.administrativedomain.LookupField",
             fieldLabel: __("Adm. Domain"),
@@ -58,12 +46,6 @@ Ext.define("NOC.sa.useraccess.Application", {
             name: "user",
             ftype: "lookup",
             lookup: "aaa.user"
-        },
-        {
-            title: __("By Selector"),
-            name: "selector",
-            ftype: "lookup",
-            lookup: "sa.managedobjectselector"
         },
         {
             title: __("By Administrative Domain"),

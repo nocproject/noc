@@ -41,15 +41,6 @@ Ext.define("NOC.inv.networksegment.Model", {
             type: "auto"
         },
         {
-            name: "selector",
-            type: "integer"
-        },
-        {
-            name: "selector__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "sibling",
             type: "string"
         },

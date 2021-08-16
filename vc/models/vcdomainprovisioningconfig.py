@@ -11,7 +11,6 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import DocumentReferenceField
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.comp import smart_text
@@ -29,13 +28,10 @@ class VCDomainProvisioningConfig(NOCModel):
         verbose_name_plural = "VC Domain Provisioning Config"
         db_table = "vc_vcdomainprovisioningconfig"
         app_label = "vc"
-        unique_together = [("vc_domain", "selector")]
+        unique_together = [("vc_domain", "resource_group")]
 
     vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain", on_delete=models.CASCADE)
-    selector = models.ForeignKey(
-        ManagedObjectSelector, verbose_name="Managed Object Selector", on_delete=models.CASCADE
-    )
-    resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
+    resource_group = DocumentReferenceField(ResourceGroup)
     is_enabled = models.BooleanField("Is Enabled", default=True)
     vc_filter = models.ForeignKey(
         VCFilter, verbose_name="VC Filter", null=True, blank=True, on_delete=models.CASCADE
@@ -50,7 +46,7 @@ class VCDomainProvisioningConfig(NOCModel):
     )
 
     def __str__(self):
-        return "%s: %s" % (smart_text(self.vc_domain), smart_text(self.selector))
+        return f"{smart_text(self.vc_domain)}: {smart_text(self.resource_group)}"
 
     @property
     def tagged_ports_list(self):

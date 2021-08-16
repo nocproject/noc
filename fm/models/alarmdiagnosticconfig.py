@@ -18,9 +18,6 @@ import cachetools
 
 # NOC modules
 from noc.sa.models.action import Action
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.core.mongo.fields import ForeignKeyField
-from noc.sa.models.selectorcache import SelectorCache
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
@@ -50,7 +47,6 @@ class AlarmDiagnosticConfig(Document):
     description = StringField()
     alarm_class = ReferenceField(AlarmClass)
     resource_group = ReferenceField(ResourceGroup)
-    selector = ForeignKeyField(ManagedObjectSelector)
     # Process only on root cause
     only_root = BooleanField(default=True)
     # On alarm raise actions
@@ -97,8 +93,6 @@ class AlarmDiagnosticConfig(Document):
         r_cfg = defaultdict(list)
         p_cfg = defaultdict(list)
         for c in cls.get_class_diagnostics(alarm.alarm_class):
-            if c.selector and not SelectorCache.is_in_selector(alarm.managed_object, c.selector):
-                continue
             if (
                 c.resource_group
                 and str(c.resource_group.id) not in alarm.managed_object.effective_service_groups
@@ -167,8 +161,6 @@ class AlarmDiagnosticConfig(Document):
         """
         cfg = defaultdict(list)
         for c in cls.get_class_diagnostics(alarm.alarm_class):
-            if c.selector and not SelectorCache.is_in_selector(alarm.managed_object, c.selector):
-                continue
             if (
                 c.resource_group
                 and str(c.resource_group.id) not in alarm.managed_object.effective_service_groups

@@ -12,7 +12,6 @@ from django.db import models
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.aaa.models.group import Group
-from .managedobjectselector import ManagedObjectSelector
 from .administrativedomain import AdministrativeDomain
 
 
@@ -25,17 +24,12 @@ class GroupAccess(NOCModel):
         ordering = ["group"]
 
     group = models.ForeignKey(Group, verbose_name=_("Group"), on_delete=models.CASCADE)
-    selector = models.ForeignKey(
-        ManagedObjectSelector, null=True, blank=True, on_delete=models.CASCADE
-    )
     administrative_domain = models.ForeignKey(
         AdministrativeDomain, null=True, blank=True, on_delete=models.CASCADE
     )
 
     def __str__(self):
         r = ["group=%s" % self.group.name]
-        if self.selector:
-            r += ["selector=%s" % self.selector.name]
         if self.administrative_domain:
             r += ["domain=%s" % self.administrative_domain.name]
         return "(%s)" % ", ".join(r)

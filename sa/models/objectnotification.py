@@ -15,7 +15,6 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.lib.template import render_message
-from .managedobjectselector import ManagedObjectSelector
 
 
 class ObjectNotification(NOCModel):
@@ -24,10 +23,7 @@ class ObjectNotification(NOCModel):
         db_table = "sa_objectnotification"
         app_label = "sa"
 
-    selector = models.ForeignKey(
-        ManagedObjectSelector, verbose_name=_("Selector"), on_delete=models.CASCADE
-    )
-    resource_group = DocumentReferenceField(ResourceGroup, null=True, blank=True)
+    resource_group = DocumentReferenceField(ResourceGroup)
     notification_group = models.ForeignKey(
         NotificationGroup, verbose_name=_("Notification Group"), on_delete=models.CASCADE
     )
@@ -45,7 +41,7 @@ class ObjectNotification(NOCModel):
     config_policy_violation = models.BooleanField(_("Config policy violation"), default=False)
 
     def __str__(self):
-        return "%s, %s" % (self.selector, self.notification_group)
+        return f"{self.resource_group}, {self.notification_group}"
 
     @classmethod
     def render_message(cls, event_id, context):
