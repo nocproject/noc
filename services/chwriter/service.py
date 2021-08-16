@@ -119,8 +119,6 @@ class CHWriterService(FastAPIService):
                         t0 = perf_counter()
                         url = (
                             f"http://{self.ch_address}/?"
-                            f"user={config.clickhouse.rw_user}&"
-                            f"password={config.clickhouse.rw_password or ''}&"
                             f"database={config.clickhouse.db}&"
                             f"query={ch.q_sql}"
                         )
