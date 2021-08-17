@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | JUNOS | Chassis | PSU | PSU Recovered (SNMP)",
+    "name": "Juniper | JUNOS | Chassis | Fan | Fan Recovered (SNMP)",
     "$collection": "fm.eventclassificationrules",
-    "uuid": "2aa8cec0-7b66-4d5f-a875-7b79615f2e3e",
-    "description": "JUNIPER-MIB::jnxPowerSupplyOK",
-    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "uuid": "3f666341-9aff-4390-9422-ed34d9197302",
+    "description": "JUNIPER-MIB::jnxFanOK",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
     "preference": 1000,
     "patterns": [
         {
@@ -24,7 +24,7 @@
         },
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-            "value_re": "^JUNIPER-MIB::jnxPowerSupplyOK$"
+            "value_re": "^JUNIPER-MIB::jnxFanOK$"
         }
     ]
 }

@@ -1,9 +1,8 @@
 {
-    "name": "Juniper | JUNOS | Chassis | PSU | PSU Recovered (SNMP)",
-    "$collection": "fm.eventclassificationrules",
-    "uuid": "2aa8cec0-7b66-4d5f-a875-7b79615f2e3e",
-    "description": "JUNIPER-MIB::jnxPowerSupplyOK",
-    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "name": "Juniper | JUNOS | Environment | Temperature Out of Range (SNMP)",
+    "uuid": "243f9d59-4809-4ca9-ac97-212579b88535",
+    "description": "JUNIPER-MIB::jnxOverTemperature",
+    "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
     "patterns": [
         {
@@ -19,12 +18,12 @@
             "value_re": "^(?P<name>.+)$"
         },
         {
-            "key_re": "^JUNIPER-MIB::jnxOperatingState(?:\\.\\d+)*$",
-            "value_re": "^(?:up|running)$"
+            "key_re": "^JUNIPER-MIB::jnxOperatingTemp(?:\\.\\d+)*$",
+            "value_re": "^(?P<measure>.+)$"
         },
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-            "value_re": "^JUNIPER-MIB::jnxPowerSupplyOK$"
+            "value_re": "^JUNIPER-MIB::jnxOverTemperature$"
         }
     ]
 }
