@@ -36,10 +36,8 @@ class Channel(object):
         self.last_updated = perf_counter()
         self.last_flushed = perf_counter()
         self.flushing = False
-        self.url = "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
+        self.url = "http://%s/?database=%s&query=%s" % (
             address,
-            config.clickhouse.rw_user,
-            config.clickhouse.rw_password or "",
             db,
             self.encoded_sql,
         )
