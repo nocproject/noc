@@ -111,7 +111,7 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                 {
                 name: "dynamic_client_labels",
                 xtype: "listform",
-                fieldLabel: __("Dynamic Service Labels"),
+                fieldLabel: __("Dynamic Client Labels"),
                 items: [
                     {
                       name: "labels",

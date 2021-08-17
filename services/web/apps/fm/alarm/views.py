@@ -379,7 +379,7 @@ class AlarmApplication(ExtApplication):
                 adm_path__in=UserAccess.get_domains(request.user),
             ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
-    @view(method=["GET", "POST"], url=r"^$", access="read", api=True)
+    @view(method=["GET", "POST"], url=r"^$", access="launch", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
