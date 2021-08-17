@@ -151,71 +151,6 @@ class Sensor(Document):
         return self.dynamic_classification_policy
 
     @classmethod
-    def sync_object(cls, obj: Object) -> None:
-        """
-        Synchronize sensors with object model
-        :param obj:
-        :return:
-        """
-        # Get existing sensors
-        obj_sensors: Dict[str, Sensor] = {
-            s.local_id: s for s in Sensor.objects.filter(object=obj.id)
-        }
-        m_proto = [
-            d.value
-            for d in obj.get_effective_data()
-            if d.interface == "modbus" and d.attr == "type"
-        ] or ["rtu"]
-        agent = obj.get_effective_agent()
-        mo = obj.get_data("management", "managed_object")
-        if mo:
-            mo = ManagedObject.get_by_id(mo)
-        # Create new sensors
-        for sensor in obj.model.sensors:
-            if sensor.name in obj_sensors:
-                s = obj_sensors.pop(sensor.name)
-            else:
-                logger.info(
-                    "[%s|%s] Creating new sensor '%s'", obj.name if obj else "-", "-", sensor.name
-                )
-                s = Sensor(
-                    profile=SensorProfile.get_default_profile(),
-                    object=obj,
-                    local_id=sensor.name,
-                )
-            if s.agent != agent:
-                s.agent = agent
-            if s.managed_object != mo:
-                s.managed_object = mo
-            if s.units != sensor.units:
-                s.units = sensor.units
-            if s.label != sensor.description:
-                s.label = sensor.description
-            # Get sensor protocol
-            if sensor.modbus_register:
-                if not m_proto:
-                    continue
-                s.protocol = "modbus_%s" % m_proto[0].lower()
-                s.modbus_register = sensor.modbus_register
-                s.modbus_format = sensor.modbus_format or "u16_be"
-            elif sensor.snmp_oid:
-                s.protocol = "snmp"
-                s.snmp_oid = sensor.snmp_oid
-            else:
-                logger.info(
-                    "[%s|%s] Unknown sensor protocol '%s'",
-                    obj.name if obj else "-",
-                    "-",
-                    sensor.name,
-                )
-            s.save()
-            s.seen("objectmodel")
-        # Notify missed sensors
-        for s in sorted(obj_sensors):
-            sensor = obj_sensors[s]
-            sensor.unseen(source="objectmodel")
-
-    @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_sensor")
 
@@ -234,3 +169,65 @@ class Sensor(Document):
                     yield list(mo.effective_labels)
         if instance.managed_object:
             yield list(instance.managed_object.effective_labels)
+
+
+def sync_object(obj: "Object") -> None:
+    """
+    Synchronize sensors with object model
+    :param obj:
+    :return:
+    """
+    # Get existing sensors
+    obj_sensors: Dict[str, Sensor] = {s.local_id: s for s in Sensor.objects.filter(object=obj.id)}
+    logger.info("[%s] Sync sensor for ojbect", obj)
+    m_proto = [
+        d.value for d in obj.get_effective_data() if d.interface == "modbus" and d.attr == "type"
+    ] or ["rtu"]
+    agent = obj.get_effective_agent()
+    mo = obj.get_data("management", "managed_object")
+    if mo:
+        mo = ManagedObject.get_by_id(mo)
+    # Create new sensors
+    for sensor in obj.model.sensors:
+        if sensor.name in obj_sensors:
+            s = obj_sensors.pop(sensor.name)
+        else:
+            logger.info(
+                "[%s|%s] Creating new sensor '%s'", obj.name if obj else "-", "-", sensor.name
+            )
+            s = Sensor(
+                profile=SensorProfile.get_default_profile(),
+                object=obj,
+                local_id=sensor.name,
+            )
+        if s.agent != agent:
+            s.agent = agent
+        if s.managed_object != mo:
+            s.managed_object = mo
+        if s.units != sensor.units:
+            s.units = sensor.units
+        if s.label != sensor.description:
+            s.label = sensor.description
+        # Get sensor protocol
+        if sensor.modbus_register:
+            if not m_proto:
+                continue
+            s.protocol = "modbus_%s" % m_proto[0].lower()
+            s.modbus_register = sensor.modbus_register
+            s.modbus_format = sensor.modbus_format or "u16_be"
+        elif sensor.snmp_oid:
+            s.protocol = "snmp"
+            s.snmp_oid = sensor.snmp_oid
+        else:
+            logger.info(
+                "[%s|%s] Unknown sensor protocol '%s'",
+                obj.name if obj else "-",
+                "-",
+                sensor.name,
+            )
+        s.save()
+        s.seen("objectmodel")
+    # Notify missed sensors
+    for s in sorted(obj_sensors):
+        sensor = obj_sensors[s]
+        sensor.unseen(source="objectmodel")

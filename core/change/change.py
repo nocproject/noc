@@ -13,6 +13,7 @@ from collections import defaultdict
 
 # Third-party modules
 import orjson
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.models import get_model
@@ -36,6 +37,8 @@ def on_change(
     ds_changes: DefaultDict[str, Set[str]] = defaultdict(set)
     # BI Dictionary changes
     bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]] = defaultdict(set)
+    # Sensors object
+    sensors_changes: DefaultDict[str, Set[str]] = defaultdict(set)
     # Iterate over changes
     for op, model_id, item_id, changed_fields, ts in changes:
         # Resolve item
@@ -60,12 +63,21 @@ def on_change(
         # Proccess BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
+        # Proccess Sensors
+        if model_id == "inv.ObjectModel" and "sensors" in changed_fields:
+            sensors_changes[model_id].add(item_id)
+        elif model_id == "inv.Object" and "data" in changed_fields:
+            # @todo ManagedObject address change
+            sensors_changes[model_id].add(item_id)
     # Apply datastream changes
     if ds_changes:
         apply_datastream(ds_changes)
     #
     if bi_dict_changes:
         apply_ch_dictionary(bi_dict_changes)
+    #
+    if sensors_changes:
+        apply_sync_sensors(sensors_changes)
 
 
 def apply_datastream(ds_changes: DefaultDict[str, Set[str]]) -> None:
@@ -100,6 +112,7 @@ def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]
         bi_dict_model: Optional["DictionaryModel"] = loader[dcls_name]
         if not bi_dict_model or bi_dict_model._meta.source_model not in bi_dict_changes:
             continue
+        logger.info("[bi_dictionary] [%s] Apply changes", dcls_name)
         data = []
         for item, ts in bi_dict_changes[bi_dict_model._meta.source_model]:
             r = bi_dict_model.extract(item)
@@ -116,3 +129,24 @@ def apply_ch_dictionary(bi_dict_changes: DefaultDict[str, Set[Tuple[str, float]]
                 partition=partition,
                 headers={},
             )
+
+
+def apply_sync_sensors(sensors_changes: DefaultDict[str, Set[str]]) -> None:
+    """
+
+    :param sensors_changes:
+    :return:
+    """
+    from noc.inv.models.object import Object
+    from noc.inv.models.sensor import sync_object
+
+    query = Q()
+    if "inv.ObjectModel" in sensors_changes:
+        query |= Q(model__in=list(sensors_changes["inv.ObjectModel"]))
+    if "inv.Object" in sensors_changes:
+        query |= Q(id__in=list(sensors_changes["inv.Object"]))
+    if not query:
+        return
+
+    for o in Object.objects.filter(query):
+        sync_object(o)

@@ -34,6 +34,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
 from noc.pm.models.measurementunits import MeasurementUnits
 from .connectiontype import ConnectionType
 from .connectionrule import ConnectionRule
@@ -146,6 +147,7 @@ class ObjectModelSensor(EmbeddedDocument):
 
 
 @category
+@change
 @on_delete_check(check=[("inv.ModelMapping", "model"), ("inv.Object", "model")])
 @on_save
 class ObjectModel(Document):
