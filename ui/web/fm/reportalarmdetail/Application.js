@@ -15,140 +15,155 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         "NOC.core.tagfield.Tagfield"
     ],
 
+    initComponent: function() {
+        var me = this;
+        if(me.noc && me.noc.cmd && me.noc.cmd.ids) {
+            me.items.controls = [
+                {
+                    name: "ids",
+                    xtype: "displayfield",
+                    fieldLabel: __("Alarms"),
+                    value: me.noc.cmd.ids.join(" ")
+                }
+            ];
+        } else {
+            me.items.controls = [
+                // {
+                //     name: "source",
+                //     xtype: "segmentedbutton",
+                //     allowBlank: false,
+                //     width: 300,
+                //     items: [
+                //         {text: __("Active Alarms"), value: 'active', pressed: true},
+                //         {text: __("Archived Alarms"), value: 'archive'},
+                //         {text: __("Both"), value: 'both'}
+                //     ]
+                // },
+                {
+                    name: "source",
+                    xtype: "radiogroup",
+                    columns: 4,
+                    vertical: false,
+                    fieldLabel: __("Alarms source"),
+                    allowBlank: false,
+                    width: 600,
+                    items: [
+                        {boxLabel: __("Active Alarms"), inputValue: 'active', checked: true},
+                        {boxLabel: __("Archived Alarms"), inputValue: 'archive'},
+                        {boxLabel: __("Both"), inputValue: 'both'},
+                        {boxLabel: __("Long Alarm Archive (more 3 months)"), inputValue: 'long_archive'}]
+                },
+                {
+                    name: "from_date",
+                    xtype: "datefield",
+                    startDay: 1,
+                    fieldLabel: __("From"),
+                    allowBlank: false,
+                    format: "d.m.Y",
+                    submitFormat: "d.m.Y"
+                },
+                {
+                    name: "to_date",
+                    xtype: "datefield",
+                    startDay: 1,
+                    fieldLabel: __("To"),
+                    allowBlank: false,
+                    format: "d.m.Y",
+                    submitFormat: "d.m.Y"
+                },
+                {
+                    name: "segment",
+                    xtype: "inv.networksegment.TreeCombo",
+                    fieldLabel: __("Segment"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500
+                },
+                {
+                    name: "administrative_domain",
+                    xtype: "sa.administrativedomain.TreeCombo",
+                    fieldLabel: __("By Adm. domain"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
+                    allowBlank: true
+                },
+                {
+                    name: "selector",
+                    xtype: "sa.managedobjectselector.LookupField",
+                    fieldLabel: __("By Selector"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
+                    allowBlank: true
+                },
+                {
+                    name: "ex_selector",
+                    xtype: "sa.managedobjectselector.LookupField",
+                    fieldLabel: __("Exclude MO by Selector"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
+                    allowBlank: true
+                },
+                {
+                    name: "min_duration",
+                    xtype: "numberfield",
+                    fieldLabel: __("Min. Duration"),
+                    allowBlank: false,
+                    value: 300,
+                    uiStyle: "small"
+                },
+                {
+                    name: "max_duration",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max. Duration"),
+                    allowBlank: false,
+                    value: 0,
+                    uiStyle: "small"
+                },
+                {
+                    name: "min_objects",
+                    xtype: "numberfield",
+                    fieldLabel: __("Min. Objects"),
+                    allowBlank: true,
+                    value: 0,
+                    uiStyle: "small"
+                },
+                {
+                    name: "min_subscribers",
+                    xtype: "numberfield",
+                    fieldLabel: __("Min. Subscribers"),
+                    allowBlank: true,
+                    value: 0,
+                    uiStyle: "small"
+                },
+                {
+                    name: "enable_autowidth",
+                    xtype: "checkboxfield",
+                    boxLabel: __("Enable Excel column autowidth"),
+                    allowBlank: false
+                },
+                {
+                    name: "subscribers",
+                    xtype: "core.tagfield",
+                    url: "/crm/subscriberprofile/lookup/",
+                    fieldLabel: __("Subscribers that Sum"),
+                    allowBlank: true,
+                    uiStyle: undefined,
+                    width: "45%"
+                }
+            ];
+        }
+        me.callParent();
+    },
     items: {
         xtype: "report.control",
         url: "/fm/reportalarmdetail",
-        controls: [
-            // {
-            //     name: "source",
-            //     xtype: "segmentedbutton",
-            //     allowBlank: false,
-            //     width: 300,
-            //     items: [
-            //         {text: __("Active Alarms"), value: 'active', pressed: true},
-            //         {text: __("Archived Alarms"), value: 'archive'},
-            //         {text: __("Both"), value: 'both'}
-            //     ]
-            // },
-            {
-                name: "source",
-                xtype: "radiogroup",
-                columns: 4,
-                vertical: false,
-                fieldLabel: __("Alarms source"),
-                allowBlank: false,
-                width: 600,
-                items: [
-                    {boxLabel: __("Active Alarms"), inputValue: 'active', checked: true},
-                    {boxLabel: __("Archived Alarms"), inputValue: 'archive'},
-                    {boxLabel: __("Both"), inputValue: 'both'},
-                    {boxLabel: __("Long Alarm Archive (more 3 months)"), inputValue: 'long_archive'}]
-            },
-            {
-                name: "from_date",
-                xtype: "datefield",
-                startDay: 1,
-                fieldLabel: __("From"),
-                allowBlank: false,
-                format: "d.m.Y",
-                submitFormat: "d.m.Y"
-            },
-            {
-                name: "to_date",
-                xtype: "datefield",
-                startDay: 1,
-                fieldLabel: __("To"),
-                allowBlank: false,
-                format: "d.m.Y",
-                submitFormat: "d.m.Y"
-            },
-            {
-                name: "segment",
-                xtype: "inv.networksegment.TreeCombo",
-                fieldLabel: __("Segment"),
-                listWidth: 1,
-                listAlign: 'left',
-                labelAlign: "left",
-                width: 500
-            },
-            {
-                name: "administrative_domain",
-                xtype: "sa.administrativedomain.TreeCombo",
-                fieldLabel: __("By Adm. domain"),
-                listWidth: 1,
-                listAlign: 'left',
-                labelAlign: "left",
-                width: 500,
-                allowBlank: true
-            },
-            {
-                name: "selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("By Selector"),
-                listWidth: 1,
-                listAlign: 'left',
-                labelAlign: "left",
-                width: 500,
-                allowBlank: true
-            },
-            {
-                name: "ex_selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("Exclude MO by Selector"),
-                listWidth: 1,
-                listAlign: 'left',
-                labelAlign: "left",
-                width: 500,
-                allowBlank: true
-            },
-            {
-                name: "min_duration",
-                xtype: "numberfield",
-                fieldLabel: __("Min. Duration"),
-                allowBlank: false,
-                value: 300,
-                uiStyle: "small"
-            },
-            {
-                name: "max_duration",
-                xtype: "numberfield",
-                fieldLabel: __("Max. Duration"),
-                allowBlank: false,
-                value: 0,
-                uiStyle: "small"
-            },
-            {
-                name: "min_objects",
-                xtype: "numberfield",
-                fieldLabel: __("Min. Objects"),
-                allowBlank: true,
-                value: 0,
-                uiStyle: "small"
-            },
-            {
-                name: "min_subscribers",
-                xtype: "numberfield",
-                fieldLabel: __("Min. Subscribers"),
-                allowBlank: true,
-                value: 0,
-                uiStyle: "small"
-            },
-            {
-                name: "enable_autowidth",
-                xtype: "checkboxfield",
-                boxLabel: __("Enable Excel column autowidth"),
-                allowBlank: false
-            },
-            {
-                name: "subscribers",
-                xtype: "core.tagfield",
-                url: "/crm/subscriberprofile/lookup/",
-                fieldLabel: __("Subscribers that Sum"),
-                allowBlank: true,
-                uiStyle: undefined,
-                width: "45%"
-            }
-        ],
         storeData: [
             ["id", __("ID"), true],
             ["root_id", __("Root ID"), true],

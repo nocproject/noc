@@ -46,6 +46,18 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
                         listeners: {
                             click: "addGroupEscalate"
                         }
+                    },
+                    {
+                        text: __("Detail Report"),
+                        listeners: {
+                            click: "openAlarmDetailReport"
+                        }
+                    },
+                    {
+                        text: __("Create Maintenance"),
+                        listeners: {
+                            click: "createMaintenance"
+                        }
                     }
                 ]
             }
