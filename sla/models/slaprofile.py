@@ -8,6 +8,7 @@
 # Python modules
 from threading import Lock
 import operator
+from functools import partial
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -59,7 +60,9 @@ class SLAProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     #
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(
+        Workflow, default=partial(Workflow.get_default_workflow, "sla.SLAProfile")
+    )
     style = ForeignKeyField(Style, required=False)
     # Agent collected intervale
     collect_interval = IntField(default=120)

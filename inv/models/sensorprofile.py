@@ -8,6 +8,7 @@
 # NOC modules
 from threading import Lock
 import operator
+from functools import partial
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -51,7 +52,9 @@ class SensorProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(
+        Workflow, default=partial(Workflow.get_default_workflow, "inv.SensorProfile")
+    )
     style = ForeignKeyField(Style)
     enable_collect = BooleanField(default=False)
     collect_interval = IntField(default=60)

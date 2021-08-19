@@ -56,7 +56,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
                     name: "workflow",
                     xtype: "wf.workflow.LookupField",
                     fieldLabel: __("WorkFlow"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "style",

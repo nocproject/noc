@@ -9,6 +9,7 @@
 from threading import Lock
 import operator
 import logging
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -59,21 +60,37 @@ class Workflow(Document):
     # Object id in BI
     bi_id = LongField(unique=True)
 
-    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    DEFAULT_WORKFLOW_NAME = "Default"
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["Workflow"]:
         return Workflow.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["Workflow"]:
         return Workflow.objects.filter(bi_id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name) -> Optional["Workflow"]:
+        return Workflow.objects.filter(name=name).first()
+
+    @classmethod
+    def get_default_workflow(cls, model_id):
+        from noc.models import get_model
+
+        model = get_model(model_id)
+        workflow = getattr(model, "DEFAULT_WORKFLOW_NAME", cls.DEFAULT_WORKFLOW_NAME)
+        return Workflow.get_by_name(workflow)
 
     @cachetools.cached(_default_state_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_default_state(self):

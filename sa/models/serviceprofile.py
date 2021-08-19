@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from functools import partial
 
 # Third-party modules
 from pymongo import UpdateOne
@@ -60,7 +61,9 @@ class ServiceProfile(Document):
     display_order = IntField(default=100)
     # Show in total summary
     show_in_summary = BooleanField(default=True)
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(
+        Workflow, default=partial(Workflow.get_default_workflow, "sa.ServiceProfile")
+    )
     # Auto-assign interface profile when service binds to interface
     interface_profile = ReferenceField(InterfaceProfile)
     # Alarm weight
@@ -79,6 +82,9 @@ class ServiceProfile(Document):
     effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_PROFILE_NAME = "default"
+    DEFAULT_WORKFLOW_NAME = "Service Default"
 
     def __str__(self):
         return self.name
