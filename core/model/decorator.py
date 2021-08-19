@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from django.core.exceptions import FieldError
-
 # NOC modules
 from noc.models import get_model
 from noc.core.comp import smart_text
@@ -251,21 +248,31 @@ def tree(field=None):
 
     """
 
+    def _before_save_handler(sender, instance, field=field, *args, **kwargs):
+        parent = getattr(instance, field, None)
+        seen = {instance.id}
+        while parent:
+            parent_id = getattr(parent, "id", None)
+            if parent_id in seen:
+                raise instance._ValidationError(f"[{instance}] Parent cycle link")
+            seen.add(parent_id)
+            parent = getattr(parent, field, None)
+
     def decorator(cls):
         if hasattr(cls, field):
 
-            def before_save(self, field):
-                parent = getattr(self, field, None)
-                seen = {getattr(self, "id", None)}
-                while parent:
-                    parent_id = getattr(parent, "id", None)
-                    if parent_id in seen:
-                        raise FieldError("Parent cycle link")
-                    seen.add(parent_id)
-                    parent = getattr(parent, field, None)
+            if is_document(cls):
+                from mongoengine import signals as mongo_signals
+                from mongoengine.errors import ValidationError
 
-            cls.before_save = before_save
-            cls.tree_field = field
+                mongo_signals.pre_save.connect(_before_save_handler, sender=cls, weak=False)
+            else:
+                from django.db.models import signals as django_signals
+                from django.core.exceptions import ValidationError
+
+                django_signals.pre_save.connect(_before_save_handler, sender=cls, weak=False)
+
+            cls._ValidationError = ValidationError
 
         return cls
 
