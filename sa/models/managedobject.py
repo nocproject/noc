@@ -43,7 +43,6 @@ from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
-from noc.main.models.regexplabel import RegexpLabel
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
@@ -1793,7 +1792,7 @@ class ManagedObject(NOCModel):
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
-        yield RegexpLabel.get_effective_labels("managedobject_name", instance.name)
+        yield Label.get_effective_regex_labels("managedobject_name", instance.name)
         lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
         yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
         if instance.vendor:
@@ -1804,9 +1803,9 @@ class ManagedObject(NOCModel):
             yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
         if instance.address:
             yield list(PrefixTable.iter_lazy_labels(instance.address))
-            yield RegexpLabel.get_effective_labels("managedobject_address", instance.address)
+            yield Label.get_effective_regex_labels("managedobject_address", instance.address)
         if instance.description:
-            yield RegexpLabel.get_effective_labels(
+            yield Label.get_effective_regex_labels(
                 "managedobject_description", instance.description
             )
         if instance.vrf:

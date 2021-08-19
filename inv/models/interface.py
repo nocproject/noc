@@ -31,7 +31,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
-from noc.main.models.regexplabel import RegexpLabel
 from noc.main.models.label import Label
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
@@ -409,8 +408,8 @@ class Interface(Document):
         yield list(instance.labels or [])
         # if instance.profile.labels:
         #     yield list(instance.profile.labels)
-        yield RegexpLabel.get_effective_labels("interface_name", instance.name)
-        yield RegexpLabel.get_effective_labels("interface_description", instance.name)
+        yield Label.get_effective_regex_labels("interface_name", instance.name)
+        yield Label.get_effective_regex_labels("interface_description", instance.name)
         if instance.managed_object:
             yield from ManagedObject.iter_effective_labels(instance.managed_object)
         # if instance.is_linked:

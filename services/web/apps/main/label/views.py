@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import re
 from collections import defaultdict
 
 # NOC modules
@@ -24,6 +25,28 @@ class LabelApplication(ExtDocApplication):
     glyph = "tag"
     model = Label
     query_condition = "icontains"
+
+    not_builtin_re = re.compile(r"^(?!noc\:\:)")
+    builtin_re = re.compile(r"^noc\:\:")
+
+    not_matched_re = re.compile(r"[^=<>&]$")
+    matched_re = re.compile(r"[=<>&]$")
+
+    def field_is_builtin(self, o):
+        return bool(o.is_builtin)
+
+    def field_is_matched(self, o):
+        return bool(o.is_matched)
+
+    def cleaned_query(self, q):
+        q = super().cleaned_query(q)
+        if "is_builtin_labels" in q:
+            q["name"] = self.builtin_re if q["is_builtin_labels"] == "true" else self.not_builtin_re
+            del q["is_builtin_labels"]
+        if "is_matched" in q:
+            q["name"] = self.matched_re if q["is_matched"] == "true" else self.not_matched_re
+            del q["is_matched"]
+        return q
 
     @view(url="^ac_lookup/", method=["GET"], access=True)
     def api_ac_lookup(self, request):
