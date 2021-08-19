@@ -94,7 +94,10 @@ class CorrelatorService(TornadoService):
         # Subscribe stream, move to separate task to let the on_activate to terminate
         self.loop.create_task(
             self.subscribe_stream(
-                "dispose.%s" % config.pool, self.slot_number, self.on_dispose_event
+                "dispose.%s" % config.pool,
+                self.slot_number,
+                self.on_dispose_event,
+                async_cursor=config.correlator.allowed_async_cursor,
             )
         )
 
