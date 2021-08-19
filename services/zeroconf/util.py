@@ -25,6 +25,9 @@ from .models.zk import (
     ZkConfigCollector,
 )
 
+DEFAULT_MODBUS_TCP_PORT = 502
+DEFAULT_MODBUS_TCP_SLAVE = 255
+
 
 def find_agent(
     agent_id: Optional[str] = None,
@@ -246,6 +249,9 @@ def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
     """
     if not sensor.modbus_register or not sensor.modbus_format:
         return
+    m_data = {
+        d.attr: d.value for d in sensor.object.get_effective_data() if d.interface == "modbus"
+    }
     yield ZkConfigCollector(
         id=f"zk:{sensor.bi_id}:modbus_tcp",
         type="modbus_tcp",
@@ -254,6 +260,8 @@ def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         labels=[f"noc::sensor::{sensor.local_id}"]
         + Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
         address=sensor.managed_object.address,
+        port=sensor.managed_object.port or DEFAULT_MODBUS_TCP_PORT,
+        slave=m_data["slave_id"] if m_data["slave_id"] != 16 else DEFAULT_MODBUS_TCP_SLAVE,
         register=sensor.modbus_register,
         format=sensor.modbus_format,
         disabled=not sensor.state.is_productive,
