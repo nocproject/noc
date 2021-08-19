@@ -159,6 +159,9 @@ Ext.apply(NOC.render, {
             bg_color1,
             "'>"
         ];
+        Ext.each(v.badges, function(badge) {
+            r.push("<i class='fa " + badge + "' style='color: " + fg_color1 + "' aria-hidden='true'></i>");
+        });
         r.push("<div class='x-noc-label-text' style='color:" + fg_color1 +
             "'>");
         r.push(Ext.util.Format.htmlEncode(name));

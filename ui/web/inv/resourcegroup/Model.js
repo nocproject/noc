@@ -70,6 +70,16 @@ Ext.define("NOC.inv.resourcegroup.Model", {
         {
             name: "labels",
             type: "auto"
+        },
+        {
+            name: "service_expression",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "client_expression",
+            type: "auto",
+            persist: false
         }
     ]
 });

@@ -276,8 +276,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                             "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: yellow;\"></div></td><td>" + __("Device has alarm") + "</td></tr>" +
                             "<tr><td><div class=\"noc-object-oper-state\" style=\"background-color: green;\"></div></td><td>" + __("Device is normal") + "</td></tr>" +
                             "</table>'";
-
-                        console.log(metaData.tdAttr);
                         if(value === "failed") {
                             color = "red";
                         } else if(value === "degraded") {

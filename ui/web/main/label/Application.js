@@ -37,6 +37,7 @@ Ext.define("NOC.main.label.Application", {
                     width: 100,
                     renderer: function(v, _x, item) {
                         return NOC.render.Label({
+                            badges: item.data.badges,
                             name: item.data.name,
                             description: item.data.description || "",
                             bg_color1: item.data.bg_color1 || 0,
