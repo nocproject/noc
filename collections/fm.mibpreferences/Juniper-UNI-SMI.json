@@ -1,0 +1,6 @@
+{
+    "mib": "Juniper-UNI-SMI",
+    "$collection": "fm.mibpreferences",
+    "uuid": "28a8fcd6-29ea-47a8-bae8-1866c8eab6c7",
+    "preference": 2500
+}

@@ -1,0 +1,6 @@
+{
+    "mib": "Juniper-TC",
+    "$collection": "fm.mibpreferences",
+    "uuid": "37e974b7-e309-471e-a419-5179c904ba70",
+    "preference": 2550
+}
