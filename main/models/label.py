@@ -156,6 +156,20 @@ class Label(Document):
     def __str__(self):
         return self.name
 
+    @property
+    def scope(self):
+        return self.name.rsplit("::", 1)[0] if self.is_scoped else ""
+
+    @property
+    def value(self):
+        return self.name.split("::")[-1]
+
+    @property
+    def badges(self):
+        if self.is_builtin:
+            return ["fa-wrench"]
+        return []
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["Label"]:

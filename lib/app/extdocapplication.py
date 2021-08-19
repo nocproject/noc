@@ -332,9 +332,10 @@ class ExtDocApplication(ExtApplication):
                         {
                             "id": ll.name,
                             "is_protected": ll.is_protected,
-                            "scope": ll.name.rsplit("::", 1)[0] if ll.is_scoped else "",
+                            "scope": ll.scope,
                             "name": ll.name,
-                            "value": ll.name.split("::")[-1],
+                            "value": ll.value,
+                            "badges": ll.badges,
                             "bg_color1": f"#{ll.bg_color1:06x}",
                             "fg_color1": f"#{ll.fg_color1:06x}",
                             "bg_color2": f"#{ll.bg_color2:06x}",

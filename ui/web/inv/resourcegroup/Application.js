@@ -21,7 +21,7 @@ Ext.define("NOC.inv.resourcegroup.Application", {
     search: true,
     helpId: "reference-resource-group",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         me.cardButton = Ext.create("Ext.button.Button", {
@@ -37,6 +37,26 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     text: __("Name"),
                     dataIndex: "name",
                     width: 300
+                },
+                {
+                    text: __("Service Expression"),
+                    dataIndex: "service_expression",
+                    width: 400,
+                    renderer: function(v, _x) {
+                        var labels = [];
+                        Ext.each(v, function(label) {
+                            labels.push(NOC.render.Label({
+                                badges: label.badges,
+                                name: label.name,
+                                description: label.description || "",
+                                bg_color1: label.bg_color1 || 0,
+                                fg_color1: label.fg_color1 || 0,
+                                bg_color2: label.bg_color2 || 0,
+                                fg_color2: label.fg_color2 || 0
+                            }));
+                        });
+                        return labels.join("");
+                    }
                 },
                 {
                     text: __("Parent"),
@@ -90,42 +110,42 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true
                 },
                 {
-                name: "dynamic_service_labels",
-                xtype: "listform",
-                fieldLabel: __("Dynamic Service Labels"),
-                items: [
-                    {
-                      name: "labels",
-                      xtype: "labelfield",
-                      fieldLabel: __("Match Labels"),
-                      allowBlank: false,
-                      isTree: true,
-                      pickerPosition: "down",
-                      uiStyle: "extra",
-                      query: {
-                        "allow_matched": true
-                      }
-                    },
-                  ]
+                    name: "dynamic_service_labels",
+                    xtype: "listform",
+                    fieldLabel: __("Dynamic Service Labels"),
+                    items: [
+                        {
+                            name: "labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Match Labels"),
+                            allowBlank: false,
+                            isTree: true,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
+                        },
+                    ]
                 },
                 {
-                name: "dynamic_client_labels",
-                xtype: "listform",
-                fieldLabel: __("Dynamic Client Labels"),
-                items: [
-                    {
-                      name: "labels",
-                      xtype: "labelfield",
-                      fieldLabel: __("Match Labels"),
-                      allowBlank: false,
-                      isTree: true,
-                      pickerPosition: "down",
-                      uiStyle: "extra",
-                      query: {
-                        "allow_matched": true
-                      }
-                    },
-                  ]
+                    name: "dynamic_client_labels",
+                    xtype: "listform",
+                    fieldLabel: __("Dynamic Client Labels"),
+                    items: [
+                        {
+                            name: "labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Match Labels"),
+                            allowBlank: false,
+                            isTree: true,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
+                        },
+                    ]
                 },
                 {
                     xtype: "fieldset",
