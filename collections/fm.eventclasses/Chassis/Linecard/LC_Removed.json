@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Linecard | LC Removed",
+    "$collection": "fm.eventclasses",
+    "uuid": "2234b539-b31e-40e5-a909-2163c9d30690",
+    "description": "Linecard Removed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "number",
+            "description": "Slot number",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Linecard in slot {{number}} Removed",
+    "body_template": "Linecard in slot {{number}} Removed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Linecard | LC Down"
+        }
+    ]
+}

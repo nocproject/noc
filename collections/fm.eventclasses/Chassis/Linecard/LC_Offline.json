@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Linecard | LC Offline",
+    "$collection": "fm.eventclasses",
+    "uuid": "27cba2d8-5bf4-45ba-879a-de80c4a0ca7c",
+    "description": "Linecard has offline state",
+    "action": "A",
+    "vars": [
+        {
+            "name": "number",
+            "description": "Slot number",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Linecard in slot {{number}} Offline",
+    "body_template": "Linecard in slot {{number}} going into offline state",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Linecard | LC Down"
+        }
+    ]
+}

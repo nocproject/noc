@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | Module | Module Offline",
+    "$collection": "fm.eventclasses",
+    "uuid": "eba4e5f8-a7c5-4de0-89e3-5ad3e011dd21",
+    "description": "Hardware module has been offline state",
+    "action": "A",
+    "vars": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Hardware module {{module}} offline{% if interface %}, interface {{interface}}{% endif %}",
+    "body_template": "Hardware module {{module}} has been offline state{% if interface %}, interface {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
