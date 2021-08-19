@@ -125,25 +125,55 @@ class ManagedObjectSelectorLabels(object):
         return None
 
     def get_regex_label(self, regex, field, selector_name):
-        coll = get_db()["regexlabels"]
-        r = coll.find_one({"regexp": regex}, {"name": 1})
+        coll = get_db()["labels"]
+        scope = "managedobject_name"
+        if field == "filter_address":
+            scope = "managedobject_address"
+        elif field == "filter_description":
+            scope = "managedobject_address"
+        r = coll.find_one(
+            {"match_regex": {"$elemMatch": {"regexp": regex, "scope": scope}}}, {"name": 1}
+        )
         if r:
-            return self.get_match_label("rxfilter", r["name"])
+            return r["name"]
         # Create RegexLabel
         name = f"SM_{selector_name}_{field}"
         self.regex_bulk += [
             InsertOne(
                 {
+                    # "_id": bson.ObjectId(),
                     "name": name,
                     "description": f"Migrate MangedObjectSelector {selector_name}, for field {field}",
-                    "regexp": regex,
-                    "enable_managedobject_name": field == "filter_name",
-                    "enable_managedobject_address": field == "filter_address",
-                    "enable_managedobject_description": field == "filter_description",
+                    "bg_color1": 8359053,
+                    "fg_color1": 16777215,
+                    "bg_color2": 8359053,
+                    "fg_color2": 16777215,
+                    "is_protected": False,
+                    "is_regex": True,
+                    # Label scope
+                    "enable_agent": False,
+                    "enable_service": False,
+                    "enable_serviceprofile": False,
+                    "enable_managedobject": False,
+                    "enable_managedobjectprofile": False,
+                    "enable_administrativedomain": False,
+                    "enable_authprofile": False,
+                    "enable_commandsnippet": False,
+                    # Exposition scope
+                    "expose_metric": False,
+                    "expose_datastream": False,
+                    "match_regex": [
+                        {
+                            "regexp": regex,
+                            "flag_multiline": False,
+                            "flag_dotall": False,
+                            "scope": scope,
+                        }
+                    ],
                 }
             )
         ]
-        return self.get_match_label("rxfilter", name)
+        return name
 
     def filter_administrative_domain_id(self, ad_id):
         name = self.get_pg_name_by_id("sa_administrativedomain", ad_id)
@@ -234,7 +264,7 @@ class Migration(BaseMigration):
             self.migrate_map[r[0]]["match_rules"] = [labels] if labels else []
         # Apply RegexLabels
         if mosl.regex_bulk:
-            coll = self.mongo_db["regexlabels"]
+            coll = self.mongo_db["labels"]
             coll.bulk_write(mosl.regex_bulk)
         # Apply Sources MAP
         for sel_id, sources in sources_map.items():
@@ -292,6 +322,8 @@ class Migration(BaseMigration):
         updating_object = defaultdict(set)
         for cache in self.mongo_db["noc.cache.selector"].find():
             o_id, s_id = cache["object"], cache["selector"]
+            if "resource_group" not in self.migrate_map[s_id]:
+                continue
             updating_object[self.migrate_map[s_id]["resource_group"]].add(o_id)
 
         for rg in updating_object:

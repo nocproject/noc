@@ -59,6 +59,20 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "is_regex",
+            type: "boolean"
+        },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
+        },
+        {
+            name: "is_matched",
+            type: "boolean",
+            persist: false
+        },
+        {
             name: "enable_agent",
             type: "boolean"
         },
@@ -245,6 +259,10 @@ Ext.define("NOC.main.label.Model", {
         {
             name: "remote_id",
             type: "string"
-        }
+        },
+        {
+            name: "match_regex",
+            type: "auto"
+        },
     ]
 });

@@ -22,7 +22,6 @@ from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.label import Label
-from noc.main.models.regexplabel import RegexpLabel
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.measurementunits import MeasurementUnits
@@ -224,7 +223,7 @@ class Sensor(Document):
         yield list(instance.labels or [])
         if instance.profile.labels:
             yield list(instance.profile.labels)
-        yield RegexpLabel.get_effective_labels("sensor_local_id", instance.local_id)
+        yield Label.get_effective_regex_labels("sensor_local_id", instance.local_id)
         if instance.object:
             yield list(instance.object.effective_labels)
             mo_id = instance.object.get_data("management", "managed_object")
