@@ -129,6 +129,7 @@ class Config(BaseConfig):
         default_interface_profile = StringParameter(default="default")
         default_rule = StringParameter(default="Unknown | Default")
         allowed_time_drift = SecondsParameter(default="5m")
+        allowed_async_cursor = BooleanParameter(default=True, help="Use Async Processed cursor")
 
     class clickhouse(ConfigSection):
         rw_addresses = ServiceParameter(service="clickhouse", wait=True)
@@ -193,6 +194,7 @@ class Config(BaseConfig):
         rca_lock_rate = FloatParameter(default=1.61)
         rca_lock_dev = FloatParameter(default=0.1)
         rca_lock_expiry = SecondsParameter(default="10s")
+        allowed_async_cursor = BooleanParameter(default=False)
 
     class customization(ConfigSection):
         favicon_url = StringParameter(default="/ui/web/img/logo_24x24_deep_azure.png")
