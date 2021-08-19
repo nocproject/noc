@@ -33,7 +33,7 @@ id_lock = threading.Lock()
 # Regular expression patterns
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
-TRY_ENCODINGS = ["utf-8", "big5"]
+TRY_ENCODINGS = ["utf-8", "big5", "gb2312", "cp1251"]
 
 
 @on_delete_check(check=[("fm.MIBData", "mib")])
