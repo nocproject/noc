@@ -21,6 +21,8 @@ pub struct ModbusRtuConfig {
     #[serde(default = "default_holding")]
     pub register_type: RegisterType,
     pub format: ModbusFormat,
+    #[serde(default = "default_5000")]
+    pub timeout_ms: u64,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -47,4 +49,8 @@ fn default_holding() -> RegisterType {
 
 fn default_none() -> CfgParity {
     CfgParity::None
+}
+
+fn default_5000() -> u64 {
+    5_000
 }

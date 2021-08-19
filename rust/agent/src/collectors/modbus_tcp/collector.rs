@@ -14,6 +14,7 @@ use crate::proto::modbus::ModbusFormat;
 use async_trait::async_trait;
 use std::convert::TryFrom;
 use std::net::SocketAddr;
+use tokio::time::{timeout, Duration};
 use tokio_modbus::prelude::*;
 
 pub struct ModbusTcpCollectorConfig {
@@ -22,6 +23,8 @@ pub struct ModbusTcpCollectorConfig {
     count: u16,
     register_type: RegisterType,
     format: ModbusFormat,
+    timeout_ms: u64,
+    slave: u8,
 }
 pub type ModbusTcpCollector = Collector<ModbusTcpCollectorConfig>;
 
@@ -40,6 +43,8 @@ impl TryFrom<&ZkConfigCollector> for ModbusTcpCollectorConfig {
                     count: config.format.min_count(),
                     register_type: config.register_type.clone(),
                     format: config.format,
+                    timeout_ms: config.timeout_ms,
+                    slave: config.slave,
                 })
             }
             _ => Err(AgentError::ConfigurationError("invalid config".into())),
@@ -62,26 +67,33 @@ impl Collectable for ModbusTcpCollector {
             self.data.register,
             self.data.count
         );
-        let mut ctx = tcp::connect(self.data.addr)
+        let mut ctx = tcp::connect_slave(self.data.addr, Slave::from(self.data.slave))
             .await
             .map_err(|e| AgentError::InternalError(e.to_string()))?;
         // Read result
+        let duration = Duration::from_millis(self.data.timeout_ms);
         let data = match self.data.register_type {
-            RegisterType::Holding => ctx
-                .read_holding_registers(self.data.register, self.data.count)
-                .await
-                .map_err(|e| AgentError::InternalError(e.to_string()))?,
-            RegisterType::Input => ctx
-                .read_input_registers(self.data.register, self.data.count)
-                .await
-                .map_err(|e| AgentError::InternalError(e.to_string()))?,
-            RegisterType::Coil => ctx
-                .read_coils(self.data.register, self.data.count)
-                .await
-                .map_err(|e| AgentError::InternalError(e.to_string()))?
-                .iter()
-                .map(|v| if *v { 1 } else { 0 })
-                .collect(),
+            RegisterType::Holding => timeout(
+                duration,
+                ctx.read_holding_registers(self.data.register, self.data.count),
+            )
+            .await?
+            .map_err(|e| AgentError::InternalError(e.to_string()))?,
+            RegisterType::Input => timeout(
+                duration,
+                ctx.read_input_registers(self.data.register, self.data.count),
+            )
+            .await?
+            .map_err(|e| AgentError::InternalError(e.to_string()))?,
+            RegisterType::Coil => timeout(
+                duration,
+                ctx.read_coils(self.data.register, self.data.count),
+            )
+            .await?
+            .map_err(|e| AgentError::InternalError(e.to_string()))?
+            .iter()
+            .map(|v| if *v { 1 } else { 0 })
+            .collect(),
         };
         // Process input value
         let value = self.data.format.modbus_try_from(data)?;

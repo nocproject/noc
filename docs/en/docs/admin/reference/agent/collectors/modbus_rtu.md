@@ -8,7 +8,7 @@ to collect performance data.
 | Parameter       | Type             | Default       | Description                                                                                 |
 | --------------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------- |
 | `id`            | String           |               | Collector's ID. Must be unique per agent instance. Will be returned along with the metrics. |
-| `type`          | String           |               | Must be `dns`                                                                               |
+| `type`          | String           |               | Must be `modbus_rtu`                                                                        |
 | `service`       | String           | Equal to `id` | Service id for output metrics                                                               |
 | `interval`      | Integer          |               | Repetition interval in seconds                                                              |
 | `labels`        | Array of Strings |               | List of additional labels. Will be returned along with metrics                              |
@@ -21,6 +21,7 @@ to collect performance data.
 | `register`      | Integer          |               | Starting register of modbus request, zero-based                                             |
 | `register_type` | String           | `holding`     | Modbus request type. Either `holding`, `input` or `coil`                                    |
 | `format`        | String           |               | Expected response format. See [Response format](#response-format) for details               |
+| `timeout_ms`    | Integer          | 5000          | Request timeout, ms.                                                                        |
 
 !!! warning "Check address notation"
 
