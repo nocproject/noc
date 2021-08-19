@@ -63,7 +63,7 @@ Ext.define("NOC.pm.agentprofile.Application", {
                     name: "workflow",
                     xtype: "wf.workflow.LookupField",
                     fieldLabel: __("Workflow"),
-                    allowBlank: false
+                    allowBlank: true
                 }
             ]
         });

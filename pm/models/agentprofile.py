@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from functools import partial
 
 # Third-party modules
 from mongoengine.document import Document
@@ -28,15 +29,17 @@ class AgentProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
-    zk_check_interval = IntField()
-    workflow = PlainReferenceField(Workflow)
+    zk_check_interval = IntField(default=60)
+    workflow = PlainReferenceField(
+        Workflow, default=partial(Workflow.get_default_workflow, "pm.AgentProfile")
+    )
     update_addresses = BooleanField(default=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
-    DEFAULT_WORKFLOW_NAME = "Default"
+    DEFAULT_WORKFLOW_NAME = "Agent Default"
 
     def __str__(self):
         return self.name
