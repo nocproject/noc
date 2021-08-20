@@ -22,7 +22,7 @@ import cachetools
 from noc.config import config
 from noc.models import get_model, is_document
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
@@ -35,7 +35,7 @@ _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 def check_rg_parent(parent: "ResourceGroup"):
     if not parent.technology.allow_children:
-        raise ValidationError("Parent technology is not allowed children")
+        raise ValidationError(f"[{parent}] Parent technology is not allowed children")
 
 
 class MatchLabels(EmbeddedDocument):
@@ -48,6 +48,7 @@ class MatchLabels(EmbeddedDocument):
         return list(Label.objects.filter(name__in=self.labels))
 
 
+@tree()
 @Label.model
 @bi_sync
 @change

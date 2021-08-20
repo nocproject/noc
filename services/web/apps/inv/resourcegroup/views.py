@@ -42,8 +42,9 @@ class ResourceGroupApplication(ExtDocApplication):
     """
 
     title = "ResourceGroup"
-    menu = [_("Setup"), _("Resource Groups")]
+    menu = [_("Resource Groups")]
     model = ResourceGroup
+    glyph = "object-group"
     query_fields = ["name"]
     query_condition = "icontains"
 
@@ -74,8 +75,7 @@ class ResourceGroupApplication(ExtDocApplication):
                         "id": ll.name,
                         "is_protected": ll.is_protected,
                         "scope": scope,
-                        "name": "::".join([scope, value]),
-                        # "name": ll.name,
+                        "name": f" {scope}::{value}" if scope else value,
                         "value": value,
                         "badges": ll.badges + badges,
                         # "bg_color1": f"#{ll.bg_color1:06x}",
@@ -94,15 +94,16 @@ class ResourceGroupApplication(ExtDocApplication):
     @staticmethod
     def field_client_expression(o: "ResourceGroup"):
         r = []
-        for ml in o.dynamic_service_labels:
+        for ml in o.dynamic_client_labels:
             for ll in ml.get_labels():
+                scope, value, badges = clean_label(ll.name)
                 r += [
                     {
                         "id": ll.name,
                         "is_protected": ll.is_protected,
-                        "scope": ll.scope,
-                        "name": ll.name,
-                        "value": ll.value,
+                        "scope": scope,
+                        "name": f"{scope}::{value}" if scope else value,
+                        "value": value,
                         "badges": ll.badges,
                         "bg_color1": ll.bg_color1,
                         "fg_color1": ll.fg_color1,
