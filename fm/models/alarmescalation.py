@@ -130,7 +130,7 @@ class AlarmEscalation(Document):
                 # Check ResourceGroup
                 if (
                     e_item.resource_group
-                    and str(e_item.resource_group)
+                    and str(e_item.resource_group.id)
                     not in alarm.managed_object.effective_service_groups
                 ):
                     continue
