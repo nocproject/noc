@@ -167,7 +167,7 @@ class Label(Document):
     @property
     def badges(self):
         if self.is_builtin:
-            return ["fa-wrench"]
+            return ["fa-ils"]
         return []
 
     @classmethod

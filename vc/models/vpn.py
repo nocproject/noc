@@ -47,7 +47,12 @@ class RouteTargetItem(EmbeddedDocument):
 @on_delete_check(check=[("vc.VPN", "parent"), ("vc.VLAN", "vpn")])
 @workflow
 class VPN(Document):
-    meta = {"collection": "vpns", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "vpns",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": ["labels", "effective_labels"],
+    }
 
     name = StringField(unique=True)
     profile = PlainReferenceField(VPNProfile)

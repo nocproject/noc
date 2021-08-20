@@ -68,6 +68,8 @@ class ActiveAlarm(Document):
             "container_path",
             "uplinks",
             ("alarm_class", "rca_neighbors"),
+            "labels",
+            "effective_labels",
         ],
     }
     status = "A"

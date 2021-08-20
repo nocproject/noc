@@ -32,7 +32,12 @@ id_lock = Lock()
     check=[("vc.VLAN", "profile"), ("inv.NetworkSegmentProfile", "default_vlan_profile")]
 )
 class VLANProfile(Document):
-    meta = {"collection": "vlanprofiles", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "vlanprofiles",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": ["labels", "effective_labels"],
+    }
 
     name = StringField(unique=True)
     description = StringField()

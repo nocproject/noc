@@ -206,7 +206,6 @@ class AdministrativeDomain(NOCModel):
         for ad in AdministrativeDomain.objects.filter(id__in=adm_domain.get_path()):
             if ad == adm_domain:
                 yield f"noc::adm_domain::{ad.name}::="
-                continue
             yield f"noc::adm_domain::{ad.name}::<"
 
 
