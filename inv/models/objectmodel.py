@@ -159,7 +159,12 @@ class ObjectModel(Document):
         "collection": "noc.objectmodels",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("vendor", "data.asset.part_no"), ("vendor", "data.asset.order_part_no")],
+        "indexes": [
+            ("vendor", "data.asset.part_no"),
+            ("vendor", "data.asset.order_part_no"),
+            "labels",
+            "effective_labels",
+        ],
         "json_collection": "inv.objectmodels",
         "json_unique_fields": ["name", "uuid"],
         "json_depends_on": ["inv.vendors", "inv.connectionrules", "pm.measurementunits"],

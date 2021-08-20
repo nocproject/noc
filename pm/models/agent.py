@@ -69,7 +69,7 @@ class Agent(Document):
         "collection": "agents",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["serial", "ip.ip", "mac.mac"],
+        "indexes": ["serial", "ip.ip", "mac.mac", "labels", "effective_labels"],
     }
 
     name = StringField(unique=True)

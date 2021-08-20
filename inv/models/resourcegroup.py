@@ -103,8 +103,10 @@ class ResourceGroup(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "dynamic_service_labels",
-            "dynamic_client_labels",
+            "dynamic_service_labels.labels",
+            "dynamic_client_labels.labels",
+            "labels",
+            "effective_labels",
         ],
     }
 

@@ -78,6 +78,8 @@ class Service(Document):
             "effective_service_groups",
             "static_client_groups",
             "effective_client_groups",
+            "labels",
+            "effective_labels",
         ],
     }
     profile = ReferenceField(ServiceProfile, required=True)

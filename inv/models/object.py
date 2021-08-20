@@ -101,6 +101,8 @@ class Object(Document):
             "container",
             ("name", "container"),
             ("data.interface", "data.attr", "data.value"),
+            "labels",
+            "effective_labels",
         ],
     }
 

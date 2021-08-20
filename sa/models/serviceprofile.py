@@ -48,7 +48,12 @@ id_lock = Lock()
 @on_save
 @on_delete_check(check=[("sa.Service", "profile")])
 class ServiceProfile(Document):
-    meta = {"collection": "noc.serviceprofiles", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "noc.serviceprofiles",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": ["labels", "effective_labels"],
+    }
     name = StringField(unique=True)
     description = StringField()
     # Jinja2 service label template

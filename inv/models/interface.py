@@ -80,6 +80,8 @@ class Interface(Document):
             ("managed_object", "ifindex"),
             "service",
             "aggregated_interface",
+            "labels",
+            "effective_labels",
         ],
     }
     managed_object = ForeignKeyField(ManagedObject)

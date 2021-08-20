@@ -49,7 +49,12 @@ class VLAN(Document):
         "collection": "vlans",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [{"fields": ["segment", "vlan"], "unique": True}, "expired"],
+        "indexes": [
+            {"fields": ["segment", "vlan"], "unique": True},
+            "expired",
+            "labels",
+            "effective_labels",
+        ],
     }
 
     name = StringField()

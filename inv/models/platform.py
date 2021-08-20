@@ -51,7 +51,12 @@ class Platform(Document):
         "auto_create_index": False,
         "json_collection": "inv.platforms",
         "json_unique_fields": [("vendor", "name")],
-        "indexes": [{"fields": ["vendor", "name"], "unique": True}, ("vendor", "aliases")],
+        "indexes": [
+            {"fields": ["vendor", "name"], "unique": True},
+            ("vendor", "aliases"),
+            "labels",
+            "effective_labels",
+        ],
     }
     vendor = PlainReferenceField(Vendor)
     name = StringField()

@@ -154,7 +154,7 @@ class ManagedObjectSelectorLabels(object):
                     "enable_agent": False,
                     "enable_service": False,
                     "enable_serviceprofile": False,
-                    "enable_managedobject": False,
+                    "enable_managedobject": True,
                     "enable_managedobjectprofile": False,
                     "enable_administrativedomain": False,
                     "enable_authprofile": False,

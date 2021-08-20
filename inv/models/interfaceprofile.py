@@ -78,7 +78,15 @@ class InterfaceProfile(Document):
     Interface SLA profile and settings
     """
 
-    meta = {"collection": "noc.interface_profiles", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "noc.interface_profiles",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": [
+            "match_rules.labels",
+            ("dynamic_classification_policy", "match_rules.labels"),
+        ],
+    }
     name = StringField(unique=True)
     description = StringField()
     style = ForeignKeyField(Style, required=False)
