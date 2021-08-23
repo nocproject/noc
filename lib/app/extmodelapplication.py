@@ -50,6 +50,7 @@ from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
 from noc.models import get_model_id
 from noc.core.model.util import is_related_field
+from noc.inv.models.resourcegroup import ResourceGroup
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
 
@@ -322,7 +323,7 @@ class ExtModelApplication(ExtApplication):
                 getattr(self, "lookup_%s" % lt)(nq, np, v)
                 continue
             elif np in {"effective_service_groups", "effective_client_groups"} and v:
-                nq[f"{np}__contains"] = v
+                nq[f"{np}__overlap"] = ResourceGroup.get_nested_ids(v)
                 continue
             elif np in self.fk_fields and lt:
                 # dereference

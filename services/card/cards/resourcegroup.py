@@ -29,7 +29,7 @@ class ResourceGroupCard(BaseCard):
             services = []
             s_model = get_model(self.object.technology.service_model)
             card = self.get_card_name(self.object.technology.service_model)
-            for i in s_model.objects.filter(effective_service_groups=str(self.object.id)):
+            for i in s_model.objects.filter(effective_service_groups__overlap=[str(self.object.id)]):
                 services += [{"id": i.id, "card": card, "label": smart_text(i)}]
         else:
             services = []
@@ -38,7 +38,7 @@ class ResourceGroupCard(BaseCard):
             clients = []
             c_model = get_model(self.object.technology.client_model)
             card = self.get_card_name(self.object.technology.client_model)
-            for i in c_model.objects.filter(effective_client_groups=str(self.object.id)):
+            for i in c_model.objects.filter(effective_client_groups__overlap=[str(self.object.id)]):
                 clients += [{"id": i.id, "card": card, "label": smart_text(i)}]
         else:
             clients = []
