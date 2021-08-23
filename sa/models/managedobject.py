@@ -511,10 +511,12 @@ class ManagedObject(NOCModel):
         default="P",
     )
     # Resource groups
-    static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
-    effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
-    static_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
-    effective_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    static_service_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    effective_service_groups = ObjectIDArrayField(
+        db_index=True, blank=True, null=True, default=list
+    )
+    static_client_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    effective_client_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
     #
     labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)

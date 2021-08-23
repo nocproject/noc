@@ -15,6 +15,8 @@ from psycopg2.extensions import adapt
 from django.db import models
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+from django.db.models import CharField
+from django.contrib.postgres.fields import ArrayField
 from bson import ObjectId
 
 # NOC Modules
@@ -330,22 +332,22 @@ class CachedForeignKey(models.ForeignKey):
     forward_related_accessor_class = CachedForeignKeyDescriptor
 
 
-class ObjectIDArrayField(models.Field):
+class CharField24(CharField):
+    def db_type(self, connection):
+        # @todo length validator
+        return "CHAR(24)"
+
+
+class ObjectIDArrayField(ArrayField):
     """
     ObjectIDArrayField maps to PostgreSQL CHAR[] type
     """
 
+    def __init__(self, size=None, **kwargs):
+        super().__init__(CharField24(max_length=24), size=size, **kwargs)
+
     def db_type(self, connection):
         return "CHAR(24)[]"
-
-    def from_db_value(self, value, expression, connection):
-        if isinstance(value, list):
-            return value
-        elif value == "{}":
-            return []
-        elif value is None:
-            return None
-        return value[1:-1].split(",")
 
     def get_db_prep_value(self, value, connection, prepared=False):
         if value is None:
