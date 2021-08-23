@@ -14,7 +14,6 @@ import time
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.sa.models.selectorcache import SelectorCache
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.serviceprofile import ServiceProfile
@@ -137,9 +136,9 @@ class Command(BaseCommand):
 
         mo = alarm.managed_object
         self.print("-" * 72)
-        self.print("Alarm Id : %s  Time: %s" % (alarm.id, alarm.timestamp))
-        self.print("Class    : %s" % alarm.alarm_class.name)
-        self.print("Object   : %s  Platform: %s  IP: %s" % (mo.name, mo.platform, mo.address))
+        self.print(f"Alarm Id : {alarm.id}  Time: {alarm.timestamp}")
+        self.print(f"Class    : {alarm.alarm_class.name}")
+        self.print(f"Object   : {mo.name}  Platform: {mo.platform}  IP: {mo.address}")
         c = mo.administrative_domain
         adm_domains = [c]
         while c.parent:
@@ -156,32 +155,29 @@ class Command(BaseCommand):
             self.print("@ No matched escalations")
             return
         for esc in escalations:
-            self.print("[Chain: %s]" % esc.name)
+            self.print(f"[Chain: {esc.name}]")
             if alarm.root:
-                self.print("    @ Not a root cause (Root Id: %s)" % alarm.root)
+                self.print(f"    @ Not a root cause (Root Id: {alarm.root})")
                 continue
             for e in esc.escalations:
-                self.print("    [After %ss]" % e.delay)
+                self.print(f"    [After {e.delay}s]")
                 # Check administrative domain
                 if e.administrative_domain and e.administrative_domain.id not in alarm.adm_path:
                     self.print(
-                        "    @ Administrative domain mismatch (%s not in %s)"
-                        % (e.administrative_domain.id, alarm.adm_path)
+                        f"    @ Administrative domain mismatch ({e.administrative_domain.id} not in {alarm.adm_path})"
                     )
                     continue
                 # Check severity
                 if e.min_severity and alarm.severity < e.min_severity:
-                    self.print(
-                        "    @ Severity mismatch: %s < %s" % (alarm.severity, e.min_severity)
-                    )
+                    self.print(f"    @ Severity mismatch: {alarm.severity} < {e.min_severity}")
                     continue
-                # Check selector
-                if e.selector and not SelectorCache.is_in_selector(mo, e.selector):
-                    self.print("    @ Selector mismatch (%s required)" % (e.selector.name))
+                # Check resource group
+                if e.resource_group and str(e.resource_group.id) not in mo.effective_service_groups:
+                    self.print(f"    @ ResourceGroup mismatch ({e.resource_group.name} required)")
                     continue
                 # Check time pattern
                 if e.time_pattern and not e.time_pattern.match(alarm.timestamp):
-                    self.print("    @ Time pattern mismatch (%s required)" % (e.time_pattern.name))
+                    self.print(f"    @ Time pattern mismatch ({e.time_pattern.name} required)")
                     continue
                 # Render escalation message
                 if not e.template:
@@ -231,25 +227,22 @@ class Command(BaseCommand):
                                 if o.can_escalate(depended=True):
                                     if o.tt_system == mo.tt_system:
                                         self.print(
-                                            "    @ Add to group TT %s. Remote Id: %s"
-                                            % (o.name, o.tt_system_id)
+                                            f"    @ Add to group TT {o.name}. Remote Id: {o.tt_system_id}"
                                         )
                                     else:
                                         self.print(
-                                            "    @ Cannot add to group TT. Belongs to other TT system"
-                                            % o.name
+                                            f"    @ Cannot add to group TT {o.name}. Belongs to other TT system"
                                         )
                                 else:
                                     self.print(
-                                        "    @ Cannot add to group TT %s. Escalations are disabled"
-                                        % (o.name)
+                                        f"    @ Cannot add to group TT {o.name}. Escalations are disabled"
                                     )
                 if e.notification_group:
                     if mo.can_notify():
                         subject = e.template.render_subject(**ctx)
                         body = e.template.render_body(**ctx)
                         self.print(
-                            "    @ Sending notification to group '%s'" % e.notification_group.name
+                            f"    @ Sending notification to group '{e.notification_group.name}'"
                         )
                         self.print("    | Subject: %s" % subject)
                         self.print("    |")

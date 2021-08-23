@@ -358,6 +358,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "match_rules",
                                     xtype: "listform",
+                                    rows: 6,
+                                    labelAlign: "top",
                                     uiStyle: "large",
                                     fieldLabel: __("Match Rules"),
                                     items: [
