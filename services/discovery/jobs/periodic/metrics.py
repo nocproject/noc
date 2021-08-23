@@ -752,6 +752,8 @@ class MetricsCheck(DiscoveryCheck):
                     path,
                     m.value,
                     labels=labels,
+                    sensor=self.sensors_metrics.get(m.id),
+                    sla_probe=self.sla_probe_metrics.get(m.id),
                 )
             if threshold.close_handler:
                 if threshold.close_handler.allow_threshold:
