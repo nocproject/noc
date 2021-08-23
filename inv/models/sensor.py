@@ -49,7 +49,7 @@ class Sensor(Document):
         "collection": "sensors",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["agent"],
+        "indexes": ["agent", "labels", "effective_labels"],
     }
 
     profile = PlainReferenceField(SensorProfile, default=SensorProfile.get_default_profile)

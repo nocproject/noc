@@ -50,7 +50,7 @@ class SLAProbe(Document):
         "collection": "noc.sla_probes",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["managed_object"],
+        "indexes": ["managed_object", "labels", "effective_labels"],
     }
 
     managed_object = ForeignKeyField(ManagedObject)

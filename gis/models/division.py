@@ -41,7 +41,7 @@ class Division(Document):
         "collection": "noc.divisions",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["parent", "data", "name", "remote_id"],
+        "indexes": ["parent", "data", "name", "remote_id", "labels", "effective_labels"],
     }
     # Division type
     type = StringField(default="A", choices=[("A", "Administrative")])

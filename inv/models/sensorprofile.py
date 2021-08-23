@@ -48,7 +48,17 @@ class MatchRule(EmbeddedDocument):
 @Label.model
 @on_delete_check(check=[("inv.Sensor", "profile")])
 class SensorProfile(Document):
-    meta = {"collection": "sensorprofiles", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "sensorprofiles",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": [
+            "labels",
+            "effective_labels",
+            "match_rules.labels",
+            ("dynamic_classification_policy", "match_rules.labels"),
+        ],
+    }
 
     name = StringField(unique=True)
     description = StringField()

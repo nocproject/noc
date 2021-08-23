@@ -112,6 +112,5 @@ class MOCardDashboard(MODashboard):
             "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "ping_interval": self.object.object_profile.ping_interval,
-            "discovery_interval": "%ss"
-            % int(self.object.object_profile.periodic_discovery_interval / 2),
+            "discovery_interval": int(self.object.object_profile.periodic_discovery_interval / 2),
         }

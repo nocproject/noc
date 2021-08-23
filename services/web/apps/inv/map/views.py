@@ -66,7 +66,8 @@ class MapApplication(ExtApplication):
             x = d.copy()
             if x["type"] == "managedobject":
                 del x["mo"]
-                x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
+                # x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
+                x["external"] = x.get("role") != "segment"
             elif d["type"] == "cloud":
                 del x["link"]
                 x["external"] = False
@@ -78,9 +79,9 @@ class MapApplication(ExtApplication):
             # Too many objects
             return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
         # if we set selector in segment
-        is_view = segment.selector
-        if is_view:
-            mos = segment.selector.managed_objects.values_list("id", flat=True)
+        # is_view = segment.selector
+        # if is_view:
+        #     mos = segment.selector.managed_objects.values_list("id", flat=True)
         # Load settings
         settings = MapSettings.objects.filter(segment=id).first()
         node_hints = {}

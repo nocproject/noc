@@ -35,7 +35,7 @@ id_lock = Lock()
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",
-        "indexes": ["name"],
+        "indexes": ["name", "labels", "effective_labels"],
         "strict": False,
         "auto_create_index": False,
     }

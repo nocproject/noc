@@ -67,7 +67,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
 class State(Document):
     meta = {
         "collection": "states",
-        "indexes": [{"fields": ["workflow", "name"], "unique": True}],
+        "indexes": [{"fields": ["workflow", "name"], "unique": True}, "labels", "effective_labels"],
         "strict": False,
         "auto_create_index": False,
     }

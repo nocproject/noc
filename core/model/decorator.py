@@ -242,13 +242,14 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
     return decorator
 
 
-def tree(field=None):
+def tree(field="parent"):
     """
     Class decorator checking cycling.
 
     """
 
-    def _before_save_handler(sender, instance, field=field, *args, **kwargs):
+    def _before_save_handler(sender, instance=None, document=None, field=field, *args, **kwargs):
+        instance = instance or document
         parent = getattr(instance, field, None)
         seen = {instance.id}
         while parent:

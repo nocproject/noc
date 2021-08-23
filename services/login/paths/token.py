@@ -117,8 +117,11 @@ async def token(
         if user:
             return get_token_response(user)
     return JSONResponse(
-        content={"error": "invalid_scope", "error_description": "Access denied"},
-        status_code=HTTPStatus.BAD_REQUEST,
+        content={
+            "error": "invalid_client",
+            "error_description": "Username or password is incorrect",
+        },
+        status_code=HTTPStatus.UNAUTHORIZED,
     )
 
 

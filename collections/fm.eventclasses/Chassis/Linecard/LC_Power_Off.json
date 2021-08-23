@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Linecard | LC Power Off",
+    "$collection": "fm.eventclasses",
+    "uuid": "83d57f4c-32c2-42db-af55-1517e145537c",
+    "description": "Linecard has been power off",
+    "action": "A",
+    "vars": [
+        {
+            "name": "number",
+            "description": "Slot number",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Linecard in slot {{number}} power off",
+    "body_template": "Linecard in slot {{number}} has been power off",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Linecard | LC Down"
+        }
+    ]
+}

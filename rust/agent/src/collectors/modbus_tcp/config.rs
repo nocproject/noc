@@ -18,6 +18,10 @@ pub struct ModbusTcpConfig {
     #[serde(default = "default_holding")]
     pub register_type: RegisterType,
     pub format: ModbusFormat,
+    #[serde(default = "default_5000")]
+    pub timeout_ms: u64,
+    #[serde(default = "default_255")]
+    pub slave: u8,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -35,4 +39,12 @@ fn default_502() -> u16 {
 
 fn default_holding() -> RegisterType {
     RegisterType::Holding
+}
+
+fn default_5000() -> u64 {
+    5_000
+}
+
+fn default_255() -> u8 {
+    255
 }

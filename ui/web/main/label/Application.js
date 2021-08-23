@@ -23,7 +23,7 @@ Ext.define("NOC.main.label.Application", {
         },
         formulas: {
             isEnableDisable: function(get) {
-                return get("is_builtin") || get("is_regex");
+                return get("is_builtin");
             },
         }
     },
@@ -37,6 +37,7 @@ Ext.define("NOC.main.label.Application", {
                     width: 100,
                     renderer: function(v, _x, item) {
                         return NOC.render.Label({
+                            badges: item.data.badges,
                             name: item.data.name,
                             description: item.data.description || "",
                             bg_color1: item.data.bg_color1 || 0,
@@ -393,32 +394,50 @@ Ext.define("NOC.main.label.Application", {
                                 {
                                     name: "enable_managedobjectprofile",
                                     xtype: "checkbox",
-                                    boxLabel: __("Managed Object Profile")
+                                    boxLabel: __("Managed Object Profile"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_agent",
                                     xtype: "checkbox",
-                                    boxLabel: __("Agent")
+                                    boxLabel: __("Agent"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_service",
                                     xtype: "checkbox",
-                                    boxLabel: __("Service")
+                                    boxLabel: __("Service"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_serviceprofile",
                                     xtype: "checkbox",
-                                    boxLabel: __("Service Profile")
+                                    boxLabel: __("Service Profile"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_slaprobe",
                                     xtype: "checkbox",
-                                    boxLabel: __("SLA Probe")
+                                    boxLabel: __("SLA Probe"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_slaprofile",
                                     xtype: "checkbox",
-                                    boxLabel: __("SLA Profile")
+                                    boxLabel: __("SLA Profile"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_interface",
@@ -434,6 +453,9 @@ Ext.define("NOC.main.label.Application", {
                             defaults: {
                                 padding: 4,
                                 labelAlign: "right"
+                            },
+                            bind: {
+                                disabled: "{is_regex}"
                             },
                             items: [
                                 {
@@ -510,37 +532,58 @@ Ext.define("NOC.main.label.Application", {
                                 {
                                     name: "enable_allocationgroup",
                                     xtype: "checkbox",
-                                    boxLabel: __("Allocation Group")
+                                    boxLabel: __("Allocation Group"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_networksegment",
                                     xtype: "checkbox",
-                                    boxLabel: __("Network Segment")
+                                    boxLabel: __("Network Segment"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_object",
                                     xtype: "checkbox",
-                                    boxLabel: __("Object")
+                                    boxLabel: __("Object"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_objectmodel",
                                     xtype: "checkbox",
-                                    boxLabel: __("Object Model")
+                                    boxLabel: __("Object Model"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_platform",
                                     xtype: "checkbox",
-                                    boxLabel: __("Platform")
+                                    boxLabel: __("Platform"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_resourcegroup",
                                     xtype: "checkbox",
-                                    boxLabel: __("Resource Group")
+                                    boxLabel: __("Resource Group"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_sensorprofile",
                                     xtype: "checkbox",
-                                    boxLabel: __("Sensor Profile")
+                                    boxLabel: __("Sensor Profile"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                                 {
                                     name: "enable_sensor",
@@ -550,7 +593,10 @@ Ext.define("NOC.main.label.Application", {
                                 {
                                     name: "enable_division",
                                     xtype: "checkbox",
-                                    boxLabel: __("GIS Division")
+                                    boxLabel: __("GIS Division"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
                                 },
                             ]
                         },
@@ -561,6 +607,9 @@ Ext.define("NOC.main.label.Application", {
                             defaults: {
                                 padding: 4,
                                 labelAlign: "right"
+                            },
+                            bind: {
+                                disabled: "{is_regex}"
                             },
                             items: [
                                 {
@@ -597,6 +646,9 @@ Ext.define("NOC.main.label.Application", {
                             defaults: {
                                 padding: 4,
                                 labelAlign: "right"
+                            },
+                            bind: {
+                                disabled: "{is_regex}"
                             },
                             items: [
                                 {

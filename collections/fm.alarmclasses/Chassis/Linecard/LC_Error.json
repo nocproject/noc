@@ -1,0 +1,24 @@
+{
+    "name": "Chassis | Linecard | LC Error",
+    "$collection": "fm.alarmclasses",
+    "uuid": "fcc51579-de89-40eb-8675-b99fe1297baa",
+    "is_unique": true,
+    "discriminator": ["number"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars": [
+        {
+            "name": "number",
+            "description": "Slot number"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "subject_template": "Linecard in slot {{number}} Error{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Linecard in slot {{number}} Error{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -35,7 +35,7 @@ id_lock = Lock()
 class Subscriber(Document):
     meta = {
         "collection": "noc.subscribers",
-        "indexes": ["name"],
+        "indexes": ["name", "labels", "effective_labels"],
         "strict": False,
         "auto_create_index": False,
     }
