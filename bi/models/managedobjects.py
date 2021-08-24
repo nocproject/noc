@@ -40,7 +40,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain as Administr
 class ManagedObject(Model):
     class Meta(object):
         db_table = "managedobjects"
-        engine = MergeTree("date", ("managed_object", "ts"))
+        engine = MergeTree("date", ("date", "managed_object"), primary_keys=("date",))
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

@@ -77,11 +77,13 @@ class Config(BaseConfig):
         extract_delay_alarms = SecondsParameter(default="1h")
         clean_delay_alarms = SecondsParameter(default="1d")
         reboot_interval = SecondsParameter(default="1M")
+        alarmlogs_interval = SecondsParameter(default="1M")
         extract_delay_reboots = SecondsParameter(default="1h")
         clean_delay_reboots = SecondsParameter(default="1d")
         chunk_size = IntParameter(default=500)
         extract_window = SecondsParameter(default="1d")
         enable_alarms = BooleanParameter(default=False)
+        enable_alarmlogs = BooleanParameter(default=False)
         enable_reboots = BooleanParameter(default=False)
         enable_managedobjects = BooleanParameter(default=False)
         enable_alarms_archive = BooleanParameter(default=False)
@@ -146,8 +148,6 @@ class Config(BaseConfig):
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
         encoding = StringParameter(default="", choices=["", "deflate", "gzip"])
-        # Enable LowCardinality fileds
-        enable_low_cardinality = BooleanParameter(default=False)
         # Cluster name for sharded/replicated configuration
         # Matches appropriative <remote_servers> part
         cluster = StringParameter()

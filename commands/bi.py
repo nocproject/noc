@@ -25,6 +25,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import get_db, connect
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
+from noc.core.etl.bi.extractor.alarmlogs import AlarmLogsExtractor
 from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
 from noc.core.bi.dictionaries.loader import loader
 from noc.core.clickhouse.model import DictionaryModel
@@ -37,7 +38,7 @@ BATCH_SIZE = 10000
 
 
 class Command(BaseCommand):
-    EXTRACTORS = [RebootsExtractor, AlarmsExtractor, ManagedObjectsExtractor]
+    EXTRACTORS = [RebootsExtractor, AlarmsExtractor, ManagedObjectsExtractor, AlarmLogsExtractor]
     # Extract by 1-day chunks
     EXTRACT_WINDOW = config.bi.extract_window
     MIN_WINDOW = datetime.timedelta(seconds=2)
@@ -118,8 +119,7 @@ class Command(BaseCommand):
                     window = window // 2
                     if window < self.MIN_WINDOW:
                         self.print(
-                            "[%s] Window less than %d seconds. Too many element in interval. Fix it manually"
-                            % (self.MIN_WINDOW.total_seconds(), e.name)
+                            f"[{e.name}] Window less than {self.MIN_WINDOW.total_seconds()} seconds. Too many element in interval. Fix it manually"
                         )
                         self.die("Too many elements per interval")
                     self.print(

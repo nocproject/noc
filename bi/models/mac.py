@@ -56,7 +56,9 @@ class MAC(Model):
 
     class Meta(object):
         db_table = "mac"
-        engine = MergeTree("date", ("ts", "managed_object"))
+        engine = MergeTree(
+            "date", ("date", "managed_object"), primary_keys=("date", "managed_object")
+        )
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

@@ -52,7 +52,9 @@ class Subscribers(NestedModel):
 class Alarms(Model):
     class Meta(object):
         db_table = "alarms"
-        engine = MergeTree("date", ("ts", "managed_object"))
+        engine = MergeTree(
+            "date", ("ts", "managed_object", "alarm_class"), primary_keys=("ts", "managed_object")
+        )
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

@@ -22,7 +22,7 @@ from noc.core.translation import ugettext as _
 class RoutingNeighbors(Model):
     class Meta:
         db_table = "routingneighbors"
-        engine = MergeTree("date", ("managed_object", "ts"))
+        engine = MergeTree("date", ("managed_object", "ts"), primary_keys=("managed_object", "ts"))
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))
