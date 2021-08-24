@@ -36,7 +36,7 @@ class Flows(Model):
 
     class Meta:
         db_table = "flows"
-        engine = MergeTree("date", ("ts", "managed_object"))
+        engine = MergeTree("date", ("date",), primary_keys=("date",))
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

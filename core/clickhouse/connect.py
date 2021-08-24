@@ -71,14 +71,15 @@ class ClickhouseClient(object):
             post=f"CREATE DATABASE IF NOT EXISTS {db_name or config.clickhouse.db};", nodb=True
         )
 
-    def has_table(self, name):
+    def has_table(self, name, is_view=False):
         r = self.execute(
-            """
+            f"""
             SELECT COUNT(*)
             FROM system.tables
             WHERE
               database=%s
               AND name = %s
+              AND engine {"!=" if not is_view else "="} 'View'
         """,
             [config.clickhouse.db, name],
         )

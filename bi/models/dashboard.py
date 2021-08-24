@@ -174,7 +174,6 @@ class Dashboard(Document):
                 "config": smart_text(b85encode(self.config)),
                 "created": self.created.isoformat(),
                 "changed": self.changed.isoformat(),
-                "access": [],
             },
             order=["title", "uuid", "description", "created"],
         )

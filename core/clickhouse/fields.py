@@ -13,9 +13,6 @@ import socket
 import struct
 from collections import defaultdict
 
-# NOC modules
-from noc.config import config
-
 
 class BaseField(object):
     """
@@ -37,7 +34,7 @@ class BaseField(object):
         self.default = default or self.default_value
         self.description = description
         self.is_agg = False
-        self.low_cardinality = config.clickhouse.enable_low_cardinality and low_cardinality
+        self.low_cardinality = low_cardinality
 
     def set_name(self, name):
         """
