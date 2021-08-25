@@ -34,7 +34,7 @@ forms:
     db:
       default: noc
       label: "DB name"
-      description: "Have to be 'noc' for now"
+      description: "Choose name of db"
       type: str
       common: environment
     query_size:
@@ -52,6 +52,10 @@ forms:
       default: "Europe/Moscow"
       label: "Timezone of server's node in zoneinfo format"
       type: str
+    expose_metrics:
+      label: "Expose metrics in Prometheus format"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
 services:
   clickhouse:
     level: system
