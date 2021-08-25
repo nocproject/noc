@@ -152,4 +152,14 @@
     -->
     <!-- <max_table_size_to_drop>0</max_table_size_to_drop> -->
 
+    {% if clickhouse_expose_metrics %}
+     <prometheus>
+        <endpoint>/metrics</endpoint>
+        <port>8001</port>
+        <metrics>true</metrics>
+        <events>true</events>
+        <asynchronous_metrics>true</asynchronous_metrics>
+    </prometheus>
+   {% endif %}
+
 </yandex>
