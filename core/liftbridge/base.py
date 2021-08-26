@@ -701,7 +701,6 @@ class LiftBridgeClient(object):
                     r = await channel.FetchCursor(
                         FetchCursorRequest(stream=stream, partition=partition, cursorId=cursor_id)
                     )
-
                 except AioRpcError as e:
                     logger.info("Failed to get cursor: %s", e)
                     if e.code() in self.GRPC_RESTARTABLE_CODES:
