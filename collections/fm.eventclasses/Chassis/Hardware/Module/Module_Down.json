@@ -1,8 +1,8 @@
 {
-    "name": "Chassis | Hardware | Module | Module Offline",
+    "name": "Chassis | Hardware | Module | Module Down",
     "$collection": "fm.eventclasses",
-    "uuid": "eba4e5f8-a7c5-4de0-89e3-5ad3e011dd21",
-    "description": "Hardware module has been offline state",
+    "uuid": "49c839ed-0436-4b8a-8fa7-aba1a4b82e68",
+    "description": "Hardware module failed",
     "action": "A",
     "vars": [
         {
@@ -24,8 +24,8 @@
             "required": false
         }
     ],
-    "subject_template": "Hardware module {{module}} offline{% if interface %}, interface {{interface}}{% endif %}",
-    "body_template": "Hardware module {{module}} has been offline state{% if interface %}, interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+    "subject_template": "Hardware module {{module}} failed{% if interface %}, interface {{interface}}{% endif %}",
+    "body_template": "Hardware module {{module}} failed{% if interface %}, interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",
