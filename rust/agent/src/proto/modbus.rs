@@ -7,8 +7,9 @@
 
 use crate::error::AgentError;
 use serde::Deserialize;
+use std::hash::Hash;
 
-#[derive(Deserialize, Debug, Clone, Copy)]
+#[derive(Deserialize, Debug, Clone, Copy, Hash)]
 pub enum ModbusFormat {
     // 16 bit
     #[serde(rename = "i16_be")]

@@ -41,7 +41,7 @@ pub struct ZkConfigMetrics {
     pub retry_timeout_ms: Option<u64>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Hash)]
 pub struct ZkConfigCollector {
     pub id: String,
     pub service: u64,

@@ -25,13 +25,14 @@ use enum_dispatch::enum_dispatch;
 use serde::Deserialize;
 use serde_json::value::RawValue;
 use std::convert::TryFrom;
+use std::hash::Hash;
 
 /// Collector config variants.
 /// Each collector must have own variant.
 /// Use
 /// `#[serde(rename = "<name>")]`
 /// To bind particular collector with `type` field of configuration JSON
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 #[serde(tag = "type")]
 pub enum CollectorConfig {
     #[serde(rename = "block_io")]
