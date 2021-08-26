@@ -73,8 +73,8 @@ class AlarmLogsExtractor(BaseExtractor):
     @classmethod
     def get_start(cls):
         d = ArchivedAlarm._get_collection().find_one(
-            {}, {"_id": 0, "timestamp": 1}, sort=[("timestamp", 1)]
+            {}, {"_id": 0, "log.timestamp": 1}, sort=[("log.timestamp", 1)]
         )
         if not d:
             return None
-        return d.get("timestamp")
+        return d["log"][0].get("timestamp")
