@@ -410,7 +410,9 @@ class Config(BaseConfig):
         stream_jobs_segment_max_bytes = BytesParameter(default=0)
         stream_jobs_auto_pause_time = SecondsParameter(default=0)
         metrics_send_delay = FloatParameter(default=0.25)
-        keepalive_timeout_ms = IntParameter(default=1000)
+        keepalive_time_ms = IntParameter(default=5000)
+        inhibit_health_checking = BooleanParameter(default=True)
+        max_pings_without_data = IntParameter(default=0)
 
     listen = StringParameter(default="auto:0")
 

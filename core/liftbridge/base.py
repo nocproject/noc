@@ -119,7 +119,9 @@ class GRPCChannel(object):
                 ("grpc.max_send_message_length", config.liftbridge.max_message_size),
                 ("grpc.max_receive_message_length", config.liftbridge.max_message_size),
                 ("grpc.enable_http_proxy", config.liftbridge.enable_http_proxy),
-                ("grpc.keepalive_timeout_ms", config.liftbridge.keepalive_timeout_ms),
+                ("grpc.keepalive_time_ms", config.liftbridge.keepalive_time_ms),
+                ("grpc.inhibit_health_checking", config.liftbridge.inhibit_health_checking),
+                ("grpc.http2.max_pings_without_data", config.liftbridge.max_pings_without_data),
             ],
         )
         while True:
@@ -699,6 +701,7 @@ class LiftBridgeClient(object):
                     r = await channel.FetchCursor(
                         FetchCursorRequest(stream=stream, partition=partition, cursorId=cursor_id)
                     )
+
                 except AioRpcError as e:
                     logger.info("Failed to get cursor: %s", e)
                     if e.code() in self.GRPC_RESTARTABLE_CODES:
