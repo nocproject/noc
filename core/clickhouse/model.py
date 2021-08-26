@@ -214,14 +214,13 @@ class Model(object, metaclass=ModelBase):
         # Get existing columns
         existing = {}
         for name, type in connect.execute(
-            """
+            f"""
             SELECT name, type
             FROM system.columns
             WHERE
-              database=%s
-              AND table=%s
+              database='{config.clickhouse.db}'
+              AND table='{table_name}'
             """,
-            [config.clickhouse.db, table_name],
         ):
             existing[name] = type
         # Check
@@ -242,6 +241,7 @@ class Model(object, metaclass=ModelBase):
                     )
 
             else:
+                print(f"[{table_name}|{field_name}] Alter column")
                 query = (
                     f"ALTER TABLE {table_name} ADD COLUMN {cls.quote_name(field_name)} {db_type}"
                 )
@@ -270,7 +270,8 @@ class Model(object, metaclass=ModelBase):
             WHERE
               database='{config.clickhouse.db}'
               AND name='{table_name}'
-              AND engine_full LIKE 'MergeTree(%'
+              AND engine = 'MergeTree'
+              AND (engine_full NOT LIKE 'MergeTree()%' AND engine_full NOT LIKE 'MergeTree %')
             """
         )
         return not bool(r)
@@ -315,6 +316,7 @@ class Model(object, metaclass=ModelBase):
             changed = True
         # For cluster mode check d_* distributed table
         if is_cluster and not cls._meta.is_local:
+            print(f"[{table}] Check distributed table")
             if ch.has_table(dist_table):
                 changed |= cls.ensure_columns(ch, dist_table)
             else:
@@ -715,7 +717,13 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         return True
 
     @classmethod
-    def ensure_dictionary(cls, connect=None):
+    def drop_dictionary(cls, connect=None):
+        ch = connect or connection()
+        ch.execute(post=f" DROP DICTIONARY IF EXISTS {cls._getdictionary_table()}")
+        return True
+
+    @classmethod
+    def ensure_dictionary(cls, connect=None) -> bool:
         """
         Check dictionary is exists
         :param connect:
@@ -723,8 +731,7 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         """
         # changed = False
         ch = connect or connection()
-        ch.execute(post=cls.get_create_dictionary_sql())
-        return True
+        return bool(ch.execute(post=cls.get_create_dictionary_sql()))
 
     @classmethod
     def dump(cls, out):
