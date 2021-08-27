@@ -9,6 +9,7 @@ use super::super::Reader;
 use crate::config::ConfigParser;
 use crate::config::ZkConfig;
 use crate::error::AgentError;
+use crate::meta::VERSION;
 use crate::state::AgentState;
 use crate::sysid::SysId;
 use async_trait::async_trait;
@@ -16,14 +17,14 @@ use async_trait::async_trait;
 pub struct HttpReader {
     path: String,
     disable_cert_validation: bool,
-    querystring: Option<String>,
+    querystring: String,
     key_header: Option<String>,
 }
 
 pub struct HttpReaderBuilder {
     path: Option<String>,
     disable_cert_validation: bool,
-    querystring: Option<String>,
+    querystring: String,
     key_header: Option<String>,
 }
 
@@ -32,7 +33,7 @@ impl HttpReader {
         HttpReaderBuilder {
             path: None,
             disable_cert_validation: false,
-            querystring: None,
+            querystring: format!("version={}", VERSION),
             key_header: None,
         }
     }
@@ -49,11 +50,7 @@ impl HttpReaderBuilder {
     }
     pub fn with_agent_state(&mut self, state: Option<&AgentState>) -> &mut Self {
         if let Some(s) = state {
-            let mut qs: Vec<String> = Vec::new();
-            // Insert existing querystring, if any
-            if let Some(old_qs) = &self.querystring {
-                qs.push(old_qs.clone());
-            }
+            let mut qs: Vec<String> = vec![self.querystring.clone()];
             // Agent id
             if let Some(agent_id) = s.agent_id {
                 qs.push(format!("agent_id={}", agent_id));
@@ -62,19 +59,13 @@ impl HttpReaderBuilder {
             if let Some(key_header) = s.agent_key.clone() {
                 self.key_header = Some(key_header)
             }
-            if !qs.is_empty() {
-                self.querystring = Some(qs.join("&"));
-            }
+            self.querystring = qs.join("&");
         }
         self
     }
     pub fn with_sys_id(&mut self, sys_id: Option<&SysId>) -> &mut Self {
         if let Some(s) = sys_id {
-            let mut qs: Vec<String> = Vec::new();
-            // Insert existing querystring, if any
-            if let Some(old_qs) = &self.querystring {
-                qs.push(old_qs.clone());
-            }
+            let mut qs: Vec<String> = vec![self.querystring.clone()];
             // MAC
             if !s.mac.is_empty() {
                 qs.extend(s.mac.iter().map(|v| format!("mac={}", v)))
@@ -84,9 +75,7 @@ impl HttpReaderBuilder {
                 qs.extend(s.ip.iter().map(|v| format!("ip={}", v)))
             }
             //
-            if !qs.is_empty() {
-                self.querystring = Some(qs.join("&"));
-            }
+            self.querystring = qs.join("&");
         }
         self
     }
@@ -104,12 +93,9 @@ impl HttpReaderBuilder {
 impl Reader for HttpReader {
     async fn get_config(&self) -> Result<ZkConfig, AgentError> {
         // Build full url
-        let url = match &self.querystring {
-            Some(qs) => match &self.path.find('?') {
-                Some(_) => format!("{}&{}", self.path, qs),
-                None => format!("{}?{}", self.path, qs),
-            },
-            None => self.path.clone(),
+        let url = match &self.path.find('?') {
+            Some(_) => format!("{}&{}", self.path, self.querystring),
+            None => format!("{}?{}", self.path, self.querystring),
         };
         log::debug!("Reading config file: {}", url);
         // Request
