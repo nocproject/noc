@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------
 
 use serde::Deserialize;
+use std::hash::Hash;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 pub struct FsConfig {}
