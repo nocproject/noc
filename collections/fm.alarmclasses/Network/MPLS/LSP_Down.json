@@ -10,10 +10,14 @@
         {
             "name": "name",
             "description": "LSP name"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
         }
     ],
-    "subject_template": "MPLS LSP Down: {{name}}",
-    "body_template": "MPLS LSP Down: {{name}}",
+    "subject_template": "MPLS LSP Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS LSP Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""
