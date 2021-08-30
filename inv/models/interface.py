@@ -402,8 +402,7 @@ class Interface(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        # return Label.get_effective_setting(label, setting="enable_sensor")
-        return False
+        return Label.get_effective_setting(label, setting="enable_interface")
 
     @classmethod
     def iter_effective_labels(cls, instance: "Interface") -> Iterable[List[str]]:
@@ -411,7 +410,7 @@ class Interface(Document):
         # if instance.profile.labels:
         #     yield list(instance.profile.labels)
         yield Label.get_effective_regex_labels("interface_name", instance.name)
-        yield Label.get_effective_regex_labels("interface_description", instance.name)
+        yield Label.get_effective_regex_labels("interface_description", instance.description)
         if instance.managed_object:
             yield from ManagedObject.iter_effective_labels(instance.managed_object)
         # if instance.is_linked:
