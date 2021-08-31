@@ -1,33 +1,60 @@
-# Technology
+# Технология
 
-Technology is an abstraction which implies restriction
-on [Resource Groups](../resource-group/index.md), their *Services* and *Clients* and
-their connections. Technology can be formulated as assertion
+Описывает область применения [группы](../resource-group/index.md) (`Resource Group`), тем самым определяя тип организуемой связи. В модели задаётся какой ресурс **предоставляет** (`Client model`) группа и какой ресур **потребляется**  (`Service model`) участниками группы со стороны клиента. Для случая, когда `Client model` не задан, мы получаем простую группировку - `Object Group` или `Interface Group`.
 
-> *Services* do *technology* for *clients*
 
-Or in simplified case, without clients
+**Справочник технологий** находится в разделе `Учёт объектов` (`Inventory`) -> Настройки (`Setup`) -> Технологии (`Technology`). Для настройки доступны следующие опции.
 
-> *Services* are groupped together to do *technology*
+* Имя (`Name`) - наименование технологии, задаётся в струтрированной нотации через `|`
+* Модель сервиса (`Service Model`) - кто будет предоставлять ресурс
+* Модель клиента (`Client Model`) - кто будет потреблять ресурс
+* Один сервис (`Single Service`) - сервисный ресурс может быть только в одной группе с данной технологией. Если окажется что по данной технологии ресурс попадает в несколько ресурсных групп, то сохранится только последняя.
+* Один клиент (`Single Client`) - клиентский ресурс может быть только в одной группе с данной технологией. Если окажется что по данной технологии ресурс попадает в несколько ресурсных групп, то сохранится только последняя.
+* Разрешить вложенные (`Allow children`) - разрешить назначение вложенных ресурсных групп
 
-Technology is a predicate
 
-> *technology*(*services*, *clients*)
+> Статические группы имеют приоритет над динамическиими при просчете ограничений
 
-or
 
-> *technology*(*services*)
+## Примеры технологий
 
-## Configuration
+В систему уже добавлено некоторое число Технологий, позволяющих сразу реализовывать связи. Рассмотрим их
 
-Technology settings are:
+#### Group
 
-* `service_model` - Database model (i.e. `sa.ManagedObject`) used to *provide* service.
-  Empty value means groupping element, not providing services
-* `client_model` - Database model (like in `service_model`) used to *consume* service.
-* `single_service` - *Service* resource may join only one [Resource Group](../resource-group/index.md) of given technology.
-* `single_client` - *Client* resource may join only one [Resource Group](../resource-group/index.md) of given technology.
-* `allow_children` - [Resource Group](../resource-group/index.md) of given technology allows children groups and can be node of hierarchy.
+Ресурсные группы этой технологии не поддерживают прямое назначение ресурсам, но могут учасвовать в иерархии групп.
 
-## Defaults
-NOC provides lots of *technologies* out of box. See Technologies Reference for details.
+| Поле | Значение  |
+| ---- | --------- |
+| service_model | - |
+| client_model | - |
+| single_service | {{ no }} |
+| single_client | {{ no }} |
+| allow_children | {{ yes }} |
+
+#### ObjectGroup
+
+Технология поддерживает группировку устройств (`ManagedObject`).
+
+
+| Поле | Значение  |
+| ---- | --------- |
+| service_model | `sa.ManagedObject` |
+| client_model | - |
+| single_service | {{ no }} |
+| single_client | {{ no }} |
+| allow_children | {{ no }} |
+
+#### Network | Controller
+
+Позволяет показать связь - `Контроллер-CPE`. `Single Client` допускает присвоение только одной группы контроллера 
+
+| Поле           | Значение                      |
+| -------------- | ----------------------------- |
+| service_model  | sa.ManagedObject (Контроллер) |
+| client_model   | sa.ManagedObject (CPE)        |
+| single_service | {{ no }}                         |
+| single_client  | {{ yes }}                          |
+| allow_children | {{ no }}                         |
+
+
