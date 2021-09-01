@@ -1,0 +1,26 @@
+{
+    "name": "Network | SONET | Path Status Change",
+    "$collection": "fm.eventclasses",
+    "uuid": "b4ab69c1-22d3-5dd9-a6c8-aecb26c249b0",
+    "description": "Value of Sonet path status changed.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "Status",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "SONET on interface {{interface}} changed path status: {{state}}.",
+    "body_template": "SONET on interface {{interface}} changed path status: {{state}}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

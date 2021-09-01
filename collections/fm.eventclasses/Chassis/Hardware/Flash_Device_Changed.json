@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | Flash Device Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "1f9381ee-30e1-41ee-a10d-6fd33fc0f14c",
+    "description": "Flash device is inserted or removed.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "device",
+            "description": "Device name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "size",
+            "description": "Flash size",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Flash {{device}} size {{size}} is changed",
+    "body_template": "Flash {{device}} size {{size}} is changed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

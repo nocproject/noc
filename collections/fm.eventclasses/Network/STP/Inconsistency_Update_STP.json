@@ -1,0 +1,32 @@
+{
+    "name": "Network | STP | Inconsistency Update STP",
+    "$collection": "fm.eventclasses",
+    "uuid": "b4ab69c1-22d3-5da9-a6c8-aecb26c249b0",
+    "description": "Value of Sonet path status changed.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "port",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "vlan",
+            "description": "vlan",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "state",
+            "description": "Status",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "The types of inconsistency which have been discovered on this port {{port}} for this VLAN {{vlan}} Spanning Tree. Status: {{state}}",
+    "body_template": "The types of inconsistency which have been discovered on this port {{port}} for this VLAN {{vlan}} Spanning Tree. Status: {{state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

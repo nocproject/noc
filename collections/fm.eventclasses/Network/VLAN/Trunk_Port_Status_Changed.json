@@ -1,0 +1,26 @@
+{
+    "name": "Network | VLAN | Trunk Port Status Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "6ae5607e-6360-42fa-970b-f734b99b9baa",
+    "description": "Trunk Port Status Changed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "status",
+            "description": "Port status",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "subject_template": "Trunk port {{interface}} changed status on {{status}}",
+    "body_template": "Trunk port {{interface}} changed status on {{status}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

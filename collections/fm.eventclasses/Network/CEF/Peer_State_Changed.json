@@ -1,0 +1,26 @@
+{
+    "name": "Network | CEF | Peer State Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "b4ab69c1-25d3-4dd9-a6c8-aecb25c249b1",
+    "description": "CEF (FIB) Peer State Changed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "peer",
+            "description": "Peer",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "state",
+            "description": "Peer state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "CEF (FIB) Peer {{peer}} state changed: {{state}}",
+    "body_template": "CEF (FIB) Peer {{peer}} state changed: {{state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

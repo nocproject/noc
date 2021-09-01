@@ -1,0 +1,24 @@
+{
+    "name": "Network | CEF | Resource Failure",
+    "$collection": "fm.alarmclasses",
+    "uuid": "6b3a8cff-44fb-461a-8cb2-454ea2d7b2c6",
+    "is_unique": true,
+    "discriminator": ["peer"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "peer",
+            "description": "BFD Peer"
+        },
+        {
+            "name": "reason",
+            "description": "Reason failed"
+        }
+    ],
+    "subject_template": "CEF Peer {{peer}} reason failed: {{reason}}",
+    "body_template": "CEF Peer {{peer}} reason failed: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

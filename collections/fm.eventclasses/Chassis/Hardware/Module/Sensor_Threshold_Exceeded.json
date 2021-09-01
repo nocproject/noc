@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | Module | Sensor Threshold Exceeded",
+    "$collection": "fm.eventclasses",
+    "uuid": "9f9381ee-28e1-41ee-a10d-6fd33fc0f14c",
+    "description": "The sensor value crossed the threshold",
+    "action": "A",
+    "vars": [
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "ovalue",
+            "description": "Sensor value",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Hardware module sensor out of Threshold:{{tvalue}}. Sensor value:{{ovalue}}",
+    "body_template": "Hardware module sensor out of Threshold:{{tvalue}}. Sensor value:{{ovalue}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

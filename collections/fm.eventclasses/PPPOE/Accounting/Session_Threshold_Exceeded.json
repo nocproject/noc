@@ -1,0 +1,32 @@
+{
+    "name": "Network | PPPOE | Accounting | Session Threshold Exceeded",
+    "$collection": "fm.eventclasses",
+    "uuid": "b4ab69c1-25d3-4dd9-a6c8-aecb66c249b0",
+    "description": "PPPOE Accounting Session Threshold Exceeded",
+    "action": "A",
+    "vars": [
+        {
+            "name": "ovalue",
+            "description": "PPPOE Current Sessions",
+            "type": "int",
+            "required": true
+        },
+       {
+            "name": "session_max",
+            "description": "PPPOE Max Sessions",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "tvalue",
+            "description": "PPPOE Threshold Sessions",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "subject_template": "PPPOE number of active sessions: {{ovalue}} on the system exceeded system sessions threshold value: {{tvalue}}.",
+    "body_template": "PPPOE number of active sessions: {{ovalue}} on the system exceeded system sessions threshold value: {{tvalue}}.\nMax system session: {{session_max}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | RF | RF SWACT Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "9f9381ee-33e1-41ee-a10d-6fd33fc0f14c",
+    "description": "A SWACT notification is sent by the newly active redundant unit whenever a switch of activity occurs",
+    "action": "A",
+    "vars": [
+        {
+            "name": "unit",
+            "description": "Unit number",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Status Reason Code",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "subject_template": "RF SWACT {{unit} Change. Status code: {{reason}}",
+    "body_template": "RF SWACT {{unit} Change. Status code: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
