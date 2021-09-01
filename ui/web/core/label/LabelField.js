@@ -44,7 +44,8 @@ Ext.define("NOC.core.label.LabelField", {
         }
     },
     labelTpl: [
-        '<div data-qtip="{scope}::{value}">',
+        '<tpl if="scope"><div data-qtip="{scope}::{value}">',
+        '<tpl else><div data-qtip="{value}"></tpl>',
         '<div class="noc-label-wrapper">',
         '<span class="noc-label-field-start" style="color: {fg_color1};background-color: {bg_color1};">{scope}</span>',
         '<span class="noc-label-field-end" style="color: {fg_color2};background-color: {bg_color2};">{value}</span>',
@@ -52,7 +53,8 @@ Ext.define("NOC.core.label.LabelField", {
     ],
     listConfig: {
         itemTpl: [
-            '<div data-qtip="{scope}::{value}">',
+            '<tpl if="scope"><div data-qtip="{scope}::{value}">',
+            '<tpl else><div data-qtip="{value}"></tpl>',
             '<span class="noc-label-field-start" style="color: {fg_color1};background-color: {bg_color1};">{scope}</span>',
             '<span class="noc-label-field-end" style="color: {fg_color2};background-color: {bg_color2};">{value}</span>',
             '</div>'
