@@ -16,7 +16,6 @@
     owner: clickhouse
   with_items:
     - "{{ ch_log_dir }}"
-    - "{{ ch_dictionaries_path }}"
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"

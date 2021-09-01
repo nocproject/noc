@@ -23,25 +23,6 @@
         path: "{{ noc_root }}"
       register: noc_root_state
 
-    - block:
-        - name: check if noc under mercurial control
-          stat:
-            path: "{{ noc_root }}/.hg"
-          register: noc_hg_state
-
-        - name: fail install if we are under mercurial
-          fail:
-            msg: |
-              It seems noc under mercurial control.
-              You have to add migrate_git role in tower additional roles.
-              Manual: https://code.getnoc.com/noc/tower/blob/master/docs/migrate_git.md
-          when:
-            - noc_hg_state.stat.exists is defined
-            - noc_hg_state.stat.exists
-            - has_svc_git_migrate is not defined
-      when:
-        - noc_root_state.stat.exists is defined
-        - noc_root_state.stat.exists
   when:
     - has_svc_noc is defined
   tags:

@@ -3,21 +3,6 @@
   tags:
     - requirements
 
-- name: Install activator python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: "requirements/activator.txt"
-    virtualenv: "{{ noc_root }}"
-  environment:
-    https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ http_proxy }}"
-    CFLAGS: "{{ pip_cflags | default('') }}"
-    LDFLAGS: "{{ pip_ldflags | default('') }}"
-  when:
-    - not single_req.stat.exists
-  tags:
-    - requirements
-
 - name: Create ssh keys directories
   file:
     path: "{{ noc_root }}/var/etc/ssh/{{ item.name }}"
