@@ -1,0 +1,38 @@
+{
+    "name": "Chassis | Hardware | RF | RF Progression Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "9f9381ee-30e1-41ee-a10d-6fd33fc0f14c",
+    "description": "A progression notification is sent by the active redundant unit whenever its RF state changes or the RF state of the peer unit changes",
+    "action": "A",
+    "vars": [
+        {
+            "name": "unit",
+            "description": "Unit number",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "peer_unit",
+            "description": "Peer unit number",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "Unit state",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "peer_state",
+            "description": "Peer Unit state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "RF {% if unit %}Unit:{{unit}} state:{{state}}{% else %}Peer Unit:{{peer_unit}} state:{{peer_state}}{% endif %} changed",
+    "body_template": "RF {% if unit %}Unit:{{unit}} state:{{state}}{% else %}Peer Unit:{{peer_unit}} state:{{peer_state}}{% endif %} changed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

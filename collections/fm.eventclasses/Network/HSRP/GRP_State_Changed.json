@@ -1,0 +1,32 @@
+{
+    "name": "Network | HSRP | GRP State Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "b4ab69c1-25d3-4dd9-a6c8-aecb26c249b0",
+    "description": "HSRP Group State Changed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "group",
+            "description": "Group",
+            "type": "str",
+            "required": true
+        },
+       {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "state",
+            "description": "HSRP state",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "HSRP Group {{group}} on {{interface}} state changed: {{state}}",
+    "body_template": "HSRP Group {{group}} on {{interface}} state changed: {{state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

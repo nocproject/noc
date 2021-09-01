@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | Flash Device Inserted",
+    "$collection": "fm.eventclasses",
+    "uuid": "1f9481ee-30e1-41ee-a11d-6fd33fc0f14c",
+    "description": "Flash device is inserted.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "device",
+            "description": "Device name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "size",
+            "description": "Flash size",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Flash {{device}} size {{size}} is inserted",
+    "body_template": "Flash {{device}} size {{size}} is inserted",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

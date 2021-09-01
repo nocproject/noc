@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | RAM | Memory Buffer Peak",
+    "$collection": "fm.eventclasses",
+    "uuid": "e9b3e184-e0cd-4f3d-a00a-324f6df951e9",
+    "description": "Object Memory is updated in the buffer pool",
+    "action": "A",
+    "vars": [
+        {
+            "name": "buffer",
+            "description": "Buffer name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "ovalue",
+            "description": "Buffer value",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "subject_template": "Memory buffer {{buffer}} is updated. Buffer size: {{ovalue}}",
+    "body_template": "Memory buffer {{buffer}} is updated. Buffer size: {{ovalue}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

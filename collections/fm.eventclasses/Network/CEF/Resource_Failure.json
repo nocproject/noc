@@ -1,0 +1,34 @@
+{
+    "name": "Network | CEF | Resource Failure",
+    "$collection": "fm.eventclasses",
+    "uuid": "b4ab69c1-25d3-4dd9-a6c8-aecb25c249b0",
+    "description": "CEF Resource Failure",
+    "action": "A",
+    "vars": [
+        {
+            "name": "peer",
+            "description": "Peer",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Reason failed",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "CEF Peer {{peer}} reason failed: {{reason}}",
+    "body_template": "CEF Peer {{peer}} reason failed: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | CEF | Resource Failure"
+        }
+    ]
+}
