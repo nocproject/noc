@@ -31,9 +31,6 @@
     - requirements
     - config
 
-- name: Include requirements install
-  import_tasks: "requirements.yml"
-
 - name: Create dirs
   import_tasks: "dirs.yml"
 

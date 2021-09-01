@@ -167,35 +167,9 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
 
-- name: Check if we have single requirements.txt
-  stat:
-    path: "{{ noc_root }}/requirements.txt"
-  register: single_req
-  tags:
-    - requirements
-
-- name: Install node python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: "requirements/node.txt"
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
-    CFLAGS: "{{ pip_cflags | default('') }}"
-    LDFLAGS: "{{ pip_ldflags | default('') }}"
-  when:
-    - not single_req.stat.exists
-  tags:
-    - requirements
-
 - name: Combine service list for requirements install
   set_fact:
     node_noc_components: "{{ lookup('template', './templates/requirements.list.j2') }}"
-  when:
-    - single_req.stat.exists
   tags:
     - requirements
 
@@ -204,7 +178,6 @@
   args:
     chdir: "{{ noc_root }}"
   register: noc_pip_packages
-  when: single_req.stat.exists
   tags:
     - requirements
 
@@ -220,8 +193,6 @@
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
-  when:
-    - single_req.stat.exists
   tags:
     - requirements
 
