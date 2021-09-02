@@ -8,7 +8,7 @@
 # Python modules
 import operator
 import threading
-from typing import List
+from typing import List, Union
 
 # Third-party modules
 import bson
@@ -212,50 +212,102 @@ class ResourceGroup(Document):
             and self.technology.service_model
         ):
             self.unset_service_group(self.technology.service_model)
+            self.add_service_group(self.technology.service_model)
         if (
             hasattr(self, "_changed_fields")
             and "dynamic_client_labels" in self._changed_fields
             and self.technology.client_model
         ):
-            self.unset_cient_group(self.technology.client_model)
+            self.unset_client_group(self.technology.client_model)
+            self.add_client_group(self.technology.client_model)
+
+    @staticmethod
+    def _remove_group(
+        model_id: str,
+        group_id: Union[str, bson.ObjectId],
+        is_client: bool = False,
+    ):
+        """
+
+        :param model_id: System model_id
+        :param group_id: ResourceGroup ID
+        :param is_client: Add to Client Groups
+        :return:
+        """
+        from django.db import connection
+
+        if isinstance(group_id, str):
+            group_id = bson.ObjectId(group_id)
+
+        model = get_model(model_id)
+        group_field = "effective_service_groups" if not is_client else "effective_client_groups"
+        if is_document(model):
+            coll = model._get_collection()
+            coll.bulk_write(
+                [
+                    UpdateMany(
+                        {group_field: {"$in": [group_id]}},
+                        {"$pull": {group_field: {"$in": [group_id]}}},
+                    )
+                ]
+            )
+        else:
+            sql = f"UPDATE {model._meta.db_table} SET {group_field}=array_remove({group_field}, '{str(group_id)}') WHERE '{str(group_id)}'=ANY ({group_field})"
+            cursor = connection.cursor()
+            cursor.execute(sql)
+
+    @staticmethod
+    def _add_group(
+        model_id: str,
+        group_id: Union[str, bson.ObjectId],
+        labels: List[str],
+        is_client: bool = False,
+    ):
+        """
+
+        :param model_id: System model_id
+        :param group_id: ResourceGroup ID
+        :param labels: Match Labels
+        :param is_client: Add to Client Groups
+        :return:
+        """
+        from django.db import connection
+
+        if isinstance(group_id, str):
+            group_id = bson.ObjectId(group_id)
+
+        model = get_model(model_id)
+        group_field = "effective_service_groups" if not is_client else "effective_client_groups"
+        if is_document(model):
+            coll = model._get_collection()
+            # @todo ALL Match
+            coll.bulk_write(
+                [
+                    UpdateMany(
+                        {"effective_labels": {"$in": labels}},
+                        {"$addToSet": {group_field: {"$in": [group_id]}}},
+                    )
+                ]
+            )
+        else:
+            sql = f"UPDATE {model._meta.db_table} SET {group_field}=array_append({group_field}, '{str(group_id)}') WHERE %s::varchar[] <@ effective_labels AND NOT ('{str(group_id)}'= ANY ({group_field}))"
+            cursor = connection.cursor()
+            cursor.execute(sql, [labels])
 
     def unset_service_group(self, model_id: str):
-        from django.db import connection
+        self._remove_group(model_id, self.id)
 
-        model = get_model(model_id)
-        if is_document(model):
-            coll = model._get_collection()
-            coll.bulk_write(
-                [
-                    UpdateMany(
-                        {"effective_service_groups": {"$in": [self.id]}},
-                        {"$pull": {"effective_service_groups": {"$in": [self.id]}}},
-                    )
-                ]
-            )
-        else:
-            sql = f"UPDATE {model._meta.db_table} SET effective_service_groups=array_remove(effective_service_groups, '{str(self.id)}') WHERE '{str(self.id)}'=ANY (effective_service_groups)"
-            cursor = connection.cursor()
-            cursor.execute(sql)
+    def unset_client_group(self, model_id: str):
+        self._remove_group(model_id, self.id, is_client=True)
 
-    def unset_cient_group(self, model_id: str):
-        from django.db import connection
+    def add_service_group(self, model_id: str):
+        # @todo optimize for one operation
+        for ml in self.dynamic_service_labels:
+            self._add_group(model_id, self.id, ml.labels)
 
-        model = get_model(model_id)
-        if is_document(model):
-            coll = model._get_collection()
-            coll.bulk_write(
-                [
-                    UpdateMany(
-                        {"effective_client_groups": {"$in": [self.id]}},
-                        {"$pull": {"effective_client_groups": {"$in": [self.id]}}},
-                    )
-                ]
-            )
-        else:
-            sql = f"UPDATE {model._meta.db_table} SET effective_client_groups=array_remove(effective_client_groups, '{str(self.id)}') WHERE '{str(self.id)}'=ANY (effective_service_groups)"
-            cursor = connection.cursor()
-            cursor.execute(sql)
+    def add_client_group(self, model_id: str):
+        for ml in self.dynamic_service_labels:
+            self._add_group(model_id, self.id, ml.labels, is_client=True)
 
     @classmethod
     def get_dynamic_service_groups(cls, labels: List[str], model: str) -> List[str]:
