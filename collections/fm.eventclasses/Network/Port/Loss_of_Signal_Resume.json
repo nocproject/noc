@@ -1,0 +1,40 @@
+{
+    "name": "Network | Port | Loss of Signal Resume",
+    "$collection": "fm.eventclasses",
+    "uuid": "358bf1ed-81ce-4e92-8d05-adc3817edbda",
+    "description": "Loss of Signal Resume",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "slot",
+            "description": "Slot name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "card",
+            "description": "Card name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Port {{card}}/{{slot}}/{{interface}} resume of signal",
+    "body_template": "Port {{card}}/{{slot}}/{{interface}} resume of signal",
+    "symptoms": "Connection lost",
+    "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
+    "recommended_actions": "Check configuration, both sides of links and hardware",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Port | Loss of Signal"
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+    "name": "Chassis | Linecard | LC Error Recover",
+    "$collection": "fm.eventclasses",
+    "uuid": "24b5b527-f55c-42d6-b7b1-07456e76c6d4",
+    "description": "Linecard Error Recover",
+    "action": "A",
+    "vars": [
+        {
+            "name": "number",
+            "description": "Slot number",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Linecard Recover in slot {{number}} Error{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Linecard Recover in slot {{number}} Error{% if reason %}: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Linecard | LC Error"
+        }
+    ]
+}
