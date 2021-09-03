@@ -10,7 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Iterable, List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -193,6 +193,11 @@ class Service(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_service")
+
+    @classmethod
+    def iter_effective_labels(cls, instance: "Service") -> Iterable[List[str]]:
+        yield list(instance.labels or [])
+        yield list(ServiceProfile.iter_lazy_labels(instance.profile))
 
     def get_effective_agent(self) -> Optional[Agent]:
         """

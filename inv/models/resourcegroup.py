@@ -49,6 +49,7 @@ class MatchLabels(EmbeddedDocument):
 
 
 @tree()
+@Label.match_labels("resourcegroup", allowed_op={"="}, parent_op={"<"})
 @Label.model
 @bi_sync
 @change
@@ -89,7 +90,8 @@ class MatchLabels(EmbeddedDocument):
         ("fm.EventTrigger", "resource_group"),
         #
         ("vc.VCDomainProvisioningConfig", "resource_group"),
-    ]
+    ],
+    clean_lazy_labels="resourcegroup",
 )
 class ResourceGroup(Document):
     """
@@ -395,3 +397,12 @@ class ResourceGroup(Document):
         ):
             rg.append(rg["_id"])
         return r
+
+    @classmethod
+    def iter_lazy_labels(cls, resource_group: "ResourceGroup"):
+        for rg in ResourceGroup.objects.filter(id__in=resource_group.get_path()):
+            if rg == resource_group:
+                # Optimize for less MatchLabels count
+                yield f"noc::resourcegroup::{rg.name}::="
+                continue
+            yield f"noc::resourcegroup::{rg.name}::<"

@@ -413,6 +413,8 @@ class Interface(Document):
         yield Label.get_effective_regex_labels("interface_description", instance.description)
         if instance.managed_object:
             yield from ManagedObject.iter_effective_labels(instance.managed_object)
+        if instance.service:
+            yield from Service.iter_effective_labels(instance.service)
         # if instance.is_linked:
         # Idle Discovery When create Aggregate interface
         #     yield ["noc::interface::linked::="]
