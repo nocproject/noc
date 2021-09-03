@@ -1,0 +1,30 @@
+{
+    "name": "Juniper | JUNOS | Network | MPLS | LDP Session Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "dc00a5fc-58ca-4e4c-a2dd-a5cfc5d44b9f",
+    "description": "JUNIPER-LDP-MIB::jnxLdpSesUp",
+    "event_class__name": "Network | MPLS | LDP Session Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-LDP-MIB::jnxLdpSesUpIf(?:\\.\\d+)*$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^JUNIPER-LDP-MIB::jnxMplsLdpSesState(?:\\.\\d+)*$",
+            "value_re": "^(?P<state>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxLdpSesUp$"
+        }
+    ]
+}

@@ -12,12 +12,16 @@
             "description": "LSP name"
         },
         {
+            "name": "state",
+            "description": "State"
+        },
+        {
             "name": "reason",
             "description": "Reason"
         }
     ],
-    "subject_template": "MPLS LSP Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
-    "body_template": "MPLS LSP Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
+    "subject_template": "MPLS LSP Down: {{name}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS LSP Down: {{name}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""
