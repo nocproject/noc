@@ -42,11 +42,12 @@ from noc.core.change.decorator import change
 id_lock = Lock()
 
 
+@Label.match_labels("serviceprofile", allowed_op={"="})
 @Label.model
 @bi_sync
 @change
 @on_save
-@on_delete_check(check=[("sa.Service", "profile")])
+@on_delete_check(check=[("sa.Service", "profile")], clean_lazy_labels="serviceprofile")
 class ServiceProfile(Document):
     meta = {
         "collection": "noc.serviceprofiles",
@@ -111,6 +112,10 @@ class ServiceProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_serviceprofile")
+
+    @classmethod
+    def iter_lazy_labels(cls, service_profile: "ServiceProfile"):
+        yield f"noc::serviceprofile::{service_profile.name}::="
 
 
 def refresh_interface_profiles(sp_id, ip_id):
