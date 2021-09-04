@@ -101,7 +101,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           fieldLabel: __("Collect interval"),
           allowBlank: true,
           uiStyle: "medium",
-          minValue: 20,
+          minValue: 1,
           maxValue: 3600
         },
         {

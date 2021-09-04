@@ -8,6 +8,7 @@
 
 # Python modules
 import asyncio
+import pytz
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple, List, Dict, Set, DefaultDict
 from collections import defaultdict
@@ -52,6 +53,7 @@ class MetricsCollectorService(FastAPIService):
         self.id_mappings: Dict[str, List[CfgItem]] = {}
         self.n_parts: int = 0
         self.ready_event: Optional[asyncio.Event] = None
+        self.tz = pytz.timezone(config.timezone)
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -189,7 +191,7 @@ class MetricsCollectorService(FastAPIService):
                     # Matched rule found
                     if map_item.ch_table not in out:
                         out[map_item.ch_table] = {
-                            "ts": item.ts.timestamp() * NS,
+                            "ts": (item.ts.timestamp() + self.tz._utcoffset.seconds) * NS,
                             "scope": map_item.ch_table,
                             "labels": item.labels,
                             "service": item.service,
