@@ -444,7 +444,10 @@ class InvApplication(ExtApplication):
         """
         for path in (
             find_path(
-                lo, left_slot.name, [p.translate(translation_map) for p in left_slot.protocols]
+                lo,
+                left_slot.name,
+                [p.translate(translation_map) for p in left_slot.protocols],
+                trace_wire=True,
             )
             or []
         ):
@@ -456,8 +459,11 @@ class InvApplication(ExtApplication):
         Determing remote device with find_path method
         :return:
         """
-        for path in find_path(o, slot, [p.translate(translation_map) for p in protocols]) or []:
-            if path.obj != o and not path.obj.get_data("length", "length"):
+        for path in (
+            find_path(o, slot, [p.translate(translation_map) for p in protocols], trace_wire=True)
+            or []
+        ):
+            if path.obj != o and not path.obj.is_wire:
                 return path
 
     def get_cs_item(

@@ -251,6 +251,10 @@ class Object(Document):
     def has_children(self) -> bool:
         return bool(Object.objects.filter(container=self.id))
 
+    @property
+    def is_wire(self) -> bool:
+        return bool(self.model.get_data("length", "length"))
+
     def get_nested_ids(self):
         """
         Return id of this and all nested object
