@@ -1,0 +1,32 @@
+{
+    "name": "Network | IS-IS | Authentication Failure",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d15b-feab-42ba-86c5-f13edc494495",
+    "description": "IS-IS Authentication Failure",
+    "action": "A",
+    "vars": [
+        {
+            "name": "level",
+            "description": "System Level index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "pdu_fragment",
+            "description": "PDU fragment",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "subject_template": "IS-IS {% if level %}{{level}}{% endif %} failed authentication on {{interface}} adjacency to {{pdu_fragment}}.",
+    "body_template": "IS-IS {% if level %}{{level}}{% endif %} failed authentication on {{interface}} adjacency to {{pdu_fragment}}.",
+    "symptoms": "",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check local and neighbor router configuration"
+}
