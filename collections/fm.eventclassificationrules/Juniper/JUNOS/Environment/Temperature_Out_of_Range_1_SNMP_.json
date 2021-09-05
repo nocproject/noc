@@ -1,9 +1,8 @@
 {
-    "name": "Juniper | JUNOS | Environment | Temperature Returned to Normal Range (SNMP)",
-    "$collection": "fm.eventclassificationrules",
-    "uuid": "c3b0e9c7-e629-47b9-bdc1-1714c785e72a",
-    "description": "JUNIPER-MIB::jnxTemperatureOK",
-    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "name": "Juniper | JUNOS | Environment | Temperature Out of Range #1 (SNMP)",
+    "uuid": "2fba5d41-4438-44d8-971d-a027961126f0",
+    "description": "JUNIPER-MIB::jnxOverTemperature",
+    "event_class__name": "Environment | Temperature Out of Range",
     "preference": 1000,
     "patterns": [
         {
@@ -24,7 +23,7 @@
         },
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-            "value_re": "^JUNIPER-MIB::jnxTemperatureOK$"
+            "value_re": "^JUNIPER-MIB::jnxOverTemperature$"
         }
     ]
 }

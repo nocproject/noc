@@ -1,0 +1,39 @@
+{
+    "name": "Juniper | JUNOS | Network | Link | DOM | RxMaxPower Revovered (SNMP)",
+    "uuid": "80c4ceec-fc32-4b7f-b436-f6d1d568a0bd",
+    "description": "Juniper-System-MIB::juniSystemPortSfpRxMaxPowerThreshold",
+    "event_class__name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "sensor",
+            "value": "RX power"
+        },
+        {
+            "name": "threshold",
+            "value": "high"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemPortSfpPowerThresholdIfIndex(?:\\.\\d+)*$",
+            "value_re": "^(?P<interface__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemPortSfpPowerThresholdValue(?:\\.\\d+)*$",
+            "value_re": "^0(.0000)?$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^Juniper-System-MIB::juniSystemPortSfpRxMaxPowerThreshold$"
+        }
+    ]
+}
