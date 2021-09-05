@@ -28,6 +28,7 @@ from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
+from noc.main.models.label import Label
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
@@ -47,6 +48,9 @@ class MatchRule(EmbeddedDocument):
 
     def __str__(self):
         return f'{self.dynamic_order}: {", ".join(self.labels)}'
+
+    def get_labels(self):
+        return list(Label.objects.filter(name__in=self.labels))
 
 
 class InterfaceProfileMetrics(EmbeddedDocument):
