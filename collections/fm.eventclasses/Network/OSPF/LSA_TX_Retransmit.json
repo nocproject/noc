@@ -1,0 +1,62 @@
+{
+    "name": "Network | OSPF | LSA TX Retransmit",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d27b-feab-42ba-86c5-f13edc494411",
+    "description": "An ospfTxRetransmit trap signifies than an OSPF packet has been retransmitted on a non- virtual interface.\nAll packets that may be re- transmitted are associated with an LSDB entry. The LS type, LS ID, and Router ID are used to identify the LSDB entry.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "lsdb_type",
+            "description": "The type of the link state advertisement.",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "lsdb_lsid",
+            "description": "The Link State ID is an LS Type Specific field containing either a Router ID or an IP address",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "lsdb_routerid",
+            "description": "The 32 bit number that uniquely identifies the originating router in the Autonomous System.",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "packet_type",
+            "description": "OSPF packet types",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "router_id",
+            "description": "OSPF Router Id",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "address",
+            "description": "OSPF Interface IP Address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's Router ID",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "OSPF packet {{packet_type}} from {{lsdb_type}} has been retransmitted on a non-virtual interface.",
+    "body_template": "OSPF packet {{packet_type}} from {{lsdb_type}} has been retransmitted on a non-virtual interface.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

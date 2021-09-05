@@ -1,0 +1,44 @@
+{
+    "name": "Network | OSPF | LSA Originate",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d27b-feab-42ba-86c5-f13edc494491",
+    "description": "An ospfOriginateLsa trap signifies that a new LSA has been originated by this router.\nThis trap should not be invoked for simple refreshes of LSAs (which happesn every 30 minutes), but instead will only be invoked when an LSA is (re)originated due to a topology change.\nAddi- tionally, this trap does not include LSAs that are being flushed because they have reached MaxAge.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "lsdb_area",
+            "description": "The 32-bit identifier of the area from which the LSA was received.",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "lsdb_type",
+            "description": "The type of the link state advertisement.",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "lsdb_lsid",
+            "description": "The Link State ID is an LS Type Specific field containing either a Router ID or an IP address",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "lsdb_routerid",
+            "description": "The 32 bit number that uniquely identifies the originating router in the Autonomous System.",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "router_id",
+            "description": "OSPF Router Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "Create new LSA: {% if lsdb_lsid %}{{lsdb_lsid}} {% else %}{{lsdb_routerid}} {% endif %} on {{lsdb_area}} with type: {{lsdb_type}}",
+    "body_template": "Create new LSA: {% if lsdb_lsid %}{{lsdb_lsid}} {% else %}{{lsdb_routerid}} {% endif %} on {{lsdb_area}} with type: {{lsdb_type}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

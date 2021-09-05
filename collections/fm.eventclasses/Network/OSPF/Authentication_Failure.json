@@ -1,0 +1,50 @@
+{
+    "name": "Network | OSPF | Authentication Failure",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d17b-feab-42ba-86c5-f13edc494495",
+    "description": "OSPF Authentication Failure",
+    "action": "A",
+    "vars": [
+        {
+            "name": "address",
+            "description": "OSPF Interface IP Address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "packet_error_type",
+            "description": "Potential types  of  configuration  conflicts. Used  by the ospfConfigError and ospfConfigVir Error traps",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "packet_src",
+            "description": "The IP address of an inbound packet that can not be identified by a neighbor instance",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "packet_type",
+            "description": "OSPF packet types",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "router_id",
+            "description": "OSPF Router Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "OSPF failed authentication on  {{address}} adjacency to {{packet_src}}.",
+    "body_template": "OSPF failed authentication on  {{address}} adjacency to {{packet_src}}. Send {{packet_type}}, reason: {{packet_error_type}}",
+    "symptoms": "",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check local and neighbor router configuration"
+}
