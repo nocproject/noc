@@ -215,6 +215,8 @@ class Migration(BaseMigration):
         # Main loop
         coll = self.mongo_db["noc.inv.interfaceclassificationrules"]
         for rule in coll.find():
+            if "match" not in rule:
+                continue
             m_labels = set()
             m_labels.add(selectors_label[rule["selector"]])
             m_labels |= set(icrl.get_labels(rule["match"], rule["name"]))

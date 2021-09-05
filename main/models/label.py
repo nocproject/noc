@@ -790,7 +790,7 @@ class Label(Document):
                 # Instance without effective labels
                 return
             profile_id = cls.get_instance_profile(profile_model, instance)
-            if instance.profile.id != profile_id:
+            if profile_id and instance.profile.id != profile_id:
                 profile = profile_model.get_by_id(profile_id)
                 setattr(instance, profile_field, profile)
 

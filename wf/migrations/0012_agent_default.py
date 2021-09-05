@@ -194,3 +194,42 @@ class Migration(BaseMigration):
                 },
             ]
         )
+        db["labels"].insert_many(
+            [
+                {
+                    # "_id": bson.ObjectId(),
+                    "name": label,
+                    "description": descr,
+                    "bg_color1": 10181046,
+                    "fg_color1": 16777215,
+                    "bg_color2": 3447003,
+                    "fg_color2": 16777215,
+                    "is_protected": True,
+                    # Label scope
+                    "enable_agent": True,
+                    "enable_service": False,
+                    "enable_serviceprofile": False,
+                    "enable_managedobject": False,
+                    "enable_managedobjectprofile": False,
+                    "enable_administrativedomain": False,
+                    "enable_authprofile": False,
+                    "enable_commandsnippet": False,
+                    "enable_workflowstate": True,
+                    # Exposition scope
+                    "expose_metric": False,
+                    "expose_datastream": False,
+                }
+                for label, descr in [
+                    ("noc::agent*", "Agent authentication precessed labels"),
+                    ("noc::agent::auth::none", "Agent is not authenticate and "),
+                    (
+                        "noc::agent::auth::pre",
+                        "Agent is registration on system and wait approve for authentication",
+                    ),
+                    (
+                        "noc::agent::auth::auth",
+                        "Agent is authenticate and allow getting collector config",
+                    ),
+                ]
+            ]
+        )
