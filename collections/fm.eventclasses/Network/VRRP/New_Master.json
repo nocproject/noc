@@ -1,0 +1,26 @@
+{
+    "name": "Network | VRRP | New Master",
+    "$collection": "fm.eventclasses",
+    "uuid": "3f8ed629-ca82-4a29-1cf2-4b0b83f57e86",
+    "description": "The newMaster trap indicates that the sending agent has transitioned to 'Master' state.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "ip",
+            "description": "IP address",
+            "type": "ip_address",
+            "required": true
+        }
+    ],
+    "subject_template": "Agent {{ip}} on interface {{interface}} has transitioned the master mode",
+    "body_template": "Agent {{ip}} on interface {{interface}} has transitioned the master mode",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

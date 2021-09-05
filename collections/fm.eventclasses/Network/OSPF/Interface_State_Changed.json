@@ -1,0 +1,38 @@
+{
+    "name": "Network | OSPF | Interface State Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d17b-feab-42ba-86c5-f13edc494492",
+    "description": "OSPF Interface State Changed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "address",
+            "description": "OSPF Interface IP Address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "The OSPF Interface State.",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "router_id",
+            "description": "OSPF Router Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "OSPF {{address}} {% if interface %}on interface {{interface}} {% endif %}state: {{state}}.",
+    "body_template": "OSPF {{address}} {% if interface %}on interface {{interface}} {% endif %}state: {{state}}.",
+    "symptoms": "",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration"
+}

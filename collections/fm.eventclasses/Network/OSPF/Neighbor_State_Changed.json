@@ -1,0 +1,44 @@
+{
+    "name": "Network | OSPF | Neighbor State Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "a248d17b-feab-42ba-86c5-f23edc494492",
+    "description": "An ospfNbrStateChange trap signifies that there has been a change in the state of a non- virtual OSPF neighbor. This trap should be generated when the neighbor state regresses (e.g., goes from Attempt or Full to 1-Way or Down) or progresses to a terminal state (e.g., 2-Way or Full). When an neighbor transitions from or to Full on non-broadcast multi-access and broadcast networks, the trap should be gen- erated by the designated router. A designated router transitioning to Down will be noted by ospfIfStateChange.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "neighbor_address",
+            "description": "OSPF neighbor IP Address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "OSPF neighbor Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's Router ID",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "to_state__enum__ospf_state",
+            "description": "The OSPF Neigbor State.",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "router_id",
+            "description": "OSPF Router Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "OSPF neighbor {{neighbor_address}} {% if interface %}on interface {{interface}} {% endif %}change state: {{to_state__enum__ospf_state}}.",
+    "body_template": "OSPF neighbor {{address}} {% if interface %}on interface {{interface}} {% endif %}change state: {{to_state__enum__ospf_state}}.",
+    "symptoms": "",
+    "probable_causes": "Link failure or protocol misconfiguration",
+    "recommended_actions": "Check links and local and neighbor router configuration"
+}
