@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | Chassis | PSU | PSU Recovered #2 (SNMP)",
+    "uuid": "932e1c43-2c9f-4054-9dc4-ba664a9dbde8",
+    "description": "Juniper-System-MIB::juniSystemPowerStatusChange",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalDescr(?:\\.\\d+)*$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemPowerStatus(?:\\.\\d+)*$",
+            "value_re": "^good$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^Juniper-System-MIB::juniSystemPowerStatusChange$"
+        }
+    ]
+}

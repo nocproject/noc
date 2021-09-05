@@ -1,0 +1,31 @@
+{
+    "name": "Juniper | JUNOS | Environment | Temperature Returned to Normal Range #2 (SNMP)",
+    "uuid": "3a9a6511-0c2c-4936-827c-bb4f7bd72617",
+    "description": "Juniper-System-MIB::juniSystemTempStatusChange",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name",
+            "value": "Chassis"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemTempStatus(?:\\.\\d+)*$",
+            "value_re": "^(?P<measure>nominal)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^Juniper-System-MIB::juniSystemTempStatusChange$"
+        }
+    ]
+}
