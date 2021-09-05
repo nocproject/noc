@@ -171,11 +171,16 @@ class PingService(FastAPIService):
         address = ps.address
         t0 = time.time()
         metrics["ping_check_total"] += 1
+        disable_message = False  # Disabe sent Event message
         if ps.time_cond:
             dt = datetime.datetime.fromtimestamp(t0)
             if not eval(ps.time_cond, {"T": dt}):
-                metrics["ping_check_skips"] += 1
-                return
+                if ps.expr_policy == "D":
+                    metrics["ping_check_skips"] += 1
+                    return
+                if ps.expr_policy == "E":
+                    self.logger.info("[%s] Disabled message", address)
+                    disable_message = True
         rtt, attempts = await self.ping.ping_check_rtt(
             ps.address, policy=ps.policy, size=ps.size, count=ps.count, timeout=ps.timeout
         )
@@ -210,8 +215,7 @@ class PingService(FastAPIService):
                     # @todo: Send throttling message
             ts = " (Throttled)" if self.is_throttled else ""
             self.logger.info("[%s] Changing status to %s%s", address, s, ts)
-            ps.status = s
-        if ps and not self.is_throttled and s != ps.sent_status:
+        if ps and not self.is_throttled and not disable_message and s != ps.sent_status:
             self.publish(
                 orjson.dumps(
                     {"ts": t0, "object": ps.id, "data": self.ok_event if s else self.failed_event}

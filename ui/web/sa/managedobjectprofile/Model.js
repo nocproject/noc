@@ -141,6 +141,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 1000
         },
         {
+            name: "ping_time_expr_policy",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
             name: "weight",
             type: "int",
             defaultValue: 0
