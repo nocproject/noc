@@ -32,6 +32,7 @@ class ProbeSetting(object):
         "report_attempts",
         "time_expr",
         "time_cond",
+        "expr_policy",
         "bi_id",
         "task",
         "fm_pool",
@@ -53,6 +54,7 @@ class ProbeSetting(object):
         report_rtt=False,
         report_attempts=False,
         time_expr=None,
+        expr_policy="D",
         bi_id=None,
         fm_pool=None,
         *args,
@@ -72,6 +74,7 @@ class ProbeSetting(object):
         self.report_attempts = report_attempts
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
+        self.expr_policy = expr_policy
         self.task = None
         self.bi_id = bi_id
         self.fm_pool = fm_pool or config.pool
@@ -99,6 +102,7 @@ class ProbeSetting(object):
         count=3,
         timeout=1000,
         time_expr=None,
+        expr_policy="D",
         fm_pool=None,
         *args,
         **kwargs,
@@ -112,6 +116,7 @@ class ProbeSetting(object):
         self.report_attempts = report_attempts
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
+        self.expr_policy = expr_policy
         self.fm_pool = fm_pool or config.pool
         self.set_stream()
 
