@@ -1,8 +1,8 @@
 {
-    "name": "Huawei | VRP | Network | Link | Link Down (SNMP)",
-    "uuid": "0aae129f-1e58-4890-a4a2-c5f39c7d6929",
-    "description": "IF-MIB::linkDown %%01IFNET/4/IF_STATE(l)[0]:Interface Ethernet0/0/4 has turned into DOWN state.",
-    "event_class__name": "Network | Link | Link Down",
+    "name": "Huawei | VRP | Network | Link | Link Up #1 (SNMP)",
+    "uuid": "e783bb44-1083-4524-898f-0df6bb8c57fd",
+    "description": "IF-MIB::linkUp \n%%01IFNET/4/IF_STATE(l)[0]:Interface Ethernet0/0/4 has turned into UP state.",
+    "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
     "patterns": [
         {
@@ -19,7 +19,7 @@
         },
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-            "value_re": "^IF-MIB::linkDown$"
+            "value_re": "^IF-MIB::linkUp$"
         }
     ]
 }
