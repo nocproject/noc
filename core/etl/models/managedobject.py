@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import Optional, List
+from enum import Enum
 from pydantic import IPvAnyAddress, validator
 
 # NOC modules
@@ -20,6 +21,15 @@ from .networksegment import NetworkSegment
 from .resourcegroup import ResourceGroup
 from .ttsystem import TTSystem
 from .project import Project
+
+
+class SourceType(str, Enum):
+    d = "d"  # Disable
+    m = "m"  # Management Address
+    s = "s"  # Specify address
+    # Loopback address
+    l = "l"  # noqa
+    a = "a"  # All interface addresses
 
 
 class ManagedObject(BaseModel):
@@ -42,6 +52,10 @@ class ManagedObject(BaseModel):
     password: Optional[str]
     super_password: Optional[str]
     snmp_ro: Optional[str]
+    trap_source_type: Optional[SourceType] = SourceType.d
+    trap_source_ip: Optional[str]
+    syslog_source_type: Optional[SourceType] = SourceType.d
+    syslog_source_ip: Optional[str]
     description: Optional[str]
     auth_profile: Optional[Reference["AuthProfile"]]
     labels: Optional[List[str]]
