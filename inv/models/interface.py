@@ -407,10 +407,13 @@ class Interface(Document):
     @classmethod
     def iter_effective_labels(cls, instance: "Interface") -> Iterable[List[str]]:
         yield list(instance.labels or [])
+        if instance.hints:
+            # Migrate to labels
+            yield Label.ensure_labels(instance.hints, enable_interface=True)
         # if instance.profile.labels:
         #     yield list(instance.profile.labels)
         yield Label.get_effective_regex_labels("interface_name", instance.name)
-        yield Label.get_effective_regex_labels("interface_description", instance.description)
+        yield Label.get_effective_regex_labels("interface_description", instance.description or "")
         if instance.managed_object:
             yield from ManagedObject.iter_effective_labels(instance.managed_object)
         if instance.service:

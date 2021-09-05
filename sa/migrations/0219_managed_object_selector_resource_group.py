@@ -130,7 +130,7 @@ class ManagedObjectSelectorLabels(object):
         if field == "filter_address":
             scope = "managedobject_address"
         elif field == "filter_description":
-            scope = "managedobject_address"
+            scope = "managedobject_description"
         r = coll.find_one(
             {"match_regex": {"$elemMatch": {"regexp": regex, "scope": scope}}}, {"name": 1}
         )

@@ -46,6 +46,28 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         dataIndex: "name"
                     },
                     {
+                        text: __("Match Expression"),
+                        dataIndex: "match_expression",
+                        width: 400,
+                        renderer: function(v, _x) {
+                            var labels = [], text;
+                            Ext.each(v, function(label) {
+                                labels.push(NOC.render.Label({
+                                    badges: label.badges,
+                                    name: label.name,
+                                    description: label.description || "",
+                                    bg_color1: label.bg_color1 || 0,
+                                    fg_color1: label.fg_color1 || 0,
+                                    bg_color2: label.bg_color2 || 0,
+                                    fg_color2: label.fg_color2 || 0
+                                }));
+                            });
+                            text = labels.join("");
+                            return '<span data-qtitle="Match Expression" ' +
+                                'data-qtip="' + text + '">' + text + '</span>';
+                        }
+                    },
+                    {
                         text: __("Link Events"),
                         dataIndex: "link_events",
                         renderer: function (value) {

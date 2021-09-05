@@ -30,11 +30,19 @@ import orjson
 
 # NOC modules
 from noc.core.model.decorator import on_save, on_delete
+from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
 from noc.models import get_model, is_document, LABEL_MODELS
 
 
 MATCH_OPS = {"=", "<", ">", "&"}
+
+MATCH_BADGES = {
+    "=": "=",
+    "<": "fa-chevron-left",
+    ">": "fa-chevron-right",
+    "&": "&",
+}
 
 REGEX_LABELS_SCOPES = {
     "managedobject_name": ("sa.ManagedObject", "name"),
@@ -680,6 +688,70 @@ class Label(Document):
             cursor = connection.cursor()
             cursor.execute(sql, [labels, labels])
 
+    @staticmethod
+    def get_instance_profile(
+        profile_model,
+        instance,
+        *args,
+        **kwargs,
+    ) -> Optional[str]:
+        """
+        Return Profile ID for instance if it support Labels Classification
+        :param instance:
+        :param profile_model:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        effective_labels = instance.effective_labels or []
+        if is_document(instance):
+            coll = profile_model._get_collection()
+            match_profiles = coll.aggregate(
+                [
+                    {"$unwind": "$match_rules"},
+                    {
+                        "$match": {
+                            "match_rules.dynamic_order": {"$gt": 0},
+                            "match_rules.labels": {"$in": effective_labels},
+                        }
+                    },
+                    {
+                        "$project": {
+                            "dynamic_order": "$match_rules.dynamic_order",
+                            "labels": "$match_rules.labels",
+                            "handlers": 1,
+                        }
+                    },
+                    {"$sort": {"dynamic_order": 1}},
+                ]
+            )
+        else:
+            with connection.cursor() as cursor:
+                query = f"""
+                                    SELECT pt.id, t.labels, t.dynamic_order, t.handler, match_rules
+                                    FROM {profile_model._meta.db_table} as pt
+                                    CROSS JOIN LATERAL jsonb_to_recordset(pt.match_rules::jsonb)
+                                    AS t("dynamic_order" int, "labels" jsonb, "handler" text)
+                                    WHERE t.labels ?| %s::varchar[] order by dynamic_order
+                                """
+                cursor.execute(query, [effective_labels])
+                match_profiles = [
+                    {
+                        "_id": r[0],
+                        "labels": orjson.loads(r[1]),
+                        "dynamic_order": r[2],
+                        "handler": r[3],
+                    }
+                    for r in cursor.fetchall()
+                ]
+        for profile in match_profiles:
+            if "handler" in profile and profile["handler"]:
+                handler = Handler.get_by_id(profile["handler"])
+                if handler(effective_labels):
+                    return profile["_id"]
+            if not set(profile["labels"]) - set(effective_labels):
+                return profile["_id"]
+
     @classmethod
     def dynamic_classification(cls, profile_model_id: str, profile_field: Optional[str] = None):
         def on_post_save(
@@ -717,53 +789,10 @@ class Label(Document):
             if not hasattr(instance, "effective_labels"):
                 # Instance without effective labels
                 return
-            effective_labels = instance.effective_labels or []
-            if is_document(instance):
-                coll = profile_model._get_collection()
-                match_profiles = coll.aggregate(
-                    [
-                        {"$unwind": "$match_rules"},
-                        {
-                            "$match": {
-                                "match_rules.dynamic_order": {"$gt": 0},
-                                "match_rules.labels": {"$in": effective_labels},
-                            }
-                        },
-                        {
-                            "$project": {
-                                "dynamic_order": "$match_rules.dynamic_order",
-                                "labels": "$match_rules.labels",
-                                "handlers": 1,
-                            }
-                        },
-                        {"$sort": {"dynamic_order": 1}},
-                    ]
-                )
-            else:
-                with connection.cursor() as cursor:
-                    query = f"""
-                            SELECT pt.id, t.labels, t.dynamic_order, t.handler, match_rules
-                            FROM {profile_model._meta.db_table} as pt
-                            CROSS JOIN LATERAL jsonb_to_recordset(pt.match_rules::jsonb)
-                            AS t("dynamic_order" int, "labels" jsonb, "handler" text)
-                            WHERE t.labels ?| %s::varchar[] order by dynamic_order
-                        """
-                    cursor.execute(query, [effective_labels])
-                    match_profiles = [
-                        {
-                            "_id": r[0],
-                            "labels": orjson.loads(r[1]),
-                            "dynamic_order": r[2],
-                            "handler": r[3],
-                        }
-                        for r in cursor.fetchall()
-                    ]
-            for profile in match_profiles:
-                if not set(profile["labels"]) - set(effective_labels):
-                    if instance.profile.id != profile["_id"]:
-                        profile = profile_model.get_by_id(profile["_id"])
-                        setattr(instance, profile_field, profile)
-                    break
+            profile_id = cls.get_instance_profile(profile_model, instance)
+            if instance.profile.id != profile_id:
+                profile = profile_model.get_by_id(profile_id)
+                setattr(instance, profile_field, profile)
 
         def inner(m_cls):
             # Install handlers
