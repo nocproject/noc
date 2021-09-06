@@ -12,26 +12,26 @@
         },
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-            "value_re": "^OSPF-TRAP-MIB::ospfOriginateLsa$"
+            "value_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfOriginateLsa$"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfRouterId\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfRouterId\\.\\S+$",
             "value_re": "^(?P<router_id>.+)$"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfLsdbAreaId\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbAreaId\\.\\S+$",
             "value_re": "^(?P<lsdb_area>\\S+)"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfLsdbType\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbType\\.\\S+$",
             "value_re": "^(?P<lsdb_type>\\S+)"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfLsdbLsid\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbLsid\\.\\S+$",
             "value_re": "^(?P<lsdb_lsid>\\S+)"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfLsdbRouterId\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfLsdbRouterId\\.\\S+$",
             "value_re": "^(?P<lsdb_routerid>\\S+)"
         }
     ]

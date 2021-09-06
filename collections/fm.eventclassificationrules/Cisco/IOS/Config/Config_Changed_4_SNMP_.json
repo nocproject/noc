@@ -1,0 +1,30 @@
+{
+    "name": "Cisco | IOS | Config | Config Changed #4 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "9a6b2269-f954-406a-afa2-7deca9227092",
+    "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigDestination\\.\\d+$",
+            "value_re": "^\\S+$"
+        },
+        {
+            "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigSource\\.\\d+$",
+            "value_re": "^running$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent$"
+        }
+    ]
+}

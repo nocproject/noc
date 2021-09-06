@@ -3,7 +3,7 @@
     "$collection": "fm.eventclassificationrules",
     "uuid": "05ff2bb2-778e-4720-bbc8-3dd31915917c",
     "description": "JNX-STD-MIB-TTI-TRAPS::BfdSessDown",
-    "event_class__name": "Network | BFD | Session Up",
+    "event_class__name": "Network | BFD | Session Down",
     "preference": 1000,
     "patterns": [
         {
