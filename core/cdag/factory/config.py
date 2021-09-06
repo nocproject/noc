@@ -66,6 +66,9 @@ class ConfigCDAGFactory(BaseCDAGFactory):
             return True
         return match(self.ctx, expr)
 
+    def clean_node_config(self, node_id: str, config: Optional[Dict[str, Any]]) -> Any:
+        return config
+
     def construct(self) -> None:
         for item in self.config.nodes:
             # Check match
@@ -75,11 +78,12 @@ class ConfigCDAGFactory(BaseCDAGFactory):
             if not self.requirements_met(item.inputs):
                 continue
             # Create node
+            node_id = self.get_node_id(item.name)
             node = self.graph.add_node(
-                self.get_node_id(item.name),
+                node_id,
                 node_type=item.type,
                 description=item.description,
-                config=item.config,
+                config=self.clean_node_config(node_id, item.config),
                 ctx=self.ctx,
                 sticky=item.sticky,
             )
