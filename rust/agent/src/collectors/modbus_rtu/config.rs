@@ -7,8 +7,9 @@
 
 use crate::proto::modbus::ModbusFormat;
 use serde::Deserialize;
+use std::hash::Hash;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 pub struct ModbusRtuConfig {
     pub serial_path: String,
     pub slave: u8,
@@ -25,7 +26,7 @@ pub struct ModbusRtuConfig {
     pub timeout_ms: u64,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 #[serde(rename_all = "lowercase")]
 #[serde(tag = "request_type")]
 pub enum RegisterType {
@@ -34,7 +35,7 @@ pub enum RegisterType {
     Coil,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 #[serde(rename_all = "lowercase")]
 #[serde(tag = "parity")]
 pub enum CfgParity {

@@ -12,6 +12,6 @@ Client is Access equpment.
 | -------------- | ---------------- |
 | Service        | sa.ManagedObject |
 | Client         | sa.ManagedObject |
-| Single Service | False            |
-| Single Client  | False            |
-| Allow Children | False            |
+| Single Service | {{ no}}            |
+| Single Client  | {{ no}}            |
+| Allow Children | {{ no}}            |

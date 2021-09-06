@@ -1,0 +1,38 @@
+{
+    "name": "Network | IS-IS | Adjacency State Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d17b-aeab-42ba-86c5-f13edc494492",
+    "description": "IS-IS Adjacency State Changed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "level",
+            "description": "System Level index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "The IS-IS Adjacency State",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "lsp_id",
+            "description": "LSP Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "IS-IS {{state}} {% if level %}{{level}}{% endif %} adjacency on {{interface}}.",
+    "body_template": "IS-IS {{state}} {% if level %}{{level}}{% endif %} adjacency on {{interface}}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -154,6 +154,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         {
             name: "match_rules",
             type: "auto"
-        }
+        },
+        {
+            name: "match_expression",
+            type: "auto",
+            persist: false
+        },
     ]
 });

@@ -1,0 +1,40 @@
+{
+    "name": "Network | MPLS | LDP Session Up",
+    "$collection": "fm.eventclasses",
+    "uuid": "6bb8af5a-c5dc-449a-9d8d-0c0eb688cfe6",
+    "description": "MPLS LDP Session Up",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Affected interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "state",
+            "description": "state",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "MPLS LDP Session Up: {{neighbor}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS LDP Session Up: {{neighbor}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | MPLS | LDP Session Down"
+        }
+    ]
+}

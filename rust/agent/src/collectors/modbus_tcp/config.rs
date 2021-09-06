@@ -7,8 +7,9 @@
 
 use crate::proto::modbus::ModbusFormat;
 use serde::Deserialize;
+use std::hash::Hash;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 pub struct ModbusTcpConfig {
     pub address: String,
     #[serde(default = "default_502")]
@@ -24,7 +25,7 @@ pub struct ModbusTcpConfig {
     pub slave: u8,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 #[serde(rename_all = "lowercase")]
 #[serde(tag = "request_type")]
 pub enum RegisterType {

@@ -16,8 +16,8 @@
             "description": "Reason"
         }
     ],
-    "subject_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
-    "body_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
+    "subject_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""

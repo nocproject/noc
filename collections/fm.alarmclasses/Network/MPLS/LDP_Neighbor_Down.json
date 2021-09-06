@@ -12,12 +12,16 @@
             "description": "LDP Neighbor"
         },
         {
+            "name": "state",
+            "description": "State"
+        },
+        {
             "name": "reason",
             "description": "Reason"
         }
     ],
-    "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
-    "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
+    "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""

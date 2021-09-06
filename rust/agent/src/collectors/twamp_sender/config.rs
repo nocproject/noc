@@ -7,8 +7,9 @@
 
 use crate::proto::pktmodel::ModelConfig;
 use serde::Deserialize;
+use std::hash::Hash;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 pub struct TwampSenderConfig {
     pub server: String,
     #[serde(default = "default_862")]

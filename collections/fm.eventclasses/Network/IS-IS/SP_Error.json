@@ -1,0 +1,44 @@
+{
+    "name": "Network | IS-IS | SP Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d12b-aeab-42ba-86c5-f23edc494492",
+    "description": "IS-IS SP Error",
+    "action": "A",
+    "vars": [
+        {
+            "name": "level",
+            "description": "System Level index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "error_type",
+            "description": "Error type",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "pdu_fragment",
+            "description": "PDU fragment",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "lsp_id",
+            "description": "LSP Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "IS-IS {% if level %}{{level}}{% endif %} SP Error: {{error_type}} on {{interface}}.",
+    "body_template": "IS-IS {% if level %}{{level}}{% endif %} SP Error: {{error_type}} on {{interface}}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

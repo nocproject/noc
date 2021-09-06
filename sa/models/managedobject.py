@@ -69,6 +69,7 @@ from noc.core.handler import get_handler
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
@@ -91,7 +92,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 30
+MANAGEDOBJECT_CACHE_VERSION = 31
 CREDENTIAL_CACHE_VERSION = 3
 
 Credentials = namedtuple(
@@ -511,10 +512,12 @@ class ManagedObject(NOCModel):
         default="P",
     )
     # Resource groups
-    static_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
-    effective_service_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
-    static_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
-    effective_client_groups = ObjectIDArrayField(db_index=True, default=[], blank=True)
+    static_service_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    effective_service_groups = ObjectIDArrayField(
+        db_index=True, blank=True, null=True, default=list
+    )
+    static_client_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    effective_client_groups = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
     #
     labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
@@ -1792,6 +1795,9 @@ class ManagedObject(NOCModel):
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
+        if instance.effective_service_groups:
+            for rg in ResourceGroup.objects.filter(id__in=instance.effective_service_groups):
+                yield list(ResourceGroup.iter_lazy_labels(rg))
         yield Label.get_effective_regex_labels("managedobject_name", instance.name)
         lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
         yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)

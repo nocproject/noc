@@ -22,7 +22,11 @@ from noc.core.translation import ugettext as _
 class Span(Model):
     class Meta:
         db_table = "span"
-        engine = MergeTree("date", ("server", "service", "ts", "in_label"))
+        engine = MergeTree(
+            "date",
+            ("server", "service", "ts", "in_label"),
+            primary_keys=("server", "service", "ts", "in_label"),
+        )
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

@@ -1,0 +1,41 @@
+{
+    "name": "Config | Config Copy",
+    "$collection": "fm.eventclasses",
+    "uuid": "e338914f-afc1-4e2c-8511-877c4ba67ad1",
+    "description": "Config | Config Copy",
+    "action": "L",
+    "vars": [
+        {
+            "name": "address",
+            "description": "Server IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "filename",
+            "description": "File name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "Copy state",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "cause",
+            "description": "Copy failed by cause",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "handlers": [
+        "noc.fm.handlers.event.discovery.on_config_change"
+    ],
+    "subject_template": "Config file:{{filename}} copy status {{state}}{% if cause %} by reason {{cause}} {% endif %}{% if address %}, IP: {{address}}{% endif %}",
+    "body_template": "Config file:{{filename}} copy status {{state}}{% if cause %} by reason {{cause}} {% endif %}{% if address %}, IP: {{address}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

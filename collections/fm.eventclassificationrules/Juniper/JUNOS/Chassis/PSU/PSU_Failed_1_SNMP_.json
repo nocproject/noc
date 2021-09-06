@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | Chassis | PSU | PSU Failed #1 (SNMP)",
+    "uuid": "5f22b987-766c-46c4-aa73-f28c561394ea",
+    "description": "JUNIPER-MIB::jnxPowerSupplyFailure",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxContentsDescr(?:\\.\\d+)*$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxOperatingState(?:\\.\\d+)*$",
+            "value_re": "^down$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxPowerSupplyFailure$"
+        }
+    ]
+}

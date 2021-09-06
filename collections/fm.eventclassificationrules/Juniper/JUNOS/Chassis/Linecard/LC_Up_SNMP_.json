@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Linecard | LC Up (SNMP)",
+    "uuid": "ec3be0a8-71fe-4da8-a6a4-9f595bde9dd9",
+    "description": "JUNIPER-MIB::jnxFruOnline",
+    "event_class__name": "Chassis | Linecard | LC Up",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruType(?:\\.\\d+)*$",
+            "value_re": "^flexiblePicConcentrator$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruSlot(?:\\.\\d+)*$",
+            "value_re": "^(?P<number>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxFruOnline$"
+        }
+    ]
+}

@@ -94,7 +94,7 @@ y Float64,
 `subscribers.summary` Array(UInt32),
 ack_user String,
 ack_ts DateTime
-) ENGINE = MergeTree(date, (ts, managed_object), 8192);"""
+) ENGINE = MergeTree() PARTITION BY toYYYYMM(date) PRIMARY KEY (ts,managed_object) ORDER BY (ts,managed_object,alarm_class) SETTINGS index_granularity = 8192 ;"""
 
 
 @pytest.mark.parametrize("name,db_type", FIELDS)

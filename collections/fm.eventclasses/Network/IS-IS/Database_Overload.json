@@ -1,0 +1,26 @@
+{
+    "name": "Network | IS-IS | Database Overload",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d15b-feab-42bb-86c5-f13edc494495",
+    "description": "IS-IS Database Overload",
+    "action": "A",
+    "vars": [
+        {
+            "name": "level",
+            "description": "System Level index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "state",
+            "description": "State",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "subject_template": "IS-IS {% if level %}{{level}}{% endif %} datebase overload {{state}}",
+    "body_template": "IS-IS {% if level %}{{level}}{% endif %} datebase overload {{state}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

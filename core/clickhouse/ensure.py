@@ -38,9 +38,11 @@ def ensure_dictionary_models(connect=None):
         if not model:
             continue
         logger.info("Ensure dictionary %s" % model._meta.db_table)
-        changed |= model.ensure_table(connect=connect)
-        if changed:
-            model.detach_dictionary(connect=connect)
+        table_changed = model.ensure_table(connect=connect)
+        changed |= table_changed
+        if table_changed:
+            logger.info("[%s] Drop Dictionary", name)
+            model.drop_dictionary(connect=connect)
         changed |= model.ensure_dictionary(connect=connect)
     return changed
 

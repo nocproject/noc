@@ -12,15 +12,8 @@ from typing import Tuple, List
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.comp import smart_text
-from noc.main.models.label import MATCH_OPS
+from noc.main.models.label import MATCH_BADGES, MATCH_OPS
 from noc.core.translation import ugettext as _
-
-MATCH_BADGES = {
-    "=": "=",
-    "<": "fa-chevron-left",
-    ">": "fa-chevron-right",
-    "&": "&",
-}
 
 
 def clean_label(label: str) -> Tuple[str, str, List[str]]:

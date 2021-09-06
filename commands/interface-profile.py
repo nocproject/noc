@@ -7,10 +7,11 @@
 
 # Python modules
 import argparse
+from functools import partial
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import connect
+from noc.core.mongo.connection import connect, get_db
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
@@ -33,6 +34,12 @@ class Command(BaseCommand):
         apply_parser = subparsers.add_parser("apply", help="Apply classification rules")
         apply_parser.add_argument(
             "--reset-default",
+            action="store_true",
+            default=False,
+            help="Set not matched profile to default",
+        )
+        apply_parser.add_argument(
+            "--use-match-rules",
             action="store_true",
             default=False,
             help="Set not matched profile to default",
@@ -167,8 +174,11 @@ class Command(BaseCommand):
         # sol = config.get("interface_discovery", "get_interface_profile")
         # @todo Classification pyrule
         default_profile = InterfaceProfile.get_default_profile()
-        get_profile = None
-        if not get_profile:
+        if kwargs.get("use_match_rules"):
+            from noc.main.models.label import Label
+
+            get_profile = partial(Label.get_instance_profile, InterfaceProfile)
+        else:
             get_profile = InterfaceClassificationRule
             get_profile = get_profile.get_classificator()
             # raise CommandError("No classification solution")

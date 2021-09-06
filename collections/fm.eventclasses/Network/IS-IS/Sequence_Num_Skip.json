@@ -1,0 +1,32 @@
+{
+    "name": "Network | IS-IS | Sequence Num Skip",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d12b-aeab-42ba-86c5-f23edc294492",
+    "description": "IS-IS Sequence Num Skip",
+    "action": "A",
+    "vars": [
+        {
+            "name": "level",
+            "description": "System Level index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": false
+        },
+        {
+            "name": "lsp_id",
+            "description": "LSP Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "IS-IS {% if level %}{{level}}{% endif %} Sequence Skip on {{interface}}.",
+    "body_template": "IS-IS {% if level %}{{level}}{% endif %} Sequence Skip on {{interface}}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

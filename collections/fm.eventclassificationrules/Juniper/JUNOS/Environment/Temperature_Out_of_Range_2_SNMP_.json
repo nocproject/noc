@@ -1,0 +1,31 @@
+{
+    "name": "Juniper | JUNOS | Environment | Temperature Out of Range #2 (SNMP)",
+    "uuid": "f46cf79b-13cc-4e4e-ad55-b2edcfdbdd3e",
+    "description": "Juniper-System-MIB::juniSystemTempStatusChange",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "name",
+            "value": "Chassis"
+        }
+    ],
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^Juniper-System-MIB::juniSystemTempStatus(?:\\.\\d+)*$",
+            "value_re": "^(?P<measure>failed|tooLow|tooHigh|tooLowWarning|tooHighWarning)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^Juniper-System-MIB::juniSystemTempStatusChange$"
+        }
+    ]
+}

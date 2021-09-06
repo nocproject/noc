@@ -18,6 +18,9 @@ for [ping](../../../../admin/reference/services/ping.md) service
 | size            | Integer | ICMP Echo-Request packet size                                                                   |
 | count           | Integer | Probe attempts per round                                                                        |
 | timeout         | Integer | Probe timeout in seconds                                                                        |
+| expr_policy     | String  | Free time behaviour:                                                                            |
+|                 |         | D - furn off pinging                                                                            |
+|                 |         | E - continue pinging, but don't follow status                                                   |
 | report_rtt      | Boolean | Report [Ping RTT](../../../../user/reference/metrics/types/index.md) metric per each round      |
 | report_attempts | Boolean | Report [Ping Attempts](../../../../user/reference/metrics/types/index.md) metric per each round |
 | status          | Null    | Reserved                                                                                        |

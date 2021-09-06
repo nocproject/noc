@@ -15,9 +15,11 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
 from .fields import BaseField
 from .engines import ReplacingMergeTree
-from .connect import connection
+from .connect import ClickhouseClient, connection
 
 __all__ = ["Model", "NestedModel"]
+
+OLD_PM_SCHEMA_TABLE = "noc_old"
 
 
 class ModelBase(type):
@@ -200,7 +202,7 @@ class Model(object, metaclass=ModelBase):
         }
 
     @classmethod
-    def ensure_columns(cls, connect, table_name):
+    def ensure_columns(cls, connect: "ClickhouseClient", table_name: str) -> bool:
         """
         Create necessary table columns
 
@@ -212,14 +214,13 @@ class Model(object, metaclass=ModelBase):
         # Get existing columns
         existing = {}
         for name, type in connect.execute(
-            """
+            f"""
             SELECT name, type
             FROM system.columns
             WHERE
-              database=%s
-              AND table=%s
+              database='{config.clickhouse.db}'
+              AND table='{table_name}'
             """,
-            [config.clickhouse.db, table_name],
         ):
             existing[name] = type
         # Check
@@ -240,6 +241,7 @@ class Model(object, metaclass=ModelBase):
                     )
 
             else:
+                print(f"[{table_name}|{field_name}] Alter column")
                 query = (
                     f"ALTER TABLE {table_name} ADD COLUMN {cls.quote_name(field_name)} {db_type}"
                 )
@@ -254,6 +256,27 @@ class Model(object, metaclass=ModelBase):
         return c
 
     @classmethod
+    def ensure_schema(cls, connect: "ClickhouseClient", table_name: str) -> bool:
+        """
+        Ensure create table Syntax. False for old Syntax, True for New
+        :param connect:
+        :param table_name:
+        :return:
+        """
+        r = connect.execute(
+            f"""
+            SELECT engine_full
+            FROM system.tables
+            WHERE
+              database='{config.clickhouse.db}'
+              AND name='{table_name}'
+              AND engine = 'MergeTree'
+              AND (engine_full NOT LIKE 'MergeTree()%' AND engine_full NOT LIKE 'MergeTree %')
+            """
+        )
+        return not bool(r)
+
+    @classmethod
     def ensure_table(cls, connect=None):
         """
         Check table is exists
@@ -263,7 +286,7 @@ class Model(object, metaclass=ModelBase):
         if not cls._meta.managed:
             return False
         changed = False
-        ch = connect or connection()
+        ch: "ClickhouseClient" = connect or connection()
         is_cluster = bool(config.clickhouse.cluster)
         table = cls._get_db_table()
         raw_table = cls._get_raw_db_table()
@@ -272,25 +295,36 @@ class Model(object, metaclass=ModelBase):
         if ch.has_table(table) and not ch.has_table(raw_table):
             # Legacy scheme, data for non-clustered installations has been written
             # to table itself. Move to raw_*
+            print(f"[{table}] Legacy migration. Rename {table} -> {raw_table}")
             ch.rename_table(table, raw_table)
             changed = True
+        # Old schema
+        if ch.has_table(raw_table) and not cls.ensure_schema(ch, raw_table):
+            # Old schema, data table will be move to old_noc db for save data.
+            print(f"[{table}] Old Schema Move Data to {OLD_PM_SCHEMA_TABLE}.{raw_table}")
+            ch.ensure_db(OLD_PM_SCHEMA_TABLE)
+            ch.rename_table(raw_table, f"{OLD_PM_SCHEMA_TABLE}.{raw_table}")
         # Ensure raw_* table
         if ch.has_table(raw_table):
             # raw_* table exists, check columns
+            print(f"[{table}] Check columns")
             changed |= cls.ensure_columns(ch, raw_table)
         else:
             # Create new table
+            print(f"[{table}] Create new table")
             ch.execute(post=cls.get_create_sql())
             changed = True
         # For cluster mode check d_* distributed table
         if is_cluster and not cls._meta.is_local:
+            print(f"[{table}] Check distributed table")
             if ch.has_table(dist_table):
                 changed |= cls.ensure_columns(ch, dist_table)
             else:
                 ch.execute(post=cls.cget_create_distributed_sql())
                 changed = True
         # Synchronize view
-        if changed or not ch.has_table(table):
+        if changed or not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
             ch.execute(post=cls.get_create_view_sql())
             changed = True
         return changed
@@ -683,7 +717,13 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         return True
 
     @classmethod
-    def ensure_dictionary(cls, connect=None):
+    def drop_dictionary(cls, connect=None):
+        ch = connect or connection()
+        ch.execute(post=f" DROP DICTIONARY IF EXISTS {cls._getdictionary_table()}")
+        return True
+
+    @classmethod
+    def ensure_dictionary(cls, connect=None) -> bool:
         """
         Check dictionary is exists
         :param connect:
@@ -691,8 +731,7 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         """
         # changed = False
         ch = connect or connection()
-        ch.execute(post=cls.get_create_dictionary_sql())
-        return True
+        return bool(ch.execute(post=cls.get_create_dictionary_sql()))
 
     @classmethod
     def dump(cls, out):

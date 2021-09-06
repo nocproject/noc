@@ -1,0 +1,33 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Linecard | LC Power Off (SNMP)",
+    "uuid": "45082ab8-5dc1-4e2c-b5d3-47c0467bd418",
+    "description": "JUNIPER-MIB::jnxFruPowerOff",
+    "event_class__name": "Chassis | Linecard | LC Power Off",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruType(?:\\.\\d+)*$",
+            "value_re": "^flexiblePicConcentrator$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruSlot(?:\\.\\d+)*$",
+            "value_re": "^(?P<number>.+)"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruOfflineReason(?:\\.\\d+)*$",
+            "value_re": "^(?P<reason>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxFruPowerOff$"
+        }
+    ]
+}

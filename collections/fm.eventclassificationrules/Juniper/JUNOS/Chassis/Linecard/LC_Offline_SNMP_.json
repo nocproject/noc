@@ -1,0 +1,33 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Linecard | LC Offline (SNMP)",
+    "uuid": "34671416-bf64-49c2-bdb0-688349964390",
+    "description": "JUNIPER-MIB::jnxFruOffline",
+    "event_class__name": "Chassis | Linecard | LC Offline",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruType(?:\\.\\d+)*$",
+            "value_re": "^flexiblePicConcentrator$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruSlot(?:\\.\\d+)*$",
+            "value_re": "^(?P<number>.+)"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruOfflineReason(?:\\.\\d+)*$",
+            "value_re": "^(?P<reason>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxFruOffline$"
+        }
+    ]
+}

@@ -358,6 +358,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "match_rules",
                                     xtype: "listform",
+                                    rows: 6,
+                                    labelAlign: "top",
                                     uiStyle: "large",
                                     fieldLabel: __("Match Rules"),
                                     items: [
@@ -542,7 +544,25 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: 'ping_calculated',
                                                     xtype: 'displayfield',
                                                     renderer: NOC.render.Duration
-                                                }
+                                                },
+                                                {
+                                                    name: "ping_time_expr_policy",
+                                                    xtype: "combobox",
+                                                    tooltip: __("Enable or disable ping if working hour on object is set. <br/>" +
+                                                        "Enable - Calc RTT, but do not raise alarm, Disable ping - do not send ICMP"),
+                                                    fieldLabel: __("Policy Off Hours"),
+                                                    labelWidth: 120,
+                                                    allowBlank: true,
+                                                    uiStyle: "medium",
+                                                    store: [
+                                                        ["D", __("Disable ping")],
+                                                        ["E", __("Enable ping but dont follow status")]
+                                                    ],
+                                                    value: "D",
+                                                    listeners: {
+                                                        render: me.addTooltip
+                                                    }
+                                                },
                                             ]
                                         }
                                     ]

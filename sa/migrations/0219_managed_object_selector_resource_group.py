@@ -130,7 +130,7 @@ class ManagedObjectSelectorLabels(object):
         if field == "filter_address":
             scope = "managedobject_address"
         elif field == "filter_description":
-            scope = "managedobject_address"
+            scope = "managedobject_description"
         r = coll.find_one(
             {"match_regex": {"$elemMatch": {"regexp": regex, "scope": scope}}}, {"name": 1}
         )
@@ -224,6 +224,12 @@ class Migration(BaseMigration):
                 """
         ):
             sources_map[sel_from] += [sel_to]
+        # Fix more than two level
+        for sel_id in list(sources_map):
+            for fid in list(sources_map[sel_id]):
+                if fid in sources_map:
+                    sources_map[sel_id].remove(fid)
+                    sources_map[sel_id] += sources_map[fid]
         mosl = ManagedObjectSelectorLabels()
         match_labels = defaultdict(set)
         # Main Loop

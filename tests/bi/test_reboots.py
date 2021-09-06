@@ -48,7 +48,7 @@ segment UInt64,
 container UInt64,
 x Float64,
 y Float64
-) ENGINE = MergeTree(date, (ts, managed_object), 8192);"""
+) ENGINE = MergeTree() PARTITION BY toYYYYMM(date) PRIMARY KEY (ts,managed_object) ORDER BY (ts,managed_object) SETTINGS index_granularity = 8192 ;"""
 
 
 @pytest.mark.parametrize("name,db_type", FIELDS)

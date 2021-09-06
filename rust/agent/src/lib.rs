@@ -11,6 +11,7 @@ pub mod collectors;
 pub mod config;
 pub mod error;
 mod feature;
+pub mod meta;
 pub mod proto;
 pub mod sender;
 pub mod state;

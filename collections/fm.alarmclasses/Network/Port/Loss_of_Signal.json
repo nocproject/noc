@@ -1,0 +1,44 @@
+{
+    "name": "Network | Port | Loss of Signal",
+    "$collection": "fm.alarmclasses",
+    "uuid": "9b5d51e7-ada9-4721-b12e-2f61835b5c8e",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface name"
+        },
+        {
+            "name": "description",
+            "description": "Interface description",
+            "default": "=InterfaceDS.description"
+        },
+        {
+            "name": "slot",
+            "description": "Slot name"
+        },
+        {
+            "name": "catrd",
+            "description": "Card name"
+        }
+    ],
+    "subject_template": "Port {{card}}/{{slot}}/{{interface}}{% if description %} ({{description}}){% endif %} loss of signal",
+    "body_template": "Port {{card}}/{{slot}}/{{interface}}{% if description %} ({{description}}){% endif %} loss of signal",
+    "symptoms": "Connection lost",
+    "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
+    "recommended_actions": "Check configuration, both sides of links and hardware",
+    "recover_time": 300
+}

@@ -33,6 +33,7 @@ class CfgPingDataStream(DataStream):
             "object_profile__ping_size",
             "object_profile__ping_count",
             "object_profile__ping_timeout_ms",
+            "object_profile__ping_time_expr_policy",
             "object_profile__report_ping_rtt",
             "object_profile__report_ping_attempts",
         )[:1]
@@ -53,6 +54,7 @@ class CfgPingDataStream(DataStream):
             ping_size,
             ping_count,
             ping_timeout_ms,
+            ping_time_expr_policy,
             report_ping_rtt,
             report_ping_attempts,
         ) = mo[0]
@@ -75,6 +77,7 @@ class CfgPingDataStream(DataStream):
             "size": ping_size,
             "count": ping_count,
             "timeout": ping_timeout_ms,
+            "expr_policy": ping_time_expr_policy,
             "report_rtt": report_ping_rtt,
             "report_attempts": report_ping_attempts,
             "status": None,

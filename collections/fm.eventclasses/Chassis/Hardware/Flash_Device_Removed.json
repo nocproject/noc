@@ -1,0 +1,20 @@
+{
+    "name": "Chassis | Hardware | Flash Device Removed",
+    "$collection": "fm.eventclasses",
+    "uuid": "1f9481ee-30e1-41ee-a10d-6fd33fc0f14c",
+    "description": "Flash device is removed.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "device",
+            "description": "Device name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Flash {{device}} is removed",
+    "body_template": "Flash {{device}} is removed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

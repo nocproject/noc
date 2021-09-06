@@ -33,7 +33,7 @@ from noc.core.translation import ugettext as _
 class Reboots(Model):
     class Meta:
         db_table = "reboots"
-        engine = MergeTree("date", ("ts", "managed_object"))
+        engine = MergeTree("date", ("ts", "managed_object"), primary_keys=("ts", "managed_object"))
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

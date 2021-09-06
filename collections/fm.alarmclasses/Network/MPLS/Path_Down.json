@@ -10,10 +10,14 @@
         {
             "name": "name",
             "description": "Path name"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
         }
     ],
-    "subject_template": "MPLS Path Down: {{name}}",
-    "body_template": "MPLS Path Down: {{name}}",
+    "subject_template": "MPLS Path Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS Path Down: {{name}}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""

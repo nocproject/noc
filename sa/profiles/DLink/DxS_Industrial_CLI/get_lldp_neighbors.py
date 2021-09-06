@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Industrial_CLI.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,31 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.base import IPv4Parameter
 from noc.core.text import parse_table
+from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
@@ -32,35 +57,45 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_cli(self):
         r = []
+        has_if_range = False
         v = self.cli("show interfaces status")
         t = parse_table(v)
         for i in t:
-            iface = {"local_interface": i[0], "neighbors": []}
-            v = self.cli("show lldp neighbors interface %s" % i[0])
+            ifname = i[0]
+            iface = {"local_interface": ifname, "neighbors": []}
+            if_range = "%s-%s" % (ifname[3:], ifname.split("/")[2])
+            if not has_if_range:
+                try:
+                    v = self.cli("show lldp neighbors interface %s" % ifname)
+                except self.CLISyntaxError:
+                    v = self.cli("show lldp neighbors interface ethernet %s" % if_range)
+                    has_if_range = True
+            else:
+                v = self.cli("show lldp neighbors interface ethernet %s" % if_range)
             for m in self.rx_entity.finditer(v):
                 n = {}
                 n["remote_chassis_id_subtype"] = {
-                    "chassis component": 1,
-                    "interface alias": 2,
-                    "port component": 3,
-                    "mac address": 4,
-                    "network address": 5,
-                    "interface name": 6,
-                    "local": 7,
+                    "chassis component": LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+                    "interface alias": LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+                    "port component": LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+                    "mac address": LLDP_CHASSIS_SUBTYPE_MAC,
+                    "network address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+                    "interface name": LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+                    "local": LLDP_CHASSIS_SUBTYPE_LOCAL,
                 }[m.group("chassis_id_type").strip().lower()]
                 n["remote_chassis_id"] = m.group("chassis_id").strip()
                 remote_port_subtype = m.group("port_id_type")
                 remote_port_subtype.replace("_", " ")
                 n["remote_port_subtype"] = {
-                    "interface alias": 1,
-                    "port component": 2,
-                    "mac address": 3,
-                    "network address": 4,
-                    "interface name": 5,
-                    "agent circuit id": 6,
-                    "local": 7,
+                    "interface alias": LLDP_PORT_SUBTYPE_ALIAS,
+                    "port component": LLDP_PORT_SUBTYPE_COMPONENT,
+                    "mac address": LLDP_PORT_SUBTYPE_MAC,
+                    "network address": LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+                    "interface name": LLDP_PORT_SUBTYPE_NAME,
+                    "agent circuit id": LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
+                    "local": LLDP_PORT_SUBTYPE_LOCAL,
                 }[remote_port_subtype.strip().lower()]
                 n["remote_port"] = m.group("port_id").strip()
                 if n["remote_port_subtype"] == 3:
@@ -78,21 +113,19 @@ class Script(BaseScript):
                     n["remote_system_description"] = re.sub(
                         r"\n\s*", "", m.group("system_description").strip()
                     )
-                caps = 0
-                for c in m.group("system_capabilities").split(","):
-                    c = c.strip()
-                    if not c:
-                        break
-                    caps |= {
-                        "Other": 1,
-                        "Repeater": 2,
-                        "Bridge": 4,
-                        "WLAN Access Point": 8,
-                        "Router": 16,
-                        "Telephone": 32,
-                        "DOCSIS Cable Device": 64,
-                        "Station Only": 128,
-                    }[c]
+                caps = lldp_caps_to_bits(
+                    m.group("system_capabilities").split(","),
+                    {
+                        "other": LLDP_CAP_OTHER,
+                        "repeater": LLDP_CAP_REPEATER,
+                        "bridge": LLDP_CAP_BRIDGE,
+                        "wlan access point": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "router": LLDP_CAP_ROUTER,
+                        "telephone": LLDP_CAP_TELEPHONE,
+                        "docsis cable device": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                        "station only": LLDP_CAP_STATION_ONLY,
+                    },
+                )
                 n["remote_capabilities"] = caps
                 iface["neighbors"] += [n]
             if iface["neighbors"]:

@@ -1,13 +1,4 @@
 ---
-- name: Create required directories  #hack. have to be fixed
-  file:
-    path: "{{ noc_root }}/lib/python2.7/site-packages/__pycache__"
-    state: "directory"
-    owner: "{{ noc_user }}"
-    mode: 0755
-  when:
-    - noc_python_interpreter == "python"
-
 - name: Create required directories on py3  #hack. have to be fixed
   file:
     path: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/__pycache__"

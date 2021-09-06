@@ -1,0 +1,30 @@
+{
+    "name": "Juniper | JUNOS | Environment | Temperature Returned to Normal Range #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "689ed691-5706-4f66-846b-161bd52a4cff",
+    "description": "JUNIPER-MIB::jnxTemperatureOK",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxContentsDescr(?:\\.\\d+)*$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxOperatingTemp(?:\\.\\d+)*$",
+            "value_re": "^(?P<measure>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxTemperatureOK$"
+        }
+    ]
+}

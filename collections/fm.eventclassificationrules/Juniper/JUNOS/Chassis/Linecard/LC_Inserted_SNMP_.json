@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Linecard | LC Inserted (SNMP)",
+    "uuid": "e36b64de-126e-4c2c-ab2d-f68492c6045a",
+    "description": "JUNIPER-MIB::jnxFruInsertion",
+    "event_class__name": "Chassis | Linecard | LC Inserted",
+    "preference": 100,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruType(?:\\.\\d+)*$",
+            "value_re": "^flexiblePicConcentrator$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxFruSlot(?:\\.\\d+)*$",
+            "value_re": "^(?P<number>.+)"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxFruInsertion$"
+        }
+    ]
+}

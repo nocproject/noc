@@ -9,8 +9,9 @@ use super::{GetPacket, Packet, NS};
 use crate::error::AgentError;
 use serde::Deserialize;
 use std::convert::TryFrom;
+use std::hash::Hash;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, Hash)]
 pub struct G729ModelConfig {}
 
 #[derive(Debug, Copy, Clone)]

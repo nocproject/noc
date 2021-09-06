@@ -1,0 +1,44 @@
+{
+    "name": "Network | OSPF | LSA Max Age",
+    "$collection": "fm.eventclasses",
+    "uuid": "a148d17b-feab-42ba-86c5-f13edc494491",
+    "description": "An ospfMaxAgeLsa trap signifies that one of the LSA in the router's link-state database has aged to MaxAge.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "lsdb_area",
+            "description": "The 32-bit identifier of the area from which the LSA was received.",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "lsdb_type",
+            "description": "The type of the link state advertisement.",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "lsdb_lsid",
+            "description": "The Link State ID is an LS Type Specific field containing either a Router ID or an IP address",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "lsdb_routerid",
+            "description": "The 32 bit number that uniquely identifies the originating router in the Autonomous System.",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "router_id",
+            "description": "OSPF Router Id",
+            "type": "ip_address",
+            "required": false
+        }
+    ],
+    "subject_template": "{% if lsdb_lsid %}{{lsdb_lsid}} {% else %} {{lsdb_routerid}} {% endif %} of the LSA record in the router's link-state database aged",
+    "body_template": "{% if lsdb_lsid %}{{lsdb_lsid}} {% else %} {{lsdb_routerid}} {% endif %} of the LSA record in the router's link-state database aged\n Link state type: {{lsdb_type}} on area {{lsdb_area}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

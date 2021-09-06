@@ -1,0 +1,34 @@
+{
+    "name": "Chassis | Hardware | Module | Module Up",
+    "$collection": "fm.eventclasses",
+    "uuid": "f5f4ba6a-3791-4556-a1d7-b4fabb5611d4",
+    "description": "Hardware module has gone online",
+    "action": "A",
+    "vars": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Hardware module {{module}} up{% if interface %}, interface {{interface}}{% endif %}",
+    "body_template": "Hardware module {{module}} up{% if interface %}, interface {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Hardware | Module | Module Down"
+        }
+    ]
+}

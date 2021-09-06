@@ -31,7 +31,8 @@ MATCHED_SCOPES = {"untagged", "tagged"}
 
 @Label.match_labels(category="vcfilter")
 @on_delete_check(
-    check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")]
+    check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")],
+    clean_lazy_labels="vcfilter",
 )
 class VCFilter(NOCModel):
     """

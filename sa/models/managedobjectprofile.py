@@ -150,6 +150,12 @@ class ManagedObjectProfile(NOCModel):
     ping_timeout_ms = models.IntegerField(_("Ping timeout (ms)"), default=1000)
     report_ping_rtt = models.BooleanField(_("Report RTT"), default=False)
     report_ping_attempts = models.BooleanField(_("Report Attempts"), default=False)
+    ping_time_expr_policy = models.CharField(
+        _("Policy Off Hours"),
+        choices=[("D", _("Disable ping")), ("E", _("Enable ping but dont follow status"))],
+        max_length=1,
+        default="D",
+    )
     # Additional alarm weight
     weight = models.IntegerField("Alarm weight", default=0)
     #
@@ -676,6 +682,7 @@ class ManagedObjectProfile(NOCModel):
                 "ping_size",
                 "ping_count",
                 "ping_timeout_ms",
+                "ping_time_expr_policy",
                 "report_ping_rtt",
                 "report_ping_attempts",
                 "event_processing_policy",

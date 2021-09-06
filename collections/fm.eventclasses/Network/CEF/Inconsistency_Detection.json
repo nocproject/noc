@@ -1,0 +1,20 @@
+{
+    "name": "Network | CEF | Inconsistency Detection",
+    "$collection": "fm.eventclasses",
+    "uuid": "d038a97e-8501-4633-a043-09c0f25811bd",
+    "description": "CEF consistency checkers detects an inconsistent prefix in one of the CEF forwarding databases.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "time",
+            "description": "sysUpTime",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "subject_template": "CEF detected an inconsistent prefix at time: {{time}}",
+    "body_template": "CEF detected an inconsistent prefix at time: {{time}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

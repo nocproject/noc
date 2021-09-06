@@ -43,7 +43,7 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     dataIndex: "service_expression",
                     width: 400,
                     renderer: function(v, _x) {
-                        var labels = [];
+                        var labels = [], text;
                         Ext.each(v, function(label) {
                             labels.push(NOC.render.Label({
                                 badges: label.badges,
@@ -55,7 +55,9 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                                 fg_color2: label.fg_color2 || 0
                             }));
                         });
-                        return labels.join("");
+                        text = labels.join("");
+                        return '<span data-qtitle="Service Expression" ' +
+                            'data-qtip="' + text + '">' + text + '</span>';
                     }
                 },
                 {
@@ -110,9 +112,21 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    uiStyle: "extra",
+                    query: {
+                        "enable_resourcegroup": true
+                    },
+                },
+                {
                     name: "dynamic_service_labels",
                     xtype: "listform",
+                    rows: 6,
                     fieldLabel: __("Dynamic Service Labels"),
+                    labelAlign: "top",
                     items: [
                         {
                             name: "labels",
@@ -132,6 +146,8 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                     name: "dynamic_client_labels",
                     xtype: "listform",
                     fieldLabel: __("Dynamic Client Labels"),
+                    rows: 6,
+                    labelAlign: "top",
                     items: [
                         {
                             name: "labels",
@@ -177,16 +193,6 @@ Ext.define("NOC.inv.resourcegroup.Application", {
                             uiStyle: "medium"
                         }
                     ]
-                },
-                {
-                    name: "labels",
-                    xtype: "labelfield",
-                    fieldLabel: __("Labels"),
-                    allowBlank: true,
-                    uiStyle: "extra",
-                    query: {
-                        "enable_resourcegroup": true
-                    },
                 }
             ],
             formToolbar: [
@@ -208,6 +214,18 @@ Ext.define("NOC.inv.resourcegroup.Application", {
             ftype: "tree",
             lookup: "inv.resourcegroup"
         },
+        {
+            title: __("By Dynamic Serivce Labels"),
+            name: "dynamic_service_labels",
+            ftype: "label",
+            lookup: "main.label"
+        },
+        {
+            title: __("By Dynamic Client Labels"),
+            name: "dynamic_client_labels",
+            ftype: "label",
+            lookup: "main.label"
+        }
     ],
     levelFilter: {
         icon: NOC.glyph.level_down,

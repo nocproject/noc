@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | Network | MPLS | LSP Down (SNMP)",
+    "uuid": "c2a35a10-cc4e-4ce5-ac20-a2a1f9f6db3d",
+    "description": "JUNIPER-LDP-MIB::jnxLdpLspDown",
+    "event_class__name": "Network | MPLS | LSP Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^JUNIPER-LDP-MIB::jnxLdpInstanceName(?:\\.\\d+)*$",
+            "value_re": "^(?P<name__ifindex>\\d+)$"
+        },
+        {
+            "key_re": "^JUNIPER-LDP-MIB::jnxLdpLspDownReason(?:\\.\\d+)*$",
+            "value_re": "^(?P<reason>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxLdpLspDown$"
+        }
+    ]
+}
