@@ -374,5 +374,4 @@ class AlarmClass(Document):
         if self.config and self._config.enable_alarm_repeat:
             if self._config.thresholdprofile and self._config.thresholdprofile.window_type == "t":
                 return self._config.thresholdprofile
-            else:
-                return None
+        return None
