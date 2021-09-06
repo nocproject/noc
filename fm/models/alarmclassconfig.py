@@ -11,7 +11,6 @@ from mongoengine.fields import StringField, BooleanField, ReferenceField, IntFie
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.decorator import on_delete_check
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from .alarmclass import AlarmClass
 
