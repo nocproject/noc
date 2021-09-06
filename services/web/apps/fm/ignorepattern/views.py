@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.ignorepattern application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -36,9 +36,9 @@ class IgnorePatternApplication(ExtDocApplication):
         if event.source == "syslog":
             data["description"] = event.raw_vars["message"]
             data["source"] = "syslog"
+            data["pattern"] = event.raw_vars["message"]
         elif event.source == "SNMP Trap" and "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars:
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
             data["source"] = "SNMP Trap"
-        if "message" in event.raw_vars:
-            data["pattern"] = event.raw_vars["message"]
+            data["pattern"] = event.raw_vars.get("1.3.6.1.6.3.1.1.4.1.0")
         return data
