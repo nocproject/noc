@@ -1,0 +1,26 @@
+{
+    "name": "Network | MPLS | LSP Path Change",
+    "$collection": "fm.eventclasses",
+    "uuid": "4c583d7b-8546-4504-8900-27c6d22ad211",
+    "description": "MPLS LSP Up",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "LSP name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "path",
+            "description": "LSP Path",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "MPLS LSP: {{name}} chage path on {{path}}",
+    "body_template": "MPLS LSP: {{name}} chage path on {{path}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

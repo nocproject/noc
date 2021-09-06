@@ -1,0 +1,44 @@
+{
+    "name": "Network | MPLS | LSR XC Down",
+    "$collection": "fm.eventclasses",
+    "uuid": "4c0a6d84-f613-4141-8b24-f57c684e3611",
+    "description": "MPLS LSR XC Down",
+    "action": "A",
+    "vars": [
+        {
+            "name": "index",
+            "description": "XC index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "lsp_id",
+            "description": "XC LSP id",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "owner",
+            "description": "XC Owner",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "admin_status",
+            "description": "XC Admin status",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "status",
+            "description": "XC Oper status",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "subject_template": "MPLS LSR XC Down. LSP ID {{lsp_id}}",
+    "body_template": "MPLS LSR XC Down. LSP ID {{lsp_id}}, owner: {{owner}}.\nAdmin status: {{admin_status}}.\nOper status: {{status}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

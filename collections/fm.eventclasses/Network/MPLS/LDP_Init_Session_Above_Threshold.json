@@ -1,0 +1,26 @@
+{
+    "name": "Network | MPLS | LDP Init Session Above Threshold",
+    "$collection": "fm.eventclasses",
+    "uuid": "188f5509-7498-4039-a4e2-41eb5d504585",
+    "description": "MPLS LDP Neighbor Down",
+    "action": "A",
+    "vars": [
+        {
+            "name": "ldp_id",
+            "description": "LDP Neighbor",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "subject_template": "MPLS LDP {{ldp_id}} the number of Session Initialization messages exceeds the value of threshold: {{tvalue}}",
+    "body_template": "MPLS LDP {{ldp_id}} the number of Session Initialization messages exceeds the value of threshold: {{tvalue}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

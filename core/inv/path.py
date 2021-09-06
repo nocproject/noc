@@ -37,7 +37,7 @@ class AdjItem(object):
 
 
 def find_path(
-    obj: Object, connection: str, target_protocols: Iterable[str], max_depth=100
+    obj: Object, connection: str, target_protocols: Iterable[str], max_depth=100, trace_wire=False
 ) -> Optional[List[PathItem]]:
     """
     Build shortest path from object's connection until a connection with any of the
@@ -47,6 +47,7 @@ def find_path(
     :param connection: Starting connection name
     :param target_protocols: Iterable of protocols
     :param max_depth: Path Limit
+    :param trace_wire: Tracing Wire connection (return neighbor conncted by wire)
     :return:
     """
 
@@ -60,6 +61,8 @@ def find_path(
         mc = ro.model.get_model_connection(r_name)
         if not mc:
             return ConnAction.REJECT
+        if trace_wire and not ro.is_wire:
+            return ConnAction.FOUND
         if not mc.protocols:
             return ConnAction.PASS
         if any(p for p in mc.protocols if p in tp):

@@ -1,0 +1,44 @@
+{
+    "name": "Network | MPLS | TE Tunnel Rerouted",
+    "$collection": "fm.eventclasses",
+    "uuid": "1c0a6d84-f613-4141-8b24-f57c684e3611",
+    "description": "MPLS TE Tunnel Rerouted",
+    "action": "A",
+    "vars": [
+        {
+            "name": "index",
+            "description": "Tunnel index",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "name",
+            "description": "Tunnel name",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "description",
+            "description": "Tunnel description",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "admin_status",
+            "description": "Tunnel Admin status",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "status",
+            "description": "Tunnel Oper status",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "subject_template": "MPLS TE Tunnel {{name}} {% if description %}desctiption: {{description}}{% endif %} rerouted.",
+    "body_template": "MPLS TE Tunnel {{name}} {% if description %}desctiption: {{description}}{% endif %} rerouted.\nTunnel index: {{index}}.\nAdmin status: {{admin_status}}.\nOper status: {{status}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
