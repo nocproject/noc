@@ -12,22 +12,22 @@
         },
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-            "value_re": "^OSPF-TRAP-MIB::ospfIfStateChange$"
+            "value_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfIfStateChange$"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfRouterId\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfRouterId\\.\\S+$",
             "value_re": "^(?P<router_id>.+)$"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfIfIpAddress\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfIfIpAddress\\.\\S+$",
             "value_re": "^(?P<address>\\S+)"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfAddressLessIf\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfAddressLessIf\\.\\S+$",
             "value_re": "^(?P<interface__ifindex>\\S+)"
         },
         {
-            "key_re": "^OSPF-TRAP-MIB::ospfIfState\\.\\S+$",
+            "key_re": "^(OSPF-MIB|OSPF-TRAP-MIB)::ospfIfState\\.\\S+$",
             "value_re": "^(?P<state>\\S+)"
         }
     ]

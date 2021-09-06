@@ -10,7 +10,7 @@
             "value_re": "^SNMP Trap$"
         },
         {
-            "key_re": "^IF-MIB::ifName\\.\\d+$",
+            "key_re": "^IF-MIB::(ifName|ifDescr)\\.\\d+$",
             "value_re": "^(?P<interface>.+)$"
         },
         {

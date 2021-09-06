@@ -14,8 +14,8 @@
             "value_re": "^Juniper\\.JUNOS$"
         },
         {
-            "key_re": "^JUNIPER-MIB::jnxFruType(?:\\.\\d+)*$",
-            "value_re": "^flexiblePicConcentrator$"
+            "key_re": "^JUNIPER-MIB::jnxFruType(?:\\..+)*$",
+            "value_re": "^.+"
         },
         {
             "key_re": "^JUNIPER-MIB::jnxFruSlot(?:\\.\\d+)*$",
