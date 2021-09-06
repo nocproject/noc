@@ -16,7 +16,6 @@ from noc.pm.models.thresholdprofile import ThresholdProfile
 from .alarmclass import AlarmClass
 
 
-@on_delete_check(check=[("fm.AlarmClassConfig", "thresholdprofile")])
 class AlarmClassConfig(Document):
     """
     Alarm class config
