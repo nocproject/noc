@@ -1,0 +1,26 @@
+{
+    "name": "Network | MPLS | VRF Router Num Above Mid Threshold",
+    "$collection": "fm.eventclasses",
+    "uuid": "aa523bd6-e5d1-4676-9665-a97c4a505416",
+    "description": "MPLS VRF Router Num Above Mid Threshold",
+    "action": "A",
+    "vars": [
+        {
+            "name": "ovalue",
+            "description": "Current Number Routes",
+            "type": "int",
+            "required": true
+        },
+        {
+            "name": "tvalue",
+            "description": "Configured High Rated Threshold",
+            "type": "int",
+            "required": false
+        }
+    ],
+    "subject_template": "MPLS VRF exceeded the mid threshold {{tvalue}} routes: {{ovalue}}.",
+    "body_template": "MPLS VRF exceeded the mid threshold {{tvalue}} routes: {{ovalue}}.",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
