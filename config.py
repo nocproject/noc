@@ -412,8 +412,8 @@ class Config(BaseConfig):
         metrics_send_delay = FloatParameter(default=0.25)
         keepalive_time_ms = IntParameter(default=30000)
         keepalive_timeout_ms = IntParameter(default=60000)
-        inhibit_health_checking = BooleanParameter(default=True)
         max_pings_without_data = IntParameter(default=0)
+        keepalive_permit_without_calls = IntParameter(default=1)
 
     listen = StringParameter(default="auto:0")
 

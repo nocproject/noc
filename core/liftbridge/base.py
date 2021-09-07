@@ -121,9 +121,8 @@ class GRPCChannel(object):
                 ("grpc.enable_http_proxy", config.liftbridge.enable_http_proxy),
                 ("grpc.keepalive_time_ms", config.liftbridge.keepalive_time_ms),
                 ("grpc.keepalive_timeout_ms", config.liftbridge.keepalive_timeout_ms),
-                ("grpc.inhibit_health_checking", config.liftbridge.inhibit_health_checking),
                 ("grpc.http2.max_pings_without_data", config.liftbridge.max_pings_without_data),
-                ("grpc.keepalive_permit_without_calls", True),
+                ("grpc.keepalive_permit_without_calls", config.liftbridge.keepalive_permit_without_calls),
             ],
         )
         while True:
