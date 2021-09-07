@@ -122,7 +122,10 @@ class GRPCChannel(object):
                 ("grpc.keepalive_time_ms", config.liftbridge.keepalive_time_ms),
                 ("grpc.keepalive_timeout_ms", config.liftbridge.keepalive_timeout_ms),
                 ("grpc.http2.max_pings_without_data", config.liftbridge.max_pings_without_data),
-                ("grpc.keepalive_permit_without_calls", config.liftbridge.keepalive_permit_without_calls),
+                (
+                    "grpc.keepalive_permit_without_calls",
+                    config.liftbridge.keepalive_permit_without_calls,
+                ),
             ],
         )
         while True:
