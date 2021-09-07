@@ -43,6 +43,11 @@ Ext.define("NOC.aaa.group.ApplicationPermission", {
     },
     tools: [
         {
+            type: "plus",
+            tooltip: __("Set all permissions"),
+            callback: "setAllPermission"
+        },
+        {
             type: "refresh",
             tooltip: __("Reset title permissions"),
             callback: "resetPermission"
@@ -81,10 +86,26 @@ Ext.define("NOC.aaa.group.ApplicationPermission", {
             });
         });
         this.setData(data);
+        NOC.msg.complete(__("Permissions were reset"));
+    },
+    setAllPermission: function() {
+        var data = this.getData();
+        Ext.Object.each(data, function(name, app) {
+            Ext.each(app.perms, function(perm) {
+                perm.status = true;
+            });
+        });
+        this.setData(data);
+        NOC.msg.complete(__("Permissions were set"));
     },
     togglePanel: function(panel) {
         var tool = panel.query("[itemId=expandTool]")[0];
         panel.toggleCollapse();
         tool.setType(tool.type === "expand" ? "collapse" : "expand");
+    },
+    expandPanel: function(panel) {
+        var tool = panel.query("[itemId=expandTool]")[0];
+        panel.expand();
+        tool.setType("collapse");
     }
 });
