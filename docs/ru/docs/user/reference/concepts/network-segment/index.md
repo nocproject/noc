@@ -227,6 +227,39 @@ _Segment Uplinks_ is the objects providing _Connectivity_ for any of
 Segment's objects. _Segment Uplinks_ can belong to segment itself,
 or may belong to any neighbor segment
 
+
+### Segment Hierarchy
+
+`Connectivity` provided by parent segment. Uplinks are all objects
+from parent segment having links to segment.
+
+Consider the scheme:
+
+```mermaid
+graph TB
+    subgraph Parent
+    MO1
+    end
+    subgraph Segment
+    MO2
+    MO3
+    MO4
+    end
+    MO1 --- MO2
+    MO1 --- MO3
+    MO2 --- MO4
+    MO3 --- MO4
+```
+
+Lets `MO1` belong to `Parent Segment`, while `MO2`, `MO3` and `MO4` are
+in current `Segment`. The table of `Uplinks` and `Downlinks`:
+
+| Object | Uplinks  | Downlinks |
+| ------ | -------- | --------- |
+| MO2    | MO1, MO4 | MO4       |
+| MO3    | MO1, MO4 | MO4       |
+| MO4    | MO2, MO3 | MO2, MO3  |
+
 ## Horizontal Transit
 
 Sometimes network segments of same level connected together
