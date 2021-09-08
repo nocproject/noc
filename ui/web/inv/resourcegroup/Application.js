@@ -215,16 +215,24 @@ Ext.define("NOC.inv.resourcegroup.Application", {
             lookup: "inv.resourcegroup"
         },
         {
-            title: __("By Dynamic Serivce Labels"),
+            title: __("By Dynamic Service Labels"),
             name: "dynamic_service_labels",
             ftype: "label",
-            lookup: "main.label"
+            lookup: "main.label",
+            treePickerWidth: 400,
+            query_filter: {
+                "allow_matched": true
+            }
         },
         {
             title: __("By Dynamic Client Labels"),
             name: "dynamic_client_labels",
             ftype: "label",
-            lookup: "main.label"
+            lookup: "main.label",
+            treePickerWidth: 400,
+            query_filter: {
+                "allow_matched": true
+            }
         }
     ],
     levelFilter: {

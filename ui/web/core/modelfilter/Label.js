@@ -27,6 +27,9 @@ Ext.define("NOC.core.modelfilter.Label", {
                     // createNewOnBlur: false,
                     itemId: me.name,
                     width: me.width,
+                    query: me.query_filter,
+                    isTree: me.isTree,
+                    treePickerWidth: me.treePickerWidth,
                     listeners: {
                         select: {
                             scope: me,
