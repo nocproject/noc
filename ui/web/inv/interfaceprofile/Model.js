@@ -35,7 +35,7 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         {
             name: "mac_discovery_policy",
             type: "string",
-            defaultValue: false
+            defaultValue: "e"
         },
         {
             name: "status_discovery",
@@ -49,11 +49,13 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         },
         {
             name: "weight",
-            type: "int"
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "discovery_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "R"
         },
         {
             name: "status_change_notification",

@@ -28,9 +28,18 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
     search: true,
     rowClassField: "row_class",
     validationModelId: "inv.InterfaceProfile",
+    formMinWidth: 800,
+    formMaxWidth: 1000,
 
-    initComponent: function () {
-        var me = this;
+    initComponent: function() {
+        var me = this,
+            fieldSetDefaults = {
+                xtype: "container",
+                padding: 5,
+                layout: "form",
+                columnWidth: 0.5
+            };
+        ;
 
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
             text: __("Validation"),
@@ -70,7 +79,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     {
                         text: __("Link Events"),
                         dataIndex: "link_events",
-                        renderer: function (value) {
+                        renderer: function(value) {
                             return {
                                 "I": "Ignore",
                                 "L": "Log",
@@ -115,142 +124,229 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                 ],
                 fields: [
                     {
-                        name: "name",
-                        xtype: "textfield",
-                        fieldLabel: __("Name"),
-                        allowBlank: false
-                    },
-                    {
-                        name: "description",
-                        xtype: "textarea",
-                        fieldLabel: __("Description"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "style",
-                        xtype: "main.style.LookupField",
-                        fieldLabel: __("Style"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "link_events",
-                        xtype: "combobox",
-                        fieldLabel: __("Link Events"),
-                        allowBlank: false,
-                        queryMode: "local",
-                        displayField: "label",
-                        valueField: "id",
-                        store: {
-                            fields: ["id", "label"],
-                            data: [
-                                {id: "I", label: "Ignore Link Events"},
-                                {
-                                    id: "L",
-                                    label: "Log events, do not raise alarms"
-                                },
-                                {id: "A", label: "Raise alarms"}
-                            ]
-                        },
-                        uiStyle: "medium"
-                    },
-                    {
-                        name: "discovery_policy",
-                        xtype: "combobox",
-                        fieldLabel: __("Discovery Policy"),
-                        allowBlank: false,
-                        queryMode: "local",
-                        displayField: "label",
-                        valueField: "id",
-                        store: {
-                            fields: ["id", "label"],
-                            data: [
-                                {id: "I", label: "Ignore"},
-                                {id: "O", label: "Create new"},
-                                {id: "R", label: "Replace"},
-                                {id: "C", label: "Cloud"}
-                            ]
-                        },
-                        uiStyle: "medium"
-                    },
-                    {
-                        name: "weight",
-                        xtype: "numberfield",
-                        fieldLabel: __("Alarm Weight"),
-                        allowBlank: false,
-                        uiStyle: "small"
-                    },
-                    {
-                        name: "mac_discovery_policy",
-                        xtype: "combobox",
-                        fieldLabel: __("MAC Discovery Policy"),
-                        allowBlank: false,
-                        store: [
-                            ["e", __("Transit")],
-                            ["d", __("Disable")],
-                            ["m", __("Management VLAN")],
-                            ["i", __("Direct Downlink")],
-                            ["c", __("Chained Downlink")],
-                            ["u", __("Direct Uplink")],
-                            ["C", __("Cloud Downlink")]
-                        ],
-                        uiStyle: "medium"
-                    },
-                    {
-                        name: "interface_validation_policy",
-                        xtype: "cm.interfacevalidationpolicy.LookupField",
-                        fieldLabel: __("Validation Policy"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "allow_lag_mismatch",
-                        xtype: "checkbox",
-                        boxLabel: __("Allow LAG mismatch"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "status_discovery",
-                        xtype: "checkbox",
-                        boxLabel: __("Status Discovery"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "status_change_notification",
-                        xtype: "main.notificationgroup.LookupField",
-                        fieldLabel: __("Status Change Notification"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "is_uni",
-                        xtype: "checkbox",
-                        boxLabel: __("User Interface"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "allow_autosegmentation",
-                        xtype: "checkbox",
-                        boxLabel: __("Allow Autosegmentation"),
-                        allowBlank: true
-                    },
-                    {
-                        name: "allow_vacuum_bulling",
-                        xtype: "checkbox",
-                        boxLabel: __("Allow Vacuum Bulling"),
-                        allowBlank: true
-                    },
-                    {
-                        xtype: "checkbox",
-                        name: "enable_abduct_detection",
-                        boxLabel: __("Enable Abduct Detection"),
-                        allowBlank: true
+                        xtype: "fieldset",
+                        layout: "column",
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        defaults: fieldSetDefaults,
+                        border: false,
+                        items: [
+                            {
+                                name: "name",
+                                xtype: "textfield",
+                                fieldLabel: __("Name"),
+                                width: 200,
+                                allowBlank: false
+                            },
+                            {
+                                name: "bi_id",
+                                xtype: "displayfield",
+                                fieldLabel: __("BI ID"),
+                                allowBlank: true,
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "description",
+                                xtype: "textarea",
+                                fieldLabel: __("Description"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "style",
+                                xtype: "main.style.LookupField",
+                                fieldLabel: __("Style"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "is_uni",
+                                xtype: "checkbox",
+                                boxLabel: __("User Interface"),
+                                allowBlank: true
+                            }
+                        ]
                     },
                     {
                         xtype: "fieldset",
-                        layout: "hbox",
+                        layout: "column",
+                        title: __("FM"),
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        defaults: fieldSetDefaults,
+                        collapsible: true,
+                        items: [
+                            {
+                                name: "link_events",
+                                xtype: "combobox",
+                                fieldLabel: __("Link Events"),
+                                labelWidth: 200,
+                                allowBlank: false,
+                                queryMode: "local",
+                                displayField: "label",
+                                valueField: "id",
+                                store: {
+                                    fields: ["id", "label"],
+                                    data: [
+                                        {id: "I", label: "Ignore Link Events"},
+                                        {
+                                            id: "L",
+                                            label: "Log events, do not raise alarms"
+                                        },
+                                        {id: "A", label: "Raise alarms"}
+                                    ]
+                                },
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "interface_validation_policy",
+                                xtype: "cm.interfacevalidationpolicy.LookupField",
+                                fieldLabel: __("Validation Policy"),
+                                labelWidth: 200,
+                                allowBlank: true
+                            },
+                            {
+                                name: "weight",
+                                xtype: "numberfield",
+                                labelWidth: 200,
+                                width: 50,
+                                fieldLabel: __("Alarm Weight"),
+                                allowBlank: false,
+                                uiStyle: "small"
+                            },
+                            {
+                                name: "status_change_notification",
+                                xtype: "main.notificationgroup.LookupField",
+                                fieldLabel: __("Status Change Notification"),
+                                labelWidth: 200,
+                                allowBlank: true
+                            },
+                            {
+                                xtype: "checkbox",
+                                name: "enable_abduct_detection",
+                                boxLabel: __("Enable Abduct Detection"),
+                                allowBlank: true
+                            },
+                        ]
+                    },
+                    {
+                        xtype: "fieldset",
+                        layout: "column",
+                        title: __("Discovery"),
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        defaults: fieldSetDefaults,
+                        collapsible: true,
+                        items: [
+                            {
+                                name: "discovery_policy",
+                                xtype: "combobox",
+                                fieldLabel: __("Link Discovery Policy"),
+                                allowBlank: false,
+                                labelWidth: 200,
+                                queryMode: "local",
+                                displayField: "label",
+                                valueField: "id",
+                                defaultValue: "R",
+                                store: {
+                                    fields: ["id", "label"],
+                                    data: [
+                                        {id: "I", label: "Ignore"},
+                                        {id: "O", label: "Create new"},
+                                        {id: "R", label: "Replace"},
+                                        {id: "C", label: "Cloud"}
+                                    ]
+                                },
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "status_discovery",
+                                xtype: "checkbox",
+                                boxLabel: __("Status Discovery"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "mac_discovery_policy",
+                                xtype: "combobox",
+                                fieldLabel: __("MAC Discovery Policy"),
+                                allowBlank: false,
+                                labelWidth: 200,
+                                defaultValue: "e",
+                                store: [
+                                    ["e", __("Transit")],
+                                    ["d", __("Disable")],
+                                    ["m", __("Management VLAN")],
+                                    ["i", __("Direct Downlink")],
+                                    ["c", __("Chained Downlink")],
+                                    ["u", __("Direct Uplink")],
+                                    ["C", __("Cloud Downlink")]
+                                ],
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "allow_lag_mismatch",
+                                xtype: "checkbox",
+                                boxLabel: __("Allow LAG mismatch"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "dynamic_classification_policy",
+                                xtype: "combobox",
+                                fieldLabel: __("Dynamic Classification Policy"),
+                                labelWidth: 200,
+                                allowBlank: false,
+                                queryMode: "local",
+                                displayField: "label",
+                                valueField: "id",
+                                store: {
+                                    fields: ["id", "label"],
+                                    data: [
+                                        {id: "D", label: "Disable"},
+                                        {id: "R", label: "By Rule"},
+                                    ]
+                                },
+                                defaultValue: "R",
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "allow_subinterface_metrics",
+                                xtype: "checkbox",
+                                boxLabel: __("Apply metrics to subinterfaces"),
+                                allowBlank: true
+                            },
+                        ]
+                    },
+                    {
+                        xtype: "fieldset",
+                        layout: "column",
+                        title: __("Segment"),
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        defaults: fieldSetDefaults,
+                        collapsible: true,
+                        collapsed: true,
+                        items: [
+                            {
+                                name: "allow_autosegmentation",
+                                xtype: "checkbox",
+                                boxLabel: __("Allow Autosegmentation"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "allow_vacuum_bulling",
+                                xtype: "checkbox",
+                                boxLabel: __("Allow Vacuum Bulling"),
+                                allowBlank: true
+                            },
+                        ]
+                    },
+                    {
+                        xtype: "fieldset",
+                        layout: "column",
                         title: __("IfDesc Settings"),
-                        defaults: {
-                            padding: 4,
-                            labelAlign: "right"
-                        },
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        defaults: fieldSetDefaults,
+                        collapsible: true,
+                        collapsed: true,
                         items: [
                             {
                                 name: "ifdesc_patterns",
@@ -271,12 +367,13 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     },
                     {
                         xtype: "fieldset",
-                        layout: "hbox",
+                        layout: "column",
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        defaults: fieldSetDefaults,
+                        collapsible: true,
+                        collapsed: true,
                         title: __("Integration"),
-                        defaults: {
-                            padding: 4,
-                            labelAlign: "right"
-                        },
                         items: [
                             {
                                 name: "remote_system",
@@ -290,31 +387,20 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 fieldLabel: __("Remote ID"),
                                 allowBlank: true,
                                 uiStyle: "medium"
-                            },
-                            {
-                                name: "bi_id",
-                                xtype: "displayfield",
-                                fieldLabel: __("BI ID"),
-                                allowBlank: true,
-                                uiStyle: "medium"
                             }
                         ]
-                    },
-                    {
-                        name: "allow_subinterface_metrics",
-                        xtype: "checkbox",
-                        boxLabel: __("Apply metrics to subinterfaces"),
-                        allowBlank: true
                     },
                     {
                         name: "metrics",
                         xtype: "gridfield",
                         fieldLabel: __("Metrics"),
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
                         columns: [
                             {
                                 text: __("Metric Type"),
                                 dataIndex: "metric_type",
-                                width: 150,
+                                width: 250,
                                 editor: {
                                     xtype: "pm.metrictype.LookupField"
                                 },
@@ -344,7 +430,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             {
                                 text: __("Profile"),
                                 dataIndex: "threshold_profile",
-                                width: 150,
+                                width: 250,
                                 editor: {
                                     xtype: "pm.thresholdprofile.LookupField"
                                 },
@@ -353,59 +439,44 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         ]
                     },
                     {
-                      name: "dynamic_classification_policy",
-                      xtype: "combobox",
-                      fieldLabel: __("Dynamic Classification Policy"),
-                      allowBlank: false,
-                      queryMode: "local",
-                      displayField: "label",
-                      valueField: "id",
-                      store: {
-                        fields: ["id", "label"],
-                        data: [
-                            {id: "D", label: "Disable"},
-                            {id: "R", label: "By Rule"},
+                        name: "match_rules",
+                        xtype: "listform",
+                        fieldLabel: __("Match Rules"),
+                        rows: 5,
+                        minWidth: me.formMinWidth,
+                        maxWidth: me.formMaxWidth,
+                        items: [
+                            {
+                                name: "dynamic_order",
+                                xtype: "numberfield",
+                                fieldLabel: __("Dynamic Order"),
+                                allowBlank: true,
+                                defaultValue: 0,
+                                uiStyle: "small"
+                            },
+                            {
+                                name: "labels",
+                                xtype: "labelfield",
+                                fieldLabel: __("Match Labels"),
+                                allowBlank: false,
+                                isTree: true,
+                                pickerPosition: "down",
+                                uiStyle: "extra",
+                                query: {
+                                    "allow_matched": true
+                                }
+                            },
+                            {
+                                name: "handler",
+                                xtype: "main.handler.LookupField",
+                                fieldLabel: __("Match Handler"),
+                                allowBlank: true,
+                                uiStyle: "medium",
+                                query: {
+                                    "allow_match_rule": true
+                                }
+                            }
                         ]
-                      },
-                      defaultValue: "R",
-                      uiStyle: "medium"
-                    },
-                    {
-                      name: "match_rules",
-                      xtype: "listform",
-                      fieldLabel: __("Match Rules"),
-                      items: [
-                          {
-                            name: "dynamic_order",
-                            xtype: "numberfield",
-                            fieldLabel: __("Dynamic Order"),
-                            allowBlank: true,
-                            defaultValue: 0,
-                            uiStyle: "small"
-                          },
-                        {
-                          name: "labels",
-                          xtype: "labelfield",
-                          fieldLabel: __("Match Labels"),
-                          allowBlank: false,
-                          isTree: true,
-                          pickerPosition: "down",
-                          uiStyle: "extra",
-                          query: {
-                            "allow_matched": true
-                          }
-                          },
-                        {
-                          name: "handler",
-                          xtype: "main.handler.LookupField",
-                          fieldLabel: __("Match Handler"),
-                          allowBlank: true,
-                          uiStyle: "medium",
-                          query: {
-                            "allow_match_rule": true
-                          }
-                        }
-                     ]
                     }
                 ],
                 formToolbar: [
@@ -416,26 +487,42 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         );
         me.callParent();
     },
-    //
-    onValidationSettings: function () {
-        var me = this;
-        me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
-    },
-    //
-    cleanData: function(v) {
-        Ext.each(v.metrics, function(m) {
-            if(m.low_error === "") {
-                m.low_error = null;
+    filters: [
+        {
+            title: __("By Match Rules Labels"),
+            name: "match_rules",
+            ftype: "label",
+            lookup: "main.handler.LookupField",
+            pickerPosition: "left",
+            isTree: true,
+            treePickerWidth: 400,
+            query_filter: {
+                "allow_matched": true
             }
-            if(m.low_warn === "") {
-                m.low_warn = null;
-            }
-            if(m.high_warn === "") {
-                m.high_warn = null;
-            }
-            if(m.high_error === "") {
-                m.high_error = null;
-            }
-        });
-    }
-});
+        }
+    ],
+
+        //
+        onValidationSettings: function() {
+            var me = this;
+            me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
+        }
+    ,
+        //
+        cleanData: function(v) {
+            Ext.each(v.metrics, function(m) {
+                if(m.low_error === "") {
+                    m.low_error = null;
+                }
+                if(m.low_warn === "") {
+                    m.low_warn = null;
+                }
+                if(m.high_warn === "") {
+                    m.high_warn = null;
+                }
+                if(m.high_error === "") {
+                    m.high_error = null;
+                }
+            });
+        }
+    });

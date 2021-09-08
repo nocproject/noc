@@ -361,15 +361,16 @@ Ext.define("NOC.core.label.LabelField", {
         if(this.isTree) {
             var position,
                 heightAbove = this.getPosition()[1] - Ext.getBody().getScroll().top,
-                heightBelow = Ext.Element.getViewportHeight() - heightAbove - this.getHeight();
-            this.treePicker.setWidth(this.getWidth());
+                heightBelow = Ext.Element.getViewportHeight() - heightAbove - this.getHeight(),
+                treePickerWidth = this.treePickerWidth || this.getWidth();
+            this.treePicker.setWidth(treePickerWidth);
             this.treePicker.height = Math.max(heightAbove, heightBelow) - 5;
             this.setEditable(false);
             position = this.getPosition();
             if(this.pickerPosition === "left") {
-                position[0] = position[0] - this.getWidth();
+                position[0] = position[0] - treePickerWidth;
             } else if(this.pickerPosition === "right") {
-                position[0] = position[0] + this.getWidth();
+                position[0] = position[0] + treePickerWidth;
             }
             if(heightAbove > heightBelow) {
                 position[1] -= this.treePicker.height + this.getHeight();
