@@ -1,60 +1,27 @@
 # Network Segment Profile
 
-Network Segment Profile is a group settings for [Network Segment](../network-segment/index.md)
+Профиль Сегмента сети содержит групповые настройки для [Сегмента сети (`Network Segment`)](../network-segment/index.md)
 
-## Uplink Policy
+## Настройки
 
-[Segment Uplinks](../network-segment/index.md#segment-uplinks) calculation
-is configured via `Uplink Policy` setting. `Uplink Policy` is the
-list of methods in order of preference. NOC tries the methods one-by-one
-until finds any appropriate Network Segment's uplinks.
-
-### Segment Hierarchy
-
-`Connectivity` provided by parent segment. Uplinks are all objects
-from parent segment having links to segment.
-
-Consider the scheme:
-
-```mermaid
-graph TB
-    subgraph Parent
-    MO1
-    end
-    subgraph Segment
-    MO2
-    MO3
-    MO4
-    end
-    MO1 --- MO2
-    MO1 --- MO3
-    MO2 --- MO4
-    MO3 --- MO4
-```
-
-Lets `MO1` belong to `Parent Segment`, while `MO2`, `MO3` and `MO4` are
-in current `Segment`. The table of `Uplinks` and `Downlinks`:
-
-| Object | Uplinks  | Downlinks |
-| ------ | -------- | --------- |
-| MO2    | MO1, MO4 | MO4       |
-| MO3    | MO1, MO4 | MO4       |
-| MO4    | MO2, MO3 | MO2, MO3  |
-
-### Object Level
-
-Objects with greatest [level](../managed-object-profile/index.md#level)
-is elected as uplinks. Objects can belong both to segment and neighbor segments.
-
-### All Segment Objects
-
-All Segment's Objects provide full network `Connectivity`. Any segment
-neighbor is uplink.
-
-### Lesser Management Address
-
-Segment's Object with lesser management address is elected as Uplink
-
-### Greater Management Address
-
-Segment's Object with greater management address is elected as Uplink
+* **Описание** (`Description`) - текстовое пояснение
+* **Стиль** (`Style`) - стиль записи в таблице сегментов (`Network Segment Grid`), в соответствии с ним оформляется строка в таблице
+* [**Интервал сегментной линковки по MAC** (`Discovery interval`)](../network-segment/index.md#mac-discovery) - интервал запуска линковки устройств внутри сегмента по `MAC`
+* **Профиль сегмента при автоматическом создании** (`Autocreated Profile`)
+* **Ограничить сбор MACов вланом управления** (`Restrict MAC to management vlan`)
+* **VLAN управления** (`Management VLAN`) - влан управления для устройств в данном сегмента
+* **Мультикаст VLAN** (`Multicast VLAN`) - мультикаст влан для устройств в данном сегмента
+* **Включить проверку резерва** (`Enable lost redundancy check`) - проверять потерю [Резерва (`Redundancy`)](../network-segment/index.md#redundancy) для сегмента во время обработки аварии
+* [**Политика транзита пути** (`Horizontal Transit Policy`)](../network-segment/index.md#horizontal-transit) - политика прохождения через семент при построении пути между устройствами
+    * `Always Enable` - всегда разрешать горизонтальный транзит (через соседа)
+    * `Calculate` - разрешать только при расчёте пути
+    * `Disable` - заблокировать 
+* **Методы построения топологии** (`Topology methods`). Перечень методово построения топологии в порядке убывания приоритета. Если линк обнаружен несколькими методами - останется более приоритетный.
+* **Политика определения аплинка** (`Uplink Policy`) - перечень методов определения направления вверх [Аплинка(`Segment Uplinks`)](../network-segment/index.md#segment-uplinks) 
+    * (`Segment Hierarchy`) - по положению устройства в [Иерархии сегментов](../network-segment/index.md#segment-hierarchy), вышестоящее устройство будет аплинком
+    * (`Managed Object Level`) - по [Уровню (`Level`)](../../../background/topology/index.md#level) устройства из настроек профиля объекта (`Managed Object Profile`). Методы применяется в заданном настройкой порядке до нахождения аплинков.
+    * (`All Segment Objects`) - по линкам сегмента. Любой связанный сегмент считается аплинком.
+    * (`Lesser Management Address`) - устройство с меньшим IP адресом управления будет выше по топологии
+    * (`Greater Management Address`) - устройство с большим IP адресом управления будет выше по топологии
+* **Разрешить сбор вланов** (`Default VLAN Profile`) - активировать сбора вланов для устройств в этом сегмента (!сделать дефолтом)
+* **Профиль по умолчанию для вланов** (`Enable VLAN Discovery`) - ссылка на профиль, назначаемый при создании вланов для устройств этого сегмента
