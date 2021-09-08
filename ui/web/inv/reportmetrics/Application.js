@@ -12,8 +12,8 @@ Ext.define("NOC.inv.reportmetrics.Application", {
         "NOC.core.ReportControl",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.interfaceprofile.LookupField",
-        "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.sa.managedobjectselector.LookupField"
+        'NOC.inv.resourcegroup.TreeCombo',
+        "NOC.sa.administrativedomain.TreeCombo"
     ],
     interfaceData: [
         ["id", __("ID"), false],
@@ -140,9 +140,9 @@ Ext.define("NOC.inv.reportmetrics.Application", {
                 allowBlank: true
             },
             {
-                name: "selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("By Selector"),
+                name: "resource_group",
+                xtype: "inv.resourcegroup.TreeCombo",
+                fieldLabel: __("By Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
                 labelAlign: "left",

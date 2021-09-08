@@ -22,7 +22,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -51,7 +51,8 @@ class Command(BaseCommand):
     help = "Manage events"
 
     def add_arguments(self, parser):
-        parser.add_argument("-s", "--selector", dest="selector", help="Selector name"),
+        # parser.add_argument("-s", "--selector", dest="selector", help="Selector name"),
+        parser.add_argument("-s", "--resource-group", dest="resource_group", help="Group"),
         parser.add_argument("-o", "--object", dest="object", help="Managed Object's name"),
         parser.add_argument("-p", "--profile", dest="profile", help="Object's profile"),
         parser.add_argument("-e", "--event", dest="event", help="Event ID"),
@@ -99,11 +100,11 @@ class Command(BaseCommand):
             except ManagedObject.DoesNotExist:
                 self.die("Object not found: %s" % options["object"])
             c = c.filter(managed_object=o.id)
-        if options["selector"]:
+        if options["resource_group"]:
             try:
-                s = ManagedObjectSelector.objects.get(name=options["selector"])
-            except ManagedObjectSelector.DoesNotExist:
-                self.die("Selector not found: %s" % options["selector"])
+                s = ResourceGroup.objects.get(name=options["resource_group"])
+            except ResourceGroup.DoesNotExist:
+                self.die("ResourceGroup not found: %s" % options["resource_group"])
             c = c.filter(managed_object__in=[mo.id for mo in s.managed_objects])
         if options["class"]:
             o = EventClass.objects.filter(name=options["class"]).first()

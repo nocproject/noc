@@ -12,7 +12,7 @@ import argparse
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.etl.portmapper.loader import loader
 from noc.core.text import alnum_key, format_table
 
@@ -32,9 +32,9 @@ class Command(BaseCommand):
         connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_portmap(self, portmap_objects=[]):
-        for po in portmap_objects:
-            for o in ManagedObjectSelector.get_objects_from_expression(po):
+    def handle_portmap(self, portmap_objects=None):
+        for po in portmap_objects or []:
+            for o in ResourceGroup.get_objects_from_expression(po, model_id="sa.ManagedObject"):
                 if not o.remote_system:
                     self.stdout.write("%s (%s, %s) NRI: N/A\n" % (o.name, o.address, o.platform))
                     continue

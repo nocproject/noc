@@ -32,7 +32,6 @@ from noc.lib.app.reportdatasources.report_objectconfig import ReportObjectConfig
 from noc.lib.app.reportdatasources.report_objectattributes import ReportObjectAttributes
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
@@ -41,6 +40,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.platform import Platform
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.project.models.project import Project
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
@@ -101,10 +101,17 @@ class ReportObjectDetailApplication(ExtApplication):
     CONTAINER_PATH_DEPTH = 7
 
     def get_report_object(
-        self, user=None, is_managed=None, adm=None, selector=None, pool=None, segment=None, ids=None
+        self,
+        user=None,
+        is_managed=None,
+        adm=None,
+        resource_group=None,
+        pool=None,
+        segment=None,
+        ids=None,
     ):
         mos = ManagedObject.objects.filter()
-        if user.is_superuser and not adm and not selector and not segment:
+        if user.is_superuser and not adm and not resource_group and not segment:
             mos = ManagedObject.objects.filter()
         if ids:
             mos = ManagedObject.objects.filter(id__in=[ids])
@@ -118,9 +125,11 @@ class ReportObjectDetailApplication(ExtApplication):
         if adm:
             ads = AdministrativeDomain.get_nested_ids(int(adm))
             mos = mos.filter(administrative_domain__in=ads)
-        if selector:
-            selector = ManagedObjectSelector.get_by_id(int(selector))
-            mos = mos.filter(selector.Q)
+        if resource_group:
+            resource_group = ResourceGroup.get_by_id(resource_group)
+            mos = mos.filter(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+            )
         if segment:
             segment = NetworkSegment.objects.filter(id=segment).first()
             if segment:
@@ -136,7 +145,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "administrative_domain": StringParameter(required=False),
             "pool": StringParameter(required=False),
             "segment": StringParameter(required=False),
-            "selector": StringParameter(required=False),
+            "resource_group": StringParameter(required=False),
             "ids": StringParameter(required=False),
             "detail_stat": StringParameter(required=False),
             "is_managed": BooleanParameter(required=False),
@@ -151,7 +160,7 @@ class ReportObjectDetailApplication(ExtApplication):
         o_format,
         is_managed=None,
         administrative_domain=None,
-        selector=None,
+        resource_group=None,
         pool=None,
         segment=None,
         avail_status=False,
@@ -254,7 +263,7 @@ class ReportObjectDetailApplication(ExtApplication):
             cmap = list(range(len(cols)))
         r = [translate_row(header_row, cmap)]
         mos = self.get_report_object(
-            request.user, is_managed, administrative_domain, selector, pool, segment, ids
+            request.user, is_managed, administrative_domain, resource_group, pool, segment, ids
         )
         columns_filter = set(columns.split(","))
         mos_id = tuple(mos.order_by("id").values_list("id", flat=True))

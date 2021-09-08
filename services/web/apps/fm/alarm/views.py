@@ -31,7 +31,7 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.selectorcache import SelectorCache
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.gis.utils.addr.ru import normalize_division
 from noc.aaa.models.user import User
 from noc.sa.models.useraccess import UserAccess
@@ -181,15 +181,18 @@ class AlarmApplication(ExtApplication):
             if q["segment"] != "_root_":
                 q["segment_path"] = bson.ObjectId(q["segment"])
             q.pop("segment")
-        if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list(
-                "object"
+        if "resource_group" in q:
+            rgs = ResourceGroup.get_by_id(q["resource_group"])
+            s = set(
+                ManagedObject.objects.filter(
+                    effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
+                ).values_list("id", flat=True)
             )
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
                 q["managed_object__in"] = s
-            q.pop("managedobjectselector")
+            q.pop("resource_group")
         if "cleared_after" in q:
             if status == "C":
                 q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(

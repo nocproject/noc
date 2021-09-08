@@ -12,7 +12,7 @@ Ext.define("NOC.fm.event.Application", {
         "NOC.core.ModelStore",
         "NOC.core.JSONPreview",
         "NOC.sa.managedobject.LookupField",
-        "NOC.sa.managedobjectselector.LookupField",
+        "NOC.inv.resourcegroup.Model",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.event.EventPanel",
@@ -239,12 +239,16 @@ Ext.define("NOC.fm.event.Application", {
                             }
                         },
                         {
-                            xtype: "core.combo",
-                            restUrl: "/sa/managedobjectselector/lookup/",
-                            fieldLabel: __("Selector"),
-                            name: "managedobjectselector",
+                            name: "resource_group",
+                            xtype: "noc.core.combotree",
+                            restUrl: "/inv/resourcegroup/",
+                            fieldLabel: __("By Resource Group (Selector)"),
+                            listWidth: 1,
+                            listAlign: 'left',
+                            labelAlign: "top",
+                            allowBlank: true,
                             bind: {
-                                selection: "{filter.managedobjectselector}"
+                                selection: "{filter.resource_group}"
                             }
                         },
                         {

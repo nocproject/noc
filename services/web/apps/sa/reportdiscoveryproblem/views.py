@@ -17,7 +17,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
 from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -100,10 +100,12 @@ class ReportForm(forms.Form):
         required=False,
         queryset=ManagedObjectProfile.objects.order_by("name"),
     )
-    selector = forms.ModelChoiceField(
-        label=_("Managed Objects Selector"),
+    resource_group = forms.ChoiceField(
+        label=_("Managed Objects Group (Selector)"),
         required=False,
-        queryset=ManagedObjectSelector.objects.order_by("name"),
+        help_text="Group for choice",
+        choices=list(ResourceGroup.objects.order_by("name").scalar("id", "name"))
+        + [(None, "-" * 9)],
     )
     avail_status = forms.BooleanField(label=_("Filter by Ping status"), required=False)
     profile_check_only = forms.BooleanField(label=_("Profile check only"), required=False)
@@ -117,14 +119,14 @@ class ReportFilterApplication(SimpleReport):
     title = _("Discovery Problem")
     form = ReportForm
     try:
-        default_selector = ManagedObjectSelector.get_objects_from_expression(
+        default_resource_group = ResourceGroup.get_objects_from_expression(
             "@Problem Discovery Report"
         )
-    except ManagedObjectSelector.DoesNotExist:
-        default_selector = None
+    except ResourceGroup.DoesNotExist:
+        default_resource_group = None
     predefined_reports = {
         "default": PredefinedReport(
-            _("Problem Discovery 2(default)"), {"selector": default_selector}
+            _("Problem Discovery 2(default)"), {"resource_group": default_resource_group}
         )
     }
 
@@ -133,7 +135,7 @@ class ReportFilterApplication(SimpleReport):
         request,
         pool=None,
         obj_profile=None,
-        selector=None,
+        resource_group=None,
         avail_status=None,
         profile_check_only=None,
         failed_scripts_only=None,
@@ -159,8 +161,11 @@ class ReportFilterApplication(SimpleReport):
         else:
             pool = Pool.objects.filter()[0]
         data += [SectionRow(name="Report by %s" % pool.name)]
-        if selector:
-            mos = ManagedObject.objects.filter(selector.Q)
+        if resource_group:
+            resource_group = ResourceGroup.get_by_id(resource_group)
+            mos = ManagedObject.objects.filter(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+            )
         else:
             mos = ManagedObject.objects.filter(pool=pool, is_managed=True)
         if not request.user.is_superuser:

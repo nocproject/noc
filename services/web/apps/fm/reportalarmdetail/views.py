@@ -27,10 +27,10 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.maintenance.models.maintenance import Maintenance
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
 from noc.sa.models.profile import Profile
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
@@ -152,8 +152,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             "source": StringParameter(required=True),
             "segment": StringParameter(required=False),
             "administrative_domain": StringParameter(required=False),
-            "selector": StringParameter(required=False),
-            "ex_selector": StringParameter(required=False),
+            "resource_group": StringParameter(required=False),
+            "ex_resource_group": StringParameter(required=False),
             "alarm_class": StringParameter(required=False),
             "subscribers": StringParameter(required=False),
             "columns": StringParameter(required=False),
@@ -172,8 +172,8 @@ class ReportAlarmDetailApplication(ExtApplication):
         min_subscribers=0,
         segment=None,
         administrative_domain=None,
-        selector=None,
-        ex_selector=None,
+        resource_group=None,
+        ex_resource_group=None,
         columns=None,
         source="both",
         alarm_class=None,
@@ -315,12 +315,16 @@ class ReportAlarmDetailApplication(ExtApplication):
                 ads = user_ads
         if ads:
             mos = mos.filter(administrative_domain__in=ads)
-        if selector:
-            selector = ManagedObjectSelector.get_by_id(int(selector))
-            mos = mos.filter(selector.Q)
-        if ex_selector:
-            ex_selector = ManagedObjectSelector.get_by_id(int(ex_selector))
-            mos = mos.exclude(ex_selector.Q)
+        if resource_group:
+            resource_group = ResourceGroup.get_by_id(resource_group)
+            mos = mos.filter(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+            )
+        if ex_resource_group:
+            ex_resource_group = ResourceGroup.get_by_id(int(ex_resource_group))
+            mos = mos.exclude(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(ex_resource_group)
+            )
 
         # Working if Administrative domain set
         if ads:
@@ -333,7 +337,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         mos_id = list(mos.order_by("id").values_list("id", flat=True))
         mo_hostname = {}
         maintenance = []
-        if mos_id and (selector or ex_selector):
+        if mos_id and (resource_group or ex_resource_group):
             match["managed_object"] = {"$in": mos_id}
         if "maintenance" in columns.split(","):
             maintenance = Maintenance.currently_affected()

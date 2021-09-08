@@ -11,9 +11,8 @@ Ext.define("NOC.inv.reportmovedmac.Application", {
         "NOC.core.ReportControl",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.interfaceprofile.LookupField",
-        "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.sa.managedobjectselector.LookupField",
-        "NOC.fm.alarm.view.grids.Tagfield"
+        'NOC.inv.resourcegroup.TreeCombo',
+        "NOC.sa.administrativedomain.TreeCombo"
     ],
 
     items: {
@@ -58,9 +57,9 @@ Ext.define("NOC.inv.reportmovedmac.Application", {
                 allowBlank: true
             },
             {
-                name: "selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("By Selector"),
+                name: "resource_group",
+                xtype: "inv.resourcegroup.TreeCombo",
+                fieldLabel: __("By Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
                 labelAlign: "left",

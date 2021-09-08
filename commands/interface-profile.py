@@ -11,11 +11,11 @@ from functools import partial
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.mongo.connection import connect, get_db
+from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.text import alnum_key
 
 
@@ -72,7 +72,9 @@ class Command(BaseCommand):
     def get_objects(exprs):
         objects = set()
         for s in exprs:
-            objects.update(ManagedObjectSelector.get_objects_from_expression(s))
+            objects.update(
+                ResourceGroup.get_objects_from_expression(s, model_id="sa.ManagedObject")
+            )
         return sorted(objects, key=lambda x: x.name)
 
     @staticmethod

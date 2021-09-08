@@ -8,7 +8,7 @@
 # Python modules
 import operator
 import threading
-from typing import List, Union
+from typing import List, Union, Optional
 
 # Third-party modules
 import bson
@@ -59,27 +59,19 @@ class MatchLabels(EmbeddedDocument):
         ("inv.ResourceGroup", "parent"),
         # sa.ManagedObject
         ("sa.ManagedObject", "static_service_groups"),
-        ("sa.ManagedObject", "effective_service_groups"),
         ("sa.ManagedObject", "static_client_groups"),
-        ("sa.ManagedObject", "effective_client_groups"),
         # sa.ManagedObjectSelector
         ("sa.ManagedObjectSelector", "filter_service_group"),
         ("sa.ManagedObjectSelector", "filter_client_group"),
         # phone.PhoneRange
         ("phone.PhoneRange", "static_service_groups"),
-        ("phone.PhoneRange", "effective_service_groups"),
         ("phone.PhoneRange", "static_client_groups"),
-        ("phone.PhoneRange", "effective_client_groups"),
         # phone.PhoneNumber
         ("phone.PhoneNumber", "static_service_groups"),
-        ("phone.PhoneNumber", "effective_service_groups"),
         ("phone.PhoneNumber", "static_client_groups"),
-        ("phone.PhoneNumber", "effective_client_groups"),
         # sa.Service
         ("sa.Service", "static_service_groups"),
-        ("sa.Service", "effective_service_groups"),
         ("sa.Service", "static_client_groups"),
-        ("sa.Service", "effective_client_groups"),
         # SA
         ("sa.CommandSnippet", "resource_group"),
         ("sa.ObjectNotification", "resource_group"),
@@ -90,6 +82,16 @@ class MatchLabels(EmbeddedDocument):
         ("fm.EventTrigger", "resource_group"),
         #
         ("vc.VCDomainProvisioningConfig", "resource_group"),
+    ],
+    clean=[
+        # ("sa.ManagedObject", "effective_service_groups"),
+        # ("sa.ManagedObject", "effective_client_groups"),
+        # ("phone.PhoneRange", "effective_service_groups"),
+        # ("phone.PhoneRange", "effective_client_groups"),
+        # ("phone.PhoneNumber", "effective_service_groups"),
+        # ("phone.PhoneNumber", "effective_client_groups"),
+        # ("sa.Service", "effective_service_groups"),
+        # ("sa.Service", "effective_client_groups"),
     ],
     clean_lazy_labels="resourcegroup",
 )
@@ -406,3 +408,57 @@ class ResourceGroup(Document):
                 yield f"noc::resourcegroup::{rg.name}::="
                 continue
             yield f"noc::resourcegroup::{rg.name}::<"
+
+    @classmethod
+    def get_objects_from_expression(cls, s, model_id: Optional[str] = None):
+        """
+        Get list of Managed Object matching selector expression
+
+        Expression must be string or list.
+        Elements must be one of:
+        * string starting with @ - treated as selector name
+        * string containing numbers - treated as object's id
+        * string - managed object name.
+        * string - IPv4 or IPv6 address - management address
+
+        Raises ManagedObject.DoesNotExists if object is not found.
+        Raises ManagedObjectSelector.DoesNotExists if selector is not found
+        :param cls:
+        :param s:
+        :param model_id:
+        :return:
+        """
+        from noc.core.validators import is_int, is_objectid
+
+        if isinstance(s, int) or isinstance(s, str):
+            s = [s]
+        if not isinstance(s, list):
+            raise ValueError("list required")
+        objects = set()
+        for so in s:
+            if not isinstance(so, str):
+                so = str(so)
+            # @todo Label expression label1 || label2 && label3 noc- N::pool::MO,
+            if so.startswith("@"):
+                # ResourceGroup expression: @<resource group name>
+                o: "ResourceGroup" = ResourceGroup.objects.get(name=so[1:])
+                model = get_model(o.technology.service_model)
+                objects |= set(
+                    model.objects.filter(
+                        effective_service_groups__overlap=ResourceGroup.get_nested_ids(o)
+                    )
+                )
+            elif model_id:
+                # @todo Model get_by_q ?
+                model = get_model(model_id)
+                if not is_document(model) and is_int(so):
+                    # Search by id
+                    q = {"id": int(so)}
+                elif is_document(model) and is_objectid(so):
+                    q = {"id": so}
+                else:
+                    # Search by name
+                    q = {"name": so}
+                o = model.objects.get(**q)
+                objects.add(o)
+        return list(objects)

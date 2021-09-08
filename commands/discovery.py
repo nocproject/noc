@@ -14,7 +14,7 @@ from collections import defaultdict
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.core.handler import get_handler
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
@@ -93,7 +93,7 @@ class Command(BaseCommand):
             if job == "segment":
                 mos += [NetworkSegment.objects.get(name=x)]
             else:
-                for mo in ManagedObjectSelector.get_objects_from_expression(x):
+                for mo in ResourceGroup.get_objects_from_expression(x, model_id="sa.ManagedObject"):
                     if mo not in mos:
                         mos += [mo]
         checks = set()

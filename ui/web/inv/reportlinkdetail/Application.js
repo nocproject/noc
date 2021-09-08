@@ -11,8 +11,8 @@ Ext.define("NOC.inv.reportlinkdetail.Application", {
     requires: [
         "NOC.core.ReportControl",
         "NOC.inv.networksegment.TreeCombo",
-        "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.sa.managedobjectselector.LookupField"
+        'NOC.inv.resourcegroup.TreeCombo',
+        "NOC.sa.administrativedomain.TreeCombo"
     ],
 
     items: {
@@ -39,9 +39,9 @@ Ext.define("NOC.inv.reportlinkdetail.Application", {
                 allowBlank: true
             },
             {
-                name: "selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("By Selector"),
+                name: "resource_group",
+                xtype: "inv.resourcegroup.TreeCombo",
+                fieldLabel: __("By Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
                 labelAlign: "left",

@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
 
 
@@ -17,7 +17,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         clean = set()
         for expr in args:
-            for obj in ManagedObjectSelector.get_objects_from_expression(expr):
+            for obj in ResourceGroup.get_objects_from_expression(expr, model_id="sa.ManagedObject"):
                 if obj.id in clean:
                     continue  # Already cleaned
                 self.clean_managed_object(obj)

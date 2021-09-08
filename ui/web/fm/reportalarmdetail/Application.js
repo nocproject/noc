@@ -11,7 +11,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         "NOC.core.ReportControl",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.sa.managedobjectselector.LookupField",
+        'NOC.inv.resourcegroup.TreeCombo',
         "NOC.core.tagfield.Tagfield"
     ],
 
@@ -82,9 +82,9 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 allowBlank: true
             },
             {
-                name: "selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("By Selector"),
+                name: "resource_group",
+                xtype: "inv.resourcegroup.TreeCombo",
+                fieldLabel: __("By Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
                 labelAlign: "left",
@@ -92,9 +92,10 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 allowBlank: true
             },
             {
-                name: "ex_selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("Exclude MO by Selector"),
+                name: "ex_resource_group",
+                xtype: "noc.core.combotree",
+                restUrl: "/inv/resourcegroup/",
+                fieldLabel: __("Exclude MO by Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
                 labelAlign: "left",

@@ -11,7 +11,7 @@ import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.mib import mib
 from noc.core.error import NOCError
 
@@ -29,8 +29,10 @@ class Command(BaseCommand):
         connect()
         for d in devices:
             try:
-                devs |= set(ManagedObjectSelector.get_objects_from_expression(d))
-            except ManagedObjectSelector.DoesNotExist:
+                devs |= set(
+                    ResourceGroup.get_objects_from_expression(d, model_id="sa.ManagedObject")
+                )
+            except ResourceGroup.DoesNotExist:
                 self.die("Invalid object '%s'" % d)
         self.stdout.write("profile,platform,oid,value\n")
         for o in sorted(devs, key=lambda x: x.name):
