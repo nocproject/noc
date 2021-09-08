@@ -25,7 +25,7 @@ from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -109,7 +109,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
         validate={
             "administrative_domain": StringParameter(required=False),
             "interface_profile": StringParameter(required=False),
-            "selector": StringParameter(required=False),
+            "resource_group": StringParameter(required=False),
             "zero": StringParameter(required=False),
             "def_profile": StringParameter(required=False),
             "columns": StringParameter(required=False),
@@ -121,7 +121,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
         request,
         o_format,
         administrative_domain=None,
-        selector=None,
+        resource_group=None,
         interface_profile=None,
         zero=None,
         def_profile=None,
@@ -208,7 +208,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
         if (
             request.user.is_superuser
             and not administrative_domain
-            and not selector
+            and not resource_group
             and not interface_profile
         ):
             mos = ManagedObject.objects.filter(is_managed=True)
@@ -217,9 +217,11 @@ class ReportInterfaceStatusApplication(ExtApplication):
         if administrative_domain:
             ads = AdministrativeDomain.get_nested_ids(int(administrative_domain))
             mos = mos.filter(administrative_domain__in=ads)
-        if selector:
-            selector = ManagedObjectSelector.get_by_id(int(selector))
-            mos = mos.filter(selector.Q)
+        if resource_group:
+            resource_group = ResourceGroup.get_by_id(resource_group)
+            mos = mos.filter(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+            )
 
         for o in mos:
             mo[o.id] = {

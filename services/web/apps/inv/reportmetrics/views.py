@@ -28,7 +28,7 @@ from noc.lib.app.reportdatasources.report_container import ReportContainerData
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
@@ -88,7 +88,7 @@ class ReportMetricsDetailApplication(ExtApplication):
             "administrative_domain": StringParameter(required=False),
             # "pool": StringParameter(required=False),
             "segment": StringParameter(required=False),
-            "selector": StringParameter(required=False),
+            "resource_group": StringParameter(required=False),
             "interface_profile": StringParameter(required=False),
             "exclude_zero": StringParameter(required=False),
             "use_aggregated_source": StringParameter(required=False),
@@ -108,7 +108,7 @@ class ReportMetricsDetailApplication(ExtApplication):
         exclude_zero=None,
         use_aggregated_source=None,
         interface_profile=None,
-        selector=None,
+        resource_group=None,
         administrative_domain=None,
         columns=None,
         o_format=None,
@@ -140,8 +140,11 @@ class ReportMetricsDetailApplication(ExtApplication):
         mos = ManagedObject.objects.filter(is_managed=True)
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
-        if selector:
-            mos = mos.filter(ManagedObjectSelector.objects.get(id=int(selector)).Q)
+        if resource_group:
+            resource_group = ResourceGroup.get_by_id(resource_group)
+            mos = mos.filter(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+            )
         if administrative_domain:
             mos = mos.filter(
                 administrative_domain__in=AdministrativeDomain.get_nested_ids(

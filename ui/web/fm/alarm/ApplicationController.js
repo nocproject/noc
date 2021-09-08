@@ -17,7 +17,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         managed_object: "",
         segment: "",
         administrative_domain: "",
-        managedobjectselector: "",
+        resource_group: "",
         alarm_class: "",
         escalation_tt__contains: "",
         timestamp__gte: null,
@@ -239,7 +239,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         // restore field which use selection binding
         Ext.each([
             "managed_object",
-            "managedobjectselector",
+            "resource_group",
             "segment"
         ], restoreCombo, this);
         // restore tag fields
@@ -308,7 +308,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             {key: "segment", valueField: "id"},
             // combo
             {key: "managed_object", valueField: "id"},
-            {key: "managedobjectselector", valueField: "id"},
+            {key: "resource_group", valueField: "id"},
             // tag field
             {key: "alarm_class", valueField: "id"},
             {key: "administrative_domain", valueField: "id"}

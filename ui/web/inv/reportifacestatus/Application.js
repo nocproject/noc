@@ -11,7 +11,7 @@ Ext.define("NOC.inv.reportifacestatus.Application", {
     requires: [
         "NOC.core.ReportControl",
         "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.sa.managedobjectselector.LookupField",
+        'NOC.inv.resourcegroup.TreeCombo',
         "NOC.inv.interfaceprofile.LookupField"
     ],
 
@@ -43,9 +43,9 @@ Ext.define("NOC.inv.reportifacestatus.Application", {
                 allowBlank: true
             },
             {
-                name: "selector",
-                xtype: "sa.managedobjectselector.LookupField",
-                fieldLabel: __("By Selector"),
+                name: "resource_group",
+               xtype: "inv.resourcegroup.TreeCombo",
+                fieldLabel: __("By Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
                 labelAlign: "left",

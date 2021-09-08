@@ -13,7 +13,7 @@ Ext.define("NOC.fm.event.ApplicationController", {
         status: "A",
         managed_object: "",
         administrative_domain: "",
-        managedobjectselector: "",
+        resource_group: "",
         event_class: "",
         timestamp__gte: null,
         timestamp__lte: null,
@@ -134,7 +134,7 @@ Ext.define("NOC.fm.event.ApplicationController", {
             // combo & tree
             {key: "managed_object", valueField: "id"},
             {key: "administrative_domain", valueField: "id"},
-            {key: "managedobjectselector", valueField: "id"},
+            {key: "resource_group", valueField: "id"},
             {key: "event_class", valueField: "id"},
         ], setParam);
         return filter;

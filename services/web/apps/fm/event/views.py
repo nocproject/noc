@@ -21,7 +21,7 @@ from noc.fm.models.mib import MIB
 from noc.fm.models.utils import get_alarm, get_event, get_severity
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.selectorcache import SelectorCache
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.interfaces.base import ModelParameter, UnicodeParameter, DateTimeParameter
 from noc.core.escape import json_escape
 from noc.core.comp import smart_text
@@ -91,15 +91,18 @@ class EventApplication(ExtApplication):
             a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
             q.pop("administrative_domain")
-        if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list(
-                "object"
+        if "resource_group" in q:
+            rgs = ResourceGroup.get_by_id(q["resource_group"])
+            s = set(
+                ManagedObject.objects.filter(
+                    effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
+                ).values_list("id", flat=True)
             )
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
                 q["managed_object__in"] = s
-            q.pop("managedobjectselector")
+            q.pop("resource_group")
         return q
 
     def instance_to_dict(self, o, fields=None):

@@ -13,15 +13,12 @@ from django.db import models
 from noc.core.model.base import NOCModel
 from noc.main.models.style import Style
 from noc.main.models.label import Label
-from noc.core.model.decorator import on_save, on_delete
 from noc.core.model.decorator import on_delete_check
 from .vctype import VCType
 from .vcfilter import VCFilter
 
 
 @Label.match_labels("vcdomain", allowed_op={"="})
-@on_save
-@on_delete
 @on_delete_check(
     check=[
         ("inv.Interface", "vc_domain"),
@@ -56,14 +53,6 @@ class VCDomain(NOCModel):
 
     def __str__(self):
         return self.name
-
-    def on_save(self):
-        # Rebuild selector cache
-        SelectorCache.refresh()
-
-    def on_delete(self):
-        # Rebuild selector cache
-        SelectorCache.refresh()
 
     @classmethod
     def get_for_object(cls, managed_object):
@@ -107,7 +96,3 @@ class VCDomain(NOCModel):
     @classmethod
     def iter_lazy_labels(cls, vcdomain: "VCDomain"):
         yield f"noc::vcdomain::{vcdomain.name}::="
-
-
-# Avoid circular references
-from noc.sa.models.selectorcache import SelectorCache

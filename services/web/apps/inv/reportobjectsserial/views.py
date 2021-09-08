@@ -15,16 +15,17 @@ from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.lib.app.reportdatasources.report_objectattributes import ReportObjectAttributes
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
-    sel = forms.ModelChoiceField(
-        label=_("Managed Object Selector"),
+    resource_group = forms.ChoiceField(
+        label=_("Managed Objects Group (Selector)"),
         required=True,
-        queryset=ManagedObjectSelector.objects.order_by("name"),
+        help_text="Group for choice",
+        choices=list(ResourceGroup.objects.order_by("name").scalar("id", "name")),
     )
 
 
@@ -32,7 +33,7 @@ class ReportFilterApplication(SimpleReport):
     title = _("Managed Object Serial Number")
     form = ReportForm
 
-    def get_data(self, request, sel=None):
+    def get_data(self, request, resource_group=None):
 
         qs = ManagedObject.objects
         if not request.user.is_superuser:
@@ -40,8 +41,11 @@ class ReportFilterApplication(SimpleReport):
                 administrative_domain__in=UserAccess.get_domains(request.user)
             )
 
-        # Get all managed objects by selector
-        mos_list = qs.filter(sel.Q)
+        # Get all managed objects by Group
+        resource_group = ResourceGroup.get_by_id(resource_group)
+        mos_list = qs.filter(
+            effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+        )
 
         columns = [
             _("Managed Objects"),

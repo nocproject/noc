@@ -112,7 +112,7 @@ class Command(BaseCommand):
         self, storage, path, spec, force, objects, description=None, *args, **options
     ):
         connect()
-        from noc.sa.models.managedobjectselector import ManagedObjectSelector
+        from noc.inv.models.resourcegroup import ResourceGroup
         from noc.dev.models.spec import Spec
 
         class FakeSpec(object):
@@ -136,7 +136,7 @@ class Command(BaseCommand):
         # Get effective list of managed objects
         mos = set()
         for ox in objects:
-            for mo in ManagedObjectSelector.get_objects_from_expression(ox):
+            for mo in ResourceGroup.get_objects_from_expression(ox, model_id="sa.ManagedObject"):
                 mos.add(mo)
         # Collect beefs
         for mo in mos:

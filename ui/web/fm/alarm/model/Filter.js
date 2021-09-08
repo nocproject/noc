@@ -38,8 +38,8 @@ Ext.define("NOC.fm.alarm.model.Filter", {
             type: "int"
         },
         {
-            name: "managedobjectselector",
-            type: "int"
+            name: "resource_group",
+            type: "str"
         },
         {
             name: "alarm_class",

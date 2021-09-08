@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 
 
 class Command(BaseCommand):
@@ -40,7 +40,7 @@ class Command(BaseCommand):
         r = set()
         connect()
         for x in objects:
-            for o in ManagedObjectSelector.get_objects_from_expression(x):
+            for o in ResourceGroup.get_objects_from_expression(x, model_id="sa.ManagedObject"):
                 r.add(o)
         yield from r
 

@@ -17,6 +17,7 @@ from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
 from noc.sa.models.useraccess import UserAccess
@@ -78,7 +79,25 @@ class ObjectListApplication(ExtApplication):
             if ad:
                 del nq["administrative_domain"]
                 nq["administrative_domain__in"] = ad
-
+        if "resource_group" in q:
+            rgs = self.get_object_or_404(ResourceGroup, id=q["resource_group"])
+            if rgs:
+                if ids:
+                    # nq["id__in"] = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
+                    ids = ids.intersection(
+                        set(
+                            ManagedObject.objects.filter(
+                                effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
+                            ).values_list("id", flat=True)
+                        )
+                    )
+                else:
+                    ids = set(
+                        ManagedObject.objects.filter(
+                            effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
+                        ).values_list("id", flat=True)
+                    )
+            del nq["resource_group"]
         if "selector" in nq:
             s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
             if s:

@@ -22,6 +22,7 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.inv.vendor.LookupField',
         'NOC.sa.managedobjectprofile.LookupField',
         'NOC.sa.managedobjectselector.LookupField',
+        'NOC.inv.resourcegroup.TreeCombo',
         'NOC.sa.commandsnippet.LookupField',
         'NOC.sa.actioncommands.LookupField',
         'NOC.core.filter.ViewModel',
@@ -115,6 +116,20 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'sa.managedobjectselector.LookupField',
             itemId: 'selector', // name of http request query param
             fieldLabel: __('By Selector:'),
+            listeners: {
+                select: 'setFilter'
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    handler: 'cleanFilter'
+                }
+            }
+        },
+        {
+            xtype: 'inv.resourcegroup.TreeCombo',
+            itemId: 'resource_group', // name of http request query param
+            fieldLabel:__("By Service Group"),
             listeners: {
                 select: 'setFilter'
             },

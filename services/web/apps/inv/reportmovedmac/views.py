@@ -28,7 +28,7 @@ from noc.main.models.pool import Pool
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.useraccess import UserAccess
 from noc.inv.models.networksegment import NetworkSegment
@@ -111,10 +111,10 @@ class ReportMovedMacApplication(ExtApplication):
     CONTAINER_PATH_DEPTH = 7
 
     def get_report_object(
-        self, user=None, is_managed=None, adm=None, selector=None, pool=None, segment=None
+        self, user=None, is_managed=None, adm=None, resource_group=None, pool=None, segment=None
     ):
         mos = ManagedObject.objects.filter()
-        if user.is_superuser and not adm and not selector and not segment:
+        if user.is_superuser and not adm and not resource_group and not segment:
             mos = ManagedObject.objects.filter()
         if is_managed is not None:
             mos = ManagedObject.objects.filter(is_managed=is_managed)
@@ -126,9 +126,11 @@ class ReportMovedMacApplication(ExtApplication):
         if adm:
             ads = AdministrativeDomain.get_nested_ids(int(adm))
             mos = mos.filter(administrative_domain__in=ads)
-        if selector:
-            selector = ManagedObjectSelector.get_by_id(int(selector))
-            mos = mos.filter(selector.Q)
+        if resource_group:
+            resource_group = ResourceGroup.get_by_id(resource_group)
+            mos = mos.filter(
+                effective_service_groups__overlap=ResourceGroup.get_nested_ids(resource_group)
+            )
         if segment:
             segment = NetworkSegment.objects.filter(id=segment).first()
             if segment:
@@ -146,7 +148,7 @@ class ReportMovedMacApplication(ExtApplication):
             "administrative_domain": StringParameter(required=False),
             # "pool": StringParameter(required=False),
             "segment": StringParameter(required=False),
-            "selector": StringParameter(required=False),
+            "resource_group": StringParameter(required=False),
             "interface_profile": StringParameter(required=False),
             "exclude_serial_change": BooleanParameter(default=False),
             "columns": StringParameter(required=False),
@@ -163,7 +165,7 @@ class ReportMovedMacApplication(ExtApplication):
         filter_default=None,
         exclude_zero=None,
         interface_profile=None,
-        selector=None,
+        resource_group=None,
         administrative_domain=None,
         columns=None,
         o_format=None,
@@ -228,7 +230,7 @@ class ReportMovedMacApplication(ExtApplication):
         # ts_to_date = time.mktime(to_date.timetuple())
 
         mos = self.get_report_object(
-            user=request.user, adm=administrative_domain, selector=selector
+            user=request.user, adm=administrative_domain, resource_group=resource_group
         )
         mos_id = set(mos.order_by("bi_id").values_list("bi_id", flat=True))
         if interface_profile:

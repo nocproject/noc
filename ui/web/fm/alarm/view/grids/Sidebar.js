@@ -244,12 +244,16 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                     }
                 },
                 {
-                    xtype: "core.combo",
-                    restUrl: "/sa/managedobjectselector/lookup/",
-                    fieldLabel: __("Selector"),
-                    name: "managedobjectselector",
+                    name: "resource_group",
+                    xtype: "noc.core.combotree",
+                    restUrl: "/inv/resourcegroup/",
+                    fieldLabel: __("By Resource Group (Selector)"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "top",
+                    allowBlank: true,
                     bind: {
-                        selection: "{activeFilter.managedobjectselector}"
+                        selection: "{activeFilter.resource_group}"
                     }
                 },
                 {

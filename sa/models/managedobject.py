@@ -781,8 +781,6 @@ class ManagedObject(NOCModel):
             NetworkSegment.update_summary(self.segment)
         # Apply discovery jobs
         self.ensure_discovery_jobs()
-        # Rebuild selector cache
-        SelectorCache.rebuild_for_object(self)
         #
         self._reset_caches()
         cache.delete_many(deleted_cache_keys)
@@ -820,8 +818,6 @@ class ManagedObject(NOCModel):
             DiscoveryID.clean_for_object(self)
 
     def on_delete(self):
-        # Rebuild selector cache
-        SelectorCache.refresh()
         # Reset discovery cache
         from noc.inv.models.discoveryid import DiscoveryID
 
@@ -1942,7 +1938,6 @@ from .useraccess import UserAccess
 from .groupaccess import GroupAccess
 from .objectnotification import ObjectNotification
 from .action import Action
-from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa

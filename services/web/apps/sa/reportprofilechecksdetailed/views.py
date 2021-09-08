@@ -15,7 +15,7 @@ from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHos
 from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
@@ -40,11 +40,12 @@ class ReportFilterApplication(SimpleReport):
                 choices=list(Pool.objects.order_by("name").scalar("id", "name"))
                 + [(None, "-" * 9)],
             )
-            selector = forms.ModelChoiceField(
-                label=_("Managed Objects Selector"),
+            resource_group = forms.ChoiceField(
+                label=_("Managed Objects Group (Selector)"),
                 required=False,
-                help_text="Selector for choice",
-                queryset=ManagedObjectSelector.objects.order_by("name"),
+                help_text="Group for choice",
+                choices=list(ResourceGroup.objects.order_by("name").scalar("id", "name"))
+                + [(None, "-" * 9)],
             )
 
         return ReportForm
@@ -83,7 +84,7 @@ class ReportFilterApplication(SimpleReport):
             decode = message
         return decode
 
-    def get_data(self, request, pool=None, selector=None, report_type=None, **kwargs):
+    def get_data(self, request, pool=None, resource_group=None, report_type=None, **kwargs):
 
         data = []
         columns, columns_desr = [], []
