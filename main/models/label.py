@@ -703,7 +703,7 @@ class Label(Document):
         :param kwargs:
         :return:
         """
-        effective_labels = instance.effective_labels or []
+        effective_labels = Label.merge_labels(instance.iter_effective_labels(instance))
         if is_document(instance):
             coll = profile_model._get_collection()
             match_profiles = coll.aggregate(
@@ -774,8 +774,6 @@ class Label(Document):
             :param kwargs:
             :return:
             """
-            # @todo flag for lock classification (ex profile set on hk)
-            # @todo Use iter_effective_labels for fix Label.model decorator running after
             profile_model = get_model(profile_model_id)
             if not hasattr(profile_model, "match_rules"):
                 # Dynamic classification not suported
