@@ -319,7 +319,7 @@ class ResourceGroup(Document):
         r = []
         if not model:
             return r
-        print(labels, model)
+        # print(labels, model)
         for rg in coll.aggregate(
             [
                 {"$match": {"dynamic_service_labels.labels": {"$in": labels}}},

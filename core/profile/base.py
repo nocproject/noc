@@ -322,7 +322,6 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     # Activated by ConfDB `hints` section
     default_config_applicators = [
         "noc.core.confdb.applicator.rebase.RebaseApplicator",
-        "noc.core.confdb.applicator.interfacediscovery.InterfaceDiscoveryApplicator",
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
         "noc.core.confdb.applicator.adminstatus.DefaultAdminStatusApplicator",
         "noc.core.confdb.applicator.fitype.DefaultForwardingInstanceTypeApplicator",

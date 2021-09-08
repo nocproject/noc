@@ -7,6 +7,7 @@
 
 # Python modules
 from collections import defaultdict
+from functools import partial
 
 # Third-party modules
 from typing import Dict, List, Tuple
@@ -20,7 +21,7 @@ from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
+from noc.main.models.label import Label
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -67,7 +68,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.get_interface_profile = InterfaceClassificationRule.get_classificator()
+        # self.get_interface_profile = InterfaceClassificationRule.get_classificator()
+        self.get_interface_profile = partial(Label.get_instance_profile, InterfaceProfile)
+        # @todo bulk
         self.confd_interface_profile_map = List[Tuple[str, InterfaceProfile]]
         self.interface_macs = set()
         self.seen_interfaces = []
@@ -167,13 +170,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     forwarding_instance, iface, [si["name"] for si in i["subinterfaces"]]
                 )
                 # Perform interface classification
-                # self.interface_classification(iface)
+                self.interface_classification(iface)
                 # Store for future collation
                 if_map[iface.name] = iface
             # Delete hanging interfaces
             self.seen_interfaces += [i["name"] for i in fi["interfaces"]]
         # Classify interface
-        self.interface_classification_confdb(if_map)
+        # self.interface_classification_confdb(if_map)
         # Delete hanging interfaces
         self.cleanup_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
@@ -417,6 +420,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         :param ifmap: Interface classification list
         :return:
         """
+        from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
+
         self.logger.debug("Start interface classification")
         proccessed = set()
         selectors_skipping = set()  # if selectors has not match
@@ -445,7 +450,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     iface.profile = icr.profile
                     iface.save()
 
-    def interface_classification(self, iface):
+    def interface_classification(self, iface: "Interface"):
         """
         Perform interface classification
         :param iface: Interface instance
