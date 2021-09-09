@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -194,7 +194,9 @@ class Script(BaseScript):
         i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
         if not i:
             i = self.rx_sh_int_des2.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
-
+        if self.has_capability("Stack | Members"):
+            for iface in parse_table(self.cli("show stack links details"), allow_wrap=True):
+                i.append((f"{iface[1][0:2]}{iface[0]}/0/{iface[1][-1]}", "Up"))
         interfaces = []
         mtu = None
         for res in i:
@@ -216,10 +218,11 @@ class Script(BaseScript):
                     else:
                         a_stat = True
                         o_stat = match.group("oper_status").lower() == "up"
-                        description = match.group("descr").strip()
-                        if not description:
+                        description = match.group("descr")
+                        if description:
+                            description = description.strip()
+                        else:
                             description = ""
-
             else:
                 if self.profile.convert_interface_name(name) in d:
                     ifindex = d[self.profile.convert_interface_name(name)]["sifindex"]
