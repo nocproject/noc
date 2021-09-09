@@ -88,6 +88,7 @@ class InterfaceProfile(Document):
         "auto_create_index": False,
         "indexes": [
             "match_rules.labels",
+            ("match_rules.dynamic_order", "match_rules.labels"),
             ("dynamic_classification_policy", "match_rules.labels"),
         ],
     }

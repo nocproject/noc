@@ -706,25 +706,30 @@ class Label(Document):
         effective_labels = Label.merge_labels(instance.iter_effective_labels(instance))
         if is_document(instance):
             coll = profile_model._get_collection()
-            match_profiles = coll.aggregate(
-                [
-                    {"$unwind": "$match_rules"},
-                    {
-                        "$match": {
-                            "match_rules.dynamic_order": {"$gt": 0},
-                            "match_rules.labels": {"$in": effective_labels},
+            pipeline = [
+                {
+                    "$match": {
+                        "match_rules": {
+                            "$elemMatch": {
+                                "dynamic_order": {"$ne": 0},
+                                "labels": {"$in": effective_labels},
+                            }
                         }
-                    },
-                    {
-                        "$project": {
-                            "dynamic_order": "$match_rules.dynamic_order",
-                            "labels": "$match_rules.labels",
-                            "handlers": 1,
-                        }
-                    },
-                    {"$sort": {"dynamic_order": 1}},
-                ]
-            )
+                    }
+                },
+                {"$unwind": "$match_rules"},
+                {
+                    "$project": {
+                        "dynamic_order": "$match_rules.dynamic_order",
+                        "labels": "$match_rules.labels",
+                        "diff": {"$setDifference": ["$match_rules.labels", effective_labels]},
+                        "handlers": 1,
+                    }
+                },
+                {"$match": {"diff": []}},
+                {"$sort": {"dynamic_order": 1}},
+            ]
+            match_profiles = coll.aggregate(pipeline)
         else:
             with connection.cursor() as cursor:
                 query = f"""
@@ -744,12 +749,13 @@ class Label(Document):
                     }
                     for r in cursor.fetchall()
                 ]
+        sef = set(effective_labels)
         for profile in match_profiles:
             if "handler" in profile and profile["handler"]:
                 handler = Handler.get_by_id(profile["handler"])
                 if handler(effective_labels):
                     return profile["_id"]
-            if not set(profile["labels"]) - set(effective_labels):
+            if not set(profile["labels"]) - sef:
                 return profile["_id"]
 
     @classmethod
