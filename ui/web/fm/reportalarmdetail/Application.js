@@ -93,8 +93,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             },
             {
                 name: "ex_resource_group",
-                xtype: "noc.core.combotree",
-                restUrl: "/inv/resourcegroup/",
+                xtype: "inv.resourcegroup.TreeCombo",
                 fieldLabel: __("Exclude MO by Resource Group (Selector)"),
                 listWidth: 1,
                 listAlign: 'left',
