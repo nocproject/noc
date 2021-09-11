@@ -23,6 +23,7 @@ from bson import ObjectId
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.comp import smart_text
+from noc.core.validators import is_objectid
 from noc.models import get_model
 
 
@@ -334,7 +335,6 @@ class CachedForeignKey(models.ForeignKey):
 
 class CharField24(CharField):
     def db_type(self, connection):
-        # @todo length validator
         return "CHAR(24)"
 
 
@@ -354,7 +354,16 @@ class ObjectIDArrayField(ArrayField):
             return None
         if isinstance(value, (str, ObjectId)):
             value = [value]
-        return "{ %s }" % ", ".join(str(x) for x in value)
+        return "{ %s }" % ", ".join(str(x) for x in set(value) if is_objectid(str(x)))
+
+    def validate(self, value, model_instance):
+        # Only form.full_clean execute
+        super().validate(value, model_instance)
+        if isinstance(value, (str, ObjectId)):
+            value = [value]
+        for v in value:
+            if not is_objectid(v):
+                raise ValueError(f"Nont ObjectId value on {model_instance} ObjectIDArrayField")
 
 
 class PydanticField(models.JSONField):
@@ -366,7 +375,16 @@ class PydanticField(models.JSONField):
         self.schema: BaseModel = schema
         super().__init__(verbose_name, name, encoder, decoder, **kwargs)
 
+    def get_db_prep_value(self, value, connection, prepared=False):
+        if not prepared:
+            try:
+                self.schema.parse_obj(value)
+            except ValidationError as e:
+                raise ValueError(e)
+        return super().get_db_prep_value(value, connection, prepared=prepared)
+
     def validate(self, value, model_instance):
+        # Only form.full_clean execute
         super().validate(value, model_instance)
         try:
             self.schema.parse_obj(value)
