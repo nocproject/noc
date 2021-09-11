@@ -17,6 +17,7 @@ from bson import ObjectId
 from noc.config import config
 from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -63,9 +64,15 @@ class ManagedObjectDataStream(DataStream):
         if mo.description:
             r["description"] = mo.description
         if mo.labels:
-            r["labels"] = [qs(x) for x in mo.labels]
+            labels = [
+                qs(ll)
+                for ll in Label.objects.filter(
+                    name__in=mo.labels, expose_datastream=True
+                ).values_list("name")
+            ]
+            r["labels"] = labels
             # Alias for compat
-            r["tags"] = [qs(x) for x in mo.labels]
+            r["tags"] = labels
         cls._apply_remote_system(mo, r)
         cls._apply_pool(mo, r)
         cls._apply_version(mo, r)

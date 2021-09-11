@@ -496,7 +496,7 @@ class ExtDocApplication(ExtApplication):
                 setattr(o, k, attrs[k])
         try:
             o.save()
-        except ValidationError as e:
+        except (ValidationError, ValueError) as e:
             return self.response({"message": str(e)}, status=self.BAD_REQUEST)
         # Reread result
         o = self.model.objects.get(**{self.pk: id})
