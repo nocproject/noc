@@ -16,7 +16,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -53,9 +53,20 @@ class MatchRule(BaseModel):
     labels: List[str] = []
     handler: Optional[str]
 
+    @validator("handler")
+    def handler_must_handler(cls, v):
+        if not v:
+            return v
+        h = Handler.objects.filter(id=v).first()
+        if not h:
+            raise ValueError(f"[{h}] Handler not found")
+        elif not h.allow_match_rule:
+            raise ValueError(f"[{h}] Handler must be set Allow Match Rule")
+        return str(h.id)
+
 
 class MatchRules(BaseModel):
-    __root__: List[MatchRule]
+    __root__: List[Optional[MatchRule]] = []
 
 
 m_valid = DictListParameter(
@@ -782,9 +793,9 @@ class ManagedObjectProfile(NOCModel):
                 self.metrics = m_valid.clean(self.metrics)
             except ValueError as e:
                 raise ValueError(e)
-        if self.match_rules:
-            # Not calling validate(). Probably on NOCModel
-            MatchRules.parse_obj(self.match_rules)
+        # if self.match_rules:
+        #     # Not calling validate(). Probably on NOCModel
+        #     MatchRules.parse_obj(self.match_rules)
         super().save(*args, **kwargs)
 
     @classmethod
