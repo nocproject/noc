@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SNMP Trap Server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import logging
 import time
 from typing import Tuple
+import codecs
 
 # NOC modules
 from noc.core.ioloop.udpserver import UDPServer
@@ -41,7 +42,7 @@ class TrapServer(UDPServer):
             community, varbinds = decode_trap(data)
         except Exception as e:
             metrics["error", ("type", "decode_failed")] += 1
-            logger.error("Failed to decode trap: %s", data.encode("hex"))
+            logger.error("Failed to decode trap: %s", codecs.encode(data, "hex"))
             logger.error("Decoder error: %s", e)
             return
         # @todo: Check trap community
