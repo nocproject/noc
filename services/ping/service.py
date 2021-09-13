@@ -215,6 +215,7 @@ class PingService(FastAPIService):
                     # @todo: Send throttling message
             ts = " (Throttled)" if self.is_throttled else ""
             self.logger.info("[%s] Changing status to %s%s", address, s, ts)
+            ps.status = s
         if ps and not self.is_throttled and not disable_message and s != ps.sent_status:
             self.publish(
                 orjson.dumps(
