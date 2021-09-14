@@ -1,0 +1,34 @@
+{
+    "name": "Juniper | JUNOS | Network | RMON | Alarms Get Failure",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "451e1e37-9c61-4a61-a58c-b1d0072edbee",
+    "description": "The SNMP trap that is generated when the get request for an alarm variable returns an error.  The specific error is identified by jnxRmonAlarmGetFailReason.\nJUNIPER-RMON-MIB::jnxRmonAlarmGetFailure",
+    "event_class__name": "Network | RMON | Agent Get Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-RMON-MIB::jnxRmonAlarmGetFailure$"
+        },
+        {
+            "key_re": "^JUNIPER-RMON-MIB::alarmIndex$",
+            "value_re": "^(P?<index>\\S+)$"
+        },
+        {
+            "key_re": "^JUNIPER-RMON-MIB::alarmVariable$",
+            "value_re": "^(P?<variable>\\S+)$"
+        },
+        {
+            "key_re": "^JUNIPER-RMON-MIB::jnxRmonAlarmGetFailReason$",
+            "value_re": "^(P?<reason>\\S+)$"
+        }
+    ]
+}

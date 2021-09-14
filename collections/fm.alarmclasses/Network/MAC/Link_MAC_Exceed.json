@@ -1,0 +1,40 @@
+{
+    "name": "Network | MAC | Link MAC Exceed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "7ff2efd4-61b1-4560-b0ba-8c9a6eaf63b8",
+    "desciption": "MAC Address Exceeded on interface",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "mac_limit",
+            "description": "MAC Address Limit"
+        },
+        {
+            "name": "utilization",
+            "description": "Utilization"
+        },
+        {
+            "name": "interface",
+            "description": "Interface"
+        }
+    ],
+    "subject_template": "Зафиксировано превышение порога MAC адресов на интерфейсе {{ interface }}: {{mac_limit}}/{{utilization}}",
+    "body_template": "Зафиксировано превышение порога MAC адресов на интерфейсе {{ interface }}: {{mac_limit}}/{{utilization}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "recover_time": 300
+}
