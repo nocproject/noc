@@ -1,0 +1,38 @@
+{
+    "name": "Juniper | JUNOS | Chassis | Linecard | Redundancy Switchover",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "3de32247-dd85-4e6f-9740-0fb58d0c0df8",
+    "description": "For certain platforms, such as the M20 or M160, some subsystems, such as the Routing Engine, have a redundant backup unit that can be brought online, manually or automatically, if the main unit malfunctions. The redundancy switchover trap indicates such a change.",
+    "event_class__name": "Chassis | Linecard | Redundancy Switchover",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^JUNIPER-MIB::jnxRedundancySwitchover$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxRedundancySwitchoverReason\\.+$",
+            "value_re": "^(?P<reason>.+)$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxRedundancyDescr\\.+$",
+            "value_re": "^(?P<description>.+)$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxRedundancyConfig\\.+$",
+            "value_re": "^(?P<config>\\S+)$"
+        },
+        {
+            "key_re": "^JUNIPER-MIB::jnxRedundancyState\\.+$",
+            "value_re": "^(?P<state>\\S+)$"
+        }
+    ]
+}

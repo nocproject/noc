@@ -1,0 +1,39 @@
+{
+    "name": "Network | MPLS | Link Down",
+    "$collection": "fm.eventclasses",
+    "uuid": "de7131bf-c8ac-4a97-b23d-acae2edac40d",
+    "description": "MPLS VPN Link Down",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Affected interface in the VPN",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "vpn_name",
+            "description": "Affected VPN",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "vpn_type",
+            "description": "Affected VPN type",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "link_event": true,
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Link in VPN {{name}} Down: {{interface}}",
+    "body_template": "Link in VPN {{name}} Down: {{interface}}",
+    "symptoms": "Connection lost",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Network | LAG | LACP Timeout",
+    "$collection": "fm.eventclasses",
+    "uuid": "56bb6772-1ae3-4ba4-a3b0-88591dd5c11c",
+    "description": "LACP Timeout",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Port",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "lag_interface",
+            "description": "LAG interface",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Timeout LACP on Interface {{interface}} , LAG {{lag_interface}}",
+    "body_template": "Timeout LACP on Interface {{interface}} , LAG {{lag_interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

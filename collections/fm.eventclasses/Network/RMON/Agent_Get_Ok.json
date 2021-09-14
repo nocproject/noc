@@ -1,0 +1,31 @@
+{
+    "name": "Network | RMON | Agent Get Ok",
+    "$collection": "fm.eventclasses",
+    "uuid": "f84f446e-e32b-4ef2-b26c-7f0c995d6062",
+    "description": "The SNMP trap that is generated when the get request for an alarm variable is successful.  This is only sent after previous attempts were unsuccessful.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "index",
+            "description": "Variable index",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "variable",
+            "description": "Requested Variable",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Get Request on RMON variable returns Ok",
+    "body_template": "Get Request on RMON variable {{ variable }} returns successful",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

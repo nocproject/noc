@@ -1,0 +1,45 @@
+{
+    "name": "Chassis | Linecard | Redundancy Switchover",
+    "$collection": "fm.eventclasses",
+    "uuid": "4cfdec5b-edf9-478f-8248-538bf4f5f31d",
+    "description": "A redundant backup unit that can be brought online, manually or automatically, if the main unit malfunctions.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "reason",
+            "description": "The reason of the last switchover",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "description",
+            "description": "Module switchover description",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "config",
+            "description": "Module election priority of redundancy configuration",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "The current running state of module",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Redundancy Switchover to online",
+    "body_template": "Redundancy Switchover to online by {{ reason }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

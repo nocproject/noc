@@ -1,0 +1,38 @@
+{
+    "name": "Network | RMON | Agent Get Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "ed54921c-162e-483c-b020-aaafc01c2cdf",
+    "description": "The SNMP trap that is generated when the get request for an alarm variable returns an error.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "index",
+            "description": "Variable index",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "variable",
+            "description": "Requested Variable",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "reason",
+            "description": "The reason why an internal get request for the variable monitored by this entry last failed.",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Get Request on RMON variable returns error",
+    "body_template": "Get Request on RMON variable {{ variable }} returns error by reason: {{ reason }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

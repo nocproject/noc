@@ -1,0 +1,39 @@
+{
+    "name": "Network | MPLS | Link Up",
+    "$collection": "fm.eventclasses",
+    "uuid": "544eaeb0-0029-42b3-a472-2d73e9cbd354",
+    "description": "MPLS VPN Link Up",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Affected interface in the VPN",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "vpn_name",
+            "description": "Affected VPN",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "vpn_type",
+            "description": "Affected VPN type",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "link_event": true,
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Link in VPN {{name}} Up: {{interface}}",
+    "body_template": "Link in VPN {{name}} Up: {{interface}}",
+    "symptoms": "Connection recover",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
