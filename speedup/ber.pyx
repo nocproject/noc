@@ -61,11 +61,15 @@ def parse_tlv_header(bytes msg):
     if l & 0x80:
         # Long form
         tl = l & 0x7f
+        if tl > 4:
+            raise ValueError("Malformed TLV")
         l = 0
         while tl:
             l = (l << 8) + ptr[skip]
             skip += 1
             tl -= 1
+        if l + skip > len(msg):
+            raise ValueError("Malformed TLV length")
     # Apply tag_id to decoder id
     decoder_id = decoder_id | (tag_id << 3)
     #
