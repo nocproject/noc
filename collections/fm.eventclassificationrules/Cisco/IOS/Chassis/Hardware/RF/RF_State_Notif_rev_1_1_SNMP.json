@@ -3,7 +3,7 @@
     "$collection": "fm.eventclassificationrules",
     "uuid": "ee7a71c0-6528-42d9-9e5f-f5056b6084f7",
     "description": "CISCO-RF-MIB::ciscoRFIssuStateNotifRev1",
-    "event_class__name": "Unknown | Default",
+    "event_class__name": "Chassis | Hardware | Version Upgrading",
     "preference": 1000,
     "patterns": [
         {
