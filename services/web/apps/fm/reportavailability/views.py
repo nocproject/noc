@@ -82,7 +82,9 @@ class ReportAvailabilityApplication(SimpleReport):
         outages = defaultdict(list)
         td = (d - b).total_seconds()
         # q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
-        q = (Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)) & Q(start__lt=d)
+        q = (Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False) | Q(stop__exists=None)) & Q(
+            start__lt=d
+        )
         for o in Outage.objects.filter(q):
             start = max(o.start, b)
             stop = o.stop if (o.stop and o.stop < d) else d
