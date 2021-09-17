@@ -1,0 +1,38 @@
+{
+    "name": "Chassis | Memory | Memory Usage Above Threshold",
+    "$collection": "fm.eventclasses",
+    "uuid": "6f07090f-6e2e-475b-9cc9-fdf199a7dc95",
+    "description": "Memory Usage Above Threshold",
+    "action": "A",
+    "vars": [
+        {
+            "name": "slot",
+            "description": "Slot",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{% if slot %}{{slot}} {% endif %} Memory Usage is above threshold",
+    "body_template": "{% if slot %}{{slot}} {% endif %} Memory Usage is above threshold {{ tvalue }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

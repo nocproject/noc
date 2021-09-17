@@ -1,0 +1,45 @@
+{
+    "name": "Chassis | Hardware | Version Upgrading",
+    "$collection": "fm.eventclasses",
+    "uuid": "f64393bc-a1e8-4993-bf3a-6fc6e17ac18c",
+    "description": "An ISSU notification to indicate the new state of the system.",
+    "action": "A",
+    "vars": [
+        {
+            "name": "issu_state",
+            "description": "The current ISSU state of the system.",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "from_version",
+            "description": "Version from is upgrading",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "to_version",
+            "description": "Version to is upgrading",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "reason",
+            "description": "Status Reason Code",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "RF Upgrading version",
+    "body_template": "RF Upgrading version from {{ from_version }} to {{ to_version }}. Change. Status code: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
