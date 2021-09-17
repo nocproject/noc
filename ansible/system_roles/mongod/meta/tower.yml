@@ -19,7 +19,7 @@ forms:
         - arbiter
         - hidden
     logging_destination:
-      default: "file"
+      default: "syslog"
       label: "Mongo logging driver"
       description: "<strong>Use syslog if you can</strong>. File option is for backward compatibility only."
       type: list
@@ -46,17 +46,8 @@ forms:
       type: str
       label: Replicaset name
       common: environment
-    engine:
-      default: wiredTiger
-      label: MongoDB engine
-      description: "Do not use mmapv1 in production"
-      type: list
-      common: environment
-      options:
-        - wiredTiger
-        - mmapv1
     version:
-      default: "4.0"
+      default: "4.4"
       type: str
       label: Mongo version
       common: environment
