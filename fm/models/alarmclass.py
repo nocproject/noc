@@ -199,7 +199,7 @@ class AlarmClass(Document):
         if vars:
             ds = sorted(str(vars[n]) for n in self.discriminator)
             return hashlib.sha1(smart_bytes("\x00".join(ds))).hexdigest()
-        return hashlib.sha1(b"").hexdigest()
+        return hashlib.sha1(smart_bytes(self.alarm_class.name)).hexdigest()
 
     def to_json(self):
         c = self
