@@ -168,9 +168,9 @@ def bool_icon(value):
     if value is None:
         return "?"
     elif value:
-        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-yes.gif' alt='Yes' />")
+        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-yes.svg' alt='Yes' />")
     else:
-        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-no.gif' alt='No' />")
+        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-no.svg' alt='No' />")
 
 
 register.filter("bool_icon", bool_icon)
