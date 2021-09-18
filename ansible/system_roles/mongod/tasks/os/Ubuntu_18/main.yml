@@ -2,7 +2,7 @@
 - name: Add MongoDB apt key
   apt_key:
     url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
-    id: "mongo_apt_{{ mongod_version }}_id"
+    id: "{{ mongo_apt_id[mongod_version] }}"
     state: present
   environment:
     https_proxy: "{{ http_proxy }}"
