@@ -53,6 +53,9 @@ Ext.define("NOC.core.tagfield.Tagfield", {
     listeners: {
         change: "onChangeTagValue"
     },
+    tipTpl: [
+        '{label}'
+    ],
     initComponent: function() {
         this.store.proxy.url = this.url;
         if(this.lazyLoadTree) {
