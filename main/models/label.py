@@ -249,8 +249,8 @@ class Label(Document):
         if self.is_scoped and not self.is_wildcard and not self.is_matched:
             self._ensure_wildcards()
         # Check if unset enable and label added to model
-        if hasattr(self, "_changed_fields") and self._changed_fields:
-            if self.is_regex and "match_regex" in self._changed_fields:
+        if self._created or getattr(self, "_changed_fields", None):
+            if self.is_regex:
                 self._refresh_regex_labels()
             # Propagate Wildcard Settings
             if self.is_wildcard and self.propagate:
@@ -524,6 +524,8 @@ class Label(Document):
                 # logger.info("[%s] Cleanup Interface effective labels: %s", self.name, self.name)
                 Label.reset_model_labels(model_id, [self.name])
         for model_id, field in r:
+            if not getattr(self, LABEL_MODELS[model_id], False):
+                continue
             model = get_model(model_id)
             regxs = r[(model_id, field)]
             if is_document(model):
