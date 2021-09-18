@@ -12,9 +12,7 @@ Ext.define("NOC.core.tagfield.TagfieldController", {
     onChangeTagValue: function(self) {
         var view = this.getView(),
             selected = self.getPicker().getSelectionModel().getSelection();
-        if(view.isTree) {
-            view.treePicker.getController().selectNode(selected);
-        }
+        view.treePicker.getController().selectNode(selected);
         view.setSelected(selected, true);
     },
 });

@@ -607,6 +607,14 @@ table {
     height: 17px;
 }
 
+.x-tagfield-item-text {
+    text-overflow: ellipsis;
+    max-width: 255px;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .noc-label-field-start {
     border-radius: 5px 0 0 5px;
     padding: 0 3px 0 3px;
