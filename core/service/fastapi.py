@@ -12,8 +12,8 @@ from typing import Optional, Tuple, Dict
 # Third-party modules
 import uvicorn
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
-from starlette.responses import Response, PlainTextResponse, JSONResponse
-from fastapi import FastAPI
+from starlette.responses import Response, JSONResponse
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
 
@@ -38,15 +38,22 @@ class FastAPIService(BaseService):
         super().__init__()
         self.app = None
 
-    async def error_handler(self, request, exc) -> Response:
+    async def error_handler(self, request: "Request", exc) -> Response:
         """
         Error handler for ServerErrorMiddleware
         :return:
         """
         error_report(logger=self.logger)
-        return PlainTextResponse("Internal Server Error", status_code=500)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "internal_error",
+                "error_description": f"Internal Server Error: {exc}",
+                "error_uri": str(request.url),
+            },
+        )
 
-    async def request_validation_error_handler(self, request, exc) -> Response:
+    async def request_validation_error_handler(self, request: "Request", exc) -> Response:
         """
         Handle request validation and customize response
         :param request:
@@ -58,6 +65,7 @@ class FastAPIService(BaseService):
             content={
                 "error": "invalid_request",
                 "error_description": jsonable_encoder(exc.errors()),
+                "error_uri": str(request.url),
             },
         )
 
