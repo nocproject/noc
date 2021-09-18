@@ -44,8 +44,8 @@
     - config
 
 - name: Generating mongo key file
-  template:
-    src: "mongo.key.j2"
+  copy:
+    content: "{{ mongo_key }}"
     dest: "{{ mongo_dir }}/mongo.key"
     owner: "{{ mongo_user }}"
     mode: "0400"

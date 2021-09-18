@@ -27,3 +27,9 @@ mongo_listen_addr: "{{ ansible_host }}"
 # for master_unused
 #mongo_control_venv: /opt/pymongo
 #pymongo_version: ">3.2"
+
+mongo_apt_3.6_id: "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+mongo_apt_4.0_id: "9DA31620334BD75D9DCB49F368818C72E52529D4"
+mongo_apt_4.2_id: "E162F504A20CDF15827F718D4B7C549A058F8B6B"
+mongo_apt_4.4_id: "20691EEC35216C63CAF66CE1656408E390CFB1F5"
+mongo_apt_5.0_id: "F5679A222C647C87527C2F8CB00A0BD1E2C63C11"
