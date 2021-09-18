@@ -753,8 +753,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: __("Box discovery"),
                             items: [
                                 {
-                                    xtype: "container",
-                                    layout: "hbox",
+                                    xtype: "fieldset",
+                                    layout: "vbox",
                                     items: [
                                         {
                                             name: "enable_box_discovery",
@@ -770,8 +770,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 ["r", __("Require Up if ping enabled")],
                                                 ["i", __("Always Run")]
                                             ],
+                                            labelWidth: 200,
                                             allowBlank: false,
-                                            uiStyle: "medium",
+                                            uiStyle: "large",
                                             padding: "0 0 0 4px"
                                         }
                                     ]
