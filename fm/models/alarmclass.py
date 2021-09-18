@@ -189,7 +189,7 @@ class AlarmClass(Document):
         self.category = c.id
         super().save(*args, **kwargs)
 
-    def get_discriminator(self, vars):
+    def get_discriminator(self, vars) -> str:
         """
         Calculate discriminator hash
 
@@ -199,7 +199,7 @@ class AlarmClass(Document):
         if vars:
             ds = sorted(str(vars[n]) for n in self.discriminator)
             return hashlib.sha1(smart_bytes("\x00".join(ds))).hexdigest()
-        return hashlib.sha1(smart_bytes(self.alarm_class.name)).hexdigest()
+        return hashlib.sha1(smart_bytes(self.name)).hexdigest()
 
     def to_json(self):
         c = self
