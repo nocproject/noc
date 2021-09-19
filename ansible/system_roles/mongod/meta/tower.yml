@@ -11,7 +11,7 @@ forms:
     power:
       default: server
       label: "Mongo server role"
-      description: "Select server role. Use server if you do not aunderstand what it is."
+      description: "Select server role. Use server if you do not understand what it is."
       type: list
       options:
         - bootstrap
