@@ -25,8 +25,8 @@ mongo_key: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
 mongo_listen_addr: "{{ ansible_host }}"
 
 # for master_unused
-#mongo_control_venv: /opt/pymongo
-#pymongo_version: ">3.2"
+mongo_control_venv: /opt/pymongo
+pymongo_version: 3.11.4
 
 mongo_apt_id:
   3.6: "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
