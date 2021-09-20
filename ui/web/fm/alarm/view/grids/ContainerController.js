@@ -206,6 +206,39 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         });
     },
     onActiveResetSelection: function() {
-        this.getView().lookup("fm-alarm-active").setSelection(null);
-    }
+        this.lookupReference("fm-alarm-active").setSelection(null);
+    },
+    createMaintenance: function() {
+        var selection = this.lookupReference("fm-alarm-active").getSelection(),
+            objects = selection.map(function(alarm) {
+                return {
+                    object: alarm.get("managed_object"),
+                    object__label: alarm.get("managed_object__label")
+                }
+            }),
+            args = {
+            direct_objects: objects,
+            subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+            contacts: NOC.email ? NOC.email : NOC.username,
+            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+            start_time: Ext.Date.format(new Date(), 'H:i'),
+            stop_time: '12:00',
+            suppress_alarms: true
+        };
+        Ext.create("NOC.maintenance.maintenancetype.LookupField")
+        .getStore()
+        .load({
+            params: {__query: 'РНР'},
+            callback: function(records) {
+                if(records.length > 0) {
+                    Ext.apply(args, {
+                        type: records[0].id
+                    })
+                }
+                NOC.launch("maintenance.maintenance", "new", {
+                    args: args
+                });
+            }
+        });
+    },
 });
