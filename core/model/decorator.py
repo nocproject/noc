@@ -8,12 +8,13 @@
 # NOC modules
 from noc.models import get_model
 from noc.core.comp import smart_text
+from django.db.models import JSONField
 
 
 def is_document(klass):
     """
     Check klass is Document instance
-    :param cls:
+    :param klass:
     :return:
     """
     return isinstance(klass._meta, dict)
@@ -197,7 +198,16 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
     def iter_related(object, model, field):
         if setup["is_document"]:
             field = field.replace(".", "__")
-            qs = {field: str(object.id)}
+            if (
+                not is_document(model)
+                and "__" in field
+                and isinstance(model._meta.get_field(field.split("__")[0]), JSONField)
+            ):
+                # JSON field
+                m_field, json_field = field.split("__")
+                qs = {f"{m_field}__contains": [{json_field: str(object.id)}]}
+            else:
+                qs = {field: str(object.id)}
         else:
             qs = {field: object.pk}
         for ro in model.objects.filter(**qs):

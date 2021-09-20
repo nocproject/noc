@@ -74,7 +74,7 @@ class ManagedObjectsExtractor(BaseExtractor):
         x_data = [
             self.get_interfaces(),
             self.get_links(),
-            self.get_caps(),
+            # self.get_caps(),
             self.get_n_subs_n_serv(),
             self.get_reboots(stats_start, self.stop),
             self.get_availability(stats_start, self.stop),
@@ -122,6 +122,8 @@ class ManagedObjectsExtractor(BaseExtractor):
                 # subscribers
                 # services
             }
+            caps = mo.get_caps()
+            r.update({self.CAPS_MAP[c]: int(caps.get(c, False)) for c in self.CAPS_MAP})
             # Apply external data
             for data in x_data:
                 d = data.get(mo.id)

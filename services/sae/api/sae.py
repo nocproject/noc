@@ -13,9 +13,9 @@ from noc.sa.models.managedobject import (
     ManagedObject,
     CREDENTIAL_CACHE_VERSION,
 )  # noqa Do not delete
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
+from noc.inv.models.capability import Capability
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.main.models.template import Template
@@ -50,6 +50,7 @@ class SAEAPI(API):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
+            mo.caps,
             (
               SELECT json_object_agg(key, value)
               FROM sa_managedobjectattribute
@@ -147,8 +148,6 @@ class SAEAPI(API):
         if not data:
             metrics["error", ("type", "object_not_found")] += 1
             raise APIError("Object is not found")
-        # Build capabilities
-        capabilities = ObjectCapabilities.get_capabilities(object_id)
         # Get object credentials
         (
             name,
@@ -181,12 +180,21 @@ class SAEAPI(API):
             p_access_preference,
             beef_storage_id,
             beef_path_template_id,
+            caps,
             attrs,
         ) = data[0]
         # Check object is managed
         if not is_managed:
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
+        # Build capabilities
+        # capabilities = ObjectCapabilities.get_capabilities(object_id)
+        capabilities = {}
+        if caps:
+            for c in caps:
+                cc = Capability.get_by_id(c["capability"])
+                if cc:
+                    capabilities[cc.name] = c.get("value")
         if auth_profile_id:
             user = ap_user
             password = ap_password

@@ -14,9 +14,10 @@ import re
 import operator
 from threading import Lock
 import datetime
-from typing import Tuple, Iterable, List
+from typing import Tuple, Iterable, List, Any, Dict
 
 # Third-party modules
+import orjson
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
     Q,
@@ -32,6 +33,7 @@ from django.db.models import (
 )
 import cachetools
 from typing import Optional
+from pydantic import BaseModel
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -45,6 +47,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
+from noc.inv.models.capsitem import ModelCapsItem
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -55,6 +58,7 @@ from noc.core.model.fields import (
     DocumentReferenceField,
     CachedForeignKey,
     ObjectIDArrayField,
+    PydanticField,
 )
 from noc.core.model.sql import SQL
 from noc.core.stencil import stencil_registry
@@ -70,6 +74,7 @@ from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.capability import Capability
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
@@ -92,12 +97,17 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 31
-CREDENTIAL_CACHE_VERSION = 3
+MANAGEDOBJECT_CACHE_VERSION = 32
+CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
     "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
 )
+
+
+class CapsItems(BaseModel):
+    __root__: List[ModelCapsItem]
+
 
 id_lock = Lock()
 
@@ -521,6 +531,16 @@ class ManagedObject(NOCModel):
     #
     labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
+    #
+    caps = PydanticField(
+        "Caps Items",
+        schema=CapsItems,
+        blank=True,
+        null=True,
+        default=list,
+        # ? Internal validation not worked with JSON Field
+        # validators=[match_rules_validate],
+    )
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -1279,19 +1299,103 @@ class ManagedObject(NOCModel):
 
         yield from Interface.objects.filter(managed_object=self.id)
 
-    def get_caps(self):
+    def get_caps(self) -> Dict[str, Any]:
         """
         Returns a dict of effective object capabilities
         """
-        return ObjectCapabilities.get_capabilities(self)
 
-    def update_caps(self, caps, source):
+        caps = {}
+        if self.caps:
+            for c in self.caps:
+                cc = Capability.get_by_id(c["capability"])
+                if cc:
+                    caps[cc.name] = c.get("value")
+        return caps
+
+    def update_caps(self, caps: Dict[str, Any], source: str) -> Dict[str, Any]:
         """
         Update existing capabilities with a new ones.
         :param caps: dict of caps name -> caps value
         :param source: Source name
         """
-        return ObjectCapabilities.update_capabilities(self, caps, source)
+
+        o_label = f"{self.name}|{source}"
+        # Update existing capabilities
+        new_caps = []
+        seen = set()
+        changed = False
+        for ci in self.caps:
+            c = Capability.get_by_id(ci["capability"])
+            cs = ci.get("source")
+            cv = ci.get("value")
+            if not c:
+                logger.info("[%s] Removing unknown capability id %s", o_label, ci["capability"])
+                continue
+            cn = c.name
+            seen.add(cn)
+            if cs == source:
+                if cn in caps:
+                    if caps[cn] != cv:
+                        logger.info(
+                            "[%s] Changing capability %s: %s -> %s", o_label, cn, cv, caps[cn]
+                        )
+                        ci["value"] = caps[cn]
+                        changed = True
+                else:
+                    logger.info("[%s] Removing capability %s", o_label, cn)
+                    changed = True
+                    continue
+            elif cn in caps:
+                logger.info(
+                    "[%s] Not changing capability %s: " "Already set with source '%s'",
+                    o_label,
+                    cn,
+                    cs,
+                )
+            new_caps += [ci]
+        # Add new capabilities
+        for cn in set(caps) - seen:
+            c = Capability.get_by_name(cn)
+            if not c:
+                logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
+                continue
+            logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
+            new_caps += [{"capability": str(c.id), "value": caps[cn], "source": source}]
+            changed = True
+
+        if changed:
+            logger.info("[%s] Saving changes", o_label)
+            from django.db import connection
+
+            self.caps = new_caps
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""UPDATE {self._meta.db_table} SET caps = %s::jsonb WHERE id = {self.id}""",
+                [smart_text(orjson.dumps(new_caps))],
+            )
+            # self.save()
+            cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
+            self._reset_caches()
+        caps = {}
+        for ci in new_caps:
+            cn = Capability.get_by_id(ci["capability"])
+            if cn:
+                caps[cn.name] = ci.get("value")
+        return caps
+
+    def set_caps(
+        self, key: str, value: Any, source: str = "manual", scope: Optional[str] = None
+    ) -> None:
+        caps = Capability.get_by_name(key)
+        value = caps.clean_value(value)
+        for item in self.caps:
+            if item["capability"] == str(caps.id):
+                if not scope or item.scope == scope:
+                    item["value"] = value
+                    break
+        else:
+            # Insert new item
+            self.caps += [{"capability": str(caps.id), "value": value, "source": source}]
 
     def disable_discovery(self):
         """
@@ -1938,7 +2042,6 @@ from .useraccess import UserAccess
 from .groupaccess import GroupAccess
 from .objectnotification import ObjectNotification
 from .action import Action
-from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
 from noc.main.models.prefixtable import PrefixTable
