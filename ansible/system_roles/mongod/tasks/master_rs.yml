@@ -23,7 +23,6 @@
   mongodb_replicaset:
     members: "{{ ansible_hostname }}"
     replica_set: "{{ mongod_rs }}"
-    state: present
     login_user:
     login_password:
     login_database: "admin"
