@@ -61,8 +61,8 @@
       - db: "{{ mongod_db }}"
         role: dbOwner
     state: present
-    vars:
-      ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
+  vars:
+    ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
 
 #- name: Ansible full of bugs 2
 #  set_fact:
