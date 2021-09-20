@@ -151,7 +151,7 @@ class ExtApplication(Application):
         # Todo: Fix
         if request.method == "POST":
             if self.site.is_json(request.META.get("CONTENT_TYPE")):
-                q = orjson.loads(request.body)
+                q = self.deserialize(request.body)
             else:
                 q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
         else:

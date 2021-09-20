@@ -19,7 +19,6 @@ from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
@@ -160,7 +159,7 @@ class ManagedObjectDataStream(DataStream):
     @staticmethod
     def _apply_caps(mo: ManagedObject, r):
         # Get caps
-        cdata = ObjectCapabilities.get_capabilities(mo)
+        cdata = mo.get_caps()
         if not cdata:
             return
         caps = []

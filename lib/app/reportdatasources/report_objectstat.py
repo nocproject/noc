@@ -12,7 +12,6 @@ from collections import defaultdict
 import cachetools
 from django.db.models import Q as d_Q
 from pymongo import ReadPreference
-from mongoengine.queryset.visitor import Q as m_Q
 
 # NOC modules
 from noc.core.mongo.connection import get_db
@@ -21,7 +20,6 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.authprofile import AuthProfile
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.capability import Capability
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
@@ -106,20 +104,11 @@ class CapabilitiesIsolator(IsolatorClass):
 
     @staticmethod
     def _2_has(index):
-        c = (
-            ObjectCapabilities.objects.filter(
-                m_Q(
-                    caps__match={
-                        "capability": Capability.objects.get(name="SNMP").id,
-                        "value": "true" == "true",
-                    },
-                )
-            )
-            .read_preference(ReadPreference.SECONDARY_PREFERRED)
-            .values_list("object")
-            .as_pymongo()
+        return set(
+            ManagedObject.objects.filter(
+                caps__contains=[{"capability": str(Capability.objects.get(name="SNMP").id)}]
+            ).values_list("id", flat=True)
         )
-        return set(e["_id"] for e in c)
 
     def _3_has(self, index):
         # Has links, index - link count
@@ -152,19 +141,12 @@ class CapabilitiesIsolator(IsolatorClass):
     def _5_has(self, index):
         # Set has Network Caps
         # Index 0 - not Netrwork Caps
-        c = (
-            ObjectCapabilities.objects.filter(
-                m_Q(
-                    caps__capability__in=[
-                        cp.id for cp in Capability.objects.filter(name__startswith="Network |")
-                    ]
-                )
-            )
-            .read_preference(ReadPreference.SECONDARY_PREFERRED)
-            .values_list("object")
-            .as_pymongo()
-        )
-        c = set(e["_id"] for e in c)
+        q = d_Q()
+        for caps in Capability.objects.filter(name__startswith="Network |"):
+            q |= d_Q(caps__contains=[{"capability": str(caps.id)}])
+        c = set()
+        if q:
+            c = set(ManagedObject.objects.filter(q).values_list("id", flat=True))
         if index == "0":
             return self.default_set - c
         elif index == "1":
