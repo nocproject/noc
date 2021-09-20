@@ -1,9 +1,8 @@
 ---
-# that scenario is waiting for https://github.com/ansible/ansible/issues/25429
-# also mongodb_replica_set is not idempotent. first init have to be done without login user and password
+# mongodb_replicaset is not idempotent. first init have to be done without login user and password
 # second and further with it.
 # let it live here for some time
-# TODO REMOVE ME after 1 jan 2019
+# TODO REMOVE ME after 1 jan 2022
 
 - name: Install pymongo
   pip:
@@ -15,19 +14,22 @@
   tags:
     - requirements
 
-## https://github.com/ansible/ansible/issues/18665#issuecomment-350144774
-- name: Ansible full of bugs
-  set_fact:
-    ansibe_correct_python: "{{ ansible_python_interpreter }}"
-    ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
+#- name: Ansible full of bugs
+#  set_fact:
+#    ansible_correct_python: "{{ ansible_python_interpreter }}"
+#    ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
 
 - name: create rs
-  mongodb_replica_set:
-    member: "{{ ansible_hostname }}"
-    replset: "{{ mongod_rs }}"
+  mongodb_replicaset:
+    members: "{{ ansible_hostname }}"
+    replica_set: "{{ mongod_rs }}"
     state: present
-    login_user: "{{ noc_mongo_admin_user }}"
-    login_password: "{{ mongod_password }}"
+    login_user:
+    login_password:
+    login_database: "admin"
+    validate: no
+  vars:
+    ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
   register: rs_status
 
 - block:
@@ -60,7 +62,9 @@
       - db: "{{ mongod_db }}"
         role: dbOwner
     state: present
+    vars:
+      ansible_python_interpreter: "{{ mongo_control_venv }}/bin/python"
 
-- name: Ansible full of bugs 2
-  set_fact:
-    ansible_python_interpreter: "{{ ansibe_correct_python }}"
+#- name: Ansible full of bugs 2
+#  set_fact:
+#    ansible_python_interpreter: "{{ ansible_correct_python }}"
