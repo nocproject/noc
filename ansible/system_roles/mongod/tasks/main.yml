@@ -109,7 +109,7 @@
     - "mongod_power == 'arbiter'"
 
 - name: include master settings
-  include_tasks: "master.yml"
+  include_tasks: "master_rs.yml"
   when: "mongod_power == 'bootstrap'"
   tags:
     - rs_init
