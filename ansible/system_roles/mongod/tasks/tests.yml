@@ -3,7 +3,7 @@
   - name: check if mongod running
     command: pgrep -x mongod -c
     failed_when: "False"
-    changed_when: "False"
+    changed_when: false
     register: mongod_running
     check_mode: "False"
 
@@ -16,7 +16,7 @@
 
   - name: check mongo disk size
     shell: df /var/lib/mongo/ | grep -Po '/dev.+\K...(?=\%)'
-    changed_when: "False"
+    changed_when: false
     failed_when: "False"
     register: mongod_dir_size
     check_mode: "False"
@@ -35,7 +35,7 @@
       url: "http://127.0.0.1:8500/v1/health/service/mongo"
       return_content: "True"
     register: consul_req
-    changed_when: "False"
+    changed_when: false
     check_mode: "False"
 
   - name: fail if no mongo found

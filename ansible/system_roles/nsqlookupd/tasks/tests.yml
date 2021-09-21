@@ -3,7 +3,7 @@
   - name: check if nsqloopupd running
     command: pgrep -x nsqlookupd -c
     failed_when: "False"
-    changed_when: "False"
+    changed_when: false
     register: nsqlookupd_running
     check_mode: "False"
 
@@ -18,7 +18,7 @@
     uri:
       url: http://127.0.0.1:4161/ping
     register: nsqlookupd_ping
-    changed_when: "False"
+    changed_when: false
     failed_when: "False"
     check_mode: "False"
 
@@ -35,7 +35,7 @@
       url: "http://127.0.0.1:8500/v1/health/service/nsqlookupd"
       return_content: "True"
     register: consul_req
-    changed_when: "False"
+    changed_when: false
     check_mode: "False"
 
   - name: fail if no nsqlookupd found
@@ -51,7 +51,7 @@
       url: "http://127.0.0.1:8500/v1/health/service/nsqlookupdhttp"
       return_content: "True"
     register: consul_req
-    changed_when: "False"
+    changed_when: false
     check_mode: "False"
 
   - name: fail if no nsqlookupdhttp found

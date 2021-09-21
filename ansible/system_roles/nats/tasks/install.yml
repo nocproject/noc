@@ -17,7 +17,7 @@
   delegate_to: 127.0.0.1
   become: "False"
   run_once: "True"
-  changed_when: "False"
+  changed_when: false
 
 - name: Download Nats
   get_url:
