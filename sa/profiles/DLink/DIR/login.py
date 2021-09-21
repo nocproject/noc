@@ -22,6 +22,6 @@ class Script(BaseScript):
     def execute(self):
         try:
             self.http.get("/")
-            return True
-        except Exception:
-            return False
+            return {"result": True, "message": ""}
+        except Exception as e:
+            return {"result": False, "message": str(e)}
