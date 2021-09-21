@@ -28,7 +28,7 @@
     name: firewalld
   check_mode: "True"
   register: firewalld_state
-  changed_when: "False"
+  changed_when: false
   ignore_errors: "True"
   tags:
     - config

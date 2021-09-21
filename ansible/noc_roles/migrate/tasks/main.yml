@@ -31,7 +31,7 @@
     chdir: "{{ noc_root }}"
   become: "True"
   become_user: "{{ noc_user }}"
-  changed_when: "False"
+  changed_when: false
 
 - name: migrate liftbridge partitions
   command: ./noc migrate-liftbridge

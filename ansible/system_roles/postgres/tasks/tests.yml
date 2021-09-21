@@ -3,7 +3,7 @@
     - name: check if postgres running
       command: pgrep -f postgres -c
       failed_when: "False"
-      changed_when: "False"
+      changed_when: false
       register: postgres_running
       check_mode: "False"
 
@@ -19,7 +19,7 @@
         url: "http://127.0.0.1:8500/v1/health/service/postgres"
         return_content: "True"
       register: consul_req
-      changed_when: "False"
+      changed_when: false
       check_mode: "False"
 
     - name: fail if no postgres found
