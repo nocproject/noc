@@ -2,7 +2,7 @@
 # File: main.yml - Main tasks for Consul
 
 - name: make servers group
-  changed_when: "False"
+  changed_when: false
   add_host:
     group: svc-consul-server
     host: "{{ item }}"

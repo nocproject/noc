@@ -3,7 +3,7 @@
     - name: check if nsqd running
       command: pgrep -x nsqd -c
       failed_when: "False"
-      changed_when: "False"
+      changed_when: false
       register: nsqd_running
       check_mode: "False"
 
@@ -18,7 +18,7 @@
       uri:
         url: http://127.0.0.1:4151/ping
       register: nsqd_ping
-      changed_when: "False"
+      changed_when: false
       failed_when: "False"
       check_mode: "False"
 
@@ -35,7 +35,7 @@
         url: "http://127.0.0.1:8500/v1/health/service/nsqd"
         return_content: "True"
       register: consul_req
-      changed_when: "False"
+      changed_when: false
       check_mode: "False"
 
     - name: fail if no nsqd found
@@ -51,7 +51,7 @@
         url: "http://127.0.0.1:8500/v1/health/service/nsqdhttp"
         return_content: "True"
       register: consul_req
-      changed_when: "False"
+      changed_when: false
       check_mode: "False"
 
     - name: fail if no nsqdhttp found

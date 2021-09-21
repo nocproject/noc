@@ -3,7 +3,7 @@
   - name: check if supervisord running
     command: pgrep -f supervisord -c
     failed_when: "False"
-    changed_when: "False"
+    changed_when: false
     register: supervisord_running
     check_mode: "False"
 
@@ -17,7 +17,7 @@
   - name: check if noc services are down
     shell: /opt/noc/noc ctl status | grep -v RUNNING
     become: "True"
-    changed_when: "False"
+    changed_when: false
     register: noc_status
     failed_when: "False"
     check_mode: "False"
