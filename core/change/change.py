@@ -28,7 +28,7 @@ def on_change(
 ) -> None:
     """
     Change worker
-    :param changes: List of (op, model id, item id, changed fields list)
+    :param changes: List of (op, model id, item id, changed fields list, timestamp)
     :param args:
     :param kwargs:
     :return:
@@ -54,19 +54,18 @@ def on_change(
             if not item:
                 logger.error("[%s|%s] Missed item. Skipping", model_id, item_id)
                 return
+        changed_fields = set(changed_fields or [])
         # Process datastreams
         if hasattr(item, "iter_changed_datastream"):
-            for ds_name, ds_id in item.iter_changed_datastream(
-                changed_fields=set(changed_fields or [])
-            ):
+            for ds_name, ds_id in item.iter_changed_datastream(changed_fields=changed_fields):
                 ds_changes[ds_name].add(ds_id)
         # Proccess BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
         # Proccess Sensors
-        if model_id == "inv.ObjectModel" and "sensors" in changed_fields:
+        if model_id == "inv.ObjectModel" and ("sensors" in changed_fields or not changed_fields):
             sensors_changes[model_id].add(item_id)
-        elif model_id == "inv.Object" and "data" in changed_fields:
+        elif model_id == "inv.Object" and ("data" in changed_fields or not changed_fields):
             # @todo ManagedObject address change
             sensors_changes[model_id].add(item_id)
     # Apply datastream changes
