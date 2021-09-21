@@ -3,7 +3,7 @@
   - name: check if clickhouse-server running
     command: pgrep -f clickhouse-server -c
     failed_when: "False"
-    changed_when: "False"
+    changed_when: false
     register: clickhouse_server_running
     check_mode: "False"
 

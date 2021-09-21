@@ -28,7 +28,7 @@
           command: grep -q sse4_2 /proc/cpuinfo
           register: sse42_support
           failed_when: "False"
-          changed_when: "False"
+          changed_when: false
           check_mode: "False"
 
         - name: fail if SSE 4.2 not supported
@@ -47,7 +47,7 @@
           command: grep -q SSE4.2 /var/run/dmesg.boot
           register: sse42_support
           failed_when: "False"
-          changed_when: "False"
+          changed_when: false
           check_mode: "False"
 
         - name: fail if SSE 4.2 not supported
