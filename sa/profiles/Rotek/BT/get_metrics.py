@@ -21,7 +21,9 @@ class Script(GetMetricsScript):
                 continue
             value = 1
             port = metric.labels[0].rsplit("::", 1)[-1]
-            status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
+            status = self.snmp.get(f"1.3.6.1.4.1.41752.5.15.1.{metric.ifindex}.0")
+            if status is None:
+                continue
             if metric.ifindex == 1 and int(status) == 0:
                 value = 0
             elif metric.ifindex == 2:
@@ -40,6 +42,8 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
     def get_temperature(self, metrics):
         for metric in metrics:
+            if not metric.labels:
+                continue
             port = metric.labels[0].rsplit("::", 1)[-1]
             if "temp" in port:
                 value = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
