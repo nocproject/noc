@@ -523,25 +523,36 @@ class Label(Document):
                 # Cleanup current labels
                 # logger.info("[%s] Cleanup Interface effective labels: %s", self.name, self.name)
                 Label.reset_model_labels(model_id, [self.name])
+        regxs = defaultdict(list)
         for model_id, field in r:
             if not getattr(self, LABEL_MODELS[model_id], False):
                 continue
             model = get_model(model_id)
-            regxs = r[(model_id, field)]
+            regxs[model] += [(field, r[(model_id, field)])]
+
+        for model in regxs:
             if is_document(model):
                 # Apply new rule
                 coll = model._get_collection()
                 coll.bulk_write(
                     [
                         UpdateMany(
-                            {"$or": [{field: {"$regex": rx}} for rx in regxs]},
+                            {
+                                "$or": [
+                                    {field: {"$in": [re.compile(x) for x in rxs]}}
+                                    for field, rxs in regxs[model]
+                                ]
+                            },
                             {"$addToSet": {"effective_labels": self.name}},
                         )
                     ]
                 )
             else:
                 # Apply new rule
-                condition = " OR ".join([f"{field} ~ %s"] * len(regxs))
+                params = [[self.name]]
+                for _, rxs in regxs[model]:
+                    params += rxs
+                condition = " OR ".join([f"{field} ~ %s" for field, _ in regxs[model]])
                 sql = f"""
                 UPDATE {model._meta.db_table}
                 SET effective_labels=ARRAY (
@@ -550,7 +561,7 @@ class Label(Document):
                 WHERE {condition}
                 """
                 cursor = connection.cursor()
-                cursor.execute(sql, [[self.name]] + regxs)
+                cursor.execute(sql, params)
 
     @classmethod
     def model(cls, m_cls):
