@@ -12,20 +12,20 @@ from collections import defaultdict
 # Third-party modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q
 
 # NOC modules
+from noc.core.mongo.connection import get_db
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.core.mongo.connection import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from pymongo import ReadPreference
-from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.core.translation import ugettext as _
 
 
@@ -179,8 +179,12 @@ class ReportAvailabilityApplication(SimpleReport):
             data = [d["_id"] for d in data]
             mos = mos.exclude(id__in=data)
 
-        mo_hostname = ReportObjectsHostname1(sync_ids=mos_id)
-        mo_hostname = mo_hostname.get_dictionary()
+        mo_hostname = {
+            val["object"]: val["hostname"]
+            for val in DiscoveryID._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1})
+        }
         for mo_id, mo_name, address, profile, ad_name in mos.values_list(
             "id", "name", "address", "profile", "administrative_domain__name"
         ):

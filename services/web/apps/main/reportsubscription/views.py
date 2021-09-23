@@ -30,3 +30,6 @@ class ReportSubscriptionApplication(ExtDocApplication):
             for report_id, r in site.iter_predefined_reports():
                 self._reports_map[report_id] = r.title
         return self._reports_map
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        return super().instance_to_dict(o, fields=fields, nocustom=True)

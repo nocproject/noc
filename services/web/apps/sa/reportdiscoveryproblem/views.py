@@ -118,15 +118,11 @@ class ReportForm(forms.Form):
 class ReportFilterApplication(SimpleReport):
     title = _("Discovery Problem")
     form = ReportForm
-    try:
-        default_resource_group = ResourceGroup.get_objects_from_expression(
-            "@Problem Discovery Report"
-        )
-    except ResourceGroup.DoesNotExist:
-        default_resource_group = None
+
     predefined_reports = {
-        "default": PredefinedReport(
-            _("Problem Discovery 2(default)"), {"resource_group": default_resource_group}
+        pname: PredefinedReport(_("Problem Discovery (pool)") + f": {pname}", {"pool": str(pid)})
+        for pid, pname in (
+            list(Pool.objects.order_by("name").scalar("id", "name")) + [(None, "ALL")]
         )
     }
 
