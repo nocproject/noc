@@ -5,17 +5,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-#
+# Third-party modules
 from django import forms
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.app.reportdatasources.base import ReportModelFilter
-from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
@@ -23,12 +24,11 @@ from noc.core.translation import ugettext as _
 class ReportFilterApplication(SimpleReport):
     title = _("Failed Discovery")
 
-    try:
-        default_pool = Pool.objects.get(name="default")
-    except Exception:
-        default_pool = Pool.objects.all()[0]
     predefined_reports = {
-        "default": PredefinedReport(_("Failed Discovery (default)"), {"pool": default_pool})
+        pname: PredefinedReport(_("Failed Discovery (pool)") + f": {pname}", {"pool": str(pid)})
+        for pid, pname in (
+            list(Pool.objects.order_by("name").scalar("id", "name")) + [(None, "ALL")]
+        )
     }
 
     def get_form(self):
@@ -108,8 +108,12 @@ class ReportFilterApplication(SimpleReport):
         report = ReportModelFilter()
         result = report.proccessed(",".join(columns))
 
-        mo_hostname = ReportObjectsHostname1(sync_ids=mos)
-        mo_hostname = mo_hostname.get_dictionary()
+        mo_hostname = {
+            val["object"]: val["hostname"]
+            for val in DiscoveryID._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1})
+        }
         d_result = ReportDiscoveryResult(sync_ids=mos)
         d_result = d_result.get_dictionary()
         for col in columns:
