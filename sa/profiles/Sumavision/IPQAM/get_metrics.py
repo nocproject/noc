@@ -5,12 +5,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
 
 
 class Script(GetMetricsScript):
     name = "Sumavision.IPQAM.get_metrics"
+
+    rx_channel = re.compile(r"^noc::interface::\d+\/\d+.\d+$")
+    rx_group = re.compile(r"^noc::interface::\d+\/\d+.\d+.\d+.\d+$")
 
     @metrics(
         ["Interface | Load | In", "Interface | Status | Admin", "Interface | Status | Oper"],
@@ -54,8 +60,10 @@ class Script(GetMetricsScript):
     )
     def get_channel_bandwidth_u_metrics(self, metrics):
         for metric in metrics:
+            if metric.labels and not self.rx_channel.match(metric.labels[0]):
+                continue
             used_bandwidth = self.snmp.get(
-                "1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.18.1.1.%s" % metric.ifindex
+                f"1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.18.1.1.{metric.ifindex}"
             )
             self.set_metric(
                 id=(
@@ -78,11 +86,13 @@ class Script(GetMetricsScript):
     )
     def get_channel_bandwidth_p_metrics(self, metrics):
         for metric in metrics:
+            if metric.labels and not self.rx_channel.match(metric.labels[0]):
+                continue
             used_bandwidth = self.snmp.get(
-                "1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.18.1.1.%s" % metric.ifindex
+                f"1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.18.1.1.{metric.ifindex}"
             )
             capacity_bandwidth = self.snmp.get(
-                "1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.19.1.1.%s" % metric.ifindex
+                f"1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.19.1.1.{metric.ifindex}"
             )
             value = (100 / float(capacity_bandwidth.rstrip("Mbps"))) * float(
                 used_bandwidth.rstrip("Mbps")
@@ -106,8 +116,10 @@ class Script(GetMetricsScript):
     )
     def get_channel_udp_metrics(self, metrics):
         for metric in metrics:
+            if metric.labels and not self.rx_channel.match(metric.labels[0]):
+                continue
             udp_ports = self.snmp.get(
-                "1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.17.1.1.%s" % metric.ifindex
+                f"1.3.6.1.4.1.32285.2.2.10.3008.5.3.1.17.1.1.{metric.ifindex}"
             )
             self.set_metric(
                 id=(
@@ -129,6 +141,8 @@ class Script(GetMetricsScript):
     def get_group_metrics(self, metrics):
 
         for metric in metrics:
+            if metric.labels and not self.rx_group.match(metric.labels[0]):
+                continue
             channel, index = int(str(metric.ifindex)[0]), int(str(metric.ifindex)[1:])
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
@@ -165,6 +179,8 @@ class Script(GetMetricsScript):
     )
     def get_group_bitrate_in_metrics(self, metrics):
         for metric in metrics:
+            if metric.labels and not self.rx_group.match(metric.labels[0]):
+                continue
             channel, index = int(str(metric.ifindex)[0]), int(str(metric.ifindex)[1:])
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
@@ -194,6 +210,8 @@ class Script(GetMetricsScript):
     )
     def get_group_bitrate_out_metrics(self, metrics):
         for metric in metrics:
+            if metric.labels and not self.rx_group.match(metric.labels[0]):
+                continue
             channel, index = int(str(metric.ifindex)[0]), int(str(metric.ifindex)[1:])
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
