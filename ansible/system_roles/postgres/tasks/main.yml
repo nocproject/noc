@@ -1,6 +1,6 @@
 ---
 - name: search for postgres master
-  changed_when: "False"
+  changed_when: false
   add_host:
     name: "{{ inventory_hostname }}"
     groups: svc-postgres-master
@@ -11,7 +11,7 @@
     - config
 
 - name: set postgres master fact
-  changed_when: "False"
+  changed_when: false
   set_fact:
     postgres_master: "{{ postgres_listen_address }}"
     postgres_master_node: "{{ groups['svc-postgres-master'][0] }}"

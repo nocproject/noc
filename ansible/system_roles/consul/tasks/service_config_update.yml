@@ -13,7 +13,7 @@
   environment:
     ANSIBLE_JINJA2_NATIVE: true
   register: consul_key_response
-  changed_when: "False"
+  changed_when: false
   check_mode: "False"
 
 # if default value is unset provide default json

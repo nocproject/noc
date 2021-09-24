@@ -271,7 +271,8 @@ class Script(BaseScript):
             #
             if slot == 0 and slot_hints:
                 card = [x for x in slot_hints["subcards"] if x["type"] == part_no]
-                slot = card[0]["slot"]
+                if card:
+                    slot = card[0]["slot"]
             return "CARD", slot, part_no
         elif "Assembly Chassis" in descr:
             return "CHASSIS", slot, part_no

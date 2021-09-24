@@ -15,6 +15,7 @@ from tempfile import TemporaryFile
 
 # Third-party modules
 import xlsxwriter
+from pymongo import ReadPreference
 from django.http import HttpResponse
 
 # NOC modules
@@ -26,8 +27,6 @@ from noc.lib.app.reportdatasources.report_objectifacestypestat import ReportObje
 from noc.lib.app.reportdatasources.report_container import ReportContainer, ReportContainerData
 from noc.lib.app.reportdatasources.report_discoveryresult import ReportDiscoveryResult
 from noc.lib.app.reportdatasources.report_objectifacesstatusstat import ReportObjectIfacesStatusStat
-from noc.lib.app.reportdatasources.report_objectcaps import ReportObjectCaps
-from noc.lib.app.reportdatasources.report_objecthostname import ReportObjectsHostname1
 from noc.lib.app.reportdatasources.report_objectconfig import ReportObjectConfig
 from noc.lib.app.reportdatasources.report_objectattributes import ReportObjectAttributes
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
@@ -39,6 +38,8 @@ from noc.sa.models.profile import Profile
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.capability import Capability
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.platform import Platform
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.project.models.project import Project
@@ -299,7 +300,13 @@ class ReportObjectDetailApplication(ExtApplication):
             roa = iter(ReportObjectAttributes(mos_id))
         else:
             roa = None
-        hn = iter(ReportObjectsHostname1(mos_id))
+        hostname_map = {
+            val["object"]: val["hostname"]
+            for val in DiscoveryID._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1})
+            .sort("object")
+        }
         rc = iter(ReportObjectConfig(mos_id))
         segment_lookup = {}
         # ccc = iter(ReportObjectCaps(mos_id))
@@ -313,11 +320,12 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend([_("ADM_PATH1"), _("ADM_PATH1"), _("ADM_PATH1")])
         if "interface_type_count" in columns_filter:
             r[-1].extend(type_columns)
+        capslist = [
+            (str(key), value)
+            for key, value in Capability.objects.filter().order_by("name").scalar("id", "name")
+        ]
         if "object_caps" in columns_filter:
-            object_caps = ReportObjectCaps(mos_id)
-            caps_columns = list(object_caps.ATTRS.values())
-            ccc = iter(object_caps)
-            r[-1].extend(caps_columns)
+            r[-1].extend([x for __, x in capslist])
         if "object_labels" in columns_filter:
             r[-1].extend([_("OBJECT_LABELS")])
         if "sorted_labels" in columns_filter:
@@ -356,6 +364,7 @@ class ReportObjectDetailApplication(ExtApplication):
             version,
             labels,
             project,
+            caps,
         ) in (
             mos.values_list(
                 "id",
@@ -372,6 +381,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 "version",
                 "labels",
                 "project",
+                "caps",
             )
             .order_by("id")
             .iterator()
@@ -397,7 +407,7 @@ class ReportObjectDetailApplication(ExtApplication):
                             mo_id,
                             name,
                             address,
-                            next(hn)[0],
+                            hostname_map.get(mo_id, ""),
                             "managed" if is_managed else "unmanaged",
                             Profile.get_by_id(sa_profile),
                             o_profile,
@@ -431,7 +441,8 @@ class ReportObjectDetailApplication(ExtApplication):
             if "interface_type_count" in columns_filter:
                 r[-1].extend(next(iss)[0])
             if "object_caps" in columns_filter:
-                r[-1].extend(next(ccc)[0])
+                caps = {c["capability"]: c["value"] for c in caps}
+                r[-1].extend([caps.get(cid) for cid, __ in capslist])
             if "object_labels" in columns_filter:
                 r[-1].append(",".join(labels if labels else []))
             if "sorted_labels" in columns_filter:

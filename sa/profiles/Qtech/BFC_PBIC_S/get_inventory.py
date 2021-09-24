@@ -34,8 +34,9 @@ class Script(BaseScript):
         :return:
         """
         temp = self.snmp.get("1.3.6.1.3.55.1.2.1.0")
+        r = []
         if temp:
-            r = [
+            r += [
                 # temp
                 {
                     "name": "temp_out",

@@ -18,7 +18,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.inv.models.capability import Capability
 from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
 from noc.sa.models.useraccess import UserAccess
 
@@ -49,6 +49,70 @@ class ObjectListApplication(ExtApplication):
                 q &= sq
             else:
                 q &= d_Q(name__contains=query)
+        nq = {}
+        if request.method == "POST":
+            if self.site.is_json(request.META.get("CONTENT_TYPE")):
+                nq = self.deserialize(request.body)
+            else:
+                nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+        else:
+            nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        if "selector" in nq:
+            s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
+            if s:
+                q &= s.Q
+            del nq["selector"]
+
+        for cc in [part for part in nq if part.startswith("caps")]:
+            """
+            Caps: caps0=CapsID,caps1=CapsID:true....
+            cq - caps query
+            mq - main_query
+            caps0=CapsID - caps is exists
+            caps0=!CapsID - caps is not exists
+            caps0=CapsID:true - caps value equal True
+            caps0=CapsID:2~50 - caps value many then 2 and less then 50
+            c_ids = set(ObjectCapabilities.objects(cq).distinct('object'))
+            """
+
+            c = nq.pop(cc)
+            if not c:
+                continue
+
+            self.logger.info("[%s] Caps", c)
+            if "!" in c:
+                # @todo Добавить исключение (только этот) !ID
+                c_id = c[1:]
+                c_query = "nexists"
+            elif ":" not in c:
+                c_id = c
+                c_query = "exists"
+            else:
+                c_id, c_query = c.split(":", 1)
+            caps = Capability.get_by_id(c_id)
+            self.logger.info("[%s] Caps: %s", c, caps)
+
+            if "~" in c_query:
+                l, r = c_query.split("~")
+                # @todo Fix more/less
+                # if not l:
+                #     cond = {"$lte": int(r)}
+                # elif not r:
+                #     cond = {"$gte": int(l)}
+                # else:
+                #     cond = {"$lte": int(r), "$gte": int(l)}
+            elif c_query in ("false", "true"):
+                q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": c_query == "true"}])
+            elif c_query == "exists":
+                q &= d_Q(caps__contains=[{"capability": str(caps.id)}])
+                continue
+            elif c_query == "nexists":
+                q &= ~d_Q(caps__contains=[{"capability": str(caps.id)}])
+                continue
+            else:
+                value = caps.clean_value(c_query)
+                q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": value}])
+
         return self.model.objects.filter(q)
 
     def instance_to_dict(self, o, fields=None):
@@ -71,7 +135,7 @@ class ObjectListApplication(ExtApplication):
         ids = set()
         self.logger.debug("Cleaned query: %s" % nq)
         if "ids" in nq:
-            ids = {int(nid) for nid in nq["ids"]}
+            nq["id__in"] = list({int(nid) for nid in nq["ids"]})
             del nq["ids"]
 
         if "administrative_domain" in nq:
@@ -81,128 +145,16 @@ class ObjectListApplication(ExtApplication):
                 nq["administrative_domain__in"] = ad
         if "resource_group" in q:
             rgs = self.get_object_or_404(ResourceGroup, id=q["resource_group"])
-            if rgs:
-                if ids:
-                    # nq["id__in"] = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
-                    ids = ids.intersection(
-                        set(
-                            ManagedObject.objects.filter(
-                                effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
-                            ).values_list("id", flat=True)
-                        )
-                    )
-                else:
-                    ids = set(
-                        ManagedObject.objects.filter(
-                            effective_service_groups__overlap=ResourceGroup.get_nested_ids(rgs)
-                        ).values_list("id", flat=True)
-                    )
+            nq["effective_service_groups__overlap"] = ResourceGroup.get_nested_ids(rgs)
             del nq["resource_group"]
-        if "selector" in nq:
-            s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
-            if s:
-                if ids:
-                    # nq["id__in"] = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
-                    ids = ids.intersection(
-                        set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
-                    )
-                else:
-                    ids = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
-            del nq["selector"]
-        mq = None
-        c_in = []
-        c_nin = []
-        for cc in [part for part in nq if part.startswith("caps")]:
-            """
-            Caps: caps0=CapsID,caps1=CapsID:true....
-            cq - caps query
-            mq - main_query
-            caps0=CapsID - caps is exists
-            caps0=!CapsID - caps is not exists
-            caps0=CapsID:true - caps value equal True
-            caps0=CapsID:2~50 - caps value many then 2 and less then 50
-            c_ids = set(ObjectCapabilities.objects(cq).distinct('object'))
-            """
-            # @todo Убирать дубликаты (повторно не добавлять)
-
-            c = nq.pop(cc)
-            if not c:
-                continue
-            if not mq:
-                mq = m_Q()
-            self.logger.info("Caps: %s" % c)
-            if "!" in c:
-                # @todo Добавить исключение (только этот) !ID
-                c_id = c[1:]
-                c_query = "nexists"
-            elif ":" not in c:
-                c_id = c
-                c_query = "exists"
-            else:
-                c_id, c_query = c.split(":", 1)
-
-            try:
-                c_id = bson.ObjectId(c_id)
-            except bson.errors.InvalidId as e:
-                self.logger.warning(e)
-                continue
-            if "~" in c_query:
-                l, r = c_query.split("~")
-                if not l:
-                    cond = {"$lte": int(r)}
-                elif not r:
-                    cond = {"$gte": int(l)}
-                else:
-                    cond = {"$lte": int(r), "$gte": int(l)}
-                cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id, "value": cond}}})
-            elif c_query in ("false", "true"):
-                cq = m_Q(caps__match={"capability": c_id, "value": c_query == "true"})
-            elif c_query == "exists":
-                c_in += [c_id]
-                continue
-            elif c_query == "nexists":
-                c_nin += [c_id]
-                continue
-            else:
-                try:
-                    c_query = int(c_query)
-                    cq = m_Q(
-                        __raw__={
-                            "caps": {"$elemMatch": {"capability": c_id, "value": int(c_query)}}
-                        }
-                    )
-                except ValueError:
-                    cq = m_Q(
-                        __raw__={
-                            "caps": {
-                                "$elemMatch": {"capability": c_id, "value": {"$regex": c_query}}
-                            }
-                        }
-                    )
-            mq &= cq
-        if c_in:
-            mq &= m_Q(caps__capability__in=c_in)
-        if c_nin:
-            mq &= m_Q(caps__capability__nin=c_nin)
-        if mq:
-            c_ids = set(
-                el["_id"]
-                for el in ObjectCapabilities.objects(mq).values_list("object").as_pymongo()
-            )
-            self.logger.info("Caps objects count: %d" % len(c_ids))
-            ids = ids.intersection(c_ids) if ids else c_ids
-
         if "addresses" in nq:
             if isinstance(nq["addresses"], list):
                 nq["address__in"] = nq["addresses"]
             else:
                 nq["address__in"] = [nq["addresses"]]
             del nq["addresses"]
-        if ids:
-            nq["id__in"] = list(ids)
 
         xf = list((set(nq.keys())) - set(f.name for f in self.model._meta.get_fields()))
-        # @todo move validation fields
         for x in xf:
             if x in ["address__in", "id__in", "administrative_domain__in"]:
                 continue

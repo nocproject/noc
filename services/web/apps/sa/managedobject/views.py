@@ -24,7 +24,7 @@ from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.profile import Profile
 from noc.sa.models.cpestatus import CPEStatus
-from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.inv.models.capability import Capability
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -850,16 +850,16 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         r = []
-        oc = ObjectCapabilities.objects.filter(object=o).first()
-        if oc:
-            for c in oc.caps:
+        if o.caps:
+            for c in o.caps:
+                capability = Capability.get_by_id(c["capability"])
                 r += [
                     {
-                        "capability": c.capability.name,
-                        "description": c.capability.description,
-                        "type": c.capability.type,
-                        "value": c.value,
-                        "source": c.source,
+                        "capability": capability.name,
+                        "description": capability.description,
+                        "type": capability.type,
+                        "value": c["value"],
+                        "source": c["source"],
                     }
                 ]
         return sorted(r, key=lambda x: x["capability"])

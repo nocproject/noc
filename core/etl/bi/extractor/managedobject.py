@@ -19,12 +19,10 @@ from noc.core.text import ch_escape
 from noc.core.etl.bi.stream import Stream
 from noc.core.clickhouse.connect import connection
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.capability import Capability
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.fm.models.uptime import Uptime
 from noc.fm.models.reboot import Reboot
@@ -74,7 +72,6 @@ class ManagedObjectsExtractor(BaseExtractor):
         x_data = [
             self.get_interfaces(),
             self.get_links(),
-            self.get_caps(),
             self.get_n_subs_n_serv(),
             self.get_reboots(stats_start, self.stop),
             self.get_availability(stats_start, self.stop),
@@ -122,6 +119,8 @@ class ManagedObjectsExtractor(BaseExtractor):
                 # subscribers
                 # services
             }
+            caps = mo.get_caps()
+            r.update({self.CAPS_MAP[c]: int(caps.get(c, False)) for c in self.CAPS_MAP})
             # Apply external data
             for data in x_data:
                 d = data.get(mo.id)
@@ -179,25 +178,6 @@ class ManagedObjectsExtractor(BaseExtractor):
         )
         return {d["_id"]: {"n_interfaces": d["total"]} for d in r}
 
-    def get_caps(self):
-        # name -> id map
-        caps = {
-            self.CAPS_MAP[d["name"]]: d["_id"]
-            for d in Capability._get_collection().find(
-                {"name": {"$in": list(self.CAPS_MAP)}}, {"_id": 1, "name": 1}
-            )
-        }
-        # object -> caps
-        add_expr = {c: {"$in": [caps[c], "$caps.capability"]} for c in caps}
-        project_expr = {c: 1 for c in caps}
-        project_expr["_id"] = 1
-        return {
-            d["_id"]: {x: d[x] for x in d if x != "_id"}
-            for d in ObjectCapabilities._get_collection().aggregate(
-                [{"$addFields": add_expr}, {"$project": project_expr}]
-            )
-        }
-
     @staticmethod
     def get_mo_sn():
         """
@@ -236,7 +216,9 @@ class ManagedObjectsExtractor(BaseExtractor):
         outages = defaultdict(list)
         td = (d - b).total_seconds()
         # q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
-        q = (Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)) & Q(start__lt=d)
+        q = (Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False) | Q(stop=None)) & Q(
+            start__lt=d
+        )
         for o in Outage.objects.filter(q):
             start = max(o.start, b)
             stop = o.stop if (o.stop and o.stop < d) else d

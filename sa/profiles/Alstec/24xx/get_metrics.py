@@ -37,7 +37,10 @@ class Script(GetMetricsScript):
 
     @metrics(["Memory | Load | 1min"], volatile=False, access="C")  # CLI version
     def get_memory_metrics(self, metrics):
-        v = self.cli("show resources")
+        try:
+            v = self.cli("show resources")
+        except self.CLISyntaxError:
+            return
         r = {}
         column = None
         for line in v.splitlines():
@@ -97,6 +100,9 @@ class Script(GetMetricsScript):
                 continue
             v = self.profile.parse_kv_out(v)
             for m, v in v.items():
+                if v == "N/A" or v.startswith("No"):
+                    # Not connected sensor
+                    continue
                 m = m.lower()
                 if m.startswith("temperature"):
                     self.set_metric(

@@ -30,7 +30,9 @@ class Script(BaseScript):
             result += [{"interface": "st", "admin_status": True, "oper_status": True}]
         for index in self.profile.PORT_TYPE.keys():
             s_status = 0
-            status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % index)
+            status = self.snmp.get(f"1.3.6.1.4.1.41752.5.15.1.{index}.0")
+            if status is None:
+                continue
             if index == 1 and int(status) == 0:
                 s_status = 1
             elif index == 2:

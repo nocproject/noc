@@ -27,15 +27,17 @@ class Script(BaseScript):
             s_status = False
             battery = False
             descr = self.snmp.get("1.3.6.1.3.55.1.3.1.2.%s" % value)
-            if descr in [0, 3]:
+            try:
                 status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % value)
+            except self.snmp.SNMPError:
+                status = None
+            if descr in [0, 3]:
                 invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % value)
                 if invert == 0 and status == 0:
                     s_status = True
                 elif invert == 1 and status == 1:
                     s_status = True
             elif descr in [9, 10]:
-                status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % value)
                 invert = self.snmp.get("1.3.6.1.3.55.1.3.1.3.%s" % value)
                 if descr == 9:
                     if invert == 0 and status == 0:
@@ -55,9 +57,8 @@ class Script(BaseScript):
                         s_status = True
                     elif battery and invert == 1 and status == 1:
                         s_status = True
-            else:
-                if status > 0:
-                    s_status = True
+            elif status:
+                s_status = True
             result += [
                 {
                     "interface": "%s/%s" % (descr, value + 1) if descr == 0 else descr,
