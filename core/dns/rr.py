@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # RR helper class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# python modules
+import string
 
 # NOC modules
 from .encoding import to_idna
@@ -96,4 +99,9 @@ class RR(object):
         try:
             return int(v)
         except ValueError:
-            return v
+            return int(v, base=16) if RR.is_hex(v) else v
+
+    @staticmethod
+    def is_hex(s):
+        hex_digits = set(string.hexdigits)
+        return all(c in hex_digits for c in s)
