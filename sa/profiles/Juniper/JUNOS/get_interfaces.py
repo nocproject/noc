@@ -73,6 +73,13 @@ class Script(BaseScript):
             return False
         return True
 
+    def clean_iftype(self, ifname: str, ifindex=None) -> str:
+        if self.is_srx_6xx and ifname.startswith("reth"):
+            return "physical"
+        elif self.is_work_em and ifname.startswith("em"):
+            return "physical"
+        return self.profile.get_interface_type(ifname)
+
     def execute_cli(self):
         untagged = {}
         tagged = {}
@@ -99,28 +106,7 @@ class Script(BaseScript):
             if not self.filter_interface(0, name, True):
                 continue
             # Detect interface type
-            if name.startswith("lo"):
-                iftype = "loopback"
-            elif name.startswith(("fxp", "me")):
-                iftype = "management"
-            elif name.startswith(("ae", "reth", "fab", "swfab")):
-                iftype = "aggregated"
-            elif name.startswith(("vlan", "vme")):
-                iftype = "SVI"
-            elif name.startswith("irb"):
-                iftype = "SVI"
-            elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
-                iftype = "physical"
-            elif name.startswith(("gr", "ip", "st")):
-                iftype = "tunnel"
-            elif name.startswith("em"):
-                if self.is_work_em:
-                    iftype = "physical"
-                else:
-                    iftype = "management"
-            else:
-                iftype = "unknown"
-
+            iftype = self.clean_iftype(name)
             # Get interface parameters
             iface = {
                 "name": name,
