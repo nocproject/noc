@@ -70,7 +70,7 @@ class IGetInventory(BaseInterface):
                     # Optional description
                     "description": StringParameter(required=False),
                     # MeasurementUnit Name
-                    "measurement": StringParameter(default="Unknown"),
+                    "measurement": StringParameter(default="Scalar"),
                     # Collected hints
                     # OID for collecting by SNMP
                     "snmp_oid": OIDParameter(required=False),

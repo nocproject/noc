@@ -261,7 +261,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             return {m: match(c, matchers[m]) for m in matchers}
 
         # Match context
-        # @todo: Add capabilities
         ctx = self.version or {}
         if self.capabilities:
             ctx["caps"] = self.capabilities

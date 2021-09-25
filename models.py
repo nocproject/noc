@@ -399,6 +399,7 @@ LABEL_MODELS = {
     "inv.ResourceGroup": "enable_resourcegroup",
     "inv.Sensor": "enable_sensor",
     "inv.SensorProfile": "enable_sensorprofile",
+    "inv.Interface": "enable_interface",
     #
     "crm.Subscriber": "enable_subscriber",
     "crm.SubscriberProfile": "enable_subscriberprofile",
