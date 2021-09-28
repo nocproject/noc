@@ -1,9 +1,14 @@
-# VC Filter
+# Фильтр VC (VC Filter)
 
-`VC Filter` is named VLAN filters which can be reused in many places
+Именованный фильтр VLANов (`VC Filter`) используется как фильтр вланов, в следующих настройках:
 
-## Expression Syntax
-`VC Filter` expression syntax:
+* Правила классификации интерфейсов [Interface Classification Rule](../interface/index.md#Interface Classification)
+* Предоставляет категорию **vcfilter** в [Match Labels](../label/index.md#Match Labels)
+* В правилах трансляции вланов Сегмента сети [Network Segment](../network-segment/index.md#VLAN Translation)
+
+## Синтакис
+`VC Filter` синтаксис выражения:
+
 ```
 <vcfilter> ::= <item> [',' <vcfilter>]
 <item> ::= <vlan> | <range>
@@ -11,9 +16,18 @@
 <range> ::= <vlan> '-' <vlan>
 ```
 
-## ## Examples
-```
-1
-1-100
-1-100,105,200-210
-```
+Примеры:
+
+* `1-4095` - любой влан
+* `100-200,300,1000` - подпадают номера VLANов с 100 до 200 (включительно), а также 300 и 1000
+* `1` - только первый VLAN
+
+## Настройки
+
+Справочник меток расположен в разделе `VC (VC)` -> `Setup (Настройки)` -> `Фильтр VC (VC Filter)`.
+
+![Форма редактирования VC Filter](images/vc-filter-any-vlan-form.png)
+
+* **Имя** (`Name`) - наименование метки
+* Описание (`Description`) - описание
+* **Выражение** (`Expression`) - выражение набора влан
