@@ -19,7 +19,6 @@
   consul_kv:
     key: "{{ consul_service_key }}"
     value: "{{ service_tmpl | to_nice_json }}"
-    cas: "{{ consul_key_response.index }}"
   vars:
     service_tmpl:
       Holders: []
