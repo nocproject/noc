@@ -22,7 +22,8 @@
             "name": "dispose",
             "condition": "True",
             "action": "clear",
-            "alarm_class__name": "NOC | Managed Object | Ping Failed"
+            "alarm_class__name": "NOC | Managed Object | Ping Failed",
+            "stop_disposition": false
         },
         {
             "name": "dispose",

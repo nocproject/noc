@@ -350,6 +350,7 @@ class EventClass(Document):
                 lll += ['            "action": "%s"' % q(d.action)]
                 if d.alarm_class:
                     lll += ['            "alarm_class__name": "%s"' % q(d.alarm_class.name)]
+                lll += ['            "stop_disposition": "%s"' % q(d.stop_disposition)]
                 if d.managed_object:
                     lll += ['            "managed_object": "%s"' % q(d.managed_object)]
                 ll += [",\n".join(lll)]
