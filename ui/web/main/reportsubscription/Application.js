@@ -33,7 +33,7 @@ Ext.define("NOC.main.reportsubscription.Application", {
                 {
                     text: __("Report"),
                     dataIndex: "report",
-                    width: 150,
+                    width: 250,
                     renderer: NOC.render.Lookup("report")
                 },
                 {
@@ -66,6 +66,7 @@ Ext.define("NOC.main.reportsubscription.Application", {
                     name: "report",
                     xtype: "main.ref.report.LookupField",
                     fieldLabel: __("Report"),
+                    uiStyle: "medium",
                     allowBlank: false
                 },
                 {
@@ -78,6 +79,7 @@ Ext.define("NOC.main.reportsubscription.Application", {
                     name: "notification_group",
                     xtype: "main.notificationgroup.LookupField",
                     fieldLabel: __("Notification Group"),
+                    uiStyle: "medium",
                     allowBlank: true
                 }
             ]
