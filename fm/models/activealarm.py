@@ -719,7 +719,7 @@ class ActiveAlarm(Document):
                     {
                         "service": total_services,
                         "subscriber": total_subscribers,
-                        "objects": total_objects,
+                        "object": total_objects,
                     }
                 )
                 op = {
