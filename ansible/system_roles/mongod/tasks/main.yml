@@ -5,7 +5,8 @@
     group: svc-mongo-primary
     host: "{{ item }}"
   with_items: "{{ groups['svc-mongod-exec'] }}"
-  when: "'bootstrap' in hostvars[item]['mongod_power']"
+  when:
+    - "'bootstrap' in hostvars[item]['mongod_power']"
 
 - name: Create mongod user
   user:
