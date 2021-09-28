@@ -21,8 +21,15 @@ class ReportSubscriptionApplication(ExtDocApplication):
     menu = [_("Setup"), _("Report Subscription")]
     model = ReportSubscription
 
-    def field_report__label(self, o):
-        return self.get_reports_map()[o.report]
+    def bulk_field_report_label(self, data):
+        """
+        Apply report_label field
+        :param data:
+        :return:
+        """
+        for x in data:
+            x["report__label"] = self.get_reports_map()[x["report"]]
+        return data
 
     def get_reports_map(self):
         if not hasattr(self, "_reports_map"):
@@ -30,6 +37,3 @@ class ReportSubscriptionApplication(ExtDocApplication):
             for report_id, r in site.iter_predefined_reports():
                 self._reports_map[report_id] = r.title
         return self._reports_map
-
-    def instance_to_dict(self, o, fields=None, nocustom=False):
-        return super().instance_to_dict(o, fields=fields, nocustom=True)
