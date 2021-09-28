@@ -16,7 +16,7 @@ from noc.ip.models.address import Address
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.validators import is_fqdn
-from noc.core.ip import IP, IPv4, PrefixDB
+from noc.core.ip import IP, PrefixDB
 
 
 DiscoveredAddress = namedtuple(
@@ -201,7 +201,7 @@ class AddressCheck(DiscoveryCheck):
 
         def get_vpn_id(ip):
             try:
-                return vpn_db[IPv4(ip)]
+                return vpn_db[IP.prefix(ip)]
             except KeyError:
                 pass
             if self.object.vrf:
@@ -224,7 +224,7 @@ class AddressCheck(DiscoveryCheck):
             return []
         vpn_db = PrefixDB()
         for a in addresses:
-            vpn_db[IPv4(a["address"]).first] = a["vpn_id"]
+            vpn_db[IP.prefix(a["address"]).first] = a["vpn_id"]
         #
         self.logger.debug("Getting DHCP addresses")
         leases = self.object.scripts.get_dhcp_binding()
