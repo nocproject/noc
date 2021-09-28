@@ -26,7 +26,11 @@ class LinkedPoP(object):
         Yield remote pop, layer
         """
         for c, remote, _ in self.pop.get_genderless_connections("links"):
-            layer = "pop_links%d" % (min(level, remote.get_data("pop", "level")) // 10)
+            remote_level = remote.get_data("pop", "level")
+            if not remote_level:
+                logger.error("[%s|%s] Object has not PoP level. Skipping", remote.id, remote)
+                continue
+            layer = "pop_links%d" % (min(level, remote_level) // 10)
             yield c, remote, layer
 
     def get_pop_objects(self, root=None):
