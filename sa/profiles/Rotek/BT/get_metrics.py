@@ -46,7 +46,9 @@ class Script(GetMetricsScript):
                 continue
             port = metric.labels[0].rsplit("::", 1)[-1]
             if "temp" in port:
-                value = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
+                value = self.snmp.get(f"1.3.6.1.4.1.41752.5.15.1.{metric.ifindex}.0")
+                if value is None:
+                    continue
                 if is_float(value):
                     self.set_metric(
                         id=("Environment | Temperature", metric.labels),
@@ -58,7 +60,9 @@ class Script(GetMetricsScript):
     @metrics(["Environment | Voltage"], volatile=False, access="S")  # SNMP version
     def get_voltage(self, metrics):
         for metric in metrics:
-            value = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % metric.ifindex)
+            value = self.snmp.get(f"1.3.6.1.4.1.41752.5.15.1.{metric.ifindex}.0")
+            if value is None:
+                continue
             port = metric.labels[0].rsplit("::", 1)[-1]
             self.set_metric(
                 id=("Environment | Voltage", metric.labels),
