@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW8200.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,7 +29,9 @@ class Script(BaseScript):
         r"administrative status is (?P<admin_status>UP|DOWN)",
         re.MULTILINE,
     )
+    # Leave this line, becouse we are not have CLI output examples
     rx_descr = re.compile(r"^\s+Description is (?P<descr>.+),", re.MULTILINE)
+    rx_descr2 = re.compile(r"^\s+Description is \"(?P<descr>.+)\"", re.MULTILINE)
     rx_hw_mac = re.compile(
         r"^\s+Hardware is (?P<iftype>\S+), MAC address is (?P<mac>\S+)", re.MULTILINE
     )
@@ -76,8 +78,8 @@ class Script(BaseScript):
 
     def execute_cli(self):
         r = []
-        for l in self.cli("show interface").split("\n\n"):
-            match = self.rx_interface.search(l)
+        for ll in self.cli("show interface").split("\n\n"):
+            match = self.rx_interface.search(ll)
             if not match:
                 continue
             ifname = match.group("ifname")
@@ -92,7 +94,7 @@ class Script(BaseScript):
                 "oper_status": match.group("oper_status") == "UP",
                 "enabled_afi": [],
             }
-            match = self.rx_hw_mac.search(l)
+            match = self.rx_hw_mac.search(ll)
             if ifname.startswith("loopback"):  # loopback has no iftype
                 iface["type"] = "loopback"
             elif ifname.startswith("NULL"):  # NULL has iftype `unknown`
@@ -109,21 +111,26 @@ class Script(BaseScript):
                 match = self.rx_vlan_id.search(ifname)
                 if match:
                     sub["vlan_ids"] = [match.group("vlan_id")]
-            match = self.rx_descr.search(l)
+            match = self.rx_descr.search(ll)
             if match:
-                iface["description"] = match.group("descr")
-                sub["description"] = match.group("descr")
-            match = self.rx_mtu.search(l)
+                iface["description"] = match.group("descr").replace('"', "")
+                sub["description"] = match.group("descr").replace('"', "")
+            else:
+                match = self.rx_descr2.search(ll)
+                if match:
+                    iface["description"] = match.group("descr")
+                    sub["description"] = match.group("descr")
+            match = self.rx_mtu.search(ll)
             if match:
                 iface["mtu"] = match.group("mtu")
                 sub["mtu"] = match.group("mtu")
-            for match in self.rx_ipv4.finditer(l):
+            for match in self.rx_ipv4.finditer(ll):
                 if "IPv4" not in sub["enabled_afi"]:
                     sub["enabled_afi"] += ["IPv4"]
                 if "ipv4_addresses" not in sub:
                     sub["ipv4_addresses"] = []
                 sub["ipv4_addresses"] += [match.group("ipv4")]
-            for match in self.rx_ipv6.finditer(l):
+            for match in self.rx_ipv6.finditer(ll):
                 if "IPv6" not in sub["enabled_afi"]:
                     sub["enabled_afi"] += ["IPv6"]
                 if "ipv6_addresses" not in sub:
