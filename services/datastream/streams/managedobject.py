@@ -310,6 +310,9 @@ class ManagedObjectDataStream(DataStream):
         r = []
         for link in links:
             for i in link["interfaces"]:
+                if i not in ifcache:
+                    # Unknown interface (perhaps already deleted)
+                    continue
                 ro, rname = ifcache[i]
                 if ro == iface["managed_object"]:
                     continue

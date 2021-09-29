@@ -599,6 +599,7 @@ class ManagedObject(NOCModel):
             yield "managedobject", self.id
         if config.datastream.enable_cfgping and changed_fields.intersection(
             {
+                "id",  # Create object
                 "name",
                 "bi_id",
                 "is_managed",
@@ -613,6 +614,7 @@ class ManagedObject(NOCModel):
             yield "cfgping", self.id
         if config.datastream.enable_cfgsyslog and changed_fields.intersection(
             {
+                "id",  # Create object
                 "name",
                 "bi_id",
                 "is_managed",
@@ -629,6 +631,7 @@ class ManagedObject(NOCModel):
             yield "cfgsyslog", self.id
         if config.datastream.enable_cfgtrap and changed_fields.intersection(
             {
+                "id",  # Create object
                 "name",
                 "bi_id",
                 "is_managed",
