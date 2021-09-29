@@ -561,7 +561,8 @@ class ActiveAlarm(Document):
                 raise ValueError("Loop detected: %s" % (str(x) for x in path))
             path = path + [alarm_id]
             root = alarms[alarm_id].get("root")
-            if not root:
+            if not root or root not in alarms:
+                # root not in alarms - Root alarm already closed
                 return path
             return get_root_path(root, path)
 
