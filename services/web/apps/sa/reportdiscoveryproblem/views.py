@@ -121,9 +121,7 @@ class ReportFilterApplication(SimpleReport):
 
     predefined_reports = {
         pname: PredefinedReport(_("Problem Discovery (pool)") + f": {pname}", {"pool": str(pid)})
-        for pid, pname in (
-            list(Pool.objects.order_by("name").scalar("id", "name")) + [(None, "ALL")]
-        )
+        for pid, pname in (list(Pool.objects.order_by("name").scalar("id", "name")) + [("", "ALL")])
     }
 
     def get_data(
