@@ -37,19 +37,19 @@ class Script(BaseScript):
 
     def execute_snmp(self):
         try:
-            platform = self.snmp.get("1.2.840.10036.3.1.2.1.3.5")
-            version = self.snmp.get("1.2.840.10036.3.1.2.1.4.5")
-            serial = self.snmp.get(
-                "1.2.840.10036.2.1.1.1.5", display_hints={"1.2.840.10036.2.1.1.1.5": render_mac}
+            platform = self.snmp.getnext("1.2.840.10036.3.1.2.1.3", only_first=True)
+            if platform:
+                _, platform = platform[0]
+            version = self.snmp.getnext("1.2.840.10036.3.1.2.1.4", only_first=True)
+            if version:
+                _, version = version[0]
+            serial = self.snmp.getnext(
+                "1.2.840.10036.2.1.1.1",
+                only_first=True,
+                display_hints={"1.2.840.10036.2.1.1.1": render_mac},
             )
-        except self.snmp.SNMPError as e:
-            # NO_SUCH_NAME
-            if e.code == 2:
-                platform = self.snmp.get("1.2.840.10036.3.1.2.1.3.8")
-                version = self.snmp.get("1.2.840.10036.3.1.2.1.4.8")
-                serial = self.snmp.get(
-                    "1.2.840.10036.2.1.1.1.8", display_hints={"1.2.840.10036.2.1.1.1.5": render_mac}
-                )
+            if serial:
+                _, serial = serial[0]
         except self.snmp.TimeOutError:
             raise self.UnexpectedResultError
 

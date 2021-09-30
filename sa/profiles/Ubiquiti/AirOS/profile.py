@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.snmp.render import render_mac
 
 
 class Profile(BaseProfile):
@@ -17,6 +18,8 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?(\.v(?P<version>\S+))?#"
     command_more = "a"
     config_volatile = [r"^%.*?$"]
+
+    snmp_display_hints = {"1.2.840.10036.2.1.1.1": render_mac}
 
     INTERFACE_TYPES = {
         1: "other",
