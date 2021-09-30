@@ -16,4 +16,4 @@ class Script(BaseScript):
 
     name = "Sumavision.IPQAM.get_uptime"
 
-    UPTIME_MULTIPLIER = 800.0
+    UPTIME_MULTIPLIER = 10000.0

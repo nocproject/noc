@@ -15,4 +15,4 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    SNMP_GET_OIDS = {"SNMP": ["1.2.840.10036.1.1.1.1.5", "1.2.840.10036.2.1.1.1.5"]}
+    SNMP_GETNEXT_OIDS = {"SNMP": ["1.2.840.10036.2.1.1.1"]}
