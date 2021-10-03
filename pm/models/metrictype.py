@@ -99,7 +99,6 @@ class MetricType(Document):
     scale = PlainReferenceField(Scale)
     # Measure name, like 'kbit/s'
     # Compatible to Grafana
-    # @todo: Should we remove id?
     measure = StringField()
     # Agent mappings
     agent_mappings = ListField(EmbeddedDocumentField(AgentMappingItem))

@@ -104,22 +104,19 @@ Ext.define("NOC.pm.metrictype.Application", {
                     uiStyle: "medium"
                 },
                 {
-                    name: "measure",
-                    xtype: "textfield",
-                    fieldLabel: __("Measure"),
-                    allowBlank: false,
-                    uiStyle: "medium"
-                },
-                {
                   name: "units",
                   xtype: "pm.measurementunits.LookupField",
                   fieldLabel: __("Metric Measurement Units"),
+                  valueField: "name",
+                  value: "Scalar",
                   allowBlank: false
                 },
                 {
                   name: "scale",
                   xtype: "pm.scale.LookupField",
                   fieldLabel: __("Metric Scale"),
+                  valueField: "name",
+                  value: "-",
                   allowBlank: false
                 },
                 {

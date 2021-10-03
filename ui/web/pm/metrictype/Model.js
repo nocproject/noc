@@ -37,10 +37,6 @@ Ext.define("NOC.pm.metrictype.Model", {
             persist: false
         },
         {
-            name: "measure",
-            type: "string"
-        },
-        {
             name: "field_name",
             type: "string"
         },
@@ -50,7 +46,8 @@ Ext.define("NOC.pm.metrictype.Model", {
         },
         {
             name: "units",
-            type: "string"
+            type: "string",
+            defaultValue: "Scalar"
         },
         {
             name: "units__label",
