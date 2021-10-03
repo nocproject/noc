@@ -19,3 +19,5 @@ class ScaleApplication(ExtDocApplication):
     title = "Scale"
     menu = [_("Setup"), _("Scale")]
     model = Scale
+    query_condition = "icontains"
+    query_fields = ["name", "description"]

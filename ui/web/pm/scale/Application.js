@@ -61,7 +61,7 @@ Ext.define("NOC.pm.scale.Application", {
                 {
                     name: "code",
                     xtype: "textfield",
-                    fieldLabel: __("Name"),
+                    fieldLabel: __("Code"),
                     uiStyle: "medium",
                     allowBlank: false
                 },
