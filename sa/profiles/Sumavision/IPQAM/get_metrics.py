@@ -15,8 +15,9 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metr
 class Script(GetMetricsScript):
     name = "Sumavision.IPQAM.get_metrics"
 
+    rx_iface = re.compile(r"^noc::interface::Gb\S+$")
     rx_channel = re.compile(r"^noc::interface::\d+\/\d+.\d+$")
-    rx_group = re.compile(r"^noc::interface::\d+\/\d+.\d+.\d+.\d+$")
+    rx_group = re.compile(r"^noc::interface::(\d+)\/\d+.\d+.\d+.\d+$")
 
     @metrics(
         ["Interface | Load | In", "Interface | Status | Admin", "Interface | Status | Oper"],
@@ -26,25 +27,26 @@ class Script(GetMetricsScript):
     )
     def get_interface_metrics(self, metrics):
         for metric in metrics:
-            ifname = self.snmp.get("1.3.6.1.4.1.32285.2.2.10.3008.4.2.1.11.1.1.%s" % metric.ifindex)
-            istatus = self.snmp.get(
-                "1.3.6.1.4.1.32285.2.2.10.3008.4.2.1.10.1.1.%s" % metric.ifindex
-            )
-            load = self.snmp.get("1.3.6.1.4.1.32285.2.2.10.3008.4.5.1.3.1.%s" % metric.ifindex)
+            # if metric.labels and not (self.rx_channel.match(metric.labels[0]) or self.rx_iface.match(metric.labels[0])):
+            if metric.labels and not self.rx_iface.match(metric.labels[0]):
+                continue
+            # ifname = self.snmp.get(f"1.3.6.1.4.1.32285.2.2.10.3008.4.2.1.11.1.1.{metric.ifindex}")
+            istatus = self.snmp.get(f"1.3.6.1.4.1.32285.2.2.10.3008.4.2.1.10.1.1.{metric.ifindex}")
+            load = self.snmp.get(f"1.3.6.1.4.1.32285.2.2.10.3008.4.5.1.3.1.{metric.ifindex}")
             self.set_metric(
-                id=("Interface | Status | Admin", [f"noc::interface::{ifname}"]),
+                id=("Interface | Status | Admin", metric.labels),
                 value=1 if istatus not in ["Shut Down", "linkError"] else 0,
                 type="gauge",
                 scale=1,
             )
             self.set_metric(
-                id=("Interface | Status | Oper", [f"noc::interface::{ifname}"]),
+                id=("Interface | Status | Oper", metric.labels),
                 value=1 if istatus not in ["Shut Down", "Link Error"] else 0,
                 type="gauge",
                 scale=1,
             )
             self.set_metric(
-                id=("Interface | Load | In", [f"noc::interface::{ifname}"]),
+                id=("Interface | Load | In", metric.labels),
                 value=float(load.rstrip("Mbps")),
                 type="gauge",
                 scale=1000000,
@@ -143,7 +145,11 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if metric.labels and not self.rx_group.match(metric.labels[0]):
                 continue
-            channel, index = int(str(metric.ifindex)[0]), int(str(metric.ifindex)[1:])
+            (group_num,) = self.rx_group.match(metric.labels[0]).groups()
+            # len needed for group num more than 10
+            channel, index = int(str(metric.ifindex)[: len(group_num)]), int(
+                str(metric.ifindex)[len(group_num) :]
+            )
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
             )
@@ -181,7 +187,11 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if metric.labels and not self.rx_group.match(metric.labels[0]):
                 continue
-            channel, index = int(str(metric.ifindex)[0]), int(str(metric.ifindex)[1:])
+            (group_num,) = self.rx_group.match(metric.labels[0]).groups()
+            # len needed for group num more than 10
+            channel, index = int(str(metric.ifindex)[: len(group_num)]), int(
+                str(metric.ifindex)[len(group_num) :]
+            )
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
             )
@@ -212,13 +222,15 @@ class Script(GetMetricsScript):
         for metric in metrics:
             if metric.labels and not self.rx_group.match(metric.labels[0]):
                 continue
-            channel, index = int(str(metric.ifindex)[0]), int(str(metric.ifindex)[1:])
-            mname = self.snmp.get(
-                "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
+            (group_num,) = self.rx_group.match(metric.labels[0]).groups()
+            # len needed for group num more than 10
+            channel, index = int(str(metric.ifindex)[: len(group_num)]), int(
+                str(metric.ifindex)[len(group_num) :]
             )
+            mname = self.snmp.get(f"1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.{channel}.{index}")
             try:
                 input = self.snmp.get(
-                    "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.24.1.1.%s.%s" % (channel, index)
+                    f"1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.24.1.1.{channel}.{index}"
                 )
                 input = float(input.rstrip("Mbps"))
             except self.snmp.SNMPError:

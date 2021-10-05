@@ -34,6 +34,7 @@ class Script(BaseScript):
         "00:00:00:00:00:00",  # Empty MAC
         "00:01:02:03:04:00",  # Very Smart programmer
         "00:01:02:03:04:05",  # Very Smart+ programmer
+        "00:02:03:04:05:06",  # Ubiquity Programmers
         "FF:FF:FF:FF:FF:FF",  # Broadcast
     }
 
