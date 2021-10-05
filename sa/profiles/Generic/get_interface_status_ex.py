@@ -68,6 +68,7 @@ class Script(BaseScript):
         else:
             for oid, v in self.snmp.getnext(
                 oid,
+                timeout=self.get_snmp_ifstatus_get_timeout(),
                 max_repetitions=self.get_max_repetitions(),
                 max_retries=self.get_getnext_retires(),
             ):
