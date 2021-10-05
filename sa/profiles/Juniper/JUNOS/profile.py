@@ -42,6 +42,7 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "mode", "server"),
         ("hints", "protocols", "ntp", "version", "3"),
     ]
+    config_applicators = ["IfaceTypeJunosApplicator"]
 
     collators = ["noc.core.confdb.collator.ifpath.IfPathCollator"]
 
@@ -51,6 +52,7 @@ class Profile(BaseProfile):
         "is_olive": {"platform": {"$regex": "olive"}},
         "is_work_em": {"platform": {"$regex": "vrr|csrx"}},
         "is_gte_16": {"version": {"$gte": "16"}},
+        "is_srx_6xx": {"platform": {"$regex": r"srx6.\d+"}},
     }
 
     rx_ver = re.compile(r"\d+")
@@ -181,9 +183,6 @@ class Profile(BaseProfile):
         elif name.startswith(("gr", "ip", "st")):
             return "tunnel"
         elif name.startswith("em"):
-            if cls.is_work_em:
-                return "physical"
-            else:
-                return "management"
+            return "management"
         else:
             return "unknown"
