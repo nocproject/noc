@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -94,10 +94,13 @@ class Profile(BaseProfile):
         "89": "MES-2308P",
         "92": "MES-2324P",
         "98": "MES-3508P",
+        # "103": "MES-5448", // see MES5448 profile
         "112": "MES-2308R",
         "116": "MES-3308F",
         "120": "MES-3348F",
         "136": "MES-5316A",
+        "159": "MES-2408CP",
+        "163": "MES-2408B",
     }
 
     def get_platform(self, s):

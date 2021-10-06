@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -36,7 +36,10 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         try:
             platform = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"], cached=True)
-            platform = platform.split(".")[8]
+            try:
+                platform = platform.split(".")[8]
+            except IndexError:
+                platform = platform.split(".")[-1]
             platform = self.profile.get_platform(platform.split(")")[0])
             version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992", cached=True)
             bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.67108992", cached=True)
