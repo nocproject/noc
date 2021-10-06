@@ -14,12 +14,14 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.core.TagsField",
         "NOC.core.tagfield.Tagfield",
         "NOC.core.label.LabelField",
+        "NOC.core.label.LabelDisplay",
         "NOC.core.PasswordField",
         "NOC.sa.administrativedomain.TreeCombo",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.managedobject.Model",
         "NOC.sa.managedobject.AttributesModel",
+        "NOC.sa.managedobject.CapabilitiesModel",
         "NOC.sa.managedobject.LookupField",
         "NOC.sa.managedobject.SchemeLookupField",
         "NOC.sa.profile.LookupField",
@@ -430,6 +432,28 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     query: {
                                         "enable_managedobject": true
                                     }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Effective Labels"),
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
+                    defaults: fieldSetDefaults,
+                    collapsible: true,
+                    collapsed: false,
+                    items: [
+                        {
+                            xtype: "container",
+                            items: [
+                                {
+                                    name: "effective_labels",
+                                    xtype: "labeldisplay",
+                                    fieldLabel: __("Effective"),
+                                    allowBlank: true,
                                 }
                             ]
                         }
@@ -1653,25 +1677,61 @@ Ext.define("NOC.sa.managedobject.Application", {
         }
     ],
     inlines:
-        [{
-            title: __("Attributes"),
-            collapsed: true,
-            model: "NOC.sa.managedobject.AttributesModel",
-            columns: [
-                {
-                    text: __("Key"),
-                    dataIndex: "key",
-                    width: 100,
-                    editor: "textfield"
-                },
-                {
-                    text: __("Value"),
-                    dataIndex: "value",
-                    editor: "textfield",
-                    flex: 1
-                }
-            ]
-        }],
+        [
+            {
+                title: __("Attributes"),
+                collapsed: true,
+                model: "NOC.sa.managedobject.AttributesModel",
+                columns: [
+                    {
+                        text: __("Key"),
+                        dataIndex: "key",
+                        width: 100,
+                        editor: "textfield"
+                    },
+                    {
+                        text: __("Value"),
+                        dataIndex: "value",
+                        editor: "textfield",
+                        flex: 1
+                    }
+                ]
+            },
+            {
+                title: __("Capabilities"),
+                collapsed: true,
+                model: "NOC.sa.managedobject.CapabilitiesModel",
+                columns: [
+                    {
+                        text: __("Capability"),
+                        dataIndex: "capability",
+                        width: 300
+                    },
+                    {
+                        text: __("Value"),
+                        dataIndex: "value",
+                        width: 100,
+                        renderer: function(v) {
+                            if((v === true) || (v === false)) {
+                                return NOC.render.Bool(v);
+                            } else {
+                                return v;
+                            }
+                        }
+                    },
+                    {
+                        text: __("Source"),
+                        dataIndex: "source",
+                        width: 100
+                    },
+                    {
+                        text: __("Description"),
+                        dataIndex: "description",
+                        flex: 1
+                    }
+                ]
+            }
+        ],
     //
     onCard: function() {
         var me = this;
