@@ -29,6 +29,7 @@ class Profile(BaseProfile):
     config_volatile = ["\x08+"]
     rogue_chars = [b"\r"]
     command_submit = "\r"
+    cli_timeout_prompt = 120
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

@@ -11,10 +11,9 @@ import re
 import binascii
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
 from noc.core.mib import mib
-from noc.core.mac import MAC
 from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_LOCAL,
@@ -37,6 +36,8 @@ from noc.core.comp import smart_text
 class Script(BaseScript):
     name = "EdgeCore.ES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+
+    always_prefer = "S"
 
     rx_localport = re.compile(
         r"^\s*Eth(| )(.+?)\s*(\|)MAC Address\s+(\S+).+?$", re.MULTILINE | re.DOTALL
@@ -94,52 +95,6 @@ class Script(BaseScript):
             raise NotImplementedError()
         return r
 
-    def execute_snmp(self):
-        neighb = (
-            "remote_chassis_id_subtype",
-            "remote_chassis_id",
-            "remote_port_subtype",
-            "remote_port",
-            "remote_port_description",
-            "remote_system_name",
-        )
-        r = []
-        local_ports = self.get_local_iface()
-        if self.has_snmp():
-            for v in self.snmp.get_tables(
-                [
-                    mib["LLDP-MIB::lldpRemLocalPortNum"],
-                    mib["LLDP-MIB::lldpRemChassisIdSubtype"],
-                    mib["LLDP-MIB::lldpRemChassisId"],
-                    mib["LLDP-MIB::lldpRemPortIdSubtype"],
-                    mib["LLDP-MIB::lldpRemPortId"],
-                    mib["LLDP-MIB::lldpRemPortDesc"],
-                    mib["LLDP-MIB::lldpRemSysName"],
-                ],
-                bulk=True,
-            ):
-                if v:
-                    neigh = dict(zip(neighb, v[2:]))
-                    if neigh["remote_chassis_id_subtype"] == 4:
-                        neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
-                    if neigh["remote_port_subtype"] == 3:
-                        try:
-                            neigh["remote_port"] = MAC(neigh["remote_port"])
-                        except ValueError:
-                            neigh["remote_port"] = neigh["remote_port"].strip(smart_text(" \x00"))
-                            self.logger.warning(
-                                "Bad MAC address on Remote Neighbor: %s", neigh["remote_port"]
-                            )
-                    r += [
-                        {
-                            "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
-                            # @todo if local interface subtype != 5
-                            # "local_interface_id": 5,
-                            "neighbors": [neigh],
-                        }
-                    ]
-        return r
-
     def execute_cli(self):
         # No lldp on 46xx
         if self.is_platform_46:
@@ -158,7 +113,7 @@ class Script(BaseScript):
         for i in ifs:
             if i["local_interface"] in local_port_ids:
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
-            v = self.cli("show lldp info remote detail %s" % i["local_interface"])
+            v = self.cli("show lldp info remote detail %s" % i["local_interface"], allow_empty_response=False)
             match = self.re_search(self.rx_detail, v)
             n = {"remote_chassis_id_subtype": LLDP_CHASSIS_SUBTYPE_MAC}
             if match:

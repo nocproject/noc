@@ -5,12 +5,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python module
-import bson
-
 # Third-party modules
 from django.db.models import Q as d_Q
-from mongoengine.queryset.visitor import Q as m_Q
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
@@ -58,7 +54,7 @@ class ObjectListApplication(ExtApplication):
         else:
             nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
         if "selector" in nq:
-            s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
+            s = self.get_object_or_404(ManagedObjectSelector, id=int(nq["selector"]))
             if s:
                 q &= s.Q
             del nq["selector"]
@@ -132,7 +128,6 @@ class ObjectListApplication(ExtApplication):
         for k in q:
             if not k.startswith("_") and "__" not in k:
                 nq[k] = q[k]
-        ids = set()
         self.logger.debug("Cleaned query: %s" % nq)
         if "ids" in nq:
             nq["id__in"] = list({int(nid) for nid in nq["ids"]})
