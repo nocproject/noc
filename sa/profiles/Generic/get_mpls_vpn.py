@@ -53,6 +53,7 @@ class Script(BaseScript):
             [mib["MPLS-L3VPN-STD-MIB::mplsL3VpnIfConfRowStatus"]]
         ):
             conf_id, ifindex = conf_id.rsplit(".", 1)
+            # In some JUNOS versions mplsL3VpnIfConfRowStatus return unparsable string
             if int(ifindex) in names and conf_id in r:
                 """
                 Some Junipers vendor, may hide interfaces from ifTable output:
