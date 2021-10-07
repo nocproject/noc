@@ -99,9 +99,9 @@ class Script(BaseScript):
             if chassis not in self._chassis_filter:
                 return False
         if (
-                (name.startswith("Vl") or name.startswith("Lo"))
-                and self.vlan_filter
-                and ifindex not in self.vlan_filter
+            (name.startswith("Vl") or name.startswith("Lo"))
+            and self.vlan_filter
+            and ifindex not in self.vlan_filter
         ):
             # Filter all vlan ifaces without IP
             return False
@@ -116,9 +116,9 @@ class Script(BaseScript):
     def get_ip_ifindex(self):
         r = set()
         for _, ifindex in self.snmp.getnext(
-                mib["RFC1213-MIB::ipAdEntIfIndex"],
-                max_repetitions=self.get_max_repetitions(),
-                max_retries=self.get_getnext_retires(),
+            mib["RFC1213-MIB::ipAdEntIfIndex"],
+            max_repetitions=self.get_max_repetitions(),
+            max_retries=self.get_getnext_retires(),
         ):
             r.add(ifindex)
         return r
@@ -127,15 +127,16 @@ class Script(BaseScript):
         # get ifindex stack interfaces
         # RADLAN-MIB::rlCascadeNeighborIfIndex 1.3.6.1.4.1.89.53.23.1.1
         # RADLAN-MIB::rlPhdUnitStackPortRow  1.3.6.1.4.1.89.53.25.1.1
-        # if self.has_capability("Stack | Members"):
         name_ifindex = {}
         stack_ifindex = set()
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.89.53.23.1.1"):
-            stack_ifindex.add(oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1:])
+            stack_ifindex.add(oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1 :])
         for oid, iface in self.snmp.getnext("1.3.6.1.4.1.89.53.25.1.1"):
-            ifindex = oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1:].split(".")
+            ifindex = oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1 :].split(".")
             if ifindex[1] in stack_ifindex:
-                sname = self.profile.convert_interface_name(f"{iface[0:2]}{ifindex[0]}/0/{iface[-1]}")
+                sname = self.profile.convert_interface_name(
+                    f"{iface[0:2]}{ifindex[0]}/0/{iface[-1]}"
+                )
                 sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(ifindex[1])]))
                 smac = MACAddressParameter().clean(sm)
                 name_ifindex[sname] = {"sifindex": ifindex[1], "smac": smac}
@@ -146,8 +147,8 @@ class Script(BaseScript):
         self._chassis_filter = None
         if self.is_3124:
             if (
-                    "Stack | Member Ids" in self.capabilities
-                    and self.capabilities["Stack | Member Ids"] != "0"
+                "Stack | Member Ids" in self.capabilities
+                and self.capabilities["Stack | Member Ids"] != "0"
             ):
                 self._chassis_filter = set(self.capabilities["Stack | Member Ids"].split(" | "))
             self.logger.debug("Chassis members filter: %s", self._chassis_filter)
@@ -189,7 +190,7 @@ class Script(BaseScript):
             try:
                 for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2", max_repetitions=10):
                     n = s[1]
-                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
+                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1 :]
                     if int(sifindex) < 3000:
                         sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(sifindex)]))
                         smac = MACAddressParameter().clean(sm)
@@ -240,10 +241,8 @@ class Script(BaseScript):
         if self.has_capability("Stack | Members"):
             for iface in parse_table(self.cli("show stack links details"), allow_wrap=True):
                 i.append((f"{iface[1][0:2]}{iface[0]}/0/{iface[1][-1]}", "Up"))
-
         interfaces = []
         mtu = None
-
         for res in i:
             mac = None
             ifindex = 0
@@ -362,7 +361,6 @@ class Script(BaseScript):
                     enabled_afi += ["IPv4"]
                 iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
                 iface["subinterfaces"][0][ip_interfaces] = ip_list
-
             interfaces += [iface]
         ip_iface = self.cli("show ip interface")
         for match in self.rx_sh_ip_int.finditer(ip_iface):
