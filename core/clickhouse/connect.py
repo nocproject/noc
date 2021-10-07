@@ -32,7 +32,7 @@ class ClickhouseClient(object):
         else:
             self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
 
-    def execute(self, sql=None, args=None, nodb=False, post=None, extra=None):
+    def execute(self, sql=None, args=None, nodb=False, post=None, extra=None, return_raw=False):
         def q(v):
             # @todo: quote dates
             if isinstance(v, str):
@@ -64,6 +64,8 @@ class ClickhouseClient(object):
         )
         if code != 200:
             raise ClickhouseError("%s: %s" % (code, body))
+        if return_raw:
+            return body
         return [smart_text(row).split("\t") for row in body.splitlines()]
 
     def ensure_db(self, db_name=None):

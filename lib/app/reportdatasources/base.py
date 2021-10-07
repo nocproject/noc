@@ -16,6 +16,9 @@ import heapq
 import itertools
 import logging
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from django.db.models import Q as d_Q
 from noc.sa.models.managedobject import ManagedObject
@@ -545,7 +548,9 @@ class CHTableReportDataSource(ReportDataSource):
             "q_having": having,
         }
 
-    def get_query_ch(self, from_date: datetime.datetime, to_date: datetime.datetime) -> str:
+    def get_query_ch(
+        self, from_date: datetime.datetime, to_date: datetime.datetime, r_format: str = None
+    ) -> str:
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
         select, group = self.get_group()
@@ -583,28 +588,30 @@ class CHTableReportDataSource(ReportDataSource):
             query += [f'ORDER BY {",".join(query_map["q_order_by"])}']
         if self.rows:
             query += [f"LIMIT {self.rows}"]
+        if r_format:
+            query += [f" FORMAT {r_format}"]
         return "\n ".join(query)
 
     def do_query(self):
         f_date, to_date = self.start, self.end
-        query = self.get_query_ch(f_date, to_date)
+        query = self.get_query_ch(f_date, to_date, r_format="JSONEachRow")
         logger.info("Query: %s", query)
         client = self.get_client()
         if self.allobjectids or not self.objectids:
-            for row in client.execute(query % ""):
-                yield row
+            body = client.execute(query % "", return_raw=True)
+            for row in body.splitlines():
+                yield orjson.loads(row)
         else:
             # chunked query
             ids = self.objectids
             while ids:
                 chunk, ids = ids[: self.CHUNK_SIZE], ids[self.CHUNK_SIZE :]
-                for row in client.execute(query % f" AND {self.get_object_filter(chunk)}"):
-                    yield row
+                body = client.execute(
+                    query % f" AND {self.get_object_filter(chunk)}", return_raw=True
+                )
+                for row in body.splitlines():
+                    yield orjson.loads(row)
 
     def extract(self):
-        fields = []
-        if self.interval:
-            fields += ["ts"]
-        fields += list(self.fields.keys())
         for row in self.do_query():
-            yield dict(zip(fields, row))
+            yield row
