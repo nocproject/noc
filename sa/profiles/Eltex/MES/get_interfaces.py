@@ -99,9 +99,9 @@ class Script(BaseScript):
             if chassis not in self._chassis_filter:
                 return False
         if (
-            (name.startswith("Vl") or name.startswith("Lo"))
-            and self.vlan_filter
-            and ifindex not in self.vlan_filter
+                (name.startswith("Vl") or name.startswith("Lo"))
+                and self.vlan_filter
+                and ifindex not in self.vlan_filter
         ):
             # Filter all vlan ifaces without IP
             return False
@@ -116,26 +116,66 @@ class Script(BaseScript):
     def get_ip_ifindex(self):
         r = set()
         for _, ifindex in self.snmp.getnext(
-            mib["RFC1213-MIB::ipAdEntIfIndex"],
-            max_repetitions=self.get_max_repetitions(),
-            max_retries=self.get_getnext_retires(),
+                mib["RFC1213-MIB::ipAdEntIfIndex"],
+                max_repetitions=self.get_max_repetitions(),
+                max_retries=self.get_getnext_retires(),
         ):
             r.add(ifindex)
         return r
+
+    def get_stack_ifindex(self):
+        # get ifindex stack interfaces
+        # RADLAN-MIB::rlCascadeNeighborIfIndex 1.3.6.1.4.1.89.53.23.1.1
+        # RADLAN-MIB::rlPhdUnitStackPortRow  1.3.6.1.4.1.89.53.25.1.1
+        # if self.has_capability("Stack | Members"):
+        name_ifindex = {}
+        stack_ifindex = set()
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.89.53.23.1.1"):
+            stack_ifindex.add(oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1:])
+        for oid, iface in self.snmp.getnext("1.3.6.1.4.1.89.53.25.1.1"):
+            ifindex = oid[len("1.3.6.1.4.1.89.53.23.1.1") + 1:].split(".")
+            if ifindex[1] in stack_ifindex:
+                sname = self.profile.convert_interface_name(f"{iface[0:2]}{ifindex[0]}/0/{iface[-1]}")
+                sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(ifindex[1])]))
+                smac = MACAddressParameter().clean(sm)
+                name_ifindex[sname] = {"sifindex": ifindex[1], "smac": smac}
+        return name_ifindex
 
     def execute_snmp(self, **kwargs):
         # Stack numbers for filter
         self._chassis_filter = None
         if self.is_3124:
             if (
-                "Stack | Member Ids" in self.capabilities
-                and self.capabilities["Stack | Member Ids"] != "0"
+                    "Stack | Member Ids" in self.capabilities
+                    and self.capabilities["Stack | Member Ids"] != "0"
             ):
                 self._chassis_filter = set(self.capabilities["Stack | Member Ids"].split(" | "))
             self.logger.debug("Chassis members filter: %s", self._chassis_filter)
         self.vlan_filter = self.get_ip_ifindex()
         self.logger.info("Use Vlan filter: %s", self.vlan_filter)
-        return super().execute_snmp()
+        interfaces = super().execute_snmp()
+        d = self.get_stack_ifindex()
+        for name in d:
+            sub = {
+                "name": self.profile.convert_interface_name(name),
+                "admin_status": "Up",
+                "oper_status": "Up",
+                "enabled_afi": [],
+                "snmp_ifindex": d[name]["sifindex"],
+                "mac": d[name]["smac"],
+            }
+            iface = {
+                "type": self.profile.get_interface_type(name),
+                "name": name,
+                "admin_status": "Up",
+                "oper_status": "Up",
+                "enabled_protocols": [],
+                "snmp_ifindex": d[name]["sifindex"],
+                "mac": d[name]["smac"],
+                "subinterfaces": [sub],
+            }
+            interfaces[0]["interfaces"] += [iface]
+        return interfaces
 
     def execute(self, **kwargs):
         if self.is_3124:
@@ -149,7 +189,7 @@ class Script(BaseScript):
             try:
                 for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2", max_repetitions=10):
                     n = s[1]
-                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1 :]
+                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
                     if int(sifindex) < 3000:
                         sm = str(self.snmp.get(mib["IF-MIB::ifPhysAddress", int(sifindex)]))
                         smac = MACAddressParameter().clean(sm)
@@ -159,6 +199,8 @@ class Script(BaseScript):
                     else:
                         continue
                     d[sname] = {"sifindex": sifindex, "smac": smac}
+                if self.has_capability("Stack | Members"):
+                    d = {**d, **self.get_stack_ifindex()}
             except self.snmp.TimeOutError:
                 pass
         # Get portchannels
@@ -194,11 +236,14 @@ class Script(BaseScript):
         i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
         if not i:
             i = self.rx_sh_int_des2.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
+        # Get stack interfaces
         if self.has_capability("Stack | Members"):
             for iface in parse_table(self.cli("show stack links details"), allow_wrap=True):
                 i.append((f"{iface[1][0:2]}{iface[0]}/0/{iface[1][-1]}", "Up"))
+
         interfaces = []
         mtu = None
+
         for res in i:
             mac = None
             ifindex = 0
@@ -319,7 +364,6 @@ class Script(BaseScript):
                 iface["subinterfaces"][0][ip_interfaces] = ip_list
 
             interfaces += [iface]
-
         ip_iface = self.cli("show ip interface")
         for match in self.rx_sh_ip_int.finditer(ip_iface):
             ifname = match.group("interface")
