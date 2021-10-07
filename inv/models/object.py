@@ -400,12 +400,14 @@ class Object(Document):
 
     def get_p2p_connection(
         self, name: str
-    ) -> Tuple[Optional["ObjectConnection"], Optional["Object"], Optional[str]]:
+    ) -> Tuple[Optional[Any], Optional["Object"], Optional[str]]:
         """
         Get neighbor for p2p connection (s and mf types)
         Returns connection, remote object, remote connection or
         None, None, None
         """
+        from .objectconnection import ObjectConnection
+
         c = ObjectConnection.objects.filter(
             __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
         ).first()
@@ -416,9 +418,12 @@ class Object(Document):
         # Strange things happen
         return None, None, None
 
-    def get_genderless_connections(
-        self, name: str
-    ) -> List[Tuple["ObjectConnection", "Object", str]]:
+    def get_genderless_connections(self, name: str) -> List[Tuple[Any, "Object", str]]:
+        """
+        Get genderless connections
+        """
+        from .objectconnection import ObjectConnection
+
         r = []
         for c in ObjectConnection.objects.filter(
             __raw__={"connection": {"$elemMatch": {"object": self.id, "name": name}}}
@@ -444,7 +449,12 @@ class Object(Document):
         remote_name: str,
         data: Dict[str, Any],
         reconnect: bool = False,
-    ) -> Optional["ObjectConnection"]:
+    ) -> Optional[Any]:
+        """
+        Connect two genderless connections
+        """
+        from .objectconnection import ObjectConnection, ObjectConnectionItem
+
         lc = self.model.get_model_connection(name)
         if lc is None:
             raise ConnectionError("Local connection not found: %s" % name)
@@ -503,6 +513,8 @@ class Object(Document):
         """
         Connect two genderless connections
         """
+        from .objectconnection import ObjectConnection, ObjectConnectionItem
+
         lc = self.model.get_model_connection(name)
         if lc is None:
             raise ConnectionError("Local connection not found: %s" % name)
@@ -636,6 +648,8 @@ class Object(Document):
         Yields connections of specified direction as tuples of
         (name, remote_object, remote_name)
         """
+        from .objectconnection import ObjectConnection
+
         ic = set(c.name for c in self.model.connections if c.direction == direction)
         for c in ObjectConnection.objects.filter(connection__object=self.id):
             sn = None
@@ -685,6 +699,8 @@ class Object(Document):
 
     @classmethod
     def delete_disconnect(cls, sender, document, target=None):
+        from .objectconnection import ObjectConnection
+
         for c in ObjectConnection.objects.filter(connection__object=document.id):
             left = [cc for cc in c.connection if cc.object.id != document.id]
             if len(left) < 2:
@@ -944,6 +960,3 @@ class Object(Document):
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
-
-# Avoid circular references
-from .objectconnection import ObjectConnection, ObjectConnectionItem
