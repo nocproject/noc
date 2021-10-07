@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | MES | MES2408CP sysObjectID.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "5c5c860d-85d4-4aa6-af1c-8b0f2b08feaa",
+    "description": null,
+    "preference": 900,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.159",
+    "action": "match",
+    "profile__name": "Eltex.MES24xx"
+}
