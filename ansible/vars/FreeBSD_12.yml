@@ -2,7 +2,7 @@
 ---
 activator_command: "/bin/sh -c 'exec cpuset -l $((%(process_num)d %% $(sysctl -n hw.ncpu))) ./services/activator/service.py'"
 
-noc_py3_ver: "3.7"
+noc_py3_ver: "3.8"
 
 etc_prefix: /usr/local/etc
 
@@ -51,7 +51,7 @@ pgbouncer_path_pid: /var/run/pgbouncer
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_home: /var/db/postgres
-postgres_version: "11"
+postgres_version: "12"
 postgres_data_dir: '{{ postgres_home }}/data{{ postgres_version|replace(".","") }}'
 postgresql_conf_prefix: '{{ postgres_home }}/data{{ postgres_version|replace(".","") }}'
 postgres_superuser: postgres
