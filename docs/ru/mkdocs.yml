@@ -1416,6 +1416,7 @@ nav:
                   - STP: admin/reference/discovery/box/stp.md
                   - REP: admin/reference/discovery/box/rep.md
                   - UDLD: admin/reference/discovery/box/udld.md
+                  - IfDescr: admin/reference/discovery/box/ifdesc.md
                   - Huawei NDP: admin/reference/discovery/box/huawei_ndp.md
                   - NRI: admin/reference/discovery/box/nri.md
                   - HouseKeeping: admin/reference/discovery/box/hk.md
@@ -1569,6 +1570,8 @@ nav:
                   - reboots: dev/reference/bi/model/reboots.md
                   - routingneighbors: dev/reference/bi/model/routingneighbors.md
                   - span: dev/reference/bi/model/span.md
+          - Card:
+              - Overview: dev/reference/card/index.md
           - ConfDB:
               - Overview: dev/reference/confdb/index.md
               - Config Fetching: dev/reference/confdb/fetching.md
@@ -1576,6 +1579,8 @@ nav:
               - Tokenizer: dev/reference/confdb/tokenizer.md
               - Normalizer: dev/reference/confdb/normalizer.md
               - Query: dev/reference/confdb/query.md
+          - Custom:
+              - Overview: dev/reference/custom/index.md
           - Scripts:
               - add_vlan: dev/reference/scripts/add_vlan.md
               - commands: dev/reference/scripts/commands.md
@@ -1637,8 +1642,13 @@ nav:
               - sync_vlans: dev/reference/scripts/sync_vlans.md
           - Handlers:
               - Handlers Overview: dev/reference/handlers/index.md
+              - Address Resolver:  dev/reference/handlers/address-resolver.md
               - Config Filter: dev/reference/handlers/config-filter.md
               - Config Diff Filter: dev/reference/handlers/config-diff-filter.md
+              - Config Validation: dev/reference/handlers/config-validation.md
+              - DS Filter: dev/reference/handlers/ds-filter.md
+              - Housekeeper: dev/reference/handlers/housekeeper.md
+              - Interface Description:  dev/reference/handlers/ifacedescription.md
               - Window Function: dev/reference/handlers/window-function.md
           - Object Models:
               - Overview: dev/reference/object-model/index.md

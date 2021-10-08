@@ -124,7 +124,7 @@
     * [**UDLD**](../../../../admin/reference/discovery/box/udld.md)
     * [**LACP**](../../../../admin/reference/discovery/box/lacp.md)
     * **xMAC**
-    * **ifDesc**
+    * [**ifDesc**](../../../../admin/reference/discovery/box/ifdesc.md)
     * **Cache Neighbor** - система сохраняет на заданный интервал соседей устройства. Пока не пройдёт интервал для проверки соседства будет использоваться сохранённая во время предыдущего опроса информация
 * *ifDesc Policy* - настройки для линковки по Дескрипшенам интерфейсов (`ifDesc`)
     * (`Symmetric Check`) - требовать симметричного (двухстороннего) подтверждения линка
