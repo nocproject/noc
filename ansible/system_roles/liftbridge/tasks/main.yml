@@ -9,7 +9,7 @@
     group: "{{ liftbridge_group }}"
     system: "True"
     home: "{{ liftbridge_home }}"
-    shell: "/bin/false"
+    shell: "{{ fake_shell }}"
   tags:
     - config
 
