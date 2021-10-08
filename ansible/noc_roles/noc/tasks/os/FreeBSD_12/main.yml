@@ -7,7 +7,7 @@
     packages:
       - postgresql{{ postgres_version|replace(".","") }}-client
       - python
-      - py37-virtualenv
+      - py38-virtualenv
       - curl
       - libffi
       - libmemcached
