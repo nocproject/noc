@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "UI_COMMIT_COMPLETED: commit complete$"
+            "value_re": "UI_COMMIT_COMPLETED.+commit complete\\s?$"
         }
     ]
 }
