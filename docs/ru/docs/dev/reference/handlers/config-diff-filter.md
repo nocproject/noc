@@ -1,27 +1,27 @@
 # Config Diff Filter Handler
 
 
-Interface for configuration comparison filter. Config diff filters
-are applied both to last and current config to avoid misdetection
-of configuration changes due to constantly changing parts.
-Results of Config Diff Filter don't stored in GridVCS and used for
-comparison only.
+Интерфейс для фильтрации конфигурации для сравнения. 
+Обработчик применяется для последней (собранной с оборудования) и текущей (последней сохранённой в базе) конфигурациям. 
+Позволяет убрать из конфигурации постоянно меняющиеся части, не влияющие на расчёт разницу. 
+Результат работы `Config Diff Filter` используется только для обнаружения разницы и не сохраняется в базе.
 
-Config filters are applied after [Config Filter](config-filter.md).
+Config Diff Filter применяется после [Config Filter](config-filter.md).
 
     config_diff_filter(managed_object, config):
         Implements config diff filter
     
         :param managed_object: Managed Object instance
-        :param config: Config
-        :returns: altered config
+        :param config: Config (str)
+        :returns: altered config (str)
 
-## Examples
+## Примеры
 
+### Скрыть сохранённое время
 
-### Hide altering part
+Удалить *ntp date XXX*
 
-Remove *ntp date XXX*
+```python
 
     import re
 
@@ -29,3 +29,4 @@ Remove *ntp date XXX*
 
     def config_diff_filter(mo, config):
         return rx_ntp.sub("", rx_password)
+```
