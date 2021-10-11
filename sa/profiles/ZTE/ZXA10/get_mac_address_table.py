@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_mac = re.compile(
-        r"^(?P<mac>\S+[0-9a-f\.]+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s+(?P<interface>\S+)",
+        r"^(?P<mac>\S+[0-9a-f\.]+)\s+(?P<vlan_id>\d+).*(?P<type>Dynamic)\s+(?P<interface>\S+)",
         re.MULTILINE,
     )
 
