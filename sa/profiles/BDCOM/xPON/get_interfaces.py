@@ -38,12 +38,12 @@ class Script(BaseScript):
         "GigaEthernet-FX": "physical",  # GigabitEthernet
         "Giga-Combo-TX": "physical",  # GigabitEthernet Combo port
         "Giga-Combo-FX": "physical",  # GigabitEthernet Combo port
-        "GigaEthernet-PON": "physical",  # EPON port
-        "GigaEthernet-LLID": "other",  # EPON port
         "Giga-TX": "physical",  # GigabitEthernet
         "Giga-FX": "physical",  # GigabitEthernet
         "Giga-FX-SFP": "physical",  # GigabitEthernet
         "10Giga-FX": "physical",  # TGigaEthernet port
+        "GigaEthernet-PON": "physical",  # EPON port
+        "GigaEthernet-LLID": "other",  # EPON ONU port
         "Giga-PON": "physical",  # EPON port
         "Giga-LLID": "other",  # EPON ONU port
         "GPON": "physical",  # GPON port
@@ -86,7 +86,7 @@ class Script(BaseScript):
             if match.group("ip"):
                 sub["enabled_afi"] = ["IPv4"]
                 sub["ipv4_addresses"] = [match.group("ip")]
-            if typ in ["GPON-ONUID", "Giga-LLID"] and ":" in ifname:
+            if typ in ["GPON-ONUID", "Giga-LLID", "GigaEthernet-LLID"] and ":" in ifname:
                 parent_iface = ifname.split(":")[0]
                 for iface in ifaces:
                     if iface["name"] == parent_iface:
