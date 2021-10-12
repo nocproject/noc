@@ -1106,13 +1106,10 @@ services:
 
   liftbridge:
     image: liftbridge/liftbridge:${LIFTBRIDGE_VERSION_TAG}
-    #image: liftbridge/standalone-dev
     hostname: liftbridge
     volumes:
       - liftbridge_data:/data
       - liftbridge_etc:/etc/liftbridge
-    depends_on:
-      - nats
     entrypoint: >
       liftbridge
       --config /etc/liftbridge/liftbridge.yml
@@ -1177,17 +1174,6 @@ services:
       MONGO_REPL_SET_HOSTS: mongo
     entrypoint: sh /rs-init.sh
     #entrypoint: ["sh", "-c", "cat rs-init.sh"]
-    logging:
-      driver: ${COMPOSE_LOG_DRIVER}
-      options:
-        max-size: ${COMPOSE_LOG_MAX_SIZE}
-        max-file: ${COMPOSE_LOG_MAX_FILE}
-    labels:
-      traefik.enable: false
-
-  nats:
-    image: nats:${NATS_VERSION_TAG}
-    hostname: nats
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:

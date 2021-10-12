@@ -2,8 +2,7 @@
 listen: 0.0.0.0:9292
 host: liftbridge
 nats:
-  servers:
-    - nats://nats:4222/
+  embedded: true
 logging:
   level: info
   raft: true
