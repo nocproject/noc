@@ -1,0 +1,13 @@
+{
+    "name": "BDCOM | xPON | P3616-2TE sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "4cd7f44b-e832-4481-ab4e-bb589f1b9a2f",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3320.1.2011.0",
+    "action": "match",
+    "profile__name": "BDCOM.xPON"
+}

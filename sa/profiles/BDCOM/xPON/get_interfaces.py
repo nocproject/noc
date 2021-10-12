@@ -43,11 +43,11 @@ class Script(BaseScript):
         "Giga-TX": "physical",  # GigabitEthernet
         "Giga-FX": "physical",  # GigabitEthernet
         "Giga-FX-SFP": "physical",  # GigabitEthernet
-        "Giga-PON": "physical",  # EPON port
-        "GPON-ONUID": "physical",  # GPON port
-        "GPON": "physical",  # GPON port
-        "Giga-LLID": "other",  # EPON port
         "10Giga-FX": "physical",  # TGigaEthernet port
+        "Giga-PON": "physical",  # EPON port
+        "Giga-LLID": "other",  # EPON ONU port
+        "GPON": "physical",  # GPON port
+        "GPON-ONUID": "other",  # GPON ONU port
         "EtherSVI": "SVI",
         "Null": "null",
     }
@@ -86,7 +86,7 @@ class Script(BaseScript):
             if match.group("ip"):
                 sub["enabled_afi"] = ["IPv4"]
                 sub["ipv4_addresses"] = [match.group("ip")]
-            if typ == "GPON-ONUID" and ":" in ifname:
+            if typ in ["GPON-ONUID", "Giga-LLID"] and ":" in ifname:
                 parent_iface = ifname.split(":")[0]
                 for iface in ifaces:
                     if iface["name"] == parent_iface:
@@ -106,7 +106,7 @@ class Script(BaseScript):
                             sub["tagged_vlans"] = tagged
             if i["type"] == "SVI":
                 sub["vlan_ids"] = ifname[4:]
-            if ifname.startswith("GigaEthernet"):
+            if ifname.startswith("GigaEthernet") or ifname.startswith("TGigaEthernet"):
                 cmd1 = "show lldp interface %s" % ifname
                 cmd2 = self.cli(cmd1)
                 for match1 in self.rx_lldp.finditer(cmd2):
