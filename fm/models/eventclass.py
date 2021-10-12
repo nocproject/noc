@@ -267,7 +267,7 @@ class EventClass(Document):
         return EventClass.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return EventClass.objects.filter(name=name).first()
 
