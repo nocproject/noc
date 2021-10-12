@@ -6,6 +6,7 @@
     "description": "The NANT-A has two uplinks (Port 0, Port 1), + Port 0 uplink can either be electrical or optical.",
     "connection_rule__name": "Alcatel | 7302",
     "cr_context": "LINECARD",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [
         {
             "description": "Chassis connection",
