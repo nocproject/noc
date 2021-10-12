@@ -46,10 +46,6 @@ VOLUME /opt/noc
 
 EXPOSE 1200
 
-# https://code.getnoc.com/noc/noc/-/issues/1480
-#HEALTHCHECK --interval=10s --timeout=1s \
-#    CMD curl -f http://0.0.0.0:1200/health/ || exit 1
-
 FROM code AS dev
 
 RUN \
