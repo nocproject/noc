@@ -489,6 +489,33 @@ services:
     labels:
       traefik.enable: false
 
+  metrics:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: metrics
+    restart: "always"
+    mem_limit: 100m
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/metrics/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
   mib:
     image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
     hostname: mib
@@ -684,8 +711,8 @@ services:
     hostname: kafkasender
     restart: "always"
     depends_on:
-#      mongo:
-#        condition: service_healthy
+      mongo:
+        condition: service_healthy
       consul:
         condition: service_healthy
     command: /usr/local/bin/python3 /opt/noc/services/kafkasender/service.py
@@ -835,7 +862,7 @@ services:
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     ports:
-      - 514:514/udp
+      - "514:514/udp"
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
@@ -883,7 +910,7 @@ services:
       - noc_code:/${NOC_CODE_PATH}:ro
       - noc_etlimport:/var/lib/noc/import:ro
     ports:
-      - 162:162/udp
+      - "162:162/udp"
     logging:
       driver: ${COMPOSE_LOG_DRIVER}
       options:
@@ -891,6 +918,41 @@ services:
         max-file: ${COMPOSE_LOG_MAX_FILE}
     labels:
       traefik.enable: false
+
+  ui:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: ui
+    restart: "always"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/ui/service.py
+    mem_limit: 120m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: ui
+      traefik.port: 1200
+      traefik.login.frontend.rule: "PathPrefix: /ui/login/"
+      traefik.frontend.entryPoints: noc
 
   web:
     image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
@@ -926,6 +988,30 @@ services:
       traefik.port: 1200
       traefik.frontend.rule: "PathPrefix: /"
       traefik.frontend.entryPoints: noc
+
+  worker:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: trapcollector-default
+    restart: "always"
+    depends_on:
+      - datastream
+    command: /usr/local/bin/python3 /opt/noc/services/worker/service.py
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
+
 
   ########## External Components #########
   clickhouse:
