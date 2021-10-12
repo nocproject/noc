@@ -1,0 +1,13 @@
+{
+    "name": "BDCOM | xPON | GP3600-08B sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "08dfb2c1-a6a2-49d4-ba04-e880ebf235cf",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3320.1.405.0",
+    "action": "match",
+    "profile__name": "BDCOM.xPON"
+}
