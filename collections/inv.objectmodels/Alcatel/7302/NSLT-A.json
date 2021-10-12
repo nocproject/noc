@@ -1,9 +1,9 @@
 {
-    "name": "Alcatel | 7302 | NALT-C",
+    "name": "Alcatel | 7302 | NSLT-A",
     "$collection": "inv.objectmodels",
-    "uuid": "dddb1415-6e2d-4974-945f-7ab2c91ce743",
+    "uuid": "5fe36331-0a2e-4452-bb49-deb00f42f77f",
     "vendor__code": "ALU",
-    "description": "ISAM FD 48-PORT ADSL LINE",
+    "description": "ISAM 24 -PORT SHDSL.bis LINE CARD",
     "connection_rule__name": "Alcatel | 7302",
     "cr_context": "LINECARD",
     "labels": ["noc::inv::lc", "noc::inv::port"],
@@ -16,16 +16,16 @@
             "type__name": "Alcatel | 7302 | LINECARD"
         },
         {
-            "description": "Line 0-48",
+            "description": null,
             "direction": "s",
             "gender": "f",
-            "name": "Line0-48",
+            "name": "line0-23",
             "type__name": "Electrical | IDC-100P"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["NALT-C"]
+            "part_no": ["NSLT-A"]
         }
     }
 }
