@@ -49,7 +49,7 @@ class Script(BaseScript):
         r"^Serial-Number\s+:(?P<serial>.*)\n",
         re.MULTILINE,
     )
-    rx_detail = re.compile(r"^Hardware-VER\s+:\s+(?P<hardware>\S+)\s*\n", re.MULTILINE)
+    rx_detail = re.compile(r"Hardware-VER\s+:\s+(?P<hardware>\S+)\s*\n", re.MULTILINE)
 
     def execute_cli(self):
         v = self.scripts.get_version()

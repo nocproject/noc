@@ -24,7 +24,7 @@ class Script(BaseScript):
         "GMRA": "gei-",
         "GTGHK": "gpon-olt_",
         "GTGHG": "gpon-olt_",
-        "GTGOG": "gpon-onu_",
+        "GTGOG": "gpon-olt_",
         "GVGO": "gpon_olt-",
         "ETGHG": "epon-olt_",
         "VDWVD": "vdsl_",
@@ -50,7 +50,7 @@ class Script(BaseScript):
         r"(^(?P<untagged>\d+)\s*\n)?"
         r"(^\s*\n)?"
         r"^TaggedVlan:\s*\n"
-        r"(^(?P<tagged>[\d,]+)\s*\n)?",
+        r"(^(?P<tagged>[\d,\-]+)\s*)?",
         re.MULTILINE,
     )
     rx_pvc = re.compile(
@@ -116,9 +116,12 @@ class Script(BaseScript):
                     if prefix == "gei_":
                         ifname = "xgei_%s" % port_num
                         v = self.cli("show interface %s" % ifname)
-                    if prefix == "gei-":
+                    elif prefix == "gei-":
                         ifname = "xgei-%s" % port_num
                         v = self.cli("show interface %s" % ifname)
+                    # In some card we have only `gpon_onu_` interfaces
+                    elif prefix == "gpon-olt_" and p["realtype"] == "GTGOG":
+                        continue
                 match = self.rx_iface.search(v)
                 admin_status = bool(match.group("admin_status") in ["up", "activate"])
                 oper_status = bool(match.group("oper_status") == "up")
@@ -144,7 +147,7 @@ class Script(BaseScript):
                     }
                     if match.group("untagged"):
                         sub["untagged_vlan"] = match.group("untagged")
-                    if match.group("tagged"):
+                    if match.group("tagged") and match.group("tagged") != "1":
                         sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
                     iface["subinterfaces"] += [sub]
                     if ifname in portchannel_members:
