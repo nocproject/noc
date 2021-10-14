@@ -210,7 +210,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     },
     createMaintenance: function() {
         var selection = this.lookupReference("fm-alarm-active").getSelection(),
-            objects = selection.map(function(alarm) {
+            objects = selection.map(function (alarm) {
                 return {
                     object: alarm.get("managed_object"),
                     object__label: alarm.get("managed_object__label")
@@ -229,8 +229,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         .getStore()
         .load({
             params: {__query: 'РНР'},
-            callback: function(records) {
-                if(records.length > 0) {
+            callback: function (records) {
+                if (records.length > 0) {
                     Ext.apply(args, {
                         type: records[0].id
                     })
@@ -240,5 +240,13 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
                 });
             }
         });
+        },
+        openAlarmDetailReport: function() {
+        var selection = this.lookupReference("fm-alarm-active").getSelection(),
+            ids = selection.map(function(alarm) {
+                return alarm.id
+            });
+        NOC.launch("fm.reportalarmdetail", "new", {ids: ids});
+
     },
 });

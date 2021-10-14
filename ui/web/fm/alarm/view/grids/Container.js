@@ -48,10 +48,16 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
                         }
                     },
                     {
-                        text: __("Create Maintenance"),
+                        text: __("New Maintaince"),
                         listeners: {
                             click: "createMaintenance"
-                        }
+                        },
+                    },
+                    {
+                        text: __("Alarm Detail Report"),
+                        listeners: {
+                            click: "openAlarmDetailReport"
+                        },
                     }
                 ]
             }
