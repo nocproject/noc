@@ -129,7 +129,10 @@ class DataStreamService(TornadoService):
         :return:
         """
         while True:
-            with coll.watch(pipeline=[{"$project": {"_id": 1}}]) as stream:
+            with coll.watch(
+                pipeline=[{"$project": {"_id": 1}}],
+                max_await_time_ms=config.datastream.max_await_time_ms * 1_000,
+            ) as stream:
                 try:
                     for _ in stream:
                         # Change received, call all pending callback
