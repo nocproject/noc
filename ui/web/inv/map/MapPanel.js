@@ -830,8 +830,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintenance bit
             if(data[s] & 0x20) { // Maintenance mode
                 if(!node.get('data').isMaintenance) {
-                    var wrench = me.createBadge(node, {position: "NE", form: "c", code: "\uf0ad"});
-                    node.set('data', {isMaintenance: true});
+                    var wrench = me.createBadge(node, {position: "NE", form: "c", code: 61613});
+                    node.attributes.data.isMaintenance = true;
                     wrench.set('data', {type: 'wrench'});
                     node.embed(wrench);
                     me.graph.addCell(wrench);
@@ -839,7 +839,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             } else {
                 if(node.get('data').isMaintenance) {
                     var embeddedCells = node.getEmbeddedCells();
-                    node.set('data', {isMaintenance: false});
+                    node.attributes.data.isMaintenance = false;
                     Ext.each(embeddedCells, function(cell) {
                         if(cell.get(data) && cell.get(data).type === 'wrench') {
                             node.unembed(cell);
