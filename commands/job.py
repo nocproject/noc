@@ -15,7 +15,7 @@ import csv
 import time
 import sys
 
-# Third-perty modules
+# Third-party modules
 from pymongo import UpdateOne
 from django.db import connection as pg_conn
 
@@ -107,7 +107,9 @@ class Command(BaseCommand):
         stat_parser.add_argument("--top", default=0, type=int, help="Top device by size")
         stat_parser.add_argument("--slots", default="0", type=str, help="Slots lists")
         #
-        bucket_duration_parser = subparsers.add_parser("bucket-duration", help="Show stats by backets")
+        bucket_duration_parser = subparsers.add_parser(
+            "bucket-duration", help="Show stats by backets"
+        )
         bucket_duration_parser.add_argument("--backets", default=5, help="Bucket count")
         bucket_duration_parser.add_argument("--slots", default="0", type=str, help="Slots lists")
         bucket_duration_parser.add_argument(
@@ -213,8 +215,8 @@ class Command(BaseCommand):
         """
         if not ts:
             ts = time.time()
-        if ts and isinstance(ts, datetime.datetime):
-            ts = time.mktime(ts.timetuple()) + float(ts.microsecond) / 1000000.0
+        if ts and isinstance(ts, datetime):
+            ts = time.mktime(ts.timetuple()) + float(ts.microsecond) / 1_000_000.0
         # Get start of current interval
         si = ts // interval * interval
         # Shift to offset
@@ -222,7 +224,7 @@ class Command(BaseCommand):
         # Shift to interval if in the past
         if si <= ts:
             si += interval
-        return datetime.datetime.fromtimestamp(si)
+        return datetime.fromtimestamp(si)
 
     def handle_fix_timepattern(self, *args, **options):
         from noc.sa.models.managedobject import ManagedObject
@@ -415,7 +417,16 @@ class Command(BaseCommand):
             self.print(f"Profile: {p} - Count {count}")
             c_slot = slot
 
-    def handle_bucket_duration(self, scheduler, min_duration=5, buckets=5, slots: Optional[List[int]] = None, detail: bool = False, *args, **options):
+    def handle_bucket_duration(
+        self,
+        scheduler,
+        min_duration=5,
+        buckets=5,
+        slots: Optional[List[int]] = None,
+        detail: bool = False,
+        *args,
+        **options,
+    ):
         # slots = [3, 5, 16, 17]
         # slots = [3, 4]
         if isinstance(slots, str):
@@ -430,13 +441,23 @@ class Command(BaseCommand):
             if detail:
                 for o in bucket["objects"]:
                     from noc.sa.models.managedobject import ManagedObject
+
                     o = ManagedObject.objects.get(id=o)
                     self.print(f"Object:  {o.profile}:{o}")
             else:
                 # self.print("Ids: ", ",".join(str(x) for x in bucket["objects"]))
                 self.handle_stats(scheduler, mos=bucket["objects"])
 
-    def handle_bucket_late(self, scheduler, min_duration=5, buckets=5, slots: Optional[List[int]] = None, detail: bool = False, *args, **options):
+    def handle_bucket_late(
+        self,
+        scheduler,
+        min_duration=5,
+        buckets=5,
+        slots: Optional[List[int]] = None,
+        detail: bool = False,
+        *args,
+        **options,
+    ):
         # slots = [3, 5, 16, 17]
         # slots = [3, 4]
         if isinstance(slots, str):
@@ -451,6 +472,7 @@ class Command(BaseCommand):
             if detail:
                 for o in bucket["objects"]:
                     from noc.sa.models.managedobject import ManagedObject
+
                     o = ManagedObject.objects.get(id=o)
                     self.print(f"Object:  {o.profile}:{o}")
             else:
@@ -460,7 +482,6 @@ class Command(BaseCommand):
     @staticmethod
     def get_bucket_ldur(scheduler, slots=None, min_duration: int = 5, buckets: int = 5):
 
-        # db.noc.schedules.discovery.MSK.aggregate([{"$project": {"slot": {"$mod": ["$key", 42]}, "key": 1, "jcls": 1, "ldur": 1}},{$match: {"slot":{$in: [3,5,16,17]}, "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob", "ldur": {"$gte": 15}}}, { "$bucketAuto": { "groupBy": "$ldur", "buckets": 8, "output":{"count": {"$sum": 1}, "objects": {"$push": "$key"}}}}])
         max_slots = 42
         pipeline = [
             {"$project": {"slot": {"$mod": ["$key", max_slots]}, "key": 1, "jcls": 1, "ldur": 1}},
@@ -485,7 +506,6 @@ class Command(BaseCommand):
     @staticmethod
     def get_bucket_late(scheduler, slots=None, min_duration: int = 5, buckets: int = 5):
 
-        # db.noc.schedules.discovery.MSK.aggregate([{"$project": {"slot": {"$mod": ["$key", 42]}, "key": 1, "jcls": 1, "ldur": 1}},{$match: {"slot":{$in: [3,5,16,17]}, "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob", "ldur": {"$gte": 15}}}, { "$bucketAuto": { "groupBy": "$ldur", "buckets": 8, "output":{"count": {"$sum": 1}, "objects": {"$push": "$key"}}}}])
         max_slots = 42
         now = datetime.now()
         pipeline = [
@@ -496,7 +516,16 @@ class Command(BaseCommand):
                     "s": "R",
                 }
             },
-            {"$project": {"slot": {"$mod": ["$key", max_slots]}, "key": 1, "jcls": 1, "ldur": 1, "ts": 1, "duration": {"$subtract": [now, "$ts"]}}},
+            {
+                "$project": {
+                    "slot": {"$mod": ["$key", max_slots]},
+                    "key": 1,
+                    "jcls": 1,
+                    "ldur": 1,
+                    "ts": 1,
+                    "duration": {"$subtract": [now, "$ts"]},
+                }
+            },
             {
                 "$match": {
                     "slot": {"$in": slots},
