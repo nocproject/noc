@@ -380,6 +380,7 @@ Ext.define("NOC.core.label.LabelField", {
             Ext.form.field.Tag.prototype.onTriggerClick.apply(this, arguments);
         }
     },
+
     onCloseTreePicker: function() {
         this.treePicker.hide();
         this.validate();
