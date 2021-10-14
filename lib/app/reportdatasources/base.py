@@ -9,7 +9,7 @@
 import datetime
 from dataclasses import dataclass, field
 from io import BytesIO, StringIO
-from typing import List, Optional, Dict, Iterable, Any, Tuple, Callable
+from typing import List, Optional, Dict, Iterable, Any, Tuple, Callable, Union
 import time
 import re
 import heapq
@@ -350,7 +350,7 @@ class ReportDataSource(object):
         end: Optional[datetime.datetime] = None,
         interval: Optional[str] = None,
         max_intervals: Optional[int] = None,
-        filters: Optional[List[Dict[str, str]]] = None,
+        filters: Optional[List[Dict[str, Union[List[str], str]]]] = None,
         rows: Optional[int] = None,
         groups: Optional[List[str]] = None,
     ):
@@ -359,7 +359,7 @@ class ReportDataSource(object):
         self.fields_summary = self.get_summary_fields(fields)
         self.objectids = objectids
         self.allobjectids: bool = allobjectids
-        self.filters: List[Dict[str, str]] = filters or []
+        self.filters: List[Dict[str, Union[List[str], str]]] = filters or []
         self.interval: str = interval
         self.max_intervals: int = max_intervals
         self.rows: int = rows
@@ -455,6 +455,7 @@ class ReportDataSource(object):
             if c not in max_column_data_length or len(str(label)) > max_column_data_length[c]:
                 max_column_data_length[c] = len(str(label))
             ws.write(0, cn, label, cf1)
+        rn, cn = 1, 0
         for rn, row in enumerate(self.extract(), start=1):
             for cn, c in enumerate(self.fields):
                 if c not in max_column_data_length or len(str(row[c])) > max_column_data_length[c]:
