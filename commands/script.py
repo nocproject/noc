@@ -433,6 +433,7 @@ class JSONObject(object):
         self.scheme = {"telnet": TELNET, "ssh": SSH, "http": HTTP, "https": HTTPS}.get(
             data.get("scheme", "telnet"), TELNET
         )
+        self.name = data.get("name", "")
         self.profile = ProfileStub(data.get("profile"))
         self.address = data["address"]
         self.port = data.get("port")
