@@ -138,7 +138,12 @@ class ReportContainerData(BaseReportColumn):
                                     "cond": {
                                         "$and": [
                                             {"$eq": ["$$d1.interface", "address"]},
-                                            {"$eq": ["$$d1.scope", ""]},
+                                            {
+                                                "$or": [
+                                                    {"$not": ["$$d1.scope"]},
+                                                    {"$eq": ["$$d1.scope", ""]},
+                                                ]
+                                            },
                                             {"$eq": ["$$d1.attr", "text"]},
                                         ]
                                     },
@@ -154,7 +159,6 @@ class ReportContainerData(BaseReportColumn):
                             "_id": 1,
                         }
                     },
-                    # {"$project": {"parent_address": "$data.value"}},
                     {
                         "$lookup": {
                             "from": "noc.objects",
@@ -177,11 +181,12 @@ class ReportContainerData(BaseReportColumn):
             )
         )
         r = {}
+        cont_map = {}
         for v in value:
             cid = str(v["_id"])
             if "child_cont" in v and "parent_address" in v and str(v["child_cont"]["_id"]) not in r:
-                # ccid = str(v["child_cont"]["_id"])
-                r[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
+                # r[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
+                cont_map[str(v["child_cont"]["_id"])] = v["parent_address"].strip()
             if cid not in r and "parent_address" in v:
                 r[cid] = v["parent_address"].strip()
         for mo_id, container in (
@@ -191,3 +196,5 @@ class ReportContainerData(BaseReportColumn):
         ):
             if container in r:
                 yield mo_id, r[container]
+            elif container in cont_map:
+                yield mo_id, cont_map[container]
