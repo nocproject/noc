@@ -444,7 +444,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     maxWidth: me.formMaxWidth,
                     defaults: fieldSetDefaults,
                     collapsible: true,
-                    collapsed: false,
+                    collapsed: true,
                     items: [
                         {
                             xtype: "container",
@@ -1699,7 +1699,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             },
             {
                 title: __("Capabilities"),
-                collapsed: true,
+                collapsed: false,
                 model: "NOC.sa.managedobject.CapabilitiesModel",
                 columns: [
                     {
