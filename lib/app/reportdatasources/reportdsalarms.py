@@ -250,9 +250,7 @@ class ReportDsAlarms(ReportDataSource):
                             "$divide": [
                                 {
                                     "$subtract": [
-                                        "$clear_timestamp"
-                                        if coll is ArchivedAlarm
-                                        else datenow,
+                                        "$clear_timestamp" if coll is ArchivedAlarm else datenow,
                                         "$timestamp",
                                     ]
                                 },
