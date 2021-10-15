@@ -106,7 +106,8 @@ class Command(BaseCommand):
             nonlocal slot_name
             if self._slots:
                 return self._slots
-            return await dcs.get_slot_limit(slot_name)
+            s = await dcs.get_slot_limit(slot_name)
+            return max(s, 1)
 
         dcs = get_dcs()
         # Plain streams
