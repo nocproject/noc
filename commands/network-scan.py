@@ -240,6 +240,10 @@ class Command(BaseCommand):
             self.version = [1, 0]
         else:
             self.version = [version]
+        try:
+            self.pool = Pool.objects.get(name=pool)
+        except Pool.DoesNotExist:
+            self.die("Invalid pool-%s" % (pool))
         # snmp community
         if not community:
             community = []
@@ -252,18 +256,16 @@ class Command(BaseCommand):
                 except AuthProfile.DoesNotExist:
                     self.die("Invalid authprofile-%s" % (auth))
             elif pool:
+                auth = f"TG.{pool}"
                 try:
-                    self.pool = Pool.objects.get(name=pool)
-                    auth = "TG." + pool
                     self.auth = AuthProfile.objects.get(name=auth)
                     if self.auth.enable_suggest:
                         for ro, rw in self.auth.iter_snmp():
                             community.append(ro)
-                except Pool.DoesNotExist:
-                    self.die("Invalid pool-%s" % (pool))
+                except AuthProfile.DoesNotExist:
+                    self.die("Invalid authprofile-%s" % (auth))
             else:
                 community = [self.DEFAULT_COMMUNITY]
-                auth = "default"
 
         # auto add objects profile
         if autoadd:
