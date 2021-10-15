@@ -21,6 +21,7 @@ class Script(BaseScript):
     type = {
         "GUSQ": "gei_",
         "HUVQ": "gei_",
+        "GMPA": "gei-",
         "GMRA": "gei-",
         "GTGHK": "gpon-olt_",
         "GTGHG": "gpon-olt_",
@@ -47,10 +48,10 @@ class Script(BaseScript):
         r"^(?P<mode>access=0|trunk\>0|hybrid\>=0|accessUn|trunk|access|hybrid)\s+(?P<pvid>\d+|--).+\n"
         r"(^\s*\n)?"
         r"^UntaggedVlan:\s*\n"
-        r"(^(?P<untagged>\d+)\s*\n)?"
+        r"(^\s*(?P<untagged>\d+)\s*\n)?"
         r"(^\s*\n)?"
         r"^TaggedVlan:\s*\n"
-        r"(^(?P<tagged>[\d,\-]+)\s*)?",
+        r"(^\s*(?P<tagged>[\d,\-]+)\s*)?",
         re.MULTILINE,
     )
     rx_pvc = re.compile(
@@ -62,6 +63,7 @@ class Script(BaseScript):
     rx_ip = re.compile(
         r"^(?P<ifname>\S+)\s+AdminStatus is (?P<admin_status>up|down),\s+"
         r"PhyStatus is (?:up|down),\s+line protocol is (?P<oper_status>up|down)\s*.*\n"
+        r"(^\s+ip vrf forwarding .+\n)?"
         r"^\s+Internet address is (?P<ip>\S+)\s*\n"
         r"^\s+Broadcast address is .+\n"
         r"(^\s+Address determined by .+\n)?"
@@ -69,9 +71,11 @@ class Script(BaseScript):
         r"^\s+IP MTU (?:is )?(?P<mtu>\d+) bytes\s*\n",
         re.MULTILINE,
     )
+    rx_ipv6 = re.compile(r"^\s+inet6 (?P<ipv6>\S+\d+)\s*\n", re.MULTILINE)
     rx_mac = re.compile(
         r"^\s+Description is (?P<descr>.+)\n^\s+MAC address is (?P<mac>\S+)\s*\n", re.MULTILINE
     )
+    rx_mac2 = re.compile(r"^\s+Hardware address is (?P<mac>\S+)\s*\n", re.MULTILINE)
     rx_range = re.compile(r"^\s+<(?P<range>\d+(?:\-\d+)?)>", re.MULTILINE)
 
     def execute_cli(self):
@@ -218,10 +222,24 @@ class Script(BaseScript):
                 iface["mac"] = match1.group("mac")
                 iface["subinterfaces"][0]["mac"] = match1.group("mac")
             except self.CLISyntaxError:
-                pass
+                try:
+                    c = self.cli("show ipv6 interface %s" % ifname)
+                    match1 = self.rx_mac2.search(c)
+                    iface["mac"] = match1.group("mac")
+                    iface["subinterfaces"][0]["mac"] = match1.group("mac")
+                    match1 = self.rx_ipv6.search(c)
+                    if match1:
+                        iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
+                        iface["subinterfaces"][0]["ipv6_addresses"] = []
+                        for match2 in self.rx_ipv6.finditer(c):
+                            iface["subinterfaces"][0]["ipv6_addresses"] += [match2.group("ipv6")]
+                except self.CLISyntaxError:
+                    pass
             if ifname.startswith("vlan"):
                 iface["type"] = "SVI"
                 iface["subinterfaces"][0]["vlan_ids"] = [ifname[4:]]
+            elif ifname == "mgmt_eth":
+                iface["type"] = "management"
             else:
                 raise self.NotSupportedError()
             interfaces += [iface]
