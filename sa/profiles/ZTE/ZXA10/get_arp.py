@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,8 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_arp = re.compile(
-        r"^(?P<ip>\S+)\s+(?:\d+|\-)\s+(?P<mac>[0-9a-f\.]+)\s+(?P<interface>\S+)", re.MULTILINE
+        r"^(?P<ip>\S+)\s+(?:\d+|\-|H|\d\d:\d\d:\d\d)\s+(?P<mac>[0-9a-f\.]+)\s+(?P<interface>\S+)",
+        re.MULTILINE,
     )
 
     def execute_cli(self):

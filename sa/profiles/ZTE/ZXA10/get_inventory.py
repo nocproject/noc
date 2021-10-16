@@ -26,6 +26,7 @@ class Script(BaseScript):
         "SCXM": "MAINBOARD",
         "SCXL": "MAINBOARD",
         "SMXA": "MAINBOARD",
+        "GMPA": "MAINBOARD",
         "GMRA": "MAINBOARD",
         "GUSQ": "LINECARD",
         "GTGHK": "LINECARD",
