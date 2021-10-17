@@ -2391,10 +2391,9 @@ plugins:
         python:
           setup_commands:
               - import sys
-              - sys.path.append('..')
+              - sys.path.insert('..')
           rendering:
             show_source: false
-      custom_templates: templates
 
 extra:
   "tab": ":material-arrow-right:"
