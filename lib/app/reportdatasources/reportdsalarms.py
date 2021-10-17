@@ -204,9 +204,9 @@ class ReportDsAlarms(ReportDataSource):
                 if "archive" in values or "both" in values:
                     alarm_collections += [ArchivedAlarm]
             elif name == "min_subscribers":
-                match_duration["total_subscribers_sum"] = {"$gte": int(values[0])}
+                match_duration["total_subscribers_sum.sum"] = {"$gte": int(values[0])}
             elif name == "min_objects":
-                match_duration["total_objects_sum"] = {"$gte": int(values[0])}
+                match_duration["total_objects_sum.sum"] = {"$gte": int(values[0])}
             elif name == "min_duration":
                 match_duration["duration"] = {"$gte": int(values[0])}
             elif name == "max_duration":
