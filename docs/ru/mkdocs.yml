@@ -2394,7 +2394,9 @@ plugins:
               - sys.path.insert(0, '..')
           rendering:
             show_source: false
-
+          selection:
+            filters:
+              - "!^__"  # exlude all members starting with _
 extra:
   "tab": ":material-arrow-right:"
   "tab2": ":material-arrow-right: :material-arrow-right:"
