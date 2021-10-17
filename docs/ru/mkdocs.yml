@@ -2392,8 +2392,7 @@ plugins:
           rendering:
             show_source: true
       custom_templates: templates
-      watch:
-        - .
+
 extra:
   "tab": ":material-arrow-right:"
   "tab2": ":material-arrow-right: :material-arrow-right:"
