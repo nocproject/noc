@@ -2389,6 +2389,12 @@ plugins:
       default_handler: python
       handlers:
         python:
+          setup_commands:
+              - import sys
+              - sys.path.append('/opt')
+              - sys.path.append('/opt/noc')
+              - sys.path.append('..')
+              - print(sys.path)
           rendering:
             show_source: true
       custom_templates: templates
