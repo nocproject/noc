@@ -309,6 +309,6 @@ class Profile(BaseProfile):
 
 ## Базовый класс профиля
 
-::: noc.core.profile.base.BaseProfile
+::: noc.core.profile.base:BaseProfile
     rendering:
       show_source: false
