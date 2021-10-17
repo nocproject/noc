@@ -311,4 +311,4 @@ class Profile(BaseProfile):
 
 ::: noc.core.profile.base.BaseProfile
     rendering:
-      show_source: true
+      show_source: false

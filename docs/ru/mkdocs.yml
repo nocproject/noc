@@ -2393,7 +2393,7 @@ plugins:
               - import sys
               - sys.path.append('..')
           rendering:
-            show_source: true
+            show_source: false
       custom_templates: templates
 
 extra:
