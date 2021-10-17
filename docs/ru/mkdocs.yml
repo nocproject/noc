@@ -2391,7 +2391,7 @@ plugins:
         python:
           setup_commands:
               - import sys
-              - sys.path.insert('..')
+              - sys.path.insert(0, '..')
           rendering:
             show_source: false
 
