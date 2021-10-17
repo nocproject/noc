@@ -39,6 +39,7 @@
         - <OSName>
             - snmp_metrics/
             - confdb/
+            - middleware/
             - __init__.py
             - profile.py
             - get_version.py
@@ -54,7 +55,8 @@
 * `profile.py` - Класс реализует настройки работы с оборудованием, наследуется от `noc.core.profile.base.BaseProfile` 
 * Набор [скриптов](../../reference/scripts/index.md), реализующих один из доступных *интерфейсов SA* (`SA Interface`)
 * `snmp_metrics/` - папка с перечнем `SNMP OID` для скриптов
-* `confdb/` - папка с парсерами конфигурации для [ConfDB](../../reference/confdb/index.md) 
+* `confdb/` - папка с парсерами конфигурации для [ConfDB](../../reference/confdb/index.md)
+* `middleware/` - папка для обработчиков `HTTP` запросов к оборудованию
 
 <!-- prettier-ignore -->
 !!! note
@@ -270,9 +272,9 @@ class Profile(BaseProfile):
 
 * `name` - имя скрипта. Строится по шаблону: `<profile_name>.<script_name>`
 * `interface` - ссылка на класс реализуемого интерфейса
-* `execute_snmp()`
-* `execute_cli()`
-* `execute()`
+* `execute_snmp()` - вызывается если приоритет исполнения (`access_preference`) выставлен в `SNMP`
+* `execute_cli()` - вызывается если приоритет исполнения (`access_preference`) выставлен в `CLI`
+* `execute()` - вызывается при начале выполнения
 
 <!-- prettier-ignore -->
 !!! note
@@ -286,32 +288,7 @@ class Profile(BaseProfile):
 !!! note
    В работе скриптов `get_version` и `get_capabilities` запрещено использовать вызов других скриптов, иначе может получиться циклическая зависимость.
 
-```python
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
-
-class Script(BaseScript):
-    name = "Huawei.VRP.get_version"
-    cache = True
-    interface = IGetVersion
-
-    def execute_cli(self, **kwargs):
-        v = self.cli("display version")
-        ...
-
-    def execute_snmp(self, **kwargs):
-        v = self.snmp.get("1.XXXX")
-        ...
-
-```
-
-Структура файла скрипта следующая
-
-1. Область импорта. В ней, мы импортируем базовый класс (строка 1) скрипта и интерфейс, который собираемся реализовывать (строка 2). Здесь же можно импортировать дополнительные, необходимые нам модули. Например, модуль поддержки регулярных выражений (строка 3)
-2. После импорта необходимых модулей мы объявляем класс `Script`, наследую его от базового класса (`BaseScript`). После указываем полное имя скрипта, интерфейс и есть ли необходимость кэшировать результат выполнения.
-3. Аттрибут `cache` кэширует результат выполнения скрипта для вызова его их других 
-4. Методы работы с оборудованием - `execute_snmp()` и `execute_cli()` очерёдность выполнения задаётся приоритетом. Приоритет можно задать в настройках `ManagedObject`
-5. При наличии метода `execute()` исполнение всегда начинается с него, даже при наличии `execute_snmp()` или `execute_cli()` это можно использовать для вмешательство в определении приоритета выволнения 
+Для того чтобы вызвать из скрипта метод профиля (`SA Profile`) применяется конструкция `self.profile.<method_name()`
 
 ### Отладка
 

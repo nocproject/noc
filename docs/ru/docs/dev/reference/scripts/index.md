@@ -1,115 +1,252 @@
 # Scripts
 
+## Описание 
 
-Инициализация профиля осуществляется в файле ``__init.py__``. В нём, путём наследования класса :py:class:`noc.core.profile.base.BaseProfile` происходит переопределение настроек работы с оборудованием по умолчанию. Также в него выносятся методы, которые используются в нескольких скриптах.
+Реализация интерфейсов и работы с оборудованием осуществляется в файлах скриптов. 
+В них, путём наследования класса :py:class:`noc.core.script.base.BaseScript` реализуется логика работы с оборудованием и нормализация полученных данных для передачи в NOC.
 
-Реализация интерфейсов и работы с оборудованием осуществляется в файлах скриптов. В них, путём наследования класса :py:class:`noc.core.script.base.BaseScript` реализуется логика работы с оборудованием и нормализация полученных данных для передачи в NOC.
-Базовый набор скриптов для взаимодействия с оборудованием состоит из:
 
-* get_version Реализует интерфейс :py:class:`noc.sa.interfaces.igetversion.IGetVersion` . Запрашивает с оборудования платформу, версию ПО, и дополнительные аттрибуты (например, имя файла образа ПО, серийный номер...)
-* get_capabilities Реализует интерфейс :py:class:`noc.sa.interfaces.igetcapabilities.IGetCapabilities` . Производит опрос оборудования на предмет поддерживаемых протоколов (SNMP, LLDP, CDP). Данная информация используется при вызове скриптов и внутри, для принятия решения, по какому протоколу работать.
-* get_interfaces Рализует интерфейс :py:class:`noc.sa.interfaces.igetinterfaces.IGetInterfaces` . Запрашивает список интерфейсов с оборудования.
+## Список скриптов
 
-Для построения :term:топологии потребуются скрипты:
+| Название скрипта                         | Интерфейс            | Generic | Назначение |
+| ---                                      | ---                  | ---    | ---          | 
+| [get_version](get_version.md)            | `IGetVersion`        |   x    | Сбор версии и платформы устройства |
+| [get_capabiliries](get_capabilities.md)  | `get_capabilities`   |   v    | Сбор поддержки оборудованием функционала (протоколонов ) |
+| [get_config](get_config.md)              | `IGetConfig`         |   x    | Сбор конфигурации |     
+| [get_interfaces](get_interfaces.md)      | `IGetInterfaces`     |   v    | Запрашивает список интерфейсов с оборудования. |
+| [get_inventory](get_inventory.md)        | `IGetInventory`      |    v   | Для сбора состава оборудования  |
+| [get_chassis_id](get_chassis_id.md)      | `IGetChassisid`      |    v   | Заправшивает `MAC` адрес устройства (шасси) |
+| [get_fqdn](get_fqdn.md)                  | `IGetFqdn`           |   v    | Запрашивает `hostname` устройства |
+| [get_mac_address_table](get_mac_address_table.md) | `IGetMACAddressTable`   |  v   | Собирает таблицу `MAC` адресов устройства  |
+| [get_arp](get_arp.md)                    | `IGetArp`            |   v    | Собирает таблицу `ARP` устройства  |
+| `get_<method>_neighnbors`                | `IGet<method>Neighbors` |  v  | Заправшивает таблицу соседей устройства указанного метода |
 
-* get_chassis_id (реализует интерфейс :py:class:`IGetChassisid` ). 
-* get_fqdn (реализует интерфейс :py:class:`IGetFqdn` )
-* get_<method>_neighnbors (реализует интерфейс соответствующего метода)
-    * get_cdp_neighbors (реализует интерфейс :py:class:`IGetCDPNeighbors` )
-    * get_lldp_neighbors (реализует интерфейс :py:class:`IGetLLDPNeighbors` )
-    * get_udld_neighbors (реализует интерфейс :py:class:`IGetUDLDNeighbors` )
-* get_mac_address_table (реализует интерфейс :py:class:`IGetConfig` )
-* get_arp (реализует интерфейс :py:class:`IGetArp` )
 
-Для сбора конфигурации
+## Структура скрипта
 
-* get_config (реализует интерфейс igetconfig)
+Пример файла скрипта:
 
-Для сбора состава оборудования
+```python
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
+import re
 
-* get_inventory (реализует интерфейс igetinventory)
 
-По необходимости, в профиле может быть добавлено любое количество файлов скриптов.
+class Script(BaseScript):
+    name = "Huawei.VRP.get_version"
+    cache = True
+    interface = IGetVersion
 
-.. _rst_device_interaction_label:
+    def execute_cli(self, **kwargs):
+        v = self.cli("display version")
+        ...
 
-## Взаимодействие с оборудованием
+    def execute_snmp(self, **kwargs):
+        v = self.snmp.get("1.XXXX")
+        ...
 
-Для взаимодействия с оборудованием базовый класс `noc.core.script.base.BaseScript` предоставляет следующие методы.
+```
+
+Структура файла скрипта следующая
+
+1. **Область импорта**. В ней, мы импортируем базовый класс (строка 1) скрипта и интерфейс, реализуемый скриптом (строка 2). Здесь же можно импортировать необходимые для работы скрипта модули. Например, модуль поддержки регулярных выражений (строка 3)
+2. После импорта необходимых модулей мы объявляем класс `Script`, наследую его от базового класса (`BaseScript`). После указываем полное имя скрипта, интерфейс и есть ли необходимость кэшировать результат выполнения.
+3. **cache** - выставленный в `True` кэширует результат выполнения скрипта. При вызове из других скриптов через `self.scripts.<script_name>()`  
+4. Методы работы с оборудованием - `execute_snmp()` и `execute_cli()` очерёдность выполнения задаётся приоритетом. Приоритет можно задать в настройках [ManagedObject](../../../user/reference/concepts/managed-object/index.md)
+5. При наличии метода `execute()` исполнение всегда начинается с него, даже при наличии `execute_snmp()` или `execute_cli()` это можно использовать для вмешательство в определении приоритета выволнения 
+
+
+## Взаимодействия с оборудованием
+
+В базовом классе реализованы методы работы с оборудованием:
+
+
+
+Для взаимодействия с оборудованием базовый класс `noc.core.script.base.BaseScript` 
 
 ### CLI
 
+Текстовый интерфейс работы с оборудование. Реализуется через `Telnet` или `SSH`. За работу отвечает метод `BaseScript.cli`, 
+позволяет выполнять команды на оборудовании. Команда передаётся в виде текстового аргумента, возвращается вывод запрошенной команды в виде строки с текстом. 
+Дальнейшая работа остаётся на совести разработчика.
 
 .. automethod:: noc.core.script.base.BaseScript.cli
 
 
-Метод позволяет выполнять команды на оборудовании. Возвращает вывод запрошенной команды в виде строки с текстом к которой, в дальнейшем, возможно применять любые методы для работы с текстовыми строками в Python.
+В случае ошибки выполнения команды может поднять исключение (`Exception`):
+* `CLISyntaxError` - ошибка команды. Определяется на основе настройки `pattern_syntax_error`
+* `CLIOperationError` - ошибка команды. Определяется на основе настройки  `pattern_operation_error`
 
-.. ps Полный перечень доступных методов смотрите в приложении.
+Их можно перехватывать и использовать для изменения поведения скрипта.
 
 ### SNMP
+
+Методы позволяют выполнять SNMP запросы к оборудованию, в качестве аргумента передаётся `OID`. Результат возвращается в виду числа или строки. 
 
 
 .. automethod:: noc.core.script.snmp.base.SNMP.get
 
 .. automethod:: noc.core.script.snmp.base.SNMP.getnext
 
-Методы позволяют выполнять SNMP запросы к оборудованию путём вызова метода с передачей ему OID'а. Для облегчения работы по SNMP, можно использовать:
+
+Для облегчения работы по SNMP, можно использовать `mib`
 
 .. automethod:: noc.core.script.snmp.base.SNMP.get_table
 
 .. automethod:: noc.core.script.snmp.base.SNMP.get_tables
 
-Полный перечень доступных методов смотрите в приложении.
+Для облегчения работы с `SNMP` есть встроенный модуль - `mib`, он позволяет конвертировать текстовые имена в соответствующий `OID`. 
+Для этого имя должно присутствовать в базе `cmibs` (находятся в `<base_noc>/cmibs`). Подробнее как добавить `MIB` в `cmibs`.:
+
+```python
+from noc.core.mib import mib
+
+mib["BRIDGE-MIB::dot1dBasePortIfIndex"]
+: '1.3.6.1.2.1.17.1.4.1.2'
+mib["BRIDGE-MIB::dot1dBasePortIfIndex", 100]
+: '1.3.6.1.2.1.17.1.4.1.2.100'
+
+```
+
+Достаточное большое число данных в `SNMP` передаётся в `OctetString`, для их правильной интерпретации необходимо наличие `MIB` с заполненными `DISPLAY_HINTS`. 
+Но возможно самостоятельно задать функцию для преобразования через аругмент `display_hints`. Встроенные функции расположены в модуле `noc.core.snmp.render`:
+
+```python
+from noc.core.script.base import BaseScript
+from noc.core.mib import mib
+from noc.core.snmp.render import render_bin
+
+class Script(BaseScript):
+
+    ...
+
+    def execute_snmp(self, **kwargs):
+        ...
+        
+        for oid, ports_mask in self.snmp.getnext(
+            mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"],
+            display_hints={mib["Q-BRIDGE-MIB::dot1qVlanCurrentEgressPorts"]: render_bin},
+        ):
+           ...
+```
 
 ### HTTP
 
+Выполняет, соответственно, GET и POST запрос к оборудованию. В качестве аргумента передаётся `URL`, 
+в результате возвращается ответ при ошибке поднимается исключение `HTTPError` (`noc.core.script.http.base.HTTPError`)
 
 .. automethod:: noc.core.script.http.base.HTTP.get
 
 .. automethod:: noc.core.script.http.base.HTTP.post
 
-Выполняет, соответственно, GET и POST запрос к оборудованию. В рельзультате возвращает ответ в виде JSON.
+При выполнении запроса есть возможность использовать схему аутентифиации - `Basic`, 
+для этого параметр `use_basic` выставляется в `True`. Более сложные схемы реализуюся через механизм `Middleware`. 
+Это промежуточный обработчик, которому передаётся запрос перед отправкой что позволяет модифицировать его данные или заголовок. 
+Встроенные обработчики находятся в модуле `noc.core.script.http.middleware.*`, для их применения достаточно указать имя в настройке `http_request_middleware`. 
+Для работы его работы  `Middleware` в [профиле SA](../../background/sa-profile/index.md) доступны настройки:
+
+* `enable_http_session` - авторизовать один раз за сессию
+* `http_request_middleware` - список `Middleware`
+
+Например, для `Digest` аутентификации в `profile.py` добавляются `digestauth`:
+
+```python
+
+    enable_http_session = True
+    http_request_middleware = [
+        "digestauth",
+    ]
+```
+
+При необходимости пожно добавлять обработчики для профиля. Они наследуются от класса `BaseMiddleware` и помещаются в папку 
+`<profile>/middleware/`. Для работы в `http_request_middleware` добавляется строка импорта - 
+`noc.sa.profiles.<profile_name>.middleware.<module_name>.<class_name>`.
+ 
+Пример:
+
+```python
+
+# Python modules
+import orjson
+import hashlib
+import codecs
+
+# NOC modules
+from noc.core.script.http.middleware.base import BaseMiddleware
+from noc.core.http.client import fetch_sync
+from noc.core.comp import smart_bytes
 
 
+class AuthMiddeware(BaseMiddleware):
+    """
+    Append HTTP Digest authorisation headers
+    """
 
-.. code-block:: python
+    name = "customauth"
 
-    def execute(self):
-        v = ""
-
-И, в методе `execute()` идёт обращение к методам работы с оборудованием, получение информации и, в конце, результат передаётся через оператор `return`.
-
-.. literalinclude:: ../examples/get_version.py
-    :language: python
-    :lines: 7-18, 57-81, 90-
-    :linenos:
+```
 
 
-Скрипт ``get_capabilities`` отличается от остальных скриптов. Его предназначение - определять поддержку оборудованием того или иного функционала. В дальнейшем подобная информация используется для оптимизации опроса оборудования. Например, если оборудование не поддерживает SNMP (например он отключён, или в настройках указан наверный SNMP Community) то скрипты, которые требуют рабочего SNMP не выполняются. Также отличием является то, что он относится к категории *модульных* скриптов. И он наследует не класс :py:class:`noc.core.script.base.BaseScript` а класс вышестоящего скрипта ``noc.sa.profiles.Generic.get_capabilities``. Также, в нём используется специальная конструкция - :term:`декоратор` .Это позволяет обрабатывать ошибки, при вводе комманд, как стандартную ситуацию и делать вывод о недоступности функционала.
+### MML
 
-Рассмотрим пример. В стройках 2, 3 мы импортируем модули. В отличие от остальных скриптом, импортируются ``noc.sa.profiles.Generic.get_capabilities`` и ``noc.sa.profiles.Generic.get_capabilities``. Строки с интерфейсом нет, т.к. она определена в вышестоящем скрипте - ``Generic.get_capabilities``. По этой же причине отсутствует метод ``exetcute()``, он вызывается из вышестоящего скрипта.
+Протокол для машинного обмена данными [MML](https://en.wikipedia.org/wiki/MML_(programming_language), 
+применяется в различных системах телефонии (АТС).  
 
-.. literalinclude:: ../examples/get_capabilities.py
-    :language: python
-    :lines: 9-32
-    :linenos:
 
-Полный перечень проверяемых возможностей можно посмотреть в скрипте ``Generic.get_capabilities``
+### RTSP
 
-::: noc.sa.profiles.Generic.get_capabilities.Script
-    rendering:
-      show_source: true
+Протокол управления стримингом потоков [Real Time Streaming Protocol](https://en.wikipedia.org/wiki/Real_Time_Streaming_Protocol). 
+Применяется в различных системах видеонаблюдения (камерах, видеорегистраторах) для управления потоком видео. 
+Также позволяет запрашивать информацию о доступных потоках. 
+Например, получение состояния порта RTSP выглядит следующим образом:
 
-После отработки скрипта get_capabilities становится возможно пользоваться данными проверок. Для этого используются методы :py:meth:`BaseScript.has_capability` , :py:meth:`BaseScript.has_snmp` .
+```python
+from noc.core.script.base import BaseScript
+from noc.core.script.rtsp.error import RTSPConnectionRefused, RTSPAuthFailed
 
-Все особенности работы с тем или иным оборудованием сосредоточены внутри профиля. Чем больше информации сможет собрать профиль (в рамках потребляемого NOC'ом), тем больше будет знать NOC.
 
-.. note:: Происходящее внутри профиля, целиком возложена на разработчика. И после запуска NOC'ом не контролируется.
+class Script(BaseScript):
+
+    ...
+
+    def execute(self, **kwargs):
+        ...
+        
+        try:
+            check = self.rtsp("DESCRIBE", "/Streaming/Channels/101/")
+        except RTSPConnectionRefused:
+            check = 0
+```
+
+
+## Generic Scripts
+
+Часть скриптов уже реализовано в общем виде (через `SNMP`). Они доступны в профиле `Generic` - `<noc_base>/sa/profiles/Generic`. 
+Функционал скриптов из `generic` можно использовать наследуюя их переопределяя функицонал через аттрибуты. 
+Например, если оборудование поддерживает `SNMP`, то для реализация скрипта `get_interfaces` можно воспользоваться наследованием:
+
+```python
+# NOC modules
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+
+class Script(BaseScript):
+    name = "<profile_name>.get_interfaces"
+    interface = IGetInterfaces
+
+```
+
+В этом случае будет достаточно фунционала базового скрипта.
+
+
+## Кастомизация 
 
 
 ### Примеры скриптов
 
+
+self.profile
 
 * Huawei.VRP.get_version 
 
@@ -124,10 +261,6 @@
 
 .. _rst-application-label:
 
-## Приложение
-
-
-.. _rst-base-class-profile-label:
 
 ### Базовый класс скрипта
 
@@ -137,6 +270,7 @@
     :show-inheritance:
 
 .. _rst-interfaces-label:
+
 
 ### Интерфейсы NOCа
 
