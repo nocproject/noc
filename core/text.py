@@ -10,7 +10,6 @@ import re
 from itertools import zip_longest
 
 # Third-party modules
-from numpy import array
 from typing import List, Union, Iterable
 
 rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
@@ -606,6 +605,8 @@ def parse_table_header(v):
     {10: 'Config Master', 18: 'Current Master', 26: 'Agg Control', 33: 'Min Active',
      43: 'Ld Share Algorithm', 49: 'Flags ', 59: 'Ld Share Group', 63: 'Agg Mbr', 69: 'Link State'}
     """
+    from numpy import array
+
     head = []
     empty_header = None
     header = {}

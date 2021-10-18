@@ -2,8 +2,8 @@
 
 Представляют собой пользовательский интерфейс без возможности изменения данных под статичный HTML и обмен ссылками. В основе шаблонизатор [`Jinja`](https://jinja.com). Базовой директории является `<noc>/services/card/`, сама карточка состоит из двух компонентов:
 
-* Бэкэнд (`Backend`), подготовливающий данные для шаблонизатора. Раположены в папке `cards/<card_name>.py`
-* Шаблон HTML для формировании страницы карточки. Расположены в папке `templates` расширение `<template_name>.html.j2`
+* Бэкэнд (`Backend`), подготавливающий данные для шаблонизатора. Раcположены в папке `cards/<card_name>.py`
+* Шаблон HTML для формирования страницы карточки. Расположены в папке `templates` расширение `<template_name>.html.j2`
 
 <!-- prettier-ignore -->
 !!! note
@@ -16,7 +16,7 @@
 
 * `<root>` - базовый URL НОКа
 * `<card_name>` - имя карточки, указанное в аттрибуте `name`
-* `<ID>` - идентификатор запрашиваемых данных, в случае заполненного `model`, будет прозведён поиск инстанса по идентификатору. Если поиск не удался - будет выдана страница `Not Found`
+* `<ID>` - идентификатор запрашиваемых данных, в случае заполненного `model`, будет произведён поиск инстанса по идентификатору. Если поиск не удался - будет выдана страница `Not Found`
 
 Полезные методы класса `BaseCard`:
 
@@ -30,6 +30,7 @@
 Файл карточки:
 
 ```python
+
 from noc.inv.models.firmware import Firmware
 from .base import BaseCard  # Базовый класс
 
@@ -40,13 +41,15 @@ class FirmwarePlanCard(BaseCard):
     model = Firmware  # Ссылка на модель
 
     def get_data(self):  # Формирование данных для шаблонизатора
-        return {"object": self.object}
+        # return {"object": self.object}
+        ...
+
 
 ```
 
 Шаблон `html`
 
-```html
+```
 <table class="table table-condensed table-hover">
 <tbody>
 </tbody>
@@ -91,6 +94,7 @@ class FirmwarePlanCard(BaseCard):
 Карточка `path` вывод на географическую карту путь между парой `ManagedObject`
 
 ```python
+
 class PathCard(BaseCard):
     name = "path"
     default_template_name = "path"
@@ -109,7 +113,7 @@ class PathCard(BaseCard):
 
 В некоторых случаях есть необходимость формировать динамическое наполнение через `API` вместо формирования статического HTML. В этом случае отдаваемые данные формируются через метод `get_ajax_data`. Примером такой карточки служит `alarmheat` - `cards/alarmheat.py`:
 
-```
+```python
 
 class AlarmHeatCard(BaseCard):
     name = "alarmheat"

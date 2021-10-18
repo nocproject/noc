@@ -1521,6 +1521,7 @@ nav:
           - Overview: dev/background/index.md
           - Connection Restrictions: dev/background/connection-restrictions/index.md
           - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
+          - SA Profile: dev/background/sa-profile/index.md
       - Reference:
           - Overview: dev/reference/index.md
           - Merge Request Labels: dev/reference/mr-labels.md
@@ -2384,6 +2385,20 @@ plugins:
         theme: dark
   - macros:
       module_name: macros
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          setup_commands:
+              - import sys
+              - sys.path.insert(0, '..')
+              - from unittest.mock import MagicMock as mock
+              - sys.modules["noc.speedup.ber"] = mock()
+          rendering:
+            show_source: false
+          selection:
+            filters:
+              - "!^__"  # exlude all members starting with _
 extra:
   "tab": ":material-arrow-right:"
   "tab2": ":material-arrow-right: :material-arrow-right:"
