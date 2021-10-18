@@ -85,9 +85,7 @@ class Label(Document):
         "collection": "labels",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            ("is_regex", "match_regex.scope")
-        ],
+        "indexes": [("is_regex", "match_regex.scope")],
     }
 
     name = StringField(unique=True)
