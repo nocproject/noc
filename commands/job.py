@@ -10,6 +10,7 @@ import argparse
 from datetime import datetime, timedelta
 from collections import defaultdict
 from typing import Optional, List
+from functools import partial
 import math
 import csv
 import time
@@ -23,7 +24,10 @@ from django.db import connection as pg_conn
 from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.loader import get_dcs
+from noc.core.ioloop.util import run_sync
 from noc.main.models.pool import Pool
+
 
 SHARDING_SCHEDULER = {"discovery", "correlator", "escalator"}
 
@@ -394,12 +398,14 @@ class Command(BaseCommand):
 
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
+        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        self.print(f"Max Slots is {max_slots}")
         query = f"""
-        SELECT mod(mo.id, 42) as slot, profile, count(*) as number 
-        FROM sa_managedobject mo JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id) 
-        WHERE mop.enable_periodic_discovery = true {"AND mo.id=ANY(%s)" if mos else ""} 
-        GROUP BY profile, slot 
-        {"HAVING mod(mo.id, 42)=ANY(%s)" if slots else ""}
+        SELECT mod(mo.id, {max_slots}) as slot, profile, count(*) as number
+        FROM sa_managedobject mo JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
+        WHERE mop.enable_periodic_discovery = true {"AND mo.id=ANY(%s)" if mos else ""}
+        GROUP BY profile, slot
+        {"HAVING mod(mo.id, %d)=ANY(%%s)" % max_slots if slots else ""}
         ORDER BY slot, number desc
         """
         params = []
@@ -427,11 +433,13 @@ class Command(BaseCommand):
         *args,
         **options,
     ):
-        # slots = [3, 5, 16, 17]
-        # slots = [3, 4]
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
-        r = self.get_bucket_ldur(scheduler, slots=slots, buckets=buckets, min_duration=min_duration)
+        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        self.print(f"Max Slots is {max_slots}")
+        r = self.get_bucket_ldur(
+            scheduler, slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+        )
         for num, bucket in enumerate(r):
             self.print("\n", "=" * 80)
             self.print(
@@ -458,11 +466,14 @@ class Command(BaseCommand):
         *args,
         **options,
     ):
-        # slots = [3, 5, 16, 17]
-        # slots = [3, 4]
         if isinstance(slots, str):
             slots = [int(s) for s in slots.split(",")]
-        r = self.get_bucket_late(scheduler, slots=slots, buckets=buckets, min_duration=min_duration)
+        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        self.print(f"Max Slots is {max_slots}")
+        r = self.get_bucket_late(
+            scheduler, slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+        )
+        print(max_slots)
         for num, bucket in enumerate(r):
             self.print("\n", "=" * 80)
             self.print(
@@ -480,9 +491,15 @@ class Command(BaseCommand):
                 self.handle_stats(scheduler, mos=bucket["objects"])
 
     @staticmethod
-    def get_bucket_ldur(scheduler, slots=None, min_duration: int = 5, buckets: int = 5):
+    async def get_slot_limits(slot_name):
+        dcs = get_dcs()
+        return await dcs.get_slot_limit(slot_name)
 
-        max_slots = 42
+    @staticmethod
+    def get_bucket_ldur(
+        scheduler, slots=None, max_slots=None, min_duration: int = 5, buckets: int = 5
+    ):
+
         pipeline = [
             {"$project": {"slot": {"$mod": ["$key", max_slots]}, "key": 1, "jcls": 1, "ldur": 1}},
             {
@@ -504,9 +521,10 @@ class Command(BaseCommand):
         return scheduler.aggregate(pipeline)
 
     @staticmethod
-    def get_bucket_late(scheduler, slots=None, min_duration: int = 5, buckets: int = 5):
+    def get_bucket_late(
+        scheduler, slots=None, max_slots=None, min_duration: int = 5, buckets: int = 5
+    ):
 
-        max_slots = 42
         now = datetime.now()
         pipeline = [
             {
