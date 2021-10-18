@@ -252,4 +252,6 @@ class TelnetCLI(CLI):
     name = "telnet"
 
     def get_stream(self) -> BaseStream:
-        return TelnetStream(self)
+        ts = TelnetStream(self)
+        ts.set_timeout(60)
+        return ts
