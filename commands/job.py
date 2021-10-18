@@ -9,19 +9,25 @@
 import argparse
 from datetime import datetime, timedelta
 from collections import defaultdict
+from typing import Optional, List
+from functools import partial
 import math
 import csv
 import time
 import sys
 
-# Third-perty modules
+# Third-party modules
 from pymongo import UpdateOne
+from django.db import connection as pg_conn
 
 # NOC modules
 from noc.core.mongo.connection import connect
 from noc.core.management.base import BaseCommand
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.loader import get_dcs
+from noc.core.ioloop.util import run_sync
 from noc.main.models.pool import Pool
+
 
 SHARDING_SCHEDULER = {"discovery", "correlator", "escalator"}
 
@@ -100,6 +106,32 @@ class Command(BaseCommand):
         )
         reschedule.add_argument("key", nargs=argparse.REMAINDER, help="List of job key")
         parser.add_argument("infile", nargs="?", type=argparse.FileType("r"), default=sys.stdin)
+        # stats command
+        stat_parser = subparsers.add_parser("stats", help="Show stats")
+        stat_parser.add_argument("--top", default=0, type=int, help="Top device by size")
+        stat_parser.add_argument("--slots", default="0", type=str, help="Slots lists")
+        #
+        bucket_duration_parser = subparsers.add_parser(
+            "bucket-duration", help="Show stats by backets"
+        )
+        bucket_duration_parser.add_argument("--backets", default=5, help="Bucket count")
+        bucket_duration_parser.add_argument("--slots", default="0", type=str, help="Slots lists")
+        bucket_duration_parser.add_argument(
+            "--min-duration", default=5, type=int, help="Minimal job duration"
+        )
+        bucket_duration_parser.add_argument(
+            "--detail", default=False, action="store_true", help="Show bucket elements"
+        )
+        #
+        bucket_late_parser = subparsers.add_parser("bucket-late", help="Show stats by backets")
+        bucket_late_parser.add_argument("--backets", default=5, help="Bucket count")
+        bucket_late_parser.add_argument("--slots", default="0", type=str, help="Slots lists")
+        bucket_late_parser.add_argument(
+            "--min-duration", default=5, type=int, help="Minimal job duration"
+        )
+        bucket_late_parser.add_argument(
+            "--detail", default=False, action="store_true", help="Show bucket elements"
+        )
 
     def init_json(self):
         pass
@@ -148,7 +180,7 @@ class Command(BaseCommand):
         if "infile" in options and not sys.stdin.isatty():
             for line in options["infile"]:
                 options["key"] += [int(line)]
-        return getattr(self, "handle_%s" % cmd)(*args, **options)
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_list(self, scheduler, *args, **options):
         q = {}
@@ -175,6 +207,64 @@ class Command(BaseCommand):
 
     def handle_set(self, scheduler, *args, **options):
         raise NotImplementedError()
+
+    @staticmethod
+    def get_next_timestamp(interval, offset=0.0, ts=None):
+        """
+        Calculate next timestamp
+        :param interval:
+        :param offset:
+        :param ts: current timestamp
+        :return: datetime object
+        """
+        if not ts:
+            ts = time.time()
+        if ts and isinstance(ts, datetime):
+            ts = time.mktime(ts.timetuple()) + float(ts.microsecond) / 1_000_000.0
+        # Get start of current interval
+        si = ts // interval * interval
+        # Shift to offset
+        si += offset * interval
+        # Shift to interval if in the past
+        if si <= ts:
+            si += interval
+        return datetime.fromtimestamp(si)
+
+    def handle_fix_timepattern(self, *args, **options):
+        from noc.sa.models.managedobject import ManagedObject
+        import random
+
+        procc_mos = defaultdict(set)
+        time_pattern = {}
+        for mo in ManagedObject.objects.filter(
+            is_managed=True, object_profile__enable_box_discovery=True
+        ).exclude(time_pattern=None):
+            procc_mos[mo.pool.name].add(mo.id)
+            time_pattern[mo.id] = mo.time_pattern
+        for pool in procc_mos:
+            c = Scheduler("discovery", pool=pool).get_collection()
+            bulk = []
+            for job in c.find(
+                {
+                    "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    "key": {"$in": list(procc_mos[pool])},
+                },
+                {"o": 1, "ts": 1, "key": 1},
+            ):
+                tp = time_pattern[job["key"]]
+                if not tp.match(job["ts"]):
+                    print("Discovery job on TP", job["ts"], " ", job["key"])
+                    ts = job["ts"]
+                    i = 0
+                    while i < 100:
+                        offset = random.random()
+                        ts = self.get_next_timestamp(86400, offset=offset, ts=ts)
+                        if tp.match(ts):
+                            bulk += [UpdateOne({"_id": job["_id"]}, {"$set": {"o": offset}})]
+                            break
+                        i += 1
+            if bulk:
+                c.bulk_write(bulk)
 
     def handle_reschedule(self, scheduler, *args, **options):
         bulk = []
@@ -296,6 +386,179 @@ class Command(BaseCommand):
             ) + task_count[pool]["periodic_task_per_seconds"] * job_avg[pool].get("periodic", 0)
             self.print("%20s %s" % ("Pool", "Threads est."))
             self.print("%40s %d" % (pool.name, math.ceil(job_count)))
+
+    def handle_stats(
+        self,
+        scheduler,
+        mos: Optional[List[int]] = None,
+        slots: Optional[List[int]] = None,
+        **options,
+    ):
+        from noc.sa.models.profile import Profile
+
+        if isinstance(slots, str):
+            slots = [int(s) for s in slots.split(",")]
+        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        self.print(f"Max Slots is {max_slots}")
+        query = f"""
+        SELECT mod(mo.id, {max_slots}) as slot, profile, count(*) as number
+        FROM sa_managedobject mo JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
+        WHERE mop.enable_periodic_discovery = true {"AND mo.id=ANY(%s)" if mos else ""}
+        GROUP BY profile, slot
+        {"HAVING mod(mo.id, %d)=ANY(%%s)" % max_slots if slots else ""}
+        ORDER BY slot, number desc
+        """
+        params = []
+        if mos:
+            params += [mos]
+        if slots:
+            params += [slots]
+        cursor = pg_conn.cursor()
+        cursor.execute(query, params)
+        c_slot = None
+        for slot, profile, count in cursor.fetchall():
+            if c_slot and c_slot != slot:
+                self.print(f"{'=' * 10} Slot {slot} {'=' * 10}")
+            p = Profile.get_by_id(profile)
+            self.print(f"Profile: {p} - Count {count}")
+            c_slot = slot
+
+    def handle_bucket_duration(
+        self,
+        scheduler,
+        min_duration=5,
+        buckets=5,
+        slots: Optional[List[int]] = None,
+        detail: bool = False,
+        *args,
+        **options,
+    ):
+        if isinstance(slots, str):
+            slots = [int(s) for s in slots.split(",")]
+        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        self.print(f"Max Slots is {max_slots}")
+        r = self.get_bucket_ldur(
+            scheduler, slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+        )
+        for num, bucket in enumerate(r):
+            self.print("\n", "=" * 80)
+            self.print(
+                f"Bucket {num}:    Count: %d; Duration %d s - %d s"
+                % (bucket["count"], bucket["_id"]["min"], bucket["_id"]["max"])
+            )
+            if detail:
+                for o in bucket["objects"]:
+                    from noc.sa.models.managedobject import ManagedObject
+
+                    o = ManagedObject.objects.get(id=o)
+                    self.print(f"Object:  {o.profile}:{o}")
+            else:
+                # self.print("Ids: ", ",".join(str(x) for x in bucket["objects"]))
+                self.handle_stats(scheduler, mos=bucket["objects"])
+
+    def handle_bucket_late(
+        self,
+        scheduler,
+        min_duration=5,
+        buckets=5,
+        slots: Optional[List[int]] = None,
+        detail: bool = False,
+        *args,
+        **options,
+    ):
+        if isinstance(slots, str):
+            slots = [int(s) for s in slots.split(",")]
+        max_slots = run_sync(partial(self.get_slot_limits, "-".join(scheduler.name.split(".")[2:])))
+        self.print(f"Max Slots is {max_slots}")
+        r = self.get_bucket_late(
+            scheduler, slots=slots, max_slots=max_slots, buckets=buckets, min_duration=min_duration
+        )
+        print(max_slots)
+        for num, bucket in enumerate(r):
+            self.print("\n", "=" * 80)
+            self.print(
+                f"Bucket {num}:    Count: %d; Duration %d s - %d s"
+                % (bucket["count"], bucket["_id"]["min"], bucket["_id"]["max"])
+            )
+            if detail:
+                for o in bucket["objects"]:
+                    from noc.sa.models.managedobject import ManagedObject
+
+                    o = ManagedObject.objects.get(id=o)
+                    self.print(f"Object:  {o.profile}:{o}")
+            else:
+                # self.print("Ids: ", ",".join(str(x) for x in bucket["objects"]))
+                self.handle_stats(scheduler, mos=bucket["objects"])
+
+    @staticmethod
+    async def get_slot_limits(slot_name):
+        dcs = get_dcs()
+        return await dcs.get_slot_limit(slot_name)
+
+    @staticmethod
+    def get_bucket_ldur(
+        scheduler, slots=None, max_slots=None, min_duration: int = 5, buckets: int = 5
+    ):
+
+        pipeline = [
+            {"$project": {"slot": {"$mod": ["$key", max_slots]}, "key": 1, "jcls": 1, "ldur": 1}},
+            {
+                "$match": {
+                    "slot": {"$in": slots},
+                    # "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    "ldur": {"$gte": min_duration},
+                }
+            },
+            {
+                "$bucketAuto": {
+                    "groupBy": "$ldur",
+                    "buckets": buckets,
+                    "output": {"count": {"$sum": 1}, "objects": {"$push": "$key"}},
+                }
+            },
+        ]
+        return scheduler.aggregate(pipeline)
+
+    @staticmethod
+    def get_bucket_late(
+        scheduler, slots=None, max_slots=None, min_duration: int = 5, buckets: int = 5
+    ):
+
+        now = datetime.now()
+        pipeline = [
+            {
+                "$match": {
+                    # "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    "s": "R",
+                }
+            },
+            {
+                "$project": {
+                    "slot": {"$mod": ["$key", max_slots]},
+                    "key": 1,
+                    "jcls": 1,
+                    "ldur": 1,
+                    "ts": 1,
+                    "duration": {"$subtract": [now, "$ts"]},
+                }
+            },
+            {
+                "$match": {
+                    "slot": {"$in": slots},
+                    "duration": {"$gte": min_duration},
+                }
+            },
+            {
+                "$bucketAuto": {
+                    "groupBy": "$ldur",
+                    "buckets": buckets,
+                    "output": {"count": {"$sum": 1}, "objects": {"$push": "$key"}},
+                }
+            },
+        ]
+        return scheduler.aggregate(pipeline)
 
 
 if __name__ == "__main__":
