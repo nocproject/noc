@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # BDCOM.xPON.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
             cmd += " %s" % MAC(mac).to_cisco()
         r = []
 
-        for i in parse_table(self.cli(cmd), allow_extend=True):
+        for i in parse_table(self.cli(cmd), expand_columns=True):
             if i[0] == "All" or i[3] == "CPU":
                 continue
             r += [{"vlan_id": i[0], "mac": i[1], "interfaces": [i[3]], "type": "D"}]
