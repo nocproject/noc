@@ -49,7 +49,7 @@ class FirmwarePlanCard(BaseCard):
 
 Шаблон `html`
 
-```html
+```
 <table class="table table-condensed table-hover">
 <tbody>
 </tbody>
