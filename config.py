@@ -652,9 +652,9 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1h")
 
     class datastream(ConfigSection):
-        max_await_time_ms = SecondsParameter(
+        max_await_time = SecondsParameter(
             default=30,
-            help="The maximum time in milliseconds for the server to wait for changes before responding to a getMore operation",
+            help="The maximum time in seconds for the server to wait for changes before responding to a getMore operation",
         )
         enable_administrativedomain = BooleanParameter(default=False)
         enable_administrativedomain_wait = BooleanParameter(

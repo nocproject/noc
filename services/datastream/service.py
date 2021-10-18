@@ -131,7 +131,7 @@ class DataStreamService(TornadoService):
         while True:
             with coll.watch(
                 pipeline=[{"$project": {"_id": 1}}],
-                max_await_time_ms=config.datastream.max_await_time_ms * 1_000,
+                max_await_time_ms=config.datastream.max_await_time * 1_000,  # Milliseconds
             ) as stream:
                 try:
                     for _ in stream:
