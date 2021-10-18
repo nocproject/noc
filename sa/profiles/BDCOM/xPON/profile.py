@@ -2,10 +2,11 @@
 # Vendor: BDCOM
 # OS:     xPON
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -25,9 +26,13 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$"]
 
     def convert_interface_name(self, interface):
-        if interface.startswith("g"):
-            return "GigaEthernet" + interface[1:]
+        if interface.startswith("gpon"):
+            return "GPON" + interface[4:]
         elif interface.startswith("epon"):
             return "EPON" + interface[4:]
+        elif interface.startswith("g"):
+            return "GigaEthernet" + interface[1:]
+        elif interface.startswith("tg"):
+            return "TGigaEthernet" + interface[2:]
         else:
             return interface
