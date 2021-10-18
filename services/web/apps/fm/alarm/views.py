@@ -12,6 +12,7 @@ import inspect
 import datetime
 import dateutil.parser
 import operator
+from typing import Tuple
 
 # Third-party modules
 import bson
@@ -295,7 +296,9 @@ class AlarmApplication(ExtApplication):
             ActiveEvent.objects.filter(alarms=o.id).count()
             + ArchivedEvent.objects.filter(alarms=o.id).count()
         )
-
+        location1, location2 = "", ""
+        if o.managed_object.container:
+            location1, location2 = self.location(o.managed_object.container)
         d = {
             "id": str(o.id),
             "status": o.status,
@@ -315,12 +318,8 @@ class AlarmApplication(ExtApplication):
             "row_class": s.style.css_class_name,
             "segment__label": o.managed_object.segment.name,
             "segment": str(o.managed_object.segment.id),
-            "location_1": self.location(o.managed_object.container.id)[0]
-            if o.managed_object.container
-            else "",
-            "location_2": self.location(o.managed_object.container.id)[1]
-            if o.managed_object.container
-            else "",
+            "location_1": location1,
+            "location_2": location2,
             "escalation_tt": o.escalation_tt,
             "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
@@ -423,10 +422,11 @@ class AlarmApplication(ExtApplication):
                 except DoesNotExist:
                     break
             d["container_path"] = " | ".join(cp)
-            if not self.location(mo.container.id)[0]:
+            location = self.location(mo.container)
+            if not location[0]:
                 d["address_path"] = None
             else:
-                d["address_path"] = ", ".join(self.location(mo.container.id))
+                d["address_path"] = ", ".join(location)
         d["tags"] = mo.labels
         # Log
         if alarm.log:
@@ -758,12 +758,13 @@ class AlarmApplication(ExtApplication):
                 AlarmEscalation.watch_escalations(alarm, force=True)
         return {"status": True}
 
-    def location(self, id):
+    @staticmethod
+    def location(oid: str) -> Tuple[str, str]:
         """
         Return geo address for Managed Objects
         """
 
-        def chunkIt(seq, num):
+        def chunk_it(seq, num):
             avg = len(seq) / float(num)
             out = []
             last = 0.0
@@ -774,7 +775,13 @@ class AlarmApplication(ExtApplication):
             return out
 
         location = []
-        address = Object.get_by_id(id).get_address_text()
+        if isinstance(oid, Object):
+            o = oid
+        else:
+            o = Object.get_by_id(oid)
+        if not o:
+            return "", ""
+        address = o.get_address_text()
         if address:
             for res in address.split(","):
                 adr = normalize_division(smart_text(res).strip().lower())
@@ -784,11 +791,9 @@ class AlarmApplication(ExtApplication):
                     location += [adr[1].title().strip()]
                 else:
                     location += [" ".join(adr).title().strip()]
-            res = chunkIt(location, 2)
-            location_1 = ", ".join(res[0])
-            location_2 = ", ".join(res[1])
-            return [location_1, location_2]
-        return ["", ""]
+            res = chunk_it(location, 2)
+            return ", ".join(res[0]), ", ".join(res[1])
+        return "", ""
 
     @classmethod
     def f_summary(cls, s):
