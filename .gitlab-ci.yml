@@ -230,6 +230,7 @@ build:Docs:en:
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
+    - pip3 install cachetools==4.2.1
     - mkdocs build --config-file=docs/en/mkdocs.yml
   tags:
     - docker
@@ -250,6 +251,7 @@ build:Docs:ru:
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
+    - pip3 install cachetools==4.2.1
     - mkdocs build --config-file=docs/ru/mkdocs.yml
   tags:
     - docker

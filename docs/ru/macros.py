@@ -128,4 +128,4 @@ def define_env(env):
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
     script_profiles = defaultdict(set)  # script -> {profile}
-    doc_root = "docs/en/docs"
+    doc_root = "docs/ru/docs"
