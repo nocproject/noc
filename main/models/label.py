@@ -55,6 +55,7 @@ REGEX_LABELS_SCOPES = {
 
 id_lock = Lock()
 re_lock = Lock()
+rx_labels_lock = Lock()
 
 
 class RegexItem(EmbeddedDocument):
@@ -84,6 +85,9 @@ class Label(Document):
         "collection": "labels",
         "strict": False,
         "auto_create_index": False,
+        "indexes": [
+            ("is_regex", "match_regex.scope")
+        ],
     }
 
     name = StringField(unique=True)
@@ -169,6 +173,7 @@ class Label(Document):
     # Caches
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _rx_labels_cache = cachetools.TTLCache(maxsize=20, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
 
     def __str__(self):
@@ -225,6 +230,15 @@ class Label(Document):
     def get_by_name(cls, name: str) -> Optional["Label"]:
         return Label.objects.filter(name=name).first()
 
+    @classmethod
+    def _reset_caches(cls, name):
+        try:
+            del cls._name_cache[
+                name,  # Tuple
+            ]
+        except KeyError:
+            pass
+
     def clean(self):
         """
         Deny rename Labels
@@ -248,6 +262,7 @@ class Label(Document):
     def on_save(self):
         if self.is_scoped and not self.is_wildcard and not self.is_matched:
             self._ensure_wildcards()
+        Label._reset_caches(self.name)
         # Check if unset enable and label added to model
         if self._created or getattr(self, "_changed_fields", None):
             if self.is_regex:
@@ -417,7 +432,10 @@ class Label(Document):
         :param fg_color2:
         :return:
         """
-        if Label.objects.filter(name=name).first():  # Do not use get_by_name. Cached None !
+        # if Label.objects.filter(name=name).first():  # Do not use get_by_name. Cached None !
+        #     return  # Exists
+        label = Label.get_by_name(name)
+        if label:
             return  # Exists
         settings = cls.get_effective_settings(name)
         settings["name"] = name
@@ -893,10 +911,25 @@ class Label(Document):
         :param: value - string value for check
         """
         labels = []
+        for rx, label in cls.get_regex_labels(scope):
+            if rx.match(value):
+                labels += [label]
+        return labels
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_rx_labels_cache"), lock=lambda _: rx_labels_lock)
+    def get_regex_labels(cls, scope: str) -> Tuple[re.Pattern, str]:
+        """
+        :param: scope - check `enable_<scope>` for filter enable regex
+        """
+        rxs = []
         for ll in Label.objects.filter(
             __raw__={"is_regex": True, "match_regex": {"$elemMatch": {"scope": scope}}}
         ):
             for rx in ll.match_regex:
-                if rx.scope == scope and cls._get_re(rx).match(value):
-                    labels += [ll.name]
-        return labels
+                if rx.scope == scope:
+                    rx = cls._get_re(rx)
+                    if not rx:
+                        continue
+                    rxs += [(rx, ll.name)]
+        return tuple(rxs)
