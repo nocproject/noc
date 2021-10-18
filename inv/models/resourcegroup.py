@@ -30,6 +30,8 @@ from noc.main.models.label import Label
 from .technology import Technology
 
 id_lock = threading.Lock()
+rx_labels_lock = threading.Lock()
+
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
@@ -136,6 +138,7 @@ class ResourceGroup(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _lazy_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
         return "%s (%s)" % (self.name, self.technology.name)
@@ -399,6 +402,44 @@ class ResourceGroup(Document):
         ):
             rg.append(rg["_id"])
         return r
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_lazy_labels_cache"),
+        key=lambda x: tuple(x),
+        lock=lambda _: rx_labels_lock,
+    )
+    def get_lazy_labels(cls, resource_groups: List[str]) -> List[str]:
+        match_rg = []
+        for rg in resource_groups:
+            if isinstance(rg, str):
+                match_rg += [bson.ObjectId(rg)]
+            else:
+                match_rg += [rg]
+        labels = []
+        for rg in cls._get_collection().aggregate(
+            [
+                {"$project": {"name": 1, "parent": 1}},
+                {"$match": {"_id": {"$in": match_rg}}},
+                {
+                    "$graphLookup": {
+                        "from": "resourcegroups",
+                        "connectFromField": "parent",
+                        "connectToField": "_id",
+                        "startWith": "$_id",
+                        "as": "_path",
+                        "maxDepth": 50,
+                    }
+                },
+            ]
+        ):
+            labels += [f'noc::resourcegroup::{rg["name"]}::=']
+            labels += [
+                f'noc::resourcegroup::{rg_path["name"]}::<'
+                for rg_path in rg["_path"]
+                if rg["_id"] != rg_path["_id"]
+            ]
+        return labels
 
     @classmethod
     def iter_lazy_labels(cls, resource_group: "ResourceGroup"):
