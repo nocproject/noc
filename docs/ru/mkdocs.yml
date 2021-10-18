@@ -2392,6 +2392,8 @@ plugins:
           setup_commands:
               - import sys
               - sys.path.insert(0, '..')
+              - from unittest.mock import MagicMock as mock
+              - sys.modules["noc.speedup.ber"] = mock()
           rendering:
             show_source: false
           selection:
