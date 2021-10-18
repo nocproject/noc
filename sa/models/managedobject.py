@@ -1899,8 +1899,9 @@ class ManagedObject(NOCModel):
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
         if instance.effective_service_groups:
-            for rg in ResourceGroup.objects.filter(id__in=instance.effective_service_groups):
-                yield list(ResourceGroup.iter_lazy_labels(rg))
+            yield ResourceGroup.get_lazy_labels(instance.effective_service_groups)
+            # for rg in ResourceGroup.objects.filter(id__in=instance.effective_service_groups):
+            #    yield list(ResourceGroup.iter_lazy_labels(rg))
         yield Label.get_effective_regex_labels("managedobject_name", instance.name)
         lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
         yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
