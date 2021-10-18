@@ -1,0 +1,13 @@
+{
+    "name": "ZTE | ZXA10 | C610 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0d1ae1d0-2b18-4834-9fda-2daa506884eb",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3902.1082.1001.610.1.1",
+    "action": "match",
+    "profile__name": "ZTE.ZXA10"
+}
