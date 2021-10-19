@@ -83,7 +83,6 @@ class MODiscoveryJob(PeriodicJob):
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
         for p in list(self.problems):
-            self.logger.info("[%s] Joblog problem. %s", key, p)
             if p["check"] not in problems:
                 problems[p["check"]] = defaultdict(str)
             if p["path"]:
