@@ -75,6 +75,9 @@ pylibmc==1.5.1; extra == "cache-memcached"
 Babel==2.3.4; extra == "dev"
 ipython==7.18.1; extra == "dev"
 pojson==0.7; extra == "dev"
+flake8==4.0.1; extra == "dev"
+mypy==0.910; extra == "dev"
+black==21.9b0; extra == "dev"
 # Login LDAP
 ldap3==2.8.1; extra == "login-ldap"
 # Login PAM
