@@ -354,7 +354,9 @@ class ObjectIDArrayField(ArrayField):
             return None
         if isinstance(value, (str, ObjectId)):
             value = [value]
-        return "{ %s }" % ", ".join(str(x) for x in set(value) if is_objectid(str(x)))
+        return "{ %s }" % ", ".join(
+            str(x) for x in sorted(set(value), key=lambda x: value.index(x)) if is_objectid(str(x))
+        )
 
     def validate(self, value, model_instance):
         # Only form.full_clean execute
