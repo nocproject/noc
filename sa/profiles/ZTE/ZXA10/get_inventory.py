@@ -18,19 +18,25 @@ class Script(BaseScript):
     interface = IGetInventory
 
     type = {
+        "PRWG": "PWR",
         "PRWGS": "PWR",
         "PRWH": "PWR",
         "PUMD": "PWR",
-        "SCXN": "MAINBOARD",
         "SCTM": "MAINBOARD",
-        "SCXM": "MAINBOARD",
         "SCXL": "MAINBOARD",
+        "SCXM": "MAINBOARD",
+        "SCXN": "MAINBOARD",
         "SMXA": "MAINBOARD",
         "GMPA": "MAINBOARD",
         "GMRA": "MAINBOARD",
+        "GUFQ": "LINECARD",
+        "GUTQ": "LINECARD",
         "GUSQ": "LINECARD",
         "GTGHK": "LINECARD",
         "GTGOG": "LINECARD",
+        "GTGQ": "LINECARD",
+        "HUGQ": "LINECARD",
+        "HUTQ": "LINECARD",
         "HUVQ": "LINECARD",
         "VDWVD": "LINECARD",
         "GVGO": "LINECARD",
@@ -38,6 +44,7 @@ class Script(BaseScript):
         "PTWVN": "LINECARD",
         "FUMO": "FAN",
         "CVST": "unknown",
+        "SVWMC": "unknown",
     }
     rx_platform = re.compile(r"^\d+\s+(?P<platform>\S+)MBRack\s+.+\n", re.MULTILINE)
     rx_card = re.compile(
