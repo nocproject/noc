@@ -346,5 +346,20 @@ Ext.define("NOC.maintenance.maintenance.Application", {
     onObjects: function() {
         var me = this;
         me.previewItem(me.ITEM_OBJECTS, me.currentRecord);
+    },
+
+    onNewRecord: function() {
+        var me = this;
+        me.cardButton.setDisabled(true);
+        me.affectedButton.setDisabled(true);
+        me.newRecord();
+    },
+
+    onEditRecord: function(record) {
+        var me = this;
+
+        me.cardButton.setDisabled(false);
+        me.affectedButton.setDisabled(false);
+        me.callParent([record]);
     }
 });
