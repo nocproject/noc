@@ -82,14 +82,14 @@ class MODiscoveryJob(PeriodicJob):
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
-        for p in self.problems:
-            if p["check"] in problems and p["path"]:
+        for p in list(self.problems):
+            if p["check"] not in problems:
+                problems[p["check"]] = defaultdict(str)
+            if p["path"]:
                 problems[p["check"]][p["path"]] = p["message"]
-            elif p["check"] in problems and not p["path"]:
+            else:
                 # p["path"] == ""
                 problems[p["check"]][p["path"]] += "; %s" % p["message"]
-            else:
-                problems[p["check"]] = {p["path"]: p["message"]}
         get_db()["noc.joblog"].update(
             {"_id": key},
             {
