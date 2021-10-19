@@ -8,3 +8,4 @@ docs/
 rust/target/
 tests/
 var/
+ansible/
