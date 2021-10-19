@@ -49,6 +49,7 @@ from .alarmlog import AlarmLog
 
 
 @change
+@Label.model
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
@@ -833,9 +834,13 @@ class ActiveAlarm(Document):
                 yield a
 
     def iter_effective_labels(self):
-        return set(self.managed_object.labels or []) | set(
-            self.managed_object.object_profile.labels or []
-        )
+
+        return [
+            ll
+            for ll in set(self.managed_object.labels or [])
+            | set(self.managed_object.object_profile.labels or [])
+            if Label.get_effective_setting(ll, "expose_alarm")
+        ]
 
     @classmethod
     def can_set_label(cls, label):

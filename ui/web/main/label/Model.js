@@ -264,6 +264,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "expose_alarm",
+            type: "boolean"
+        },
+        {
             name: "remote_system",
             type: "string"
         },
