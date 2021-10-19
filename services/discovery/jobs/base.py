@@ -47,8 +47,6 @@ from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 
-MAX_DB_LOG_SIZE = 14 * 1048576
-
 
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
@@ -84,29 +82,20 @@ class MODiscoveryJob(PeriodicJob):
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
-        for p in self.problems:
-            if p["check"] in problems and p["path"]:
+        for p in list(self.problems):
+            self.logger.info("[%s] Joblog problem. %s", key, p)
+            if p["check"] not in problems:
+                problems[p["check"]] = defaultdict(str)
+            if p["path"]:
                 problems[p["check"]][p["path"]] = p["message"]
-            elif p["check"] in problems and not p["path"]:
+            else:
                 # p["path"] == ""
                 problems[p["check"]][p["path"]] += "; %s" % p["message"]
-            else:
-                problems[p["check"]] = {p["path"]: p["message"]}
-        log = smart_bytes(self.out_buffer.getvalue())
-        if len(log) > MAX_DB_LOG_SIZE:
-            # Truncate
-            self.logger.warning(
-                "[%s] Discovery Log will be truncated, byx size: , Max:",
-                key,
-                len(log),
-                MAX_DB_LOG_SIZE,
-            )
-            log = log[:MAX_DB_LOG_SIZE] + b"\n\n-----Log Truncated--------\n\n" + log[-1048576:]
         get_db()["noc.joblog"].update(
             {"_id": key},
             {
                 "$set": {
-                    "log": bson.Binary(zlib.compress(log)),
+                    "log": bson.Binary(zlib.compress(smart_bytes(self.out_buffer.getvalue()))),
                     "problems": problems,
                 }
             },
