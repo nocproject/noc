@@ -83,7 +83,12 @@ class ReportDsAlarms(ReportDataSource):
             ReportField(
                 name="object_profile",
                 label="OBJECT_PROFILE",
-                description="Прфиль объекта",
+                description="Профиль",
+            ),
+            ReportField(
+                name="object_object_profile",
+                label="OBJECT_OBJECT_PROFILE",
+                description="Профиль объекта",
             ),
             ReportField(
                 name="object_admdomain",
@@ -294,6 +299,7 @@ class ReportDsAlarms(ReportDataSource):
                 "name",
                 "address",
                 "profile",
+                "object_profile__name",
                 "administrative_domain__name",
                 "platform",
                 "version",
@@ -344,6 +350,7 @@ class ReportDsAlarms(ReportDataSource):
                 "object_address": mo["address"],
                 "object_hostname": self._mo_hostname.get(aa["managed_object"], ""),
                 "object_profile": Profile.get_by_id(mo["profile"]).name,
+                "object_object_profile": mo["object_profile__name"],
                 "object_admdomain": mo["administrative_domain__name"],
                 "object_platform": platform,
                 "object_version": version,

@@ -18,11 +18,12 @@ import logging
 
 # Third-party modules
 import orjson
+from django.db.models import Q as d_Q
 
 # NOC modules
-from django.db.models import Q as d_Q
-from noc.sa.models.managedobject import ManagedObject
+from noc.aaa.models.user import User
 from noc.core.comp import smart_bytes
+from noc.sa.models.managedobject import ManagedObject
 from .report_objectstat import (
     AttributeIsolator,
     CapabilitiesIsolator,
@@ -353,6 +354,7 @@ class ReportDataSource(object):
         filters: Optional[List[Dict[str, Union[List[str], str]]]] = None,
         rows: Optional[int] = None,
         groups: Optional[List[str]] = None,
+        user: Optional["User"] = None,
     ):
         self.query_fields: List[str] = fields
         self.fields: Dict[str, ReportField] = self.get_fields(fields)  # OrderedDict
@@ -370,6 +372,7 @@ class ReportDataSource(object):
         self.end = self.end.replace(tzinfo=None)
         self.start: datetime.datetime = start or self.end - datetime.timedelta(days=1)
         self.start = self.start.replace(tzinfo=None)
+        self.user = user
 
     @classmethod
     def get_config(cls) -> ReportConfig:
