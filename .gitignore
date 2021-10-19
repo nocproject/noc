@@ -11,8 +11,8 @@ etc/**
 include/*
 lib/python*
 lib64
-local/*
 .*
+!/.devcontainer/
 !/.docker/*
 !/.gitignore
 !/.dockerignore*
@@ -22,8 +22,6 @@ local/*
 !/.prettierrc
 !/scripts/build/
 ext_*
-etc/requirements/local.txt
-share/
 static/test/
 pip-selfcheck.json
 var/

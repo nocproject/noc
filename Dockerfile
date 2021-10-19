@@ -1,5 +1,7 @@
+#
 # Base layer containing system packages and requirements
-FROM python:3.8.8-slim-buster AS code
+#
+FROM python:3.8.12-slim-buster AS code
 ENV\
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
@@ -32,7 +34,7 @@ RUN \
     && mkdir /opt/nocspeedup \
     && cp /opt/noc/speedup/*.so /opt/nocspeedup \
     && if [ -f "$IP_SO" ]; then cp $IP_SO /opt/nocspeedup/ip.so; else \
-       curl -LJO https://cdn.getnoc.com/noc/libs/libip.so && cp libip.so /opt/nocspeedup/ip.so; fi \
+    curl -LJO https://cdn.getnoc.com/noc/libs/libip.so && cp libip.so /opt/nocspeedup/ip.so; fi \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && pip3 uninstall -y Cython \
     && apt remove --purge -y $BUILD_PACKAGES \
@@ -40,7 +42,6 @@ RUN \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -d /opt/noc -M -r -u 1200 -U noc -s /bin/sh \
     && chown noc /opt/noc
-
 
 VOLUME /opt/noc
 
@@ -50,15 +51,22 @@ EXPOSE 1200
 #HEALTHCHECK --interval=10s --timeout=1s \
 #    CMD curl -f http://0.0.0.0:1200/health/ || exit 1
 
+#
+# Developer's container
+#
 FROM code AS dev
 
 RUN \
     apt update && apt-get install -y --no-install-recommends \
     snmp \
     vim \
+    git \
     && (./scripts/build/get-noc-requirements.py dev | pip3 install -r /dev/stdin )\
     && rm -rf /var/lib/apt/lists/*
 
+#
+# Self-serving static ui files
+#
 FROM nginx:alpine AS static
 
 RUN apk add --no-cache curl
