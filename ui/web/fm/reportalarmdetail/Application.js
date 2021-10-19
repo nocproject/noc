@@ -174,6 +174,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             ["object_address", __("IP"), true],
             ["object_hostname", __("Hostname"), true],
             ["object_profile", __("Profile"), true],
+            ["object_object_profile", __("Object Profile"), true],
             ["object_admdomain", __("Administrative Domain"), true],
             ["object_platform", __("Platform"), true],
             ["object_version", __("Version"), true],
