@@ -11,11 +11,12 @@ import sys
 import datetime
 import re
 from collections import defaultdict
-from typing import Optional, Dict
+from typing import Any, Optional, Dict, List
 import operator
 
 # Third-party modules
 import orjson
+from bson import ObjectId
 
 # NOC modules
 from noc.config import config
@@ -53,9 +54,9 @@ class CorrelatorService(TornadoService):
     def __init__(self):
         super().__init__()
         self.version = version.version
-        self.rules = {}  # event_class -> [Rule]
-        self.back_rules = {}  # event_class -> [Rule]
-        self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
+        self.rules: Dict[ObjectId, List[Rule]] = {}
+        self.back_rules: Dict[ObjectId, List[Rule]] = {}
+        self.triggers: Dict[ObjectId, List[Trigger]] = {}
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         #
@@ -177,7 +178,7 @@ class CorrelatorService(TornadoService):
                 n += 1
         self.logger.info("%d RCA Rules have been loaded" % n)
 
-    def mark_as_failed(self, event):
+    def mark_as_failed(self, event: ActiveEvent):
         """
         Write error log and mark event as failed
         """
@@ -191,7 +192,7 @@ class CorrelatorService(TornadoService):
         r = "\n".join(r)
         event.mark_as_failed(version=self.version, traceback=r)
 
-    def set_root_cause(self, a):
+    def set_root_cause(self, a: ActiveAlarm) -> bool:
         """
         Search for root cause and set, if found
         :returns: Boolean. True, if root cause set
@@ -211,11 +212,11 @@ class CorrelatorService(TornadoService):
                 return True
         return False
 
-    def set_reverse_root_cause(self, a):
+    def set_reverse_root_cause(self, a: ActiveAlarm) -> bool:
         """
-        Set *a* as root cause for existing events
+        Set `a` as root cause for existing events
         :param a:
-        :return:
+        :return: True, if set as root
         """
         found = False
         for rc in self.rca_reverse[a.alarm_class.id]:
@@ -238,7 +239,7 @@ class CorrelatorService(TornadoService):
                     found = True
         return found
 
-    async def raise_alarm(self, r, e):
+    async def raise_alarm_from_rule(self, r: Rule, e: ActiveEvent):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info("Empty managed object, ignoring")
@@ -352,7 +353,7 @@ class CorrelatorService(TornadoService):
             a.vars,
         )
         metrics["alarm_raise"] += 1
-        await self.correlate(r, a)
+        await self.correlate(a)
         # Notify about new alarm
         if not a.root:
             a.managed_object.event(
@@ -373,7 +374,7 @@ class CorrelatorService(TornadoService):
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
 
-    async def correlate(self, r, a):
+    async def correlate(self, a: ActiveAlarm):
         # Topology RCA
         if a.alarm_class.topology_rca:
             await self.topology_rca(a)
@@ -402,8 +403,8 @@ class CorrelatorService(TornadoService):
                 error_report()
                 metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
-        if r.alarm_class.id in self.triggers:
-            for t in self.triggers[r.alarm_class.id]:
+        if a.alarm_class.id in self.triggers:
+            for t in self.triggers[a.alarm_class.id]:
                 try:
                     t.call(a)
                 except:  # noqa. Can probable happens anything from trigger
@@ -417,7 +418,7 @@ class CorrelatorService(TornadoService):
             metrics["alarm_drop"] += 1
             return
 
-    def clear_alarm(self, r, e):
+    def clear_alarm(self, r: Rule, e: ActiveEvent):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info(
@@ -447,7 +448,7 @@ class CorrelatorService(TornadoService):
                 a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name, ts=e.timestamp)
                 metrics["alarm_clear"] += 1
 
-    def get_delayed_event(self, r, e):
+    def get_delayed_event(self, r: Rule, e: ActiveEvent):
         """
         Check wrether all delayed conditions are met
 
@@ -504,9 +505,20 @@ class CorrelatorService(TornadoService):
         Called on new dispose message
         """
         data = orjson.loads(msg.value)
+        op = data.get("$op") or "event"
+        msg_handler = getattr(self, f"on_msg_{op}")
+        if not msg_handler:
+            self.logger.error("Unknown operation: '%s'. Discarding message", op)
+            return
+        await msg_handler(data)
+
+    async def on_msg_event(self, data: Dict[str, Any]) -> None:
+        """
+        Process `event` message type
+        """
         event_id = data["event_id"]
         hint = data["event"]
-        self.logger.info("[%s] Receiving message", event_id)
+        self.logger.info("[event|%s] Receiving message", event_id)
         metrics["alarm_dispose"] += 1
         try:
             event = ActiveEvent.from_json(hint)
@@ -545,7 +557,7 @@ class CorrelatorService(TornadoService):
                     self.logger.info("[%s] Ignored by action", event_id)
                     return
                 elif r.action == "raise" and r.combo_condition == "none":
-                    await self.raise_alarm(r, e)
+                    await self.raise_alarm_from_rule(r, e)
                 elif r.action == "clear" and r.combo_condition == "none":
                     self.clear_alarm(r, e)
                 if r.action in ("raise", "clear"):
@@ -560,7 +572,7 @@ class CorrelatorService(TornadoService):
                             de = self.get_delayed_event(br, e)
                             if de:
                                 if br.action == "raise":
-                                    await self.raise_alarm(br, de)
+                                    await self.raise_alarm_from_rule(br, de)
                                 elif br.action == "clear":
                                     self.clear_alarm(br, de)
                 if r.stop_disposition:
