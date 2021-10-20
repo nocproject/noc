@@ -108,6 +108,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+          name: "enable_alarm",
+          type: "boolean"
+        },
+        {
             name: "enable_authprofile",
             type: "boolean"
         },
@@ -261,6 +265,10 @@ Ext.define("NOC.main.label.Model", {
         },
         {
             name: "expose_datastream",
+            type: "boolean"
+        },
+        {
+            name: "expose_alarm",
             type: "boolean"
         },
         {

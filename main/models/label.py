@@ -161,6 +161,7 @@ class Label(Document):
     # Exposition scope
     expose_metric = BooleanField(default=False)
     expose_datastream = BooleanField(default=False)
+    expose_alarm = BooleanField(default=False)
     # Regex
     match_regex = ListField(EmbeddedDocumentField(RegexItem))
     # Integration with external NRI and TT systems
