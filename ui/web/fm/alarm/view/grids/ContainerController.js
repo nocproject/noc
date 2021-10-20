@@ -218,7 +218,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
             }),
             args = {
             direct_objects: objects,
-            subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+            subject: __('created from alarms list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
             contacts: NOC.email ? NOC.email : NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),

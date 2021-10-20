@@ -303,6 +303,8 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         record.set("stop_date", stop);
         record.set("stop_time", stop);
         me.callParent([record]);
+        me.cardButton.setDisabled(false);
+        me.affectedButton.setDisabled(false);
     },
 
     cleanData: function(v) {
@@ -348,18 +350,11 @@ Ext.define("NOC.maintenance.maintenance.Application", {
         me.previewItem(me.ITEM_OBJECTS, me.currentRecord);
     },
 
-    onNewRecord: function() {
+    newRecord: function(defaults) {
         var me = this;
+
+        me.callParent([defaults]);
         me.cardButton.setDisabled(true);
         me.affectedButton.setDisabled(true);
-        me.newRecord();
     },
-
-    onEditRecord: function(record) {
-        var me = this;
-
-        me.cardButton.setDisabled(false);
-        me.affectedButton.setDisabled(false);
-        me.callParent([record]);
-    }
 });
