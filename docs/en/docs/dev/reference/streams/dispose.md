@@ -11,6 +11,8 @@ while `CORE` pool will use `dispose.CORE` stream.
 ## Publishers
 
 - [classifier](../../../admin/reference/services/classifier.md) service.
+- [discovery](../../../admin/reference/services/discovery.md) service.
+- [ping](../../../admin/reference/services/ping.md) service.
 
 ## Subscribers
 
@@ -22,9 +24,15 @@ while `CORE` pool will use `dispose.CORE` stream.
 
 ## Message Format
 
-`dispose` stream carries JSON-encoded messages.
+`dispose` stream carries JSON-encoded messages of several types. Type of message is encoded
+in the `$op` field. Unknown message types and malformed messages are discarded.
+
+### event message
+
+`event` messages represent classified events which may raise and clear alarms.
 
 | Field      | Type                 | Description         |
 | ---------- | -------------------- | ------------------- |
+| `op`       | String               | Equals to `event`   |
 | `event_id` | String               | Registered event id |
 | `event`    | Object {{ complex }} | Event data          |

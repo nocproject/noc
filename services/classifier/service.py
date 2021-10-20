@@ -426,7 +426,7 @@ class ClassifierService(TornadoService):
             self.pool_partitions[fm_pool] = num_partitions
         partition = int(event.managed_object.id) % num_partitions
         self.publish(
-            orjson.dumps({"event_id": str(event.id), "event": event.to_json()}),
+            orjson.dumps({"$op": "event", "event_id": str(event.id), "event": event.to_json()}),
             stream=stream,
             partition=partition,
         )
