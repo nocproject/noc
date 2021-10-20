@@ -418,7 +418,7 @@ class CorrelatorService(TornadoService):
             metrics["alarm_drop"] += 1
             return
 
-    def clear_alarm(self, r: Rule, e: Event):
+    def clear_alarm(self, r: Rule, e: ActiveEvent):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info(
