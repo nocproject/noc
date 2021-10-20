@@ -49,7 +49,6 @@ from .alarmlog import AlarmLog
 
 
 @change
-@Label.model
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
@@ -844,7 +843,9 @@ class ActiveAlarm(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_alarm")
+        return Label.get_effective_setting(label, "enable_alarm") or Label.get_effective_setting(
+            label, "expose_alarm"
+        )
 
 
 # Avoid circular references
