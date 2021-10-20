@@ -743,6 +743,11 @@ Ext.define("NOC.main.label.Application", {
                             name: "expose_datastream",
                             xtype: "checkbox",
                             boxLabel: __("Datastream")
+                        },
+                        {
+                            name: "expose_alarm",
+                            xtype: "checkbox",
+                            boxLabel: __("Alarm")
                         }
                     ]
                 },
