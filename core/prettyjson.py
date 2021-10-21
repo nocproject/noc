@@ -59,7 +59,9 @@ class PrettyJSON(object):
                 nk = [k for k in order if k in keys]
                 nk += [k for k in keys if k not in order]
                 keys = nk
-            r = ",\n".join("%s: %s" % (cls.convert(k, 0), cls.convert(o[k], 0)) for k in keys)
+            r = ",\n".join(
+                f"{cls.convert(k, 0, order)}: {cls.convert(o[k], 0, order)}" for k in keys
+            )
             return indent("{\n%s\n}" % indent(r, 4), i)
         raise ValueError("Cannot encode %r" % o)
 

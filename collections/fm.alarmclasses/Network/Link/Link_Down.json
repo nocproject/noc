@@ -16,6 +16,18 @@
             }
         }
     ],
+    "components": [
+        {
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [
+                {
+                    "param": "interface",
+                    "var": "interface"
+                }
+            ]
+        }
+    ],
     "vars": [
         {
             "name": "interface",

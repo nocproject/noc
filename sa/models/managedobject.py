@@ -738,6 +738,27 @@ class ManagedObject(NOCModel):
             if ManagedObject.objects.filter(GroupAccess.Q(g) & Q(id=self.id)).exists()
         ]
 
+    @classmethod
+    def get_component(
+        cls, managed_object: "ManagedObject", mac=None, ipv4=None, vrf=None, **kwargs
+    ) -> Optional["ManagedObject"]:
+        from noc.inv.models.subinterface import SubInterface
+        from noc.inv.models.forwardinginstance import ForwardingInstance
+        from noc.inv.models.discoveryid import DiscoveryID
+
+        if mac:
+            mac = MACAddressParameter().clean(mac)
+            return DiscoveryID.find_object(mac)
+        if ipv4:
+            q = {"ipv4_addresses": ipv4}
+            if vrf is not None and vrf != "default":
+                fi = list(ForwardingInstance.objects.filter(name=vrf)[:2])
+                if len(fi) == 1:
+                    q["forwarding_instance"] = fi[0]
+            si = list(SubInterface.objects.filter(**q)[:2])
+            if len(si) == 1:
+                return si[0].managed_object
+
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = ["managedobject-name-to-id-%s" % self.name]

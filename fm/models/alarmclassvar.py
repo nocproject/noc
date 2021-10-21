@@ -25,3 +25,10 @@ class AlarmClassVar(EmbeddedDocument):
             and self.description == other.description
             and self.default == other.default
         )
+
+    @property
+    def json_data(self):
+        r = {"name": self.name, "description": self.description}
+        if self.default:
+            r["default"] = self.default
+        return r
