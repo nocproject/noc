@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,9 +23,10 @@ from noc.config import config
 from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.mongo.connection import connect
-from services.correlator.rule import Rule
-from services.correlator.rcacondition import RCACondition
-from services.correlator.trigger import Trigger
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.correlator.rule import Rule
+from noc.services.correlator.rcacondition import RCACondition
+from noc.services.correlator.trigger import Trigger
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -38,7 +39,7 @@ from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
-from services.correlator import utils
+from noc.services.correlator import utils
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.liftbridge.message import Message
@@ -178,7 +179,7 @@ class CorrelatorService(TornadoService):
                 n += 1
         self.logger.info("%d RCA Rules have been loaded" % n)
 
-    def mark_as_failed(self, event: ActiveEvent):
+    def mark_as_failed(self, event: "ActiveEvent"):
         """
         Write error log and mark event as failed
         """
@@ -239,88 +240,134 @@ class CorrelatorService(TornadoService):
                     found = True
         return found
 
-    async def raise_alarm_from_rule(self, r: Rule, e: ActiveEvent):
-        managed_object = self.eval_expression(r.managed_object, event=e)
-        if not managed_object:
-            self.logger.info("Empty managed object, ignoring")
-            return
+    def try_reopen_alarm(
+        self,
+        managed_object: ManagedObject,
+        discriminator: str,
+        timestamp: datetime.datetime,
+        event: ActiveEvent = None,
+    ) -> Optional[ActiveAlarm]:
+        """
+        Try to reopen archived alarm
+
+        :param managed_object: Managed Object instance
+        :param discriminator: Discriminator string
+        :param timestamp: New alarm timestamp
+        :param event:
+        :returns: Reopened alarm, when found, None otherwise
+        """
+        arch = ArchivedAlarm.objects.filter(
+            managed_object=managed_object.id,
+            discriminator=discriminator,
+            control_time__gte=timestamp,
+        ).first()
+        if not arch:
+            return None
+        if event:
+            self.logger.info(
+                "[%s|%s|%s] %s reopens alarm %s(%s)",
+                event.id,
+                managed_object.name,
+                managed_object.address,
+                event.event_class.name,
+                arch.alarm_class.name,
+                arch.id,
+            )
+            reason = f"Reopened by {event.event_class.name}({event.id})"
+        else:
+            reason = "Reopened by alarm"
+        alarm = arch.reopen(reason)
+        metrics["alarm_reopen"] += 1
+        return alarm
+
+    def refresh_alarm(self, alarm: ActiveAlarm, timestamp: datetime.datetime):
+        """
+        Refresh active alarm data
+        """
+        if timestamp < alarm.timestamp:
+            # Set to earlier date
+            alarm.timestamp = timestamp
+            alarm.save()
+        elif timestamp > alarm.last_update:
+            # Refresh last update
+            alarm.last_update = timestamp
+            alarm.save()
+
+    async def raise_alarm(
+        self,
+        managed_object: ManagedObject,
+        timestamp: datetime.datetime,
+        alarm_class: AlarmClass,
+        vars: Optional[Dict[str, Any]],
+        event: Optional[ActiveEvent] = None,
+    ) -> Optional[ActiveAlarm]:
+        """
+        Raise alarm
+        :param managed_object: Managed Object instance
+        :param timestamp: Alarm Timestamp
+        :param alarm_class: Alarm Class reference
+        :param vars: Alarm variables
+        :param event:
+        :returns: Alarm, if created, None otherwise
+        """
+        scope_label = str(event.id) if event else "DIRECT"
         # @todo: Make configurable
         if not managed_object.is_managed:
             self.logger.info("Managed object is not managed. Do not raise alarm")
-            return
-        if e.managed_object.id != managed_object.id:
-            metrics["alarm_change_mo"] += 1
-            self.logger.info("Changing managed object to %s", managed_object.name)
-        discriminator, vars = r.get_vars(e)
-        if r.unique:
+            return None
+        discriminator = alarm_class.get_discriminator(vars)
+        if alarm_class.is_unique:
             assert discriminator is not None
-            a = ActiveAlarm.objects.filter(
+            alarm = ActiveAlarm.objects.filter(
                 managed_object=managed_object.id, discriminator=discriminator
             ).first()
-            if not a:
-                # Try to reopen alarm
-                a = ArchivedAlarm.objects.filter(
-                    managed_object=managed_object.id,
+            if not alarm:
+                alarm = self.try_reopen_alarm(
+                    managed_object=managed_object,
                     discriminator=discriminator,
-                    control_time__gte=e.timestamp,
-                ).first()
-                if a:
-                    # Reopen alarm
-                    self.logger.info(
-                        "[%s|%s|%s] %s reopens alarm %s(%s)",
-                        e.id,
-                        managed_object.name,
-                        managed_object.address,
-                        e.event_class.name,
-                        a.alarm_class.name,
-                        a.id,
-                    )
-                    a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
-                    metrics["alarm_reopen"] += 1
-            if a:
-                # Active alarm found, refresh
+                    timestamp=timestamp,
+                    event=event,
+                )
+            if alarm:
                 self.logger.info(
                     "[%s|%s|%s] Contributing event %s to active alarm %s(%s)",
-                    e.id,
+                    scope_label,
                     managed_object.name,
                     managed_object.address,
-                    e.event_class.name,
-                    a.alarm_class.name,
-                    a.id,
+                    event.event_class.name,
+                    alarm.alarm_class.name,
+                    alarm.id,
                 )
-                # Contribute event to alarm
-                e.contribute_to_alarm(a)
-                if e.timestamp < a.timestamp:
-                    # Set to earlier date
-                    a.timestamp = e.timestamp
-                    a.save()
-                elif e.timestamp > a.last_update:
-                    # Refresh last update
-                    a.last_update = e.timestamp
-                    a.save()
-                metrics["alarm_contribute"] += 1
-                return
+                if event:
+                    event.contribute_to_alarm(alarm)
+                    metrics["alarm_contribute"] += 1
+                self.refresh_alarm(alarm, timestamp)
+                return alarm
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
         summary["object"] = {managed_object.object_profile.id: 1}
         #
         severity = max(ServiceSummary.get_severity(summary), 1)
+        # @todo: Fix
         self.logger.info(
-            "[%s|%s|%s] %s: Calculated alarm severity is: %s",
-            e.id,
+            "[%s|%s|%s] Calculated alarm severity is: %s",
+            scope_label,
             managed_object.name,
             managed_object.address,
-            r.u_name,
             severity,
         )
         # Create new alarm
         direct_services = SummaryItem.dict_to_items(summary["service"])
         direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
+        if event:
+            msg = f"Alarm risen from event {event.id}({event.event_class.name})"
+        else:
+            msg = "Alarm risen directly"
         a = ActiveAlarm(
-            timestamp=e.timestamp,
-            last_update=e.timestamp,
+            timestamp=timestamp,
+            last_update=timestamp,
             managed_object=managed_object.id,
-            alarm_class=r.alarm_class,
+            alarm_class=alarm_class,
             severity=severity,
             vars=vars,
             discriminator=discriminator,
@@ -334,20 +381,19 @@ class CorrelatorService(TornadoService):
                     timestamp=datetime.datetime.now(),
                     from_status="A",
                     to_status="A",
-                    message="Alarm risen from event %s(%s) by rule '%s'"
-                    % (str(e.id), str(e.event_class.name), r.u_name),
+                    message=msg,
                 )
             ],
-            opening_event=e.id,
+            opening_event=event.id if event else None,
         )
         a.save()
-        e.contribute_to_alarm(a)
+        if event:
+            event.contribute_to_alarm(a)
         self.logger.info(
-            "[%s|%s|%s] %s raises alarm %s(%s): %r",
-            e.id,
+            "[%s|%s|%s] Raise alarm %s(%s): %r",
+            scope_label,
             managed_object.name,
             managed_object.address,
-            e.event_class.name,
             a.alarm_class.name,
             a.id,
             a.vars,
@@ -373,6 +419,28 @@ class CorrelatorService(TornadoService):
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
+
+    async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent):
+        """
+        Raise alarm from incoming event
+        """
+        # Find effective managed object
+        managed_object = self.eval_expression(rule.managed_object, event=event)
+        if not managed_object:
+            self.logger.info("Empty managed object, ignoring")
+            return
+        if event.managed_object.id != managed_object.id:
+            metrics["alarm_change_mo"] += 1
+            self.logger.info("Changing managed object to %s", managed_object.name)
+        # Extract variables
+        vars = rule.get_vars(event)
+        await self.raise_alarm(
+            managed_object=managed_object,
+            timestamp=event.timestamp,
+            alarm_class=rule.alarm_class,
+            vars=vars,
+            event=event,
+        )
 
     async def correlate(self, a: ActiveAlarm):
         # Topology RCA
@@ -418,49 +486,53 @@ class CorrelatorService(TornadoService):
             metrics["alarm_drop"] += 1
             return
 
-    def clear_alarm(self, r: Rule, e: ActiveEvent):
-        managed_object = self.eval_expression(r.managed_object, event=e)
+    def clear_alarm_from_rule(self, rule: "Rule", event: "ActiveEvent"):
+        managed_object = self.eval_expression(rule.managed_object, event=event)
         if not managed_object:
             self.logger.info(
-                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", e.id
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", event.id
             )
             metrics["unknown_object"] += 1
             return
-        if r.unique:
-            discriminator, vars = r.get_vars(e)
-            assert discriminator is not None
-            a = ActiveAlarm.objects.filter(
-                managed_object=managed_object.id, discriminator=discriminator
-            ).first()
-            if a:
-                self.logger.info(
-                    "[%s|%s|%s] %s clears alarm %s(%s)",
-                    e.id,
-                    managed_object.name,
-                    managed_object.address,
-                    e.event_class.name,
-                    a.alarm_class.name,
-                    a.id,
-                )
-                e.contribute_to_alarm(a)
-                a.closing_event = e.id
-                a.last_update = max(a.last_update, e.timestamp)
-                a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name, ts=e.timestamp)
-                metrics["alarm_clear"] += 1
+        if not rule.unique:
+            return
+        vars = rule.get_vars(event)
+        discriminator = rule.alarm_class.get_discriminator(vars)
+        assert discriminator is not None
+        alarm: "ActiveAlarm" = ActiveAlarm.objects.filter(
+            managed_object=managed_object.id, discriminator=discriminator
+        ).first()
+        if not alarm:
+            return
+        self.logger.info(
+            "[%s|%s|%s] %s clears alarm %s(%s)",
+            event.id,
+            managed_object.name,
+            managed_object.address,
+            event.event_class.name,
+            alarm.alarm_class.name,
+            alarm.id,
+        )
+        event.contribute_to_alarm(alarm)
+        alarm.closing_event = event.id
+        alarm.last_update = max(alarm.last_update, event.timestamp)
+        alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
+        metrics["alarm_clear"] += 1
 
-    def get_delayed_event(self, r: Rule, e: ActiveEvent):
+    def get_delayed_event(self, rule: Rule, event: ActiveEvent):
         """
         Check wrether all delayed conditions are met
 
-        :param r: Delayed rule
-        :param e: Event which can trigger delayed rule
+        :param rule: Delayed rule
+        :param event: Event which can trigger delayed rule
         """
         # @todo: Rewrite to scheduler
-        discriminator, vars = r.get_vars(e)
-        ws = e.timestamp - datetime.timedelta(seconds=r.combo_window)
+        vars = rule.get_vars(event)
+        discriminator = rule.alarm_class.get_discriminator(vars)
+        ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
         de = ActiveEvent.objects.filter(
-            managed_object=e.managed_object_id,
-            event_class=r.event_class,
+            managed_object=event.managed_object_id,
+            event_class=rule.event_class,
             discriminator=discriminator,
             timestamp__gte=ws,
         ).first()
@@ -472,21 +544,21 @@ class CorrelatorService(TornadoService):
         fe = [
             ee.event_class.id
             for ee in ActiveEvent.objects.filter(
-                managed_object=e.managed_object_id,
-                event_class__in=r.combo_event_classes,
+                managed_object=event.managed_object_id,
+                event_class__in=rule.combo_event_classes,
                 discriminator=discriminator,
                 timestamp__gte=ws,
             ).order_by("timestamp")
         ]
-        if r.combo_condition == "sequence":
+        if rule.combo_condition == "sequence":
             # Exact match
-            if fe == self.combo_event_classes:
+            if fe == rule.combo_event_classes:
                 return de
-        elif r.combo_condition == "all":
+        elif rule.combo_condition == "all":
             # All present
-            if not any([c for c in r.combo_event_classes if c not in fe]):
+            if not any([c for c in rule.combo_event_classes if c not in fe]):
                 return de
-        elif r.combo_condition == "any":
+        elif rule.combo_condition == "any":
             # Any found
             if fe:
                 return de
@@ -533,7 +605,7 @@ class CorrelatorService(TornadoService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
-    async def dispose_event(self, e):
+    async def dispose_event(self, e: "ActiveEvent"):
         """
         Dispose event according to disposition rule
         """
@@ -546,37 +618,38 @@ class CorrelatorService(TornadoService):
             )
             return
         # Apply disposition rules
-        for r in drc:
-            if self.eval_expression(r.condition, event=e):
-                # Process action
-                if r.action == "drop":
-                    self.logger.info("[%s] Dropped by action", event_id)
-                    e.delete()
-                    return
-                elif r.action == "ignore":
-                    self.logger.info("[%s] Ignored by action", event_id)
-                    return
-                elif r.action == "raise" and r.combo_condition == "none":
-                    await self.raise_alarm_from_rule(r, e)
-                elif r.action == "clear" and r.combo_condition == "none":
-                    self.clear_alarm(r, e)
-                if r.action in ("raise", "clear"):
-                    # Write discriminator if can trigger delayed event
-                    if r.unique and r.event_class.id in self.back_rules:
-                        discriminator, vars = r.get_vars(e)
-                        e.discriminator = discriminator
-                        e.save()
-                    # Process delayed combo conditions
-                    if e.event_class.id in self.back_rules:
-                        for br in self.back_rules[e.event_class.id]:
-                            de = self.get_delayed_event(br, e)
-                            if de:
-                                if br.action == "raise":
-                                    await self.raise_alarm_from_rule(br, de)
-                                elif br.action == "clear":
-                                    self.clear_alarm(br, de)
-                if r.stop_disposition:
-                    break
+        for rule in drc:
+            if not self.eval_expression(rule.condition, event=e):
+                continue  # Rule is not applicable
+            # Process action
+            if rule.action == "drop":
+                self.logger.info("[%s] Dropped by action", event_id)
+                e.delete()
+                return
+            elif rule.action == "ignore":
+                self.logger.info("[%s] Ignored by action", event_id)
+                return
+            elif rule.action == "raise" and rule.combo_condition == "none":
+                await self.raise_alarm_from_rule(rule, e)
+            elif rule.action == "clear" and rule.combo_condition == "none":
+                self.clear_alarm_from_rule(rule, e)
+            if rule.action in ("raise", "clear"):
+                # Write discriminator if can trigger delayed event
+                if rule.unique and rule.event_class.id in self.back_rules:
+                    vars = rule.get_vars(e)
+                    e.discriminator = rule.alarm_class.get_discriminator(vars)
+                    e.save()
+                # Process delayed combo conditions
+                if e.event_class.id in self.back_rules:
+                    for br in self.back_rules[e.event_class.id]:
+                        de = self.get_delayed_event(br, e)
+                        if de:
+                            if br.action == "raise":
+                                await self.raise_alarm_from_rule(br, de)
+                            elif br.action == "clear":
+                                self.clear_alarm_from_rule(br, de)
+            if rule.stop_disposition:
+                break
         self.logger.info("[%s] Disposition complete", event_id)
 
     async def topology_rca(self, alarm):
