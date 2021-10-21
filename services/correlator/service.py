@@ -23,10 +23,10 @@ from noc.config import config
 from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.mongo.connection import connect
-from sa.models.managedobject import ManagedObject
-from services.correlator.rule import Rule
-from services.correlator.rcacondition import RCACondition
-from services.correlator.trigger import Trigger
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.correlator.rule import Rule
+from noc.services.correlator.rcacondition import RCACondition
+from noc.services.correlator.trigger import Trigger
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -39,7 +39,7 @@ from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
-from services.correlator import utils
+from noc.services.correlator import utils
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.liftbridge.message import Message
@@ -179,7 +179,7 @@ class CorrelatorService(TornadoService):
                 n += 1
         self.logger.info("%d RCA Rules have been loaded" % n)
 
-    def mark_as_failed(self, event: ActiveEvent):
+    def mark_as_failed(self, event: "ActiveEvent"):
         """
         Write error log and mark event as failed
         """
@@ -252,6 +252,8 @@ class CorrelatorService(TornadoService):
 
         :param managed_object: Managed Object instance
         :param discriminator: Discriminator string
+        :param timestamp: New alarm timestamp
+        :param event:
         :returns: Reopened alarm, when found, None otherwise
         """
         arch = ArchivedAlarm.objects.filter(
@@ -278,6 +280,7 @@ class CorrelatorService(TornadoService):
         metrics["alarm_reopen"] += 1
         return alarm
 
+    @staticmethod
     def refresh_alarm(self, alarm: ActiveAlarm, timestamp: datetime.datetime):
         """
         Refresh active alarm data
@@ -305,6 +308,7 @@ class CorrelatorService(TornadoService):
         :param timestamp: Alarm Timestamp
         :param alarm_class: Alarm Class reference
         :param vars: Alarm variables
+        :param event:
         :returns: Alarm, if created, None otherwise
         """
         scope_label = str(event.id) if event else "DIRECT"
@@ -383,7 +387,7 @@ class CorrelatorService(TornadoService):
             ],
             opening_event=event.id if event else None,
         )
-        alarm.save()
+        a.save()
         if event:
             event.contribute_to_alarm(a)
         self.logger.info(
@@ -483,7 +487,7 @@ class CorrelatorService(TornadoService):
             metrics["alarm_drop"] += 1
             return
 
-    def clear_alarm_from_rule(self, rule: Rule, event: ActiveEvent):
+    def clear_alarm_from_rule(self, rule: "Rule", event: "ActiveEvent"):
         managed_object = self.eval_expression(rule.managed_object, event=event)
         if not managed_object:
             self.logger.info(
@@ -496,7 +500,7 @@ class CorrelatorService(TornadoService):
         vars = rule.get_vars(event)
         discriminator = rule.alarm_class.get_discriminator(vars)
         assert discriminator is not None
-        alarm = ActiveAlarm.objects.filter(
+        alarm: "ActiveAlarm" = ActiveAlarm.objects.filter(
             managed_object=managed_object.id, discriminator=discriminator
         ).first()
         if not alarm:
@@ -513,17 +517,15 @@ class CorrelatorService(TornadoService):
         event.contribute_to_alarm(alarm)
         alarm.closing_event = event.id
         alarm.last_update = max(alarm.last_update, event.timestamp)
-        alarm.clear_alarm_from_rule(
-            "Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp
-        )
+        alarm.clear("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
         metrics["alarm_clear"] += 1
 
     def get_delayed_event(self, rule: Rule, event: ActiveEvent):
         """
         Check wrether all delayed conditions are met
 
-        :param r: Delayed rule
-        :param e: Event which can trigger delayed rule
+        :param rule: Delayed rule
+        :param event: Event which can trigger delayed rule
         """
         # @todo: Rewrite to scheduler
         vars = rule.get_vars(event)
@@ -551,7 +553,7 @@ class CorrelatorService(TornadoService):
         ]
         if rule.combo_condition == "sequence":
             # Exact match
-            if fe == self.combo_event_classes:
+            if fe == rule.combo_event_classes:
                 return de
         elif rule.combo_condition == "all":
             # All present
@@ -604,7 +606,7 @@ class CorrelatorService(TornadoService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
-    async def dispose_event(self, e):
+    async def dispose_event(self, e: "ActiveEvent"):
         """
         Dispose event according to disposition rule
         """
