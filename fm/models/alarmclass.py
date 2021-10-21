@@ -10,6 +10,7 @@ import hashlib
 import os
 from threading import Lock
 import operator
+from typing import Any, Optional, Dict
 
 # Third-party modules
 from mongoengine.document import Document
@@ -222,7 +223,7 @@ class AlarmClass(Document):
         self.category = c.id
         super().save(*args, **kwargs)
 
-    def get_discriminator(self, vars) -> str:
+    def get_discriminator(self, vars: Optional[Dict[str, Any]]) -> str:
         """
         Calculate discriminator hash
 

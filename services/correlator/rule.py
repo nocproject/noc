@@ -1,11 +1,15 @@
 # ---------------------------------------------------------------------
 # Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Any, Optional, Dict
+
 # NOC modules
+from noc.fm.models.activeevent import ActiveEvent
 from noc.lib.datasource import datasource_registry
 
 
@@ -61,32 +65,29 @@ class Rule(object):
                     {},
                 )
 
-    def get_vars(self, e):
+    def get_vars(self, event: ActiveEvent) -> Optional[Dict[str, Any]]:
         """
         Get alarm variables from event.
 
         :param e: ActiveEvent
-        :returns: tuple of (discriminator, vars)
+        :returns: Dict of variables or None
         """
-        if self.var_mapping:
-            vars = self.c_defaults.copy()
-            # Map vars
-            for k, v in self.var_mapping.items():
-                try:
-                    vars[v] = e.vars[k]
-                except KeyError:
-                    pass
-            # Calculate dynamic defaults
-            ds_vars = vars.copy()
-            ds_vars["managed_object"] = e.managed_object
-            context = {k: v(ds_vars) for k, v in self.datasources.items()}
-            context.update(vars)
-            for k, v in self.d_defaults.items():
-                x = eval(v, {}, context)
-                if x:
-                    vars[k] = x
-            # Calculate discriminator
-            discriminator = self.alarm_class.get_discriminator(vars)
-            return discriminator, vars
-        else:
-            return self.alarm_class.get_discriminator({}), None
+        if not self.var_mapping:
+            return None
+        vars = self.c_defaults.copy()
+        # Map vars
+        for k, v in self.var_mapping.items():
+            try:
+                vars[v] = event.vars[k]
+            except KeyError:
+                pass
+        # Calculate dynamic defaults
+        ds_vars = vars.copy()
+        ds_vars["managed_object"] = event.managed_object
+        context = {k: v(ds_vars) for k, v in self.datasources.items()}
+        context.update(vars)
+        for k, v in self.d_defaults.items():
+            x = eval(v, {}, context)
+            if x:
+                vars[k] = x
+        return vars
