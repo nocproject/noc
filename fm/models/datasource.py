@@ -25,3 +25,11 @@ class DataSource(EmbeddedDocument):
             and self.datasource == other.datasource
             and self.search == other.search
         )
+
+    @property
+    def json_data(self):
+        return {
+            "name": self.name,
+            "datasource": self.datasource,
+            "search": {ss: self.search[ss] for ss in self.search},
+        }

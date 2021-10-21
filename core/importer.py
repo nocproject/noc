@@ -105,6 +105,7 @@ class NOCPyruleLoader(NOCLoader):
     def _get_collection(self):
         if not self.collection:
             from noc.core.mongo.connection import get_db
+
             self.collection = get_db()[self.COLLECTION_NAME]
         return self.collection
 

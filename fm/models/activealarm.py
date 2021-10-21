@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 from collections import defaultdict
-from typing import Optional
+from typing import Optional, Set, Any, Dict
 
 # Third-party modules
 from django.template import Template as DjangoTemplate
@@ -30,6 +30,7 @@ from mongoengine.errors import SaveConditionError
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.models import get_model
 from noc.aaa.models.user import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
@@ -398,6 +399,14 @@ class ActiveAlarm(Document):
         ctx = Context(self.get_template_vars())
         s = DjangoTemplate(self.alarm_class.body_template).render(ctx)
         return s
+
+    @property
+    def components(self):
+        components = getattr(self, "_components", None)
+        if components:
+            return components
+        self._components = ComponentHub(self)
+        return self._components
 
     def subscribe(self, user):
         """
@@ -846,6 +855,57 @@ class ActiveAlarm(Document):
         return Label.get_effective_setting(label, "enable_alarm") or Label.get_effective_setting(
             label, "expose_alarm"
         )
+
+
+class ComponentHub(object):
+    def __init__(self, alarm: ActiveAlarm):
+        self.__alarm = alarm
+        self.__components: Dict[str, Any] = {}
+        self.__all_components: Optional[Set[str]] = None
+
+    def get(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
+        if name in self.__components:
+            return self.__components[name] if self.__components[name] is not None else default
+        self.__refresh_all_components()
+        if name not in self.__all_components:
+            return default
+        v = self.__get_component(name)
+        self.__components[name] = v
+        return v if v is not None else default
+
+    def __getitem__(self, name: str) -> Any:
+        v = self.get(name)
+        if v is None:
+            raise KeyError
+        return v
+
+    def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
+        v = self.get(name)
+        if v is None and default is None:
+            raise AttributeError
+        return default if v is None else v
+
+    def __contains__(self, name: str) -> bool:
+        return self.get(name) is not None
+
+    def __get_component(self, name: str) -> Optional[Any]:
+        for c in self.__alarm.alarm_class.components:
+            if c.name != name:
+                continue
+            model = get_model(c.model)
+            if not hasattr(model, "get_component"):
+                # Model has not supported component interface
+                break
+            args = {"managed_object": self.__alarm.managed_object}
+            for arg in c.args:
+                if arg["var"] in self.__alarm.vars:
+                    args[arg["param"]] = self.__alarm.vars[arg["var"]]
+            return model.get_component(**args)
+
+    def __refresh_all_components(self) -> None:
+        if self.__all_components is not None:
+            return
+        self.__all_components = {c.name for c in self.__alarm.alarm_class.components}
 
 
 # Avoid circular references

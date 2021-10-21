@@ -138,6 +138,28 @@ class Interface(Document):
     def get_by_id(cls, id) -> Optional["Interface"]:
         return Interface.objects.filter(id=id).first()
 
+    @classmethod
+    def get_component(
+        cls, managed_object: "ManagedObject", interface=None, ifindex=None, **kwargs
+    ) -> Optional["Interface"]:
+        from noc.inv.models.subinterface import SubInterface
+
+        q = {}
+        if interface:
+            q["name"] = managed_object.get_profile().convert_interface_name(interface)
+        elif ifindex:
+            q["ifindex"] = int(ifindex)
+        if not q:
+            return
+        q["managed_object"] = managed_object.id
+        iface = Interface.objects.filter(**q).first()
+        if iface:
+            return iface
+        # Try to find subinterface
+        si = SubInterface.objects.filter(**q).first()
+        if si:
+            return si.interface
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id

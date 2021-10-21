@@ -36,3 +36,13 @@ class AlarmRootCauseCondition(EmbeddedDocument):
             and self.condition == other.condition
             and self.match_condition == other.match_condition
         )
+
+    @property
+    def json_data(self):
+        r = {"name": self.name, "root__name": self.root.name, "window": self.window}
+        if self.condition:
+            r["condition"] = self.condition
+        r["match_condition"] = {}
+        for key in self.match_condition:
+            r["match_condition"][key] = self.match_condition[key]
+        return r

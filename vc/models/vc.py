@@ -8,6 +8,7 @@
 # Python modules
 import re
 import operator
+from typing import Optional
 from threading import Lock
 
 # Third-party modules
@@ -102,6 +103,15 @@ class VC(NOCModel):
         name = rx_vc_underline.sub("_", name)
         name = rx_vc_empty.sub("", name)
         return name
+
+    @classmethod
+    def get_component(cls, managed_object, l1=None, l2=None, **kwargs) -> Optional["VC"]:
+        if not l1 or not l2:
+            return
+        if managed_object.vc_domain:
+            r = list(VC.objects.filter(vc_domain=managed_object.vc_domain, l1=l1, l2=l2))
+            if r:
+                return r[0]
 
     def save(self, *args, **kwargs):
         """

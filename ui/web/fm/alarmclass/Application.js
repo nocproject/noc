@@ -10,6 +10,7 @@ Ext.define('NOC.fm.alarmclass.Application', {
     extend: 'NOC.core.ModelApplication',
     requires: [
         'NOC.core.JSONPreview',
+        "NOC.core.ListFormField",
         'NOC.fm.alarmclass.Model',
         'NOC.fm.alarmclass.LookupField',
         'NOC.fm.alarmseverity.LookupField',
@@ -211,6 +212,50 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                 }
                             ]
                         }, // Data Sources
+                        {
+                            title: __('Components'),
+                            items: [
+                                {
+                                    name: "components",
+                                    xtype: "listform",
+                                    fieldLabel: __("Components"),
+                                    labelAlign: "top",
+                                    items: [
+                                        {
+                                            name: "name",
+                                            xtype: "textfield",
+                                            fieldLabel: __("Name"),
+                                            allowBlank: false
+                                        },
+                                        {
+                                            name: "model",
+                                            xtype: "textfield",
+                                            fieldLabel: __("Model"),
+                                            allowBlank: false
+                                        },
+                                        {
+                                            name: "args",
+                                            xtype: "gridfield",
+                                            fieldLabel: __("Args"),
+                                            columns: [
+                                                {
+                                                    dataIndex: "param",
+                                                    text: __("Param"),
+                                                    editor: "textfield",
+                                                    width: 150
+                                                },
+                                                {
+                                                    dataIndex: "var",
+                                                    text: __("Var"),
+                                                    editor: "textfield",
+                                                    width: 100
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }, // Components
                         {
                             title: __('Root Cause'),
                             items: [

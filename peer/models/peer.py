@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -192,6 +195,11 @@ class Peer(NOCModel):
             return data[0]
         else:
             return None
+
+    @classmethod
+    def get_component(cls, managed_object, peer=None, **kwargs) -> Optional["Peer"]:
+        if peer:
+            return Peer.get_peer(peer)
 
     def touch_rpsl(self):
         c_rpsl = self.rpsl.read()

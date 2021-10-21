@@ -18,3 +18,13 @@ class AlarmPlugin(EmbeddedDocument):
 
     def __str__(self):
         return self.name
+
+    @property
+    def json_data(self):
+        r = {
+            "name": self.name,
+        }
+        if self.config:
+            for key in self.config:
+                r[key] = self.config[key]
+        return r

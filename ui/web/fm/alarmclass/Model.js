@@ -32,6 +32,10 @@ Ext.define("NOC.fm.alarmclass.Model", {
             type: "auto",
         },
         {
+            name: "components",
+            type: "auto",
+        },
+        {
             name: "vars",
             type: "auto",
         },

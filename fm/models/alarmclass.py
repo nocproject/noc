@@ -13,6 +13,7 @@ import operator
 
 # Third-party modules
 from mongoengine.document import Document
+from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     UUIDField,
@@ -28,13 +29,13 @@ import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.escape import json_escape as q
 from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.comp import smart_bytes
+from noc.core.prettyjson import to_json
 from .alarmseverity import AlarmSeverity
 from .alarmclassvar import AlarmClassVar
 from .datasource import DataSource
@@ -44,6 +45,35 @@ from .alarmplugin import AlarmPlugin
 
 id_lock = Lock()
 handlers_lock = Lock()
+
+
+class ComponentArgs(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    param = StringField(required=True)
+    var = StringField(required=True)
+
+
+class Component(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    name = StringField(required=True)
+    model = StringField(required=True)
+    args = ListField(EmbeddedDocumentField(ComponentArgs))
+
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.name == other.name and self.model == other.model and self.args == other.args
+
+    @property
+    def json_data(self):
+        return {
+            "name": self.name,
+            "model": self.model,
+            "args": [{"param": a["param"], "var": a["var"]} for a in self.args],
+        }
 
 
 @bi_sync
@@ -85,6 +115,9 @@ class AlarmClass(Document):
     default_severity = PlainReferenceField(AlarmSeverity)
     #
     datasources = ListField(EmbeddedDocumentField(DataSource))
+    #
+    components = ListField(EmbeddedDocumentField(Component))
+    #
     vars = ListField(EmbeddedDocumentField(AlarmClassVar))
     # Text messages
     subject_template = StringField()
@@ -201,141 +234,88 @@ class AlarmClass(Document):
             return hashlib.sha1(smart_bytes("\x00".join(ds))).hexdigest()
         return hashlib.sha1(smart_bytes(self.name)).hexdigest()
 
-    def to_json(self):
-        c = self
-        r = ["{"]
-        r += ['    "name": "%s",' % q(c.name)]
-        r += ['    "$collection": "%s",' % self._meta["json_collection"]]
-        r += ['    "uuid": "%s",' % c.uuid]
-        if c.description:
-            r += ['    "desciption": "%s",' % q(c.description)]
-        r += ['    "is_unique": %s,' % q(c.is_unique)]
-        if c.is_unique and c.discriminator:
-            r += [
-                '    "discriminator": [%s],' % ", ".join(['"%s"' % q(d) for d in c.discriminator])
-            ]
-        r += ['    "user_clearable": %s,' % q(c.user_clearable)]
-        r += ['    "default_severity__name": "%s",' % q(c.default_severity.name)]
-        # datasources
-        if c.datasources:
-            r += ['    "datasources": [']
-            jds = []
-            for ds in c.datasources:
-                x = []
-                x += ['            "name": "%s"' % q(ds.name)]
-                x += ['            "datasource": "%s"' % q(ds.datasource)]
-                ss = []
-                for k in sorted(ds.search):
-                    ss += ['                "%s": "%s"' % (q(k), q(ds.search[k]))]
-                x += ['            "search": {\n%s\n            }' % (",\n".join(ss))]
-                jds += ["        {\n%s\n        }" % ",\n".join(x)]
-            r += [",\n\n".join(jds)]
-            r += ["    ],"]
-        # vars
-        vars = []
-        for v in c.vars:
-            vd = ["        {"]
-            vd += ['            "name": "%s",' % q(v.name)]
-            vd += ['            "description": "%s"' % q(v.description)]
-            if v.default:
-                vd[-1] += ","
-                vd += ['            "default": "%s"' % q(v.default)]
-            vd += ["        }"]
-            vars += ["\n".join(vd)]
-        r += ['    "vars": [']
-        r += [",\n".join(vars)]
-        r += ["    ],"]
-        # Handlers
+    @property
+    def json_data(self):
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "is_unique": self.is_unique,
+            "discriminator": [d for d in self.discriminator],
+            "user_clearable": self.user_clearable,
+            "default_severity__name": self.default_severity.name,
+        }
+        if self.description:
+            r["description"] = self.description
+        if self.datasources:
+            r["datasources"] = [s.json_data for s in self.datasources]
+        if self.components:
+            r["components"] = [c.json_data for c in self.components]
+        r["vars"] = [v.json_data for v in self.vars]
         if self.handlers:
-            hh = ['        "%s"' % h for h in self.handlers]
-            r += ['    "handlers": [']
-            r += [",\n\n".join(hh)]
-            r += ["    ],"]
+            r["handlers"] = [h for h in self.handlers]
         if self.clear_handlers:
-            hh = ['        "%s"' % h for h in self.clear_handlers]
-            r += ['    "clear_handlers": [']
-            r += [",\n\n".join(hh)]
-            r += ["    ],"]
-        # Text
-        r += ['    "subject_template": "%s",' % q(c.subject_template)]
-        r += ['    "body_template": "%s",' % q(c.body_template)]
-        r += ['    "symptoms": "%s",' % q(c.symptoms if c.symptoms else "")]
-        r += ['    "probable_causes": "%s",' % q(c.probable_causes if c.probable_causes else "")]
-        r += [
-            '    "recommended_actions": "%s",'
-            % q(c.recommended_actions if c.recommended_actions else "")
-        ]
-        # Root cause
+            r["clear_handlers"] = [h for h in self.clear_handlers]
+        r["subject_template"] = self.subject_template
+        r["body_template"] = self.body_template
+        r["symptoms"] = self.symptoms
+        r["probable_causes"] = self.probable_causes
+        r["recommended_actions"] = self.recommended_actions or ""
         if self.root_cause:
-            rc = []
-            for rr in self.root_cause:
-                rcd = ["        {"]
-                rcd += ['            "name": "%s",' % rr.name]
-                rcd += ['            "root__name": "%s",' % rr.root.name]
-                rcd += ['            "window": %d,' % rr.window]
-                if rr.condition:
-                    rcd += ['            "condition": "%s",' % rr.condition]
-                rcd += ['            "match_condition": {']
-                mcv = []
-                for v in rr.match_condition:
-                    mcv += ['                "%s": "%s"' % (v, rr.match_condition[v])]
-                rcd += [",\n".join(mcv)]
-                rcd += ["            }"]
-                rcd += ["        }"]
-                rc += ["\n".join(rcd)]
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ['    "root_cause": [']
-            r += [",\n".join(rc)]
-            r += ["    ]"]
+            r["root_cause"] = [rr.json_data for rr in self.root_cause]
         if self.topology_rca:
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ['    "topology_rca": true']
-        # Plugins
+            r["topology_rca"] = True
         if self.plugins:
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            plugins = []
-            for p in self.plugins:
-                pd = ["        {"]
-                pd += ['            "name": "%s"' % p.name]
-                if p.config:
-                    pd[-1] += ","
-                    pc = []
-                    for v in p.config:
-                        pc += ['                "%s": "%s"' % (v, p.config.vars[v])]
-                    pd += ['            "config": {']
-                    pd += [",\n".join(pc)]
-                    pd += ["            }"]
-                pd += ["        }"]
-                plugins += ["\n".join(pd)]
-            r += ['    "plugins": [']
-            r += [",\n".join(plugins)]
-            r += ["    ]"]
+            r["plugins"] = [p.json_data for p in self.plugins]
         if self.notification_delay:
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ['    "notification_delay": %d' % self.notification_delay]
+            r["notification_delay"] = self.notification_delay
         if self.control_time0:
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ['    "control_time0": %d' % self.control_time0]
+            r["control_time0"] = self.control_time0
             if self.control_time1:
-                r[-1] += ","
-                r += ['    "control_time1": %d' % self.control_time1]
+                r["control_time1"] = self.control_time1
                 if self.control_timeN:
-                    r[-1] += ","
-                    r += ['    "control_timeN": %d' % self.control_timeN]
+                    r["control_timeN"] = self.control_timeN
         if self.recover_time:
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ['    "recover_time": %d' % self.recover_time]
-        # Close
-        if r[-1].endswith(","):
-            r[-1] = r[-1][:-1]
-        r += ["}", ""]
-        return "\n".join(r)
+            r["recover_time"] = self.recover_time
+        return r
+
+    def to_json(self):
+        return to_json(
+            self.json_data,
+            order=[
+                "name",
+                "$collection",
+                "uuid",
+                "description",
+                "is_unique",
+                "discriminator",
+                "user_clearable",
+                "default_severity__name",
+                "datasources",
+                "components",
+                "vars",
+                "vars__interface",
+                "vars__number",
+                "handlers",
+                "clear_handlers",
+                "subject_template",
+                "body_template",
+                "symptoms",
+                "probable_causes",
+                "recommended_actions",
+                "root_cause",
+                "topology_rca",
+                "plugins",
+                "notification_delay",
+                "control_time0",
+                "recover_time",
+                "root__name",
+                "window",
+                "condition",
+                "match_condition",
+                "model",
+            ],
+        )
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
