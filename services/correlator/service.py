@@ -280,7 +280,6 @@ class CorrelatorService(TornadoService):
         metrics["alarm_reopen"] += 1
         return alarm
 
-    @staticmethod
     def refresh_alarm(self, alarm: ActiveAlarm, timestamp: datetime.datetime):
         """
         Refresh active alarm data
@@ -517,7 +516,7 @@ class CorrelatorService(TornadoService):
         event.contribute_to_alarm(alarm)
         alarm.closing_event = event.id
         alarm.last_update = max(alarm.last_update, event.timestamp)
-        alarm.clear("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
+        alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
         metrics["alarm_clear"] += 1
 
     def get_delayed_event(self, rule: Rule, event: ActiveEvent):
