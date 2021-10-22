@@ -301,6 +301,7 @@ class AlarmClass(Document):
                 "description",
                 "is_unique",
                 "reference",
+                "is_ephemeral",
                 "user_clearable",
                 "default_severity__name",
                 "datasources",

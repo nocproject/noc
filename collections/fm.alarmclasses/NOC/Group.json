@@ -1,0 +1,26 @@
+{
+    "name": "Group",
+    "$collection": "fm.alarmclasses",
+    "uuid": "4644ca2a-4cfc-4818-9467-49d7e57cb47d",
+    "description": "Default Alarm Class for grouping alarms",
+    "is_unique": false,
+    "is_ephemeral": true,
+    "discriminator": [],
+    "user_clearable": false,
+    "default_severity__name": "IGNORE",
+    "vars": [
+        {
+            "name": "title",
+            "description": "Alarm Group title"
+        },
+        {
+            "name": "name",
+            "description": "Alarm Group name"
+        }
+    ],
+    "subject_template": "Group Alarm {{alarm.vars[\"name\"]}} - {{alarm.vars[\"title\"]}}",
+    "body_template": "Alarm by group {{alarm.vars[\"name\"]}} ",
+    "symptoms": null,
+    "probable_causes": null,
+    "recommended_actions": "Ignore this"
+}

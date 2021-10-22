@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -63,3 +64,11 @@ class AlarmGroup(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id) -> "AlarmGroup":
         return AlarmGroup.objects.filter(bi_id=id).first()
+
+    @classmethod
+    def get_effective_group(cls, reference_prefix: str, labels: List[str] = None) -> "AlarmGroup":
+        return (
+            AlarmGroup.objects.filter(reference_prefix=reference_prefix, labels__in=[labels])
+            .order_by("preference")
+            .first()
+        )
