@@ -8,7 +8,6 @@
 # Python modules
 import operator
 from threading import Lock
-import uuid
 
 # Third-party modules
 from mongoengine.document import Document
