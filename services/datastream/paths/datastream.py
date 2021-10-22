@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Callable
+from typing import Optional, List, Callable, Set
 from http import HTTPStatus
 import time
 import cachetools
@@ -17,12 +17,12 @@ import random
 from queue import Queue, Empty
 
 # Third-party modules
-import pymongo
 from pymongo.errors import PyMongoError
-from fastapi import APIRouter, Query, Header, HTTPException, Response
+from fastapi import APIRouter, Query, Header, HTTPException, Response, Depends
 
 # NOC modules
 from noc.core.datastream.loader import loader
+from noc.core.datastream.base import DataStream
 from noc.config import config
 from noc.core.ioloop.util import setup_asyncio
 
@@ -30,10 +30,21 @@ router = APIRouter()
 
 logger = logging.getLogger(__name__)
 
+API_ACCESS_HEADER = "X-NOC-API-Access"
+
 
 @cachetools.cached
 def get_format_role(ds, fmt):
     return ds.get_format_role(fmt)
+
+
+def get_access_tokens_set(datastream, fmt: Optional[str] = None) -> Set[str]:
+    tokens = {"datastream:*", f"datastream:{datastream.name}"}
+    if fmt:
+        role = get_format_role(datastream, fmt)
+        if role:
+            tokens.add("datastream:%s" % role)
+    return tokens
 
 
 class DatastreamAPI(object):
@@ -48,7 +59,7 @@ class DatastreamAPI(object):
         self.setup_datastream()
 
     @staticmethod
-    def get_datastreams():
+    def get_datastreams() -> List["DataStream"]:
         r = []
         for name in loader:
             if not getattr(config.datastream, "enable_%s" % name, False):
@@ -74,7 +85,7 @@ class DatastreamAPI(object):
         await event.wait()
 
     @staticmethod
-    def has_watch():
+    def has_watch() -> bool:
         """
         Detect cluster has working .watch() implementation
         :return: True if .watch() is working
@@ -117,7 +128,7 @@ class DatastreamAPI(object):
             queue = Queue()
             self.ds_queue[ds.name] = queue
             thread = threading.Thread(
-                target=waiter, args=(ds.get_collection(), queue), name="waiter-%s" % ds.name
+                target=waiter, args=(ds.get_collection(), queue), name=f"waiter-{ds.name}"
             )
             thread.setDaemon(True)
             thread.start()
@@ -151,7 +162,7 @@ class DatastreamAPI(object):
                     for _ in stream:
                         # Change received, call all pending callback
                         self._run_callbacks(queue)
-                except pymongo.errors.PyMongoError as e:
+                except PyMongoError as e:
                     logger.error("Unrecoverable watch error: %s", e)
                     time.sleep(1)
 
@@ -169,7 +180,7 @@ class DatastreamAPI(object):
             time.sleep(TIMEOUT + (random.random() - 0.5) * TIMEOUT * 2 * JITER)
             self._run_callbacks(queue)
 
-    def get_datastream_handler(self, datastream) -> Callable:
+    def get_datastream_handler(self, datastream: "DataStream") -> Callable:
         async def inner_datastream(
             limit: Optional[int] = datastream.DEFAULT_LIMIT,
             ds_filter: Optional[List[str]] = Query(None, alias="filter"),
@@ -177,8 +188,6 @@ class DatastreamAPI(object):
             ds_format: Optional[str] = Query(None, alias="format"),
             ds_from: Optional[str] = Query(None, alias="from"),
             block: Optional[int] = None,
-            x_noc_api_access: Optional[str] = Header(None),
-            host: Optional[str] = Header(None),
         ):
             # Increase limit by 1 to detect datastream has more data
             limit = min(limit, datastream.DEFAULT_LIMIT) + 1
@@ -239,12 +248,27 @@ class DatastreamAPI(object):
 
         return inner_datastream
 
+    def get_verify_token_hander(self, datastream: "DataStream") -> Callable:
+        async def verify_token(
+            ds_format: Optional[str] = Query(None, alias="format"),
+            x_noc_api_access: Optional[str] = Header(None),
+            host: Optional[str] = Header(None),
+        ):
+            if not x_noc_api_access:
+                raise HTTPException(status_code=400, detail="X-NOC-API-Access header invalid")
+            a_set = get_access_tokens_set(datastream, ds_format) & set(x_noc_api_access.split(","))
+            if not a_set:
+                raise HTTPException(status_code=403, detail="Not allowed datastream")
+
+        return verify_token
+
     def setup_datastream(self):
         for ds in self.get_datastreams():
             self.router.add_api_route(
                 path=f"/api/datastream/{ds.name}",
                 endpoint=self.get_datastream_handler(ds),
                 methods=["GET"],
+                dependencies=[Depends(self.get_verify_token_hander(ds))],
                 # response_model=sig.return_annotation,
                 tags=self.openapi_tags,
                 name=f"{self.api_name}_get_{ds.name}",
