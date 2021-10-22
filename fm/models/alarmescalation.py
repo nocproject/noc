@@ -115,6 +115,9 @@ class AlarmEscalation(Document):
 
     @classmethod
     def watch_escalations(cls, alarm, force=None, timestamp_policy="a"):
+        if alarm.alarm_class.is_ephemeral:
+            # Ephemeral alarm has not escalated
+            return
         now = datetime.datetime.now()
         for esc in cls.get_class_escalations(alarm.alarm_class):
             for e_item in esc.escalations:

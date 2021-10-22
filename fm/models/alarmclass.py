@@ -108,6 +108,8 @@ class AlarmClass(Document):
     # if is_unique is True and there is active alarm
     # Do not create separate alarm if is_unique set
     is_unique = BooleanField(default=False)
+    # Do not move alarm to Archive when clear, just delete
+    is_ephemeral = BooleanField(default=False)
     # List of var names to be used as discriminator key
     discriminator = ListField(StringField())
     # Can alarm status be cleared by user
@@ -242,6 +244,7 @@ class AlarmClass(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "is_unique": self.is_unique,
+            "is_ephemeral": self.is_ephemeral,
             "discriminator": [d for d in self.discriminator],
             "user_clearable": self.user_clearable,
             "default_severity__name": self.default_severity.name,

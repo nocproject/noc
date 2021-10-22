@@ -248,6 +248,8 @@ class ActiveAlarm(Document):
         """
         from .alarmdiagnosticconfig import AlarmDiagnosticConfig
 
+        if self.alarm_class.is_ephemeral:
+            self.delete()
         ts = ts or datetime.datetime.now()
         if self.wait_tt and not force:
             # Wait for escalated tt to close
