@@ -19,20 +19,20 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             text: __("Name"),
             dataIndex: "name",
             width: 100,
-            align: "right"
+            align: "left"
         },
         {
             text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
-            width: 50,
-            align: "right"
+            width: 100,
+            align: "left"
         },
         {
             text: __("Preference"),
             dataIndex: "preference",
-            width: 50,
-            align: "right"
+            width: 100,
+            align: "left"
         },
         {
             text: __("Alarm Class"),
@@ -41,10 +41,10 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             width: 200
         },
         {
-            text: __("ReferencePrefix"),
+            text: __("Reference Prefix"),
             dataIndex: "reference_prefix",
-            width: 100,
-            align: "right"
+            width: 150,
+            align: "left"
         },
         {
           text: __("Labels"),
@@ -65,13 +65,14 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             name: 'description',
             xtype: 'textarea',
             fieldLabel: __('Description'),
-            uiStyle: 'extra'
+            uiStyle: 'large'
         },
         {
             name: "preference",
             xtype: "numberfield",
             fieldLabel: __("Preference"),
             allowBlank: true,
+            uiStyle: 'small',
             defaultValue: 999,
             minValue: 0
         },
@@ -79,28 +80,29 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             name: "alarm_class",
             xtype: "fm.alarmclass.LookupField",
             fieldLabel: __("Alarm Class"),
+            uiStyle: 'large',
             allowBlank: false
         },
         {
             name: 'reference_prefix',
-            xtype: 'textarea',
+            xtype: 'textfield',
             fieldLabel: __('Reference Prefix'),
-            uiStyle: 'extra'
+            uiStyle: 'large'
         },
         {
             name: 'title_template',
             xtype: 'textarea',
             fieldLabel: __('Title Template'),
-            uiStyle: 'extra'
+            uiStyle: 'large'
         },
         {
             name: "labels",
             xtype: "labelfield",
             fieldLabel: __("Match Labels"),
-            allowBlank: false,
+            allowBlank: true,
             isTree: true,
             pickerPosition: "down",
-            uiStyle: "extra",
+            uiStyle: "large",
             query: {
                 "allow_matched": true
             }
