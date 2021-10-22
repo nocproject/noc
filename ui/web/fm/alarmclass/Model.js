@@ -98,6 +98,11 @@ Ext.define("NOC.fm.alarmclass.Model", {
             type: "boolean"
         },
         {
+            name: "is_ephemeral",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "user_clearable",
             type: "boolean",
             defaultValue: true

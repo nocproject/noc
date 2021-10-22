@@ -147,6 +147,11 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                     boxLabel: __('User Clearable')
                                 },
                                 {
+                                    name: 'is_ephemeral',
+                                    xtype: 'checkboxfield',
+                                    boxLabel: __('Ephemeral')
+                                },
+                                {
                                     name: 'discriminator',
                                     xtype: 'stringsfield',
                                     fieldLabel: __('Discriminator')

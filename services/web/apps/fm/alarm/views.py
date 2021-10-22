@@ -740,6 +740,9 @@ class AlarmApplication(ExtApplication):
         if not alarms:
             return self.response_not_found()
         for alarm in alarms:
+            if alarm.alarm_class.is_ephemeral:
+                # Ephemeral alarm has not escalated
+                continue
             if alarm.escalation_tt:
                 alarm.log_message(
                     "Already escalated with TT #%s" % alarm.escalation_tt,
