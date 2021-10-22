@@ -27,7 +27,6 @@ class Migration(BaseMigration):
                 "is_ephemeral": True,
                 "discriminator": [],
                 "user_clearable": False,
-                "default_severity": ObjectId("58cec7a8c165cf5cc0c452bc"),
                 "datasources": [],
                 "components": [],
                 "vars": [
