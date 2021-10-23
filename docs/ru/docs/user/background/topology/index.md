@@ -27,44 +27,190 @@ L2 топология (`L2 Topology`) строится между интерфе
 
 При построении топологии важно помнить термины:
 
-* **Связь** (`Линк`) - групп (традиционно 2) 
-* **Топологический метод** (`Topology Method`) - это способ по которому строится линк. Обычно они совпадают с топологическими протоколами, но есть несколько дополнительных
-* **Текущее устройство** - это устройство на котором запущен опрос.
-* **Соседнее устройство** (сосед) - устройство, видимое в списке соседей (кандидатов на построение с ним линка)
-* **Идентификатор устройства** 
-    * `chassis_id` - MAC адреса устройства
-    * `hostname` - `Hostname` устройства
-    *   
-    * `router_id` - для L3 протоколов
+* **Связь** (`Link`) - групп (традиционно 2) 
+* **Текущее устройство** - это устройство (`ManagedObject`) на котором запущен опрос
+* **Соседнее устройство** (сосед) - устройства, соединенённые с текущим напрямую (не через иные устройства уровня L2). Они отображаются в таблице соседей устройства
+* **Идентификатор устройства** - свойство, позволяющее найти соседнее устройство. В топологических протоколах используются следующие идентификаторы
+    * MAC адреса устройства (`Chassis ID`)
+    * Hostname устройства
+    * IP адес (`IP address`)
+    * Серийный номер (`Serial`)
+* **Идентификатор порта устройства** - позволяется определить порт соседа к которому идёт связь. Например:
+    * Имя интерфейса (`Interface Name`)
+    * Описание (`Description`)
+    * MAC адрес интерфейса
+    * SNMP индекс (`ifindex`)
+    * Номер интерфейса 
+    * Иные
+* **Топологический метод** (`Topology Method`) - это способ с помощью которого система строит связь. Помимо обычных, совпадающих с топологическими протоколами, в системе присутствует несколько дополнительных.
 
-* **Идентификатор порта устройства**
+Для создания связи (`Link`) обязательно наличие интерфейса [Interface](../../reference/concepts/interface/index.md) на всех связанных устройствах.
+Дальнейший список требования отличается в завимости от метода создания связи (`Link`). Рассмотри доступные.
+
+### Создание связи вручную
+
+Производится через панель инфтерфейс в форме устройства [ManagedObject](). Для этого выбираем интерфей текущего устройство и указываем интерфейс соседа, с которым будет создана связь.
+
+
+
+### Создание связи на основе протоколов соседства
+
+Для автоматического построения связи можно воспользоваться информацией о соседях с устройства. 
+В НОКе поддерживается достаточное большое число протоколов соседства - `LLDP`, `CDP`, ... но основные подходы в их работе не меняются:
+
+* Устройство должно поддерживать возможность показать список соседей с указанием их интерфейсов
+* Идентификатор соседа из списка должен позволять найти устройство в системе
+* Идентификатор порта соседа должен позволять найти порт соседа в системе
+* В профилях [SA Profile](../../reference/concepts/sa-profile/index.md) устройств должны быть реализованы скрипты для получения информации о соседях
+
+### Процедура построений связи
+
+```mermaid
+flowchart TD
+
+discovery_start => start: Запуск опроса
+discovery_end => end: Окончание опроса
+get_lo_neighbor => operation: Запрос соседей с устройства
+find_lo_neighbor => operation: Поиск соседа в Системе
+find_lo_neighbor_cond => condition: Нашли соседа?
+find_lo_neighbor_cond_error => operation: Ошибка
+find_lo_neighbor_ri => operation: Поиск интерфейса соседа в системе
+find_lo_neighbor_ri_cond => condition: Нашли интерфейс соседа?
+
+get_ri_neighbor => operation: Запрос соседей соседа
+find_ro_neighbor => operation: Поиск соседей соседа в Системе
+find_ro_neighbor_cond => condition: Нашли текущее устройство?
+find_ro_neighbor_ri => operation: Поиск интерфейса текущего устройства в системе
+find_ro_neighbor_ri_cond => condition: Нашли локальный интерфейс?
+find_li_ri_cond => condition: Найденный интерфейс совпадает с локальным?
+next_condition => condition: Есть ещё соседи?
+
+discovery_start(left) -> get_lo_neighbor->find_lo_neighbor->find_lo_neighbor_cond
+find_lo_neighbor_cond(yes) -> find_lo_neighbor_ri->find_lo_neighbor_ri_cond
+find_lo_neighbor_cond(no) -> next_condition
+find_lo_neighbor_ri_cond(yes) -> get_ri_neighbor->find_ro_neighbor->find_ro_neighbor_cond
+find_lo_neighbor_ri_cond(no) -> next_condition
+find_ro_neighbor_cond(yes) -> find_ro_neighbor_ri->find_ro_neighbor_ri_cond
+find_ro_neighbor_ri_cond(yes) -> find_li_ri_cond
+find_li_ri_cond(yes) -> next_condition
+next_condition(no) -> discovery_end
+
+```
+
+#### Запрос соседей с устройства
+
+На первом этапе запускается опрос устройства по одному из методов. Система получает список соседей `текущего устройства` (на котором запускается опрос). В списке присутствуют:
+
+* `Идентификатор соседа` - зависит от протокола. Для случая `LLDP`, это может быть `MAC` адрес или `hostname`.
+* `Локальный порт` - порт `текущего устройства`, за которым виден сосед
+* `Порт соседа`. Указание за каким портом соседнего устройства видно текущее. Может приходить в виде имени, MAC адреса, или некоторого локального идентификатора (обычно `snmp_index`)
+
+Пример вывода на примере `LLDP` (для других протоколов он будет другой):
+
+```json
+[
+    {
+        "local_interface": "GigabitEthernet0/0/1",
+        "neighbors": [
+            {
+                "remote_chassis_id_subtype": 4,
+                "remote_chassis_id": "00:0E:5E:11:22:77",
+                "remote_port_subtype": 5,
+                "remote_port": "port 25",
+                "remote_port_description": "TRUNK",
+                "remote_system_name": "782-swc1",
+                "remote_system_description": "ISCOM2128EA-MA-AC ROS_4.15.1365_20171229(Compiled Dec 29 2017, 15:40:31)",
+                "remote_capabilities": 4
+            }
+        ]
+    },
+    {
+        "local_interface": "XGigabitEthernet0/1/1",
+        "neighbors": [
+            {
+                "remote_chassis_id_subtype": 4,
+                "remote_chassis_id": "08:19:A6:11:22:88",
+                "remote_port_subtype": 5,
+                "remote_port": "XGigabitEthernet0/1/2",
+                "remote_port_description": "\"link to WAN\"",
+                "remote_system_name": "70-swc71",
+                "remote_system_description": "S5328C-EI-24S",
+                "remote_capabilities": 20
+            }
+        ]
+    }
+]
+```
+
+<!-- prettier-ignore -->
+!!! note
+    Для уменьшения частоты захода на устройства есть возможность настроить кэш соседства
+
+#### Формирование списка кандидатов
+
+По полученному списку идентификаторов происходит поиск соседнего устройства [ManagedObject](../../reference/concepts/managed-object/index.md) 
+и его порта [Interface](../../reference/concepts/interface/index.md). 
+При успехе пара `текущее устройство -> порт,  соседнее устройство -> соседний порт` добавляются в список кандидатов. 
+После формирования списка кандидатов начинается его проверка - система запрашивает таблицу соседей *соседнего устройства* 
+и проверяет что за указанным *соседним портом* находится *текущее устройство*.
+
+
+В данном случае возможны следующие ошибки: ...
+
+#### Построение связи
+
+В случае подтверждения начинается процедура создания связи (`Link`). 
+Она регулируется настройкой `Политика при опросе` [Discovery Policy](../../reference/concepts/interface-profile/index.md) в профиле интерфейса (`Interface Profile`). Доступны опции:
+
+* `Ignored` (Игнорировать) - не создавать связь (`Link`) с этим портом
+* `Create New` (Создавать новый) - не создавать связь, если таковая уже есть
+* `Replace` (Заменять) - создать связь с портом
+* `Cloud` (Облако) - добавть порт к существующей связи (образуется облако)
+
+Для самой процедуры могут быть следующие варианты:
+
+* **Новый связь** - когда на обоих интерфейсах отсутствуют линки. Просто создаётся (если не выставлена опция `Ignored`) и заполняется поле `first_discovered` временем создания.
+* **Существующая связь** - между интерфейсами уже есть построенный линк. В этом случае происходит обновление поля `last_seen` (время когда система видела линк последний раз) 
+* **Другой линк** - когда на интерфейсе есть линк и новый ведёт в другую сторону. Если выставлена опция `Create New`, то линк разрываться не будет. Если же перелинковка (`Replace`) разрешена, поведение регулируется `приоритетом метода`. Если линк нашёл более приоритетный метод - он его перестраивает. Если менее, то остаётся построенный более высоким приоритетом. Приоритет выставляется на сегмент в `Профиле сегмента` (`Segment Profile`)
+
+<!-- prettier-ignore -->
+!!! note
+    При создании линка поле `first_discovered` заполняется временем создания. При повторном нахождении обновляется поле `last_seen`.
+
+:::warning
+Разлинковка (т.е. удаление линков) возможна только вручную, во время опроса возможна только перелинковка (если в профиле объекта выставлено `Replace`).
+:::
+
+#### Удаление линка 
+
+Если при проверке соседнего устройства текущее не обнаруживается в соседях и между ними есть связь (`Link`), то она разрывается.
+
+
+### Методы построения линка
+
+Доступные методы построения линков можно свести в таблицу:
+
+| Метод | Протокол | Скрипт | Caps |
+|  --- | --- | --- | --- |
+|  [CDP](../../../admin/reference/discovery/box/cdp.md) | CDP | [get_cdp_neighbors](../../../dev/reference/scripts/get_cdp_neighbors.md) | `Network  CDP` |
+|  [REP](../../../admin/reference/discovery/box/rep.md) | REP | [get_rep_topology](../../../dev/reference/scripts/get_rep_topology.md) | `Network  REP` |
+|  [LLDP](../../../admin/reference/discovery/box/lldp.md) | LLDP | [get_lldp_neighbors](../../../dev/reference/scripts/get_lldp_neighbors.md) | `Network  LLDP` |
+|  [STP](../../../admin/reference/discovery/box/stp.md) | STP | [get_spanning_tree](../../../dev/reference/scripts/get_spanning_tree.md) | `Network  STP` |
+|  [UDLD](../../../admin/reference/discovery/box/udld.md) | UDLD | [get_udld_neighbors](../../../dev/reference/scripts/get_udld_neighbors.md) | `Network  UDLD` |
+|  [OAM](../../../admin/reference/discovery/box/oam.md) | OAM | [get_oam_status](../../../dev/reference/scripts/get_oam_status.md) | `Network  OAM` |
+|  [BFD](../../../admin/reference/discovery/box/bfd.md) | BFD | [get_bfd_sessions](../../../dev/reference/scripts/get_bfd_sessions.md) | `Network  BFD` |
+|  [FDP](../../../admin/reference/discovery/box/fdp.md) | FDP | [get_fdp_neighbors](../../../dev/reference/scripts/get_fdp_neighbors.md) | `Network  FDP` |
+|  [Huawei NDP (NTDP)](../../../admin/reference/discovery/box/huawei_ndp.md) | Huawei NDP | [get_huawei_ndp_neighbors](../../../dev/reference/scripts/get_huawei_ndp_neighbors.md) | `Network  FDP` |
+|  [LACP](../../../admin/reference/discovery/box/lacp.md) | LACP | [get_lacp_neighbors](../../../dev/reference/scripts/get_lacp_neighbors.md) | `Network  LACP` |
+|  [NRI](../../../admin/reference/discovery/box/nri.md) | NRI | - | - |
+|  [ifDesc](../../../admin/reference/discovery/box/ifdesc.md) | ifDesc | - | - |
+
+
+### Создание связи внутри сегмента
+
 * **Коллекция идентификаторов** - система собирает идентификаторы устройства для поиска устройств. В них входит:
 
-Топология
-
-Построение топологии (Сосед)
-* Ручное
-* Автоматическое
-  * Требования
-  * Алгоритм  
-  * Методы
-  * Настройка
-
-Применение 
-
-### Ручное 
-
-### Автоматическое 
-
-### Требования
-
-### Настройки
-
-### Алгоритм
-
-### Методы
-
-### Отладка
+### Приоритет методов
 
 ## Расчёт направления вверх
 
@@ -108,6 +254,9 @@ L2 топология (`L2 Topology`) строится между интерфе
 | MPLS PE                | 84        |
 | MPLS P                 | 86        |
 | ASBR                   | 88        |
+
+
+## Настройки 
 
 
 ## Работа с топологией
