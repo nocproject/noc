@@ -66,34 +66,26 @@ L2 топология (`L2 Topology`) строится между интерфе
 ### Процедура построений связи
 
 ```mermaid
+
 flowchart TD
-
-discovery_start => start: Запуск опроса
-discovery_end => end: Окончание опроса
-get_lo_neighbor => operation: Запрос соседей с устройства
-find_lo_neighbor => operation: Поиск соседа в Системе
-find_lo_neighbor_cond => condition: Нашли соседа?
-find_lo_neighbor_cond_error => operation: Ошибка
-find_lo_neighbor_ri => operation: Поиск интерфейса соседа в системе
-find_lo_neighbor_ri_cond => condition: Нашли интерфейс соседа?
-
-get_ri_neighbor => operation: Запрос соседей соседа
-find_ro_neighbor => operation: Поиск соседей соседа в Системе
-find_ro_neighbor_cond => condition: Нашли текущее устройство?
-find_ro_neighbor_ri => operation: Поиск интерфейса текущего устройства в системе
-find_ro_neighbor_ri_cond => condition: Нашли локальный интерфейс?
-find_li_ri_cond => condition: Найденный интерфейс совпадает с локальным?
-next_condition => condition: Есть ещё соседи?
-
-discovery_start(left) -> get_lo_neighbor->find_lo_neighbor->find_lo_neighbor_cond
-find_lo_neighbor_cond(yes) -> find_lo_neighbor_ri->find_lo_neighbor_ri_cond
-find_lo_neighbor_cond(no) -> next_condition
-find_lo_neighbor_ri_cond(yes) -> get_ri_neighbor->find_ro_neighbor->find_ro_neighbor_cond
-find_lo_neighbor_ri_cond(no) -> next_condition
-find_ro_neighbor_cond(yes) -> find_ro_neighbor_ri->find_ro_neighbor_ri_cond
-find_ro_neighbor_ri_cond(yes) -> find_li_ri_cond
-find_li_ri_cond(yes) -> next_condition
-next_condition(no) -> discovery_end
+    discovery_start[Запуск опроса] --> get_lo_neighbor[Запрос соседей с устройства];
+    get_lo_neighbor --> find_lo_neighbor[Поиск соседа в Системе];
+    find_lo_neighbor --> find_lo_neighbor_cond{Нашли соседа?};
+    find_lo_neighbor_cond --> |Да| find_lo_neighbor_ri[Поиск интерфейса соседа в системе];
+    find_lo_neighbor_ri --> find_lo_neighbor_ri_cond{Нашли интерфейс соседа?};
+    find_lo_neighbor_ri_cond --> |Да| get_ri_neighbor[Запрос соседей соседа];
+    get_ri_neighbor --> find_ro_neighbor[Поиск соседей соседа в Системе];
+    find_ro_neighbor --> find_ro_neighbor_cond{Нашли текущее устройство?};
+    find_ro_neighbor_cond --> |Да| find_ro_neighbor_ri[Поиск интерфейса текущего устройства в системе];
+    find_ro_neighbor_ri --> find_ro_neighbor_ri_cond{Нашли локальный интерфейс?};
+    find_lo_neighbor_ri_cond --> |Нет| next_condition{Есть ещё соседи?};
+    find_lo_neighbor_cond --> |Нет| next_condition;
+    find_ro_neighbor_ri_cond --> |Нет| find_li_ri_cond{Найденный интерфейс совпадает с локальным?};
+    find_ro_neighbor_ri_cond --> |Нет| next_condition;
+    find_li_ri_cond --> |Да| create_link[/Создать связь/];
+    find_li_ri_cond --> |Нет| next_condition;
+    next_condition --> |Да| find_lo_neighbor;
+    next_condition --> |Нет| discoveryend[Окончание опроса];
 
 ```
 
@@ -177,22 +169,32 @@ next_condition(no) -> discovery_end
 !!! note
     При создании линка поле `first_discovered` заполняется временем создания. При повторном нахождении обновляется поле `last_seen`.
 
+
 <!-- prettier-ignore -->
 !!! note
-  удаление существующей связи производится если она не обнаружена на соседнем устройстве
+    Удаление существующей связи производится если она не обнаружена на соседнем устройстве
+
+#### Удаление связей 
+
+Если при проверке соседнего устройства текущее не обнаруживается в соседях и между ними есть связь (`Link`), то она разрывается. 
+При этом, если устройство выведено из эксплуатации или порты перестали быть задействованы, то связь становится *вечной*, 
+поскольку опрос не может обнаружить её отсутствие: по причине его отключения или отсутствия соседа. Не всегда это может быть удобным. 
+
+Если требуются очищать связи не обновляемые в течении какого-то времени, можно воспользоваться аргументом `ttl_policy` 
+команды [./noc link](../../../admin/reference/man/link.md).
+
+### Методы построения связи
+
+Доступные методы построения линков:
+
+* Метод - метод построения связи
+* Протокол (`Protocol`) - используемый методом протокол определения соседей
+* Скрипт (`Script`) - необходимый скрипт в профиле для работы метода
+* Возможность (`Capabilities`) необходимая для запуска опроса
 
 
-#### Устаревание связей 
-
-Если при проверке соседнего устройства текущее не обнаруживается в соседях и между ними есть связь (`Link`), то она разрывается.
-
-
-### Методы построения линка
-
-Доступные методы построения линков можно свести в таблицу:
-
-| Метод | Протокол | Скрипт | Caps |
-|  --- | --- | --- | --- |
+| Метод                                                 | Протокол                | Скрипт | Caps |
+|  ---                                                  | --- | ---               | --- |
 |  [CDP](../../../admin/reference/discovery/box/cdp.md) | CDP | [get_cdp_neighbors](../../../dev/reference/scripts/get_cdp_neighbors.md) | `Network  CDP` |
 |  [REP](../../../admin/reference/discovery/box/rep.md) | REP | [get_rep_topology](../../../dev/reference/scripts/get_rep_topology.md) | `Network  REP` |
 |  [LLDP](../../../admin/reference/discovery/box/lldp.md) | LLDP | [get_lldp_neighbors](../../../dev/reference/scripts/get_lldp_neighbors.md) | `Network  LLDP` |
@@ -203,15 +205,13 @@ next_condition(no) -> discovery_end
 |  [FDP](../../../admin/reference/discovery/box/fdp.md) | FDP | [get_fdp_neighbors](../../../dev/reference/scripts/get_fdp_neighbors.md) | `Network  FDP` |
 |  [Huawei NDP (NTDP)](../../../admin/reference/discovery/box/huawei_ndp.md) | Huawei NDP | [get_huawei_ndp_neighbors](../../../dev/reference/scripts/get_huawei_ndp_neighbors.md) | `Network  FDP` |
 |  [LACP](../../../admin/reference/discovery/box/lacp.md) | LACP | [get_lacp_neighbors](../../../dev/reference/scripts/get_lacp_neighbors.md) | `Network  LACP` |
-|  [NRI](../../../admin/reference/discovery/box/nri.md) | NRI | - | - |
-|  [ifDesc](../../../admin/reference/discovery/box/ifdesc.md) | ifDesc | - | - |
-|  [xMAC](../../../admin/reference/discovery/box/xmac.md) | ifDesc | [get_mac_address_table](../../../dev/reference/scripts/get_mac_address_table.md) | - |
+|  [NRI](../../../admin/reference/discovery/box/nri.md) | - | - | - |
+|  [ifDesc](../../../admin/reference/discovery/box/ifdesc.md) | - | - | - |
+|  [xMAC](../../../admin/reference/discovery/box/xmac.md) | - | [get_mac_address_table](../../../dev/reference/scripts/get_mac_address_table.md) | - |
 
+[Segment](../../../admin/reference/discovery/segment/mac.md) - отдельный метод построения связей на основе таблицы MAC адресов (`FDB`). 
+В отличие от перечисленных в таблице он строит связи между устройствами одного сегмента и работает по расписанию сегмента.
 
-### Создание связи внутри сегмента
-
-
-* **Коллекция идентификаторов** - система собирает идентификаторы устройства для поиска устройств. В них входит:
 
 ## Расчёт направления вверх
 
@@ -280,14 +280,54 @@ next_condition(no) -> discovery_end
 
 ## Настройки 
 
-Настройки конкретных методов находятся в разделах методов. Опрос включается в профиле объектов
+Настройки опроса по методам находятся на вкладке `Box` в разделe топология [Managed Object Profile](../../reference/concepts/managed-object-profile/index.md#Box(Полный_опрос)). 
+Для активации метода необходимо поставить напротив него галочку.
+
+Требования по каждому из методов указаны в разделе. Необходимо учитывать следующие требования:
+
+* L2 связь строится между интерфейсами, по этой причине у устройства должен быть включён опрос инетерфейсов [Interface](../../../admin/reference/discovery/box/interface.md)
+* Для запуска методов он должен поддерживаться на устройстве, так что необходимо включить опрос возможностей [Capabilities](../../../admin/reference/discovery/box/caps.md). Для методов `ifDesc`, `xMAC` и `NRI` не требуется.
+* Часть методов производят поиск устройств по идентификатору, для них необходимо включить опрос [ID](../../../admin/reference/discovery/box/id.md)
+
+Помимо настройки опроса необходимо включить метод в приоритете методов.
 
 ### Приоритет методов
 
+Настройка приоритетов расположена в Профиле сегмента [Network Segment Profile](../../reference/concepts/network-segment-profile/index.md) - `Методы построения топологии`. 
+Если устройство поддерживает несколько методов построения связи может возникнуть ситуация когда информация 
+от разных методов отличается. Например по описанию интерфейса (`ifDesc`) связь строится с одним устройством, а по `LLDP` с другим. 
+В это случае победит метод, расположенный выше по приоритету.
+
+<!-- prettier-ignore -->
+!!! note
+  Если метод отсутствует в списке приоритетов - опрос по нему не проводится
+
+
+После прохождения опроса должны построиться связи. При возникновении ошибок они напишутся в лог.
+
+
+### Кэш соседей
+
+Для построение связи обязательным условием является её подтверждение с двух сторон. Если у устройства достаточно большое число соседей 
+процедура подтверждения может привести к повышенной нагрузке (при опросе каждого соседа НОК будет заходить на устройство). 
+Для облегчения ситуации предусмотрен *Кэш соседей* (`Neighbor cache`). При его включении на указанное время (`TTL`) система 
+запоминает соседей устройства и при не заходит на него. По истечении времени кэш очищается и при опросе потребуется заход на устройство.
+
+Настройка расположена в Профиле объекта [Managed Object Profile](../../reference/concepts/managed-object-profile/index.md#Box(Полный_опрос)) 
+`Управление объектами` (`Service Activation`) -> `Настройки` (`Setup`) -> `Профиль объекта` (`ManagedObject Profile`) на вкладке `Box`. 
+По умолчанию выставлена в 0, т.е. отключено. Значение больше 0 определяет время в течении которого система **запоминает полученную с устройства информацию** и при поиске соседа обращается к ней, а не к устройству. 
+Использование соседей из кэша можно увидеть в логе опроса по записи: ` [discovery|box|<MONAME>|lldp] Use neighbors cache`.
+
+<!-- prettier-ignore -->
+!!! warning
+    При включённом кэше соседей новые соседи устройства будут увидены системой только после истечения времени запоминания. Это может вводить в заблуждение.
 
 
 ## Работа с топологией
 
-*  Схема сегмента
+* Схема сегмента 
+* Ттрассировка пути на верх из карточки
+* Расчёт пути [path](../../../dev/reference/api/nbi/path.md)
+* Расчёт RCA в авариях
+* Отчёты по метрикам с учётом топологии
 
-### Расчёт пути 

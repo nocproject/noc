@@ -47,41 +47,6 @@ class FirmwarePlanCard(BaseCard):
 
 ```
 
-Шаблон `html`
-
-```
-<table class="table table-condensed table-hover">
-<tbody>
-</tbody>
-<tr>
-    <th colspan="2">
-        Firmware: {%- if object.full_name -%}{{ object.full_name }}{%- else -%}{{ object.version }}{%- endif -%}
-    </th>
-</tr>
-<tr>
-    <th scope="row" class="col-md-2">{{ _("Vendor") }}</th>
-    <td>{{ object.vendor.name }}</td>
-</tr>
-<tr>
-    <th scope="row" class="col-md-2">{{ _("Profile") }}</th>
-    <td>{{ object.profile.name }}</td>
-</tr>
-{% if object.description %}
-<tr>
-    <th scope="row" class="col-md-2">{{ _("Description") }}</th>
-    <td>{{ object.description }}</td>
-</tr>
-{% endif %}
-{% if object.download_url %}
-<tr>
-    <th scope="row" class="col-md-2">{{ _("URL") }}</th>
-    <td><a href="{{ object.download_url }}">{{ object.download_url }}</a></td>
-</tr>
-{% endif %}
-</table>
-
-```
-
 Как видно в данной карточке выводится информация о конкретном инстансе. Это часто встречающаяся использование карточек. 
 
 
