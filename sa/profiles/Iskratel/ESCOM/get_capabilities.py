@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.core.text import parse_table
 
 
 class Script(BaseScript):
@@ -42,6 +43,16 @@ class Script(BaseScript):
         else:
             cmd = self.cli("show spanning-tree active")
             return "  enabled  " in cmd
+
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check stack members
+        :return:
+        """
+        r = self.cli("show aggregator-group summary", cached=True)
+        r = parse_table(r)
+        return bool(r)
 
     def execute_platform_cli(self, caps):
         try:

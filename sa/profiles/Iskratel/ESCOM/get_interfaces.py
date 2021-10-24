@@ -17,6 +17,7 @@ from noc.core.text import parse_table
 class Script(BaseScript):
     name = "Iskratel.ESCOM.get_interfaces"
     interface = IGetInterfaces
+    cache = True
 
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|Te|Po|oo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
@@ -104,6 +105,13 @@ class Script(BaseScript):
     def execute_escom_l(self):
         interfaces = {}
         switchport = self.get_escom_l_vlans()
+        # Get portchannels
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
         v = self.cli("show interface")
         for iface in self.rx_escom_l_port.finditer(v):
             ifname = self.profile.convert_interface_name(iface.group("name"))
@@ -114,6 +122,7 @@ class Script(BaseScript):
                 "ifindex": iface.group("ifindex"),
                 "admin_status": iface.group("admin_status") == "up",
                 "oper_status": iface.group("oper_status") == "up",
+                "enabled_protocols": [],
                 "subinterfaces": [],
             }
             if ifname in switchport:
@@ -144,6 +153,12 @@ class Script(BaseScript):
                     )
                 else:
                     interfaces[ifname]["mac"] = iface.group("mac")
+            # Portchannel member
+            if ifname in portchannel_members:
+                ai, is_lacp = portchannel_members[ifname]
+                interfaces[ifname]["aggregated_interface"] = ai
+                if is_lacp:
+                    interfaces[ifname]["enabled_protocols"] += ["LACP"]
         return [{"interfaces": list(interfaces.values())}]
 
     def execute_cli(self, **kwargs):
