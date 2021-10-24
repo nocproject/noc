@@ -36,6 +36,7 @@ class Profile(BaseProfile):
         "Tg": "physical",  # ESCOM L TGigaEthernet
         "Lo": "loopback",  # Loopback
         "Po": "aggregated",  # Port-channel/Portgroup
+        "p": "Port-aggregator",  # ESCOM L Port-channel/Portgroup
         "vl": "SVI",  # vlan
         "Vl": "SVI",  # Vlan
         "VL": "SVI",  # ESCOM L VLAM
@@ -45,16 +46,21 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get(name[:2])
 
-    rx_escom_l = re.compile(r"(?P<type>g)(?P<number>\d+(\/\d+)+)")
+    rx_escom_l = re.compile(r"(?P<type>g|p)(?P<number>\d+(\/\d+)+)")
 
     def convert_interface_name(self, interface):
         """
-        >>> Profile().convert_interface_name_cisco("gi1/0/1")
+        >>> Profile().convert_interface_name("gi1/0/1")
         'Gi 1/0/1'
-        >>> Profile().convert_interface_name_cisco("gi1/0/1?")
+        >>> Profile().convert_interface_name("gi1/0/1?")
         'Gi 1/0/1'
+        >>> Profile().convert_interface_name("p1")
+        'Port-aggregator 1'
         """
         match = self.rx_escom_l.match(interface)
+        if interface.startswith("p"):
+            # ESCOM L Port-channel/Portgroup
+            return f"Port-aggregator {interface[1:]}"
         if match:
             interface = "%si %s" % (match.group("type"), match.group("number"))
-        return self.convert_interface_name_cisco(interface)
+        return self.convert_interface_name_cisco(interface.strip("?"))

@@ -17,6 +17,7 @@ from noc.core.text import parse_table
 class Script(BaseScript):
     name = "Iskratel.ESCOM.get_interfaces"
     interface = IGetInterfaces
+    cache = True
 
     rx_port = re.compile(
         r"^(?P<port>(?:Gi|Te|Po|oo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
@@ -104,6 +105,13 @@ class Script(BaseScript):
     def execute_escom_l(self):
         interfaces = {}
         switchport = self.get_escom_l_vlans()
+        # Get portchannels
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
         v = self.cli("show interface")
         for iface in self.rx_escom_l_port.finditer(v):
             ifname = self.profile.convert_interface_name(iface.group("name"))
@@ -114,6 +122,7 @@ class Script(BaseScript):
                 "ifindex": iface.group("ifindex"),
                 "admin_status": iface.group("admin_status") == "up",
                 "oper_status": iface.group("oper_status") == "up",
+                "enabled_protocols": [],
                 "subinterfaces": [],
             }
             if ifname in switchport:
@@ -144,6 +153,12 @@ class Script(BaseScript):
                     )
                 else:
                     interfaces[ifname]["mac"] = iface.group("mac")
+            # Portchannel member
+            if ifname in portchannel_members:
+                ai, is_lacp = portchannel_members[ifname]
+                interfaces[ifname]["aggregated_interface"] = ai
+                if is_lacp:
+                    interfaces[ifname]["enabled_protocols"] += ["LACP"]
         return [{"interfaces": list(interfaces.values())}]
 
     def execute_cli(self, **kwargs):
@@ -156,14 +171,14 @@ class Script(BaseScript):
         stp = self.get_stp()
         ctp = self.get_ctp()
         lldp = self.get_lldp()
-        for l in self.cli("show interfaces description").split("\n"):
-            match = self.rx_descr.match(l.strip())
+        for ll in self.cli("show interfaces description").split("\n"):
+            match = self.rx_descr.match(ll.strip())
             if match:
                 if match.group("port") == "Port":
                     continue
                 descr += [match.groupdict()]
-        for l in self.cli("show interfaces configuration").split("\n"):
-            match = self.rx_port1.match(l.strip())
+        for ll in self.cli("show interfaces configuration").split("\n"):
+            match = self.rx_port1.match(ll.strip())
             if match:
                 adm_status += [match.groupdict()]
         for match in self.rx_port.finditer(self.cli("show interfaces status")):
@@ -222,8 +237,8 @@ class Script(BaseScript):
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
-        for l in self.cli("show ip interface").split("\n"):
-            match = self.rx_vlan_ipif.match(l.strip())
+        for ll in self.cli("show ip interface").split("\n"):
+            match = self.rx_vlan_ipif.match(ll.strip())
             if match:
                 ifname = "vlan" + match.group("vlan_id")
                 iface = {
