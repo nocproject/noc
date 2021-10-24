@@ -18,6 +18,7 @@ import bson
 import bson.errors
 import pymongo
 import dateutil.parser
+from pydantic import BaseModel
 from typing import Optional, Dict, Any, List, Union, Iterable, Tuple, Callable
 
 # NOC modules
@@ -29,6 +30,11 @@ from noc.core.hash import hash_int
 from noc.core.mx import send_message, MX_CHANGE_ID
 
 logger = logging.getLogger(__name__)
+
+
+class RemoteSystemItem(BaseModel):
+    id: str
+    name: str
 
 
 class DataStream(object):

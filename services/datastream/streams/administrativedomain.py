@@ -12,7 +12,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 # NOC modules
-from noc.core.datastream.base import DataStream
+from noc.core.datastream.base import DataStream, RemoteSystemItem
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.comp import smart_text
 
@@ -26,10 +26,11 @@ def qs(s):
 class AdmDomainDataStreamItem(BaseModel):
     id: str
     name: str
+    change_id: str
     parent: Optional[str]
     labels: Optional[List[str]]
     tags: Optional[List[str]]
-    remote_system: Optional[str]
+    remote_system: Optional[RemoteSystemItem]
     remote_id: Optional[str]
 
 
