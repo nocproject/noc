@@ -515,7 +515,3 @@ class DataStream(object):
         )
         # Cleanup
         del data["$changeid"]
-
-    @property
-    def annotation(self) -> Optional[Any]:
-        return None
