@@ -270,6 +270,7 @@ class DatastreamAPI(object):
                 methods=["GET"],
                 dependencies=[Depends(self.get_verify_token_hander(ds))],
                 # response_model=sig.return_annotation,
+                response_model=ds.model,
                 tags=self.openapi_tags,
                 name=f"{self.api_name}_get_{ds.name}",
                 description=f"Getinng info {ds.name} datastream",

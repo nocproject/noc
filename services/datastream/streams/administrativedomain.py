@@ -5,6 +5,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Optional, List
+
+# Third-party modules
+from pydantic import BaseModel
+
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.sa.models.administrativedomain import AdministrativeDomain
@@ -17,8 +23,19 @@ def qs(s):
     return smart_text(s)
 
 
+class AdmDomainDataStreamItem(BaseModel):
+    id: str
+    name: str
+    parent: Optional[str]
+    labels: Optional[List[str]]
+    tags: Optional[List[str]]
+    remote_system: Optional[str]
+    remote_id: Optional[str]
+
+
 class AdmDomainDataStream(DataStream):
     name = "administrativedomain"
+    model = AdmDomainDataStreamItem
     clean_id = DataStream.clean_id_int
 
     @classmethod

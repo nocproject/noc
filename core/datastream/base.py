@@ -42,6 +42,7 @@ class DataStream(object):
     """
 
     name = None
+    model = None  # PydanticModel for Response
 
     # Generate separate message
     enable_message = False
@@ -514,3 +515,7 @@ class DataStream(object):
         )
         # Cleanup
         del data["$changeid"]
+
+    @property
+    def annotation(self) -> Optional[Any]:
+        return None
