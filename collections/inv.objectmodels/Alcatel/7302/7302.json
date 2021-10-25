@@ -160,7 +160,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["7302"]
+            "part_no": ["7302", "7302FD", "7302XD"]
         },
         "management": {
             "managed": true
