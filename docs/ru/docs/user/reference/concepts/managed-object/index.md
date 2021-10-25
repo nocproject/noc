@@ -21,3 +21,21 @@ answering particular question:
   See [Container](../container/index.md)
 
 Managed Object must belong to only one division of particular type
+
+## Uplinks
+
+Except in rare cases _Managed Objects_ should have one or more _Paths_
+to upper levels of network (to establish _Connectivity_ with all network)
+or to the NOC's probes (to be monitored and managed at all).
+
+Those paths are called _Uplink Paths_ and all direct _Neighbors_ on the
+_Uplink Paths_ are called _Uplinks_. The role of _Uplink_ is to provide
+_Connectivity_ for its _Downlink_. For reserved topologies object's _Uplink_ may be
+its _Downlink_ at the same time.
+
+_Uplinks_ are key concept for [RCA](../../../../glossary.md#rca). _Managed Object_ with all unavailable
+uplinks looses _Connectivity_ and problem lies somewhere on the _Uplink Paths_.
+
+NOC perform automatic uplinks calculation on topology changes. The proccess
+can be configured via [Network Segment Profiles](../network-segment-profile/index.md)
+[Uplink Policy](../network-segment-profile/index.md#uplink-policy) setting.
