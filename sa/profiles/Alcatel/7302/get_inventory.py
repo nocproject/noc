@@ -15,6 +15,8 @@ class Script(BaseScript):
     interface = IGetInventory
     port_map = {
         7: "7330",
+        10: "7330",
+        11: "7330",
         14: "7330",
         17: "7342",
         18: "7302",
