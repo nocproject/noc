@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ from mongoengine.fields import (
     BooleanField,
     ObjectIdField,
     DictField,
+    BinaryField,
 )
 from mongoengine.errors import SaveConditionError
 
@@ -60,7 +61,7 @@ class ActiveAlarm(Document):
             "root",
             "-severity",
             ("alarm_class", "managed_object"),
-            ("discriminator", "managed_object"),
+            "#reference",
             ("timestamp", "managed_object"),
             "escalation_tt",
             "escalation_ts",
@@ -81,10 +82,10 @@ class ActiveAlarm(Document):
     alarm_class = PlainReferenceField(AlarmClass)
     severity = IntField(required=True)
     vars = DictField()
-    # Calculated alarm discriminator
-    # Has meaning only for alarms with is_unique flag set
-    # Calculated as sha1("value1\x00....\x00valueN").hexdigest()
-    discriminator = StringField(required=False)
+    # Alarm reference is a hash of discriminator
+    # for external systems
+    reference = BinaryField(required=False)
+    #
     log = ListField(EmbeddedDocumentField(AlarmLog))
     # Manual acknowledgement timestamp
     ack_ts = DateTimeField(required=False)
@@ -291,7 +292,7 @@ class ActiveAlarm(Document):
             escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
-            discriminator=self.discriminator,
+            reference=self.reference,
             reopens=self.reopens,
             direct_services=self.direct_services,
             direct_subscribers=self.direct_subscribers,

@@ -114,7 +114,7 @@ class BaseService(object):
         set_service(self)
         sys.excepthook = excepthook
         self.loop: Optional[asyncio.BaseEventLoop] = None
-        self.logger = None
+        self.logger = logging.getLogger()
         self.service_id = str(uuid.uuid4())
         self.executors = {}
         self.start_time = perf_counter()
