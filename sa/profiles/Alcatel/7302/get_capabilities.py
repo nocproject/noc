@@ -1,4 +1,4 @@
-# ----------------------------------------------------------------------
+B# ----------------------------------------------------------------------
 # Alcatel.7302.get_capabilities
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
@@ -61,11 +61,11 @@ class Script(BaseScript):
     def execute_platform_cli(self, caps):
         s = self.has_slots_cli()
         if s:
-            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
-            caps["Stack | Member Ids"] = " | ".join(s)
+            caps["Slot | Members"] = len(s) if len(s) != 1 else 0
+            caps["Slot | Member Ids"] = " | ".join(s)
 
     def execute_platform_snmp(self, caps):
         s = self.has_slots_snmp()
         if s:
-            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
-            caps["Stack | Member Ids"] = " | ".join(s)
+            caps["Slot | Members"] = len(s) if len(s) != 1 else 0
+            caps["Slot | Member Ids"] = " | ".join(s)
