@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,8 @@ class Script(BaseScript):
 
     port_map = {
         7: "7330",
+        10: "7330",
+        11: "7330",
         14: "7330",
         18: "7302",
         19: "7302",
@@ -36,9 +38,21 @@ class Script(BaseScript):
         slots = self.rx_slots.search(v)
         v = self.cli("show software-mngt oswp")
         match_ver = self.rx_ver.search(v)
+        platform = self.port_map[int(slots.group("slot_count"))]
+        try:
+            v = self.cli("show equipment isam")
+            match = self.rx_sys.search(v)
+            if match:
+                if match.group("platform") == "leeu":
+                    platform = platform + "XD"
+                elif match.group("platform") == "lneu":
+                    platform = platform + "FD"
+        except self.CLISyntaxError:
+            pass
+
         return {
             "vendor": "Alcatel",
-            "platform": self.port_map[int(slots.group("slot_count"))],
+            "platform": platform,
             "version": match_ver.group("version"),
         }
 
@@ -55,6 +69,11 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.4.17")
         platform = self.rack_map.get(v, "7302")
+        v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.3.1")
+        if v == "LEEU":
+            platform = platform + "XD"
+        elif v == "LNEU":
+            platform = platform + "FD"
         version = None
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.637.61.1.24.1.1.1.2"):
             if v == "NO_OSWP":

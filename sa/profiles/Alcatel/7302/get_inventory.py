@@ -15,6 +15,8 @@ class Script(BaseScript):
     interface = IGetInventory
     port_map = {
         7: "7330",
+        10: "7330",
+        11: "7330",
         14: "7330",
         17: "7342",
         18: "7302",
@@ -41,13 +43,19 @@ class Script(BaseScript):
                 r[-1]["serial"] = sn
             if b_revision is not None:
                 r[-1]["revision"] = b_revision
+        platform = self.port_map[slots]
+        v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.3.1")
+        if v == "LEEU":
+            platform = platform + "XD"
+        elif v == "LNEU":
+            platform = platform + "FD"
         r.insert(
             0,
             {
                 "number": "0",
                 "type": "CHASSIS",
                 "vendor": "Alcatel",
-                "part_no": self.port_map[slots],
+                "part_no": platform,
             },
         )
         return r
