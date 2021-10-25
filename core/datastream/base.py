@@ -37,6 +37,18 @@ class RemoteSystemItem(BaseModel):
     name: str
 
 
+class WorkflowItem(BaseModel):
+    id: str
+    name: str
+
+
+class StateItem(BaseModel):
+    id: str
+    name: str
+    workflow: WorkflowItem
+    allocated_till: Optional[datetime.datetime]
+
+
 class DataStream(object):
     """
     Datastream stored in collection named ds_<name>.
