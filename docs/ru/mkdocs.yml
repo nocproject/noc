@@ -7,6 +7,7 @@ edit_uri: -/edit/master/docs/ru/docs
 copyright: 2007-2021, The NOC Project
 nav:
   - Home: index.md
+  - License: doc-license.md
   - User's Guide:
       - Overview: user/index.md
       - Get Started:
@@ -14,9 +15,12 @@ nav:
       - How-to Guides:
           - Overview: user/howto/index.md
           - Loading GIS data with etl command: user/howto/fias/index.md
+          - FIAS Codes: user/howto/fias/fias_region_codes.md
+          - OKTMO Codes: user/howto/fias/oktmo_region_codes.md
       - Background:
           - Обзор: user/background/index.md
           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
+          - Работа с топологией: user/background/topology/index.md
       - Reference:
           - Overview: user/reference/index.md
           - Concepts:
@@ -1420,6 +1424,7 @@ nav:
                   - Huawei NDP: admin/reference/discovery/box/huawei_ndp.md
                   - NRI: admin/reference/discovery/box/nri.md
                   - HouseKeeping: admin/reference/discovery/box/hk.md
+                  - xMAC: admin/reference/discovery/box/xmac.md
               - Periodic Discovery:
                   - Overview: admin/reference/discovery/periodic/index.md
                   - interfacestatus: admin/reference/discovery/periodic/interfacestatus.md

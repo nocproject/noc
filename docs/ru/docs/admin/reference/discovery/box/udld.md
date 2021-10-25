@@ -1,11 +1,12 @@
-# udld check
+# UDLD
 
-<!-- prettier-ignore -->
-!!! todo
-    Describe *udld* check
+`Unidirectional Link Detection`. Изобретение Cisco - протокол по контролю состояния линка. 
+Также позволяет видеть соседа (если сосед оборудование `Cisco`).
 
-## Requirements
 
-* [get_udld_neighbors](../../../../dev/reference/scripts/get_udld_neighbors.md)
-* [Network UDLD caps](../../../../user/reference/caps/network/udld.md)
-* UDLD check is enabled in [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md)
+## Требования
+
+* Скрипт [get_udld_neighbors](../../../../dev/reference/scripts/get_udld_neighbors.md)
+* Возможность [Network UDLD](../../../../user/reference/caps/network/udld.md)
+* Опрос UDLD включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
+* Метод UDLD в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)
