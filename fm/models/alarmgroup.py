@@ -37,7 +37,7 @@ class AlarmGroup(Document):
     is_active = BooleanField(default=True)
     description = StringField()
     preference = IntField(default=999)
-    reference_prefix = StringField()
+    reference_template = StringField(default="")
     labels = ListField(StringField())
     # Group Alarm Class (Group by default)
     alarm_class = PlainReferenceField(AlarmClass)
