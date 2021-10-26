@@ -22,6 +22,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     DictField,
     ObjectIdField,
+    BinaryField,
 )
 from bson import ObjectId
 
@@ -46,7 +47,7 @@ class ActiveEvent(Document):
         "auto_create_index": False,
         "indexes": [
             "timestamp",
-            "discriminator",
+            "#reference",
             "alarms",
             ("timestamp", "event_class", "managed_object"),
             {"fields": ["expires"], "expireAfterSeconds": 0},
@@ -64,7 +65,7 @@ class ActiveEvent(Document):
     resolved_vars = RawDictField()
     vars = DictField()
     log = ListField(EmbeddedDocumentField(EventLog))
-    discriminator = StringField(required=False)
+    reference = BinaryField(required=False)
     alarms = ListField(ObjectIdField())
     expires = DateTimeField(required=False)
 

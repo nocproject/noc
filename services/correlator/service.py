@@ -13,6 +13,7 @@ import re
 from collections import defaultdict
 from typing import Any, Optional, Dict, List
 import operator
+from hashlib import sha512
 
 # Third-party modules
 import orjson
@@ -240,10 +241,41 @@ class CorrelatorService(TornadoService):
                     found = True
         return found
 
+    @staticmethod
+    def get_default_reference(
+        managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
+    ) -> str:
+        """
+        Generate default reference for event-based alarms.
+        Reference has a form of
+
+        ```
+        e:<mo id>:<alarm class id>:<value1>:...:<value N>
+        ```
+
+        :param managed_object: Managed Object instance
+        :param alarm_class: Alarm Class instance
+        :param vars: Variables
+        :returns: Reference string
+        """
+        if not vars:
+            return f"e:{managed_object.id}:{alarm_class.id}"
+        var_suffix = ":".join(
+            str(vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
+            for n in alarm_class.reference
+        )
+        return f"e:{managed_object.id}:{alarm_class.id}:{var_suffix}"
+
+    @staticmethod
+    def get_reference_hash(reference: str) -> bytes:
+        """
+        Generate hashed form of reference
+        """
+        return sha512(reference.encode("utf-8")).digest()[:10]
+
     def try_reopen_alarm(
         self,
-        managed_object: ManagedObject,
-        discriminator: str,
+        reference: bytes,
         timestamp: datetime.datetime,
         event: ActiveEvent = None,
     ) -> Optional[ActiveAlarm]:
@@ -251,14 +283,13 @@ class CorrelatorService(TornadoService):
         Try to reopen archived alarm
 
         :param managed_object: Managed Object instance
-        :param discriminator: Discriminator string
+        :param reference: Reference hash
         :param timestamp: New alarm timestamp
         :param event:
         :returns: Reopened alarm, when found, None otherwise
         """
         arch = ArchivedAlarm.objects.filter(
-            managed_object=managed_object.id,
-            discriminator=discriminator,
+            reference=reference,
             control_time__gte=timestamp,
         ).first()
         if not arch:
@@ -267,8 +298,8 @@ class CorrelatorService(TornadoService):
             self.logger.info(
                 "[%s|%s|%s] %s reopens alarm %s(%s)",
                 event.id,
-                managed_object.name,
-                managed_object.address,
+                arch.managed_object.name,
+                arch.managed_object.address,
                 event.event_class.name,
                 arch.alarm_class.name,
                 arch.id,
@@ -300,6 +331,7 @@ class CorrelatorService(TornadoService):
         alarm_class: AlarmClass,
         vars: Optional[Dict[str, Any]],
         event: Optional[ActiveEvent] = None,
+        reference: Optional[str] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -315,16 +347,16 @@ class CorrelatorService(TornadoService):
         if not managed_object.is_managed:
             self.logger.info("Managed object is not managed. Do not raise alarm")
             return None
-        discriminator = alarm_class.get_discriminator(vars)
+        if not reference:
+            reference = self.get_default_reference(
+                managed_object=managed_object, alarm_class=alarm_class, vars=vars
+            )
+        ref_hash = self.get_reference_hash(reference)
         if alarm_class.is_unique:
-            assert discriminator is not None
-            alarm = ActiveAlarm.objects.filter(
-                managed_object=managed_object.id, discriminator=discriminator
-            ).first()
+            alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
             if not alarm:
                 alarm = self.try_reopen_alarm(
-                    managed_object=managed_object,
-                    discriminator=discriminator,
+                    reference=ref_hash,
                     timestamp=timestamp,
                     event=event,
                 )
@@ -370,7 +402,7 @@ class CorrelatorService(TornadoService):
             alarm_class=alarm_class,
             severity=severity,
             vars=vars,
-            discriminator=discriminator,
+            reference=ref_hash,
             direct_services=direct_services,
             direct_subscribers=direct_subscribers,
             total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
@@ -497,11 +529,11 @@ class CorrelatorService(TornadoService):
         if not rule.unique:
             return
         vars = rule.get_vars(event)
-        discriminator = rule.alarm_class.get_discriminator(vars)
-        assert discriminator is not None
-        alarm: "ActiveAlarm" = ActiveAlarm.objects.filter(
-            managed_object=managed_object.id, discriminator=discriminator
-        ).first()
+        reference = self.get_default_reference(
+            managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
+        )
+        ref_hash = self.get_reference_hash(reference)
+        alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
         if not alarm:
             return
         self.logger.info(
@@ -528,25 +560,27 @@ class CorrelatorService(TornadoService):
         """
         # @todo: Rewrite to scheduler
         vars = rule.get_vars(event)
-        discriminator = rule.alarm_class.get_discriminator(vars)
+        reference = self.get_default_reference(
+            managed_object=event.managed_object, alarm_class=rule.alarm_class, vars=vars
+        )
+        ref_hash = self.get_reference(reference)
         ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
         de = ActiveEvent.objects.filter(
             managed_object=event.managed_object_id,
             event_class=rule.event_class,
-            discriminator=discriminator,
+            reference=ref_hash,
             timestamp__gte=ws,
         ).first()
         if not de:
             # No starting event
             return None
-        # Probable starting event found, get all interesting following event
-        # classes
+        # Probable starting event found, get all interesting following event classes
         fe = [
             ee.event_class.id
             for ee in ActiveEvent.objects.filter(
                 managed_object=event.managed_object_id,
                 event_class__in=rule.combo_event_classes,
-                discriminator=discriminator,
+                reference=ref_hash,
                 timestamp__gte=ws,
             ).order_by("timestamp")
         ]
@@ -634,10 +668,13 @@ class CorrelatorService(TornadoService):
             elif rule.action == "clear" and rule.combo_condition == "none":
                 self.clear_alarm_from_rule(rule, e)
             if rule.action in ("raise", "clear"):
-                # Write discriminator if can trigger delayed event
+                # Write reference if can trigger delayed event
                 if rule.unique and rule.event_class.id in self.back_rules:
                     vars = rule.get_vars(e)
-                    e.discriminator = rule.alarm_class.get_discriminator(vars)
+                    reference = self.get_default_reference(
+                        managed_object=e.managed_object, alarm_class=rule.alarm_class, vars=vars
+                    )
+                    e.reference = self.get_reference_hash(reference)
                     e.save()
                 # Process delayed combo conditions
                 if e.event_class.id in self.back_rules:

@@ -3,7 +3,7 @@
     "$collection": "fm.alarmclasses",
     "uuid": "c3a089e3-16b8-42aa-a4d2-801049177a22",
     "is_unique": true,
-    "discriminator": ["interface", "vlan"],
+    "reference": ["interface", "vlan"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
     "datasources": [

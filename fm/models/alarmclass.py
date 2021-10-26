@@ -6,11 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import hashlib
 import os
 from threading import Lock
 import operator
-from typing import Any, Optional, Dict
 
 # Third-party modules
 from mongoengine.document import Document
@@ -35,10 +33,8 @@ from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
-from noc.core.comp import smart_bytes
 from noc.core.prettyjson import to_json
 from .alarmseverity import AlarmSeverity
-from .alarmclassvar import AlarmClassVar
 from .datasource import DataSource
 from .alarmrootcausecondition import AlarmRootCauseCondition
 from .alarmclasscategory import AlarmClassCategory
@@ -77,6 +73,30 @@ class Component(EmbeddedDocument):
         }
 
 
+class AlarmClassVar(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+    name = StringField(required=True)
+    description = StringField(required=False)
+    default = StringField(required=False)
+
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return (
+            self.name == other.name
+            and self.description == other.description
+            and self.default == other.default
+        )
+
+    @property
+    def json_data(self):
+        r = {"name": self.name, "description": self.description}
+        if self.default:
+            r["default"] = self.default
+        return r
+
+
 @bi_sync
 @change
 @on_delete_check(
@@ -104,14 +124,13 @@ class AlarmClass(Document):
     name = StringField(required=True, unique=True)
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
-    # Create or not create separate Alarm
     # if is_unique is True and there is active alarm
     # Do not create separate alarm if is_unique set
     is_unique = BooleanField(default=False)
     # Do not move alarm to Archive when clear, just delete
     is_ephemeral = BooleanField(default=False)
-    # List of var names to be used as discriminator key
-    discriminator = ListField(StringField())
+    # List of var names to be used as default reference key
+    reference = ListField(StringField())
     # Can alarm status be cleared by user
     user_clearable = BooleanField(default=True)
     # Default alarm severity
@@ -225,18 +244,6 @@ class AlarmClass(Document):
         self.category = c.id
         super().save(*args, **kwargs)
 
-    def get_discriminator(self, vars: Optional[Dict[str, Any]]) -> str:
-        """
-        Calculate discriminator hash
-
-        :param vars: Dict of vars
-        :returns: Discriminator hash
-        """
-        if vars:
-            ds = sorted(str(vars[n]) for n in self.discriminator)
-            return hashlib.sha1(smart_bytes("\x00".join(ds))).hexdigest()
-        return hashlib.sha1(smart_bytes(self.name)).hexdigest()
-
     @property
     def json_data(self):
         r = {
@@ -245,7 +252,7 @@ class AlarmClass(Document):
             "uuid": self.uuid,
             "is_unique": self.is_unique,
             "is_ephemeral": self.is_ephemeral,
-            "discriminator": [d for d in self.discriminator],
+            "reference": [d for d in self.reference],
             "user_clearable": self.user_clearable,
             "default_severity__name": self.default_severity.name,
         }
@@ -292,7 +299,7 @@ class AlarmClass(Document):
                 "uuid",
                 "description",
                 "is_unique",
-                "discriminator",
+                "reference",
                 "user_clearable",
                 "default_severity__name",
                 "datasources",
