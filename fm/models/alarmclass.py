@@ -255,8 +255,9 @@ class AlarmClass(Document):
             "is_ephemeral": self.is_ephemeral,
             "reference": [d for d in self.reference],
             "user_clearable": self.user_clearable,
-            "default_severity__name": self.default_severity.name,
         }
+        if self.default_severity:
+            r["default_severity__name"] = self.default_severity.name
         if self.description:
             r["description"] = self.description
         if self.datasources:
