@@ -25,7 +25,7 @@ class Migration(BaseMigration):
                 "description": "Default Alarm Class for grouping alarms",
                 "is_unique": False,
                 "is_ephemeral": True,
-                "discriminator": [],
+                "reference": [],
                 "user_clearable": False,
                 "datasources": [],
                 "components": [],
