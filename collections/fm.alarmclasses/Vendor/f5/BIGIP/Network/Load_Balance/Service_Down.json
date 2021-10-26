@@ -3,7 +3,7 @@
     "$collection": "fm.alarmclasses",
     "uuid": "94244c8a-d185-4c50-adaa-09fe27a39f92",
     "is_unique": true,
-    "discriminator": ["node", "port"],
+    "reference": ["node", "port"],
     "user_clearable": true,
     "default_severity__name": "WARNING",
     "vars": [

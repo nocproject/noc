@@ -21,6 +21,7 @@ from mongoengine.fields import (
     LongField,
     ObjectIdField,
     DictField,
+    BinaryField,
 )
 
 # NOC modules
@@ -46,7 +47,7 @@ class ArchivedAlarm(Document):
             "root",
             "timestamp",
             "managed_object",
-            ("managed_object", "discriminator", "control_time"),
+            ("reference", "control_time"),
             "escalation_tt",
             "escalation_ts",
         ],
@@ -65,8 +66,8 @@ class ArchivedAlarm(Document):
     closing_event = ObjectIdField(required=False)
     # Number of reopens
     reopens = IntField(required=False)
-    # Copied discriminator
-    discriminator = StringField(required=False)
+    # Copied reference
+    reference = BinaryField(required=False)
     # Manual acknowledgement timestamp
     ack_ts = DateTimeField(required=False)
     # Manual acknowledgement user name
@@ -200,7 +201,7 @@ class ArchivedAlarm(Document):
             escalation_error=self.escalation_error,
             escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
-            discriminator=self.discriminator,
+            reference=self.reference,
             reopens=reopens + 1,
             direct_services=self.direct_services,
             direct_subscribers=self.direct_subscribers,

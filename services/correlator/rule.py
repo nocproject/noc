@@ -25,7 +25,7 @@ class Rule(object):
         self.alarm_class = dr.alarm_class
         self.stop_disposition = dr.stop_disposition
         self.var_mapping = {}
-        self.discriminator = []
+        self.reference = []
         self.datasources = {}
         self.c_defaults = {}
         self.d_defaults = {}
@@ -38,7 +38,7 @@ class Rule(object):
                 self.var_mapping[v] = v
             if dr.var_mapping:
                 self.var_mapping.update(dr.var_mapping)
-            self.discriminator = self.alarm_class.discriminator
+            self.reference = self.alarm_class.reference
             self.combo_condition = dr.combo_condition
             self.combo_window = dr.combo_window
             self.combo_event_classes = [c.id for c in dr.combo_event_classes]

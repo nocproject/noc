@@ -152,7 +152,7 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                     boxLabel: __('Ephemeral')
                                 },
                                 {
-                                    name: 'discriminator',
+                                    name: 'reference',
                                     xtype: 'stringsfield',
                                     fieldLabel: __('Discriminator')
                                 }
