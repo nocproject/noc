@@ -80,7 +80,7 @@ Ext.define("NOC.fm.alarmclass.Model", {
             type: "string"
         },
         {
-            name: "discriminator",
+            name: "reference",
             type: "auto",
         },
         {
