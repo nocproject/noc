@@ -60,7 +60,7 @@ class ManagedObject(Model):
     pool = ReferenceField(Pool, description=_("Pool Name"))
     object_profile = ReferenceField(ObjectProfile, description=_("Object Profile"))
     name = StringField(description=_("Name"))
-    hostname = StringField(description=_("Hostaname"))
+    hostname = StringField(description=_("Hostname"))
     ip = IPv4Field(description=_("IP Address"))
     is_managed = BooleanField(description=_("Is Managed"))
     # Platform
