@@ -15,7 +15,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 
 
 class ReportObjectsHostname1(BaseReportColumn):
-    name = "hostaname"
+    name = "hostname"
     unknown_value = ("",)
     builtin_sorted = True
 
@@ -30,7 +30,7 @@ class ReportObjectsHostname1(BaseReportColumn):
 
 
 class ReportObjectsHostname2(BaseReportColumn):
-    name = "hostaname2"
+    name = "hostname2"
     unknown_value = ("",)
     builtin_sorted = True
 
