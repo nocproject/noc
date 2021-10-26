@@ -43,7 +43,7 @@ def get_access_tokens_set(datastream, fmt: Optional[str] = None) -> Set[str]:
     if fmt:
         role = get_format_role(datastream, fmt)
         if role:
-            tokens.add("datastream:%s" % role)
+            tokens.add(f"datastream:{role}")
     return tokens
 
 
@@ -62,7 +62,7 @@ class DatastreamAPI(object):
     def get_datastreams() -> List["DataStream"]:
         r = []
         for name in loader:
-            if not getattr(config.datastream, "enable_%s" % name, False):
+            if not getattr(config.datastream, f"enable_{name}", False):
                 continue
             ds = loader[name]
             if ds:
@@ -77,7 +77,6 @@ class DatastreamAPI(object):
             loop.call_soon(event.set)
             # asyncio.get_running_loop().call_soon(event.set)
 
-        print("Wait")
         if ds_name not in self.ds_queue:
             return
         event = asyncio.Event()
@@ -120,7 +119,7 @@ class DatastreamAPI(object):
         # Start watcher threads
         self.ds_queue = {}
         for ds in self.get_datastreams():
-            if has_watch and getattr(config.datastream, "enable_%s_wait" % ds.name):
+            if has_watch and getattr(config.datastream, f"enable_{ds.name}_wait"):
                 waiter = self.watch_waiter
             else:
                 waiter = self.sleep_waiter

@@ -5,15 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional, List
-
-# Third-party modules
-from pydantic import BaseModel, Field
-
 # NOC modules
-from noc.core.datastream.base import DataStream, StateItem
+from noc.core.datastream.base import DataStream
 from noc.ip.models.prefix import Prefix
+from ..models.prefix import PrefixDataStreamItem
 from noc.core.comp import smart_text
 
 
@@ -21,44 +16,6 @@ def qs(s):
     if not s:
         return ""
     return smart_text(s)
-
-
-class ProjectItem(BaseModel):
-    id: str
-    name: str
-
-
-class PrefixProfileItem(BaseModel):
-    id: str
-    name: str
-
-
-class VRFItem(BaseModel):
-    id: str
-    name: str
-
-
-class ASItem(BaseModel):
-    id: str
-    name: str
-    asf: str = Field(None, default_factory=str)
-
-
-class PrefixDataStreamItem(BaseModel):
-    id: str
-    name: str
-    change_id: str
-    prefix: str
-    afi: str
-    source: str
-    description: Optional[str]
-    labels: Optional[List[str]]
-    tags: Optional[List[str]]
-    state: StateItem
-    profile: PrefixProfileItem
-    project: Optional[ProjectItem]
-    vrf: Optional[VRFItem]
-    asf: Optional[ASItem] = Field(None, alias="as")
 
 
 class PrefixDataStream(DataStream):

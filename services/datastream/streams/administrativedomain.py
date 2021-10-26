@@ -5,15 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional, List
-
-# Third-party modules
-from pydantic import BaseModel
-
 # NOC modules
-from noc.core.datastream.base import DataStream, RemoteSystemItem
+from noc.core.datastream.base import DataStream
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from ..models.administrativedomain import AdmDomainDataStreamItem
 from noc.core.comp import smart_text
 
 
@@ -21,17 +16,6 @@ def qs(s):
     if not s:
         return ""
     return smart_text(s)
-
-
-class AdmDomainDataStreamItem(BaseModel):
-    id: str
-    name: str
-    change_id: str
-    parent: Optional[str]
-    labels: Optional[List[str]]
-    tags: Optional[List[str]]
-    remote_system: Optional[RemoteSystemItem]
-    remote_id: Optional[str]
 
 
 class AdmDomainDataStream(DataStream):

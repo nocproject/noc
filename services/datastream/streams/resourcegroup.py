@@ -5,15 +5,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional
-
-# Third-party modules
-from pydantic import BaseModel
-
 # NOC modules
-from noc.core.datastream.base import DataStream, RemoteSystemItem
+from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
+from ..models.resourcegroup import ResourceGroupDataStreamItem
 from noc.core.comp import smart_text
 
 
@@ -21,21 +16,6 @@ def qs(s):
     if not s:
         return ""
     return smart_text(s)
-
-
-class TechnologyItem(BaseModel):
-    id: str
-    name: str
-
-
-class ResourceGroupDataStreamItem(BaseModel):
-    id: str
-    name: str
-    change_id: str
-    technology: TechnologyItem
-    parent: Optional[str]
-    remote_system: Optional[RemoteSystemItem]
-    remote_id: Optional[str]
 
 
 class ResourceGroupDataStream(DataStream):

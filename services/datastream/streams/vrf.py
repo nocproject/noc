@@ -5,14 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional, List
-
-# Third-party modules
-from pydantic import BaseModel
-
 # NOC modules
-from noc.core.datastream.base import DataStream, StateItem
+from noc.core.datastream.base import DataStream
+from ..models.vrf import VRFGroupDataStreamItem
 from noc.ip.models.vrf import VRF
 from noc.core.comp import smart_text
 
@@ -21,37 +16,6 @@ def qs(s):
     if not s:
         return ""
     return smart_text(s)
-
-
-class AFIItem(BaseModel):
-    ipv4: bool
-    ipv6: bool
-
-
-class ProjectItem(BaseModel):
-    id: str
-    name: str
-
-
-class VRFProfileItem(BaseModel):
-    id: str
-    name: str
-
-
-class VRFGroupDataStreamItem(BaseModel):
-    id: str
-    name: str
-    change_id: str
-    vpn_id: str
-    afi: AFIItem
-    source: str
-    description: Optional[str]
-    rd: Optional[str]
-    labels: Optional[List[str]]
-    tags: Optional[List[str]]
-    state: StateItem
-    profile: VRFProfileItem
-    project: Optional[ProjectItem]
 
 
 class VRFGroupDataStream(DataStream):
