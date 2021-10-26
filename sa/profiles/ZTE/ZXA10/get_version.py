@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ class Script(BaseScript):
         r"^ZTE ZXA10 Software, Version: (?P<version>\S+), Release software",
         re.MULTILINE,
     )
+    rx_serial = re.compile(r"^\d+\s+\S+_Shelf\s+\S+\s+(?P<serial>\d+)", re.MULTILINE)
 
     def execute_cli(self):
         try:
@@ -35,8 +36,17 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             v = self.cli("show software", cached=True)
             match = self.rx_version2.search(v)
-        return {
+        r = {
             "vendor": "ZTE",
             "platform": match.group("platform"),
             "version": match.group("version"),
         }
+        try:
+            v = self.cli("show backboard ")
+            match = self.rx_serial.search(v)
+            if match:
+                r["attributes"] = {}
+                r["attributes"]["Serial Number"] = match.group("serial")
+        except self.CLISyntaxError:
+            pass
+        return r

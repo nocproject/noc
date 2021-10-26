@@ -18,6 +18,8 @@ class Script(BaseScript):
     interface = IGetInventory
 
     type = {
+        "PRSF": "PWR",
+        "PRVR": "PWR",
         "PRWG": "PWR",
         "PRWGS": "PWR",
         "PRWH": "PWR",
@@ -26,9 +28,13 @@ class Script(BaseScript):
         "SCXL": "MAINBOARD",
         "SCXM": "MAINBOARD",
         "SCXN": "MAINBOARD",
+        "SFUQ": "MAINBOARD",
         "SMXA": "MAINBOARD",
+        "SPUF": "MAINBOARD",
         "GMPA": "MAINBOARD",
         "GMRA": "MAINBOARD",
+        "GFCL": "LINECARD",
+        "GFGL": "LINECARD",
         "GUFQ": "LINECARD",
         "GUTQ": "LINECARD",
         "GUSQ": "LINECARD",
@@ -42,8 +48,11 @@ class Script(BaseScript):
         "GVGO": "LINECARD",
         "PTWV": "LINECARD",
         "PTWVN": "LINECARD",
+        "XFTO": "LINECARD",
         "FUMO": "FAN",
         "CVST": "unknown",
+        "FCSDA": "unknown",
+        "FCRDC": "unknown",
         "SVWMC": "unknown",
     }
     rx_platform = re.compile(r"^\d+\s+(?P<platform>\S+)MBRack\s+.+\n", re.MULTILINE)
@@ -62,6 +71,8 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.scripts.get_version()
         r = [{"type": "CHASSIS", "vendor": "ZTE", "part_no": [v["platform"]]}]
+        if "attributes" in v:
+            r[0]["serial"] = v["attributes"]["Serial Number"]
         ports = self.profile.fill_ports(self)
         for p in ports:
             v = self.cli("show card shelfno %s slotno %s" % (p["shelf"], p["slot"]))
