@@ -55,7 +55,8 @@ class Migration(BaseMigration):
         if bulk:
             aa.bulk_write(bulk)
         active_alarms.update_many({}, {"$unset": {"discriminator": 1}})
-        db["noc.alarmclasses"].bulk_write(ac_bulk)
+        if ac_bulk:
+            db["noc.alarmclasses"].bulk_write(ac_bulk)
         db["noc.alarmclasses"].update_many({}, {"$unset": {"discriminator": 1}})
 
     @staticmethod
