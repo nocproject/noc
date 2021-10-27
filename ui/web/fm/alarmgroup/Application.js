@@ -100,7 +100,7 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             allowBlank: true,
             uiStyle: "medium",
             query: {
-                "allow_match_rule": true
+                "allow_fm_alarmgroup": true
             }
         },
         {
