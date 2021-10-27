@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,5 +17,8 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         config = self.cli("show running-config")
-        config = self.strip_first_lines(config, 3)
+        if "!<mim>" in config:  # Found in С620/C650
+            config = self.strip_first_lines(config, 5)
+        else:
+            config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)
