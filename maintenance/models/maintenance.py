@@ -58,7 +58,7 @@ class Maintenance(Document):
         "collection": "noc.maintenance",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [("start", "is_completed"), "administrative_domain"],
+        "indexes": ["start", "stop", ("start", "is_completed"), "administrative_domain"],
         "legacy_collections": ["noc.maintainance"],
     }
 
