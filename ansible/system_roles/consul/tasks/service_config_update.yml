@@ -7,14 +7,11 @@
   consul_kv:
     key: "{{ consul_service_key }}"
     state: present
-    cas: 0
   vars:
     ansible_python_interpreter: "{{ consul_control_python }}"
   environment:
     ANSIBLE_JINJA2_NATIVE: true
   register: consul_key_response
-  changed_when: false
-  check_mode: "False"
 
 # if default value is unset provide default json
 # waiting for https://github.com/ansible/ansible/pull/32738
@@ -22,11 +19,10 @@
   consul_kv:
     key: "{{ consul_service_key }}"
     value: "{{ service_tmpl | to_nice_json }}"
-    cas: "{{ consul_key_response.index }}"
   vars:
     service_tmpl:
       Holders: []
-      Limit: "{{ consul_service_value | int }}"
+      Limit: "{{ consul_service_value }}"
     ansible_python_interpreter: "{{ consul_control_python }}"
   environment:
     ANSIBLE_JINJA2_NATIVE: true
@@ -43,7 +39,6 @@
             | combine({ consul_service_internal_key: consul_service_value })
             | to_nice_json
             }}"
-    cas: "{{ consul_key_response.index }}"
     #token: "{{ consul_service_token }}"
   vars:
     ansible_python_interpreter: "{{ consul_control_python }}"
