@@ -11,6 +11,7 @@ from threading import Lock
 from typing import List
 
 # Third-party modules
+import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -20,7 +21,6 @@ from mongoengine.fields import (
     ReferenceField,
     EmbeddedDocumentField,
 )
-import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
@@ -51,7 +51,7 @@ class AlarmGroup(Document):
         "collection": "alarmgroups",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["reference_prefix", ("rules.alarm_class", "rules.labels")],
+        "indexes": ["rules.labels", ("rules.alarm_class", "rules.labels")],
     }
 
     name = StringField(unique=True)
@@ -59,7 +59,7 @@ class AlarmGroup(Document):
     is_active = BooleanField(default=True)
     #
     rules = ListField(EmbeddedDocumentField(MatchRule))
-    #
+    # Group Alarm reference Template
     group_reference = StringField(default="")
     # Group Alarm Class (Group by default)
     group_alarm_class = PlainReferenceField(AlarmClass)
@@ -89,11 +89,3 @@ class AlarmGroup(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id) -> "AlarmGroup":
         return AlarmGroup.objects.filter(bi_id=id).first()
-
-    @classmethod
-    def get_effective_group(cls, reference_prefix: str, labels: List[str] = None) -> "AlarmGroup":
-        return (
-            AlarmGroup.objects.filter(reference_prefix=reference_prefix, labels__in=[labels])
-            .order_by("preference")
-            .first()
-        )

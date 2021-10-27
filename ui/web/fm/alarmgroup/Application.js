@@ -66,11 +66,10 @@ Ext.define("NOC.fm.alarmgroup.Application", {
         },
         {
             xtype: "fieldset",
-            layout: "column",
+            layout: "vbox",
             title: __("Group Alarm"),
-            minWidth: me.formMinWidth,
-            maxWidth: me.formMaxWidth,
-            defaults: fieldSetDefaults,
+            minWidth: 800,
+            maxWidth: 1000,
             collapsible: false,
             items: [
                 {
@@ -78,7 +77,7 @@ Ext.define("NOC.fm.alarmgroup.Application", {
                     xtype: "fm.alarmclass.LookupField",
                     fieldLabel: __("Group Alarm Class"),
                     uiStyle: 'large',
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: 'group_reference',
@@ -109,6 +108,7 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             xtype: "main.notificationgroup.LookupField",
             fieldLabel: __("Notification Group"),
             labelWidth: 200,
+            uiStyle: "medium",
             allowBlank: true
         },
         {
@@ -116,14 +116,12 @@ Ext.define("NOC.fm.alarmgroup.Application", {
             xtype: "listform",
             fieldLabel: __("Match Rules"),
             rows: 5,
-            minWidth: me.formMinWidth,
-            maxWidth: me.formMaxWidth,
             items: [
                 {
                     name: "labels",
                     xtype: "labelfield",
                     fieldLabel: __("Match Labels"),
-                    allowBlank: false,
+                    allowBlank: true,
                     isTree: true,
                     pickerPosition: "down",
                     uiStyle: "extra",
@@ -136,7 +134,7 @@ Ext.define("NOC.fm.alarmgroup.Application", {
                     xtype: "fm.alarmclass.LookupField",
                     fieldLabel: __("Alarm Class"),
                     uiStyle: 'large',
-                    allowBlank: false
+                    allowBlank: true
                 }
             ]
         }
