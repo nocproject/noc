@@ -8,7 +8,6 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import List
 
 # Third-party modules
 import cachetools
