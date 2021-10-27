@@ -23,9 +23,14 @@ class Script(BaseScript):
         "HUVQ": "gei_",
         "GMPA": "gei-",
         "GMRA": "gei-",
+        "SFUQ": "xgei-",
+        "SPUF": "xgei-",
+        "XFTO": "xgei-",
         "GTGHK": "gpon-olt_",
         "GTGHG": "gpon-olt_",
         "GTGOG": "gpon-olt_",
+        "GFCL": "gpon_olt-",
+        "GFGL": "gpon_olt-",
         "GVGO": "gpon_olt-",
         "ETGHG": "epon-olt_",
         "VDWVD": "vdsl_",
@@ -140,7 +145,7 @@ class Script(BaseScript):
                     descr = match.group("descr").strip()
                     if descr not in ["none", "none.", "null"]:
                         iface["description"] = descr
-                if prefix in ["gei_", "gpon-olt_", "epon-olt_", "gei-"]:
+                if prefix in ["gei_", "gpon-olt_", "epon-olt_", "gei-", "xgei-"]:
                     v = self.cli("show vlan port %s" % ifname)
                     match = self.rx_vlan.search(v)
                     sub = {
