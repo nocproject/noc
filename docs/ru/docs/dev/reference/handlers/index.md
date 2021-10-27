@@ -18,6 +18,18 @@
 
 ## Примеры
 
+Проверить обработчик можно через `./noc shell`:
+
+```python
+
+from noc.core.mongo.connection import connect
+from noc.core.handler import get_handler
+
+connect()
+h = get_handler(<handler_point>)
+h()
+```
+
 ### Распечатка переменных
 
 Обработчик распечатывает переданные аргументы
