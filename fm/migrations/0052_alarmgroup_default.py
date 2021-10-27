@@ -56,9 +56,12 @@ class Migration(BaseMigration):
                 "name": "default",
                 "is_active": True,
                 "description": "Default Alarm Group",
-                "preference": 999,
-                "labels": [],
-                "alarm_class": ObjectId("6172add005d0668829888eae"),
+                "rules": [],
+                "group_reference": "",
+                "group_alarm_class": None,
+                "group_title_template": "",
+                "handler": None,
+                "notification_group": None,
                 "bi_id": 8422126749852039790,
             }
         )

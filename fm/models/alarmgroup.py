@@ -11,17 +11,38 @@ from threading import Lock
 from typing import List
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField, IntField, ListField, LongField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    LongField,
+    ReferenceField,
+    EmbeddedDocumentField,
+)
 import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.main.models.label import Label
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.handler import Handler
 from noc.core.bi.decorator import bi_sync
 from .alarmclass import AlarmClass
 
 
 id_lock = Lock()
+
+
+class MatchRule(EmbeddedDocument):
+    labels = ListField(StringField())
+    alarm_class = ReferenceField(AlarmClass)
+
+    def __str__(self):
+        return f'{self.alarm_class}: {", ".join(self.labels)}'
+
+    def get_labels(self):
+        return list(Label.objects.filter(name__in=self.labels))
 
 
 @bi_sync
@@ -30,19 +51,23 @@ class AlarmGroup(Document):
         "collection": "alarmgroups",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["reference_prefix", ("reference_prefix", "labels")],
+        "indexes": ["reference_prefix", ("rules.alarm_class", "rules.labels")],
     }
 
     name = StringField(unique=True)
-    is_active = BooleanField(default=True)
     description = StringField()
-    preference = IntField(default=999)
-    reference_template = StringField(default="")
-    labels = ListField(StringField())
+    is_active = BooleanField(default=True)
+    #
+    rules = ListField(EmbeddedDocumentField(MatchRule))
+    #
+    group_reference = StringField(default="")
     # Group Alarm Class (Group by default)
-    alarm_class = PlainReferenceField(AlarmClass)
+    group_alarm_class = PlainReferenceField(AlarmClass)
     # Group Title template
-    title_template = StringField()
+    group_title_template = StringField()
+    #
+    handler = PlainReferenceField(Handler)
+    notification_group = ForeignKeyField(NotificationGroup, required=False)
     # BI ID
     bi_id = LongField(unique=True)
 

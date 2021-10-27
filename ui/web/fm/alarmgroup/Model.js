@@ -20,39 +20,52 @@ Ext.define("NOC.fm.alarmgroup.Model", {
             type: "string"
         },
         {
+            name: "description",
+            type: "string"
+        },
+        {
             name: "is_active",
             type: "boolean",
             defaultValue: true
         },
         {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "preference",
-            type: "int",
-            defaultValue: 999
-        },
-        {
-            name: "reference_prefix",
-            type: "string"
-        },
-        {
-            name: "labels",
+            name: "rules",
             type: "auto"
         },
         {
-            name: "alarm_class",
+            name: "group_reference",
             type: "string"
         },
         {
-            name: "alarm_class__label",
+            name: "group_alarm_class",
+            type: "string"
+        },
+        {
+            name: "group_alarm_class__label",
             type: "string",
             persist: false
         },
         {
-            name: "title_template",
+            name: "group_title_template",
             type: "string"
+        },
+        {
+            name: "handler",
+            type: "string"
+        },
+        {
+            name: "handler__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "notification_group",
+            type: "string"
+        },
+        {
+            name: "notification_group__label",
+            type: "string",
+            persist: false
         },
         {
             name: "bi_id",
