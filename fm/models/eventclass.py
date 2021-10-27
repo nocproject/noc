@@ -17,6 +17,7 @@ from mongoengine.fields import (
     StringField,
     BooleanField,
     IntField,
+    LongField,
     ListField,
     DictField,
     ObjectIdField,
@@ -31,6 +32,7 @@ from noc.core.escape import json_escape as q
 from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
+from noc.core.bi.decorator import bi_sync
 from .alarmclass import AlarmClass
 
 id_lock = Lock()
@@ -196,6 +198,7 @@ class EventClassCategory(Document):
         super().save(*args, **kwargs)
 
 
+@bi_sync
 @on_delete_check(
     check=[
         ("fm.EventClassificationRule", "event_class"),
@@ -251,6 +254,8 @@ class EventClass(Document):
     handlers = ListField(StringField())
     # Plugin settings
     plugins = ListField(EmbeddedDocumentField(EventPlugin))
+    #
+    bi_id = LongField(unique=True)
     #
     category = ObjectIdField()
 
