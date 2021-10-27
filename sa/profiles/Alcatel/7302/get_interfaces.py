@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,6 +26,10 @@ class Script(BaseScript):
     rx_bridge_port = re.compile(
         r"^(?P<ifname>\S+)\s+(?P<bridge_port>\d+)\s+(?P<pvid>\d+)\s+\d+\s*\n", re.MULTILINE
     )
+    rx_bridge_port2 = re.compile(
+        r"^port (?P<ifname>\S+)\s*\n" r"(^\s+.+\n)+?" r"^\s+pvid (?P<pvid>\d+)\s*\n" r"^exit",
+        re.MULTILINE,
+    )
     rx_vlan_map = re.compile(r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_ifname = re.compile(r"port : (?P<ifname>\S+)")
     rx_ifindex = re.compile(r"if-index : (?P<ifindex>\d+)")
@@ -45,7 +49,9 @@ class Script(BaseScript):
     )
     rx_mgmt_ip = re.compile(r"host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)")
     rx_mgmt_vlan = re.compile(r"mgnt-vlan-id (?P<vlan_id>\d+)")
-
+    rx_mgmt_ip2 = re.compile(
+        r"vlan (?P<vlan_id>\d+) host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)"
+    )
     types = {
         "ethernet": "physical",
         "slip": "tunnel",
@@ -97,21 +103,41 @@ class Script(BaseScript):
         )
 
         subifaces = defaultdict(list)
-        v = self.cli("show bridge port")
-        for match in self.rx_bridge_port.finditer(v):
-            # bridge_port[match.group("ifname")] = match.group("pvid")
-            port_id, vpi, vci = match.group("ifname").split(":")
-            name = "%s:%s:%s" % (port_id, vpi, vci)
-            subifaces[port_id] += [
-                {
-                    "name": name,
-                    "vci": vci,
-                    "vpi": vpi,
-                    # "snmp_ifindex": vciifindex,
-                    "enabled_afi": ["ATM", "BRIDGE"],
-                    "untagged_vlan": match.group("pvid"),
-                }
-            ]
+        try:
+            v = self.cli("show bridge port")
+            for match in self.rx_bridge_port.finditer(v):
+                port_id, vpi, vci = match.group("ifname").split(":")
+                name = "%s:%s:%s" % (port_id, vpi, vci)
+                subifaces[port_id] += [
+                    {
+                        "name": name,
+                        "vci": vci,
+                        "vpi": vpi,
+                        # "snmp_ifindex": vciifindex,
+                        "enabled_afi": ["ATM", "BRIDGE"],
+                        "untagged_vlan": match.group("pvid"),
+                    }
+                ]
+        except self.CLISyntaxError:
+            pass
+        if not subifaces:
+            v = self.cli("info configure bridge port")
+            for match in self.rx_bridge_port2.finditer(v):
+                name = match.group("ifname")
+                if ":" not in name:
+                    continue
+                port_id, vpi, vci = match.group("ifname").split(":")
+                name = "%s:%s:%s" % (port_id, vpi, vci)
+                subifaces[port_id] += [
+                    {
+                        "name": name,
+                        "vci": vci,
+                        "vpi": vpi,
+                        # "snmp_ifindex": vciifindex,
+                        "enabled_afi": ["ATM", "BRIDGE"],
+                        "untagged_vlan": match.group("pvid"),
+                    }
+                ]
         tagged_vlans = {}
         v = self.cli("show vlan shub-port-vlan-map")
         for match in self.rx_vlan_map.finditer(v):
@@ -161,6 +187,18 @@ class Script(BaseScript):
             }
             if port_id in subifaces:
                 interfaces[port_id]["subinterfaces"] += subifaces[port_id]
+            if ifname.startswith("ethernet") and port_id not in subifaces:
+                sub = {
+                    "name": port_id,
+                    "snmp_ifindex": self.rx_ifindex.search(p).group("ifindex"),
+                    "oper_status": self.rx_oper_status.search(p).group("oper_status") == "up",
+                    "admin_status": self.rx_admin_status.search(p).group("admin_status")
+                    in ["up", "admin-up"],
+                    "enabled_afi": ["BRIDGE"],
+                }
+                if tagged_vlans.get(ifname):
+                    sub["tagged_vlans"] = tagged_vlans[ifname]
+                interfaces[port_id]["subinterfaces"] += [sub]
             match = self.rx_mac.search(p)
             if match:
                 interfaces[port_id]["mac"] = match.group("mac")
@@ -192,20 +230,43 @@ class Script(BaseScript):
                 ],
             }
 
-        v = self.cli("info configure system management flat")
-        match = self.rx_mgmt_ip.search(v)
-        if match:
-            i = {
-                "name": "mgmt",
-                "type": "management",
-                "enabled_protocols": [],
-                "subinterfaces": [
-                    {"name": "mgmt", "enabled_afi": ["IPv4"], "ipv4_addresses": [match.group("ip")]}
-                ],
-            }
-            match = self.rx_mgmt_vlan.search(v)
+        try:
+            v = self.cli("info configure system management flat")
+            match = self.rx_mgmt_ip.search(v)
             if match:
-                i["subinterfaces"][0]["vlan_ids"] = [int(match.group("vlan_id"))]
+                i = {
+                    "name": "mgmt",
+                    "type": "management",
+                    "enabled_protocols": [],
+                    "subinterfaces": [
+                        {
+                            "name": "mgmt",
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [match.group("ip")],
+                        }
+                    ],
+                }
+                match = self.rx_mgmt_vlan.search(v)
+                if match:
+                    i["subinterfaces"][0]["vlan_ids"] = [int(match.group("vlan_id"))]
+            interfaces["mgmt"] = i
+        except self.CLISyntaxError:
+            v = self.cli("info configure system management vlan")
+            match = self.rx_mgmt_ip2.search(v)
+            if match:
+                i = {
+                    "name": "mgmt",
+                    "type": "management",
+                    "enabled_protocols": [],
+                    "subinterfaces": [
+                        {
+                            "name": "mgmt",
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [match.group("ip")],
+                            "vlan_ids": int(match.group("vlan_id")),
+                        }
+                    ],
+                }
             interfaces["mgmt"] = i
 
         return [{"interfaces": list(interfaces.values())}]
