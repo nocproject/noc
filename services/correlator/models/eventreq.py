@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any
 
 try:
     from typing import Literal

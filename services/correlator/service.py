@@ -668,7 +668,7 @@ class CorrelatorService(TornadoService):
         # Fetch timestamp
         ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
         # Managed Object
-        managed_object = ManagedObject.get_by_id(req.managed_object)
+        managed_object = ManagedObject.get_by_id(int(req.managed_object))
         if not managed_object:
             self.logger.error("Invalid managed object: %s", req.managed_object)
             return
@@ -723,7 +723,7 @@ class CorrelatorService(TornadoService):
             req.reference,
         )
         alarm.last_update = max(alarm.last_update, ts)
-        alarm.clear_alarm("Cleared by rereference")
+        alarm.clear_alarm("Cleared by reference")
         metrics["alarm_clear"] += 1
 
     async def dispose_event(self, e: ActiveEvent):
