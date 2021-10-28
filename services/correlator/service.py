@@ -18,6 +18,8 @@ from hashlib import sha512
 # Third-party modules
 import orjson
 from bson import ObjectId
+from dateutil.parser import parse as parse_date
+from pydantic import parse_obj_as, ValidationError
 
 # NOC modules
 from noc.config import config
@@ -28,8 +30,12 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.services.correlator.rule import Rule
 from noc.services.correlator.rcacondition import RCACondition
 from noc.services.correlator.trigger import Trigger
-from noc.fm.models.activeevent import ActiveEvent
+from noc.services.correlator.models.disposereq import DisposeRequest
+from noc.services.correlator.models.eventreq import EventRequest
+from noc.services.correlator.models.clearreq import ClearRequest
+from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmclass import AlarmClass
@@ -37,6 +43,7 @@ from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
@@ -332,6 +339,8 @@ class CorrelatorService(TornadoService):
         vars: Optional[Dict[str, Any]],
         event: Optional[ActiveEvent] = None,
         reference: Optional[str] = None,
+        remote_system: Optional[RemoteSystem] = None,
+        remote_id: Optional[str] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -340,6 +349,9 @@ class CorrelatorService(TornadoService):
         :param alarm_class: Alarm Class reference
         :param vars: Alarm variables
         :param event:
+        :param reference:
+        :param remote_system:
+        :param remote_id:
         :returns: Alarm, if created, None otherwise
         """
         scope_label = str(event.id) if event else "DIRECT"
@@ -417,6 +429,8 @@ class CorrelatorService(TornadoService):
                 )
             ],
             opening_event=event.id if event else None,
+            remote_system=remote_system,
+            remote_id=remote_id,
         )
         a.save()
         if event:
@@ -608,26 +622,34 @@ class CorrelatorService(TornadoService):
 
     async def on_dispose_event(self, msg: Message) -> None:
         """
-        Called on new dispose message
+        Called on new `dispose` message
         """
         data = orjson.loads(msg.value)
-        op = data.get("$op") or "event"
-        msg_handler = getattr(self, f"on_msg_{op}")
-        if not msg_handler:
-            self.logger.error("Unknown operation: '%s'. Discarding message", op)
+        # Backward-compatibility
+        if "$op" not in data:
+            data["$op"] = "event"
+        # Parse request
+        try:
+            req = parse_obj_as(DisposeRequest, data)
+        except ValidationError as e:
+            self.logger.error("Malformed message: %s", e)
+            metrics["malformed_messages"] += 1
             return
-        await msg_handler(data)
+        # Call handler, may not be invalid
+        msg_handler = getattr(self, f"on_msg_{req.op}")
+        if not msg_handler:
+            self.logger.error("Internal error. No handler for '%s'", req.op)
+            return
+        await msg_handler(req)
+        metrics["alarm_dispose"] += 1
 
-    async def on_msg_event(self, data: Dict[str, Any]) -> None:
+    async def on_msg_event(self, req: EventRequest) -> None:
         """
         Process `event` message type
         """
-        event_id = data["event_id"]
-        hint = data["event"]
-        self.logger.info("[event|%s] Receiving message", event_id)
-        metrics["alarm_dispose"] += 1
+        self.logger.info("[event|%s] Receiving message", req.event_id)
         try:
-            event = ActiveEvent.from_json(hint)
+            event = ActiveEvent.from_json(req.event)
             event.timestamp = event.timestamp.replace(tzinfo=None)
             await self.dispose_event(event)
         except Exception:
@@ -639,7 +661,72 @@ class CorrelatorService(TornadoService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
-    async def dispose_event(self, e: "ActiveEvent"):
+    async def on_msg_raise(self, req: RaiseRequest) -> None:
+        """
+        Process `raise` message.
+        """
+        # Fetch timestamp
+        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        # Managed Object
+        managed_object = ManagedObject.get_by_id(int(req.managed_object))
+        if not managed_object:
+            self.logger.error("Invalid managed object: %s", req.managed_object)
+            return
+        # Get alarm class
+        alarm_class = AlarmClass.get_by_name(req.alarm_class)
+        if not alarm_class:
+            self.logger.error("Invalid alarm class: %s", req.alarm_class)
+            return
+        # Remote system
+        if req.remote_system and req.remote_id:
+            remote_system = RemoteSystem.get_by_id(req.remote_system)
+        else:
+            remote_system = None
+        try:
+            await self.raise_alarm(
+                managed_object=managed_object,
+                timestamp=ts,
+                alarm_class=alarm_class,
+                vars=req.vars,
+                reference=req.reference,
+                remote_system=remote_system,
+                remote_id=req.remote_id if remote_system else None,
+            )
+        except Exception:
+            metrics["alarm_dispose_error"] += 1
+            error_report()
+        finally:
+            if self.topo_rca_lock:
+                # Release pending RCA Lock
+                await self.topo_rca_lock.release()
+                self.topo_rca_lock = None
+
+    async def on_msg_clear(self, req: ClearRequest) -> None:
+        """
+        Process `clear` message.
+        """
+        # Fetch timestamp
+        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        # Get alarm
+        ref_hash = self.get_reference_hash(req.reference)
+        alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
+        if not alarm:
+            self.logger.info("Alarm '%s' is not found. Skipping", req.reference)
+            return
+        # Clear alarm
+        self.logger.info(
+            "[%s|%s] Clear alarm %s(%s) by reference %s",
+            alarm.managed_object.name,
+            alarm.managed_object.address,
+            alarm.alarm_class.name,
+            alarm.id,
+            req.reference,
+        )
+        alarm.last_update = max(alarm.last_update, ts)
+        alarm.clear_alarm("Cleared by reference")
+        metrics["alarm_clear"] += 1
+
+    async def dispose_event(self, e: ActiveEvent):
         """
         Dispose event according to disposition rule
         """

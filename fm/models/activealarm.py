@@ -37,6 +37,7 @@ from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.change.decorator import change
@@ -142,9 +143,13 @@ class ActiveAlarm(Document):
     # labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    # Reference to remote system object has been imported from
+    remote_system = PlainReferenceField(RemoteSystem, required=False)
+    # Object id in remote system
+    remote_id = StringField(required=False)
 
     def __str__(self):
-        return "%s" % self.id
+        return str(self.id)
 
     @classmethod
     def get_by_id(cls, id) -> Optional["ActiveAlarm"]:
@@ -307,6 +312,8 @@ class ActiveAlarm(Document):
             rca_type=self.rca_type,
             labels=self.labels,
             effective_labels=self.effective_labels,
+            remote_system=self.remote_system,
+            remote_id=self.remote_id,
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:

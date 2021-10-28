@@ -28,6 +28,7 @@ from mongoengine.fields import (
 from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.change.decorator import change
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
@@ -109,9 +110,13 @@ class ArchivedAlarm(Document):
     # labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    # Reference to remote system object has been imported from
+    remote_system = PlainReferenceField(RemoteSystem, required=False)
+    # Object id in remote system
+    remote_id = StringField(required=False)
 
     def __str__(self):
-        return "%s" % self.id
+        return str(self.id)
 
     @classmethod
     def get_by_id(cls, id) -> Optional["ArchivedAlarm"]:
@@ -212,6 +217,8 @@ class ArchivedAlarm(Document):
             segment_path=self.segment_path,
             container_path=self.container_path,
             uplinks=self.uplinks,
+            remote_system=self.remote_system,
+            remote_id=self.remote_id,
         )
         a.save()
         # @todo: Clear related correlator jobs
