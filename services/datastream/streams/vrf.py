@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.core.datastream.base import DataStream
+from ..models.vrf import VRFGroupDataStreamItem
 from noc.ip.models.vrf import VRF
 from noc.core.comp import smart_text
 
@@ -19,6 +20,7 @@ def qs(s):
 
 class VRFGroupDataStream(DataStream):
     name = "vrf"
+    model = VRFGroupDataStreamItem
     clean_id = DataStream.clean_id_int
 
     @classmethod

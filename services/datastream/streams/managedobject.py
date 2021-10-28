@@ -16,6 +16,7 @@ from bson import ObjectId
 # NOC modules
 from noc.config import config
 from noc.core.datastream.base import DataStream
+from ..models.managedobject import ManagedObjectDataStreamItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
@@ -40,6 +41,7 @@ def qs(s):
 
 class ManagedObjectDataStream(DataStream):
     name = "managedobject"
+    model = ManagedObjectDataStreamItem
     enable_message = config.message.enable_managedobject
 
     clean_id = DataStream.clean_id_int
