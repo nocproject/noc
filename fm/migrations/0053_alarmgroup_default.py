@@ -30,7 +30,6 @@ class Migration(BaseMigration):
                 "datasources": [],
                 "components": [],
                 "vars": [
-                    {"name": "title", "description": "Alarm Group title", "default": ""},
                     {"name": "name", "description": "Alarm Group name"},
                 ],
                 "subject_template": 'Group Alarm {{alarm.vars["title_template"]}}',

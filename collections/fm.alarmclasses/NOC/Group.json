@@ -10,10 +10,6 @@
     "default_severity__name": "IGNORE",
     "vars": [
         {
-            "name": "title",
-            "description": "Alarm Group title"
-        },
-        {
             "name": "name",
             "description": "Alarm Group name"
         }
