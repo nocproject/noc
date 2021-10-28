@@ -1519,6 +1519,7 @@ nav:
           - Overview: dev/tutorial/index.md
       - How-to Guides:
           - Overview: dev/howto/index.md
+          - 'Handler: Filter config': dev/howto/handler_config_filter/index.md
           - How to Share Collections: dev/howto/sharing-collections/index.md
           - How to Setup black Formatter in PyCharm: dev/howto/setup-black-in-pycharm/index.md
           - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
