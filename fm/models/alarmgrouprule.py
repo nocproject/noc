@@ -86,7 +86,7 @@ class AlarmGroupRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, name) -> "AlarmGroupRule":
+    def get_by_name(cls, name) -> "AlarmGroupRule":
         return AlarmGroupRule.objects.filter(name=name).first()
 
     @classmethod
