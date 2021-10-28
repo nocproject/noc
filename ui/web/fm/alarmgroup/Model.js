@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// fm.alarmgroup Model
+// fm.alarmgrouprule Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarmgroup.Model");
+console.debug("Defining NOC.fm.alarmgrouprule.Model");
 
-Ext.define("NOC.fm.alarmgroup.Model", {
+Ext.define("NOC.fm.alarmgrouprule.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/fm/alarmgroup/",
+    rest_url: "/fm/alarmgrouprule/",
 
     fields: [
         {

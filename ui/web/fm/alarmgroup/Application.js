@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// fm.alarmgroup application
+// fm.alarmgrouprule application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2014 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarmgroup.Application");
+console.debug("Defining NOC.fm.alarmgrouprule.Application");
 
-Ext.define("NOC.fm.alarmgroup.Application", {
+Ext.define("NOC.fm.alarmgrouprule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.label.LabelField",

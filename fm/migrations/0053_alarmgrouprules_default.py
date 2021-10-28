@@ -49,7 +49,7 @@ class Migration(BaseMigration):
             }
         )
         # Alarm Group
-        db["alarmgroups"].insert_one(
+        db["alarmgrouprules"].insert_one(
             {
                 "_id": ObjectId("6172a2c994b882e61820692b"),
                 "name": "default",

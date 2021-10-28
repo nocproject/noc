@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
-from noc.fm.models.alarmgroup import AlarmGroup
+from noc.fm.models.alarmgrouprule import AlarmGroupRule
 from noc.core.translation import ugettext as _
 
 
@@ -18,4 +18,4 @@ class AlarmGroupApplication(ExtDocApplication):
 
     title = "Alarm Group Config"
     menu = [_("Setup"), _("Alarm Group")]
-    model = AlarmGroup
+    model = AlarmGroupRule

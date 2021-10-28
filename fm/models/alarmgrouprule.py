@@ -45,9 +45,9 @@ class MatchRule(EmbeddedDocument):
 
 
 @bi_sync
-class AlarmGroup(Document):
+class AlarmGroupRule(Document):
     meta = {
-        "collection": "alarmgroups",
+        "collection": "alarmgrouprules",
         "strict": False,
         "auto_create_index": False,
         "indexes": ["rules.labels", ("rules.alarm_class", "rules.labels")],
@@ -71,8 +71,8 @@ class AlarmGroup(Document):
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_AC_NAME = "Group"
 
@@ -81,10 +81,15 @@ class AlarmGroup(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> "AlarmGroup":
-        return AlarmGroup.objects.filter(id=id).first()
+    def get_by_id(cls, id) -> "AlarmGroupRule":
+        return AlarmGroupRule.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, name) -> "AlarmGroupRule":
+        return AlarmGroupRule.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "AlarmGroup":
-        return AlarmGroup.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, id) -> "AlarmGroupRule":
+        return AlarmGroupRule.objects.filter(bi_id=id).first()
