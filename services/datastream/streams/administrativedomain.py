@@ -8,6 +8,7 @@
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from ..models.administrativedomain import AdmDomainDataStreamItem
 from noc.core.comp import smart_text
 
 
@@ -19,6 +20,7 @@ def qs(s):
 
 class AdmDomainDataStream(DataStream):
     name = "administrativedomain"
+    model = AdmDomainDataStreamItem
     clean_id = DataStream.clean_id_int
 
     @classmethod

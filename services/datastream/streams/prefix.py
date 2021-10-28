@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # prefix datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.ip.models.prefix import Prefix
+from ..models.prefix import PrefixDataStreamItem
 from noc.core.comp import smart_text
 
 
@@ -19,6 +20,7 @@ def qs(s):
 
 class PrefixDataStream(DataStream):
     name = "prefix"
+    model = PrefixDataStreamItem
     clean_id = DataStream.clean_id_int
 
     @classmethod

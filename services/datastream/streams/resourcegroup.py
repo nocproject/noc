@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # resourcegroup datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.inv.models.resourcegroup import ResourceGroup
+from ..models.resourcegroup import ResourceGroupDataStreamItem
 from noc.core.comp import smart_text
 
 
@@ -19,6 +20,7 @@ def qs(s):
 
 class ResourceGroupDataStream(DataStream):
     name = "resourcegroup"
+    model = ResourceGroupDataStreamItem
 
     @classmethod
     def get_object(cls, id):

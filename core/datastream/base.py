@@ -42,6 +42,7 @@ class DataStream(object):
     """
 
     name = None
+    model = None  # PydanticModel for Response
 
     # Generate separate message
     enable_message = False

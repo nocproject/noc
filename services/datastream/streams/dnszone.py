@@ -18,6 +18,7 @@ from noc.core.datastream.base import DataStream
 from noc.main.models.systemtemplate import SystemTemplate
 from noc.dns.models.dnszone import DNSZone, ZONE_FORWARD, ZONE_REVERSE_IPV4, ZONE_REVERSE_IPV6
 from noc.dns.models.dnszonerecord import DNSZoneRecord
+from ..models.dnszone import DNSZoneDataStreamItem
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.core.dns.rr import RR
@@ -27,6 +28,7 @@ from noc.core.dns.encoding import to_idna
 
 class DNSZoneDataStream(DataStream):
     name = "dnszone"
+    model = DNSZoneDataStreamItem
     clean_id = DataStream.clean_id_int
 
     @classmethod

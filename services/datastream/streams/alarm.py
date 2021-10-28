@@ -13,6 +13,7 @@ from noc.config import config
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.core.datastream.base import DataStream
+from ..models.alarm import AlarmDataStreamItem
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.utils import get_alarm
 from noc.main.models.label import Label
@@ -22,6 +23,7 @@ from noc.core.mx import MX_PROFILE_ID
 
 class AlarmDataStream(DataStream):
     name = "alarm"
+    model = AlarmDataStreamItem
     enable_message = config.message.enable_alarm
 
     clean_id = DataStream.clean_id_bson
