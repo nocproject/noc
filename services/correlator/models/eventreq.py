@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 try:
     from typing import Literal
