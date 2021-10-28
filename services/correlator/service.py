@@ -646,7 +646,7 @@ class CorrelatorService(TornadoService):
         """
         self.logger.info("[event|%s] Receiving message", req.event_id)
         try:
-            event = ActiveEvent.from_json(req.hint)
+            event = ActiveEvent.from_json(req.event)
             event.timestamp = event.timestamp.replace(tzinfo=None)
             await self.dispose_event(event)
         except Exception:

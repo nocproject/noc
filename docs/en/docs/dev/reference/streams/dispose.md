@@ -35,7 +35,7 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | ---------- | -------------------- | ------------------- |
 | `$op`      | String               | Equals to `event`   |
 | `event_id` | String               | Registered event id |
-| `hint`     | Object {{ complex }} | Event data          |
+| `event`    | Object {{ complex }} | Event data          |
 
 ### raise message
 `raise` message represents a direct alarm rising request, issued by an external mechanism.

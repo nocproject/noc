@@ -21,4 +21,4 @@ from pydantic import BaseModel, Field
 class EventRequest(BaseModel):
     op: Literal["event"] = Field(None, alias="$op")
     event_id: str
-    hint: Dict[str, Any]
+    event: Dict[str, Any]
