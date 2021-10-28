@@ -624,8 +624,11 @@ class CorrelatorService(TornadoService):
         """
         Called on new `dispose` message
         """
-        # Parse request
         data = orjson.loads(msg.value)
+        # Backward-compatibility
+        if "$op" not in data:
+            data["$op"] = "event"
+        # Parse request
         try:
             req = parse_obj_as(DisposeRequest, data)
         except ValidationError as e:
