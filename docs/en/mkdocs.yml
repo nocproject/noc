@@ -2253,6 +2253,7 @@ nav:
               - metrics: dev/reference/streams/metrics.md
               - jobs: dev/reference/streams/jobs.md
               - mx: dev/reference/streams/mx.md
+          - Alarm Reference Format: dev/reference/alarm-reference-format.md
           - Tools:
               - Overview: dev/reference/tools/index.md
               - PyCharm: dev/reference/tools/pycharm.md

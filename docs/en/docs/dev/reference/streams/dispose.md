@@ -24,15 +24,38 @@ while `CORE` pool will use `dispose.CORE` stream.
 
 ## Message Format
 
-`dispose` stream carries JSON-encoded messages of several types. Type of message is encoded
+`dispose` stream carries JSON-encoded messages of several types. The type of message is encoded
 in the `$op` field. Unknown message types and malformed messages are discarded.
 
 ### event message
 
-`event` messages represent classified events which may raise and clear alarms.
+`event` messages represent classified events that may raise and clear alarms.
 
 | Field      | Type                 | Description         |
 | ---------- | -------------------- | ------------------- |
-| `op`       | String               | Equals to `event`   |
+| `$op`      | String               | Equals to `event`   |
 | `event_id` | String               | Registered event id |
 | `event`    | Object {{ complex }} | Event data          |
+
+### raise message
+`raise` message represents a direct alarm rising request, issued by an external mechanism.
+
+| Field            | Type                 | Description                                                                             |
+| ---------------- | -------------------- | --------------------------------------------------------------------------------------- |
+| `$op`            | String               | Equals to `raise`                                                                       |
+| `reference`      | String               | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
+| `timestamp`      | String               | Optional timestamp in ISO 8601 format                                                   |
+| `managed_object` | String               | Managed Object'd ID                                                                     |
+| `alarm_class`    | String               | Alarm class name                                                                        |
+| `vars`           | Object {{ comples }} | Alarm variables                                                                         |
+| `remote_system`  | String               | Optional Remote System ID                                                               |
+| `remote_id`      | String               | Optional Remote ID                                                                      |
+
+### clear message
+`clear` message represents a direct alarm clear request, issued by an external mechanism.
+
+| Field       | Type   | Description                                                                         |
+| ----------- | ------ | ----------------------------------------------------------------------------------- |
+| `$op`       | String | Equals to `clear`                                                                   |
+| `reference` | String | Alarm reference. Should be the same as in previous [raise](#raise-message) message. |
+| `timestamp` | String | Optional timestamp in ISO 8601 format                                               |

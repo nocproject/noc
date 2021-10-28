@@ -49,6 +49,8 @@ class EnvItem(EmbeddedDocument):
         ("crm.Supplier", "remote_system"),
         ("crm.SupplierProfile", "remote_system"),
         ("inv.ExtNRILink", "remote_system"),
+        ("fm.ActiveAlarm", "remote_system"),
+        ("fm.ArchivedAlarm", "remote_system"),
         ("fm.TTSystem", "remote_system"),
         ("gis.Address", "remote_system"),
         ("gis.Building", "remote_system"),
