@@ -11,13 +11,13 @@ Ext.define("NOC.fm.alarmgrouprule.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
-        "NOC.fm.alarmgroup.Model",
+        "NOC.fm.alarmgrouprule.Model",
         "NOC.fm.alarmclass.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.main.handler.LookupField"
     ],
-    model: "NOC.fm.alarmgroup.Model",
+    model: "NOC.fm.alarmgrouprule.Model",
     columns: [
         {
             text: __("Name"),
