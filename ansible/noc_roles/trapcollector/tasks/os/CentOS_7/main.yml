@@ -10,12 +10,12 @@
 
 - name: Add firewall permissions for nodes
   firewalld:
-    port: "{{ trapcollector_listen_traps.split(':')[1] }}/udp"
+    port: "{{ trapcollector_listen.split(':')[1] }}/udp"
     permanent: "True"
     state: enabled
     immediate: "True"
   when:
-    - trapcollector_listen_traps is defined
+    - trapcollector_listen is defined
     - "firewalld_state.status.ActiveState == 'active'"
     - trapcollector_permit_firewall
   tags:
