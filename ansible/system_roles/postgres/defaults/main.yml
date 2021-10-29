@@ -12,7 +12,7 @@ postgres_path: /usr/bin/postgres
 postgres_system_service: postgresql
 postgres_user: postgres
 postgres_superuser: postgres
-postgres_version: 9.6
+postgres_version: 12
 postgres_replicator_password: noc
 postgres_superuser_password: noc
 postgres_noc_db: noc
