@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"^(?P<ifname>\S+)\s+(?P<bridge_port>\d+)\s+(?P<pvid>\d+)\s+\d+\s*\n", re.MULTILINE
     )
     rx_bridge_port2 = re.compile(
-        r"^port (?P<ifname>\S+)\s*\n" r"(^\s+.+\n)+?" r"^\s+pvid (?P<pvid>\d+)\s*\n" r"^exit",
+        r"^port (?P<ifname>\S+)\s*\n(^\s+.+\n)+?^\s+pvid (?P<pvid>\d+)\s*\n^exit",
         re.MULTILINE,
     )
     rx_vlan_map = re.compile(r"^(?P<ifname>\S+)\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
@@ -50,7 +50,8 @@ class Script(BaseScript):
     rx_mgmt_ip = re.compile(r"host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)")
     rx_mgmt_vlan = re.compile(r"mgnt-vlan-id (?P<vlan_id>\d+)")
     rx_mgmt_ip2 = re.compile(
-        r"vlan (?P<vlan_id>\d+) host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)"
+        r"configure system management(?: vlan (?P<vlan_id>\d+))? "
+        r"host-ip-address manual:(?P<ip>\d+\.\d+\.\d+\.\d+\/\d+)"
     )
     types = {
         "ethernet": "physical",
@@ -251,23 +252,19 @@ class Script(BaseScript):
                     i["subinterfaces"][0]["vlan_ids"] = [int(match.group("vlan_id"))]
             interfaces["mgmt"] = i
         except self.CLISyntaxError:
-            v = self.cli("info configure system management vlan")
-            match = self.rx_mgmt_ip2.search(v)
-            if match:
-                i = {
+            v = self.cli("info configure system flat")
+            mgmt = {"name": "mgmt", "type": "management", "subinterfaces": []}
+            for match in self.rx_mgmt_ip2.finditer(v):
+                sub = {
                     "name": "mgmt",
-                    "type": "management",
-                    "enabled_protocols": [],
-                    "subinterfaces": [
-                        {
-                            "name": "mgmt",
-                            "enabled_afi": ["IPv4"],
-                            "ipv4_addresses": [match.group("ip")],
-                            "vlan_ids": int(match.group("vlan_id")),
-                        }
-                    ],
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": [match.group("ip")],
                 }
-            interfaces["mgmt"] = i
+                if match.group("vlan_id"):
+                    sub["vlan_ids"] = int(match.group("vlan_id"))
+                    sub["name"] = "mgmt" + match.group("vlan_id")
+                mgmt["subinterfaces"] += [sub]
+            interfaces["mgmt"] = mgmt
 
         return [{"interfaces": list(interfaces.values())}]
 
