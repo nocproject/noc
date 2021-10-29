@@ -125,7 +125,8 @@ Running this script will delete the old cluster's data files:
 8. Remove old PG packages:
    - `yum remove postgresql96* -y`
 
-9. Write proper new version of PostgreSQL (**12**) in the Tower in `postgres` service at `PostgreSQL version` field. 
+9. Write proper new version of PostgreSQL (**12**) in the Tower in `postgres` service at `PostgreSQL version` field.
+10. Deploy
 
 ### DEB-based distros (Debian, Ubuntu)
 
