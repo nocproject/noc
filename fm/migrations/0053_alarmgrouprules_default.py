@@ -32,7 +32,7 @@ class Migration(BaseMigration):
                 "vars": [
                     {"name": "name", "description": "Alarm Group name"},
                 ],
-                "subject_template": 'Group Alarm {{alarm.vars["title_template"]}}',
+                "subject_template": 'Group Alarm {{alarm.vars["name"]}}',
                 "body_template": "Group Alarm",
                 "recommended_actions": "Ignore this",
                 "flap_condition": "none",
@@ -48,7 +48,7 @@ class Migration(BaseMigration):
                 "category": ObjectId("6172adba835d62a6f337f55e"),
             }
         )
-        # Alarm Group
+        # Alarm Group Rule
         db["alarmgrouprules"].insert_one(
             {
                 "_id": ObjectId("6172a2c994b882e61820692b"),
@@ -57,7 +57,7 @@ class Migration(BaseMigration):
                 "description": "Default Alarm Group",
                 "rules": [],
                 "group_reference": "",
-                "group_alarm_class": None,
+                "group_alarm_class": ObjectId("6172add005d0668829888eae"),
                 "group_title_template": "",
                 "handler": None,
                 "notification_group": None,
