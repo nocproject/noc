@@ -81,19 +81,43 @@ class Script(BaseScript):
 
 ### SNMP
 
-Методы позволяют выполнять SNMP запросы к оборудованию, в качестве аргумента передаётся `OID`. Результат возвращается в виду числа или строки. 
+Методы позволяют выполнять SNMP запросы к оборудованию, в качестве аргумента передаётся `OID`. 
+Результат возвращается в виде числа или строки. 
 
 
-.. automethod:: noc.core.script.snmp.base.SNMP.get
+::: noc.core.script.snmp.base:SNMP.get
+    selection:
+        docstring_style: restructured-text
+    rendering:
+        show_root_heading: true
+        heading_level: 4
+        show_category_heading: true
 
-.. automethod:: noc.core.script.snmp.base.SNMP.getnext
-
+::: noc.core.script.snmp.base:SNMP.getnext
+    selection:
+        docstring_style: restructured-text
+    rendering:
+        show_root_heading: true
+        heading_level: 4
+        show_category_heading: true
 
 Для облегчения работы по SNMP, можно использовать `mib`
 
-.. automethod:: noc.core.script.snmp.base.SNMP.get_table
+::: noc.core.script.snmp.base:SNMP.get_table
+    selection:
+        docstring_style: restructured-text
+    rendering:
+        show_root_heading: true
+        heading_level: 4
+        show_category_heading: true
 
-.. automethod:: noc.core.script.snmp.base.SNMP.get_tables
+::: noc.core.script.snmp.base:SNMP.get_tables
+    selection:
+        docstring_style: restructured-text
+    rendering:
+        show_root_heading: true
+        heading_level: 4
+        show_category_heading: true
 
 Для облегчения работы с `SNMP` есть встроенный модуль - `mib`, он позволяет конвертировать текстовые имена в соответствующий `OID`. 
 Для этого имя должно присутствовать в базе `cmibs` (находятся в `<base_noc>/cmibs`). Подробнее как добавить `MIB` в `cmibs`.:
@@ -135,9 +159,21 @@ class Script(BaseScript):
 Выполняет, соответственно, GET и POST запрос к оборудованию. В качестве аргумента передаётся `URL`, 
 в результате возвращается ответ при ошибке поднимается исключение `HTTPError` (`noc.core.script.http.base.HTTPError`)
 
-.. automethod:: noc.core.script.http.base.HTTP.get
+::: noc.core.script.http.base:HTTP.get
+    selection:
+        docstring_style: restructured-text
+    rendering:
+        show_root_heading: true
+        heading_level: 4
+        show_category_heading: true
 
-.. automethod:: noc.core.script.http.base.HTTP.post
+::: noc.core.script.http.base:HTTP.post
+    selection:
+        docstring_style: restructured-text
+    rendering:
+        show_root_heading: true
+        heading_level: 4
+        show_category_heading: true
 
 При выполнении запроса есть возможность использовать схему аутентифиации - `Basic`, 
 для этого параметр `use_basic` выставляется в `True`. Более сложные схемы реализуюся через механизм `Middleware`. 
@@ -158,7 +194,7 @@ class Script(BaseScript):
     ]
 ```
 
-При необходимости пожно добавлять обработчики для профиля. Они наследуются от класса `BaseMiddleware` и помещаются в папку 
+При необходимости можно добавлять обработчики для профиля. Они наследуются от класса `BaseMiddleware` и помещаются в папку 
 `<profile>/middleware/`. Для работы в `http_request_middleware` добавляется строка импорта - 
 `noc.sa.profiles.<profile_name>.middleware.<module_name>.<class_name>`.
  
@@ -264,6 +300,53 @@ self.profile
 
 ### Базовый класс скрипта
 
+
+::: noc.core.script.base:BaseScript
+    selection:
+        docstring_style: restructured-text
+        members: true
+        filters:
+          - "!_x_seq"
+          - "!__call__"
+          - "!__init__"
+          - "!apply_matchers"
+          - "!clean_input"
+          - "!clean_output"
+          - "!run"
+          - "!compile_match_filter"
+          - "!match"
+          - "!call_method"
+          - "!root"
+          - "!get_cache"
+          - "!set_cache"
+          - "!schedule_to_save"
+          - "!push_prompt_pattern"
+          - "!pop_prompt_pattern"
+          - "!get_timeout"
+          - "!get_cli_stream"
+          - "!close_cli_stream"
+          - "!close_snmp"
+          - "!get_mml_stream"
+          - "!close_mml_stream"
+          - "!get_rtsp_stream"
+          - "!close_rtsp_stream"
+          - "!close_current_session"
+          - "!close_session"
+          - "!get_access_preference"
+          - "!get_always_preferred"
+          - "!to_reuse_cli_session"
+          - "!to_keep_cli_session"
+          - "!push_cli_tracking"
+          - "!push_snmp_tracking"
+          - "!iter_cli_fsm_tracking"
+          - "!request_beef"
+    rendering:
+        heading_level: 4
+        show_source: false
+        show_category_heading: true
+        show_root_toc_entry: false
+        show_if_no_docstring: true
+
 .. automodule:: noc.core.script.base
     :members:
     :undoc-members:
@@ -276,6 +359,16 @@ self.profile
 
 
 Профиль передаёт данные в сторону основной системы через интерфейс обмена данными. Интерфейс описывает формат и набор данных, который должен вернуть скрипт его реализующий. Существуют следующие интерфейсы для реализации профилем:
+
+::: noc.sa.interfaces.igetversion:IGetVersion
+    rendering:
+      show_source: true
+
+::: noc.sa.interfaces.igetinterfaces:IGetInterfaces
+    selection:
+      docstring_style: restructured-text
+    rendering:
+      show_source: true
 
 .. automodule:: noc.sa.interfaces.igetversion
     :members:

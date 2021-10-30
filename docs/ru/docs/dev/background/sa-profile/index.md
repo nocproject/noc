@@ -12,7 +12,7 @@
 
 <!-- prettier-ignore -->
 !!! note
- `Профиль SA` (`SA Profile`) - это компонент NOC'а, скрывающий от остальной системы особенности взаимодействия с оборудованием.
+    `Профиль SA` (`SA Profile`) - это компонент NOC'а, скрывающий от остальной системы особенности взаимодействия с оборудованием.
 
 
 Можно выделить следующие особенности профилей:
@@ -24,26 +24,33 @@
 * Собранные данные живут в рамах одной сессии 
 
 
-## Структура и взаимодействие с НОКом
+## Структура и взаимодействие с системой
 
 ### Состав профиля:
 
 Профили расположены в директории `sa/profiles`. 
 По соглашению имя профиля строится из названия производителя `VendorName` и имени ОС `OSName`: `Juniper.JUNOS`, `Cisco.IOS`. 
 
-
 ```
-<noc_base>/sa/profiles
-    - <VendorName>
-        - __init__.py
-        - <OSName>
-            - snmp_metrics/
-            - confdb/
-            - middleware/
-            - __init__.py
-            - profile.py
-            - get_version.py
-            - <scripts>
+<noc_base>/sa/profiles/
+├── <VendorName>
+│   ├── __init__.py
+│   ├── <OSName>
+│   │   ├── __init__.py
+│   │   ├── profile.py
+│   │   ├── confdb
+│   │   │   ├── __init__.py
+│   │   │   └── normalizer.py
+│   │   ├── middleware/
+│   │   │   ├── __init__.py
+│   │   │   └── ...
+│   │   ├── get_version.py
+│   │   ├── get_vlans.py
+│   │   ├── ...
+│   │   └── snmp_metrics
+│   │       ├── cpu_usage_1min.json
+│   │       └── ...
+
 ```
 
 <!-- prettier-ignore -->
@@ -60,7 +67,7 @@
 
 <!-- prettier-ignore -->
 !!! note
- `Интерфейс SA` (`SA Interface`) описывает формат и состав данных, которые необходимо передать в сторону NOC'а.
+    `Интерфейс SA` (`SA Interface`) описывает формат и состав данных, которые необходимо передать в сторону NOC'а.
 
 ### Взаимодействие с NOC'ом
 
@@ -72,24 +79,23 @@
 ![Схема вызова профиля](images/SA_Script.png)
 
 1. Вызов скрипта для устройства `ManagedObject`. Пример вызова скрипта `get_version`:
-
-```python
-
-    from noc.core.mongo.connection import connect
-    connect()
-    from noc.sa.models.managedobject import ManagedObject
-
-    mo = ManagedObject.objects.get(name="<MONAME>")
-    r = mo.scripts.get_version()
-    r
-    {'vendor': 'Huawei',
-     'platform': 'S2326TP-EI',
-     'version': '5.70 (V100R006C05)',
-     'image': 'V100R006C05',
-     'attributes': {'Serial Number': '21',
-      'Patch Version': 'V100R006SPH031'}}
-
-```
+    ```python
+    
+        from noc.core.mongo.connection import connect
+        connect()
+        from noc.sa.models.managedobject import ManagedObject
+    
+        mo = ManagedObject.objects.get(name="<MONAME>")
+        r = mo.scripts.get_version()
+        r
+        {'vendor': 'Huawei',
+         'platform': 'S2326TP-EI',
+         'version': '5.70 (V100R006C05)',
+         'image': 'V100R006C05',
+         'attributes': {'Serial Number': '21',
+          'Patch Version': 'V100R006SPH031'}}
+    
+    ```
 
 2. После вызова система делает `RPC` запрос к сервису [SAE](../../../admin/reference/services/sae.md) для получения параметров вызова скрипта:
     * Учётные данные оборудования (пользователь, пароль, Community)
@@ -121,9 +127,18 @@
 
 Если данные не прошли проверку поднимется исключение. В качестве примера возьмём интерфейс `noc.sa.interfaces.igetversion.IGetVersion`
 
-.. autoclass:: noc.sa.interfaces.igetversion.IGetVersion
+::: noc.sa.interfaces.igetversion:IGetVersion
+    selection:
+        docstring_style: restructured-text
+        members: true
+    rendering:
+        heading_level: 4
+        show_source: true
+        show_root_heading: true
+        show_if_no_docstring: true
+        show_signature_annotations: true
 
-Описание достаточно наглядно показывает какой результат ожидается от скрипта. 
+Описание достаточно наглядно показывает какой результат ожидать от скрипта. 
 В данном случае, для успешной передачи нам необходимо сформировать словарь (`dict`) с ключами:
 
 * `vendor` - текстовое поле `StringParameter()`
@@ -176,7 +191,7 @@ IGetVersion().clean_result(r)
 
 <!-- prettier-ignore -->
 !!! note
-  До версии 19.1 настройки находились в файле `__init__.py`
+    До версии 19.1 настройки находились в файле `__init__.py`
 
 Настройки взаимодействия с оборудованием сосредоточены в файле `profile.py` профиля. 
 Большинство настроек описаны в базовом классе - `noc.core.profile.base` и доступны для переопределения в классе профиля. Они включают в себя следующие группы:
@@ -278,15 +293,14 @@ class Profile(BaseProfile):
 
 <!-- prettier-ignore -->
 !!! note
-  Как и профиль, скрипты считываются при старте NOC'а и кэшируется. Поэтому, для того чтобы, NOC восприняла изменения необходим перезапуск. 
-  Правило не распространяется на отладку через `./noc script`
+    Как и профиль, скрипты считываются при старте NOC'а и кэшируется. Поэтому, для того чтобы, NOC восприняла изменения необходим перезапуск. Правило не распространяется на отладку через `./noc script`
 
 Обязательным является скрипт `get_version`, через него получается базовая информация об оборудовании: производитель, версия ПО, модель. 
 Второй по важности скрипт - `get_capabilities` через него определяется поддержка устройством различных протоколов (`SNMP`) и технологий. 
 
 <!-- prettier-ignore -->
 !!! note
-   В работе скриптов `get_version` и `get_capabilities` запрещено использовать вызов других скриптов, иначе может получиться циклическая зависимость.
+    В работе скриптов `get_version` и `get_capabilities` запрещено использовать вызов других скриптов, иначе может получиться циклическая зависимость.
 
 Для того чтобы вызвать из скрипта метод профиля (`SA Profile`) применяется конструкция `self.profile.<method_name()`
 
@@ -310,5 +324,28 @@ class Profile(BaseProfile):
 ## Базовый класс профиля
 
 ::: noc.core.profile.base:BaseProfile
+    selection:
+        docstring_style: restructured-text
+        filters:
+          - "!add_script_method"
+          - "!initialize"
+          - "!get_telnet_naws"
+          - "!allow_cli_session"
+          - "!send_backspaces"
+          - "!get_config_tokenizer"
+          - "!get_config_normalizer"
+          - "!get_confdb_defaults"
+          - "!iter_config_applicators"
+          - "!iter_collators"
+          - "!get_http_request_middleware"
+          - "!get_snmp_display_hints"
+          - "!get_snmp_response_parser"
+          - "!has_confdb_support"
+          - "!_get_patterns"
+          - "!_get_rogue_chars_cleaners"
+          - "!get_snmp_rate_limit"
     rendering:
-      show_source: false
+        show_source: false
+        show_category_heading: true
+        show_root_toc_entry: false
+        members_order: "source"
