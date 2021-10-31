@@ -344,7 +344,9 @@ class Profile(BaseProfile):
           - "!_get_patterns"
           - "!_get_rogue_chars_cleaners"
           - "!get_snmp_rate_limit"
+          - "!cleaned_input"
     rendering:
+        heading_level: 3
         show_source: false
         show_category_heading: true
         show_root_toc_entry: false
