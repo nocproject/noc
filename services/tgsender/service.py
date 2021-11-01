@@ -11,7 +11,7 @@ import re
 import orjson
 import requests
 import time
-from urllib.parse import urlencode
+from io import StringIO
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -62,28 +62,71 @@ class TgSenderService(FastAPIService):
         return re.sub(r"([%s])" % escape_chars, r"\\\1", text)
 
     def send_tb(self, topic: str, data: str) -> None:
-        sendMessage = {
+
+        type = "/sendMessage"
+        subject = self.escape_markdown(smart_text(data["subject"], errors="ignore"))
+        body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
+        send = {
             "chat_id": data["address"],
-            "text": "*"
-            + self.escape_markdown(smart_text(data["subject"], errors="ignore"))
-            + "*\n"
-            + self.escape_markdown(smart_text(data["body"], errors="ignore")),
+            "text": "*" + subject + "*\n" + body,
             "parse_mode": "Markdown",
         }
+        # Text of the message to be sent, 1-4096 characters after entities parsing
+        # Check, if len (body)
+        if len(body) > 3000:
+            caption = "*" + subject + "*\n" + body[0:500] + "..."
+            # Bots can currently send files of any type of up to 50 MB in size
+            # If len(body) > 50Mb use /sendDocument
+            if len(body) > 5e7:  # len(body) > 50Mb
+                type = "/sendDocument"
+                result = None
+                message = {}
+                part = 1
+                size = 0
+                for line in body.splitlines():
+                    size = size + len(line)
+                    if size < 5e7:  # len(body) > 50Mb
+                        if result:
+                            result = result + "\n" + line
+                        else:
+                            result = line
+                    else:
+                        message.update({part: result})
+                        result = line
+
+                        size = size - 5e7  # len(body) > 50Mb
+                        part = part + 1
+                else:
+                    message.update({part: result})
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
-            get = self.url + "/sendMessage?" + urlencode(sendMessage)
-            self.logger.info("HTTP GET %s", "/sendMessage?" + urlencode(sendMessage))
+            url = self.url + type
             proxy = {}
             if config.tgsender.use_proxy and config.tgsender.proxy_address:
                 self.logger.info("USE PROXY %s", config.tgsender.proxy_address)
                 proxy = {"https": config.tgsender.proxy_address}
             try:
-                response = requests.get(get, proxies=proxy)
+                if type == "/sendMessage":
+                    self.logger.info("Send Message")
+                    response = requests.post(url, send, proxies=proxy)
+                else:
+                    self.logger.info("Send Document")
+                    for p, d in message.items():
+                        buf = StringIO()
+                        buf.write(d)
+                        buf.name = "part_%s.txt" % p
+                        buf.seek(0)
+                        if p > 1:
+                            caption = None
+                        send = {"chat_id": data["address"], "caption": caption}
+                        files = {"document": buf}
+                        response = requests.post(url, send, proxies=proxy, files=files)
+                        buf.close()
                 if proxy:
                     self.logger.info("Proxy Send: %s\n" % response.json())
                     metrics["telegram_proxy_proxy_ok"] += 1
                 else:
+                    print("3")
                     self.logger.info("Send: %s\n" % response.json())
                     metrics["telegram_sended_ok"] += 1
             except requests.HTTPError as error:
