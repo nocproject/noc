@@ -97,9 +97,15 @@ class ReportLatestChangesApplication(SimpleReport):
                     )
                 }
             for d in data:
-                name, profile = n_map.get(d["_id"], ("-", None))
+                name, address, profile = n_map.get(d["_id"], ("-", "-", None))
                 result += [
-                    (d["_id"], name, Profile.get_by_id(profile) if profile else "-", d["last_ts"])
+                    (
+                        d["_id"],
+                        name,
+                        address,
+                        Profile.get_by_id(profile) if profile else "-",
+                        d["last_ts"],
+                    )
                 ]
         return self.from_dataset(
             title="%s: %s in %d days" % (self.title, repo, days),
