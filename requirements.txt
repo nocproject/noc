@@ -41,6 +41,7 @@ http-parser==0.9.0
 manhole==1.6.0
 markerlib==0.6.0
 mongoengine==0.22.1
+motor==2.5.1
 networkx==2.5.1
 numpy==1.20.2
 orjson==3.5.2
