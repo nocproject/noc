@@ -111,7 +111,6 @@ class TgSenderService(FastAPIService):
                                     files={"document": buf},
                                 )
                                 buf.close()
-                                continue
                             else:
                                 buf.write(line + "\n")
                                 continue
