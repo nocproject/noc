@@ -80,24 +80,7 @@ class TgSenderService(FastAPIService):
             # If len(body) > 50Mb use /sendDocument
             if len(body) > file_size:  # len(body) > 50Mb
                 t_type = "/sendDocument"
-                result = None
-                message = {}
                 part = 1
-                size = 0
-                for line in body.splitlines():
-                    size = size + len(line)
-                    if size < file_size:  # len(body) > 50Mb
-                        if result:
-                            result = result + "\n" + line
-                        else:
-                            result = line
-                    else:
-                        message.update({part: result})
-                        result = line
-                        size = size - file_size  # len(body) > 50Mb
-                        part = part + 1
-                else:
-                    message.update({part: result})
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
             url = self.url + t_type
@@ -111,17 +94,41 @@ class TgSenderService(FastAPIService):
                     response = requests.post(url, send, proxies=proxy)
                 else:
                     self.logger.info("Send Document")
-                    for p, d in message.items():
-                        buf = StringIO()
-                        buf.write(d)
-                        buf.name = "part_%s.txt" % p
-                        buf.seek(0)
-                        if p > 1:
-                            caption = None
-                        send = {"chat_id": data["address"], "caption": caption}
-                        files = {"document": buf}
-                        response = requests.post(url, send, proxies=proxy, files=files)
-                        buf.close()
+                    buf = StringIO()
+                    file_lines = body.splitlines()
+                    for line in file_lines:
+                        if buf.tell() < file_size:
+                            if line.strip() == file_lines[-1].strip():
+                                buf.write(line)
+                                buf.seek(0)
+                                buf.name = "part_%s.txt" % part
+                                if part > 1:
+                                    caption = None
+                                response = requests.post(
+                                    url,
+                                    {"chat_id": data["address"], "caption": caption},
+                                    proxies=proxy,
+                                    files={"document": buf},
+                                )
+                                buf.close()
+                                continue
+                            else:
+                                buf.write(line + "\n")
+                                continue
+                        else:
+                            buf.seek(0)
+                            buf.name = "part_%s.txt" % part
+                            if part > 1:
+                                caption = None
+                            response = requests.post(
+                                url,
+                                {"chat_id": data["address"], "caption": caption},
+                                proxies=proxy,
+                                files={"document": buf},
+                            )
+                            part = part + 1
+                            buf.close()
+                            buf = StringIO()
                 if proxy:
                     self.logger.info("Proxy Send: %s\n" % response.json())
                     metrics["telegram_proxy_proxy_ok"] += 1
