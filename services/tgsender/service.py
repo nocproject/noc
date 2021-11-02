@@ -97,7 +97,7 @@ class TgSenderService(FastAPIService):
                     buf = StringIO()
                     file_lines = body.splitlines()
                     for line in file_lines:
-                        if buf.tell() < file_size:
+                        if buf.tell() < file_size:  # Check buffer size
                             if line.strip() == file_lines[-1].strip():
                                 buf.write(line)
                                 buf.seek(0)
@@ -111,10 +111,10 @@ class TgSenderService(FastAPIService):
                                     files={"document": buf},
                                 )
                                 buf.close()
-                            else:
+                            else:  # Write line if buffer < 50Mb
                                 buf.write(line + "\n")
                                 continue
-                        else:
+                        else:  # Send document if buffer > 50Mb
                             buf.seek(0)
                             buf.name = "part_%s.txt" % part
                             if part > 1:
