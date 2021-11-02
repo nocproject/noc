@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Rotek.RTBSv1.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -48,6 +48,8 @@ class Script(BaseScript):
         #    cmd+=" source %s" % source_address
         # if df:
         #    cmd+=" df-bit"
+        if "Network is unreachable" in ping:
+            return {"success": 0, "count": count if count else 5}
         result = self.rx_result.search(ping)
         r = {"success": result.group("success"), "count": result.group("count")}
         stat = self.rx_stat.search(ping)
