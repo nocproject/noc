@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
     LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS,
     LLDP_PORT_SUBTYPE_MAC,
     LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
     LLDP_PORT_SUBTYPE_NAME,
@@ -93,6 +94,7 @@ class Script(BaseScript):
             if not match:
                 continue
             remote_port_subtype = {
+                "interface-alias": LLDP_PORT_SUBTYPE_ALIAS,
                 "mac-address": LLDP_PORT_SUBTYPE_MAC,
                 "network-address": LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
                 "interface-name": LLDP_PORT_SUBTYPE_NAME,
