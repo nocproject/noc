@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,10 @@ class Script(BaseScript):
         r"^System hardware version\s+:\s+(?P<hardware>\S+)\s*\n"
         r"^System firmware version\s+:\s+(?P<version>\S+)\s*\n"
         r"^System boot version\s+:\s+(?P<bootprom>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_platform_lldp = re.compile(
+        r"^\s+System Description\s+:\s+(?P<platform>D[EG]S-\d+\S+)",
         re.MULTILINE,
     )
     rx_fwt = re.compile(
@@ -108,12 +112,12 @@ class Script(BaseScript):
     def execute_cli(self):
         s = self.scripts.get_switch()
         match = self.rx_ver.search(s)
-        if match.group("platform"):
+        if match and match.group("platform"):
             platform = match.group("platform")
         else:
             match = self.rx_ver_old.search(s)
-            m = self.motd
-            platform = self.rx_motd.search(m).group("platform")
+            v = self.cli("show lldp", cached=True)
+            platform = self.rx_platform_lldp.search(v).group("platform")
         r = {
             "vendor": "DLink",
             "platform": get_platform(platform, match.group("hardware")),
