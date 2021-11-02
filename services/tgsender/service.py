@@ -69,13 +69,13 @@ class TgSenderService(FastAPIService):
         body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
         send = {
             "chat_id": data["address"],
-            "text": "*" + subject + "*\n" + body,
+            "text": "*" + subject + "**\n\n" + body,
             "parse_mode": "Markdown",
         }
         # Text of the message to be sent, 1-4096 characters after entities parsing
         # Check, if len (body)
         if len(body) > body_l:
-            caption = "*" + subject + "*\n" + body[0:500] + "..."
+            caption = "*" + subject + "**\n\n" + body[0:500] + "..."
             # Bots can currently send files of any type of up to 50 MB in size
             # If len(body) > 50Mb use /sendDocument
             if len(body) > file_size:  # len(body) > 50Mb
