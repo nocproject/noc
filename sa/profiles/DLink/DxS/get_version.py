@@ -34,7 +34,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_platform_lldp = re.compile(
-        r"^\s+System Description\s+:\s+(?P<platform>DES-\d+\S+)",
+        r"^\s+System Description\s+:\s+(?P<platform>D[EG]S-\d+\S+)",
         re.MULTILINE,
     )
     rx_fwt = re.compile(
@@ -118,8 +118,6 @@ class Script(BaseScript):
             match = self.rx_ver_old.search(s)
             v = self.cli("show lldp", cached=True)
             platform = self.rx_platform_lldp.search(v).group("platform")
-            if platform.startswith("DES-1210-"):
-                platform = platform + "/A1"
         r = {
             "vendor": "DLink",
             "platform": get_platform(platform, match.group("hardware")),
