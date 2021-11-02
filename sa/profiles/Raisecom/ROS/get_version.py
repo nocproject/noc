@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ class Script(BaseScript):
         r"Product name:\s*(Gazelle |)(?P<platform>\S+)\s*\n"
         r"(ROS|QOS)\s+Version(:|)\s*(?P<version>\S+)(\.|)\s*\(Compiled(?P<compiled>.+)\)\s*\n"
         r"Product Version: \S+\s*\n"
-        r"BOOT Room Version\s*(:|)\s*(?P<bootstrap>\S+)\s*\n"
+        r"BOOT Room Version\s*(:|)\s*(Gazelle |)(?P<bootstrap>\S+)\s*\n"
         r"CPLD Version: \S+\s*\n"
         r"Hardware\s*(Gazelle |)\S*\s*Version(\sRev\.|:)?\s*(?P<hw_rev>\S+)\s*\n\n"
         r"System MacAddress( is)?\s*:\s*(?P<mac>\S+)\s*\n"
