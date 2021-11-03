@@ -95,7 +95,7 @@ class SNMP(object):
     def get(self, oids, cached=False, version=None, raw_varbinds=False, display_hints=None):
         """
         Perform SNMP GET request
-        :param oid: string or list of oids
+        :param List[str] oids: string or list of oids
         :param cached: True if get results can be cached during session
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
@@ -216,6 +216,15 @@ class SNMP(object):
         raw_varbinds=False,
         display_hints=None,
     ):
+        """
+        Perform SNMP GETNEXT request
+        :param oid: string or list of oids
+        :param cached: True if get results can be cached during session
+        :param raw_varbinds: Return value in BER encoding
+        :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
+        :returns: eigther result scalar or dict of name -> value
+        """
+
         async def run():
             try:
                 r = await snmp_getnext(
@@ -300,7 +309,7 @@ class SNMP(object):
         :param min_index:
         :param max_index:
         :param cached:
-        :param max_repetitions,
+        :param max_repetitions:
         :param timeout:
         :param max_retries:
         :param display_hints:
