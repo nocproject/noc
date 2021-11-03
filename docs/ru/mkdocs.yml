@@ -1571,6 +1571,7 @@ nav:
                   - version: dev/reference/bi/dict/version.md
               - Models:
                   - alarms: dev/reference/bi/model/alarms.md
+                  - events: dev/reference/bi/model/events.md
                   - mac: dev/reference/bi/model/mac.md
                   - managedobjects: dev/reference/bi/model/managedobjects.md
                   - netflow: dev/reference/bi/model/netflow.md
@@ -1579,6 +1580,8 @@ nav:
                   - span: dev/reference/bi/model/span.md
           - Card:
               - Overview: dev/reference/card/index.md
+          - Web:
+              - Overview: dev/reference/web/index.md
           - ConfDB:
               - Overview: dev/reference/confdb/index.md
               - Config Fetching: dev/reference/confdb/fetching.md

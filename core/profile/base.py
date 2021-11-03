@@ -102,224 +102,400 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     Equipment profile. Contains all equipment personality and specific
     """
 
-    # Profile name in form <vendor>.<system>
     name = None
+    """
+    Profile name in form <vendor>.<system>
+    """
     #
     # Device capabilities
     #
 
-    #
-    # A list of supported access schemes.
-    # Access schemes constants are defined
-    # in noc.sa.protocols.sae_pb2
-    # (TELNET, SSH, HTTP, etc)
-    # @todo: Deprecated
-    #
-    supported_schemes = []
-    # Regular expression to catch user name prompt
-    # (Usually during telnet sessions)
+    supported_schemes = []  # @todo: Deprecated
+    """
+    A list of supported access schemes.
+    Access schemes constants are defined
+    in noc.sa.protocols.sae_pb2
+    (TELNET, SSH, HTTP, etc)
+    Deprecated
+    """
+
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
-    # Regulal expression to catch password prompt
-    # (Telnet/SSH sessions)
+    """
+    List[str]: Regular expression to catch user name prompt. Usually during telnet sessions)
+    """
+
     pattern_password = "[Pp]ass[Ww]ord: ?"
-    # Regular expression to catch implicit super password prompt
-    # (Telnet/SSH sessions)
+    """
+    Optional[regexp]: Regulal expression to catch password prompt (Telnet/SSH sessions)
+    """
+
     pattern_super_password = None
-    # Regular expression to catch command prompt
-    # (CLI Sessions)
+    """
+    Optional[regexp]: Regular expression to catch implicit super password prompt
+    (Telnet/SSH sessions)
+    """
+
     pattern_prompt = r"^\S*[>#]"
-    # Regular expression to catch unpriveleged mode command prompt
-    # (CLI Session)
+    """
+    Optional[regexp]: Regular expression to catch command prompt (CLI Sessions)
+    """
+
     pattern_unprivileged_prompt = None
-    # Regular expression to catch pager
-    # (Used in command results)
-    # If pattern_more is string, send command_more
-    # If pattern_more is a list of (pattern,command)
-    # send appropriate command
+    """
+    Optional[regexp]: Regular expression to catch unpriveleged mode command prompt
+    (CLI Session)
+    """
+
     pattern_more = "^---MORE---"
-    # Regular expression (string or compiled) to catch the syntax errors in cli output.
-    # If CLI output matches pattern_syntax_error,
-    # then CLISyntaxError exception raised
+    """
+    Optional[regexp]: Regular expression to catch pager
+    (Used in command results)
+    If pattern_more is string, send command_more
+    If pattern_more is a list of (pattern,command) send appropriate command
+    """
+
     pattern_syntax_error = None
-    # Regular expression (string or compiled) to catch the CLI commands errors in cli output.
-    # If CLI output matches pattern_syntax_error and not matches
-    # pattern_syntax_error, then CLIOperationError exception raised
+    """
+    Optional[regexp]: Regular expression (string or compiled) to catch the syntax errors in cli output.
+    If CLI output matches pattern_syntax_error, then CLISyntaxError exception raised
+    """
+
     pattern_operation_error = None
-    # Reqular expression to start setup sequence
-    # defined in setup_sequence list
+    """
+    Optional[regexp]: Regular expression (string or compiled) to catch the CLI commands errors in cli output.
+    If CLI output matches pattern_syntax_error and not matches
+    pattern_syntax_error, then CLIOperationError exception raised
+    """
+
     pattern_start_setup = None
-    # String or list of string to recognize continued multi-line commands
-    # Multi-line commands must be sent at whole, as the prompt will be
-    # not available until end of command
-    # NB: Sending logic is implemented in *commands* script
-    # Examples:
-    # "^.+\\" -- treat trailing backspace as continuation
-    # "banner\s+login\s+(\S+)" -- continue until matched group
+    """
+    Optional[regexp]: Regular expression to start setup sequence
+    defined in setup_sequence list
+    """
+
     pattern_multiline_commands = None
-    # MML end of block pattern
+    """
+    String or list of string to recognize continued multi-line commands
+    Multi-line commands must be sent at whole, as the prompt will be
+    not available until end of command
+    NB: Sending logic is implemented in *commands* script
+
+    Examples:
+    "^.+\\" -- treat trailing backspace as continuation
+    "banner\s+login\s+(\S+)" -- continue until matched group
+    """
+
     pattern_mml_end = None
-    # MML continue pattern
+    """
+    MML end of block pattern
+    """
+
     pattern_mml_continue = None
-    # Device can strip long hostname in various modes
-    # i.e
-    # my.very.long.hostname# converts to
-    # my.very.long.hos(config)#
-    # In this case set can_strip_hostname_to = 16
-    # None by default
+    """
+    MML continue pattern
+    """
+
     can_strip_hostname_to = None
-    # Sequence to be send to list forward pager
-    # If pattern_more is string and is matched
+    """
+    Device can strip long hostname in various modes i.e
+    my.very.long.hostname# converts to
+    my.very.long.hos(config)#
+    In this case set `can_strip_hostname_to` = 16
+    None by default
+    """
+
     command_more = b"\n"
-    # Sequence to be send at the end of all CLI commands
+    """
+    bytes: Sequence to be send to list forward pager
+    If pattern_more is string and is matched
+    """
+
     command_submit = b"\n"
-    # Sequence to submit username. Use "\n" if None
+    """
+    bytes: Sequence to be send at the end of all CLI commands
+    """
+
     username_submit = None
-    # Sequence to submit password. Use "\n" if None
+    """
+    Sequence to submit username. Use "\n" if None
+    """
+
     password_submit = None
-    # Callable accepting script instance
-    # to set up additional script attributes
-    # and methods. Use Profile.add_script_method()
-    # to add methods
+    """
+    Sequence to submit password. Use "\n" if None
+    """
+
     setup_script = None
-    # Callable accepting script instance
-    # to set up session.
+    """
+    Callable accepting script instance
+    to set up additional script attributes
+    and methods. Use Profile.add_script_method()
+    to add methods
+    """
+
     setup_session = None
-    # Callable accepting script instance
-    # to finaly close session
+    """
+    Callable accepting script instance to set up session.
+    """
+
     shutdown_session = None
-    # Callable accepting script instance to set up http session
+    """
+    Callable accepting script instance
+    to finaly close session
+    """
+
     setup_http_session = None
-    # List of middleware names to be applied to each HTTP request
-    # Refer to core.script.http.middleware for details
-    # Middleware may be set as
-    # * name
-    # * handler, leading to BaseMiddleware instance
-    # * (name, config)
-    # * (handler, config)
-    # Where config is dict of middleware's constructor parameters
+    """
+    Callable accepting script instance to set up http session
+    """
+
     http_request_middleware = None
-    # Callable acceptings script instance to finaly close http session
+    """
+    List of middleware names to be applied to each HTTP request
+    Refer to core.script.http.middleware for details
+    Middleware may be set as
+      * name
+      * handler, leading to BaseMiddleware instance
+      * (name, config)
+      * (handler, config)
+    Where config is dict of middleware's constructor parameters
+    """
+
     shutdown_http_session = None
-    # Sequence to disable pager
-    #
+    """
+    Callable acceptings script instance to finaly close http session
+    """
+
     command_disable_pager = None
-    # Sequence to gracefully close session
-    #
+    """
+    Sequence to disable pager
+    """
+
     command_exit = None
-    # Sequence to enable priveleged mode
-    #
+    """
+    Sequence to gracefully close session
+    """
+
     command_super = None
-    # Sequence to enter configuration mode
-    #
+    """
+    Sequence to enable priveleged mode
+    """
+
     command_enter_config = None
-    # Sequence to leave configuration mode
-    #
+    """
+    Sequence to enter configuration mode
+    """
+
     command_leave_config = None
-    # Sequence to save configuration
-    #
+    """
+    Sequence to leave configuration mode
+    """
+
     command_save_config = None
-    # String or callable to send on syntax error to perform cleanup
-    # Callable accepts three arguments
-    # * cli instance
-    # * command that caused syntax error
-    # * error response.
-    # Coroutines are also accepted.
-    # SyntaxError exception will be raised after cleanup procedure
+    """
+    Sequence to save configuration
+    """
+
     send_on_syntax_error = None
-    # List of chars to be stripped out of input stream
-    # before checking any regular expressions
-    # (when Action.CLEAN_INPUT==True)
+    """
+    String or callable to send on syntax error to perform cleanup
+    Callable accepts three arguments:
+      * cli instance
+      * command that caused syntax error
+      * error response.
+    Coroutines are also accepted.
+    SyntaxError exception will be raised after cleanup procedure
+
+    """
+
     rogue_chars = [b"\r"]
-    # String to send just after telnet connect is established
+    """
+    List of chars to be stripped out of input stream
+    before checking any regular expressions
+    (when Action.CLEAN_INPUT==True)
+    """
+
     telnet_send_on_connect = None
-    # Password sending mode for telnet
-    # False - send password at once
-    # True - send password by characters
+    """
+    String to send just after telnet connect is established
+    """
+
     telnet_slow_send_password = False
-    # Telnet NAWS negotiation
+    """
+    Password sending mode for telnet
+      False - send password at once
+      True - send password by characters
+    """
+
     telnet_naws = b"\x00\x80\x00\x80"
-    # List of strings containing setup sequence
-    # Setup sequence is initialized on pattern_start_setup during
-    # startup phase
-    # Strings sending one-by-one, waiting for response after
-    # each string, excluding last one
+    """
+    Telnet NAWS negotiation
+    """
+
     setup_sequence = None
-    # Does the equipment supports bitlength netmasks
-    # or netmask should be converted to traditional formats
+    """
+    List of strings containing setup sequence
+    Setup sequence is initialized on pattern_start_setup during
+    startup phase
+    Strings sending one-by-one, waiting for response after
+    each string, excluding last one
+    """
+
     requires_netmask_conversion = False
-    # Upper concurrent scripts limit, if set
+    """
+    Does the equipment supports bitlength netmasks
+    or netmask should be converted to traditional formats
+    """
+
     max_scripts = None
-    # CLI timeouts
-    # Timeout between connection established and login prompt
+    """
+    Upper concurrent scripts limit, if set
+    """
+
     cli_timeout_start = 50
-    # Timeout after user name provided
+    """
+    CLI timeouts
+    Timeout between connection established and login prompt
+    """
+
     cli_timeout_user = 30
-    # Timeout after password provided
+    """
+    Timeout after user name provided
+    """
+
     cli_timeout_password = 30
-    # Timeout after submitting *command_super*
+    """
+    Timeout after password provided
+    """
+
     cli_timeout_super = 10
-    # Timeout waiting next setup sequence response
+    """
+    Timeout after submitting *command_super*
+    """
+
     cli_timeout_setup = 10
-    # Timeout until next prompt
+    """
+    Timeout waiting next setup sequence response
+    """
+
     cli_timeout_prompt = 3600
-    # Amount of retries for enable passwords
-    # Increase if box asks for enable password twice
+    """
+    Timeout until next prompt
+    """
+
     cli_retries_super_password = 1
-    # Amount of retries for unprivileged prompt
-    # Increase if box send unprivileged prompt twice
+    """
+    Amount of retries for enable passwords
+    Increase if box asks for enable password twice
+    """
+
     cli_retries_unprivileged_mode = 1
-    # Additional hints for snmp binary OctetString data processing
-    # Contains mapping of
-    # oid -> render_callable
-    # if render_callable is None, translation is disabled and binary data processed by default way
-    # Otherwise it must be a callable, accepting (oid, raw_data) parameter
-    # where oid is varbind's oid value, while raw_data is raw binary data of varbind value.
-    # Callable should return str
-    # It is possible to return bytes in very rare specific cases,
-    # when you have intention to process binary output in script directly
+    """
+    Amount of retries for unprivileged prompt
+    Increase if box send unprivileged prompt twice
+    """
+
     snmp_display_hints: Dict[str, Optional[Callable[[str, bytes], Union[str, bytes]]]] = {}
-    # Aggregate up to *snmp_metrics_get_chunk* oids
-    # to one SNMP GET request
+    """
+    Additional hints for snmp binary OctetString data processing
+    Contains mapping of
+    oid -> render_callable
+    if render_callable is None, translation is disabled and binary data processed by default way
+    Otherwise it must be a callable, accepting (oid, raw_data) parameter
+    where oid is varbind's oid value, while raw_data is raw binary data of varbind value.
+    Callable should return str
+    It is possible to return bytes in very rare specific cases,
+    when you have intention to process binary output in script directly
+    """
+
     snmp_metrics_get_chunk = 15
-    # Timeout for snmp GET request
+    """
+    Aggregate up to *snmp_metrics_get_chunk* oids
+    to one SNMP GET request
+    """
+
     snmp_metrics_get_timeout = 3
-    # Aggregate up to *snmp_ifstatus_get_chunk* oids
-    # to one SNMP GET request for get_interface_status_ex
+    """
+    Timeout for snmp GET request
+    """
+
     snmp_ifstatus_get_chunk = 15
-    # Timeout for snmp GET request for get_interface_status_ex
+    """
+    Aggregate up to *snmp_ifstatus_get_chunk* oids
+    to one SNMP GET request for get_interface_status_ex
+    """
+
     snmp_ifstatus_get_timeout = 2
-    # _ResponseParser for customized SNMP response processing.
-    # Broken SNMP implementations are urged to use `parse_get_response_strict`
+    """
+    Timeout for snmp GET request for get_interface_status_ex
+    """
+
     snmp_response_parser: Optional[_ResponseParser] = None
-    # matcher_name -> snmp rate limit
-    # for default get_snmp_rate_limit() implementation
+    """
+    _ResponseParser for customized SNMP response processing.
+    Broken SNMP implementations are urged to use `parse_get_response_strict`
+    """
+
     snmp_rate_limit: Dict[str, Optional[float]] = {}
-    # Allow CLI sessions by default
+    """
+    matcher_name -> snmp rate limit
+    for default get_snmp_rate_limit() implementation
+    """
+
     enable_cli_session = True
-    # True - Send multiline command at once
-    # False - Send multiline command line by line
+    """
+    Allow CLI sessions by default
+    """
+
     batch_send_multiline = True
-    # String to separate MML response header from body
+    """
+    True - Send multiline command at once
+    False - Send multiline command line by line
+    """
+
     mml_header_separator = "\r\n\r\n"
-    # Always enclose MML command arguments with quotes
-    # False - pass integers as unquoted
+    """
+    String to separate MML response header from body
+    """
+
     mml_always_quote = False
-    # Config tokenizer name, from noc.core.confdb.tokenizer.*
+    """
+    Always enclose MML command arguments with quotes
+    False - pass integers as unquoted
+    """
+
     config_tokenizer = None
-    # Configuration for config tokenizer
+    """
+    Config tokenizer name, from noc.core.confdb.tokenizer.*
+    """
+
     config_tokenizer_settings = {}
-    # Config normalizer handler
+    """
+    Configuration for config tokenizer
+    """
+
     config_normalizer = None
-    # Config normalizer settings
+    """
+    Config normalizer handler
+    """
+
     config_normalizer_settings = {}
-    # List of confdb default tokens
-    # To be appended on every confdb initiation
+    """
+    Config normalizer settings
+    """
+
     confdb_defaults = None
-    # Config applicators
-    # List of (<applicator handler>, <applicator settings>) or <applicator handler>
+    """
+    List of confdb default tokens
+    To be appended on every confdb initiation
+    """
+
     config_applicators = None
-    # List of default applicators
-    # Activated by ConfDB `hints` section
+    """
+    Config applicators
+    List of (<applicator handler>, <applicator settings>) or <applicator handler>
+    """
+
     default_config_applicators = [
         "noc.core.confdb.applicator.rebase.RebaseApplicator",
         "noc.core.confdb.applicator.interfacetype.InterfaceTypeApplicator",
@@ -339,18 +515,42 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         # Finally apply meta
         "noc.core.confdb.applicator.meta.MetaApplicator",
     ]
-    # Collators
-    # List of (<collator handler>, <collator settings>) or <collator_handler>
+    """
+    List of default applicators
+    Activated by ConfDB `hints` section
+    """
+
     collators = None
-    # Matchers are helper expressions to calculate and fill
-    # script's is_XXX properties
+    """
+    Collators
+    List of (<collator handler>, <collator settings>) or <collator_handler>
+    """
+
     matchers = {}
-    # Filled by metaclass
+    """
+    Matchers are helper expressions to calculate and fill
+    script's is_XXX properties
+    """
+
     patterns = {}
+    """
+    Filled by metaclass
+    """
 
     def convert_prefix(self, prefix):
         """
         Convert ip prefix to the format accepted by router's CLI
+
+        ```python
+        >>> BaseProfile().convert_prefix("192.168.2.0/24")
+        '192.168.2.0/24'
+
+        >>> BaseProfile().convert_prefix("192.168.2.0 255.255.255.0")
+        '192.168.2.0 255.255.255.0'
+        ```
+        :param str prefix: IP Prefix
+        :return: IP MASK notation
+        :rtype: str
         """
         if "/" in prefix and self.requires_netmask_conversion:
             prefix = IPv4(prefix)
@@ -360,19 +560,46 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def convert_mac_to_colon(self, mac):
         """
         Leave 00:11:22:33:44:55 style MAC-address untouched
+
+        ```python
+        >>> BaseProfile().convert_mac_to_colon("00:11:22:33:44:55")
+        '00:11:22:33:44:55'
+
+        >>> BaseProfile().convert_mac_to_colon("00:11:22:33:44:55")
+        '0011:2233:4455'
+        ```
+        :param str mac:
+        :return: MAC-address HH:HH:HH:HH:HH:HH
+        :rtype: str
         """
         return mac
 
     def convert_mac_to_cisco(self, mac):
         """
         Convert 00:11:22:33:44:55 style MAC-address to 0011.2233.4455
+
+        ```python
+        >>> BaseProfile().convert_mac_to_cisco("00:11:22:33:44:55")
+        '0011.2233.4455'
+        ```
+        :param str mac: HH:HH:HH:HH:HH:HH
+
+        :return: MAC-address HHHH.HHHH.HHHH
+        :rtype: str
         """
         v = mac.replace(":", "").lower()
         return "%s.%s.%s" % (v[:4], v[4:8], v[8:])
 
     def convert_mac_to_huawei(self, mac):
         """
-        Convert 00:11:22:33:44:55 style MAC-address to 0011.2233.4455
+        Convert 00:11:22:33:44:55 style MAC-address to 0011-2233-4455
+
+        ```python
+        >>> BaseProfile().convert_mac_to_huawei("00:11:22:33:44:55")
+        '0011-2233-4455'
+        ```
+        :return: MAC-address HHHH-HHHH-HHHH
+        :rtype: str
         """
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
@@ -380,19 +607,32 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def convert_mac_to_dashed(self, mac):
         """
         Convert 00:11:22:33:44:55 style MAC-address to 00-11-22-33-44-55
+
+        ```python
+        >>> BaseProfile().convert_mac_to_dashed("00:11:22:33:44:55")
+        '00-11-22-33-44-55'
+        ```
+        :param str mac: MAC-address HH:HH:HH:HH:HH:HH
+        :return: MAC-address HH-HH-HH-HH-HH-HH
+        :rtype: str
         """
         v = mac.replace(":", "").lower()
         return "%s-%s-%s-%s-%s-%s" % (v[:2], v[2:4], v[4:6], v[6:8], v[8:10], v[10:])
 
-    #
-    # Convert 00:11:22:33:44:55 style MAC-address to local format
-    # Can be changed in derived classes
-    #
     convert_mac = convert_mac_to_colon
+    """
+    Convert 00:11:22:33:44:55 style MAC-address to local format
+    Can be changed in derived classes
+    """
 
     def convert_interface_name(self, s):
         """
         Normalize interface name
+
+        :param str s: Interface Name
+
+        :return: Normalize interface name
+        :rtype: str
         """
         return s
 
@@ -405,24 +645,26 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
 
     def convert_interface_name_cisco(self, s):
         """
-        >>> Profile().convert_interface_name_cisco("Gi0")
+        ```python
+        >>> BaseProfile().convert_interface_name_cisco("Gi0")
         'Gi 0'
-        >>> Profile().convert_interface_name_cisco("GigabitEthernet0")
+        >>> BaseProfile().convert_interface_name_cisco("GigabitEthernet0")
         'Gi 0'
-        >>> Profile().convert_interface_name_cisco("Gi 0")
+        >>> BaseProfile().convert_interface_name_cisco("Gi 0")
         'Gi 0'
-        >>> Profile().convert_interface_name_cisco("tengigabitethernet 1/0/1")
+        >>> BaseProfile().convert_interface_name_cisco("tengigabitethernet 1/0/1")
         'Te 1/0/1'
-        >>> Profile().convert_interface_name_cisco("tengigabitethernet 1/0/1.5")
+        >>> BaseProfile().convert_interface_name_cisco("tengigabitethernet 1/0/1.5")
         'Te 1/0/1.5'
-        >>> Profile().convert_interface_name_cisco("Se 0/1/0:0")
+        >>> BaseProfile().convert_interface_name_cisco("Se 0/1/0:0")
         'Se 0/1/0:0'
-        >>> Profile().convert_interface_name_cisco("Se 0/1/0:0.10")
+        >>> BaseProfile().convert_interface_name_cisco("Se 0/1/0:0.10")
         'Se 0/1/0:0.10'
-        >>> Profile().convert_interface_name_cisco("ATM1/1/ima0")
+        >>> BaseProfile().convert_interface_name_cisco("ATM1/1/ima0")
         'At 1/1/ima0'
-        >>> Profile().convert_interface_name_cisco("Port-channel5B")
+        >>> BaseProfile().convert_interface_name_cisco("Port-channel5B")
         'Po 5B'
+        ```
         """
         match = self.rx_cisco_interface_name.match(s)
         if not match:
@@ -432,10 +674,13 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def root_interface(self, name):
         """
         Returns root interface
-        >>> Profile().root_interface("Gi 0/1")
+
+        ```python
+        >>> BaseProfile().root_interface("Gi 0/1")
         'Gi 0/1'
-        >>> Profile().root_interface("Gi 0/1.15")
+        >>> BaseProfile().root_interface("Gi 0/1.15")
         'Gi 0/1'
+        ```
         """
         name = name.split(".")[0]
         name = name.split(":")[0]
@@ -445,17 +690,26 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         """
         Return possible alternative interface names,
         i.e. for LLDP discovery *Local* method
+        Can be overriden to achieve desired behavior
+
+        :param str name: Interface Name
+
+        :return: List Alternative interface names
+        :rtype: list
         """
         return []
 
     def get_linecard(self, interface_name):
         """
         Returns linecard number related to interface
+
+        ```python
         >>> Profile().get_linecard("Gi 4/15")
         4
         >>> Profile().get_linecard("Lo")
         >>> Profile().get_linecard("ge-1/1/0")
         1
+        ```
         """
         if " " in interface_name:
             l, r = interface_name.split(" ")
@@ -478,6 +732,8 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def get_stack_number(self, interface_name):
         """
         Returns stack number related to interface
+
+        ```python
         >>> Profile().get_stack_number("Gi 1/4/15")
         1
         >>> Profile().get_stack_number("Lo")
@@ -489,6 +745,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         3
         >>> Profile().get_stack_number("3/2")
         3
+        ```
         """
         match = self.rx_num1.match(interface_name)
         if match:
@@ -502,30 +759,52 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def generate_prefix_list(self, name, pl):
         """
         Generate prefix list:
-        name - name of prefix list
-        pl -  is a list of (prefix, min_len, max_len)
+
+        :param str name: name of prefix list
+        :param List[str] pl: is a list of (prefix, min_len, max_len)
+
         Strict - should tested prefix be exactly matched
         or should be more specific as well
+        Can be overriden to achieve desired behavior
+
+        Not implemented in Base Class
         """
         raise NotImplementedError()
 
-    #
-    # Volatile strings:
-    # A list of strings can be changed over time, which
-    # can be sweeped out of config safely or None
-    # Strings are regexpes, compiled with re.DOTALL|re.MULTILINE
-    #
     config_volatile = None
+    """
+    Volatile strings:
+    A list of strings can be changed over time, which
+    can be sweeped out of config safely or None
+    Strings are regexpes, compiled with re.DOTALL|re.MULTILINE
+    """
 
     def cleaned_input(self, input: bytes) -> bytes:
         """
         Preprocessor to clean up and normalize input from device.
         Delete ASCII sequences by default.
         Can be overriden to achieve desired behavior
+
+        > *ECMA-48 control sequences processing*
+        > ::: noc.core.ecma48.strip_control_sequences
+            rendering:
+                show_category_heading: false
+                show_root_toc_entry: false
+                show_source: false
+        :param input: Input text for clean
+
+        :return: Text with strip control Sequences
         """
         return strip_control_sequences(input)
 
     def clean_rogue_chars(self, s: bytes) -> bytes:
+        """
+        Clean up config. Wipe out volatile strings before returning result
+
+        :param s: Configuration
+
+        :return: Clean up configuration
+        """
         if self.rogue_chars:
             for cleaner in self.rogue_char_cleaners:
                 s = cleaner(s)
@@ -533,7 +812,12 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
 
     def cleaned_config(self, cfg):
         """
-        Clean up config
+        Clean up config. Wipe out volatile strings before returning result
+
+        :param str cfg: Configuration
+
+        :return: Clean up configuration
+        :rtype: str
         """
         if self.config_volatile:
             # Wipe out volatile strings before returning result
@@ -550,7 +834,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         Remote object profile's .clean_lldp_neighbor() used
 
         :param obj: Managed Object reference
-        :param neighbor: IGetLLDPNeighbors.neighbors item
+        :param neighbor: `IGetLLDPNeighbors.neighbors` item
         :return: IGetLLDPNeighbors.neighbors item
         """
         return neighbor
@@ -584,7 +868,10 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     def get_interface_type(cls, name):
         """
         Return IGetInterface-compatible interface type
-        :param Name: Normalized interface name
+
+        :param str name: Normalized interface name
+
+        :return: Optional[str]
         """
         return None
 
