@@ -38,7 +38,10 @@ class Migration(BaseMigration):
         # archived_alarms = db.noc.alarms.archive
         active_alarms.find({"vars": {}})
         for aa in (active_alarms,):
-            for doc in aa.find({}, {"managed_object": 1, "alarm_class": 1, "vars": 1}):
+            for doc in aa.find(
+                {"managed_object": {"$exists": True}, "alarm_class": {"$exists": True}},
+                {"managed_object": 1, "alarm_class": 1, "vars": 1},
+            ):
                 if doc["alarm_class"] not in ac_map:
                     continue
                 reference = self.get_default_reference(
