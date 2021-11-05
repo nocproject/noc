@@ -105,8 +105,9 @@ class AlarmClassVar(EmbeddedDocument):
         ("fm.AlarmClassConfig", "alarm_class"),
         ("fm.ArchivedAlarm", "alarm_class"),
         ("fm.AlarmDiagnosticConfig", "alarm_class"),
-        ("fm.AlarmGroupRule", "group_alarm_class"),
-        ("fm.AlarmGroupRule", "rules.alarm_class"),
+        ("fm.AlarmRule", "groups.alarm_class"),
+        ("fm.AlarmRule", "match.alarm_class"),
+        ("fm.AlarmRule", "actions.alarm_class"),
     ]
 )
 class AlarmClass(Document):

@@ -14,7 +14,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.core.ListFormField",
         "NOC.fm.alarmclass.LookupField",
         "NOC.main.notificationgroup.LookupField",
-        "Ext.ux.form.MultiIntervalField",
         "NOC.main.handler.LookupField",
         "Ext.ux.form.GridField"
     ],
@@ -74,7 +73,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             dataIndex: "alarm_class",
                             editor: "fm.alarmclass.LookupField",
                             renderer: NOC.render.Lookup("alarm_class"),
-                            width: 250,
+                            width: 250
                         },
                         {
                             text: __("Title Template"),
@@ -82,7 +81,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: "textfield",
                             allowBlank: true,
                             flex: 1
-                        },
+                        }
                     ]
                 },
                 {
@@ -98,13 +97,13 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["raise", __("Persistent")],
-                                    ["clear", __("Floating")],
+                                    ["raise", __("On Alarm Raise")],
+                                    ["clear", __("On Alarm Clear")],
                                 ]
                             },
                             renderer: NOC.render.Choices({
-                                "raise": __("Persistent"),
-                                "clear": __("Floating"),
+                                "raise": __("On Alarm Raise"),
+                                "clear": __("On Alarm Clear"),
                             })
                         },
                         {
@@ -143,9 +142,9 @@ Ext.define("NOC.fm.alarmrule.Application", {
                                 query: {
                                     "allow_fm_alarmgroup": true
                                 }
-                                },
-                            width: 200,
-                            renderer: NOC.render.Lookup("handler")
+                            },
+                            renderer: NOC.render.Lookup("handler"),
+                            width: 200
                         },
                         {
                             text: __("Alarm Class"),
@@ -153,12 +152,12 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: "fm.alarmclass.LookupField",
                             allowBlank: true,
                             renderer: NOC.render.Lookup("alarm_class"),
-                            width: 250,
+                            width: 250
                         }
                     ]
                 },
                 {
-                    name: "rules",
+                    name: "match",
                     xtype: "listform",
                     fieldLabel: __("Match Rules"),
                     rows: 5,
