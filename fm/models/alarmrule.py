@@ -58,7 +58,10 @@ class Group(EmbeddedDocument):
 
 
 class Action(EmbeddedDocument):
-    when = StringField(default="raise", choices=["raise", "clear"])
+    when = StringField(default="raise", choices=[
+        ("raise", "When raise alarm"),
+        ("clear", "When clear alarm"),
+    ])
     policy = PlainReferenceField(default="continue", choices=["continue", "drop", "rewrite"])
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
