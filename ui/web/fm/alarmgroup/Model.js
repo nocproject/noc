@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// fm.alarmgrouprule Model
+// fm.alarmrule Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarmgrouprule.Model");
+console.debug("Defining NOC.fm.alarmrule.Model");
 
-Ext.define("NOC.fm.alarmgrouprule.Model", {
+Ext.define("NOC.fm.alarmrule.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/fm/alarmgrouprule/",
+    rest_url: "/fm/alarmrule/",
 
     fields: [
         {
@@ -29,43 +29,16 @@ Ext.define("NOC.fm.alarmgrouprule.Model", {
             defaultValue: true
         },
         {
-            name: "rules",
+            match: "rules",
             type: "auto"
         },
         {
-            name: "group_reference",
-            type: "string"
+            match: "groups",
+            type: "auto"
         },
         {
-            name: "group_alarm_class",
-            type: "string"
-        },
-        {
-            name: "group_alarm_class__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "group_title_template",
-            type: "string"
-        },
-        {
-            name: "handler",
-            type: "string"
-        },
-        {
-            name: "handler__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "notification_group",
-            type: "string"
-        },
-        {
-            name: "notification_group__label",
-            type: "string",
-            persist: false
+            match: "actions",
+            type: "auto"
         },
         {
             name: "bi_id",

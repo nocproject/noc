@@ -34,7 +34,7 @@ id_lock = Lock()
         ("pm.ThresholdProfile", "value_handler"),
         ("pm.ThresholdConfig", "open_handler"),
         ("pm.ThresholdConfig", "close_handler"),
-        ("fm.AlarmGroupRule", "handler"),
+        ("fm.AlarmRule", "actions.handler"),
     ]
 )
 class Handler(Document):

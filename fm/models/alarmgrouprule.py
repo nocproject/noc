@@ -33,40 +33,59 @@ from .alarmclass import AlarmClass
 id_lock = Lock()
 
 
-class MatchRule(EmbeddedDocument):
+class Match(EmbeddedDocument):
     labels = ListField(StringField())
     alarm_class = ReferenceField(AlarmClass)
+    reference_re = StringField()
 
     def __str__(self):
-        return f'{self.alarm_class}: {", ".join(self.labels)}'
+        return f'{", ".join(self.labels)}, {self.alarm_class or ""}/{self.reference_re}'
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
 
 
+class Group(EmbeddedDocument):
+    # Group Alarm reference Template
+    reference_template = StringField(default="")
+    # Group Alarm Class (Group by default)
+    alarm_class = PlainReferenceField(AlarmClass)
+    # Group Title template
+    title_template = StringField()
+
+    def __str__(self):
+        return f'{self.alarm_class or ""}/{self.title_template or ""}: {self.reference_template}'
+
+
+class Action(EmbeddedDocument):
+    when = StringField(default="raise", choices=["raise", "clear"])
+    policy = PlainReferenceField(default="continue", choices=["continue", "drop", "rewrite"])
+    handler = PlainReferenceField(Handler)
+    notification_group = ForeignKeyField(NotificationGroup, required=False)
+    alarm_class = PlainReferenceField(AlarmClass)
+
+    def __str__(self):
+        return f'{self.when}: {self.policy}'
+
+
 @bi_sync
-class AlarmGroupRule(Document):
+class AlarmRule(Document):
     meta = {
-        "collection": "alarmgrouprules",
+        "collection": "alarmrules",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["rules.labels", ("rules.alarm_class", "rules.labels")],
+        "indexes": ["match.labels", ("match.alarm_class", "match.labels")],
     }
 
     name = StringField(unique=True)
     description = StringField()
     is_active = BooleanField(default=True)
     #
-    rules = ListField(EmbeddedDocumentField(MatchRule))
-    # Group Alarm reference Template
-    group_reference = StringField(default="")
-    # Group Alarm Class (Group by default)
-    group_alarm_class = PlainReferenceField(AlarmClass)
-    # Group Title template
-    group_title_template = StringField()
+    match = ListField(EmbeddedDocumentField(Match))
     #
-    handler = PlainReferenceField(Handler)
-    notification_group = ForeignKeyField(NotificationGroup, required=False)
+    groups = ListField(EmbeddedDocumentField(Group))
+    #
+    actions = ListField(EmbeddedDocumentField(Action))
     # BI ID
     bi_id = LongField(unique=True)
 
@@ -81,15 +100,15 @@ class AlarmGroupRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> "AlarmGroupRule":
-        return AlarmGroupRule.objects.filter(id=id).first()
+    def get_by_id(cls, id) -> "AlarmRule":
+        return AlarmRule.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> "AlarmGroupRule":
-        return AlarmGroupRule.objects.filter(name=name).first()
+    def get_by_name(cls, name) -> "AlarmRule":
+        return AlarmRule.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "AlarmGroupRule":
-        return AlarmGroupRule.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, id) -> "AlarmRule":
+        return AlarmRule.objects.filter(bi_id=id).first()
