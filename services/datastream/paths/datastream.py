@@ -214,7 +214,7 @@ class DatastreamAPI(object):
             while True:
                 r = []
                 try:
-                    for item_id, change_id, data in datastream.iter_data(
+                    async for item_id, change_id, data in datastream.iter_data_async(
                         limit=limit, filters=filters, change_id=change_id, fmt=fmt
                     ):
                         if not first_change:
