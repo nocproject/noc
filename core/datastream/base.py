@@ -60,6 +60,7 @@ class DataStream(object):
     BULK_SIZE = 500
 
     _collections: Dict[str, pymongo.collection.Collection] = {}
+    _collections_async: Dict[str, pymongo.collection.Collection] = {}
 
     @classmethod
     def get_collection_name(cls, format: Optional[str] = None) -> str:
@@ -79,6 +80,21 @@ class DataStream(object):
             coll = get_db()[c_name]
             cls._collections[c_name] = coll
         return coll
+
+    @classmethod
+    def get_collection_async(cls, fmt: Optional[str] = None) -> pymongo.collection.Collection:
+        """
+        Get pymongo Collection object
+        :return:
+        """
+        c_name = cls.get_collection_name(fmt)
+        if c_name not in cls._collections_async:
+            from noc.core.mongo.connection_async import connect_async, get_db
+
+            connect_async()
+            coll = get_db()[c_name]
+            cls._collections_async[c_name] = coll
+        return cls._collections_async[c_name]
 
     @classmethod
     def ensure_collection(cls):
@@ -314,6 +330,21 @@ class DataStream(object):
             return bson.ObjectId(change_id)
         except (bson.errors.InvalidId, TypeError) as e:
             raise ValueError(str(e))
+
+    @classmethod
+    async def iter_data_async(cls, change_id, limit, filters, fmt):
+        q = {}
+        if filters:
+            q.update(cls.compile_filters(filters))
+        if change_id:
+            q[cls.F_CHANGEID] = {"$gt": cls.clean_change_id(change_id)}
+        coll = cls.get_collection_async(fmt)
+        async for doc in (
+            coll.find(q, {cls.F_ID: 1, cls.F_CHANGEID: 1, cls.F_DATA: 1})
+            .sort([(cls.F_CHANGEID, pymongo.ASCENDING)])
+            .limit(limit=limit or cls.DEFAULT_LIMIT)
+        ):
+            yield doc[cls.F_ID], doc[cls.F_CHANGEID], doc[cls.F_DATA]
 
     @classmethod
     def iter_data(cls, change_id=None, limit=None, filters=None, fmt=None):
