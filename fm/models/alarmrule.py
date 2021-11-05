@@ -58,17 +58,27 @@ class Group(EmbeddedDocument):
 
 
 class Action(EmbeddedDocument):
-    when = StringField(default="raise", choices=[
-        ("raise", "When raise alarm"),
-        ("clear", "When clear alarm"),
-    ])
-    policy = PlainReferenceField(default="continue", choices=["continue", "drop", "rewrite"])
+    when = StringField(
+        default="raise",
+        choices=[
+            ("raise", "When raise alarm"),
+            ("clear", "When clear alarm"),
+        ],
+    )
+    policy = StringField(
+        default="continue",
+        choices=[
+            ("continue", "Continue processed"),
+            ("drop", "Drop Alarm"),
+            ("rewrite", "Rewrite Alarm Class"),
+        ],
+    )
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
     alarm_class = PlainReferenceField(AlarmClass)
 
     def __str__(self):
-        return f'{self.when}: {self.policy}'
+        return f"{self.when}: {self.policy}"
 
 
 @bi_sync

@@ -49,18 +49,19 @@ class Migration(BaseMigration):
             }
         )
         # Alarm Group Rule
-        db["alarmgrouprules"].insert_one(
+        db["alarmrules"].insert_one(
             {
                 "_id": ObjectId("6172a2c994b882e61820692b"),
                 "name": "default",
                 "is_active": True,
                 "description": "Default Alarm Group",
-                "rules": [],
-                "group_reference": "",
-                "group_alarm_class": ObjectId("6172add005d0668829888eae"),
-                "group_title_template": "",
-                "handler": None,
-                "notification_group": None,
+                "match": [],
+                "groups": [{
+                    "reference_template": "",
+                    "alarm_class": ObjectId("6172add005d0668829888eae"),
+                    "title_template": "",
+                }],
+                "actions": [],
                 "bi_id": 8422126749852039790,
             }
         )

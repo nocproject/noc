@@ -101,6 +101,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     text: __("When Do"),
                     dataIndex: "when",
                     width: 100,
+                    allowBlank: false,
                     editor: {
                         xtype: "combobox",
                         store: [
@@ -117,6 +118,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     text: __("Action Policy"),
                     dataIndex: "policy",
                     width: 100,
+                    allowBlank: false,
                     editor: {
                         xtype: "combobox",
                         store: [
@@ -125,6 +127,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             ["rewrite", __("Rewrite AlarmClass")]
                         ]
                     },
+                    value: "continue",
                     renderer: NOC.render.Choices({
                         "continue": __("Continue Processed"),
                         "drop": __("Drop Alarm"),
