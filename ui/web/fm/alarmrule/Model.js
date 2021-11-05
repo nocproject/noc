@@ -29,7 +29,7 @@ Ext.define("NOC.fm.alarmrule.Model", {
             defaultValue: true
         },
         {
-            match: "rules",
+            match: "match",
             type: "auto"
         },
         {
