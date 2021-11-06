@@ -1591,6 +1591,8 @@ nav:
               - Query: dev/reference/confdb/query.md
           - Custom:
               - Overview: dev/reference/custom/index.md
+          - ETL:
+              - Overview: dev/reference/etl/index.md
           - Scripts:
               - add_vlan: dev/reference/scripts/add_vlan.md
               - commands: dev/reference/scripts/commands.md
