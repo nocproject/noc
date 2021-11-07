@@ -150,7 +150,8 @@ class TrapCollectorService(TornadoService):
             self.address_configs[addr] = cfg
         # Revoke stale addresses
         for addr in old_addresses - new_addresses:
-            del self.address_configs[addr]
+            if addr in self.address_configs:
+                del self.address_configs[addr]
         # Update configs
         self.source_configs[data["id"]] = cfg
         # Update metrics
