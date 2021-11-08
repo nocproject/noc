@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CDAG.to_dot() tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -121,8 +121,7 @@ def test_const():
     factory = YAMLCDAGFactory(cdag, CONST_CONFIG)
     factory.construct()
     node = cdag.get_node("measure")
-    assert node.const_inputs
-    assert "x" in node.const_inputs
+    assert node.is_const_input("x")
     assert node.const_inputs["x"] == 9.0
     tx = cdag.begin()
     inputs = tx.get_inputs(node)
