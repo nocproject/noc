@@ -126,7 +126,7 @@ class CDAG(object):
             n_attrs = ""
             if node.config:
                 attrs = []
-                for fn in node.config.__fields__:
+                for fn in node.iter_config_fields():
                     v = getattr(node.config, fn)
                     if hasattr(v, "value"):
                         v = v.value

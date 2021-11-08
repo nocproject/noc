@@ -45,7 +45,7 @@ class MetricsNode(BaseCDAGNode):
         for k, v in kwargs.items():
             if v is None:
                 continue
-            if k in self._key_inputs:
+            if self.is_key_input(k):
                 rk[k] = v
                 continue
             cleaner = self.cleaners.get(k)
@@ -82,5 +82,6 @@ class MetricsNode(BaseCDAGNode):
             return None
         for k, v in self.cleaners.items():
             node.set_cleaner(k, v)
-        node._key_inputs = self._key_inputs.copy()
+        for i in self.iter_key_inputs():
+            node.mark_as_key(i)
         return node

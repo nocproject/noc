@@ -15,7 +15,7 @@ from .typing import ValueType
 class Transaction(object):
     def __init__(self, cdag):
         self.cdag = cdag
-        self.inputs: [Dict[str, Dict[str, ValueType]]] = {}
+        self.inputs: Dict[str, Dict[str, ValueType]] = {}
         self._states: Dict[str, Any] = {}
 
     def activate(self, node: str, name: str, value: ValueType) -> None:
@@ -32,8 +32,7 @@ class Transaction(object):
         :return:
         """
         if node.node_id not in self.inputs:
-            const_inputs = node.const_inputs
-            self.inputs[node.node_id] = {n: const_inputs.get(n) for n in node.iter_inputs()}
+            self.inputs[node.node_id] = {k: v for k, v in node.iter_initial_inputs()}
         return self.inputs[node.node_id]
 
     def update_state(self, node) -> None:
