@@ -53,6 +53,11 @@ class BaseCDAGNodeMetaclass(type):
             n.config_cls_slot = type(
                 f"{n.config_cls.__name__}_Slot", (), {"__slots__": tuple(n.config_cls.__fields__)}
             )
+        # Slotted state
+        if hasattr(n, "state_cls"):
+            n.state_cls_slot = type(
+                f"{n.state_cls.__name__}_Slot", (), {"__slots__": tuple(n.state_cls.__fields__)}
+            )
         #
         return n
 
@@ -66,6 +71,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     dot_shape: str = "box"
     categories: List[Category] = []
     config_cls_slot: Type  # Filled by metaclass
+    state_cls_slot: Type  # Filled by metaclass
 
     def __init__(
         self,
@@ -138,7 +144,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if not hasattr(self, "state_cls"):
             return None
         state = state or {}
-        return self.state_cls(**state)
+        c_state = self.state_cls(**state)
+        return self.slotify(self.state_cls_slot, c_state)
 
     def clean_config(self, config: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
         if not hasattr(self, "config_cls") or config is None:
@@ -293,6 +300,12 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Get current node state
         :return:
         """
+        if self.state:
+            return self.state_cls(
+                **{s: getattr(self.state, s) for s in self.state_cls_slot.__slots__}
+            )
+        return None
+
         return self.state
 
     def iter_subscribers(self) -> Iterable[Tuple["BaseCDAGNode", str]]:
