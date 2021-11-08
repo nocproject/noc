@@ -117,7 +117,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
 
     def clone(self, graph, node_id: str) -> Optional["BaseCDAGNode"]:
         if hasattr(self, "config_cls"):
-            config = self.config.dict()
+            config = {k: getattr(self.config, k) for k in self.iter_config_fields()}
         else:
             config = {}
         node = self.__class__(
