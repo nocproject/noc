@@ -31,6 +31,11 @@ class Category(str, Enum):
     WINDOW = "window"
 
 
+MASK_BOUND = 1 << 0
+MASK_DYNAMIC = 1 << 1
+MASK_KEY = 1 << 2
+
+
 class BaseCDAGNodeMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
@@ -75,15 +80,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
         self._subscribers: List[Tuple[BaseCDAGNode, str]] = []
-        # Pre-calculated inputs
-        self.const_inputs: Dict[str, ValueType] = {}
+        self._inputs = {i: 0 for i in self.iter_inputs()}
+        # # Pre-calculated inputs
+        self.const_inputs: Optional[Dict[str, ValueType]] = None
         self._const_value: Optional[ValueType] = None
-        # Manually-configured dynamic inputs
-        self._dynamic_inputs: Set[str] = set()
-        self._key_inputs: Set[str] = set()
-        # All inputs
-        self._inputs = {i for i in self.iter_inputs()}
-        self._bound_inputs: Set[str] = set()
         self.sticky = sticky
 
     @classmethod
@@ -128,8 +128,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             sticky=self.sticky,
         )
         if self.allow_dynamic:
-            for di in self._dynamic_inputs:
-                node.add_input(di)
+            for di, flag in self._inputs.items():
+                if flag & MASK_DYNAMIC:
+                    node.add_input(di)
         graph.nodes[node_id] = node
         return node
 
@@ -150,8 +151,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Enumerate all configured inputs
         :return:
         """
-        yield from self.static_inputs
-        yield from self._dynamic_inputs
+        inputs = getattr(self, "_inputs", self.static_inputs)
+        yield from inputs
 
     def iter_unbound_inputs(self) -> Iterable[str]:
         """
@@ -159,8 +160,22 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         for i in self.iter_inputs():
-            if i not in self._bound_inputs:
+            if not self._inputs[i] & MASK_BOUND:
                 yield i
+
+    def iterate_mask_inputs(self, mask: int) -> Iterable[str]:
+        """
+        Iterate all inputs matching mask
+        """
+        for i, flag in self._inputs.items():
+            if flag & mask:
+                yield i
+
+    def iter_key_inputs(self) -> Iterable[str]:
+        """
+        Iterate all key inputs
+        """
+        yield from self.iterate_mask_inputs(MASK_KEY)
 
     def activate(self, tx: Transaction, name: str, value: ValueType) -> None:
         """
@@ -189,7 +204,32 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
                 s_node.activate(tx, s_name, value)
 
     def is_required_input(self, name: str) -> bool:
-        return name not in self._dynamic_inputs
+        """
+        Check if input is required
+        """
+        return not self.is_dynamic_input(name)
+
+    def is_dynamic_input(self, name: str) -> bool:
+        """
+        Check if input is dynamic
+        :param name:
+        :return:
+        """
+        return bool(self._inputs.get(name, 0) & MASK_DYNAMIC)
+
+    def is_const_input(self, name: str) -> bool:
+        """
+        Check if input is const
+        """
+        return self.const_inputs is not None and name in self.const_inputs
+
+    def is_key_input(self, name: str) -> bool:
+        """
+        Check if input is key
+        :param name:
+        :return:
+        """
+        return bool(self._inputs.get(name, 0) & MASK_KEY)
 
     def activate_const(self, name: str, value: ValueType) -> None:
         """
@@ -201,6 +241,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         if name not in self._inputs:
             raise KeyError(f"Invalid const input: {name}")
+        if self.const_inputs is None:
+            self.const_inputs = {}
         self.const_inputs[name] = value
         if self.is_const:
             for node, name in self._subscribers:
@@ -226,8 +268,18 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             node.activate_const(name, self._const_value)
 
     def mark_as_bound(self, name: str) -> None:
+        """
+        Mark input as bound
+        """
         if name in self._inputs:
-            self._bound_inputs.add(name)
+            self._inputs[name] |= MASK_BOUND
+
+    def mark_as_key(self, name: str) -> None:
+        """
+        Mark input as key
+        """
+        if name in self._inputs:
+            self._inputs[name] |= MASK_KEY
 
     def get_value(self, *args, **kwargs) -> Optional[ValueType]:  # pragma: no cover
         """
@@ -255,9 +307,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         if self._const_value is not None:
             return True
-        if len(self.const_inputs) != len(self._inputs):
+        const_inputs = self.const_inputs if self.const_inputs is not None else {}
+        if len(const_inputs) != len(self._inputs):
             return False
-        self._const_value = self.get_value(**self.const_inputs)
+        self._const_value = self.get_value(**const_inputs)
         return True
 
     def add_input(self, name: str, is_key: bool = False) -> None:
@@ -270,18 +323,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             return
         if not self.allow_dynamic:
             raise TypeError("Dynamic inputs are not allowed")
-        self._inputs.add(name)
-        self._dynamic_inputs.add(name)
+        flag = MASK_DYNAMIC
         if is_key:
-            self._key_inputs.add(name)
-
-    def is_dynamic_input(self, name: str) -> bool:
-        """
-        Check if input is dynamic
-        :param name:
-        :return:
-        """
-        return name in self._dynamic_inputs
+            flag |= MASK_KEY
+        self._inputs[name] = flag
 
     def iter_config_fields(self) -> Iterable[str]:
         """
@@ -289,3 +334,14 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         if hasattr(self, "config_cls"):
             yield from self.config_cls_slot.__slots__
+
+    def iter_initial_inputs(self) -> Iterable[Tuple[str, Optional[ValueType]]]:
+        """
+        Iterate transaction initial inputs
+        """
+        if self.const_inputs:
+            for i in self._inputs:
+                yield i, self.const_inputs.get(i)
+        else:
+            for i in self._inputs:
+                yield i, None
