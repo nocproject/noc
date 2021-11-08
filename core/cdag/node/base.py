@@ -42,6 +42,13 @@ class BaseCDAGNodeMetaclass(type):
         else:
             n.allow_dynamic = False
         n.static_inputs = inputs
+        # Create slotted config class to optimize memory layout.
+        # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
+        if hasattr(n, "config_cls"):
+            n.config_cls_slot = type(
+                f"{n.config_cls.__name__}_Slot", (), {"__slots__": tuple(n.config_cls.__fields__)}
+            )
+        #
         return n
 
 
@@ -53,6 +60,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     allow_dynamic: bool = False  # Filled by metaclass
     dot_shape: str = "box"
     categories: List[Category] = []
+    config_cls_slot: Type  # Filled by metaclass
 
     def __init__(
         self,
@@ -97,6 +105,16 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         graph.nodes[node_id] = node
         return node
 
+    @staticmethod
+    def slotify(slot_cls: Type, data: BaseModel) -> object:
+        """
+        Convert pydantic model to slotted class instance
+        """
+        o = slot_cls()
+        for k in data.__fields__:
+            setattr(o, k, getattr(data, k))
+        return o
+
     def clone(self, graph, node_id: str) -> Optional["BaseCDAGNode"]:
         if hasattr(self, "config_cls"):
             config = self.config.dict()
@@ -122,9 +140,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         return self.state_cls(**state)
 
     def clean_config(self, config: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
-        if not hasattr(self, "config_cls"):
+        if not hasattr(self, "config_cls") or config is None:
             return None
-        return self.config_cls(**config)
+        cfg = self.config_cls(**config)
+        return self.slotify(self.config_cls_slot, cfg)
 
     def iter_inputs(self) -> Iterable[str]:
         """
@@ -263,3 +282,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         return name in self._dynamic_inputs
+
+    def iter_config_fields(self) -> Iterable[str]:
+        """
+        Iterate config field names
+        """
+        if hasattr(self, "config_cls"):
+            yield from self.config_cls_slot.__slots__
