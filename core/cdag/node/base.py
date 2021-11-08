@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Set, Optional, Type, Dict, List, Iterable, Tuple
+from typing import Any, Optional, Type, Dict, List, Iterable, Tuple
 from enum import Enum
 import inspect
 
