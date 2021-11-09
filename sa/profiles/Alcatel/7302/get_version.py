@@ -34,7 +34,7 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
-        v = self.cli("show equipment slot")
+        v = self.cli("show equipment slot", cached=True)
         slots = self.rx_slots.search(v)
         v = self.cli("show software-mngt oswp")
         match_ver = self.rx_ver.search(v)
@@ -43,12 +43,19 @@ class Script(BaseScript):
             v = self.cli("show equipment isam")
             match = self.rx_sys.search(v)
             if match:
-                if match.group("platform") == "leeu":
+                if match.group("platform") in ["leeu", "leus"]:
                     platform = platform + "XD"
                 elif match.group("platform") == "lneu":
                     platform = platform + "FD"
         except self.CLISyntaxError:
-            pass
+            try:
+                v = self.cli("show equipment gebc")
+                match = self.rx_sys.search(v)
+                if match:
+                    if match.group("platform") == "mlsa":
+                        platform = platform + "FD"
+            except self.CLISyntaxError:
+                pass
 
         return {
             "vendor": "Alcatel",
