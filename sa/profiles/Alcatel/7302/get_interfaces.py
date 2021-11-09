@@ -107,7 +107,11 @@ class Script(BaseScript):
         try:
             v = self.cli("show bridge port")
             for match in self.rx_bridge_port.finditer(v):
-                port_id, vpi, vci = match.group("ifname").split(":")
+                ifname = match.group("ifname")
+                if ifname.startswith("isam:"):
+                    _, port_id, vpi, vci = ifname.split(":")
+                else:
+                    port_id, vpi, vci = ifname.split(":")
                 name = "%s:%s:%s" % (port_id, vpi, vci)
                 subifaces[port_id] += [
                     {
@@ -124,10 +128,13 @@ class Script(BaseScript):
         if not subifaces:
             v = self.cli("info configure bridge port")
             for match in self.rx_bridge_port2.finditer(v):
-                name = match.group("ifname")
-                if ":" not in name:
+                ifname = match.group("ifname")
+                if ":" not in ifname:
                     continue
-                port_id, vpi, vci = match.group("ifname").split(":")
+                if ifname.startswith("isam:"):
+                    _, port_id, vpi, vci = ifname.split(":")
+                else:
+                    port_id, vpi, vci = ifname.split(":")
                 name = "%s:%s:%s" % (port_id, vpi, vci)
                 subifaces[port_id] += [
                     {
@@ -141,18 +148,32 @@ class Script(BaseScript):
                 ]
         tagged_vlans = {}
         v = self.cli("show vlan shub-port-vlan-map")
+        network_0_found = False
         for match in self.rx_vlan_map.finditer(v):
             ifname = match.group("ifname")
             ifname = ifname.replace("lt:", "atm-if:")
             if ifname == "network:0":
                 ifname = "ethernet:1"
+                network_0_found = True
             if ifname == "network:1":
+                if network_0_found:
+                    ifname = "ethernet:2"
+                else:
+                    ifname = "ethernet:1"
+            if ifname == "network:2":
                 ifname = "ethernet:2"
+            if ifname == "network:3":
+                ifname = "ethernet:3"
+            if ifname == "network:4":
+                ifname = "ethernet:4"
+            if ifname == "network:5":
+                ifname = "ethernet:5"
+            if ifname == "network:6":
+                ifname = "ethernet:6"
             if ifname in tagged_vlans:
                 tagged_vlans[ifname] += [match.group("vlan_id")]
             else:
                 tagged_vlans[ifname] = [match.group("vlan_id")]
-
         boards_status = self.get_boards_status_cli()
         self.logger.debug("Boards status: %s", boards_status)
         interfaces = {}
@@ -164,7 +185,10 @@ class Script(BaseScript):
             ifname = match.group("ifname")
             hints = []
             if ifname.startswith("ethernet"):
-                port_id = ifname
+                if ifname.startswith("ethernet:1/1/1:"):
+                    port_id = "ethernet:" + ifname.split(":")[-1]
+                else:
+                    port_id = ifname
                 hints = ["nni"]
             else:
                 port_id = ifname.split(":", 1)[-1]
@@ -197,8 +221,8 @@ class Script(BaseScript):
                     in ["up", "admin-up"],
                     "enabled_afi": ["BRIDGE"],
                 }
-                if tagged_vlans.get(ifname):
-                    sub["tagged_vlans"] = tagged_vlans[ifname]
+                if tagged_vlans.get(port_id):
+                    sub["tagged_vlans"] = tagged_vlans[port_id]
                 interfaces[port_id]["subinterfaces"] += [sub]
             match = self.rx_mac.search(p)
             if match:
