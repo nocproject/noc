@@ -154,7 +154,7 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                 {
                                     name: 'reference',
                                     xtype: 'stringsfield',
-                                    fieldLabel: __('Discriminator')
+                                    fieldLabel: __('Reference')
                                 }
                             ]
                         }, // Severity

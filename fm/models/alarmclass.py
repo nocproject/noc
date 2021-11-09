@@ -105,6 +105,9 @@ class AlarmClassVar(EmbeddedDocument):
         ("fm.AlarmClassConfig", "alarm_class"),
         ("fm.ArchivedAlarm", "alarm_class"),
         ("fm.AlarmDiagnosticConfig", "alarm_class"),
+        ("fm.AlarmRule", "groups.alarm_class"),
+        ("fm.AlarmRule", "match.alarm_class"),
+        ("fm.AlarmRule", "actions.alarm_class"),
     ]
 )
 class AlarmClass(Document):
@@ -254,8 +257,9 @@ class AlarmClass(Document):
             "is_ephemeral": self.is_ephemeral,
             "reference": [d for d in self.reference],
             "user_clearable": self.user_clearable,
-            "default_severity__name": self.default_severity.name,
         }
+        if self.default_severity:
+            r["default_severity__name"] = self.default_severity.name
         if self.description:
             r["description"] = self.description
         if self.datasources:
@@ -300,6 +304,7 @@ class AlarmClass(Document):
                 "description",
                 "is_unique",
                 "reference",
+                "is_ephemeral",
                 "user_clearable",
                 "default_severity__name",
                 "datasources",
