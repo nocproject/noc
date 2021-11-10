@@ -297,6 +297,7 @@ class ReportField:
     default: Optional[str] = None
     metric_name: Optional[str] = None  # Field name on clickhouse
     group: bool = False
+    hidden: bool = False
 
 
 @dataclass
@@ -436,11 +437,10 @@ class ReportDataSource(object):
         writer = csv.writer(
             response, dialect="excel", delimiter=";", quotechar='"', quoting=csv.QUOTE_NONNUMERIC
         )
-        print(self.fields)
         # Header
-        writer.writerow((self.fields[f].label for f in self.fields))
+        writer.writerow((self.fields[f].label for f in self.fields if not self.fields[f].hidden))
         for row in self.extract():
-            writer.writerow((row[f] for f in self.fields))
+            writer.writerow((row[f] for f in self.fields if not self.fields[f].hidden))
 
         return smart_bytes(response.getvalue())
 
@@ -454,6 +454,8 @@ class ReportDataSource(object):
         max_column_data_length: Dict[str, int] = {}
         # Header
         for cn, c in enumerate(self.fields):
+            if self.fields[c].hidden:
+                continue
             label = self.fields[c].label
             if c not in max_column_data_length or len(str(label)) > max_column_data_length[c]:
                 max_column_data_length[c] = len(str(label))
@@ -461,6 +463,8 @@ class ReportDataSource(object):
         rn, cn = 1, 0
         for rn, row in enumerate(self.extract(), start=1):
             for cn, c in enumerate(self.fields):
+                if self.fields[c].hidden:
+                    continue
                 if c not in max_column_data_length or len(str(row[c])) > max_column_data_length[c]:
                     max_column_data_length[c] = len(str(row[c]))
                 ws.write(rn, cn, row[c], cf1)
@@ -469,6 +473,8 @@ class ReportDataSource(object):
         ws.freeze_panes(1, 0)
         for cn, c in enumerate(self.fields):
             # Set column width
+            if self.fields[c].hidden:
+                continue
             width = 15
             if width < max_column_data_length[c]:
                 width = max_column_data_length[c]
