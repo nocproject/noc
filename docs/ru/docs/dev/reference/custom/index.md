@@ -13,20 +13,20 @@
 * `commands` - инструментарий команд
 * `collections` -
 * `geocoder` - GIS геокодеры для внешних систем 
-* `etl`
-  * `extractors` - `ETL` адаптеры для внешних систем
-  * `loader` - собственные загрузчики
-  * `portmappers` - адаптеры привязки интерфейсов с внешними системами
+* `etl` - Адаптеры синхронизации данных с внешней системы [ETL](../../reference/etl/index.md)
+    * `extractors` - `ETL` адаптеры для внешних систем
+    * `loader` - собственные загрузчики
+    * `portmapper` - адаптеры привязки интерфейсов с внешними системами
 * `handlers` - директория с обработчиками [Handlers](../../reference/handlers/index.md)
-* `sa` - профили оборудования
-  * `profiles` - Профили SA [SA Profile](../../background/sa-profile/index.md)
-  * `interfaces` - Интерфейсы SA [SA Interface](../../background/sa-profile/index.md#Интерфейсы_SA)
+* `sa` - взаимодействие с устройствами
+    * `profiles` - Профили SA [SA Profile](../../background/sa-profile/index.md)
+    * `interfaces` - Интерфейсы SA [SA Interface](../../background/sa-profile/index.md#Интерфейсы-SA)
 * `services` - расширения сервисов системы
-  * `card` - пользовательские карточки [Card](../../reference/card/index.md)
-  * `web` - пользовательские веб приложения [Web](../../reference/web/index.md)
-  * `nbi` - NBI API endpoint [NBI](../../reference/api/nbi/index.md)
+    * `card` - пользовательские карточки [Card](../../reference/card/index.md)
+    * `web` - пользовательские веб приложения [Web](../../reference/web/index.md)
+    * `nbi` - NBI API endpoint [NBI](../../reference/api/nbi/index.md)
 * `templates` - `Jinja` шаблоны для различных частей системы
-  * `ddash` - шаблоны для графиков метрик `PM` 
+    * `ddash` - шаблоны для графиков метрик `PM` 
 * `tt` - адаптеры для систем эскалации аварии (`TroubleTicket`)
 
 
