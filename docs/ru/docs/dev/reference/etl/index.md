@@ -2,6 +2,79 @@
 
 ## Описание механизма
 
+Получение инвентарной информации из внешней системы позволяет автоматизировать добавление оборудования и настройку НОКа. 
+Для этого в составе системы предусмотрена поддержка механизма `ETL`. Основная применяемая терминология:
+* Внешняя система [Remote System](../../../user/reference/concepts/remote-system/index.md) - cистема, являющаяся источником данных для работы ETL
+* `Extractor` - Адаптер *выгрузки*, модуль на `Python` отвечающий за извлечение информации из `Внешней системы`, преобразование её к необходимому для работы формату
+* `Loader` - адаптер *загрузки*. Создаёт сущности в НОКе и формирует файл привязки (`mapping file`)
+* `mappings` формирует привязку между ID системам (ID НОКа <> ID внешней системы)
+* `DataModel` (Модель данных) - описание состава и структуры данных для работы загрузчика
+* `Model` - модель данных НОКа, с которой работает загручзчик
+
+Для взаимодействия с `ETL` предусмотрена команда `./noc elt`, при её запуске по базовому пути (`/var/lib/noc/import/`) 
+создаётся структура папок в составе:
+
+* `import.jsonl.gz` - файл с новой выгрузкой
+* `archive` - папка с файлами предыдущих выгрузок
+* `mappings.csv` - файл соответствия ID внешней системы <-> ID НОКа
+* `import.csv.rej.gz` - файл с записями ошибок выгрузки
+
+```
+/var/lib/noc/import/<RemoveSystemName>/
+├── administrativedomain
+│   ├── archive
+│   ├── import.jsonl.gz
+│   └── mappings.csv
+├── container
+│   ├── archive
+│   ├── import.jsonl.gz
+│   └── mappings.csv
+├── link
+│   └── archive
+├── managedobject
+│   ├── archive
+|   │   ├── import-2021-04-13-23-17-08.jsonl.gz
+|   │   ├── import-2021-09-05-16-26-45.jsonl.gz
+|   │   └── import-2021-09-05-18-08-45.jsonl.gz
+│   ├── import.csv.gz
+│   ├── import.csv.rej.gz
+│   ├── import.jsonl.gz
+│   └── mappings.csv
+├── managedobjectprofile
+│   ├── archive
+│   ├── import.jsonl.gz
+│   └── mappings.csv
+├── networksegment
+│   ├── archive
+│   ├── import.jsonl.gz
+│   └── mappings.csv
+├── networksegmentprofile
+│   ├── archive
+│   └── import.jsonl.gz
+├── resourcegroup
+│   ├── archive
+│   └── mappings.csv
+└── ttsystem
+    ├── archive
+    ├── import.jsonl.gz
+    └── mappings.csv
+```
+
+<!-- prettier-ignore -->
+!!! info
+    Путь `/var/lib/noc/import` задаётся настройкой `path` -> `etl_import`
+
+Кратко работа механизм выглядит следующим образом:
+
+1. Реализуется **адаптера выгрузки** (`extractor`). Его задача - получить данные из **внешней системы** и отдать в виде списка полей, определённых в `загрузчике`. Подробнее см главу `Загрузка`
+2. В интерфейсе настраивается [Внешняя система](../../../user/reference/concepts/remote-system/index.md) и выбираются реализованные `загрузчики`
+3. После настройки даётся команда `./noc etl extract <remote_system_name>`. Происходит извлечение информации из внешней системе (при помощи адаптера, написанного на шаге 1). Всё складывается в файлы `import.csv.gz` в директории `/var/lib/noc/import/<remote_system_name>/<loader_name>/import.csv.gz`
+4. Командой `./noc etl check <remote_system_name>` проверяем целостность выгрузки
+5. Командой `./noc etl diff <remote_system_name>` смотрим изменения относительно предыдущего файла выгрузки. В первым раз все объекты будут показаны как новые.
+6. Командой `./noc etl load <remote_system_name>` заливаем данные в НОК (при этом создаются объекты соотв. загрузчику). 
+
+После окончания файл `import.csv.gz` перемещается в папку `/var/lib/noc/import/<remote_system_name>/<loader_name>/archive/import_date.csv.gz` и файл `mappings.csv` дополняется связкой: `ID внешней системы` <-> `ID НОКа`. 
+Также поля объектов `Remote System`, `Remote ID` - заполняются выгрузкой.
 
 
 ## Поддерживаемые модели
@@ -26,8 +99,8 @@ class AdministrativeDomain(BaseModel):
 ## Адаптер выгрузки
 
 Процедура извлечение данных из внешней системы и сопоставление их с моделью называется выгрузка (`extract`). 
-Для её работы реализуется адаптер, в котором запрошенная информация транслируется в формат модели данных. Адаптер 
-состоит из внешней системы и классов, реализующих работу с одной моделью, образующих модуль. Пример:
+Для её работы необходим адаптер, в котором запрошенная информация транслируется в формат модели данных. 
+В адаптере указывается класс внешней системы и классы получения данных (реализуют работу с отдельной моделью данных). Пример:
 
 ```python
 
@@ -84,24 +157,23 @@ class ZBAdministrativeDomainExtractor(BaseExtractor):
 по пути: `etl_path/remote_system_name/loader_name/`
 
 
-### Определение и проверка изменений
+### Расчёт изменений и проверка целостности данных
 
-Проверка выгруженных данных выполняется командой `./noc etl check REMOTE_SYSTEM_NAME`. Происходит проверка файла `import.csv` на правильность структуры и связей.
-Возможные ошибки:
-
-* Отсутствует объект по ссылке
+Следующей после выгрузки запускается контроль целостности данных. Проверяются ссылки на данные полученные для других моделей 
+поля типа `Reference`. Проверка запускается командой `./noc etl check <REMOTE_SYSTEM_NAME>`, в случае проблем выводится сообщение:
 ```
 [noc.core.etl.loader.base] [RS|managedobject] ERROR: Field #4(administrative_domain) == 'administrativedomain' refers to non-existent record: 10106,mos-pma-pta-pta1-sw01#10106,True,,administrativedomain,default,!new,Generic.Host,zb.std.sw,,,2,192.168.3.2,,,,,,,ZB.AUTO,,
 [noc.core.etl.loader.base] [RS|managedobject] ERROR: Field #4(administrative_domain) == 'administrativedomain' refers to non-existent record: 10107,mos-pma-lta-lta1-sw01#10107,True,,administrativedomain,default,!new,Generic.Host,zb.std.sw,,,2,192.168.3.4,,,,,,,ZB.AUTO,,
 ```
-Расшифровывается, что поле `administrative_domain` ссылается на несуществующую запись в выгрузке с `administrativedomain` (на это указывает поле из `mapped_fields`) c ID `administrativedomain`
-* Неправильный формат загрузки
 
-Команда `./noc etl diff REMOTE_SYSTEM_NAME <ExtractorNAME>` позволяет увидеть разницу между последней успешной и текущей загрузками. В построчно формате с указателями:
+В нём указывается название поля (`administrative_domain`), модель, на которую оно ссылается и запись с ошибкой.
 
-* `/` - изменение
-* `+` - новый объект
-* `-` - удаление объекта
+Посмотр изменений доступен по команде `./noc etl diff <REMOTE_SYSTEM_NAME> <ExtractorNAME>`. В выводе 
+отображается разница между новой и текущей (последний успешной) выгрузками. Изменённые записи показываются построчно с указателем:
+
+* `/` - изменение записи
+* `+` - новая запись (будет добавлена в систему)
+* `-` - отсутствие записи (будет удалена из системы)
 
 ```
 --- RS.admdiv
@@ -147,193 +219,73 @@ managedobjectprofile |        2 |        0 |        0
 ```
 
 
-## Загрузчик
+## Загрузчик (Loader)
+
+Последним этапом является загрузка изменений в НОК. Загрузчики для моделей находятся в папке `core/etl/loader`, 
+в ней располагаются файлы с классами загрузчиков. Например, в загрузчике для `ManagedObject` определёны следующие аттрибуты:
+
+* `name` - имя загрузчика
+* `model` - ссылка на реализуемую модель системы
+* `data_model` - ссылка на модель данных 
+* метод `purge` - позволяет переопределять поведение системы при удалении. В примере вместо удаления устройства из системы 
+оно переводится в неуправляемые и очищается ссылка на контейнер
+
+```python
+
+class ManagedObjectLoader(BaseLoader):
+    """
+    Managed Object loader
+    """
+
+    name = "managedobject"
+    model = ManagedObjectModel
+    data_model = ManagedObject
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.clean_map["pool"] = Pool.get_by_name
+        self.clean_map["fm_pool"] = lambda x: Pool.get_by_name(x) if x else None
+        self.clean_map["profile"] = Profile.get_by_name
+        self.clean_map["static_service_groups"] = lambda x: [
+            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
+        ]
+        self.clean_map["static_client_groups"] = lambda x: [
+            str(x.id) for x in ResourceGroup.objects.filter(remote_id__in=x)
+        ]
+
+    def purge(self):
+        """
+        Perform pending deletes
+        """
+        for r_id, msg in reversed(self.pending_deletes):
+            self.logger.debug("Deactivating: %s", msg)
+            self.c_delete += 1
+            try:
+                obj = self.model.objects.get(pk=self.mappings[r_id])
+                obj.is_managed = False
+                obj.container = None
+                obj.save()
+            except self.model.DoesNotExist:
+                pass  # Already deleted
+        self.pending_deletes = []
+
+```
 
 
-**Загрузка** заливка извлечённых данных в НОК выполняется командой `./noc etl load REMOTE_SYSTEM_NAME <loadername>`. Происходит применение изменений по следующем правилам:
+**Загрузка** заливка извлечённых данных в НОК выполняется командой `./noc etl load <REMOTE_SYSTEM_NAME>`. Процедура выглядит следующим образом:
 
-* При создании объекта связка `ID внешней системы`: `ID Объекта в НОКе` записывается в файл `mappings.csv`, расположенным в папке загрузчика.
-* при создании `PoP` по пути создаются объекты типа `контейнер`
-* изменения считаются относительно данных `предыдущей` загрузки (!не данных в НОКе)
-* удалённые объекты управления (`Managed Object`) переводятся в состояние `unmanaged`
-* при удалении сегмента с находящиеся в нём объекты перемещаются в сегмент `ALL`
+1. Добавление и изменение записей происходит в порядке их появления
+2. Удаления записей происходит в конце (после изменений и удалений)
+3. Файл привязки идентификаторов внешней системы и локальных обновляется в конце выгрузки
+4. Удаление происходит согласно методу `purge` загрузчика
 
 <!-- prettier-ignore -->
 !!! warning
     Важно понимать, что изменения вычисляются относительно предыдущей загрузки (предыдущего состояния) из внешней системы. По этой причине, если внести изменения по полю в НОКе - загрузка эти изменения не откатит. Также, если потерять архивные файлы по последней выгузке, то все объекты будут пересозданы.
 
 
-Адаптеры для загрузки (загрузчики), ответственные за создание  расположены в директории `core/etl/loader`. Разберём на примере `managedobject` (`core/etl/loader/managedobject.py`):
-
-```python
-class ManagedObjectLoader(BaseLoader):
-    """
-    Managed Object loader
-    """
-    name = "managedobject"  # Имя (Loader Name)
-    model = ManagedObject   # NOC object Model (модель, создаваемая адаптером)
-    fields = [        # Список полей, необходимых для создания
-                     # объекта
-        "id",            
-        "name",
-        "is_managed",
-        "container",
-        "administrative_domain",
-        "pool",
-        "segment",
-        "profile",
-        "object_profile",
-        "static_client_groups",
-        "static_service_groups",
-        "scheme",
-        "address",
-        "port",
-        "user",
-        "password",
-        "super_password",
-        "snmp_ro",
-        "description",
-        "auth_profile",
-        "tags",
-        "tt_system",
-        "tt_queue",
-        "tt_system_id"
-    ]
-
-    mapped_fields = {  # карта связей полей с другими вгрузчиками (loader)
-        "administrative_domain": "administrativedomain",
-        "object_profile": "managedobjectprofile",
-        "segment": "networksegment",
-        "container": "container",
-        "auth_profile": "authprofile",
-        "tt_system": "ttsystem",
-        "static_client_groups": "resourcegroup",
-        "static_service_groups": "resourcegroup"
-    }
-
-```
-Как видно выше `загрузчика` состоит из:
-
-* `имени`
-* указания на модель, загрузку которой он реализует
-* `списка полей` необходимых для создания объекта
-* `карты связи полей` применяется для ссылок на объекты, созданные другими загрузчиками
-> Остановимся на карте связей подробнее. Для системы нормально, когда одни сущности связываются с другими. Это позволяет *не мешать всё в одну кучу*, по этой причине и существуют `карты связей` (`mappings map`). В примере указано что поле `object_profile` необходидо связать с вгрузчиком `managedobjectprofile`. Сама привязка идёт по полям ID (всегда первые в списке), а сам вгрузчик ищется по имени:
-> 
-
-Как видно, для `managedobjectprofile` достаточно 3 полей: `id`, `имя`, `уровень`. При этом, `карта связей` (`mapped_fields`) отсутствует.
-```python
-class ManagedObjectProfileLoader(BaseLoader):
-    """
-    Managed Object Profile loader
-    """
-    name = "managedobjectprofile"
-    model = ManagedObjectProfile
-    fields = [
-        "id",
-        "name",
-        "level"
-    ]
-```
-
-При работе с картами связей, необходимо помнить - что не все поля являются обязательными. Н-р для `managedobject` обязательными являются: `administrative_domain`, `object_profile`, `segment`
-следовательно, для реализаци `адаптера выгрузки` объектов управления (`ManagedObject`), необходимо будет реализовать выгрузку для `administrativedomain`, `networksegment` и `managedobjectprofile`. Иначе при выполнении команды `./noc etl check` будет множество ошибок вида:
-```
-[noc.core.etl.loader.base] [RS|managedobject] ERROR: Field #4(administrative_domain) == 'administrativedomain' refers to non-existent record: 10106,mos-pma-pta-pta1-sw01#10106,True,,administrativedomain,default,!new,Generic.Host,zb.std.sw,,,2,192.168.3.2,,,,,,,ZB.AUTO,,
-[noc.core.etl.loader.base] [RS|managedobject] ERROR: Field #4(administrative_domain) == 'administrativedomain' refers to non-existent record: 10107,mos-pma-lta-lta1-sw01#10107,True,10107,administrativedomain,default,!new,Generic.Host,zb.std.sw,,,2,192.168.3.4,,,,,,,ZB.AUTO,,
-
-```
-
-
 ## Portmapper
 
-## Порядок синхронизации
+Специальный адаптер, в котором описываются правила привязки портов во внешней системе к интерфейсам `ManagedObject` в НОК. 
+Используется в линковке по данным внешней системы [portmapper](../../../admin/reference/discovery/box/nri.md)
 
-
-
-## Введение (в общем)
-В мире многообразия систем, выполняющих различные задачи, часто возникает задача на основании данных 
-одной или нескольких систем создать объекты (таблицы или сущности) в другой системе. 
-В общем случае за это отвечает механизм `ETL`:
-
-**ETL** (от англ. `Extract`, `Transform`, `Load` — дословно «извлечение, преобразование, загрузка»). 
-Это системы корпоративного класса, которые применяются, чтобы привести к одним справочникам и загрузить в DWH (Data Warehouse, Хранилище данных) и EPM (Enterprise Performance Management, управление эффективностью бизнеса) данные из нескольких разных учетных систем.
-Т.е. решает задачу однонаправленного обмена данными между исходной и целевой системой.
-
-Подробнее можно почитать:
-* [Wiki](https://ru.wikipedia.org/wiki/ETL)
-* [Введение в ETL](https://bourabai.ru/tpoi/olap01-9.htm)
-* [Habr. Основные функции ETL-систем](https://habr.com/post/248231/)
-
-
-В общем виде процесс проходит по следующим этапам:
-1. *Процесс извлечения* – его задача затянуть в ETL данные из внешней системы
-2. *Процесс валидации данных* – на этом этапе данные последовательно проверяются на корректность и полноту
-3. *Процесс привязки (mapping) данных* с целевой моделью – связывания данных с полями целевой модели
-4. *Процесс агрегации данных* – 
-5. *Загрузка в целевую систему* — это технический процесс использования коннектора и передачи данных в целевую систему.
-
-
-## NOC
-
-В НОКе реализован базовый функционал **ETL** - возможность извлекать данные из **внешней системы** [Remote System](../../../user/reference/concepts/remote-system/index.md) и на их основе получать объекты в НОКе. 
-На данный момент возможна загрузка следующих сущностей:
-
-* Зоны ответственности [Administrative Domain](../../../user/reference/concepts/administrative-domain/index.md)
-* Объекты управления [Managed Object](../../../user/reference/concepts/managed-object/index.md)
-* Профили объектов [Manged Object Profile](../../../user/reference/concepts/managed-object-profile/index.md)
-* Сегменты [Segments](../../../user/reference/concepts/network-segment/index.md)
-* Точки присутствия [PoP](../../../user/reference/concepts/container/index.md)
-* Профили аутентификации (`Auth profile`)
-* Сервисы [Services](../../../user/reference/concepts/service/index.md)
-* Абоненты [Subscribers](../../../user/reference/concepts/subscriber/index.md)
-* Линки (`Links`) - для построения связей по данным внешней системы [NRI](../../../admin/reference/discovery/box/nri.md)
-* Ресурсные группы [Resource Group](../../../user/reference/concepts/resource-group/index.md)
-
-Кратко механизм выглядит так:
-
-1. Реализуется **адаптера выгрузки** (`extractor`). Его задача - получить данные из **внешней системы** и отдать в виде списка полей, определённых в `загрузчике`. Подробнее см главу `Загрузка`
-2. В интерфейсе настраивается `Внешняя система` и выбираются реализованные `загрузчики`
-3. После настройки даётся команда `./noc etl extract <remote_system_name>`. Происходит извлечение информации из внешней системе (при помощи адаптера, написанного на шаге 1). Всё складывается в файлы `import.csv.gz` в директории `/var/lib/noc/import/<remote_system_name>/<loader_name>/import.csv.gz`
-4. Командой `./noc etl check <remote_system_name>` проверяем целостность выгрузки
-5. Командой `./noc etl diff <remote_system_name>` смотрим изменения относительно предыдущего файла выгрузки. В первым раз все объекты будут показаны как новые.
-6. Командой `./noc etl load <remote_system_name>` заливаем данные в НОК (при этом создаются объекты соотв. загрузчику). 
-
-После окончания файл `import.csv.gz` перемещается в папку `/var/lib/noc/import/<remote_system_name>/<loader_name>/arcive/import_date.csv.gz` и файл `mappings.csv` дополняется связкой: `ID внешней системы` <-> `ID НОКа`. Также поля объектов `Remote System`, `Remote ID` - заполняются выгрузкой.
-
-
-<!-- prettier-ignore -->
-!!! info
-    Путь `/var/lib/noc/import` задаётся настройкой `path` -> `etl_import`
-
-
-### Настройка внешней системы
-
-Настройка начинается в пункте меню `Main` -> `Setup` -> `Remote Systems`. После нажатия на кнопку `Add` открывается форма создания внешней ситемы с пунктами:
-* `Name` - имя внешней системы. Будет использоваться при работе с командой `ETL`. Желательно выбирать краткое и без пробелов.
-* `Description` - описание (какой-нибудь текст)
-* `Handler` - ссылка на `адаптер загрузки` в виде строчки импорта питона. 
-> Н-р: `noc.custom.etl.extractors.zabbix.ZBRemoteSystem` рассчитывает, что файлик лежит в кастоме по пути `<custom_folder>/etl/extractor/zabbix.py`
-* `Extractors/Loaders` - список доступных для моделей для загрузки. Требует реализацию в адаптере.
-* `Environment` - настройки адаптера загрузки (передаются в него при работе)
-
-Также, в объектах, поддерживающих создание из механизма `ETL` присутствуют поля:
-
-* `Remote System` - это указание из какой внешней системы приехал объект
-* `Remote ID` - текстовое поле, ID объекта во внешней системе
-
-<!-- prettier-ignore -->
-!!! info
-    Поля `Remote System`, `Remote ID` заполняются автоматически. Вносить изменения вручную не рекомендуется
-
-
-После настройки внешней системы дальнейшая работа идёт с командой `./noc etl`. 
-Для лучшего понимания мы начнём рассмотрение с последнего этапа - загрузки в НОК.
-
-
-## Термины
-
-* Внешняя система (`Remote System`) - Система, являющаяся источником данных для работы ETL
-* `Extractor` - Адаптер загрузки, отвечающий за извлечение информации из `Внешней системы`, преобразование её к необходимому для работы формату
-* `Loader` - адаптер загрузки. Создаёт сущности в НОКе и формирует файл привязки (`mapping file`)
-* `mappings` формирует привязку между ID системам (ID НОКа <> ID внешней системы)
