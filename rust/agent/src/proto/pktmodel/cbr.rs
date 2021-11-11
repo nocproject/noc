@@ -14,9 +14,9 @@ use std::hash::Hash;
 #[derive(Deserialize, Debug, Clone, Hash)]
 pub struct CbrModelConfig {
     #[serde(rename = "model_bandwidth")]
-    bandwidth: usize,
+    pub bandwidth: usize,
     #[serde(rename = "model_size")]
-    size: usize,
+    pub size: usize,
 }
 
 #[derive(Debug, Copy, Clone)]

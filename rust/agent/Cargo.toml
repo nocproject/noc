@@ -1,9 +1,9 @@
 [package]
-name = "agent"
-version = "0.8.0"
 authors = ["The NOC Project"]
-edition = "2018"
 description = "NOC Agent"
+edition = "2018"
+name = "agent"
+version = "0.8.1"
 
 [[bin]]
 name = "noc-agent"
@@ -24,8 +24,7 @@ default = [
   "test",
   "twamp-sender",
   "twamp-reflector",
-  "uptime",
-  # Config
+  "uptime", # Config
   "config-static",
   "config-zk",
   "config-file",
@@ -79,45 +78,45 @@ config-json = []
 config-yaml = ["serde_yaml"]
 
 [dependencies]
-chrono = "0.4"
-clap = { version = "2.33", default-features = false }
-log = "0.4"
-env_logger = "0.8"
-tokio = { version = "1.10", features = ["full"] }
-bytes = "1.0"
-serde = { version = "1.0", features = ["derive"] }
 async-trait = "0.1"
+bytes = "1.0"
 cfg-if = "1.0"
+chrono = "0.4"
+clap = {version = "2.33", default-features = false}
 enum_dispatch = "0.3"
-rand = "0.8"
+env_logger = "0.8"
 lazy_static = "1.4"
+log = "0.4"
+rand = "0.8"
+serde = {version = "1.0", features = ["derive"]}
+serde_json = {version = "1.0", features = ["raw_value"]}
 thiserror = "1.0"
-serde_json = { version = "1.0", features = ["raw_value"] }
+tokio = {version = "1.10", features = ["full"]}
 # Optional dependencies
-trust-dns-proto = { version = "0.20", optional = true }
-trust-dns-resolver = { version = "0.20", optional = true }
-serde_yaml = { version = "0.8", optional = true }
-systemstat = { version = "0.1", optional = true }
-reqwest = { version = "0.11", features = [
+reqwest = {version = "0.11", features = [
   "rustls-tls",
   "gzip",
   "deflate",
-  "trust-dns"
-], optional = true }
-tokio-modbus = { version = "0.5", default-features = false, features = [
+  "trust-dns",
+], optional = true}
+serde_yaml = {version = "0.8", optional = true}
+systemstat = {version = "0.1", optional = true}
+tokio-modbus = {version = "0.5", default-features = false, features = [
   "rtu",
-  "tcp"
-], optional = true }
-tokio-serial = { version = "5.4", optional = true }
+  "tcp",
+], optional = true}
+tokio-serial = {version = "5.4", optional = true}
+trust-dns-proto = {version = "0.20", optional = true}
+trust-dns-resolver = {version = "0.20", optional = true}
 
 [dev-dependencies]
-criterion = "0.3"
 assert_approx_eq = "1.1"
+criterion = "0.3"
 
 [[bench]]
+harness = false
 name = "twamp_benchmark"
-harness = false
 
 [[bench]]
-name = "pktmodel_benchmark"
 harness = false
+name = "pktmodel_benchmark"
