@@ -20,6 +20,7 @@
 		"ms-python.python",
 		"yzhang.markdown-all-in-one",
 		"ms-azuretools.vscode-docker",
+		"be5invis.toml",
 	]
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

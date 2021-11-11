@@ -14,7 +14,7 @@ use std::hash::Hash;
 #[derive(Deserialize, Debug, Clone, Hash)]
 pub struct ImixModelConfig {
     #[serde(rename = "model_bandwidth")]
-    bandwidth: usize,
+    pub bandwidth: usize,
 }
 
 #[derive(Debug, Copy, Clone)]
