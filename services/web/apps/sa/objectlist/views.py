@@ -18,6 +18,8 @@ from noc.inv.models.capability import Capability
 from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
 from noc.sa.models.useraccess import UserAccess
 
+JP_CLAUSE_PATTERN = 'jsonb_path_exists(caps, \'$[*] ? (@.capability == "{}") ? (@.value {} {})\')'
+
 
 class ObjectListApplication(ExtApplication):
     """
@@ -59,6 +61,7 @@ class ObjectListApplication(ExtApplication):
                 q &= s.Q
             del nq["selector"]
 
+        jp_clauses = []
         for cc in [part for part in nq if part.startswith("caps")]:
             """
             Caps: caps0=CapsID,caps1=CapsID:true....
@@ -90,13 +93,14 @@ class ObjectListApplication(ExtApplication):
 
             if "~" in c_query:
                 l, r = c_query.split("~")
-                # @todo Fix more/less
-                # if not l:
-                #     cond = {"$lte": int(r)}
-                # elif not r:
-                #     cond = {"$gte": int(l)}
-                # else:
-                #     cond = {"$lte": int(r), "$gte": int(l)}
+                if not l:
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '<=', r))
+                elif not r:
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '>=', l))
+                else:
+                    # TODO This functionality is not implemented in frontend
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '<=', r))
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '>=', l))
             elif c_query in ("false", "true"):
                 q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": c_query == "true"}])
             elif c_query == "exists":
@@ -109,7 +113,10 @@ class ObjectListApplication(ExtApplication):
                 value = caps.clean_value(c_query)
                 q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": value}])
 
-        return self.model.objects.filter(q)
+        queryset = self.model.objects.filter(q)
+        if jp_clauses:
+            queryset = queryset.extra(where=jp_clauses)
+        return queryset
 
     def instance_to_dict(self, o, fields=None):
         return {
