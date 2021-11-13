@@ -124,7 +124,7 @@ class Script(BaseScript):
 
     def get_switchport_cli(self):
         r = {}
-        if self.is_rotek:
+        if self.is_rotek or self.is_gazelle:
             return r
         v = self.cli("show interface port switchport")
         for section in v.split("Port"):
@@ -236,7 +236,7 @@ class Script(BaseScript):
             return self.execute_iscom2624g()
         lldp_ifaces = self.get_lldp_config()
         interfaces = {}
-        if not self.is_rotek:
+        if not self.is_rotek and not self.is_gazelle:
             v = self.cli("show interface port description")
             for line in v.splitlines()[2:-1]:
                 ifname = int(line[:8])
@@ -285,7 +285,11 @@ class Script(BaseScript):
                     "description": match.group("descr").strip(),
                     "enabled_protocols": [],
                     "subinterfaces": [
-                        {"name": match.group("port"), "description": match.group("descr").strip()}
+                        {
+                            "name": match.group("port"),
+                            "enabled_afi": [],
+                            "description": match.group("descr").strip(),
+                        }
                     ],
                 }
                 interfaces[i["name"]] = i
@@ -307,12 +311,19 @@ class Script(BaseScript):
                                 interfaces[p_name]["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
                         else:
                             interfaces[p_name]["subinterfaces"][0]["untagged_vlan"] = vlan_id
+            # Check vlans
+            for iface in interfaces.values():
+                if (
+                    "tagged_vlans" in iface["subinterfaces"][0]
+                    or "untagged_vlan" in iface["subinterfaces"][0]
+                ):
+                    iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
         ifdescr = self.get_iface_ip_description()
         v = self.scripts.get_chassis_id()
         mac = v[0]["first_chassis_mac"]
         # XXX: This is a dirty hack !!!
         # I do not know, how get ip interface MAC address
-        if not self.is_rotek:
+        if not self.is_rotek and not self.is_gazelle:
             try:
                 v = self.cli("show interface ip")
             except self.CLISyntaxError:

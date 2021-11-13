@@ -47,7 +47,7 @@ class BaseProfileMetaclass(type):
                 "%s: 'command_more' is deprecated and will be removed in NOC 20.3" % n.name,
                 RemovedInNOC2003Warning,
             )
-        if isinstance(n.pattern_more, str):
+        if isinstance(n.pattern_more, (str, bytes)):
             warnings.warn(
                 "%s: 'command_more' must be a list of (pattern, command). "
                 "Support for textual 'command_more' will be removed in NOC 20.3" % n.name,
@@ -119,12 +119,12 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     Deprecated
     """
 
-    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
+    pattern_username = rb"([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
     """
     List[str]: Regular expression to catch user name prompt. Usually during telnet sessions)
     """
 
-    pattern_password = "[Pp]ass[Ww]ord: ?"
+    pattern_password = rb"[Pp]ass[Ww]ord: ?"
     """
     Optional[regexp]: Regulal expression to catch password prompt (Telnet/SSH sessions)
     """
@@ -135,7 +135,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     (Telnet/SSH sessions)
     """
 
-    pattern_prompt = r"^\S*[>#]"
+    pattern_prompt = rb"^\S*[>#]"
     """
     Optional[regexp]: Regular expression to catch command prompt (CLI Sessions)
     """
@@ -146,7 +146,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     (CLI Session)
     """
 
-    pattern_more = "^---MORE---"
+    pattern_more = rb"^---MORE---"
     """
     Optional[regexp]: Regular expression to catch pager
     (Used in command results)
