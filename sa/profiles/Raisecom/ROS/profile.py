@@ -16,14 +16,13 @@ from noc.core.confdb.syntax.patterns import ANY
 
 class Profile(BaseProfile):
     name = "Raisecom.ROS"
-    pattern_more = r"^ --More--\s*"
-    pattern_unprivileged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = rb"^\S+?>"
     command_super = "enable"
-    pattern_prompt = r"^\S+?#"
-    command_more = " "
+    pattern_prompt = rb"^\S+?#"
     command_exit = "exit"
-    pattern_syntax_error = r"(% \".+\"  (?:Unknown command.)|Error input in the position marke[dt] by|%\s+Incomplete command\.)"
-    pattern_operation_error = r"% You Need higher priority!"
+    pattern_more = [(rb"^ --More--\s*", b" ")]
+    pattern_syntax_error = rb"(% \".+\"  (?:Unknown command.)|Error input in the position marke[dt] by|%\s+Incomplete command\.)"
+    pattern_operation_error = rb"% You Need higher priority!"
     rogue_chars = [re.compile(rb"\x08+\s+\x08+"), b"\r"]
     config_volatile = [
         r"radius(-server | accounting-server |-)encrypt-key \S+\n",
@@ -38,8 +37,9 @@ class Profile(BaseProfile):
     collators = ["noc.core.confdb.collator.ifname.IfNameCollator"]
 
     matchers = {
-        "is_iscom2624g": {"platform": {"$regex": "ISCOM26(?:24|08)G"}},
+        "is_iscom2624g": {"platform": {"$regex": r"ISCOM26(?:24|08)G"}},
         "is_rotek": {"vendor": {"$in": ["Rotek", "ROTEK"]}},
+        "is_gazelle": {"platform": {"$regex": r"^[SR]\d+[Ii]\S+"}},
         "is_ifname_use": {"platform": {"$regex": "QSW-8200"}},
     }
 
