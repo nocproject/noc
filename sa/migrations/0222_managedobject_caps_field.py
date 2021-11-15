@@ -46,7 +46,7 @@ class Migration(BaseMigration):
             c_hash = siphash24(SIPHASH_SEED, oc)
             if c_hash not in caps_map:
                 caps_map[c_hash] = oc
-            objects_map[c_hash].add(caps["_id"])
+            objects_map[c_hash].add(str(caps["_id"]))
         for hh in caps_map:
             if not caps_map[hh]:
                 continue
