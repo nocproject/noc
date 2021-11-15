@@ -38,6 +38,9 @@ class Migration(BaseMigration):
         objects_map = defaultdict(set)
         caps_coll = self.mongo_db["noc.sa.objectcapabilities"]
         for caps in caps_coll.find({"caps": {"$exists": True}}):
+            if isinstance(caps["_id"], bson.ObjectId):
+                # Old migrations is not completed
+                continue
             oc = orjson.dumps(
                 sorted(caps["caps"], key=operator.itemgetter("capability")),
                 default=default,
