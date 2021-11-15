@@ -38,6 +38,9 @@ class Migration(BaseMigration):
         objects_map = defaultdict(set)
         caps_coll = self.mongo_db["noc.sa.objectcapabilities"]
         for caps in caps_coll.find({"caps": {"$exists": True}}):
+            if isinstance(caps["_id"], bson.ObjectId):
+                # Old migrations is not completed
+                continue
             oc = orjson.dumps(
                 sorted(caps["caps"], key=operator.itemgetter("capability")),
                 default=default,
@@ -46,7 +49,7 @@ class Migration(BaseMigration):
             c_hash = siphash24(SIPHASH_SEED, oc)
             if c_hash not in caps_map:
                 caps_map[c_hash] = oc
-            objects_map[c_hash].add(str(caps["_id"]))
+            objects_map[c_hash].add(caps["_id"])
         for hh in caps_map:
             if not caps_map[hh]:
                 continue
