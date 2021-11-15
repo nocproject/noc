@@ -11,7 +11,8 @@ import sys
 import datetime
 import re
 from collections import defaultdict
-from typing import Any, Optional, Dict, List
+import threading
+from typing import Any, Iterable, Optional, Dict, List
 import operator
 from hashlib import sha512
 
@@ -20,6 +21,7 @@ import orjson
 from bson import ObjectId
 from dateutil.parser import parse as parse_date
 from pydantic import parse_obj_as, ValidationError
+import cachetools
 
 # NOC modules
 from noc.config import config
@@ -27,6 +29,7 @@ from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
+from noc.services.correlator.alarmrule import AlarmRuleSet
 from noc.services.correlator.rule import Rule
 from noc.services.correlator.rcacondition import RCACondition
 from noc.services.correlator.trigger import Trigger
@@ -43,6 +46,7 @@ from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
+from noc.fm.models.alarmrule import AlarmRule
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
@@ -52,6 +56,9 @@ from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.liftbridge.message import Message
 from noc.services.correlator.rcalock import RCALock
+from services.correlator.alarmrule import GroupItem
+
+ref_lock = threading.Lock()
 
 
 class CorrelatorService(TornadoService):
@@ -59,6 +66,8 @@ class CorrelatorService(TornadoService):
     pooled = True
     use_mongo = True
     process_name = "noc-%(name).10s-%(pool).5s"
+
+    _reference_cache = cachetools.TTLCache(100, ttl=60)
 
     def __init__(self):
         super().__init__()
@@ -68,6 +77,7 @@ class CorrelatorService(TornadoService):
         self.triggers: Dict[ObjectId, List[Trigger]] = {}
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
+        self.alarm_rule_set = AlarmRuleSet()
         #
         self.slot_number = 0
         self.total_slots = 0
@@ -120,6 +130,7 @@ class CorrelatorService(TornadoService):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
+        self.load_alarm_rules()
 
     def load_rules(self):
         """
@@ -145,7 +156,7 @@ class CorrelatorService(TornadoService):
                                 self.back_rules[cc.id] = [dr]
                             nbr += 1
                 self.rules[c.id] = r
-        self.logger.debug("%d rules are loaded. %d combos" % (nr, nbr))
+        self.logger.debug("%d rules are loaded. %d combos", nr, nbr)
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -164,7 +175,7 @@ class CorrelatorService(TornadoService):
                     cn += 1
                     self.logger.debug("    %s" % c_name)
             n += 1
-        self.logger.info("%d triggers has been loaded to %d classes" % (n, cn))
+        self.logger.info("%d triggers has been loaded to %d classes", n, cn)
 
     def load_rca_rules(self):
         """
@@ -185,7 +196,19 @@ class CorrelatorService(TornadoService):
                     self.rca_reverse[rc.root.id] = []
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
-        self.logger.info("%d RCA Rules have been loaded" % n)
+        self.logger.info("%d RCA Rules have been loaded", n)
+
+    def load_alarm_rules(self):
+        """
+        Load Alarm Rules
+        """
+        self.logger.info("Loading alarm rules")
+        n = 0
+        for rule in AlarmRule.objects.filter(is_active=True):
+            self.alarm_rule_set.add(rule)
+            n += 1
+        self.alarm_rule_set.compile()
+        self.logger.info("%d Alam Rules have been loaded", n)
 
     def mark_as_failed(self, event: "ActiveEvent"):
         """
@@ -432,6 +455,17 @@ class CorrelatorService(TornadoService):
             remote_system=remote_system,
             remote_id=remote_id,
         )
+        a.effective_labels = a.iter_effective_labels(a)
+        a.raw_reference = reference
+        # @todo: Static groups
+        # Apply rules
+        groups: Dict[str, GroupItem] = {}
+        for rule in self.alarm_rule_set.iter_rules(a):
+            for gi in rule.iter_groups(a):
+                if gi.reference and gi.reference not in groups:
+                    groups[gi.reference] = gi
+        a.groups = await self.get_groups(a, groups.values())
+        # Save
         a.save()
         if event:
             event.contribute_to_alarm(a)
@@ -465,6 +499,7 @@ class CorrelatorService(TornadoService):
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
+        return a
 
     async def raise_alarm_from_rule(self, rule: Rule, event: ActiveEvent):
         """
@@ -908,6 +943,38 @@ class CorrelatorService(TornadoService):
         for a in iter_downlink_alarms(alarm):
             correlate_uplinks(a)
         self.logger.debug("[%s] Correlation completed", alarm.id)
+
+    async def get_groups(
+        self, alarm: ActiveAlarm, groups: Iterable[GroupItem]
+    ) -> List[ActiveAlarm]:
+        """
+        Resolve all groups and create when necessary
+        """
+        r: List[ActiveAlarm] = []
+        for group in groups:
+            if group.reference == alarm.raw_reference:
+                continue  # Reference cycle
+            g_alarm = self.get_by_reference(group.reference)
+            if not g_alarm:
+                # Raise group alarm
+                g_alarm = await self.raise_alarm(
+                    managed_object=alarm.managed_object,
+                    timestamp=alarm.timestamp,
+                    alarm_class=group.alarm_class,
+                    vars={"name": group.title},
+                    reference=group.reference,
+                )
+                if g_alarm:
+                    # Update cache
+                    self._reference_cache[group.reference] = g_alarm
+            if g_alarm:
+                r.append(g_alarm)
+        return r
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_reference_cache"), lock=lambda _: ref_lock)
+    def get_by_reference(cls, reference: str) -> Optional["ActiveAlarm"]:
+        return ActiveAlarm.objects.filter(reference=cls.get_reference_hash(reference)).first()
 
 
 if __name__ == "__main__":

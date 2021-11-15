@@ -182,7 +182,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             allowBlank: true
                         },
                         {
-                            name: 'reference_re',
+                            name: 'reference_rx',
                             xtype: 'textfield',
                             fieldLabel: __('Group Reference Regex'),
                             uiStyle: 'large',
