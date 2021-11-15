@@ -3,7 +3,7 @@
     - name: check if nginx running
       command: pgrep -x nginx -c
       failed_when: "False"
-      changed_when: "False"
+      changed_when: false
       register: nginx_running
       check_mode: "False"
 
@@ -19,7 +19,7 @@
         url: "https://{{ noc_web_host }}/ng_stats"
         validate_certs: "{{ not nginx_self_signed_cerificate }}"
       register: nginx_ping
-      changed_when: "False"
+      changed_when: false
       failed_when: "False"
       check_mode: "False"
 
@@ -45,7 +45,7 @@
         url: "https://{{ noc_web_host }}/api/login/index.html"
         validate_certs: "{{ not nginx_self_signed_cerificate }}"
       register: nginx_ping
-      changed_when: "False"
+      changed_when: false
       failed_when: "False"
       check_mode: "False"
 

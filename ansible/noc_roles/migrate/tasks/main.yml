@@ -55,7 +55,7 @@
     chdir: "{{ noc_root }}"
   become: "True"
   become_user: "{{ noc_user }}"
-  changed_when: "False"
+  changed_when: false
 
 - name: Apply pools
   command: "{{ noc_root }}/scripts/deploy/apply-pools"

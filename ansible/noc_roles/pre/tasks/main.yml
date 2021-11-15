@@ -41,7 +41,7 @@
     state: stopped
   become: "True"
   failed_when: "False"
-  changed_when: "False"
+  changed_when: false
   when: tower_stop_noc
 
 - name: Setup hostname

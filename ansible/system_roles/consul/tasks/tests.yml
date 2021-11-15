@@ -3,7 +3,7 @@
     - name: check if consul running
       command: pgrep -x consul -c
       failed_when: "False"
-      changed_when: "False"
+      changed_when: false
       register: consul_running
       check_mode: "False"
 
@@ -26,7 +26,7 @@
       uri:
         url: "http://127.0.0.1:8500/v1/health/node/{{ host }}/"
       register: consul_ping
-      changed_when: "False"
+      changed_when: false
       check_mode: "False"
       loop_control:
         loop_var: host
