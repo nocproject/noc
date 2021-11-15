@@ -11,7 +11,7 @@ from typing import Optional, List, Set
 from dataclasses import asdict
 
 # Third-Party modules
-from networkx import nx
+import networkx as nx
 import numpy as np
 import cachetools
 
