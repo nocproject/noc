@@ -106,7 +106,7 @@ class ActiveAlarm(Document):
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = ObjectIdField(required=False)
     # Group alarm references
-    groups = ListField(ObjectIdField())
+    groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_ts = DateTimeField(required=False)

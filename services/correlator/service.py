@@ -12,7 +12,7 @@ import datetime
 import re
 from collections import defaultdict
 import threading
-from typing import Any, Iterable, Optional, Dict, List
+from typing import Union, Any, Iterable, Optional, Dict, List
 import operator
 from hashlib import sha512
 
@@ -464,7 +464,8 @@ class CorrelatorService(TornadoService):
             for gi in rule.iter_groups(a):
                 if gi.reference and gi.reference not in groups:
                     groups[gi.reference] = gi
-        a.groups = await self.get_groups(a, groups.values())
+        all_groups = await self.get_groups(a, groups.values())
+        a.groups = [g.reference for g in all_groups]
         # Save
         a.save()
         if event:
@@ -742,11 +743,24 @@ class CorrelatorService(TornadoService):
         """
         # Fetch timestamp
         ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        await self.clear_by_reference(req.reference, ts)
+
+    async def clear_by_reference(
+        self, reference: Union[str, bytes], ts: Optional[datetime.datetime] = None
+    ) -> None:
+        """
+        Clear alarm by reference
+        """
+        ts = ts or datetime.datetime.now()
+        # Normalize reference
+        if isinstance(reference, str):
+            ref_hash = self.get_reference_hash(reference)
+        else:
+            ref_hash = reference
         # Get alarm
-        ref_hash = self.get_reference_hash(req.reference)
         alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
         if not alarm:
-            self.logger.info("Alarm '%s' is not found. Skipping", req.reference)
+            self.logger.info("Alarm '%s' is not found. Skipping", reference)
             return
         # Clear alarm
         self.logger.info(
@@ -755,11 +769,13 @@ class CorrelatorService(TornadoService):
             alarm.managed_object.address,
             alarm.alarm_class.name,
             alarm.id,
-            req.reference,
+            reference,
         )
         alarm.last_update = max(alarm.last_update, ts)
+        groups = alarm.groups
         alarm.clear_alarm("Cleared by reference")
         metrics["alarm_clear"] += 1
+        await self.clear_groups(groups, ts=ts)
 
     async def dispose_event(self, e: ActiveEvent):
         """
@@ -970,6 +986,35 @@ class CorrelatorService(TornadoService):
             if g_alarm:
                 r.append(g_alarm)
         return r
+
+    async def clear_groups(self, groups: List[bytes], ts: Optional[datetime.datetime]) -> None:
+        """
+        Clear group alarms from list when necessary
+
+        @todo: Possible race when called from different processes
+
+        :param groups: List of group reference hashes
+        :param ts: Clear timestamp
+        """
+        # Get groups summary
+        r: Dict[bytes, int] = {}
+        for doc in ActiveAlarm._get_collection().aggregate(
+            [
+                # Filter all active alarms in the selected groups
+                {"$match": {"groups": {"$in": groups}}},
+                # Leave only `groups` field
+                {"$project": {"groups": 1}},
+                # Unwind `groups` array to separate documents
+                {"$unwind": {"$groups"}},
+                # Group by each group reference
+                {"$group": {"_id": "$groups", "n": {"$count": {}}}},
+            ]
+        ):
+            r[doc["_id"]] = doc["n"]
+        for ref in groups:
+            if r.get(ref, 0) == 0:
+                self.logger.info("Clear empty group %r", ref)
+                await self.clear_by_reference(ref, ts=ts)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_reference_cache"), lock=lambda _: ref_lock)
