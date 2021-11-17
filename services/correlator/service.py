@@ -1007,9 +1007,9 @@ class CorrelatorService(TornadoService):
                 # Leave only `groups` field
                 {"$project": {"groups": 1}},
                 # Unwind `groups` array to separate documents
-                {"$unwind": {"$groups"}},
+                {"$unwind": "$groups"},
                 # Group by each group reference
-                {"$group": {"_id": "$groups", "n": {"$count": {}}}},
+                {"$group": {"_id": "$groups", "n": {"$sum": 1}}},
             ]
         ):
             r[doc["_id"]] = doc["n"]
