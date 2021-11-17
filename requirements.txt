@@ -27,6 +27,7 @@ PyYAML==6.0
 Pygments==2.10.0
 XlsxWriter==3.0.2
 atomicl==0.1.1
+asgiref>=3.4.0
 blinker==1.4
 bsdiff4==1.2.1
 cachetools==4.2.1
