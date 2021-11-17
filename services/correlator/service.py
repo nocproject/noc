@@ -568,7 +568,7 @@ class CorrelatorService(TornadoService):
             metrics["alarm_drop"] += 1
             return
 
-    def clear_alarm_from_rule(self, rule: "Rule", event: "ActiveEvent"):
+    async def clear_alarm_from_rule(self, rule: "Rule", event: "ActiveEvent"):
         managed_object = self.eval_expression(rule.managed_object, event=event)
         if not managed_object:
             self.logger.info(
@@ -598,8 +598,10 @@ class CorrelatorService(TornadoService):
         event.contribute_to_alarm(alarm)
         alarm.closing_event = event.id
         alarm.last_update = max(alarm.last_update, event.timestamp)
+        groups = alarm.groups
         alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
         metrics["alarm_clear"] += 1
+        await self.clear_groups(groups, ts=event.timestamp)
 
     def get_delayed_event(self, rule: Rule, event: ActiveEvent):
         """
@@ -804,7 +806,7 @@ class CorrelatorService(TornadoService):
             elif rule.action == "raise" and rule.combo_condition == "none":
                 await self.raise_alarm_from_rule(rule, e)
             elif rule.action == "clear" and rule.combo_condition == "none":
-                self.clear_alarm_from_rule(rule, e)
+                await self.clear_alarm_from_rule(rule, e)
             if rule.action in ("raise", "clear"):
                 # Write reference if can trigger delayed event
                 if rule.unique and rule.event_class.id in self.back_rules:
@@ -822,7 +824,7 @@ class CorrelatorService(TornadoService):
                             if br.action == "raise":
                                 await self.raise_alarm_from_rule(br, de)
                             elif br.action == "clear":
-                                self.clear_alarm_from_rule(br, de)
+                                await self.clear_alarm_from_rule(br, de)
             if rule.stop_disposition:
                 break
         self.logger.info("[%s] Disposition complete", event_id)
