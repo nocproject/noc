@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
-# AlarmGroup model
+# AlarmRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
 from threading import Lock
+from typing import Optional
 
 # Third-party modules
 import cachetools
@@ -36,10 +37,10 @@ id_lock = Lock()
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     alarm_class = ReferenceField(AlarmClass)
-    reference_re = StringField()
+    reference_rx = StringField()
 
     def __str__(self):
-        return f'{", ".join(self.labels)}, {self.alarm_class or ""}/{self.reference_re}'
+        return f'{", ".join(self.labels)}, {self.alarm_class or ""}/{self.reference_rx}'
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
@@ -51,7 +52,7 @@ class Group(EmbeddedDocument):
     # Group Alarm Class (Group by default)
     alarm_class = PlainReferenceField(AlarmClass)
     # Group Title template
-    title_template = StringField()
+    title_template = StringField(default="")
 
     def __str__(self):
         return f'{self.alarm_class or ""}/{self.title_template or ""}: {self.reference_template}'
@@ -113,15 +114,15 @@ class AlarmRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> "AlarmRule":
+    def get_by_id(cls, id) -> Optional["AlarmRule"]:
         return AlarmRule.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> "AlarmRule":
+    def get_by_name(cls, name: str) -> Optional["AlarmRule"]:
         return AlarmRule.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "AlarmRule":
+    def get_by_bi_id(cls, id) -> Optional["AlarmRule"]:
         return AlarmRule.objects.filter(bi_id=id).first()
