@@ -615,7 +615,7 @@ class CorrelatorService(TornadoService):
         reference = self.get_default_reference(
             managed_object=event.managed_object, alarm_class=rule.alarm_class, vars=vars
         )
-        ref_hash = self.get_reference(reference)
+        ref_hash = self.get_reference_hash(reference)
         ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
         de = ActiveEvent.objects.filter(
             managed_object=event.managed_object_id,

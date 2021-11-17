@@ -73,6 +73,7 @@ class ActiveAlarm(Document):
             ("alarm_class", "rca_neighbors"),
             "labels",
             "effective_labels",
+            "groups",
         ],
     }
     status = "A"
