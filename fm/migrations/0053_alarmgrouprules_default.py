@@ -32,7 +32,7 @@ class Migration(BaseMigration):
                 "vars": [
                     {"name": "name", "description": "Alarm Group name"},
                 ],
-                "subject_template": 'Group Alarm {{alarm.vars["name"]}}',
+                "subject_template": "Group Alarm {{alarm.vars.name}}",
                 "body_template": "Group Alarm",
                 "recommended_actions": "Ignore this",
                 "flap_condition": "none",
@@ -56,11 +56,13 @@ class Migration(BaseMigration):
                 "is_active": True,
                 "description": "Default Alarm Group",
                 "match": [],
-                "groups": [{
-                    "reference_template": "",
-                    "alarm_class": ObjectId("6172add005d0668829888eae"),
-                    "title_template": "",
-                }],
+                "groups": [
+                    {
+                        "reference_template": "",
+                        "alarm_class": ObjectId("6172add005d0668829888eae"),
+                        "title_template": "",
+                    }
+                ],
                 "actions": [],
                 "bi_id": 8422126749852039790,
             }

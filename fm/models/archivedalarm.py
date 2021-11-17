@@ -79,6 +79,8 @@ class ArchivedAlarm(Document):
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = ObjectIdField(required=False)
+    # Group alarm references
+    groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_ts = DateTimeField(required=False)
@@ -201,6 +203,7 @@ class ArchivedAlarm(Document):
             vars=self.vars,
             log=log,
             root=self.root,
+            groups=self.groups,
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
             escalation_error=self.escalation_error,

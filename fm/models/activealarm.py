@@ -73,6 +73,7 @@ class ActiveAlarm(Document):
             ("alarm_class", "rca_neighbors"),
             "labels",
             "effective_labels",
+            "groups",
         ],
     }
     status = "A"
@@ -105,6 +106,8 @@ class ActiveAlarm(Document):
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = ObjectIdField(required=False)
+    # Group alarm references
+    groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_ts = DateTimeField(required=False)
@@ -171,9 +174,7 @@ class ActiveAlarm(Document):
         self.rca_neighbors = data.rca_neighbors
         self.dlm_windows = data.dlm_windows
         if not self.id:
-            self.effective_labels = [
-                label for label in self.iter_effective_labels() if self.can_set_label(label)
-            ]
+            self.effective_labels = self.iter_effective_labels(self)
 
     def safe_save(self, **kwargs):
         """
@@ -291,6 +292,7 @@ class ActiveAlarm(Document):
             ack_ts=self.ack_ts,
             ack_user=self.ack_user,
             root=self.root,
+            groups=self.groups,
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
             escalation_error=self.escalation_error,
@@ -851,14 +853,10 @@ class ActiveAlarm(Document):
             if a.escalation_tt:
                 yield a
 
-    def iter_effective_labels(self):
+    @classmethod
+    def iter_effective_labels(cls, instance: "ActiveAlarm"):
 
-        return [
-            ll
-            for ll in set(self.managed_object.labels or [])
-            | set(self.managed_object.object_profile.labels or [])
-            if Label.get_effective_setting(ll, "expose_alarm")
-        ]
+        return [ll for ll in instance.managed_object.effective_labels if cls.can_set_label(ll)]
 
     @classmethod
     def can_set_label(cls, label):
