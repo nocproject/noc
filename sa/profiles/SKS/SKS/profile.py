@@ -2,7 +2,7 @@
 # Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - https://www.nposkss.ru)
 # OS:     SKS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,9 @@ class Profile(BaseProfile):
         r"% Unrecognized command|% Wrong number of parameters|"
         r"% Unrecognized host or address|"
         r"Unknown command|Incomplete command|Too many parameters"
+    )
+    pattern_operation_error = (
+        r"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config. Please wait."
     )
     command_super = "enable"
     command_disable_pager = "terminal datadump"
