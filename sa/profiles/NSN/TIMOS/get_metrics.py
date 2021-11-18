@@ -13,7 +13,9 @@ class Script(GetMetricsScript):
     name = "NSN.TIMOS.get_metrics"
 
     @metrics(
-        ["Subscribers | Summary"], has_capability="BRAS | IPoE", volatile=False, access="S",
+        ["Subscribers | Summary"],
+        has_capability="BRAS | PPPoE",
+        volatile=False, access="S",
     )
     def get_subscribers_metrics_snmp(self, metrics):
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.6527.3.1.2.33.1.106.1.2.1", bulk=False):
@@ -101,7 +103,7 @@ class Script(GetMetricsScript):
             )
 
     @metrics(
-        ["Environment | Temperature",],
+        ["Environment | Temperature"],
         # has_capability="BRAS | PPPoE",
         volatile=False,
         access="S",
@@ -128,7 +130,9 @@ class Script(GetMetricsScript):
                 )
 
     @metrics(
-        ["DHCP | Pool | Used"], has_capability="BRAS | PPPoE", volatile=False, access="S",
+        ["DHCP | Pool | Used"],
+        has_capability="BRAS | PPPoE",
+        volatile=False, access="S",
     )
     def get_dhcp_used_metrics_snmp(self, metrics):
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21"):
@@ -147,7 +151,9 @@ class Script(GetMetricsScript):
             )
 
     @metrics(
-        ["Environment | Sensor Status"], volatile=False, access="S",
+        ["Environment | Sensor Status"],
+        volatile=False,
+        access="S",
     )
     def get_sensor_status(self, metrics):
         v = self.snmp.get("1.3.6.1.4.1.6527.3.1.2.2.1.24.1.1.2.3.1.1", cached=True)
@@ -175,7 +181,10 @@ class Script(GetMetricsScript):
             )
 
     @metrics(
-        ["RADIUS | Requests", "RADIUS | Responses",],
+        [
+            "RADIUS | Requests",
+            "RADIUS | Responses",
+        ],
         # has_capability="BRAS | PPPoE",
         volatile=False,
         access="S",
