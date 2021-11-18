@@ -20,6 +20,7 @@ class Script(BaseScript):
 
     rx_sys = re.compile(r"actual-type\s*?:\s*(?P<platform>.+?)\s*$", re.MULTILINE)
     rx_slots = re.compile(r"slot count\s*:\s*(?P<slot_count>\d+)")
+    rx_shelf = re.compile(r"^\s*1/1\s+(?P<platform>\S+)\s+yes", re.MULTILINE)
     rx_ver = re.compile(r".+?\/*(?P<version>[A-Za-z0-9.]+?)\s+\S+\s+active.*$", re.MULTILINE)
 
     port_map = {
@@ -36,9 +37,12 @@ class Script(BaseScript):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
         v = self.cli("show equipment slot", cached=True)
         slots = self.rx_slots.search(v)
-        v = self.cli("show software-mngt oswp")
-        match_ver = self.rx_ver.search(v)
         platform = self.port_map[int(slots.group("slot_count"))]
+        try:
+            v = self.cli("show software-mngt oswp")
+            version = self.rx_ver.search(v).group("version")
+        except self.CLISyntaxError:
+            version = "Unknown"
         try:
             v = self.cli("show equipment isam")
             match = self.rx_sys.search(v)
@@ -55,12 +59,19 @@ class Script(BaseScript):
                     if match.group("platform") == "mlsa":
                         platform = platform + "FD"
             except self.CLISyntaxError:
-                pass
+                try:
+                    v = self.cli("show equipment shelf")
+                    match = self.shelf.search(v)
+                    if match:
+                        if match.group("platform") == "mlts-g":
+                            platform = platform + "FD"
+                except self.CLISyntaxError:
+                    pass
 
         return {
             "vendor": "Alcatel",
             "platform": platform,
-            "version": match_ver.group("version"),
+            "version": version,
         }
 
     rack_map = {
@@ -77,7 +88,7 @@ class Script(BaseScript):
         v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.4.17")
         platform = self.rack_map.get(v, "7302")
         v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.3.1")
-        if v == "LEEU":
+        if v in ["LEEU", "LEUS", "MLSA"]:
             platform = platform + "XD"
         elif v == "LNEU":
             platform = platform + "FD"
