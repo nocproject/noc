@@ -15,7 +15,8 @@ class Script(GetMetricsScript):
     @metrics(
         ["Subscribers | Summary"],
         has_capability="BRAS | PPPoE",
-        volatile=False, access="S",
+        volatile=False, 
+        access="S",
     )
     def get_subscribers_metrics_snmp(self, metrics):
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.6527.3.1.2.33.1.106.1.2.1", bulk=False):
@@ -132,7 +133,8 @@ class Script(GetMetricsScript):
     @metrics(
         ["DHCP | Pool | Used"],
         has_capability="BRAS | PPPoE",
-        volatile=False, access="S",
+        volatile=False, 
+        access="S",
     )
     def get_dhcp_used_metrics_snmp(self, metrics):
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21"):
