@@ -88,7 +88,7 @@ class Script(BaseScript):
                 r[-1]["revision"] = b_revision
         platform = self.port_map[slots]
         v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.3.1")
-        if v in ["LEEU", "LEUS"]:
+        if v in ["LEEU", "LEUS", "MLSA"]:
             platform = platform + "XD"
         elif v == "LNEU":
             platform = platform + "FD"
