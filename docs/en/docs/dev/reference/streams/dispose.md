@@ -40,16 +40,20 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 ### raise message
 `raise` message represents a direct alarm rising request, issued by an external mechanism.
 
-| Field            | Type                 | Description                                                                             |
-| ---------------- | -------------------- | --------------------------------------------------------------------------------------- |
-| `$op`            | String               | Equals to `raise`                                                                       |
-| `reference`      | String               | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
-| `timestamp`      | String               | Optional timestamp in ISO 8601 format                                                   |
-| `managed_object` | String               | Managed Object'd ID                                                                     |
-| `alarm_class`    | String               | Alarm class name                                                                        |
-| `vars`           | Object {{ comples }} | Alarm variables                                                                         |
-| `remote_system`  | String               | Optional Remote System ID                                                               |
-| `remote_id`      | String               | Optional Remote ID                                                                      |
+| Field                   | Type                          | Description                                                                                            |
+| ----------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `$op`                   | String                        | Equals to `raise`                                                                                      |
+| `reference`             | String                        | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details                |
+| `timestamp`             | String                        | Optional timestamp in ISO 8601 format                                                                  |
+| `managed_object`        | String                        | Managed Object'd ID                                                                                    |
+| `alarm_class`           | String                        | Alarm class name                                                                                       |
+| `groups`                | Array of Object {{ complex }} | Optional static groups                                                                                 |
+| {{ tab }} `reference`   | String                        | Optional Group Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
+| {{ tab }} `name`        | String                        | Optional group name                                                                                    |
+| {{ tab }} `alarm_class` | String                        | Optional group alarm class name                                                                        |
+| `vars`                  | Object {{ complex }}          | Alarm variables                                                                                        |
+| `remote_system`         | String                        | Optional Remote System ID                                                                              |
+| `remote_id`             | String                        | Optional Remote ID                                                                                     |
 
 ### clear message
 `clear` message represents a direct alarm clear request, issued by an external mechanism.
