@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NSN.TIMOS.get_capabilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,10 @@ class Script(BaseScript):
     name = "NSN.TIMOS.get_capabilities"
     cache = True
 
-    CHECK_SNMP_GET = {"BRAS | IPoE": "1.3.6.1.4.1.6527.3.1.2.33.1.107.1.65.1"}
+    CHECK_SNMP_GET = {
+        "BRAS | IPoE": "1.3.6.1.4.1.6527.3.1.2.33.1.107.1.65.1",
+        "BRAS | PPPoE": "1.3.6.1.4.1.6527.3.1.2.33.5.9.1.2.1",
+    }
     rx_lldp = re.compile(r"Admin Enabled\s+: True")
     rx_port = re.compile(
         r"^(?P<port>\d+/\d+/\d+)\s+(?:Up|Down)\s+(?:Yes|No)\s+"
