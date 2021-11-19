@@ -1,0 +1,6 @@
+{
+    "mib": "TIMETRA-SERV-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "2f468eb7-9e06-40c6-9802-16dc1200259b",
+    "preference": 3308
+}
