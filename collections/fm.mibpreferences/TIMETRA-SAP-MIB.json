@@ -1,0 +1,6 @@
+{
+    "mib": "TIMETRA-SAP-MIB",
+    "$collection": "fm.mibpreferences",
+    "uuid": "6f4d7b15-05ea-4734-9dcf-fff7d4c2b1b8",
+    "preference": 3307
+}
