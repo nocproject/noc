@@ -21,10 +21,13 @@ class SlotRule(OIDRule):
         r = {}
         if script.has_capability("Slot | Member Ids"):
             sys_slot_index = [0] + [
-                int(index) for index in script.capabilities["Slot | Member Ids"].split(" | ")
+                int(index)
+                for index in script.capabilities["Slot | Member Ids"].split(" | ")
             ]
         elif script.has_capability("Slot | Members"):
-            sys_slot_index = list(range(0, script.capabilities["Slot | Members"] + 1))
+            sys_slot_index = list(
+                range(0, script.capabilities["Slot | Members"] + 1)
+            )
         else:
             sys_slot_index = [0]
 
@@ -43,7 +46,13 @@ class SlotRule(OIDRule):
                             )
                         ] = "%d.%d" % (i, s_i)
                 else:
-                    r[("noc::chassis::1", "noc::slot::0", "noc::sensor::State_nt-a_s",)] = str(i)
+                    r[
+                        (
+                            "noc::chassis::1",
+                            "noc::slot::0",
+                            "noc::sensor::State_nt-a_s",
+                        )
+                    ] = str(i)
                 continue
             # r[str(i)] = {"healthModuleSlot": ms}
             if "Temperature" in metric.metric:
@@ -59,12 +68,18 @@ class SlotRule(OIDRule):
                         )
                     ] = "%d.%d" % (i + ms + 1, s_i,)
             else:
-                r[("noc::chassis::1", f"noc::slot::{ms}", f"noc::sensor::State_lt_s{ms}",)] = str(
-                    i + ms + 1
-                )
+                r[
+                    (
+                        "noc::chassis::1",
+                        f"noc::slot::{ms}",
+                        f"noc::sensor::State_lt_s{ms}",
+                    )
+                ] = str(i + ms + 1)
         for i in r:
             if self.is_complex:
-                gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
+                gen = [
+                    mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid
+                ]
                 if gen:
                     yield tuple(gen), self.type, self.scale, list(i)
             else:
