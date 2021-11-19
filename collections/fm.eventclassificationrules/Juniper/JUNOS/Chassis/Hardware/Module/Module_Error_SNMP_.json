@@ -1,6 +1,6 @@
 {
     "name": "Juniper | JUNOS | Chassis | Hardware | Module | Module Error (SNMP)",
-    "uuid": "6a33aea6-05f5-4948-99fb-55d7b7d0478b",
+    "uuid": "0b3e3865-83e4-45c2-95b8-78184da0b64b",
     "description": "JUNIPER-MIB::jnxFruCheck",
     "event_class__name": "Chassis | Hardware | Module | Module Error",
     "preference": 1000,
