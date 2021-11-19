@@ -21,8 +21,7 @@ class SlotRule(OIDRule):
         r = {}
         if script.has_capability("Slot | Member Ids"):
             sys_slot_index = [0] + [
-                int(index)
-                for index in script.capabilities["Slot | Member Ids"].split(" | ")
+                int(index) for index in script.capabilities["Slot | Member Ids"].split(" | ")
             ]
         elif script.has_capability("Slot | Members"):
             sys_slot_index = list(
@@ -66,7 +65,10 @@ class SlotRule(OIDRule):
                             f"noc::module::{s_i}",
                             f"noc::sensor::Temperature_lt_s{ms, s_i}",
                         )
-                    ] = "%d.%d" % (i + ms + 1, s_i,)
+                    ] = "%d.%d" % (
+                        i + ms + 1,
+                        s_i,
+                    )
             else:
                 r[
                     (
@@ -77,9 +79,7 @@ class SlotRule(OIDRule):
                 ] = str(i + ms + 1)
         for i in r:
             if self.is_complex:
-                gen = [
-                    mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid
-                ]
+                gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
                 if gen:
                     yield tuple(gen), self.type, self.scale, list(i)
             else:
