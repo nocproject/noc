@@ -403,7 +403,7 @@ class CorrelatorService(TornadoService):
                     scope_label,
                     managed_object.name,
                     managed_object.address,
-                    f"event {{event.event_class.name}}" if event else "DIRECT",
+                    f"event {event.event_class.name}" if event else "DIRECT",
                     alarm.alarm_class.name,
                     alarm.id,
                 )
