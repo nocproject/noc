@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 try:
     from typing import Literal
@@ -18,12 +18,19 @@ except ImportError:
 from pydantic import BaseModel, Field
 
 
+class GroupItem(BaseModel):
+    reference: str
+    alarm_class: Optional[str]
+    name: Optional[str]
+
+
 class RaiseRequest(BaseModel):
     op: Literal["raise"] = Field(None, alias="$op")
     reference: str
     managed_object: str
     alarm_class: str
     timestamp: Optional[str]
+    groups: Optional[List[GroupItem]]
     vars: Optional[Dict[str, Any]]
     remote_system: Optional[str]
     remote_id: Optional[str]

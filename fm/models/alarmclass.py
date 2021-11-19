@@ -9,6 +9,7 @@
 import os
 from threading import Lock
 import operator
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -195,17 +196,17 @@ class AlarmClass(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id: int) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name: str) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(name=name).first()
 
     def get_handlers(self):

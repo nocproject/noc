@@ -29,7 +29,7 @@ from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
-from noc.services.correlator.alarmrule import AlarmRuleSet
+from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
 from noc.services.correlator.rule import Rule
 from noc.services.correlator.rcacondition import RCACondition
 from noc.services.correlator.trigger import Trigger
@@ -364,6 +364,7 @@ class CorrelatorService(TornadoService):
         reference: Optional[str] = None,
         remote_system: Optional[RemoteSystem] = None,
         remote_id: Optional[str] = None,
+        groups: Optional[List[GroupItem]] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -375,6 +376,7 @@ class CorrelatorService(TornadoService):
         :param reference:
         :param remote_system:
         :param remote_id:
+        :param groups:
         :returns: Alarm, if created, None otherwise
         """
         scope_label = str(event.id) if event else "DIRECT"
@@ -457,14 +459,18 @@ class CorrelatorService(TornadoService):
         )
         a.effective_labels = a.iter_effective_labels(a)
         a.raw_reference = reference
-        # @todo: Static groups
+        # Static groups
+        alarm_groups: Dict[str, GroupItem] = {}
+        if groups:
+            for gi in groups:
+                if gi.reference and gi.reference not in alarm_groups:
+                    alarm_groups[gi.reference] = gi
         # Apply rules
-        groups: Dict[str, GroupItem] = {}
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
-                if gi.reference and gi.reference not in groups:
-                    groups[gi.reference] = gi
-        all_groups = await self.get_groups(a, groups.values())
+                if gi.reference and gi.reference not in alarm_groups:
+                    alarm_groups[gi.reference] = gi
+        all_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         # Save
         a.save()
@@ -715,6 +721,16 @@ class CorrelatorService(TornadoService):
         if not alarm_class:
             self.logger.error("Invalid alarm class: %s", req.alarm_class)
             return
+        # Groups
+        if req.groups:
+            groups = []
+            for gi in req.groups:
+                ac = AlarmClass.get_by_name(gi.alarm_class) if gi.alarm_class else None
+                ac = ac or CAlarmRule.get_default_alarm_class()
+                gi_name = gi.name or "Alarm Group"
+                groups.append(GroupItem(reference=gi.reference, alarm_class=ac, title=gi_name))
+        else:
+            groups = None
         # Remote system
         if req.remote_system and req.remote_id:
             remote_system = RemoteSystem.get_by_id(req.remote_system)
@@ -727,6 +743,7 @@ class CorrelatorService(TornadoService):
                 alarm_class=alarm_class,
                 vars=req.vars,
                 reference=req.reference,
+                groups=groups,
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )
