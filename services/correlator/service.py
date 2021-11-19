@@ -399,11 +399,11 @@ class CorrelatorService(TornadoService):
                 )
             if alarm:
                 self.logger.info(
-                    "[%s|%s|%s] Contributing event %s to active alarm %s(%s)",
+                    "[%s|%s|%s] Contributing %s to active alarm %s(%s)",
                     scope_label,
                     managed_object.name,
                     managed_object.address,
-                    event.event_class.name,
+                    f"event {{event.event_class.name}}" if event else "DIRECT",
                     alarm.alarm_class.name,
                     alarm.id,
                 )
