@@ -1,6 +1,6 @@
 {
     "name": "Juniper | JUNOS | Network | MPLS | LSP Up (SNMP)",
-    "uuid": "c2a35a10-cc4e-4ce5-ac20-a2a1f9f6db3d",
+    "uuid": "996657cf-5346-4c87-81f7-f590ef7410cb",
     "description": "JUNIPER-LDP-MIB::jnxLdpLspUp",
     "event_class__name": "Network | MPLS | LSP Up",
     "preference": 1000,

@@ -1,7 +1,7 @@
 {
     "name": "Cisco | 7600 | PWR-1900-DC",
     "$collection": "inv.objectmodels",
-    "uuid": "356243a2-5d0e-4220-a76b-a48b636d16c4",
+    "uuid": "1011de1d-808c-46b0-990e-c3d72fdb20d3",
     "vendor__code": "CISCO",
     "description": "1900 Watt DC Power Supply for Cisco 7600",
     "cr_context": "PSU",
