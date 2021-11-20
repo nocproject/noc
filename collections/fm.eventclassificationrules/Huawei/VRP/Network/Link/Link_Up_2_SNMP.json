@@ -1,6 +1,6 @@
 {
     "name": "Huawei | VRP | Network | Link | Link Up #2 (SNMP)",
-    "uuid": "e783bb44-1083-4524-898f-0df6bb8c57fd",
+    "uuid": "44766dc4-6be0-4dea-a4df-621e02f556e6",
     "description": "IF-MIB::linkUp \n%%01IFNET/4/IF_STATE(l)[0]:Interface Ethernet0/0/4 has turned into UP state.",
     "event_class__name": "Network | Link | Link Up",
     "preference": 1000,
