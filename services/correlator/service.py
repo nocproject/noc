@@ -12,7 +12,7 @@ import datetime
 import re
 from collections import defaultdict
 import threading
-from typing import Union, Any, Iterable, Optional, Dict, List
+from typing import Union, Any, Iterable, Optional, Dict, List, Set
 import operator
 from hashlib import sha512
 
@@ -37,6 +37,7 @@ from noc.services.correlator.models.disposereq import DisposeRequest
 from noc.services.correlator.models.eventreq import EventRequest
 from noc.services.correlator.models.clearreq import ClearRequest
 from noc.services.correlator.models.raisereq import RaiseRequest
+from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.activealarm import ActiveAlarm
@@ -763,6 +764,96 @@ class CorrelatorService(TornadoService):
         # Fetch timestamp
         ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
         await self.clear_by_reference(req.reference, ts)
+
+    async def on_msg_ensure_group(self, req: EnsureGroupRequest) -> None:
+        """
+        Process `ensure_group` message.
+        """
+        # Find existing group alarm
+        group_alarm = self.get_by_reference(req.reference)
+        if not group_alarm and not req.alarms:
+            return  # Nothing to clear, nothing to create
+        # Check managed objects and timestamps
+        mos: Dict[str, ManagedObject] = {}
+        tses: Dict[str, datetime.datetime] = {}
+        alarm_classes: Dict[str, AlarmClass] = {}
+        for ai in req.alarms:
+            # Managed Object
+            mo = ManagedObject.get_by_id(int(ai.managed_object))
+            if not mo:
+                self.logger.error("Invalid managed object: %s", ai.managed_object)
+                return
+            mos[ai.managed_object] = mo
+            # Timestamp
+            if ai.timestamp:
+                tses[ai.timestamp] = parse_date(ai.timestamp)
+            # Alarm class
+            alarm_class = AlarmClass.get_by_name(ai.alarm_class)
+            if not alarm_class:
+                self.logger.error("Invalid alarm class: %s", ai.alarm_class)
+                return
+            alarm_classes[ai.alarm_class] = alarm_class
+        #
+        now = datetime.datetime.now()
+        if not group_alarm:
+            # Create group alarm
+            # Calculate timestamp and managed object
+            mo_id = req.alarms[0].managed_object
+            min_ts = now
+            for ai in req.alarms:
+                if not ai.timestamp:
+                    continue
+                ts = tses[ai.timestamp]
+                if ts < min_ts:
+                    mo_id = ai.managed_object
+                    min_ts = ts
+            # Resolve managed object
+            mo = mos[mo_id]
+            # Get group alarm's alarm class
+            if req.alarm_class:
+                alarm_class = AlarmClass.get_by_name(req.alarm_class)
+                if not alarm_class:
+                    self.logger.error("Invalid group alarm class: %s", req.alarm_class)
+                    return
+            else:
+                alarm_class = CAlarmRule.get_default_alarm_class()
+            # Raise group alarm
+            group_alarm = await self.raise_alarm(
+                managed_object=mo,
+                timestamp=min_ts,
+                alarm_class=alarm_class,
+                vars={"name": req.name or "Group"},
+                reference=req.reference,
+            )
+        # Fetch all open alarms in group
+        open_alarms: Dict[bytes, ActiveAlarm] = {
+            alarm.reference: alarm
+            for alarm in ActiveAlarm.objects.filter(group=group_alarm.reference)
+        }
+        seen_refs: Set[bytes] = set()
+        for ai in req.alarms:
+            h_ref = self.get_reference_hash(ai.reference)
+            if h_ref in open_alarms:
+                seen_refs.add(h_ref)
+                continue  # Alarm is still active, skipping
+            # Raise new alarm
+            await self.raise_alarm(
+                managed_object=mos[ai.managed_object],
+                timestamp=tses[ai.timestamp] if ai.timestamp else now,
+                alarm_class=alarm_classes[ai.alarm_class],
+                vars=ai.vars or {},
+                reference=ai.reference,
+                groups=[
+                    GroupItem(
+                        reference=req.reference,
+                        alarm_class=group_alarm.alarm_class,
+                        title=req.name or "Group",
+                    )
+                ],
+            )
+        # Close hanging alarms
+        for h_ref in set(open_alarms) - seen_refs:
+            await self.clear_by_reference(h_ref, ts=now)
 
     async def clear_by_reference(
         self, reference: Union[str, bytes], ts: Optional[datetime.datetime] = None
