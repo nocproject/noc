@@ -21,17 +21,21 @@ nav:
           - Обзор: user/background/index.md
           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
           - Работа с топологией: user/background/topology/index.md
+          - Работа с авариями: user/background/fault-management/index.md
       - Reference:
           - Overview: user/reference/index.md
           - Concepts:
               - Overview: user/reference/concepts/index.md
               - Administrative Domain: user/reference/concepts/administrative-domain/index.md
+              - Alarm Class: user/reference/concepts/alarm-class/index.md
+              - Alarm Severity: user/reference/concepts/alarm-severity/index.md
               - Allocation Group: user/reference/concepts/allocation-group/index.md
               - API Key: user/reference/concepts/apikey/index.md
               - Container: user/reference/concepts/container/index.md
               - Dialplan: user/reference/concepts/dialplan/index.md
               - DNS Zone: user/reference/concepts/dns-zone/index.md
               - Dynamic Profile Classification: user/reference/concepts/dynamic-classification-policy/index.md
+              - Event Class: user/reference/concepts/event-class/index.md
               - Внешнее хранилище: user/reference/concepts/external-storage/index.md
               - Group: user/reference/concepts/group/index.md
               - Handler: user/reference/concepts/handler/index.md
@@ -1432,6 +1436,7 @@ nav:
                   - mac: admin/reference/discovery/periodic/mac.md
                   - metrics: admin/reference/discovery/periodic/metrics.md
                   - cpestatus: admin/reference/discovery/periodic/cpestatus.md
+                  - alarms: admin/reference/discovery/periodic/alarms.md
               - AS Discovery:
                   - Overview: admin/reference/discovery/as/index.md
                   - Prefix Discovery: admin/reference/discovery/as/prefix.md
@@ -1528,6 +1533,7 @@ nav:
           - Connection Restrictions: dev/background/connection-restrictions/index.md
           - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
           - SA Profile: dev/background/sa-profile/index.md
+          - UI Design Principles: dev/background/ui-design-principles/index.md
       - Reference:
           - Overview: dev/reference/index.md
           - Merge Request Labels: dev/reference/mr-labels.md

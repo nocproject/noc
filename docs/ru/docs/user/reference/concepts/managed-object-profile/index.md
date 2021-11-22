@@ -80,7 +80,7 @@
 * **Политика событий** (`Event Policy`) - политика обработки сообщений FM для устройства
     * (`Enable`) - обрабатывать сообщения FM для устройства
     * (`Disable`) - не обрабатывать сообщения FM для устройства
-* **Вес аварии** (`Alarm Weight`) - настройка веса аварии
+* **Вес аварии** (`Alarm Weight`) - настройка для расчёта веса аварии [Alarm Weight](../../../background/fault-management/index.md#Серьёзность%20и%20Вес)
 * **Политика архивирования Syslog** (`Syslog Archive Policy`) - отправлять принятые сообщения `Syslog` в архивное хранилище
 * `Merge Downlink` - активировать механизм `Merge Downlink` (!описание)
 
@@ -154,11 +154,11 @@
     * ConfDB - использовать адреса (`Address`) из конфигурации устройства - должна быть поддержка (`ConfDB`)
 * *Clear links*
     * **On platform change** - удалять линки устройства при изменении платформы (`Platform`)
-* [(`SLA`)](../../../../admin/reference/discovery/box/sla.md) - собирать SLA пробы с устройства (необходима поддержка со стороны адаптера)
-* (`CPE Status`) - собирать оперативный статус CPE с контроллера
+* [SLA](../../../../admin/reference/discovery/box/sla.md) - собирать SLA пробы с устройства (необходима поддержка со стороны адаптера)
+* [CPE Status](../../../../admin/reference/discovery/periodic/cpestatus.md) - собирать оперативный статус CPE с контроллера
 * (`CPE`) - собирать устройства `CPE` с контроллера
 * *NRI* - Опросы по интеграции с внешней системой
-    * **Привязка портов** (`Portmapper`) - маппинг сетевых интерфейсов с получеными из внешней системы (необходима реализация адаптера)
+    * **Привязка портов** [Portmapper](../../../../dev/reference/etl/index.md#Portmapper) - маппинг сетевых интерфейсов с портами внешней системы (необходима реализация адаптера)
     * **Привязка сервисов к портам** (`Service Binding`) - осуществлять привязку сервисов к интерфейсам
 * *Housekeeping* - активировать механизм [HK Check](../../../../admin/reference/discovery/box/hk.md)
 * *Discovery Alarm* - 
@@ -177,12 +177,12 @@
     * Всегда (`Always Run`)
 * **Интервал** (`Interval, sec`) - интервал запуска опроса
 * *Опросы* (`Discovery`) - состав опроса
-    * [(`Uptime`)](../../../../admin/reference/discovery/periodic/uptime.md)
-    * [(`Interface status`)](../../../../admin/reference/discovery/periodic/interfacestatus.md)
-    * [(`CPE status`)](../../../../admin/reference/discovery/periodic/cpestatus.md)
-    * [(`MAC`)](../../../../admin/reference/discovery/periodic/mac.md)
-    * (`Alarms`)
-    * [(`Metrics`)](../../../../admin/reference/discovery/periodic/metrics.md)
+    * [Uptime](../../../../admin/reference/discovery/periodic/uptime.md)
+    * [Interface status](../../../../admin/reference/discovery/periodic/interfacestatus.md)
+    * [CPE status](../../../../admin/reference/discovery/periodic/cpestatus.md)
+    * [MAC](../../../../admin/reference/discovery/periodic/mac.md)
+    * [Alarms](../../../../admin/reference/discovery/periodic/alarms.md)
+    * [Metrics](../../../../admin/reference/discovery/periodic/metrics.md)
 * *Discovery Alarm* - 
     * **Аварий при опросе** (`Box Alarm`)
         * Включить (`Enable`) - включить создание аварий по полному опросу
