@@ -21,7 +21,7 @@
     * Создав(`Create new`)
     * Заменять (`Replace`)
     * Облако (`Cloud`)
-* **Вес аварии** (`Alarm Weight`)
+* **Вес аварии** - весовой коэффициент для расчёта веса аварии [Alarm Weight](../../../background/fault-management/index.md#Серьёзность%20и%20Вес)
 * **Политика сбора MAC адресов** (`MAC Discovery Policy`)
     * `Transit` - собирать MAC адреса на интерфейсе (Настройка для опроса [MAC](../../../../admin/reference/discovery/periodic/mac.md))
     * `Disable` - не собирать MAC адреса на интерфейсе (Настройка для опроса [MAC](../../../../admin/reference/discovery/periodic/mac.md))
