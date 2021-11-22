@@ -56,7 +56,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 | [syslogcollector](../../../admin/reference/services/syslogcollector.md) | x | Syslog | By Rule | By Rule |
 | [Metric Threshold](../../../admin/reference/discovery/periodic/metrics.md) | v | -    | [Threshold Profile](../../../user/reference/concepts/threshold-profile/index.md) | [Threshold Profile](../../../user/reference/concepts/threshold-profile/index.md) | 
 | [Config Validation](../../../admin/reference/discovery/box/config.md) | v | - | [Config Validation Rules](../../../user/background/configuration-management/index.md#Создание%20политики%20валидации%20на%20основе%20запросов%20ConfDB) | 
-| [Alarm Discovery](../../../admin/reference/discovery/box/alarm.md) | v | CLI | By Rule | By Rule |
+| [Alarm Discovery](../../../admin/reference/discovery/periodic/alarms.md) | v | CLI | By Rule | By Rule |
 | [Discovery](../../../admin/reference/discovery/box/index.md) | v | CLI | - | - | 
 
 
@@ -201,8 +201,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 ### Классы аварий
 
 События, требующие реакции называются *аварийными* или **Авариями**. Для них существуют отдельные Классы Аварий (`Alarm Class`), 
-описывающие их значение для системы с отдельным набором настроек. Также, аварии могут быть эскалированы для уведомления 
-пользователей о возникающих проблемах. 
+описывающие их значение для системы с отдельным набором настроек. Для аварий поддерживается эскалация во внешние системы ТТ, аналитика и уведомления.
 
 ### Корреляция аварий
 
@@ -223,7 +222,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 * **Первопричина** (`Root`) - ссылка на класс аварии первопричины
 * **Окно** (`Window`) - интервал, внутри которого производится поиск первопричины
 * **Условие** (`Condition`) - условия проверки применимости правила. Выражение `Python`, доступ к аварии через переменную `alarm`. Например `alarm.vars.get('link') is not None`
-* **Криптерий совпадения** (`Match Condition`) - дополнительные критерии совпадения с первопричиной (`Root`). Выражение для запроса текущая авария доступна через переменную `alarm`. Например поиск аварий по тому же устройству - `{"managed_object":"alarm.managed_object.id"}`
+* **Критерий совпадения** (`Match Condition`) - дополнительные критерии совпадения с первопричиной (`Root`). Выражение для запроса текущая авария доступна через переменную `alarm`. Например поиск аварий по тому же устройству - `{"managed_object":"alarm.managed_object.id"}`
 
 После создания аварии коррелятор последовательно проходит записи из таблицы при успешной проверке условия (`Condition`), производится 
 поиск активной аварии внутри окна (`Window`), классом аварии указанным в первопричине (`Root`)  и критериями совпадения (`Match Condition`). 
@@ -242,24 +241,32 @@ System supports life cycle of events ensuring no important events left unnoticed
 Включается настройкой `Topology RCA` в классе аварии. На текущий момент активирована только для класса `NOC | Managed Object | Ping Failed`, описывающий 
 недоступность устройства по `ICMP` со стороны системы.
 
-Алгоритм достаточно прост, при построении топологии устройсв для них высчитываются направление вверх 
-(аплинк) [Uplink](../topology/index.md#Расчёт%20направления%20вверх). Происходит поиск аварии `NOC | Managed Object | Ping Failed` 
+Алгоритм достаточно прост, при построении топологии устройств для них высчитываются направление вверх 
+[Uplink](../topology/index.md#Расчёт%20направления%20вверх). Происходит поиск аварии `NOC | Managed Object | Ping Failed` 
 на вышестоящем устройстве. Если она найдена, то считается первопричиной для текущей
 
-? раньше корреляция по топологии или правилам
+<!-- prettier-ignore -->
+!!! todo
+    уточнить вначале корреляция по топологии или правилам
+
 
 ### Серьёзность и Вес
 
-Для каждой аварии рассчитывается её вас `weight`, как мера её влияния на компоненты. 
-Вес рассчитывается по формуле, связанные с устройством компоненты учитываются через *весовые коэффициенты*: 
+После обнаружения аварии на конкретном оборудовании, система вычисляет вес **Weight** аварии и в какой интервал базовых значений важности **Severity** попадает авария. 
+Вес рассчитывается по формуле, в которой учитывается влияние на связанных с устройством компонент через *весовые коэффициенты*: 
 
 * Устройство [ManagedObject](../../reference/concepts/managed-object/index.md). Весовой коэффициент выставляется в профиле объекта [Managed Object Profile](../../reference/concepts/managed-object-profile/index.md#FM)
 * Интерфейсы устройства [Interface](../../reference/concepts/interface/index.md). Весовой коэффициент выставляется в профиле интерфейса [Interface Profile](../../reference/concepts/interface-profile/index.md)
 * Сервисы связанные с устройством [Service](../../reference/concepts/service/index.md). Весовой коэффициент выставляется в профиле сервиса [Service Profile](../../reference/concepts/service-profile/index.md)
+* Абоненты связанные с устройством [Subscribers](../../reference/concepts/subscriber/index.md). Весовой коэффициент выставляется в профиле абонента [Subscriber Profile](../../reference/concepts/subscriber-profile/index.md)
 
-Непосредственно вес (`Weight`) несёт мало смысловой нагрузки для оператора системы поэтому используются уровни важности [Severity](../../reference/concepts/alarm-severity/index.md) аварии. 
-Они настраиваются в меню `Управление авариями (Fault Management) -> Настройки (Setup) -> Важность аварии (Alarm Severities)`. 
-По умолчанию представлены следующие уровни:
+<!-- prettier-ignore -->
+!!! info
+    К весу первопричины аварии помимо собственного добавляются веса подчинённых.
+
+Уровни важности [Severity](../../reference/concepts/alarm-severity/index.md) аварии 
+настраиваются в меню `Управление авариями (Fault Management) -> Настройки (Setup) -> Важность аварии (Alarm Severities)`. 
+В ней указывается минимальный вес необходимые для выставления соответствующей важности. По умолчанию представлены следующие уровни:
 
 * `CRITICAL` - Наивысший уровень важности аварии.
 * `MAJOR` - Крупная авария.
@@ -267,10 +274,6 @@ System supports life cycle of events ensuring no important events left unnoticed
 * `WARNING` - Событие, требующее обратить внимание оператора.
 * `INFO` - Информирование.
 * `IGNORE` - Штатное событие, не влияющее на состояние сети.
-
-Базовый уровень аварии определяет минимальное и максимальное значение веса аварии. 
-Максимальное значение уровня аварии является минимальным значением для следующего уровня.
-После обнаружения аварии на конкретном оборудовании, система вычисляет вес аварии и в какой интервал базовых значений важности попадает авария. 
 
 
 ### Эскалация и уведомления

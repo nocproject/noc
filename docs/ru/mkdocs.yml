@@ -1436,6 +1436,7 @@ nav:
                   - mac: admin/reference/discovery/periodic/mac.md
                   - metrics: admin/reference/discovery/periodic/metrics.md
                   - cpestatus: admin/reference/discovery/periodic/cpestatus.md
+                  - alarms: admin/reference/discovery/periodic/alarms.md
               - AS Discovery:
                   - Overview: admin/reference/discovery/as/index.md
                   - Prefix Discovery: admin/reference/discovery/as/prefix.md
@@ -1532,6 +1533,7 @@ nav:
           - Connection Restrictions: dev/background/connection-restrictions/index.md
           - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
           - SA Profile: dev/background/sa-profile/index.md
+          - UI Design Principles: dev/background/ui-design-principles/index.md
       - Reference:
           - Overview: dev/reference/index.md
           - Merge Request Labels: dev/reference/mr-labels.md
