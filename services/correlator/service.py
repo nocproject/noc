@@ -828,7 +828,7 @@ class CorrelatorService(TornadoService):
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {
             alarm.reference: alarm
-            for alarm in ActiveAlarm.objects.filter(group=group_alarm.reference)
+            for alarm in ActiveAlarm.objects.filter(groups__in=[group_alarm.reference])
         }
         seen_refs: Set[bytes] = set()
         for ai in req.alarms:
