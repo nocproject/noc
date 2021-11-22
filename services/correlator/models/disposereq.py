@@ -12,5 +12,6 @@ from typing import Union
 from .clearreq import ClearRequest
 from .eventreq import EventRequest
 from .raisereq import RaiseRequest
+from .ensuregroupreq import EnsureGroupRequest
 
-DisposeRequest = Union[ClearRequest, EventRequest, RaiseRequest]
+DisposeRequest = Union[ClearRequest, EventRequest, RaiseRequest, EnsureGroupRequest]

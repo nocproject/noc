@@ -63,3 +63,19 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | `$op`       | String | Equals to `clear`                                                                   |
 | `reference` | String | Alarm reference. Should be the same as in previous [raise](#raise-message) message. |
 | `timestamp` | String | Optional timestamp in ISO 8601 format                                               |
+
+### ensure_group message
+`ensure_group` message creates and synchronizes group with given set of alarms.
+
+| Field                      | Type                         | Descriptionn                                                                            |
+| -------------------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
+| `$op`                      | String                       | Equals to `ensure_group`                                                                |
+| `reference`                | String                       | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
+| `name`                     | String                       | Group alarm title                                                                       |
+| `alarm_class`              | String                       | Optional group alarm class                                                              |
+| `alarms`                   | Array of Object {{ complex}} | List of active alarms                                                                   |
+| {{ tab }} `reference`      | String                       | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
+| {{ tab }} `timestamp`      | String                       | Optional timestamp in ISO 8601 format                                                   |
+| {{ tab }} `managed_object` | String                       | Managed Object'd ID                                                                     |
+| {{ tab }} `alarm_class`    | String                       | Alarm class name                                                                        |
+| {{ tab }} `vars`           | Object {{ complex }}         | Alarm variables                                                                         |
