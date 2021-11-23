@@ -18,7 +18,7 @@ from noc.inv.models.capability import Capability
 from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
 from noc.sa.models.useraccess import UserAccess
 
-JP_CLAUSE_PATTERN = 'jsonb_path_exists(caps, \'$[*] ? (@.capability == "{}") ? (@.value {} {})\')'
+JP_CLAUSE_PATTERN = "jsonb_path_exists(caps, '$[*] ? (@.capability == \"{}\") ? (@.value {} {})')"
 
 
 class ObjectListApplication(ExtApplication):
@@ -94,13 +94,13 @@ class ObjectListApplication(ExtApplication):
             if "~" in c_query:
                 l, r = c_query.split("~")
                 if not l:
-                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '<=', r))
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, "<=", r))
                 elif not r:
-                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '>=', l))
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, ">=", l))
                 else:
                     # TODO This functionality is not implemented in frontend
-                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '<=', r))
-                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, '>=', l))
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, "<=", r))
+                    jp_clauses.append(JP_CLAUSE_PATTERN.format(caps.id, ">=", l))
             elif c_query in ("false", "true"):
                 q &= d_Q(caps__contains=[{"capability": str(caps.id), "value": c_query == "true"}])
             elif c_query == "exists":

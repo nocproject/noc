@@ -1,17 +1,12 @@
 # ----------------------------------------------------------------------
 # TokenResponse
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Union
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal  # py3.7 support
+from typing import Optional, Union, Literal
 
 # Third-party modules
 from pydantic import BaseModel

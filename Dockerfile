@@ -1,13 +1,13 @@
 #
 # Base layer containing system packages and requirements
 #
-FROM python:3.8.12-slim-buster AS code
+FROM python:3.9.9-slim-bullseye AS code
 ENV\
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
-    PYTHONPATH=/opt/noc:/opt:/usr/local/bin/python3.8 \
+    PYTHONPATH=/opt/noc:/opt:/usr/local/bin/python3.9 \
     PROJ_DIR=/usr \
     IP_SO="build/rust/release/libip.so"
 
@@ -20,7 +20,7 @@ RUN \
     apt update && apt-get install -y --no-install-recommends \
     bzip2 \
     curl \
-    libffi6 \
+    libffi7 \
     libjemalloc2 \
     libmemcached11 \
     libpq-dev \
