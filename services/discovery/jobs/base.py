@@ -15,10 +15,12 @@ import types
 import operator
 from io import StringIO
 from time import perf_counter
+from dataclasses import dataclass, field
 
 # Third-party modules
 import bson
 import cachetools
+import orjson
 from pymongo import UpdateOne
 from typing import List, Dict
 from builtins import str, object
@@ -48,6 +50,17 @@ from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 
 
+@dataclass(frozen=True)
+class ProblemItem(object):
+    alarm_class: str
+    message: str = ""
+    path: str = ""
+    fatal: bool = False
+    vars: dict = field(default_factory=dict)
+    code: str = ""
+    check: str = ""
+
+
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
     use_get_by_id = True
@@ -63,7 +76,7 @@ class MODiscoveryJob(PeriodicJob):
         self.out_buffer = StringIO()
         self.logger = PrefixLoggerAdapter(self.logger, "", target=self.out_buffer)
         self.check_timings = []
-        self.problems = []
+        self.problems: List[ProblemItem] = []
         self.caps = None
         self.has_fatal_error = False
         self.service = self.scheduler.service
@@ -83,13 +96,13 @@ class MODiscoveryJob(PeriodicJob):
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
         for p in list(self.problems):
-            if p["check"] not in problems:
-                problems[p["check"]] = defaultdict(str)
-            if p["path"]:
-                problems[p["check"]][p["path"]] = p["message"]
+            if p.check not in problems:
+                problems[p.check] = defaultdict(str)
+            if p.path:
+                problems[p.check][p.path] = p.message
             else:
                 # p["path"] == ""
-                problems[p["check"]][p["path"]] += "; %s" % p["message"]
+                problems[p.check][p.path] += "; %s" % p.message
         get_db()["noc.joblog"].update(
             {"_id": key},
             {
@@ -147,15 +160,17 @@ class MODiscoveryJob(PeriodicJob):
             kwargs,
         )
         self.problems += [
-            {
-                "check": check,
-                "alarm_class": alarm_class,
-                # in MongoDB Key must be string
-                "path": str(path) if path else "",
-                "message": message,
-                "fatal": fatal,
-                "vars": kwargs,
-            }
+            ProblemItem(
+                **{
+                    "check": check,
+                    "alarm_class": alarm_class,
+                    # in MongoDB Key must be string
+                    "path": str(path) if path else "",
+                    "message": message,
+                    "fatal": fatal,
+                    "vars": kwargs,
+                }
+            )
         ]
         if fatal:
             self.has_fatal_error = True
@@ -289,6 +304,7 @@ class MODiscoveryJob(PeriodicJob):
     def update_alarms(self):
         prev_status = self.context.get("umbrella_settings", False)
         current_status = self.can_update_alarms()
+        # @todo Save reference for check changes
         self.context["umbrella_settings"] = current_status
 
         if not prev_status and not current_status:
@@ -300,29 +316,48 @@ class MODiscoveryJob(PeriodicJob):
             return
         details = []
         if current_status:
-            fatal_weight = self.get_fatal_alarm_weight()
-            weight = self.get_alarm_weight()
+            now = datetime.datetime.now()
             for p in self.problems:
-                if not p["alarm_class"]:
+                if not p.alarm_class:
                     continue
-                ac = AlarmClass.get_by_name(p["alarm_class"])
+                ac = AlarmClass.get_by_name(p.alarm_class)
                 if not ac:
-                    self.logger.info("Unknown alarm class %s. Skipping", p["alarm_class"])
+                    self.logger.info("Unknown alarm class %s. Skipping", p.alarm_class)
                     continue
+                vars = {"path": p.path, "message": p.message}
+                if p.vars:
+                    vars.update(p.vars)
                 details += [
                     {
-                        "alarm_class": ac,
-                        "path": p["path"],
-                        "severity": AlarmSeverity.severity_for_weight(
-                            fatal_weight if p["fatal"] else weight
-                        ),
-                        "vars": {"path": p["path"], "message": p["message"]},
+                        "reference": f"d:{p.alarm_class}:{self.object.id}",
+                        "alarm_class": p.alarm_class,
+                        "managed_object": self.object.id,
+                        "timestamp": now,
+                        "vars": vars,
                     }
                 ]
         else:
             # Clean up all open alarms as they has been disabled
             details = []
-        self.update_umbrella(umbrella_cls, details)
+        msg = {
+            "$op": "ensure_group",
+            "reference": f"g:d:{self.object.id}:{self.umbrella_cls}",
+            "alarm_class": self.umbrella_cls,
+            "alarms": details,
+        }
+        fm_pool = self.object.get_effective_fm_pool().name
+        stream = f"dispose.{fm_pool}"
+        num_partitions = self.service.pool_partitions.get(fm_pool)
+        if not num_partitions:
+            num_partitions = await self.service.get_stream_partitions(stream)
+            self.service.pool_partitions[fm_pool] = num_partitions
+        self.service.publish(
+            orjson.dumps(msg),
+            stream=stream,
+            partition=int(self.object.id) % num_partitions,
+        )
+        self.logger.info("Send %s", msg)
+        # self.update_umbrella(umbrella_cls, details)
 
     def can_update_alarms(self):
         return False
