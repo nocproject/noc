@@ -629,3 +629,28 @@ def parse_table_header(v):
         header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
         header[num] = header[num].strip()
     return header
+
+
+def split_text(text: str, max_chunk: int) -> Iterable[str]:
+    """
+    Split text by splitline if len > max_chunk
+    :param text:
+    :param max_chunk:
+    :return: Dictionary {part_number: text, part_number: text}
+    """
+    data = {}
+    part = 1
+    result = None
+    for line in text.splitlines():
+        if result:
+            if len(result) + len(line) >= max_chunk:
+                data.update({part: result})
+                result = line
+                part = part + 1
+            else:
+                result = f"{result}\n{line}"
+        else:
+            result = line
+    else:
+        data.update({part: result})
+    return data

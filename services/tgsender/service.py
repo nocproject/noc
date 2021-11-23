@@ -20,6 +20,7 @@ from noc.core.mx import MX_TO
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.core.text import split_text
 
 API = "https://api.telegram.org/bot"
 TGSENDER_STREAM = "tgsender"
@@ -33,7 +34,7 @@ class TgSenderService(FastAPIService):
             self.logger.info("No token defined")
             self.url = None
         else:
-            self.url = API + config.tgsender.token
+            self.url = f"{API}{config.tgsender.token}"
             self.slot_number, self.total_slots = await self.acquire_slot()
             await self.subscribe_stream(TGSENDER_STREAM, self.slot_number, self.on_message)
 
@@ -46,10 +47,10 @@ class TgSenderService(FastAPIService):
         :return:
         """
         metrics["messages"] += 1
-        self.logger.debug("[%d] Receiving message %s", msg.offset, msg.headers)
+        self.logger.debug(f"[{msg.offset}] Receiving message {msg.headers}")
         dst = msg.headers.get(MX_TO)
         if not dst:
-            self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
+            self.logger.debug(f"[{msg.offset}] Missed '{MX_TO}' header. Dropping")
             metrics["messages_drops"] += 1
             return
         metrics["messages_processed"] += 1
@@ -69,24 +70,23 @@ class TgSenderService(FastAPIService):
         body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
         send = {
             "chat_id": data["address"],
-            "text": "*" + subject + "**\n\n" + body,
+            "text": f"\* {subject} \*\*\n\n {body}",
             "parse_mode": "Markdown",
         }
         # Text of the message to be sent, 1-4096 characters after entities parsing
         # Check, if len (body)
+        # If len(body) > 4096 use /sendDocument
+        # Bots can currently send files of any type of up to 50 MB in size
         if len(body) > body_l:
-            caption = "*" + subject + "**\n\n" + body[0:500] + "..."
-            # Bots can currently send files of any type of up to 50 MB in size
-            # If len(body) > 50Mb use /sendDocument
-            if len(body) > file_size:  # len(body) > 50Mb
-                t_type = "/sendDocument"
-                part = 1
+            caption = f"\* {subject} \*\*\n\n {body[0:500]}..."
+            t_type = "/sendDocument"
+            r = split_text(body, file_size)
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
-            url = self.url + t_type
+            url = f"{self.url}{t_type}"
             proxy = {}
             if config.tgsender.use_proxy and config.tgsender.proxy_address:
-                self.logger.info("USE PROXY %s", config.tgsender.proxy_address)
+                self.logger.info(f"USE PROXY {config.tgsender.proxy_address}")
                 proxy = {"https": config.tgsender.proxy_address}
             try:
                 if t_type == "/sendMessage":
@@ -95,65 +95,46 @@ class TgSenderService(FastAPIService):
                 else:
                     self.logger.info("Send Document")
                     buf = StringIO()
-                    file_lines = body.splitlines()
-                    for line in file_lines:
-                        if buf.tell() < file_size:  # Check buffer size
-                            if line.strip() == file_lines[-1].strip():
-                                buf.write(line)
-                                buf.seek(0)
-                                buf.name = "part_%s.txt" % part
-                                if part > 1:
-                                    caption = None
-                                response = requests.post(
-                                    url,
-                                    {"chat_id": data["address"], "caption": caption},
-                                    proxies=proxy,
-                                    files={"document": buf},
-                                )
-                                buf.close()
-                            else:  # Write line if buffer < 50Mb
-                                buf.write(line + "\n")
-                                continue
-                        else:  # Send document if buffer > 50Mb
-                            buf.seek(0)
-                            buf.name = "part_%s.txt" % part
-                            if part > 1:
-                                caption = None
-                            response = requests.post(
-                                url,
-                                {"chat_id": data["address"], "caption": caption},
-                                proxies=proxy,
-                                files={"document": buf},
-                            )
-                            part = part + 1
-                            buf.close()
-                            buf = StringIO()
+                    for part, text in r.items():
+                        buf.write(text)
+                        buf.seek(0)
+                        buf.name = f"part_{part}.txt"
+                        if part > 1:
+                            caption = None
+                        response = requests.post(
+                            url,
+                            {"chat_id": data["address"], "caption": caption},
+                            proxies=proxy,
+                            files={"document": buf},
+                        )
+                        buf = StringIO()
+                    buf.close()
                 if proxy:
-                    self.logger.info("Proxy Send: %s\n" % response.json())
+                    self.logger.info(f"Proxy Send: {response.json()}\n")
                     metrics["telegram_proxy_proxy_ok"] += 1
                 else:
-                    self.logger.info("Send: %s\n" % response.json())
+                    self.logger.info(f"Send: {response.json()}\n")
                     metrics["telegram_sended_ok"] += 1
             except requests.HTTPError as error:
-                self.logger.error("Http Error: %s" % error)
+                self.logger.error(f"Http Error: {error}")
                 if proxy:
                     metrics["telegram_proxy_failed_httperror"] += 1
                 else:
                     metrics["telegram_failed_httperror"] += 1
             except requests.ConnectionError as error:
-                self.logger.error("Error Connecting: %s" % error)
+                self.logger.error(f"Error Connecting: {error}")
                 if proxy:
                     metrics["telegram_proxy_failed_connection"] += 1
                 else:
                     metrics["telegram_failed_connection"] += 1
             except requests.Timeout as error:
-                self.logger.error("Timeout Error: %s" % error)
+                self.logger.error(f"Timeout Error: {error}")
                 if proxy:
                     metrics["telegram_proxy_failed_timeout"] += 1
                 else:
                     metrics["telegram_failed_timeout"] += 1
             except requests.RequestException as error:
-                self.logger.error("OOps: Something Else %s" % error)
+                self.logger.error(f"OOps: Something Else {error}")
                 if proxy:
                     metrics["telegram_proxy_failed_else_error"] += 1
                 else:
