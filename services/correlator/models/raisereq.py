@@ -32,5 +32,6 @@ class RaiseRequest(BaseModel):
     timestamp: Optional[str]
     groups: Optional[List[GroupItem]]
     vars: Optional[Dict[str, Any]]
+    labels: Optional[List[str]]
     remote_system: Optional[str]
     remote_id: Optional[str]
