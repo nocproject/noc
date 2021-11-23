@@ -22,7 +22,7 @@ import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict
+from typing import List, Dict, Optional
 from builtins import str, object
 
 # NOC modules
@@ -52,13 +52,13 @@ from noc.core.comp import smart_bytes
 
 @dataclass(frozen=True)
 class ProblemItem(object):
-    alarm_class: str
+    alarm_class: Optional[str]
     message: str = ""
-    path: str = ""
+    path: List[str] = field(default_factory=list)
     fatal: bool = False
     vars: dict = field(default_factory=dict)
-    code: str = ""
-    check: str = ""
+    code: Optional[str] = None
+    check: Optional[str] = None
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -91,18 +91,22 @@ class MODiscoveryJob(PeriodicJob):
             )
         super().schedule_next(status)
         # Update alarm statuses
-        self.update_alarms()
+        self.update_alarms(self.umbrella_cls, self.problems)
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
         for p in list(self.problems):
+            if not p.check:
+                # Not Discovery problem
+                continue
+            path = " | ".join(p.path)
             if p.check not in problems:
                 problems[p.check] = defaultdict(str)
             if p.path:
-                problems[p.check][p.path] = p.message
+                problems[p.check][path] = p.message
             else:
                 # p["path"] == ""
-                problems[p.check][p.path] += "; %s" % p.message
+                problems[p.check][path] += "; %s" % p.message
         get_db()["noc.joblog"].update(
             {"_id": key},
             {
@@ -165,7 +169,7 @@ class MODiscoveryJob(PeriodicJob):
                     "check": check,
                     "alarm_class": alarm_class,
                     # in MongoDB Key must be string
-                    "path": str(path) if path else "",
+                    "path": [str(path)] if path else [],
                     "message": message,
                     "fatal": fatal,
                     "vars": kwargs,
@@ -301,7 +305,7 @@ class MODiscoveryJob(PeriodicJob):
         if umbrella and umbrella_changed:
             AlarmEscalation.watch_escalations(umbrella)
 
-    def update_alarms(self):
+    def update_alarms(self, umbrella_cls: str, problems: List[ProblemItem]):
         prev_status = self.context.get("umbrella_settings", False)
         current_status = self.can_update_alarms()
         # @todo Save reference for check changes
@@ -310,30 +314,30 @@ class MODiscoveryJob(PeriodicJob):
         if not prev_status and not current_status:
             return
         self.logger.info("Updating alarm statuses")
-        umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
+        umbrella_cls = AlarmClass.get_by_name(umbrella_cls)
         if not umbrella_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []
         if current_status:
             now = datetime.datetime.now()
-            for p in self.problems:
+            for p in problems:
                 if not p.alarm_class:
                     continue
                 ac = AlarmClass.get_by_name(p.alarm_class)
                 if not ac:
                     self.logger.info("Unknown alarm class %s. Skipping", p.alarm_class)
                     continue
-                vars = {"path": p.path, "message": p.message}
+                d_vars = {"path": " | ".join(p.path), "message": p.message}
                 if p.vars:
-                    vars.update(p.vars)
+                    d_vars.update(p.vars)
                 details += [
                     {
                         "reference": f"d:{p.alarm_class}:{self.object.id}",
                         "alarm_class": p.alarm_class,
                         "managed_object": self.object.id,
                         "timestamp": now,
-                        "vars": vars,
+                        "vars": d_vars,
                     }
                 ]
         else:
@@ -357,7 +361,6 @@ class MODiscoveryJob(PeriodicJob):
             partition=int(self.object.id) % num_partitions,
         )
         self.logger.info("Send %s", msg)
-        # self.update_umbrella(umbrella_cls, details)
 
     def can_update_alarms(self):
         return False
@@ -1607,7 +1610,6 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
 
 
 # Avoid circular references
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
