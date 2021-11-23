@@ -6,13 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal  # py3.7 support
-
+from typing import Optional, Literal
 
 # Third-party modules
 from pydantic import BaseModel, Field

@@ -22,10 +22,7 @@ router = APIRouter()
 @router.post("/api/mib")
 def api_mib(req: JSONRemoteProcedureCall):
     if req.method not in MIBAPI.get_methods():
-        return {
-            "error": f"Invalid method: '{req.method}'",
-            "id": req.id
-        }
+        return {"error": f"Invalid method: '{req.method}'", "id": req.id}
     service = get_service()
     api = MIBAPI(service, None, None)
     api_method = getattr(api, req.method)
@@ -38,8 +35,4 @@ def api_mib(req: JSONRemoteProcedureCall):
     except Exception as e:
         error_report()
         error = f"Failed: {e}"
-    return {
-        "result": result,
-        "error": error,
-        "id": req.id
-    }
+    return {"result": result, "error": error, "id": req.id}

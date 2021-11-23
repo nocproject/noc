@@ -20,7 +20,7 @@ class Profile(BaseProfile):
         (r"[Cc]onfirm?\S+", "y\n\r"),
         (r" [Aa]re you sure?\S+", "y\n\r"),
         (r"^Delete flash:", "y\n\r"),
-        (r"^Squeeze flash:", "y\n\r")
+        (r"^Squeeze flash:", "y\n\r"),
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
     pattern_syntax_error = r"(Error: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at)"
@@ -39,8 +39,7 @@ class Profile(BaseProfile):
             p += " le 32"
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
-    rx_interface_name = re.compile(
-        r"^(?P<type>XGE|GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$")
+    rx_interface_name = re.compile(r"^(?P<type>XGE|GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
         """
@@ -56,13 +55,16 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if not match:
             return s
-        return "%s%s" % ({
-            "XGE": "XGigabitEthernet",
-            "GE": "GigabitEthernet",
-            "Eth": "Ethernet",
-            "MEth": "M-Ethernet",
-            # "Vlanif": "Vlan-interface" - need testing
-        }[match.group("type")], match.group("number"))
+        return "%s%s" % (
+            {
+                "XGE": "XGigabitEthernet",
+                "GE": "GigabitEthernet",
+                "Eth": "Ethernet",
+                "MEth": "M-Ethernet",
+                # "Vlanif": "Vlan-interface" - need testing
+            }[match.group("type")],
+            match.group("number"),
+        )
 
     def convert_mac(self, mac):
         """

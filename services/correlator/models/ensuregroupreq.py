@@ -6,13 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any, List
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal  # py3.7 support
-
+from typing import Optional, Dict, Any, List, Literal
 
 # Third-party modules
 from pydantic import BaseModel, Field
