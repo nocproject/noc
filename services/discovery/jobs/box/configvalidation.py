@@ -30,7 +30,9 @@ class ConfigValidationCheck(DiscoveryCheck):
             self.logger.info("%d problem(s) detected", len(problems))
         else:
             self.logger.info("No problems detected")
-        self.job.update_alarms(self.umbrella_cls, problems)
+        self.job.update_alarms(
+            self.umbrella_cls, problems, group_reference=f"g:c:{self.object.id}:{self.umbrella_cls}"
+        )
 
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())

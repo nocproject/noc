@@ -294,7 +294,9 @@ class MODiscoveryJob(PeriodicJob):
         if umbrella and umbrella_changed:
             AlarmEscalation.watch_escalations(umbrella)
 
-    def update_alarms(self, umbrella_cls: str, problems: List[ProblemItem]):
+    def update_alarms(
+        self, group_cls: str, problems: List[ProblemItem], group_reference: str = None
+    ):
         prev_status = self.context.get("umbrella_settings", False)
         current_status = self.can_update_alarms()
         # @todo Save reference for check changes
@@ -303,8 +305,8 @@ class MODiscoveryJob(PeriodicJob):
         if not prev_status and not current_status:
             return
         self.logger.info("Updating alarm statuses")
-        umbrella_cls = AlarmClass.get_by_name(umbrella_cls)
-        if not umbrella_cls:
+        group_cls = AlarmClass.get_by_name(group_cls)
+        if not group_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []
@@ -322,7 +324,7 @@ class MODiscoveryJob(PeriodicJob):
                     d_vars.update(p.vars)
                 details += [
                     {
-                        "reference": f"d:{p.alarm_class}:{self.object.id}",
+                        "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
                         "alarm_class": p.alarm_class,
                         "managed_object": self.object.id,
                         "timestamp": now,
@@ -334,8 +336,8 @@ class MODiscoveryJob(PeriodicJob):
             details = []
         msg = {
             "$op": "ensure_group",
-            "reference": f"g:d:{self.object.id}:{self.umbrella_cls}",
-            "alarm_class": self.umbrella_cls,
+            "reference": group_reference or f"g:d:{self.object.id}:{group_cls.name}",
+            "alarm_class": group_cls.name,
             "alarms": details,
         }
         stream, partition = self.object.alarms_stream_and_partition
