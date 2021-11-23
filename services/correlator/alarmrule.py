@@ -34,6 +34,7 @@ class Group(object):
     reference_template: Template
     alarm_class: AlarmClass
     title_template: Template
+    labels: Optional[List[str]]
 
 
 @dataclass
@@ -41,6 +42,7 @@ class GroupItem(object):
     reference: str
     alarm_class: AlarmClass
     title: str
+    labels: Optional[List[str]]
 
 
 class AlarmRule(object):
@@ -119,6 +121,7 @@ class AlarmRule(object):
                 reference=group.reference_template.render(**ctx),
                 alarm_class=group.alarm_class,
                 title=group.title_template.render(**ctx),
+                labels=group.labels,
             )
 
 

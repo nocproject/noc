@@ -18,6 +18,7 @@ class AlarmItem(BaseModel):
     alarm_class: str
     timestamp: Optional[str]
     vars: Optional[Dict[str, Any]]
+    labels: Optional[List[str]]
     remote_system: Optional[str]
     remote_id: Optional[str]
 
@@ -27,4 +28,5 @@ class EnsureGroupRequest(BaseModel):
     reference: str
     name: Optional[str]
     alarm_class: Optional[str]
+    labels: Optional[str]
     alarms: List[AlarmItem]

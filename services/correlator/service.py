@@ -366,6 +366,7 @@ class CorrelatorService(TornadoService):
         remote_system: Optional[RemoteSystem] = None,
         remote_id: Optional[str] = None,
         groups: Optional[List[GroupItem]] = None,
+        labels: Optional[List[str]] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -378,9 +379,11 @@ class CorrelatorService(TornadoService):
         :param remote_system:
         :param remote_id:
         :param groups:
+        :param labels:
         :returns: Alarm, if created, None otherwise
         """
         scope_label = str(event.id) if event else "DIRECT"
+        labels = labels or []
         # @todo: Make configurable
         if not managed_object.is_managed:
             self.logger.info("Managed object is not managed. Do not raise alarm")
@@ -455,6 +458,7 @@ class CorrelatorService(TornadoService):
                 )
             ],
             opening_event=event.id if event else None,
+            labels=labels,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -478,13 +482,14 @@ class CorrelatorService(TornadoService):
         if event:
             event.contribute_to_alarm(a)
         self.logger.info(
-            "[%s|%s|%s] Raise alarm %s(%s): %r",
+            "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
             managed_object.name,
             managed_object.address,
             a.alarm_class.name,
             a.id,
             a.vars,
+            ", ".join(labels),
         )
         metrics["alarm_raise"] += 1
         await self.correlate(a)
@@ -745,6 +750,7 @@ class CorrelatorService(TornadoService):
                 vars=req.vars,
                 reference=req.reference,
                 groups=groups,
+                labels=req.labels,
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )
@@ -824,6 +830,7 @@ class CorrelatorService(TornadoService):
                 alarm_class=alarm_class,
                 vars={"name": req.name or "Group"},
                 reference=req.reference,
+                labels=req.labels,
             )
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {
@@ -850,6 +857,7 @@ class CorrelatorService(TornadoService):
                         title=req.name or "Group",
                     )
                 ],
+                labels=ai.labels,
             )
         # Close hanging alarms
         for h_ref in set(open_alarms) - seen_refs:
@@ -1089,6 +1097,7 @@ class CorrelatorService(TornadoService):
                     alarm_class=group.alarm_class,
                     vars={"name": group.title},
                     reference=group.reference,
+                    labels=group.labels,
                 )
                 if g_alarm:
                     # Update cache

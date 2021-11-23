@@ -52,6 +52,7 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | {{ tab }} `name`        | String                        | Optional group name                                                                                    |
 | {{ tab }} `alarm_class` | String                        | Optional group alarm class name                                                                        |
 | `vars`                  | Object {{ complex }}          | Alarm variables                                                                                        |
+| `labels`                | Array of String               | Optional list of alarm labels                                                                          |
 | `remote_system`         | String                        | Optional Remote System ID                                                                              |
 | `remote_id`             | String                        | Optional Remote ID                                                                                     |
 
@@ -73,9 +74,12 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | `reference`                | String                       | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
 | `name`                     | String                       | Group alarm title                                                                       |
 | `alarm_class`              | String                       | Optional group alarm class                                                              |
+| `labels`                   | Array of String              | Optional list of group alarm labels                                                     |
 | `alarms`                   | Array of Object {{ complex}} | List of active alarms                                                                   |
 | {{ tab }} `reference`      | String                       | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
 | {{ tab }} `timestamp`      | String                       | Optional timestamp in ISO 8601 format                                                   |
 | {{ tab }} `managed_object` | String                       | Managed Object'd ID                                                                     |
 | {{ tab }} `alarm_class`    | String                       | Alarm class name                                                                        |
 | {{ tab }} `vars`           | Object {{ complex }}         | Alarm variables                                                                         |
+| {{ tab }} `labels`         | Array of String              | Optional list of alarm labels                                                           |
+
