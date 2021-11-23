@@ -36,7 +36,7 @@ class EventSummaryReport(SimpleReport):
 
     @staticmethod
     def get_by_event_class():
-        """ Summary by event class """
+        """Summary by event class"""
         c = ActiveEvent.objects.item_frequencies("event_class")
         r = []
         for k, v in c.items():

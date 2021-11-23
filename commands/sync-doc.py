@@ -93,7 +93,7 @@ class Command(BaseCommand):
             return h + "\n" + ["=", "-", "~"][level] * len(h) + "\n"
 
         def path_to_mod(f):
-            """ Convert file path to module name"""
+            """Convert file path to module name"""
             if f.endswith(INIT):
                 f = f[:-12]
             else:
@@ -101,13 +101,13 @@ class Command(BaseCommand):
             return "noc." + f.replace(os.sep, ".")
 
         def path_to_doc(f):
-            """ Convert path fo RST file name"""
+            """Convert path fo RST file name"""
             if f == INIT:
                 return "index.rst"
             return path_to_mod(f) + ".rst"
 
         def package_doc(f):
-            """ Generate package doc"""
+            """Generate package doc"""
             m = path_to_mod(f)
             r = header(":mod:`%s` Package" % m)
             r += ".. automodule:: %s\n    :members:\n\n" % m
@@ -127,7 +127,7 @@ class Command(BaseCommand):
             return r
 
         def package_files(f):
-            """ Return a list of package files"""
+            """Return a list of package files"""
 
             def is_child(ff):
                 pp = ff.split(os.sep)
