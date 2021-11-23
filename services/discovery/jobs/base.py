@@ -15,18 +15,18 @@ import types
 import operator
 from io import StringIO
 from time import perf_counter
-from dataclasses import dataclass, field
 
 # Third-party modules
 import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict, Optional
+from typing import List, Dict
 from builtins import str, object
 
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.core.scheduler.problem import ProblemItem
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -48,17 +48,6 @@ from noc.core.span import Span
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
-
-
-@dataclass(frozen=True)
-class ProblemItem(object):
-    alarm_class: Optional[str]
-    message: str = ""
-    path: List[str] = field(default_factory=list)
-    fatal: bool = False
-    vars: dict = field(default_factory=dict)
-    code: Optional[str] = None
-    check: Optional[str] = None
 
 
 class MODiscoveryJob(PeriodicJob):

@@ -90,7 +90,7 @@ from noc.core.confdb.engine.base import Engine
 from noc.core.comp import smart_text, smart_bytes
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
-from noc.services.discovery.jobs.base import ProblemItem
+from noc.core.scheduler.problem import ProblemItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
