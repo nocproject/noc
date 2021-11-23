@@ -349,18 +349,15 @@ class MODiscoveryJob(PeriodicJob):
             "alarm_class": self.umbrella_cls,
             "alarms": details,
         }
-        fm_pool = self.object.get_effective_fm_pool().name
-        stream = f"dispose.{fm_pool}"
-        num_partitions = self.service.pool_partitions.get(fm_pool)
-        if not num_partitions:
-            num_partitions = await self.service.get_stream_partitions(stream)
-            self.service.pool_partitions[fm_pool] = num_partitions
+        stream, partition = self.object.alarms_stream_and_partition
         self.service.publish(
             orjson.dumps(msg),
             stream=stream,
-            partition=int(self.object.id) % num_partitions,
+            partition=partition,
         )
-        self.logger.info("Send %s", msg)
+        self.logger.info(
+            "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
+        )
 
     def can_update_alarms(self):
         return False

@@ -1915,6 +1915,21 @@ class ManagedObject(NOCModel):
         pool = self.get_effective_fm_pool().name
         return "events.%s" % pool, 0
 
+    @property
+    def alarms_stream_and_partition(self) -> Tuple[str, int]:
+        """
+        Return publish stream and partition for alarms
+        :return: stream name, partition
+        """
+        # @todo: Calculate partition properly
+        fm_pool = self.get_effective_fm_pool().name
+        stream = f"dispose.{fm_pool}"
+        # num_partitions = self.service.pool_partitions.get(fm_pool)
+        # if not num_partitions:
+        #     num_partitions = await self.service.get_stream_partitions(stream)
+        #     self.service.pool_partitions[fm_pool] = num_partitions
+        return stream, 0
+
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
         yield list(instance.labels or [])
