@@ -73,7 +73,7 @@ redis==3.5.3; extra == "cache-redis"
 # Cache-Memcached
 pylibmc==1.5.1; extra == "cache-memcached"
 # Dev requirements
-Babel==2.3.4; extra == "dev"
+Babel==2.9.1; extra == "dev"
 ipython==7.29.0; extra == "dev"
 pojson==0.7; extra == "dev"
 flake8==4.0.1; extra == "dev"
