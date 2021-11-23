@@ -1,15 +1,16 @@
-# -*- coding: utf-8 -*-
-"""
-##----------------------------------------------------------------------
-## Vendor: Huawei
-## OS:     VRP
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-from noc.core.profile.base import BaseProfile
+# ----------------------------------------------------------------------
+#  Vendor: Huawei
+#  OS:     VRP
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2014 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
 import re
+
+# NOC modules
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
@@ -73,7 +74,7 @@ class Profile(BaseProfile):
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
 
-    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+    spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)
