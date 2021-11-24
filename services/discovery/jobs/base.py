@@ -26,7 +26,7 @@ from builtins import str, object
 
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
-from noc.core.scheduler.problem import ProblemItem
+from noc.core.models.problem import ProblemItem
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile

@@ -22,7 +22,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.scheduler.problem import ProblemItem
+from noc.core.models.problem import ProblemItem
 from noc.inv.models.object import Object
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile

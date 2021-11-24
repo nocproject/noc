@@ -26,7 +26,7 @@ from typing import Iterable
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.fm.models.alarmclass import AlarmClass
-from noc.core.scheduler.problem import ProblemItem
+from noc.core.models.problem import ProblemItem
 from .confdbquery import ConfDBQuery
 
 id_lock = threading.Lock()
