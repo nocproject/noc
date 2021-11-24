@@ -11,7 +11,7 @@ import operator
 import itertools
 import time
 from collections import defaultdict
-from typing import Any, Optional, List, Dict, Set
+from typing import Any, Optional, List, Dict, Set, Tuple
 from dataclasses import dataclass
 
 # Third-party modules
@@ -22,6 +22,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.models.problem import ProblemItem
 from noc.inv.models.object import Object
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -34,7 +35,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
-from noc.pm.models.thresholdprofile import ThresholdProfile
+from noc.pm.models.thresholdprofile import ThresholdProfile, ThresholdConfig
 from noc.core.hash import hash_str
 
 
@@ -137,6 +138,8 @@ class MetricsCheck(DiscoveryCheck):
 
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
 
+    umbrella_cls = "NOC | PM | Out of Thresholds"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id_count = itertools.count()
@@ -218,7 +221,7 @@ class MetricsCheck(DiscoveryCheck):
             r[m.metric_type.name] = cls.config_from_settings(m)
         return r
 
-    def get_object_metrics(self):
+    def get_object_metrics(self) -> List[Dict[str, Any]]:
         """
         Populate metrics list with objects metrics
         :return:
@@ -249,7 +252,7 @@ class MetricsCheck(DiscoveryCheck):
             subs[si["interface"]] += [{"name": si["name"], "ifindex": si.get("ifindex")}]
         return subs
 
-    def get_interface_metrics(self):
+    def get_interface_metrics(self) -> List[Dict[str, Any]]:
         """
         Populate metrics list with interface metrics
         :return:
@@ -330,7 +333,7 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("Interface metrics are not configured. Skipping")
         return metrics
 
-    def get_sla_metrics(self):
+    def get_sla_metrics(self) -> List[Dict[str, Any]]:
         if not self.has_any_capability(self.SLA_CAPS):
             self.logger.info("SLA not configured, skipping SLA metrics")
         metrics = []
@@ -381,7 +384,7 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("SLA metrics are not configured. Skipping")
         return metrics
 
-    def get_sensor_metrics(self):
+    def get_sensor_metrics(self) -> List[Dict[str, Any]]:
         metrics = []
         o = Object.get_managed(self.object).values_list("id")
         for s in (
@@ -418,7 +421,9 @@ class MetricsCheck(DiscoveryCheck):
                 self.sensors_metrics[m_id] = int(s["bi_id"])
         return metrics
 
-    def process_result(self, result: List[MData]):
+    def process_result(
+        self, result: List[MData]
+    ) -> Tuple[int, Dict[str, Dict[str, Dict[str, Any]]], List[ProblemItem], List[Dict[str, Any]]]:
         """
         Process IGetMetrics result
         :param result:
@@ -591,7 +596,11 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("%d alarms detected", len(alarms))
         if events:
             self.logger.info("%d events detected", len(events))
-        self.job.update_umbrella(self.get_ac_pm_thresholds(), alarms)
+        self.job.update_alarms(
+            alarms,
+            group_cls=self.umbrella_cls,
+            group_reference=f"g:t:{self.object.id}:{self.umbrella_cls}",
+        )
 
     def convert_delta(self, m, r):
         """
@@ -950,7 +959,14 @@ class MetricsCheck(DiscoveryCheck):
         return alarms, events
 
     def get_umbrella_alarm_cfg(
-        self, metric_config, threshold, path, value, labels=None, sensor=None, sla_probe=None
+        self,
+        metric_config: "MetricConfig",
+        threshold: "ThresholdConfig",
+        path: str,
+        value: float,
+        labels=None,
+        sensor=None,
+        sla_probe=None,
     ):
         """
         Get configuration for umbrella alarm
@@ -963,16 +979,15 @@ class MetricsCheck(DiscoveryCheck):
         :param sla_probe:
         :return: List of dicts or empty list
         """
-        self.logger.info("Get Umbrella Alarm CFG: %s", metric_config)
+        self.logger.debug("Get Umbrella Alarm CFG: %s", metric_config)
         alarm_cfg = {
-            "alarm_class": threshold.alarm_class,
+            "alarm_class": threshold.alarm_class.name,
             "path": path,
-            "severity": threshold.alarm_class.default_severity.severity,
             "vars": {
-                "path": path,
-                "labels": ";".join(labels or []),
+                "path": [path],
                 "metric": metric_config.metric_type.name,
-                "value": value,
+                "ovalue": value,
+                "tvalue": threshold.value,
                 "window_type": metric_config.threshold_profile.window_type,
                 "window": metric_config.threshold_profile.window,
                 "window_function": metric_config.threshold_profile.window_function,
@@ -982,6 +997,12 @@ class MetricsCheck(DiscoveryCheck):
             alarm_cfg["vars"]["sensor"] = str(sensor)
         if sla_probe:
             alarm_cfg["vars"]["sla_probe"] = str(sla_probe)
+        for ll in labels:
+            scope, value = ll.rsplit("::", 1)
+            if scope.startswith("noc::interface"):
+                alarm_cfg["vars"]["interface"] = str(value)
+            if scope.startswith("noc::subinterface"):
+                alarm_cfg["vars"]["subinterface"] = str(value)
         if metric_config.threshold_profile.umbrella_filter_handler:
             if metric_config.threshold_profile.umbrella_filter_handler.allow_threshold_handler:
                 try:
@@ -994,7 +1015,14 @@ class MetricsCheck(DiscoveryCheck):
                     self.logger.error("Exception when loading handler %s", e)
             else:
                 self.logger.warning("Umbrella filter Handler is not allowed for Thresholds")
-        return [alarm_cfg]
+        return [
+            ProblemItem(
+                alarm_class=threshold.alarm_class.name,
+                path=[path],
+                labels=labels or [],
+                vars=alarm_cfg["vars"],
+            )
+        ]
 
     def get_event_cfg(
         self,

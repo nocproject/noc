@@ -835,6 +835,14 @@ class ActiveAlarm(Document):
             yield a
             yield from a.iter_consequences()
 
+    def iter_grouped(self):
+        """
+        Generator yielding all alarm in group
+        """
+        for a in ActiveAlarm.objects.filter(groups__in=[self.reference]):
+            yield a
+            yield from a.iter_grouped()
+
     def iter_affected(self):
         """
         Generator yielding all affected managed objects

@@ -4,13 +4,13 @@
     "uuid": "bcb92084-18ed-4229-9a1f-f85fc80c6a96",
     "description": "Base Alarm Class for Box discovery alarms.",
     "is_unique": true,
+    "reference": [],
+    "is_ephemeral": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "vars": [
-
-    ],
+    "vars": [],
     "subject_template": "Umbrella for Box discovery alarms",
-    "body_template": "Alarms on Box discovery processed\n \n{% for aa in alarm.iter_consequences  %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}",
+    "body_template": "Alarms on Box discovery processed\n \n{% for aa in alarm.iter_grouped  %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}",
     "symptoms": "",
     "probable_causes": "Various errors connecting to the equipment",
     "recommended_actions": "Connection error - check telnet/ssh port availability on device\nAuthentication error - check allow access to device with credentials\nSNMP error - check SNMP community settings on device",
