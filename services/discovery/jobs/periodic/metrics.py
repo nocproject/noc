@@ -981,7 +981,7 @@ class MetricsCheck(DiscoveryCheck):
         """
         self.logger.debug("Get Umbrella Alarm CFG: %s", metric_config)
         alarm_cfg = {
-            "alarm_class": threshold.alarm_class,
+            "alarm_class": threshold.alarm_class.name,
             "path": path,
             "vars": {
                 "path": [path],
@@ -997,6 +997,12 @@ class MetricsCheck(DiscoveryCheck):
             alarm_cfg["vars"]["sensor"] = str(sensor)
         if sla_probe:
             alarm_cfg["vars"]["sla_probe"] = str(sla_probe)
+        for ll in labels:
+            scope, value = ll.rsplit("::", 1)
+            if scope.startswith("noc::interface"):
+                alarm_cfg["vars"]["interface"] = str(value)
+            if scope.startswith("noc::subinterface"):
+                alarm_cfg["vars"]["subinterface"] = str(value)
         if metric_config.threshold_profile.umbrella_filter_handler:
             if metric_config.threshold_profile.umbrella_filter_handler.allow_threshold_handler:
                 try:
@@ -1011,7 +1017,7 @@ class MetricsCheck(DiscoveryCheck):
                 self.logger.warning("Umbrella filter Handler is not allowed for Thresholds")
         return [
             ProblemItem(
-                alarm_class=threshold.alarm_class,
+                alarm_class=threshold.alarm_class.name,
                 path=[path],
                 labels=labels or [],
                 vars=alarm_cfg["vars"],
