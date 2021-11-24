@@ -14,6 +14,7 @@ from collections import defaultdict
 import threading
 from typing import Union, Any, Iterable, Optional, Dict, List, Set
 import operator
+from itertools import chain
 from hashlib import sha512
 
 # Third-party modules
@@ -462,7 +463,7 @@ class CorrelatorService(TornadoService):
             remote_system=remote_system,
             remote_id=remote_id,
         )
-        a.effective_labels = a.iter_effective_labels(a)
+        a.effective_labels = list(chain.from_iterable(ActiveAlarm.iter_effective_labels(a)))
         a.raw_reference = reference
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
@@ -750,7 +751,7 @@ class CorrelatorService(TornadoService):
                 vars=req.vars,
                 reference=req.reference,
                 groups=groups,
-                labels=req.labels,
+                labels=req.labels or [],
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )
@@ -830,7 +831,7 @@ class CorrelatorService(TornadoService):
                 alarm_class=alarm_class,
                 vars={"name": req.name or "Group"},
                 reference=req.reference,
-                labels=req.labels,
+                labels=req.labels or [],
             )
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {

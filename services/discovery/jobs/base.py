@@ -322,6 +322,7 @@ class MODiscoveryJob(PeriodicJob):
                     "alarm_class": p.alarm_class,
                     "managed_object": self.object.id,
                     "timestamp": now,
+                    "labels": p.labels,
                     "vars": d_vars,
                 }
             ]
