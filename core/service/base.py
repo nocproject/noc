@@ -137,8 +137,6 @@ class BaseService(object):
         self.mx_metrics_queue: Optional[QBuffer] = None
         self.mx_metrics_scopes: Dict[str, Callable] = {}
         self.mx_partitions: int = 0
-        # Dispose publisher partitions
-        self.pool_partitions: Dict[str, int] = {}
         #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
