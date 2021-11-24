@@ -1924,10 +1924,6 @@ class ManagedObject(NOCModel):
         # @todo: Calculate partition properly
         fm_pool = self.get_effective_fm_pool().name
         stream = f"dispose.{fm_pool}"
-        # num_partitions = self.service.pool_partitions.get(fm_pool)
-        # if not num_partitions:
-        #     num_partitions = await self.service.get_stream_partitions(stream)
-        #     self.service.pool_partitions[fm_pool] = num_partitions
         return stream, 0
 
     @classmethod

@@ -596,11 +596,11 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("%d alarms detected", len(alarms))
         if events:
             self.logger.info("%d events detected", len(events))
-        print("Alarms", alarms)
         self.job.update_alarms(
-            self.umbrella_cls, alarms, group_reference=f"g:t:{self.object.id}:{self.umbrella_cls}"
+            alarms,
+            group_cls=self.umbrella_cls,
+            group_reference=f"g:t:{self.object.id}:{self.umbrella_cls}",
         )
-        # self.job.update_umbrella(self.get_ac_pm_thresholds(), alarms)
 
     def convert_delta(self, m, r):
         """
@@ -979,13 +979,12 @@ class MetricsCheck(DiscoveryCheck):
         :param sla_probe:
         :return: List of dicts or empty list
         """
-        self.logger.info("Get Umbrella Alarm CFG: %s", metric_config)
+        self.logger.debug("Get Umbrella Alarm CFG: %s", metric_config)
         alarm_cfg = {
             "alarm_class": threshold.alarm_class,
             "path": path,
             "vars": {
                 "path": [path],
-                "labels": labels or [],
                 "metric": metric_config.metric_type.name,
                 "ovalue": value,
                 "tvalue": threshold.value,
@@ -1014,6 +1013,7 @@ class MetricsCheck(DiscoveryCheck):
             ProblemItem(
                 alarm_class=threshold.alarm_class,
                 path=[path],
+                labels=labels or [],
                 vars=alarm_cfg["vars"],
             )
         ]

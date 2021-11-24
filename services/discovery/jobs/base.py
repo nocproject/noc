@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -80,7 +80,8 @@ class MODiscoveryJob(PeriodicJob):
             )
         super().schedule_next(status)
         # Update alarm statuses
-        self.update_alarms(self.umbrella_cls, self.problems)
+        # Clean up all open alarms as they has been disabled
+        self.update_alarms(self.problems if self.get_umbrella_settings() else [], self.umbrella_cls)
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
@@ -295,45 +296,35 @@ class MODiscoveryJob(PeriodicJob):
             AlarmEscalation.watch_escalations(umbrella)
 
     def update_alarms(
-        self, group_cls: str, problems: List[ProblemItem], group_reference: str = None
+        self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
     ):
-        prev_status = self.context.get("umbrella_settings", False)
-        current_status = self.can_update_alarms()
-        # @todo Save reference for check changes
-        self.context["umbrella_settings"] = current_status
-
-        if not prev_status and not current_status:
-            return
+        # @todo Save reference to job context
         self.logger.info("Updating alarm statuses")
-        group_cls = AlarmClass.get_by_name(group_cls)
+        group_cls = AlarmClass.get_by_name(group_cls or "Group")
         if not group_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []
-        if current_status:
-            now = datetime.datetime.now()
-            for p in problems:
-                if not p.alarm_class:
-                    continue
-                ac = AlarmClass.get_by_name(p.alarm_class)
-                if not ac:
-                    self.logger.info("Unknown alarm class %s. Skipping", p.alarm_class)
-                    continue
-                d_vars = {"path": " | ".join(p.path), "message": p.message}
-                if p.vars:
-                    d_vars.update(p.vars)
-                details += [
-                    {
-                        "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
-                        "alarm_class": p.alarm_class,
-                        "managed_object": self.object.id,
-                        "timestamp": now,
-                        "vars": d_vars,
-                    }
-                ]
-        else:
-            # Clean up all open alarms as they has been disabled
-            details = []
+        now = datetime.datetime.now()
+        for p in problems:
+            if not p.alarm_class:
+                continue
+            ac = AlarmClass.get_by_name(p.alarm_class)
+            if not ac:
+                self.logger.info("Unknown alarm class %s. Skipping", p.alarm_class)
+                continue
+            d_vars = {"path": " | ".join(p.path), "message": p.message}
+            if p.vars:
+                d_vars.update(p.vars)
+            details += [
+                {
+                    "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
+                    "alarm_class": p.alarm_class,
+                    "managed_object": self.object.id,
+                    "timestamp": now,
+                    "vars": d_vars,
+                }
+            ]
         msg = {
             "$op": "ensure_group",
             "reference": group_reference or f"g:d:{self.object.id}:{group_cls.name}",
@@ -346,9 +337,24 @@ class MODiscoveryJob(PeriodicJob):
             stream=stream,
             partition=partition,
         )
-        self.logger.info(
+        self.logger.debug(
             "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
         )
+
+    def get_umbrella_settings(self) -> bool:
+        """
+        Check enable Alarm for Discovery
+        :param self:
+        :return:
+        """
+        prev_status = self.context.get("umbrella_settings", False)
+        current_status = self.can_update_alarms()
+
+        self.context["umbrella_settings"] = current_status
+
+        if not prev_status and not current_status:
+            return False
+        return True
 
     def can_update_alarms(self):
         return False

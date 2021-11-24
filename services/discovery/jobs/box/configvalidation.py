@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ConfigValidation check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -31,7 +31,9 @@ class ConfigValidationCheck(DiscoveryCheck):
         else:
             self.logger.info("No problems detected")
         self.job.update_alarms(
-            self.umbrella_cls, problems, group_reference=f"g:c:{self.object.id}:{self.umbrella_cls}"
+            problems,
+            group_cls=self.umbrella_cls,
+            group_reference=f"g:c:{self.object.id}:{self.umbrella_cls}",
         )
 
     def is_enabled(self):
