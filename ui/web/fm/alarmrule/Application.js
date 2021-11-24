@@ -63,6 +63,24 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     fieldLabel: __("Group Alarm"),
                     columns: [
                         {
+                            text: __("Minimum alarms"),
+                            dataIndex: "min_threshold",
+                            editor: {
+                                xtype: "numberfield"
+                            },
+                            minValue: 0,
+                            defaultValue: 0,
+                        },
+                        {
+                            text: __("Window (sec.)"),
+                            dataIndex: "window",
+                            editor: {
+                                xtype: "numberfield"
+                            },
+                            minValue: 0,
+                            defaultValue: 0,
+                        },
+                        {
                             text: __("Reference Template"),
                             dataIndex: "reference_template",
                             editor: "textfield",
@@ -81,7 +99,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: "textfield",
                             allowBlank: true,
                             flex: 1
-                        }
+                        },
                     ]
                 },
                 {

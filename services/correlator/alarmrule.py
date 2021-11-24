@@ -35,8 +35,8 @@ class Group(object):
     alarm_class: AlarmClass
     title_template: Template
     labels: Optional[List[str]] = None
-    min_threshold: int
-    window: int
+    min_threshold: int = 0
+    window: int = 0
 
 
 @dataclass
@@ -45,8 +45,8 @@ class GroupItem(object):
     alarm_class: AlarmClass
     title: str
     labels: Optional[List[str]] = None
-    min_threshold: int
-    window: int
+    min_threshold: int = 0
+    window: int = 0
 
 
 class AlarmRule(object):
