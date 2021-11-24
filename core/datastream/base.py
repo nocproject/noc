@@ -59,6 +59,8 @@ class DataStream(object):
 
     BULK_SIZE = 500
 
+    META_MAX_DEPTH = 3
+
     _collections: Dict[str, pymongo.collection.Collection] = {}
     _collections_async: Dict[str, pymongo.collection.Collection] = {}
 
@@ -138,6 +140,15 @@ class DataStream(object):
         """
         return {"id": str(id), "$deleted": True}
 
+    @classmethod
+    def get_moved_object(cls, id: Union[str, int]) -> Dict[str, Any]:
+        """
+        Generate item for deleted object
+        :param id:
+        :return:
+        """
+        return {"id": str(id), "$moved": True}
+
     @staticmethod
     def get_hash(data) -> str:
         return hashlib.sha256(orjson.dumps(data)).hexdigest()[: DataStream.HASH_LEN]
@@ -156,7 +167,9 @@ class DataStream(object):
             chunk, objects = objects[: cls.BULK_SIZE], objects[cls.BULK_SIZE :]
             current_state = {
                 doc[cls.F_ID]: doc
-                for doc in coll.find({cls.F_ID: {"$in": chunk}}, {cls.F_ID: 1, cls.F_HASH: 1})
+                for doc in coll.find(
+                    {cls.F_ID: {"$in": chunk}}, {cls.F_ID: 1, cls.F_HASH: 1, cls.F_META: 1}
+                )
             }
             bulk = []
             fmt_data = defaultdict(list)
@@ -174,7 +187,7 @@ class DataStream(object):
                 current_state = {
                     doc[cls.F_ID]: doc
                     for doc in fmt_coll[fmt].find(
-                        {cls.F_ID: {"$in": fmt_ids}}, {cls.F_ID: 1, cls.F_HASH: 1}
+                        {cls.F_ID: {"$in": fmt_ids}}, {cls.F_ID: 1, cls.F_HASH: 1, cls.F_META: 1}
                     )
                 }
                 fmt_bulk[fmt] = []
@@ -189,6 +202,39 @@ class DataStream(object):
                 if bulk:
                     logger.info("[%s|%s] Sending %d bulk operations", cls.name, fmt, len(bulk))
                     fmt_coll[fmt].bulk_write(bulk, ordered=True)
+
+    @classmethod
+    def clean_meta(cls, meta: Dict[str, List[Any]], current_meta: Dict[str, Any]):
+        """
+        Calculate actual meta from calculate and current records
+
+        :param meta: Calculated meta
+        :param current_meta: Meta value for current record
+        :return:
+        """
+        r = {}  # current meta
+        # Compare meta
+        for mf, mv in meta.items():
+            if not mv and isinstance(mv, list) and not current_meta.get(mf):
+                r[mf] = []
+                continue
+            elif mf not in current_meta or not current_meta[mf]:
+                # @todo Save empty list ?
+                r[mf] = [mv]
+                continue
+            r[mf] = current_meta[mf]
+            # Check old format
+            if isinstance(r[mf], str):
+                r[mf] = [r[mf]]
+            elif isinstance(mv, list) and not isinstance(r[mf][0], list):
+                r[mf] = [r[mf]]
+            # Check changes
+            if r[mf] and r[mf][0] == mv:
+                continue
+            r[mf].insert(0, mv)
+            # Check max depth
+            r[mf] = r[mf][: cls.META_MAX_DEPTH]
+        return r
 
     @classmethod
     def _update_object(cls, data, meta=None, fmt=None, state=None, bulk=None) -> bool:
@@ -207,7 +253,9 @@ class DataStream(object):
         if state:
             doc = state.get(obj_id)
         else:
-            doc = cls.get_collection(fmt).find_one({cls.F_ID: obj_id}, {cls.F_ID: 0, cls.F_HASH: 1})
+            doc = cls.get_collection(fmt).find_one(
+                {cls.F_ID: obj_id}, {cls.F_ID: 0, cls.F_HASH: 1, cls.F_META: 1}
+            )
         if not is_changed(doc, hash):
             logger.info("[%s] Object hasn't been changed", l_name)
             return False  # Not changed
@@ -227,7 +275,9 @@ class DataStream(object):
             }
         }
         if meta:
-            op["$set"][cls.F_META] = meta
+            op["$set"][cls.F_META] = cls.clean_meta(
+                meta, doc[cls.F_META] if doc and doc.get(cls.F_META) else {}
+            )
         elif "$deleted" not in data:
             op["$unset"] = {cls.F_META: ""}
         if bulk is None:
@@ -332,22 +382,36 @@ class DataStream(object):
             raise ValueError(str(e))
 
     @classmethod
-    async def iter_data_async(cls, change_id, limit, filters, fmt):
-        q = {}
-        if filters:
-            q.update(cls.compile_filters(filters))
-        if change_id:
-            q[cls.F_CHANGEID] = {"$gt": cls.clean_change_id(change_id)}
-        coll = cls.get_collection_async(fmt)
-        async for doc in (
-            coll.find(q, {cls.F_ID: 1, cls.F_CHANGEID: 1, cls.F_DATA: 1})
-            .sort([(cls.F_CHANGEID, pymongo.ASCENDING)])
-            .limit(limit=limit or cls.DEFAULT_LIMIT)
-        ):
-            yield doc[cls.F_ID], doc[cls.F_CHANGEID], doc[cls.F_DATA]
+    def is_moved(cls, meta: Dict[str, List[Any]], meta_filters: Dict[str, Any]) -> bool:
+        """
+        Check record is out of filter scope. Check filter diff on meta and record value
+        :param meta:
+        :param meta_filters:
+        :return:
+        """
+        for field, field_value in meta_filters.items():
+            if not field.startswith("meta."):
+                # Not meta query
+                continue
+            _, field = field.split(".", 1)
+            if field not in meta or not meta[field]:
+                continue
+            if isinstance(meta[field], str):
+                # Old meta format
+                return False
+            if meta[field][0] != field_value:
+                return True
+        return False
 
     @classmethod
-    def iter_data(cls, change_id=None, limit=None, filters=None, fmt=None):
+    async def iter_data_async(
+        cls,
+        change_id: str = None,
+        limit: int = None,
+        filters: List[str] = None,
+        fmt=None,
+        filter_policy: Optional[str] = None,
+    ):
         """
         Iterate over data items beginning from change id
 
@@ -356,20 +420,94 @@ class DataStream(object):
         :param limit: Records limit
         :param filters: List of strings with filter expression
         :param fmt: Format
+        :param filter_policy: Metadata changed policy. Behavior if metadata change out of filter scope
+                   * default - no changes
+                   * delete - return $delete message
+                   * keep - ignore filter, return full record
+                   * move - return $moved message
         :return: (id, change_id, data)
         """
-        q = {}
+        q, meta_filters = {}, {}
         if filters:
-            q.update(cls.compile_filters(filters))
+            cf = cls.compile_filters(filters)
+            q.update(cf)
+            meta_filters = {k: v for k, v in cf.items() if k.startswith("meta.")}
+        if change_id:
+            q[cls.F_CHANGEID] = {"$gt": cls.clean_change_id(change_id)}
+        coll = cls.get_collection_async(fmt)
+        async for doc in (
+            coll.find(q, {cls.F_ID: 1, cls.F_CHANGEID: 1, cls.F_DATA: 1, cls.F_META: 1})
+            .sort([(cls.F_CHANGEID, pymongo.ASCENDING)])
+            .limit(limit=limit or cls.DEFAULT_LIMIT)
+        ):
+            data = doc[cls.F_DATA]
+            if not meta_filters or filter_policy == "keep":
+                # Optimization for exclude is_moved check
+                yield doc[cls.F_ID], doc[cls.F_CHANGEID], data
+                continue
+            is_moved = cls.is_moved(doc[cls.F_META], meta_filters)
+            if is_moved and (filter_policy == "default" or not filter_policy):
+                # Default behavior - skip record
+                continue
+            elif is_moved and filter_policy in {"delete", "move"}:
+                data = {cls.F_CHANGEID: str(doc[cls.F_CHANGEID])}
+                h = {"delete": cls.get_deleted_object, "move": cls.get_moved_object}[filter_policy]
+                data.update(h(doc[cls.F_ID]))
+                data = smart_text(orjson.dumps(data))
+            yield doc[cls.F_ID], doc[cls.F_CHANGEID], data
+
+    @classmethod
+    def iter_data(
+        cls,
+        change_id: str = None,
+        limit: int = None,
+        filters: List[str] = None,
+        fmt=None,
+        filter_policy: Optional[str] = None,
+    ):
+        """
+        Iterate over data items beginning from change id
+
+        Raises ValueError if filters has incorrect input parameters
+        :param change_id: Staring change id
+        :param limit: Records limit
+        :param filters: List of strings with filter expression
+        :param fmt: Format
+        :param filter_policy: Metadata changed policy. Behavior if metadata change out of filter scope
+                   * default - no changes
+                   * delete - return $delete message
+                   * keep - ignore filter, return full record
+                   * move - return $moved message
+        :return: (id, change_id, data)
+        """
+        q, meta_filters = {}, {}
+        if filters:
+            cf = cls.compile_filters(filters)
+            q.update(cf)
+            meta_filters = {k: v for k, v in cf.items() if k.startswith("meta.")}
         if change_id:
             q[cls.F_CHANGEID] = {"$gt": cls.clean_change_id(change_id)}
         coll = cls.get_collection(fmt)
         for doc in (
-            coll.find(q, {cls.F_ID: 1, cls.F_CHANGEID: 1, cls.F_DATA: 1})
+            coll.find(q, {cls.F_ID: 1, cls.F_CHANGEID: 1, cls.F_DATA: 1, cls.F_META: 1})
             .sort([(cls.F_CHANGEID, pymongo.ASCENDING)])
             .limit(limit=limit or cls.DEFAULT_LIMIT)
         ):
-            yield doc[cls.F_ID], doc[cls.F_CHANGEID], doc[cls.F_DATA]
+            data = doc[cls.F_DATA]
+            if not meta_filters or filter_policy == "keep":
+                # Optimization for exclude is_moved check
+                yield doc[cls.F_ID], doc[cls.F_CHANGEID], data
+                continue
+            is_moved = cls.is_moved(doc[cls.F_META], meta_filters)
+            if is_moved and (filter_policy == "default" or not filter_policy):
+                # Default behavior - skip record
+                continue
+            elif is_moved and filter_policy in {"delete", "move"}:
+                data = {cls.F_CHANGEID: str(doc[cls.F_CHANGEID])}
+                h = {"delete": cls.get_deleted_object, "move": cls.get_moved_object}[filter_policy]
+                data.update(h(doc[cls.F_ID]))
+                data = smart_text(orjson.dumps(data))
+            yield doc[cls.F_ID], doc[cls.F_CHANGEID], data
 
     @classmethod
     def on_change(cls, data):

@@ -36,6 +36,13 @@ class DataStreamClient(object):
         :return:
         """
 
+    async def on_move(self, data):
+        """
+        Called on each moved item received through datastream
+        :param data:
+        :return:
+        """
+
     async def on_delete(self, data):
         """
         Called on each deleted item received through datastream
@@ -55,13 +62,19 @@ class DataStreamClient(object):
         filters=None,
         block: bool = False,
         limit: Optional[int] = None,
+        filter_policy: Optional[str] = None,
     ):
         """
         Query datastream
-        :param change_id:
-        :param filters:
+        :param change_id: Staring change id
+        :param filters: List of strings with filter expression
         :param block:
-        :param limit:
+        :param limit: Records limit
+        :param filter_policy: Metadata changed policy. Behavior if metadata change out of filter scope
+                   * default - no changes
+                   * delete - return $delete message
+                   * keep - ignore filter, return full record
+                   * move - return $moved message
         :return:
         """
         # Basic URL and query
@@ -73,6 +86,8 @@ class DataStreamClient(object):
             base_qs += ["block=1"]
         if limit:
             base_qs += [f"limit={limit}"]
+        if filter_policy:
+            base_qs += [f"filter_policy={filter_policy}"]
         req_headers = {"X-NOC-API-Access": f"datastream:{self.name}"}
         loop = asyncio.get_running_loop()
         # Continue until finish
@@ -110,6 +125,8 @@ class DataStreamClient(object):
             for item in data:
                 if "$deleted" in item:
                     await self.on_delete(item)
+                elif "$moved" in item:
+                    await self.on_move(item)
                 else:
                     await self.on_change(item)
             #

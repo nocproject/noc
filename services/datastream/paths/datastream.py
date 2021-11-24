@@ -186,6 +186,9 @@ class DatastreamAPI(object):
             ds_id: Optional[List[str]] = Query(None, aplias="id"),
             ds_format: Optional[str] = Query(None, alias="format"),
             ds_from: Optional[str] = Query(None, alias="from"),
+            ds_filter_policy: Optional[str] = Query(
+                None, alias="filter_policy", regex=r"^(default|delete|keep|move)$"
+            ),
             block: Optional[int] = None,
         ):
             # Increase limit by 1 to detect datastream has more data
@@ -215,7 +218,11 @@ class DatastreamAPI(object):
                 r = []
                 try:
                     async for item_id, change_id, data in datastream.iter_data_async(
-                        limit=limit, filters=filters, change_id=change_id, fmt=fmt
+                        limit=limit,
+                        filters=filters,
+                        change_id=change_id,
+                        fmt=fmt,
+                        filter_policy=ds_filter_policy,
                     ):
                         if not first_change:
                             first_change = change_id
