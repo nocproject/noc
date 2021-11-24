@@ -197,7 +197,7 @@ class Command(BaseCommand):
                 if key not in headers:
                     headers += [key]
                     width += [40]
-                row.insert(headers.count(key), r[key])
+                row.insert(headers.index(key), r[key])
             table += [row]
         if table:
             self.print("Result:\n", format_table(width, [headers] + table))
