@@ -81,7 +81,8 @@ Ext.define("NOC.cm.confdbquery.Application", {
                                 store: [
                                     ["str", "str"],
                                     ["int", "int"],
-                                    ["bool", "bool"]
+                                    ["bool", "bool"],
+                                    ["ip", "IP"]
                                 ]
                             }
                         },
