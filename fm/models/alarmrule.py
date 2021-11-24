@@ -18,6 +18,7 @@ from mongoengine.fields import (
     BooleanField,
     ListField,
     LongField,
+    IntField,
     ReferenceField,
     EmbeddedDocumentField,
 )
@@ -53,6 +54,10 @@ class Group(EmbeddedDocument):
     alarm_class = PlainReferenceField(AlarmClass)
     # Group Title template
     title_template = StringField(default="")
+    # Minimum amount of alarms to create the group
+    min_threshold = IntField(default=0)
+    # Correlation window in seconds to check min_threshold
+    window = IntField(default=0)
 
     def __str__(self):
         return f'{self.alarm_class or ""}/{self.title_template or ""}: {self.reference_template}'
