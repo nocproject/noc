@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ConfDBQuery model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,19 +22,31 @@ from mongoengine.fields import (
 import cachetools
 
 # NOC modules
+from noc.core.ip import IP
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
 
+
+class IPParameter(object):
+    def clean(self, value):
+        return IP.prefix(value)
+
+
 id_lock = threading.Lock()
-TYPE_MAP = {"str": StringParameter(), "int": IntParameter(), "bool": BooleanParameter()}
+TYPE_MAP = {
+    "str": StringParameter(),
+    "int": IntParameter(),
+    "bool": BooleanParameter(),
+    "ip": IPParameter(),
+}
 
 
 class ConfDBQueryParam(EmbeddedDocument):
     meta = {"strict": False}
     name = StringField()
-    type = StringField(choices=["str", "int", "bool"])
+    type = StringField(choices=["str", "int", "bool", "ip"])
     default = StringField()
     description = StringField()
 
