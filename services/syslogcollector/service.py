@@ -133,6 +133,7 @@ class SyslogCollectorService(TornadoService):
                     limit=config.syslogcollector.ds_limit,
                     filters=["pool(%s)" % config.pool],
                     block=True,
+                    filter_policy="delete",
                 )
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
