@@ -90,6 +90,7 @@ from noc.core.confdb.engine.base import Engine
 from noc.core.comp import smart_text, smart_bytes
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.core.models.problem import ProblemItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -149,6 +150,7 @@ logger = logging.getLogger(__name__)
         ("inv.DiscoveryID", "object"),
         ("inv.Sensor", "managed_object"),
         ("sa.ObjectCapabilities", "object"),
+        ("sa.ObjectData", "_id"),
     ],
     clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
 )
@@ -1243,7 +1245,7 @@ class ManagedObject(NOCModel):
             return False
         return True
 
-    def iter_validation_problems(self, changed):
+    def iter_validation_problems(self, changed: bool) -> Iterable[ProblemItem]:
         """
         Yield validation problems
 
@@ -1912,6 +1914,17 @@ class ManagedObject(NOCModel):
         # @todo: Calculate partition properly
         pool = self.get_effective_fm_pool().name
         return "events.%s" % pool, 0
+
+    @property
+    def alarms_stream_and_partition(self) -> Tuple[str, int]:
+        """
+        Return publish stream and partition for alarms
+        :return: stream name, partition
+        """
+        # @todo: Calculate partition properly
+        fm_pool = self.get_effective_fm_pool().name
+        stream = f"dispose.{fm_pool}"
+        return stream, 0
 
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:

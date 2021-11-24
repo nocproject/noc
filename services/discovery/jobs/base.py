@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,12 +19,14 @@ from time import perf_counter
 # Third-party modules
 import bson
 import cachetools
+import orjson
 from pymongo import UpdateOne
 from typing import List, Dict
 from builtins import str, object
 
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.core.models.problem import ProblemItem
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -63,7 +65,7 @@ class MODiscoveryJob(PeriodicJob):
         self.out_buffer = StringIO()
         self.logger = PrefixLoggerAdapter(self.logger, "", target=self.out_buffer)
         self.check_timings = []
-        self.problems = []
+        self.problems: List[ProblemItem] = []
         self.caps = None
         self.has_fatal_error = False
         self.service = self.scheduler.service
@@ -78,18 +80,23 @@ class MODiscoveryJob(PeriodicJob):
             )
         super().schedule_next(status)
         # Update alarm statuses
-        self.update_alarms()
+        # Clean up all open alarms as they has been disabled
+        self.update_alarms(self.problems if self.get_umbrella_settings() else [], self.umbrella_cls)
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
         for p in list(self.problems):
-            if p["check"] not in problems:
-                problems[p["check"]] = defaultdict(str)
-            if p["path"]:
-                problems[p["check"]][p["path"]] = p["message"]
+            if not p.check:
+                # Not Discovery problem
+                continue
+            path = " | ".join(p.path)
+            if p.check not in problems:
+                problems[p.check] = defaultdict(str)
+            if p.path:
+                problems[p.check][path] = p.message
             else:
                 # p["path"] == ""
-                problems[p["check"]][p["path"]] += "; %s" % p["message"]
+                problems[p.check][path] += "; %s" % p.message
         get_db()["noc.joblog"].update(
             {"_id": key},
             {
@@ -147,15 +154,17 @@ class MODiscoveryJob(PeriodicJob):
             kwargs,
         )
         self.problems += [
-            {
-                "check": check,
-                "alarm_class": alarm_class,
-                # in MongoDB Key must be string
-                "path": str(path) if path else "",
-                "message": message,
-                "fatal": fatal,
-                "vars": kwargs,
-            }
+            ProblemItem(
+                **{
+                    "check": check,
+                    "alarm_class": alarm_class,
+                    # in MongoDB Key must be string
+                    "path": [str(path)] if path else [],
+                    "message": message,
+                    "fatal": fatal,
+                    "vars": kwargs,
+                }
+            )
         ]
         if fatal:
             self.has_fatal_error = True
@@ -286,43 +295,67 @@ class MODiscoveryJob(PeriodicJob):
         if umbrella and umbrella_changed:
             AlarmEscalation.watch_escalations(umbrella)
 
-    def update_alarms(self):
-        prev_status = self.context.get("umbrella_settings", False)
-        current_status = self.can_update_alarms()
-        self.context["umbrella_settings"] = current_status
-
-        if not prev_status and not current_status:
-            return
+    def update_alarms(
+        self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
+    ):
+        # @todo Save reference to job context
         self.logger.info("Updating alarm statuses")
-        umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
-        if not umbrella_cls:
+        group_cls = AlarmClass.get_by_name(group_cls or "Group")
+        if not group_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []
-        if current_status:
-            fatal_weight = self.get_fatal_alarm_weight()
-            weight = self.get_alarm_weight()
-            for p in self.problems:
-                if not p["alarm_class"]:
-                    continue
-                ac = AlarmClass.get_by_name(p["alarm_class"])
-                if not ac:
-                    self.logger.info("Unknown alarm class %s. Skipping", p["alarm_class"])
-                    continue
-                details += [
-                    {
-                        "alarm_class": ac,
-                        "path": p["path"],
-                        "severity": AlarmSeverity.severity_for_weight(
-                            fatal_weight if p["fatal"] else weight
-                        ),
-                        "vars": {"path": p["path"], "message": p["message"]},
-                    }
-                ]
-        else:
-            # Clean up all open alarms as they has been disabled
-            details = []
-        self.update_umbrella(umbrella_cls, details)
+        now = datetime.datetime.now()
+        for p in problems:
+            if not p.alarm_class:
+                continue
+            ac = AlarmClass.get_by_name(p.alarm_class)
+            if not ac:
+                self.logger.info("Unknown alarm class %s. Skipping", p.alarm_class)
+                continue
+            d_vars = {"path": " | ".join(p.path), "message": p.message}
+            if p.vars:
+                d_vars.update(p.vars)
+            details += [
+                {
+                    "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
+                    "alarm_class": p.alarm_class,
+                    "managed_object": self.object.id,
+                    "timestamp": now,
+                    "labels": p.labels,
+                    "vars": d_vars,
+                }
+            ]
+        msg = {
+            "$op": "ensure_group",
+            "reference": group_reference or f"g:d:{self.object.id}:{group_cls.name}",
+            "alarm_class": group_cls.name,
+            "alarms": details,
+        }
+        stream, partition = self.object.alarms_stream_and_partition
+        self.service.publish(
+            orjson.dumps(msg),
+            stream=stream,
+            partition=partition,
+        )
+        self.logger.debug(
+            "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
+        )
+
+    def get_umbrella_settings(self) -> bool:
+        """
+        Check enable Alarm for Discovery
+        :param self:
+        :return:
+        """
+        prev_status = self.context.get("umbrella_settings", False)
+        current_status = self.can_update_alarms()
+
+        self.context["umbrella_settings"] = current_status
+
+        if not prev_status and not current_status:
+            return False
+        return True
 
     def can_update_alarms(self):
         return False
@@ -1572,7 +1605,6 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
 
 
 # Avoid circular references
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation

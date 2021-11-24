@@ -28,5 +28,5 @@ class EnsureGroupRequest(BaseModel):
     reference: str
     name: Optional[str]
     alarm_class: Optional[str]
-    labels: Optional[str]
+    labels: Optional[List[str]]
     alarms: List[AlarmItem]

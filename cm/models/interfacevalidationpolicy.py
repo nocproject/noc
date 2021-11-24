@@ -20,11 +20,13 @@ from mongoengine.fields import (
 )
 from jinja2 import Template
 import cachetools
+from typing import Iterable
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.fm.models.alarmclass import AlarmClass
+from noc.core.models.problem import ProblemItem
 from .confdbquery import ConfDBQuery
 
 id_lock = threading.Lock()
@@ -67,7 +69,7 @@ class InterfaceValidationPolicy(Document):
     def get_by_id(cls, id):
         return InterfaceValidationPolicy.objects.filter(id=id).first()
 
-    def iter_problems(self, engine, ifname):
+    def iter_problems(self, engine, ifname: str) -> Iterable[ProblemItem]:
         """
         Check rules against ConfDB engine
 
@@ -92,12 +94,12 @@ class InterfaceValidationPolicy(Document):
                     path = [ifname]
                     if rule.error_code:
                         path += [rule.error_code]
-                    problem = {
-                        "alarm_class": rule.alarm_class.name if rule.alarm_class else None,
-                        "path": path,
-                        "message": tpl.render(ctx),
-                        "code": rule.error_code or None,
-                    }
-                    yield problem
+                    yield ProblemItem(
+                        alarm_class=rule.alarm_class.name if rule.alarm_class else None,
+                        path=path,
+                        message=tpl.render(ctx),
+                        code=rule.error_code or None,
+                        vars={"interface": ifname},
+                    )
                     if rule.is_fatal:
                         return
