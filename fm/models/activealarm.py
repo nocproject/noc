@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 from collections import defaultdict
+from itertools import chain
 from typing import Optional, Set, Any, Dict
 
 # Third-party modules
@@ -174,7 +175,7 @@ class ActiveAlarm(Document):
         self.rca_neighbors = data.rca_neighbors
         self.dlm_windows = data.dlm_windows
         if not self.id:
-            self.effective_labels = self.iter_effective_labels(self)
+            self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
 
     def safe_save(self, **kwargs):
         """
@@ -855,14 +856,16 @@ class ActiveAlarm(Document):
 
     @classmethod
     def iter_effective_labels(cls, instance: "ActiveAlarm"):
-
-        return [ll for ll in instance.managed_object.effective_labels if cls.can_set_label(ll)]
+        yield instance.labels
+        yield [
+            ll
+            for ll in instance.managed_object.effective_labels
+            if Label.get_effective_setting(ll, "expose_alarm")
+        ]
 
     @classmethod
     def can_set_label(cls, label):
-        return Label.get_effective_setting(label, "enable_alarm") or Label.get_effective_setting(
-            label, "expose_alarm"
-        )
+        return Label.get_effective_setting(label, "enable_alarm")
 
 
 class ComponentHub(object):

@@ -34,7 +34,7 @@ class Group(object):
     reference_template: Template
     alarm_class: AlarmClass
     title_template: Template
-    labels: Optional[List[str]]
+    labels: Optional[List[str]] = None
 
 
 @dataclass
@@ -42,7 +42,7 @@ class GroupItem(object):
     reference: str
     alarm_class: AlarmClass
     title: str
-    labels: Optional[List[str]]
+    labels: Optional[List[str]] = None
 
 
 class AlarmRule(object):
