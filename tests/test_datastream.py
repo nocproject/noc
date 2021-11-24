@@ -213,7 +213,7 @@ def test_datastream_key_error(ds_index):
     else:
         assert "$deleted" not in doc["data"]
         assert "meta" in doc
-        assert doc["meta"]["n"] == ds_index / 2
+        assert doc["meta"]["n"][0] == ds_index / 2
 
 
 def test_datastream_delete_object():
