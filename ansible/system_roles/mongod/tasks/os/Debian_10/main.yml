@@ -1,14 +1,9 @@
-# mongodb debian
 ---
 - name: Add MongoDB apt key
   apt_key:
-    url: "{{ item.url }}"
-    id: "{{ item.id }}"
+    url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
+    id: "{{ mongo_apt_id[mongod_version] }}"
     state: present
-  with_items:
-    - { url: "https://www.mongodb.org/static/pgp/server-3.6.asc", id: 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5 }
-    - { url: "https://www.mongodb.org/static/pgp/server-4.0.asc", id: 9DA31620334BD75D9DCB49F368818C72E52529D4 }
-    - { url: "https://www.mongodb.org/static/pgp/server-4.2.asc", id: E162F504A20CDF15827F718D4B7C549A058F8B6B }
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -39,9 +34,6 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when:
-    - ansible_distribution == "Debian"
-    - ansible_distribution_version is version('10', '>=')
   tags:
     - repo
 
