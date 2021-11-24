@@ -12,7 +12,7 @@ import datetime
 import re
 from collections import defaultdict
 import threading
-from typing import Union, Any, Iterable, Optional, Dict, List, Set
+from typing import Union, Any, Iterable, Optional, Tuple, Dict, List, Set
 import operator
 from itertools import chain
 from hashlib import sha512
@@ -476,8 +476,9 @@ class CorrelatorService(TornadoService):
             for gi in rule.iter_groups(a):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
-        all_groups = await self.get_groups(a, alarm_groups.values())
+        all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
+        a.deferred_groups = deferred_groups
         # Save
         a.save()
         if event:
@@ -1079,18 +1080,79 @@ class CorrelatorService(TornadoService):
             correlate_uplinks(a)
         self.logger.debug("[%s] Correlation completed", alarm.id)
 
+    def get_group_deferred_count(
+        self, h_ref: bytes, min_ts: datetime.datetime, max_ts: datetime.datetime
+    ) -> int:
+        """
+        Get amount of waiting alarms for reference
+        """
+        for doc in ActiveAlarm._get_collection().aggregate(
+            [
+                {
+                    "$match": {
+                        "deferred_groups": h_ref,
+                        "timestamp": {"$gte": min_ts, "$lte": max_ts},
+                    }
+                },
+                {"$group": {"_id": None, "def_count": {"$sum": 1}}},
+                {"$project": {"_id": 0}},
+            ]
+        ):
+            return doc.get("def_count", 0) or 0
+        return 0
+
+    def resolve_deferred_groups(self, h_ref: bytes) -> None:
+        """
+        Mark all resolved groups as permanent
+        """
+        ActiveAlarm._get_collection().update_many(
+            {"deferred_group": h_ref},
+            {"$push": {"groups": h_ref}, "$pullAll": {"deferred_groups": [h_ref]}},
+        )
+        # Reset affected cached values
+        with ref_lock:
+            deprecated: List[str] = [
+                a_ref
+                for a_ref, alarm in self._reference_cache.items()
+                if alarm.deferred_groups and h_ref in alarm.deferred_groups
+            ]
+            for a_ref in deprecated:
+                del self._reference_cache[a_ref]
+
     async def get_groups(
         self, alarm: ActiveAlarm, groups: Iterable[GroupItem]
-    ) -> List[ActiveAlarm]:
+    ) -> Tuple[List[ActiveAlarm], List[bytes]]:
         """
         Resolve all groups and create when necessary
+
+        :param alarm: Active Alarm to match groups
+        :param groups: Iterable of group configurations
+        :returns: Tuple of list of active group alarms
+                  and the list of the deferred group references
         """
-        r: List[ActiveAlarm] = []
+        active: List[ActiveAlarm] = []
+        deferred: List[bytes] = []
         for group in groups:
             if group.reference == alarm.raw_reference:
                 continue  # Reference cycle
+            def_h_ref: Optional[bytes] = None
+            # Fetch or raise group alarm
             g_alarm = self.get_by_reference(group.reference)
             if not g_alarm:
+                if group.min_threshold > 0 and group.window > 0:
+                    # Check group has enough deferred alarms to raise thresholds
+                    h_ref = self.get_reference_hash(group.reference)
+                    w_delta = datetime.timedelta(seconds=group.window)
+                    n_waiting = self.get_group_deferred_count(
+                        h_ref, alarm.timestamp - w_delta, alarm.timestamp + w_delta
+                    )
+                    if n_waiting < group.min_threshold - 1:
+                        # Below the threshold, set group as deferred
+                        deferred.append(h_ref)
+                        continue
+                    else:
+                        # Pull deferred alarms later
+                        def_h_ref = h_ref
                 # Raise group alarm
                 g_alarm = await self.raise_alarm(
                     managed_object=alarm.managed_object,
@@ -1100,12 +1162,14 @@ class CorrelatorService(TornadoService):
                     reference=group.reference,
                     labels=group.labels,
                 )
-                if g_alarm:
+                if not g_alarm:
                     # Update cache
                     self._reference_cache[group.reference] = g_alarm
             if g_alarm:
-                r.append(g_alarm)
-        return r
+                active.append(g_alarm)
+                if def_h_ref:
+                    self.resolve_deferred_groups(def_h_ref)
+        return active, deferred
 
     async def clear_groups(self, groups: List[bytes], ts: Optional[datetime.datetime]) -> None:
         """

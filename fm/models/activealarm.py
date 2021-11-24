@@ -75,6 +75,7 @@ class ActiveAlarm(Document):
             "labels",
             "effective_labels",
             "groups",
+            "deferred_groups",
         ],
     }
     status = "A"
@@ -109,6 +110,8 @@ class ActiveAlarm(Document):
     root = ObjectIdField(required=False)
     # Group alarm references
     groups = ListField(BinaryField())
+    # Groups waiting to min_threshold quorum
+    deferred_groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_ts = DateTimeField(required=False)
