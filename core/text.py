@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -530,7 +530,7 @@ def format_table(widths, data, sep=" ", hsep=" "):
     # Calculate column widths
     widths = list(widths)
     for row in data:
-        widths = [max(x, len(y)) for x, y in zip(widths, row)]
+        widths = [max(x, len(str(y))) for x, y in zip(widths, row)]
     # Build print mask
     mask = sep.join("%%-%ds" % w for w in widths)
     out = [
