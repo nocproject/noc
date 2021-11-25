@@ -82,6 +82,7 @@ class SubgraphNode(BaseCDAGNode):
     config_cls = SubgraphConfig
     state_cls = SubgraphState
     categories = [Category.UTIL]
+    __slots__ = "state", "cdag", "input_mappings", "measure_node"
 
     def __init__(
         self,

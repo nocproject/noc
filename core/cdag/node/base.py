@@ -73,6 +73,18 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     config_cls_slot: Type  # Filled by metaclass
     state_cls_slot: Type  # Filled by metaclass
 
+    __slots__ = (
+        "node_id",
+        "description",
+        "state",
+        "config",
+        "_subscribers",
+        "_inputs",
+        "const_inputs",
+        "_const_value",
+        "sticky",
+    )
+
     def __init__(
         self,
         node_id: str,
