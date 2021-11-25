@@ -34,6 +34,7 @@ class MetricsNode(BaseCDAGNode):
     categories = [Category.UTIL]
     config_cls = MetricsNodeConfig
     dot_shape = "folder"
+    __slots__ = ("cleaners",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
