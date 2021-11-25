@@ -97,7 +97,7 @@ class TgSenderService(FastAPIService):
                     buf = StringIO()
                     for part, text in enumerate(split_text(body, file_size)):
                         part = part + 1
-                        buf.write("\n".join(text))
+                        buf.write(text)
                         buf.seek(0)
                         buf.name = f"part_{part}.txt"
                         if part > 1:
