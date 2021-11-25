@@ -64,8 +64,7 @@ class TgSenderService(FastAPIService):
 
     def send_tb(self, topic: str, data: str) -> None:
         body_l = 3000
-        # file_size = 5e7  # 50Mb
-        file_size = 5000
+        file_size = 5e7  # 50Mb
         t_type = "/sendMessage"
         subject = self.escape_markdown(smart_text(data["subject"], errors="ignore"))
         body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
