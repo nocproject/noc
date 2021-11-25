@@ -300,7 +300,13 @@ class MODiscoveryJob(PeriodicJob):
         self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
     ):
         """
-        Sync problems to alarm
+        Sync problems to alarm and use active_problems context variable
+        for check active alarm group.
+
+        * If empty problems and `group reference` not in active_problems- do nothing
+        * If empty problems and `group reference` in active_problems - send empty ensure_group to dispose and remove it from context
+        * If has problems - send ensure_group to dispose and save reference_group to active_problems context
+
         :param problems: List problems
         :param group_cls: Group Alarm Class
         :param group_reference: Group Reference
