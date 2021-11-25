@@ -631,26 +631,22 @@ def parse_table_header(v):
     return header
 
 
-def split_text(text: str, max_chunk: int) -> Iterable[str]:
+def split_text(text:str, max_chunk:int) -> Iterable[str]:
     """
     Split text by splitline if len > max_chunk
     :param text:
     :param max_chunk:
-    :return: Dictionary {part_number: text, part_number: text}
+    :return: Iterable[str]
     """
-    data = {}
-    part = 1
-    result = None
+    size = 0
+    result = []
     for line in text.splitlines():
-        if result:
-            if len(result) + len(line) >= max_chunk:
-                data.update({part: result})
-                result = line
-                part = part + 1
-            else:
-                result = f"{result}\n{line}"
+        if size + len(line) <= max_chunk:
+            result.append(line)
+            size = size + len(line)
         else:
-            result = line
+            size = 0
+            yield result
+            result = [line]
     else:
-        data.update({part: result})
-    return data
+        yield result

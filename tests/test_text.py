@@ -480,12 +480,12 @@ def test_ch_escape(config, expected):
         (
             "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad",
             500,
-            {1: "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad"},
+            ["sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad"],
         ),
         (
             "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad",
             50,
-            {1: "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa", 2: "sdasdasdasdsadasdasdsad"},
+            ["sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa", "sdasdasdasdsadasdasdsad"],
         ),
     ],
 )

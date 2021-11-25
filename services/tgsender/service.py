@@ -64,7 +64,8 @@ class TgSenderService(FastAPIService):
 
     def send_tb(self, topic: str, data: str) -> None:
         body_l = 3000
-        file_size = 5e7  # 50Mb
+        # file_size = 5e7  # 50Mb
+        file_size = 5000
         t_type = "/sendMessage"
         subject = self.escape_markdown(smart_text(data["subject"], errors="ignore"))
         body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
@@ -80,10 +81,9 @@ class TgSenderService(FastAPIService):
         if len(body) > body_l:
             caption = f"\* {subject} \*\*\n\n {body[0:500]}..."
             t_type = "/sendDocument"
-            r = split_text(body, file_size)
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
-            url = f"{self.url}{t_type}"
+            url = "".join([self.url, t_type])
             proxy = {}
             if config.tgsender.use_proxy and config.tgsender.proxy_address:
                 self.logger.info(f"USE PROXY {config.tgsender.proxy_address}")
@@ -95,8 +95,9 @@ class TgSenderService(FastAPIService):
                 else:
                     self.logger.info("Send Document")
                     buf = StringIO()
-                    for part, text in r.items():
-                        buf.write(text)
+                    for part, text in enumerate(split_text(body, file_size)):
+                        part = part + 1
+                        buf.write("\n".join(text))
                         buf.seek(0)
                         buf.name = f"part_{part}.txt"
                         if part > 1:
