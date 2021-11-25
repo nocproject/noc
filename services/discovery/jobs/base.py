@@ -21,7 +21,7 @@ import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict
+from typing import List, Dict, Any, Optional
 from builtins import str, object
 
 # NOC modules
@@ -81,7 +81,8 @@ class MODiscoveryJob(PeriodicJob):
         super().schedule_next(status)
         # Update alarm statuses
         # Clean up all open alarms as they has been disabled
-        self.update_alarms(self.problems if self.get_umbrella_settings() else [], self.umbrella_cls)
+        if self.get_umbrella_settings():
+            self.update_alarms(self.problems, self.umbrella_cls)
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
@@ -298,13 +299,25 @@ class MODiscoveryJob(PeriodicJob):
     def update_alarms(
         self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
     ):
-        # @todo Save reference to job context
+        """
+        Sync problems to alarm
+        :param problems: List problems
+        :param group_cls: Group Alarm Class
+        :param group_reference: Group Reference
+        :return:
+        """
         self.logger.info("Updating alarm statuses")
-        group_cls = AlarmClass.get_by_name(group_cls or "Group")
+        group_cls: Optional["AlarmClass"] = AlarmClass.get_by_name(group_cls or "Group")
         if not group_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
-        details = []
+
+        group_reference = group_reference or f"g:d:{self.object.id}:{group_cls.name}"
+        active_problems: Dict[str, List[str]] = self.context.get("active_problems", {})
+        if not problems and group_reference not in active_problems:
+            # No money, no honey
+            return
+        details: List[Dict[str, Any]] = []
         now = datetime.datetime.now()
         for p in problems:
             if not p.alarm_class:
@@ -328,7 +341,7 @@ class MODiscoveryJob(PeriodicJob):
             ]
         msg = {
             "$op": "ensure_group",
-            "reference": group_reference or f"g:d:{self.object.id}:{group_cls.name}",
+            "reference": group_reference,
             "alarm_class": group_cls.name,
             "alarms": details,
         }
@@ -341,6 +354,11 @@ class MODiscoveryJob(PeriodicJob):
         self.logger.debug(
             "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
         )
+        if not details and group_reference in active_problems:
+            del active_problems[group_reference]
+        else:
+            active_problems[group_reference] = [d["reference"] for d in details]
+        self.context["active_problems"] = active_problems
 
     def get_umbrella_settings(self) -> bool:
         """
