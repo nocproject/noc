@@ -490,4 +490,4 @@ def test_ch_escape(config, expected):
     ],
 )
 def test_split_text(config, max_chunk, expected):
-    assert split_text(config, max_chunk=max_chunk) == expected
+    assert list(split_text(config, max_chunk=max_chunk)) == expected

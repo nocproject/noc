@@ -631,7 +631,7 @@ def parse_table_header(v):
     return header
 
 
-def split_text(text:str, max_chunk:int) -> Iterable[str]:
+def split_text(text: str, max_chunk: int) -> Iterable[str]:
     """
     Split text by splitline if len > max_chunk
     :param text:
@@ -646,7 +646,7 @@ def split_text(text:str, max_chunk:int) -> Iterable[str]:
             size = size + len(line)
         else:
             size = 0
-            yield result
+            yield "\n".join(result)
             result = [line]
     else:
-        yield result
+        yield "\n".join(result)
