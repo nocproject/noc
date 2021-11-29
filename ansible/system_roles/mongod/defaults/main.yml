@@ -1,12 +1,11 @@
 ---
 mongod_logging_destination: "syslog"
 mongo_path: /usr/bin/mongo
-mongod_version: "4.0"
+mongod_version: "4.4"
 noc_mongo_admin_user: "root"
 mongod_db: "noc"
 mongod_password: "noc"
 mongod_rs: "noc"
-mongod_engine: "wiredTiger"
 mongod_user: "noc"
 
 mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
@@ -26,5 +25,12 @@ mongo_key: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
 mongo_listen_addr: "{{ ansible_host }}"
 
 # for master_unused
-#mongo_control_venv: /opt/pymongo
-#pymongo_version: ">3.2"
+mongo_control_venv: /opt/pymongo
+pymongo_version: 3.11.4
+
+mongo_apt_id:
+  3.6: "2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5"
+  4.0: "9DA31620334BD75D9DCB49F368818C72E52529D4"
+  4.2: "E162F504A20CDF15827F718D4B7C549A058F8B6B"
+  4.4: "20691EEC35216C63CAF66CE1656408E390CFB1F5"
+  5.0: "F5679A222C647C87527C2F8CB00A0BD1E2C63C11"
