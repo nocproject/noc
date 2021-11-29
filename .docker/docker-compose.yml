@@ -2,7 +2,7 @@ version: "2.4"
 
 services:
   mongo:
-    image: "mongo:4.0"
+    image: "mongo:4.4"
     command: --wiredTigerCacheSizeGB 1.5 --bind_ip_all --replSet noc --port 27017
     volumes:
       - ./files/mongo-init.js:/docker-entrypoint-initdb.d/01mongo-init.js
@@ -16,7 +16,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: noc
 
   mongodb-repl-set-init:
-    image: "mongo:4.0"
+    image: "mongo:4.4"
     depends_on:
       mongo:
         condition: service_started

@@ -5,7 +5,8 @@
     group: svc-mongo-primary
     host: "{{ item }}"
   with_items: "{{ groups['svc-mongod-exec'] }}"
-  when: "'bootstrap' in hostvars[item]['mongod_power']"
+  when:
+    - "'bootstrap' in hostvars[item]['mongod_power']"
 
 - name: Create mongod user
   user:
@@ -44,8 +45,8 @@
     - config
 
 - name: Generating mongo key file
-  template:
-    src: "mongo.key.j2"
+  copy:
+    content: "{{ mongo_key }}"
     dest: "{{ mongo_dir }}/mongo.key"
     owner: "{{ mongo_user }}"
     mode: "0400"

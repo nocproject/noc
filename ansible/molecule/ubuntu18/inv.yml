@@ -125,13 +125,12 @@ all:
           memcached_max_clients: 1024
           memcached_max_memory: 64
           mongod_db: noc
-          mongod_engine: wiredTiger
-          mongod_logging_destination: file
+          mongod_logging_destination: syslog
           mongod_password: noc
           mongod_power: server
           mongod_rs: noc
           mongod_user: noc
-          mongod_version: 4.0
+          mongod_version: 4.4
           mrt_loglevel: info
           mrt_max_concurrency: 50
           mrt_power: 2
