@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,7 +29,8 @@ class Script(BaseScript):
     rx_serial = re.compile(r"^\s*Serial number : (?P<serial>\S+)")
 
     rx_ver2 = re.compile(
-        r"^(?P<platform>S(?:KS|WA)\-\S+) Series Software, Version (?P<version>\S+)", re.MULTILINE
+        r"^(?P<platform>S(?:KS|WA)\-\S+) Series Software, Version (?P<version>\S+(?: Build \d+)?)",
+        re.MULTILINE,
     )
     rx_rs = re.compile(
         r"^ROM: System Bootstrap, Version (?P<bootprom>\S+),\s*"
