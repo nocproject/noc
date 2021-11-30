@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import codecs
 import os
 import bisect
 import inspect
