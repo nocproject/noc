@@ -16,8 +16,6 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 # NOC modules
-from noc.core.debug import error_report
-from noc.core.error import NOCError
 from noc.core.service.loader import get_service
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
@@ -57,7 +55,6 @@ router = APIRouter()
 @router.post("/api/grafanads/annotations")
 async def api_grafanads_annotations(req: Annotation):
     service = get_service()
-    print('req', req, type(req))
     f = dateutil.parser.parse(req.range.from_, ignoretz=False)
     t = dateutil.parser.parse(req.range.to, ignoretz=False)
     if f > t:
@@ -70,8 +67,7 @@ async def api_grafanads_annotations(req: Annotation):
     # Annotation to return in reply
     ra = req.annotation
     #
-    #result = await service.run_in_executor("db", get_annotations, f, t, ra)
-    result = await get_annotations(f, t, ra)
+    result = await service.run_in_executor("db", get_annotations, f, t, ra)
     return result
 
 
@@ -80,7 +76,7 @@ def api_grafanads():
     return "OK"
 
 
-async def get_annotations(f, t, annotation):
+def get_annotations(f, t, annotation):
     # @todo: Check object is exists
     # @todo: Check access
     mo = ManagedObject.get_by_id(int(annotation.query))
