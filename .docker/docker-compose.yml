@@ -3,7 +3,14 @@ version: "2.4"
 services:
   mongo:
     image: "mongo:4.4"
-    command: --wiredTigerCacheSizeGB 1.5 --bind_ip_all --keyFile=mongodb.key --replSet noc --port 27017
+    command: mongod --wiredTigerCacheSizeGB 1.5 --bind_ip_all --keyFile=mongodb.key --replSet noc --port 27017
+    entrypoint:
+        - sh
+        - -c
+        - |
+                chmod 600 mongodb.key
+                chown 999:999 mongodb.key
+                exec docker-entrypoint.sh $$@
     volumes:
       - ./files/mongo-init.js:/docker-entrypoint-initdb.d/01mongo-init.js
       - ./files/mongodb.key:/mongodb.key
