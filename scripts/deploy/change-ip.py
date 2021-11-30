@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     set_hosts_address(my_ip)
     change_ip_everywhere(ALL_PATHS, old_ip_address, my_ip)
-    
+
     print("Restarting services")
     os.system(f"chown nats {NATS_DEB_PATH}")
     os.system("systemctl restart nats-server")
