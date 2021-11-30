@@ -13,6 +13,8 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         status: "A",
         collapse: 1,
         maintenance: "hide",
+        alarm_group: "show",
+        ephemeral: 0,
         wait_tt: 0,
         managed_object: "",
         segment: "",
@@ -48,7 +50,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             this.openForm();
         } else {
             if(url[0] === "fm.alarm") {
-                if(queryStr && queryStr !== "__format=ext&status=A&maintenance=hide&collapse=1&cleared_after=0") {
+                if(queryStr && queryStr !== "__format=ext&status=A&alarm_group=show&maintenance=hide&collapse=1&ephemeral=0&cleared_after=0") {
                     this.deserialize(queryStr, viewModel);
                 } else {  // restore from local store
                     var filter = window.localStorage.getItem("fm-alarm-filter");
@@ -297,7 +299,9 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
         Ext.each([
             {key: "status"},
             {key: "maintenance"},
+            {key: "alarm_group"},
             {key: "collapse", defaultValue: 1},
+            {key: "ephemeral", defaultValue: 0},
             {key: "wait_tt", defaultValue: 1},
             // search field
             {key: "escalation_tt__contains"},

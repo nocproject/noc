@@ -204,7 +204,53 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
                             inputValue: "show"
                         }
                     ]
-                }
+                },
+                {
+                    xtype: "fieldcontainer",
+                    layout: "column",
+                    defaults: {
+                        xtype: "radiogroup",
+                        columns: 2,
+                        labelAlign: "top",
+                        columnWidth: .5
+                    },
+                    items: [
+                        {
+                            fieldLabel: __("Alarm Group"),
+                            name: "alarm_group",
+                            bind: {value: "{alarm_group}"},
+                            items: [
+                                {
+                                    boxLabel: __("Only"),
+                                    inputValue: "only"
+                                    // tooltip: __("Show only alarm causes"),
+                                },
+                                {
+                                    boxLabel: __("All"),
+                                    inputValue: "show"
+                                    // tooltip: __("Show all alarms")
+                                }
+                            ]
+                        },
+                        {
+                            name: "ephemeral",
+                            bind: {value: "{ephemeral}"},
+                            fieldLabel: "Ephemeral",
+                            items: [
+                                {
+                                    boxLabel: __("Show"),
+                                    inputValue: 1
+                                    // tooltip: __("Show only waiting confirmation"),
+                                },
+                                {
+                                    boxLabel: __("Hide"),
+                                    inputValue: 0
+                                    // tooltip: __("Show all alarms")
+                                }
+                            ]
+                        }
+                    ]
+                },
             ]
         },
         {

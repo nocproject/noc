@@ -302,6 +302,13 @@ Ext.define("NOC.fm.alarm.view.grids.Grid", {
             width: 30,
             align: "right",
             sortable: false
+        },
+        {
+            text: __("Grouped"),
+            dataIndex: "total_grouped",
+            width: 30,
+            align: "right",
+            sortable: false
         }
     ],
     viewConfig: {

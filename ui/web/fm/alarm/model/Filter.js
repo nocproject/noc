@@ -26,6 +26,14 @@ Ext.define("NOC.fm.alarm.model.Filter", {
             type: "string"
         },
         {
+            name: "alarm_group",
+            type: "string"
+        },
+        {
+            name: "ephemeral",
+            type: "int"
+        },
+        {
             name: "managed_object",
             type: "int"
         },
