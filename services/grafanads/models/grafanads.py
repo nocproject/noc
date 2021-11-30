@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# grafanads API endpoint
+# Pydentic models for grafanads service
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
@@ -31,4 +31,4 @@ class AnnotationSection(BaseModel):
 class Annotation(BaseModel):
     range: RangeSection
     annotation: AnnotationSection
-    rangeRaw: RangeSingle = Field(..., alias='rangeRaw')
+    range_raw: RangeSingle = Field(..., alias='rangeRaw')
