@@ -7,20 +7,12 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.ui import UIService
-from noc.services.grafanads.check import CheckHandler
-from noc.services.grafanads.annotations import AnnotationsHandler
+from noc.core.service.fastapi import FastAPIService
 
 
-class GrafanaDSService(UIService):
+class GrafanaDSService(FastAPIService):
     name = "grafanads"
     use_mongo = True
-
-    def get_handlers(self):
-        return super().get_handlers() + [
-            ("^/api/grafanads/annotations", AnnotationsHandler, {"service": self}),
-            ("^/api/grafanads/", CheckHandler),
-        ]
 
 
 if __name__ == "__main__":
