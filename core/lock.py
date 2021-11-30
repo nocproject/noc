@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
 from typing import Optional, Iterable, List
 import datetime
 import time
