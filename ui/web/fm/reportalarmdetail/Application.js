@@ -165,7 +165,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         xtype: "report.control",
         url: "/fm/reportalarmdetail",
         storeData: [
-            ["id", __("ID"), true],
+            ["alarm_id", __("ID"), true],
             ["root_id", __("Root ID"), true],
             ["from_ts", __("From"), true],
             ["to_ts", __("To"), true],
