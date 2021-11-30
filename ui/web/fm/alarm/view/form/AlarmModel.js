@@ -245,6 +245,37 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
                     root: data
                 }
             }
+        },
+        selectedGroups: {
+            bind: "{selected.groups}",
+            deep: true,
+            get: function(value) {
+                return {
+                    fields: [
+                        {
+                            name: "id",
+                            type: "string"
+                        },
+                        {
+                            name: "timestamp",
+                            type: "date"
+                        },
+                        {
+                            name: "subject",
+                            type: "string"
+                        },
+                        {
+                            name: "alarm_class",
+                            type: "string"
+                        },
+                        {
+                            name: "alarm_class__label",
+                            type: "string"
+                        }
+                    ],
+                    data: value
+                };
+            }
         }
     }
 });

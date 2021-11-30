@@ -57,6 +57,17 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarModel", {
                 this.set("activeFilter.wait_tt", value.wait_tt);
             }
         },
+        ephemeral: {
+            bind: "{activeFilter.ephemeral}",
+            get: function(value) {
+                return {
+                    ephemeral: value
+                }
+            },
+            set: function(value) {
+                this.set("activeFilter.ephemeral", value.ephemeral);
+            }
+        },
         maintenance: {
             bind: "{activeFilter.maintenance}",
             get: function(value) {
@@ -66,6 +77,17 @@ Ext.define("NOC.fm.alarm.view.grids.SidebarModel", {
             },
             set: function(value) {
                 this.set("activeFilter.maintenance", value.maintenance);
+            }
+        },
+        alarm_group: {
+            bind: "{activeFilter.alarm_group}",
+            get: function(value) {
+                return {
+                    alarm_group: value
+                }
+            },
+            set: function(value) {
+                this.set("activeFilter.alarm_group", value.alarm_group);
             }
         }
     }

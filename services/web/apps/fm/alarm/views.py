@@ -27,6 +27,7 @@ from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -162,6 +163,14 @@ class AlarmApplication(ExtApplication):
                     q["__raw__"].update(af["__raw__"])
                     del af["__raw__"]
                 q.update(af)
+        # Grouped Alarms
+        if "alarm_group" not in q:
+            # Show all alarm
+            q["alarm_group"] = "show"
+        if q["alarm_group"] == "only":
+            # Show Only Alarm without group
+            q["groups"] = []
+        del q["alarm_group"]
         # Exclude maintenance
         if "maintenance" not in q:
             q["maintenance"] = "hide"
@@ -212,6 +221,14 @@ class AlarmApplication(ExtApplication):
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
+        #
+        if "ephemeral" in q:
+            c = q["ephemeral"]
+            del q["ephemeral"]
+            if c != "1":
+                q["alarm_class__nin"] = list(
+                    AlarmClass.objects.filter(is_ephemeral=True).values_list("id")
+                )
         if status == "C":
             if (
                 "timestamp__gte" not in q
@@ -311,6 +328,7 @@ class AlarmApplication(ExtApplication):
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
             "timestamp": self.to_json(o.timestamp),
+            "reference": o.reference,
             "subject": o.subject,
             "events": n_events,
             "duration": o.duration,
@@ -460,12 +478,27 @@ class AlarmApplication(ExtApplication):
             d["events"] = events
         # Alarms
         children = self.get_nested_alarms(alarm)
+        if not alarm.groups:
+            children += self.get_grouped_alarms(alarm)
         if children:
             d["alarms"] = {"expanded": True, "children": children}
         # Subscribers
         if alarm.status == "A":
             d["subscribers"] = self.get_alarm_subscribers(alarm)
             d["is_subscribed"] = user in alarm.subscribers
+        # Groups
+        if alarm.groups:
+            d["groups"] = []
+            for ag in ActiveAlarm.objects.filter(reference__in=alarm.groups):
+                d["groups"] += [
+                    {
+                        "id": str(ag.id),
+                        "alarm_class": str(ag.alarm_class.id),
+                        "alarm_class__label": ag.alarm_class.name,
+                        "timestamp": self.to_json(ag.timestamp),
+                        "subject": ag.subject,
+                    }
+                ]
         # Apply plugins
         plugins = []
         acp = alarm.alarm_class.plugins or []
@@ -480,6 +513,8 @@ class AlarmApplication(ExtApplication):
                 d.update(dd)
         if plugins:
             d["plugins"] = plugins
+        if "reference" in d:
+            del d["reference"]
         return d
 
     def get_alarm_subscribers(self, alarm):
@@ -527,6 +562,35 @@ class AlarmApplication(ExtApplication):
                 else:
                     c["leaf"] = True
                 children += [c]
+        return children
+
+    def get_grouped_alarms(self, alarm):
+        """
+        Return nested alarms as a part of NodeInterface
+        :param alarm:
+        :return:
+        """
+        children = []
+        for a in ActiveAlarm.objects.filter(groups__in=[alarm.reference]):
+            s = AlarmSeverity.get_severity(a.severity)
+            c = {
+                "id": str(a.id),
+                "subject": a.subject,
+                "alarm_class": str(a.alarm_class.id),
+                "alarm_class__label": a.alarm_class.name,
+                "managed_object": a.managed_object.id,
+                "managed_object__label": a.managed_object.name,
+                "timestamp": self.to_json(a.timestamp),
+                "iconCls": "icon_error",
+                "row_class": s.style.css_class_name,
+            }
+            nc = self.get_nested_alarms(a)
+            if nc:
+                c["children"] = nc
+                c["expanded"] = True
+            else:
+                c["leaf"] = True
+            children += [c]
         return children
 
     @view(
@@ -839,6 +903,26 @@ class AlarmApplication(ExtApplication):
             r += get_summary(s["service"], ServiceProfile)
         r = [x for x in r if x]
         return r
+
+    def bulk_field_total_grouped(self, data):
+        if not data:
+            return data
+        coll = ActiveAlarm._get_collection()
+        r = {
+            c["_id"]: c["count"]
+            for c in coll.aggregate(
+                [
+                    {"$match": {"groups": {"$ne": []}}},
+                    {"$unwind": "$groups"},
+                    {"$group": {"_id": "$groups", "count": {"$sum": 1}}},
+                ]
+            )
+        }
+        for x in data:
+            if "reference" in x:
+                x["total_grouped"] = r.get(x["reference"], 0)
+                del x["reference"]
+        return data
 
     def bulk_field_isinmaintenance(self, data):
         if not data:

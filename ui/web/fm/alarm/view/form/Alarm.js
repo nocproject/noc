@@ -202,7 +202,40 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
                             return c ? c : "";
                         }
                     }
-                }
+                },
+                {
+                    xtype: "grid",
+                    reference: "fm-alarm-groups",
+                    title: __("Groups"),
+                    scrollable: true,
+                    bind: {
+                        store: "{selectedGroups}"
+                    },
+                    columns: [
+                        {
+                            dataIndex: "id",
+                            text: __("ID"),
+                            width: 150
+                        },
+                        {
+                            dataIndex: "timestamp",
+                            text: __("Time"),
+                            renderer: NOC.render.DateTime,
+                            width: 120
+                        },
+                        {
+                            dataIndex: "alarm_class",
+                            text: __("Class"),
+                            renderer: NOC.render.Lookup("alarm_class"),
+                            width: 200
+                        },
+                        {
+                            dataIndex: "subject",
+                            text: __("Subject"),
+                            flex: 1
+                        }
+                    ]
+                },
             ]
         }
     ],
