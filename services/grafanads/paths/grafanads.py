@@ -13,7 +13,6 @@ from time import mktime
 import dateutil.parser
 from dateutil import tz
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
 
 # NOC modules
 from noc.core.service.loader import get_service
@@ -21,31 +20,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmclass import AlarmClass
-
-
-class RangeSingle(BaseModel):
-    from_: str = Field(..., alias='from')
-    to: str
-
-
-class RangeSection(BaseModel):
-    from_: str = Field(..., alias='from')
-    to: str
-    raw: RangeSingle
-
-
-class AnnotationSection(BaseModel):
-    name: str
-    datasource: str
-    enable: bool
-    icon_color: str = Field(..., alias='iconColor')
-    query: str
-
-
-class Annotation(BaseModel):
-    range: RangeSection
-    annotation: AnnotationSection
-    rangeRaw: RangeSingle = Field(..., alias='rangeRaw')
+from noc.services.grafanads.models.grafanads import Annotation
 
 
 router = APIRouter()
