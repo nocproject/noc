@@ -25,6 +25,7 @@ from noc.core.text import (
     clean_number,
     safe_shadow,
     ch_escape,
+    split_text,
 )
 
 
@@ -471,3 +472,22 @@ def test_safe_shadow(config, expected):
 )
 def test_ch_escape(config, expected):
     assert ch_escape(config) == expected
+
+
+@pytest.mark.parametrize(
+    "config, max_chunk, expected",
+    [
+        (
+            "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad",
+            500,
+            ["sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad"],
+        ),
+        (
+            "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad",
+            50,
+            ["sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa", "sdasdasdasdsadasdasdsad"],
+        ),
+    ],
+)
+def test_split_text(config, max_chunk, expected):
+    assert list(split_text(config, max_chunk=max_chunk)) == expected
