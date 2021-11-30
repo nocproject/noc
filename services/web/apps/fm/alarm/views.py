@@ -163,26 +163,13 @@ class AlarmApplication(ExtApplication):
                     q["__raw__"].update(af["__raw__"])
                     del af["__raw__"]
                 q.update(af)
-        # Exclude Grouped Alarms
+        # Grouped Alarms
         if "alarm_group" not in q:
-            # Exclude ephemeral
+            # Show all alarm
             q["alarm_group"] = "show"
-        if q["alarm_group"] == "hide":
-            # Hide Group Alarm
-            q["groups__ne"] = []
-        elif q["alarm_group"] == "only":
-            # Show Only Group Alarm, exclude Ephemeral
+        if q["alarm_group"] == "only":
+            # Show Only Alarm without group
             q["groups"] = []
-            q["alarm_class__nin"] = list(
-                AlarmClass.objects.filter(is_ephemeral=True).values_list("id")
-            )
-        elif q["alarm_group"] == "show":
-            # Show Alarm Group and Alarm, exclude Ephemeral
-            q["alarm_class__nin"] = list(
-                AlarmClass.objects.filter(is_ephemeral=True).values_list("id")
-            )
-        elif q["alarm_group"] == "all":
-            pass
         del q["alarm_group"]
         # Exclude maintenance
         if "maintenance" not in q:
@@ -234,6 +221,14 @@ class AlarmApplication(ExtApplication):
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
+        #
+        if "ephemeral" in q:
+            c = q["ephemeral"]
+            del q["ephemeral"]
+            if c != "1":
+                q["alarm_class__nin"] = list(
+                    AlarmClass.objects.filter(is_ephemeral=True).values_list("id")
+                )
         if status == "C":
             if (
                 "timestamp__gte" not in q
@@ -492,13 +487,15 @@ class AlarmApplication(ExtApplication):
         if alarm.groups:
             d["groups"] = []
             for ag in ActiveAlarm.objects.filter(reference__in=alarm.groups):
-                d["groups"] += [{
-                    "id": str(ag.id),
-                    "alarm_class": str(ag.alarm_class.id),
-                    "alarm_class__label": ag.alarm_class.name,
-                    "timestamp": self.to_json(ag.timestamp),
-                    "subject": ag.subject,
-                }]
+                d["groups"] += [
+                    {
+                        "id": str(ag.id),
+                        "alarm_class": str(ag.alarm_class.id),
+                        "alarm_class__label": ag.alarm_class.name,
+                        "timestamp": self.to_json(ag.timestamp),
+                        "subject": ag.subject,
+                    }
+                ]
         # Apply plugins
         plugins = []
         acp = alarm.alarm_class.plugins or []
