@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, Iterable, List
+from itertools import filterfalse
 
 # Third-party modules
 from mongoengine.document import Document
@@ -22,6 +22,7 @@ from mongoengine.fields import (
     ObjectIdField,
 )
 from pymongo import ReadPreference
+from typing import Optional, Iterable, List
 
 # NOC Modules
 from noc.config import config
@@ -208,14 +209,40 @@ class Interface(Document):
         :returns: True if interface is linked, False otherwise
         """
         if self.type == "aggregated":
-            q = {"interfaces": {"$in": [self.id] + [i.id for i in self.lag_members]}}
+            # Speedup query for labels because self.lag_members very slow
+            return bool(
+                next(
+                    Interface._get_collection()
+                    .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                    .aggregate(
+                        [
+                            {
+                                "$match": {
+                                    "$or": [{"_id": self.id}, {"aggregated_interface": self.id}]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "noc.links",
+                                    "localField": "_id",
+                                    "foreignField": "interfaces",
+                                    "as": "links",
+                                }
+                            },
+                            {"$match": {"links": {"$ne": []}}},
+                            {"$limit": 1},
+                        ]
+                    ),
+                    None,
+                )
+            )
+
         else:
-            q = {"interfaces": self.id}
-        return bool(
-            Link._get_collection()
-            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-            .find_one(q)
-        )
+            return bool(
+                Link._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .find_one({"interfaces": self.id})
+            )
 
     def unlink(self):
         """
@@ -437,12 +464,15 @@ class Interface(Document):
         yield Label.get_effective_regex_labels("interface_name", instance.name)
         yield Label.get_effective_regex_labels("interface_description", instance.description or "")
         if instance.managed_object:
-            yield from ManagedObject.iter_effective_labels(instance.managed_object)
+            yield from filterfalse(
+                lambda x: x != "noc::is_linked::=",
+                ManagedObject.iter_effective_labels(instance.managed_object),
+            )
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
-        # if instance.is_linked:
-        # Idle Discovery When create Aggregate interface
-        #     yield ["noc::interface::linked::="]
+        if instance.is_linked:
+            # Idle Discovery When create Aggregate interface (fixed not use lag_members)
+            yield ["noc::is_linked::="]
         for si in instance.parent.subinterface_set.filter(enabled_afi__in=["BRIDGE", "IPv4"]):
             if si.tagged_vlans:
                 lazy_tagged_vlans_labels = list(

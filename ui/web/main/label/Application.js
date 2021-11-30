@@ -208,6 +208,9 @@ Ext.define("NOC.main.label.Application", {
                         if(item.data.expose_datastream) {
                             r.push(__("Datastream"));
                         }
+                        if(item.data.expose_alarm) {
+                            r.push(__("Alarm"));
+                        }
                         return r.join(", ");
                     }
                 }
