@@ -1318,7 +1318,7 @@ class ManagedObject(NOCModel):
 
     def iter_recursive_objects(self):
         """
-        Generator yilding all recursive objects
+        Generator yielding all recursive objects
         for effective PM settings
         """
         from noc.inv.models.interface import Interface
@@ -1929,6 +1929,8 @@ class ManagedObject(NOCModel):
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
         yield list(instance.labels or [])
+        if instance.is_managed:
+            yield ["noc::is_managed::="]
         yield list(AdministrativeDomain.iter_lazy_labels(instance.administrative_domain))
         yield list(Pool.iter_lazy_labels(instance.pool))
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
@@ -1958,6 +1960,12 @@ class ManagedObject(NOCModel):
             yield list(VCDomain.iter_lazy_labels(instance.vc_domain))
         if instance.tt_system:
             yield list(TTSystem.iter_lazy_labels(instance.tt_system))
+        if Interface.objects.filter(
+            managed_object=instance.id, effective_labels="noc::is_linked::="
+        ).first():
+            # If use Link.objects.filter(linked_objects=mo.id).first() - 1.27 ms,
+            # Interface = 39.4 µs
+            yield ["noc::is_linked::="]
 
     @classmethod
     def can_set_label(cls, label):
@@ -2084,3 +2092,4 @@ from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
 from noc.main.models.prefixtable import PrefixTable
 from noc.ip.models.vrf import VRF
+from noc.inv.models.interface import Interface

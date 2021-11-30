@@ -11,6 +11,7 @@ import datetime
 from typing import Optional
 
 # Third-party modules
+from pymongo import UpdateMany
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
 
@@ -196,9 +197,11 @@ class Link(Document):
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
             self.update_topology()
+            self.set_label()
 
     def on_delete(self):
         self.update_topology()
+        self.reset_label()
 
     @property
     def managed_objects(self):
@@ -245,3 +248,51 @@ class Link(Document):
             else:
                 return "M"
         return "u"
+
+    def reset_label(self):
+        from noc.main.models.label import Label
+
+        coll = Link._get_collection()
+        # Check ManagedObject Link Count
+        r = [
+            c["_id"]
+            for c in coll.aggregate(
+                [
+                    {"$match": {"linked_objects": {"$in": self.linked_objects}}},
+                    {"$unwind": "$linked_objects"},
+                    {"$group": {"_id": "$linked_objects", "count": {"$sum": 1}}},
+                    {"$match": {"count": {"$lt": 2}, "_id": {"$in": self.linked_objects}}},
+                ]
+            )
+        ]
+
+        Label.reset_model_labels("sa.ManagedObject", ["noc::is_linked::="], r)
+        # Assumption that Interface has only one Link :)
+        Label.reset_model_labels(
+            "inv.Interface", ["noc::is_linked::="], [i.id for i in self.interfaces]
+        )
+
+    def set_label(self):
+        from django.db import connection
+        from noc.inv.models.interface import Interface
+        from noc.sa.models.managedobject import ManagedObject
+
+        print("Set label Is Linked")
+        coll = Interface._get_collection()
+        coll.bulk_write(
+            [
+                UpdateMany(
+                    {"_id": {"$in": [i.id for i in self.interfaces]}},
+                    {"$addToSet": {"effective_labels": "noc::is_linked::="}},
+                )
+            ]
+        )
+        sql = f"""
+        UPDATE {ManagedObject._meta.db_table}
+        SET effective_labels=ARRAY (
+        SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e)
+        )
+        WHERE id = ANY (%s::numeric[])
+        """
+        cursor = connection.cursor()
+        cursor.execute(sql, [["noc::is_linked::="], self.linked_objects])
