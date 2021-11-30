@@ -27,6 +27,7 @@ from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -162,6 +163,27 @@ class AlarmApplication(ExtApplication):
                     q["__raw__"].update(af["__raw__"])
                     del af["__raw__"]
                 q.update(af)
+        # Exclude Grouped Alarms
+        if "alarm_group" not in q:
+            # Exclude ephemeral
+            q["alarm_group"] = "show"
+        if q["alarm_group"] == "hide":
+            # Hide Group Alarm
+            q["groups__ne"] = []
+        elif q["alarm_group"] == "only":
+            # Show Only Group Alarm, exclude Ephemeral
+            q["groups"] = []
+            q["alarm_class__nin"] = list(
+                AlarmClass.objects.filter(is_ephemeral=True).values_list("id")
+            )
+        elif q["alarm_group"] == "show":
+            # Show Alarm Group and Alarm, exclude Ephemeral
+            q["alarm_class__nin"] = list(
+                AlarmClass.objects.filter(is_ephemeral=True).values_list("id")
+            )
+        elif q["alarm_group"] == "all":
+            pass
+        del q["alarm_group"]
         # Exclude maintenance
         if "maintenance" not in q:
             q["maintenance"] = "hide"
