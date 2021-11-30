@@ -12,6 +12,9 @@ import datetime
 from time import perf_counter
 import asyncio
 
+# Third-party modules
+from typing import Dict, Any
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
@@ -104,7 +107,7 @@ class Job(object):
         self.start_time = None
         self.duration = None
         self.logger = PrefixLoggerAdapter(scheduler.logger, self.get_display_key())
-        self.context = {}
+        self.context: Dict[str, Any] = {}
 
     def load_context(self, data):
         self.context = data or {}
