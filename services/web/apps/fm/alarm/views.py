@@ -488,6 +488,17 @@ class AlarmApplication(ExtApplication):
         if alarm.status == "A":
             d["subscribers"] = self.get_alarm_subscribers(alarm)
             d["is_subscribed"] = user in alarm.subscribers
+        # Groups
+        if alarm.groups:
+            d["groups"] = []
+            for ag in ActiveAlarm.objects.filter(reference__in=alarm.groups):
+                d["groups"] += [{
+                    "id": str(ag.id),
+                    "alarm_class": str(ag.alarm_class.id),
+                    "alarm_class__label": ag.alarm_class.name,
+                    "timestamp": self.to_json(ag.timestamp),
+                    "subject": ag.subject,
+                }]
         # Apply plugins
         plugins = []
         acp = alarm.alarm_class.plugins or []
