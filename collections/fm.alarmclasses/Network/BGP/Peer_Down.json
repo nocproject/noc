@@ -4,15 +4,17 @@
     "uuid": "1b01710e-b3e7-4ff5-b718-2b6925bc6537",
     "is_unique": true,
     "reference": ["peer"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "PeerDS",
-            "datasource": "peer.Peer",
-            "search": {
-                "peer": "peer"
-            }
+            "name": "peer",
+            "model": "peer.Peer",
+            "args": [{
+                "param": "peer",
+                "var": "peer"
+            }]
         }
     ],
     "vars": [
@@ -31,27 +33,27 @@
         {
             "name": "as",
             "description": "BGP Peer AS",
-            "default": "=PeerDS.remote_asn"
+            "default": "=components.peer.remote_asn"
         },
         {
             "name": "local_as",
             "description": "Local AS",
-            "default": "=PeerDS.local_asn"
+            "default": "=components.peer.local_asn"
         },
         {
             "name": "description",
             "description": "BGP Peer Description",
-            "default": "=PeerDS.description"
+            "default": "=components.peer.description"
         },
         {
             "name": "import_filter",
             "description": "BGP Import Filter",
-            "default": "=PeerDS.import_filter"
+            "default": "=components.peer.import_filter"
         },
         {
             "name": "export_filter",
             "description": "BGP Export Filter",
-            "default": "=PeerDS.export_filter"
+            "default": "=components.peer.export_filter"
         }
     ],
     "subject_template": "BGP Peer {{peer}}{%if vrf %} vrf {{vrf}}{% endif %}{% if as %} (AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down{%if reason %} - {{reason}}{% endif %}",

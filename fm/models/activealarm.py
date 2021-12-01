@@ -421,7 +421,7 @@ class ActiveAlarm(Document):
         components = getattr(self, "_components", None)
         if components:
             return components
-        self._components = ComponentHub(self)
+        self._components = ComponentHub(self.alarm_class, self.managed_object, self.vars)
         return self._components
 
     def subscribe(self, user):
@@ -880,8 +880,12 @@ class ActiveAlarm(Document):
 
 
 class ComponentHub(object):
-    def __init__(self, alarm: ActiveAlarm):
-        self.__alarm = alarm
+    def __init__(
+        self, alarm_class: AlarmClass, managed_object: ManagedObject, vars: Dict[str, Any] = None
+    ):
+        self.__alarm_class = alarm_class
+        self.__managed_object = managed_object
+        self.__vars = vars or {}
         self.__components: Dict[str, Any] = {}
         self.__all_components: Optional[Set[str]] = None
 
@@ -911,23 +915,23 @@ class ComponentHub(object):
         return self.get(name) is not None
 
     def __get_component(self, name: str) -> Optional[Any]:
-        for c in self.__alarm.alarm_class.components:
+        for c in self.__alarm_class.components:
             if c.name != name:
                 continue
             model = get_model(c.model)
             if not hasattr(model, "get_component"):
                 # Model has not supported component interface
                 break
-            args = {"managed_object": self.__alarm.managed_object}
+            args = {"managed_object": self.__managed_object}
             for arg in c.args:
-                if arg["var"] in self.__alarm.vars:
-                    args[arg["param"]] = self.__alarm.vars[arg["var"]]
+                if arg["var"] in self.__vars:
+                    args[arg["param"]] = self.__vars[arg["var"]]
             return model.get_component(**args)
 
     def __refresh_all_components(self) -> None:
         if self.__all_components is not None:
             return
-        self.__all_components = {c.name for c in self.__alarm.alarm_class.components}
+        self.__all_components = {c.name for c in self.__alarm_class.components}
 
 
 # Avoid circular references

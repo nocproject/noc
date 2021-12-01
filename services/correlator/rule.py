@@ -6,43 +6,44 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List, Set
 
 # NOC modules
 from noc.fm.models.activeevent import ActiveEvent
-from noc.lib.datasource import datasource_registry
+from noc.fm.models.eventclass import EventClass, EventDispositionRule
+from noc.fm.models.activealarm import ComponentHub
+from noc.fm.models.alarmclass import AlarmClass
 
 
 class Rule(object):
-    def __init__(self, ec, dr):
-        self.name = dr.name
-        self.event_class = ec
-        self.u_name = "%s: %s" % (self.event_class.name, self.name)
+    def __init__(self, ec: "EventClass", dr: "EventDispositionRule"):
+        self.name: str = dr.name
+        self.event_class: "EventClass" = ec
+        self.u_name: str = "%s: %s" % (self.event_class.name, self.name)
         self.condition = compile(dr.condition, "<string>", "eval")
         mo_exp = dr.managed_object or "event.managed_object"
         self.managed_object = compile(mo_exp, "<string>", "eval")
-        self.action = dr.action
-        self.alarm_class = dr.alarm_class
-        self.stop_disposition = dr.stop_disposition
-        self.var_mapping = {}
-        self.reference = []
-        self.datasources = {}
-        self.c_defaults = {}
-        self.d_defaults = {}
+        self.action: str = dr.action
+        self.alarm_class: "AlarmClass" = dr.alarm_class
+        self.stop_disposition: bool = dr.stop_disposition
+        self.var_mapping: Dict[str, Any] = {}  # Map Event to Alarm vars
+        self.reference: List[str] = []
+        self.c_defaults: Dict[str, Any] = {}  # Static AlarmClass variables
+        self.d_defaults: Dict[str, Any] = {}  # Dynamic AlarmClass variables
         if self.alarm_class:
             self.severity = self.alarm_class.default_severity.severity
-            self.unique = self.alarm_class.is_unique
-            a_vars = {v.name for v in self.alarm_class.vars}
-            e_vars = {v.name for v in self.event_class.vars}
+            self.unique: bool = self.alarm_class.is_unique
+            a_vars: Set[str] = {v.name for v in self.alarm_class.vars}
+            e_vars: Set[str] = {v.name for v in self.event_class.vars}
             for v in a_vars.intersection(e_vars):
                 self.var_mapping[v] = v
             if dr.var_mapping:
                 self.var_mapping.update(dr.var_mapping)
-            self.reference = self.alarm_class.reference
-            self.combo_condition = dr.combo_condition
-            self.combo_window = dr.combo_window
-            self.combo_event_classes = [c.id for c in dr.combo_event_classes]
-            self.combo_count = dr.combo_count
+            self.reference: List[str] = self.alarm_class.reference
+            self.combo_condition: str = dr.combo_condition
+            self.combo_window: int = dr.combo_window
+            self.combo_event_classes: List[str] = [c.id for c in dr.combo_event_classes]
+            self.combo_count: int = dr.combo_count
             # Default variables
             for v in self.alarm_class.vars:
                 if v.default:
@@ -52,24 +53,12 @@ class Rule(object):
                     else:
                         # Constant
                         self.c_defaults[v.name] = v.default
-            # Compile datasource lookup functions
-            self.datasources = {}  # name -> ds class
-            for ds in self.alarm_class.datasources:
-                self.datasources[ds.name] = eval(
-                    "lambda vars: datasource_registry['%s'](%s)"
-                    % (
-                        ds.datasource,
-                        ", ".join(["%s=vars['%s']" % (k, v) for k, v in ds.search.items()]),
-                    ),
-                    {"datasource_registry": datasource_registry},
-                    {},
-                )
 
-    def get_vars(self, event: ActiveEvent) -> Optional[Dict[str, Any]]:
+    def get_vars(self, event: "ActiveEvent") -> Optional[Dict[str, Any]]:
         """
         Get alarm variables from event.
 
-        :param e: ActiveEvent
+        :param event: ActiveEvent
         :returns: Dict of variables or None
         """
         if not self.var_mapping:
@@ -81,13 +70,12 @@ class Rule(object):
                 vars[v] = event.vars[k]
             except KeyError:
                 pass
+        if not self.d_defaults:
+            return vars
         # Calculate dynamic defaults
-        ds_vars = vars.copy()
-        ds_vars["managed_object"] = event.managed_object
-        context = {k: v(ds_vars) for k, v in self.datasources.items()}
-        context.update(vars)
+        context = {"components": ComponentHub(self.alarm_class, event.managed_object, vars.copy())}
         for k, v in self.d_defaults.items():
             x = eval(v, {}, context)
             if x:
-                vars[k] = x
+                vars[k] = str(x)
         return vars
