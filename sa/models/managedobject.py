@@ -1928,6 +1928,8 @@ class ManagedObject(NOCModel):
 
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
+        from noc.inv.models.interface import Interface
+
         yield list(instance.labels or [])
         if instance.is_managed:
             yield ["noc::is_managed::="]
@@ -2092,4 +2094,3 @@ from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
 from noc.main.models.prefixtable import PrefixTable
 from noc.ip.models.vrf import VRF
-from noc.inv.models.interface import Interface
