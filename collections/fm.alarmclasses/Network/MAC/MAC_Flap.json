@@ -4,34 +4,33 @@
     "uuid": "211d9e04-9595-465b-9257-7fd0d68ff10a",
     "is_unique": true,
     "reference": ["mac"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "INFO",
-    "datasources": [
+    "components": [
         {
-            "name": "fromInterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "from_interface",
-                "managed_object": "managed_object"
-            }
+            "name": "frominterface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "frominterface"
+            }]
         },
-
         {
-            "name": "toInterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "to_interface",
-                "managed_object": "managed_object"
-            }
+            "name": "tointerface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "tointerface"
+            }]
         },
-
         {
-            "name": "VCDS",
-            "datasource": "vc.VCDS",
-            "search": {
-                "l1": "vlan",
-                "managed_object": "managed_object"
-            }
+            "name": "vcds",
+            "model": "vc.VC",
+            "args": [{
+                "param": "l1",
+                "var": "vlan"
+            }]
         }
     ],
     "vars": [
@@ -54,32 +53,33 @@
         {
             "name": "from_description",
             "description": "Interface description",
-            "default": "=fromInterfaceDS.description"
+            "default": "=components.frominterface.description"
         },
         {
             "name": "to_description",
             "description": "Interface description",
-            "default": "=toInterfaceDS.description"
+            "default": "=components.tointerface.description"
         },
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=VCDS.name"
+            "default": "=components.vcds.name"
         },
         {
             "name": "vlan_description",
             "description": "Vlan description",
-            "default": "=VCDS.description"
+            "default": "=components.vcds.description"
         },
         {
             "name": "vlan_vc_domain",
             "description": "VC domain",
-            "default": "=VCDS.vc_domain"
+            "default": "=components.vcds.vc_domain"
         }
     ],
     "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}: {{from_interface}}{% if from_description %} ({{from_description}}){% endif %} -> {{to_interface}}{% if to_description %} ({{to_description}}){% endif %}",
     "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}: {{from_interface}}{% if from_description %} ({{from_description}}){% endif %} -> {{to_interface}}{% if to_description %} ({{to_description}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
     "symptoms": "",
     "probable_causes": "The system found the specified host moving between the specified ports.",
-    "recommended_actions": "Examine the network for possible loops."
+    "recommended_actions": "Examine the network for possible loops.",
+    "recover_time": 300
 }

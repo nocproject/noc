@@ -7,16 +7,6 @@
     "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "MINOR",
-    "datasources": [
-        {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
-        }
-    ],
     "components": [
         {
             "name": "interface",
