@@ -880,6 +880,12 @@ class ActiveAlarm(Document):
 
 
 class ComponentHub(object):
+    """
+    Resolve Model instance by Alarm Vars data
+    If component not find on the system - return None
+    If getting component not in AlarmClass - raise AttributeError
+    """
+
     def __init__(
         self, alarm_class: AlarmClass, managed_object: ManagedObject, vars: Dict[str, Any] = None
     ):
@@ -894,6 +900,8 @@ class ComponentHub(object):
             return self.__components[name] if self.__components[name] is not None else default
         self.__refresh_all_components()
         if name not in self.__all_components:
+            if default is None:
+                raise AttributeError
             return default
         v = self.__get_component(name)
         self.__components[name] = v
@@ -907,8 +915,8 @@ class ComponentHub(object):
 
     def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
         v = self.get(name)
-        if v is None and default is None:
-            raise AttributeError
+        # if v is None and default is None:
+        #     raise AttributeError
         return default if v is None else v
 
     def __contains__(self, name: str) -> bool:

@@ -83,7 +83,7 @@ class ActiveEvent(Document):
         @todo: Rename method to *reclassify*
         """
         import orjson
-        from noc.core.service.pub import publish
+        from noc.core.service.loader import get_service
 
         # if message is None:
         #    message = "Reclassification requested"
@@ -99,7 +99,8 @@ class ActiveEvent(Document):
             "data": data,
         }
         stream, partition = self.managed_object.events_stream_and_partition
-        publish(
+        svc = get_service()
+        svc.publish(
             orjson.dumps(msg),
             stream=stream,
             partition=partition,

@@ -49,7 +49,13 @@ class Rule(object):
                 if v.default:
                     if v.default.startswith("="):
                         # Expression
-                        self.d_defaults[v.name] = compile(v.default[1:], "<string>", "eval")
+                        # Check component '=component.<name>'
+                        _, c_name, *_ = v.default[1:].split(".", 2)
+                        self.d_defaults[v.name] = compile(
+                            f'{v.default[1:]} if "{c_name}" in components else None',
+                            "<string>",
+                            "eval",
+                        )
                     else:
                         # Constant
                         self.c_defaults[v.name] = v.default
