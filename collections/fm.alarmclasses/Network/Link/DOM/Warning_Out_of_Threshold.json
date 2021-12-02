@@ -4,16 +4,17 @@
     "uuid": "2e064533-45ec-44bc-9f5b-9a3cbf8f51c2",
     "is_unique": true,
     "reference": ["interface", "sensor"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -40,12 +41,13 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if description %} ({{description}}){% endif %}",
     "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if description %} ({{description}}){% endif %}{% if ovalue %}, Operating value {{ovalue}}{% endif %}{% if tvalue %}, Threshold value {{tvalue}}{% endif %}",
     "symptoms": "Connection lost",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }

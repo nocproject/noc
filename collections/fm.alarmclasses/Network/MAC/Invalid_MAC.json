@@ -4,16 +4,17 @@
     "uuid": "c32378e8-a6e6-4a00-928f-96b3a7cb5f77",
     "is_unique": true,
     "reference": ["mac"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "INFO",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -32,12 +33,13 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if description %} ({{description}}){% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
     "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if description %} ({{description}}){% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }

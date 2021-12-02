@@ -4,16 +4,17 @@
     "uuid": "10d86131-7073-4671-9c9f-91924f86af62",
     "is_unique": true,
     "reference": ["interface"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "MINOR",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -24,12 +25,13 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "Duplex mismatch on interface {{interface}}{% if description %} ({{description}}){% endif %}",
     "body_template": "Duplex mismatch on interface {{interface}}{% if description %} ({{description}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }
