@@ -23,7 +23,7 @@ class Profile(BaseProfile):
         r"Unknown command|Incomplete command|Too many parameters"
     )
     pattern_operation_error = (
-        r"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config. Please wait."
+        r"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config."
     )
     command_super = "enable"
     command_disable_pager = "terminal datadump"
@@ -125,3 +125,12 @@ class Profile(BaseProfile):
             # Vlan on SNMP
             return "SVI"
         return cls.INTERFACE_TYPES.get(name[:2].lower())
+
+    rx_e1 = re.compile(r"e1 unit-1|!")
+
+    def cleaned_config(self, cfg):
+        cfg = super().cleaned_config(cfg)
+        search = self.rx_e1.search(cfg)
+        if search:
+            cfg = cfg[search.span()[0] :]
+        return cfg
