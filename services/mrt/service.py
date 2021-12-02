@@ -7,12 +7,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.tornado import TornadoService
-from noc.services.mrt.mrt import MRTRequestHandler
+from noc.core.service.fastapi import FastAPIService
 from noc.config import config
 
 
-class MRTService(TornadoService):
+class MRTService(FastAPIService):
     name = "mrt"
     use_telemetry = config.mrt.enable_command_logging
     use_mongo = True
@@ -23,9 +22,6 @@ class MRTService(TornadoService):
 
     async def on_activate(self):
         self.sae = self.open_rpc("sae")
-
-    def get_handlers(self):
-        return [("/api/mrt/", MRTRequestHandler, {"service": self})]
 
 
 if __name__ == "__main__":
