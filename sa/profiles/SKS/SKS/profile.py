@@ -38,6 +38,8 @@ class Profile(BaseProfile):
         r"radius(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
         r"tacacs(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
     ]
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {"line_comment": "!"}
 
     matchers = {"is_sks_achtung": {"version": {"$regex": r"^2(\.\d+)+\w"}}}
     # 2.2.0C, 2.0.2H
