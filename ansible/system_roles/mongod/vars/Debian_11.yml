@@ -1,0 +1,4 @@
+# Debian settings
+---
+mongo_user: mongodb
+mongo_db_path: /var/lib/mongodb

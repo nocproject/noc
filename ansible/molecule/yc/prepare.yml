@@ -20,7 +20,7 @@
 
     - name: Check if not python2 on host
       raw: test -e /usr/bin/python || (apt -qy update && apt install -y python-minimal)
-      when: molecule_yml.platforms[0].distr is match("debian.*")
+      when: molecule_yml.platforms[0].distr is match("debian9")
       changed_when: false
 
     - name: download caches
