@@ -16,19 +16,25 @@ class Script(BaseScript):
 
     def execute_cli(self, policy="r"):
         assert policy in ("r", "s")
-        if policy == "s":
+
+        config, e1_error = None, False
+        if policy == "r":
+            try:
+                config = self.cli("show running-config")
+            except self.CLIOperationError:
+                e1_error = True
+        if policy == "s" or not config:
             try:
                 config = self.cli("show startup-config")
             except self.CLISyntaxError:
                 config = self.cli("show configuration")
-        else:
-            config = self.cli("show running-config")
-        try:
-            i = config.index("e1 unit-1")
-        except ValueError:
-            try:
-                i = config.index("!")
-                config = config[i:]
-            except ValueError:
-                pass
-        return self.cleaned_config(config)
+        r = [{"name": "main", "config": self.cleaned_config(config)}]
+        if e1_error:
+            r += [
+                {
+                    "name": "error",
+                    "config": "%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config",
+                }
+            ]
+
+        return r

@@ -2,7 +2,7 @@
 # Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - https://www.nposkss.ru)
 # OS:     SKS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,6 +22,9 @@ class Profile(BaseProfile):
         r"% Unrecognized host or address|"
         r"Unknown command|Incomplete command|Too many parameters"
     )
+    pattern_operation_error = (
+        r"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config."
+    )
     command_super = "enable"
     command_disable_pager = "terminal datadump"
     rogue_chars = [re.compile(rb"\r\n##+#\r\n"), "\r"]
@@ -35,6 +38,8 @@ class Profile(BaseProfile):
         r"radius(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
         r"tacacs(-server | accounting-server )(encrypt-key|key) \d+ \S+\n",
     ]
+    config_tokenizer = "indent"
+    config_tokenizer_settings = {"line_comment": "!"}
 
     matchers = {"is_sks_achtung": {"version": {"$regex": r"^2(\.\d+)+\w"}}}
     # 2.2.0C, 2.0.2H
@@ -122,3 +127,12 @@ class Profile(BaseProfile):
             # Vlan on SNMP
             return "SVI"
         return cls.INTERFACE_TYPES.get(name[:2].lower())
+
+    rx_e1 = re.compile(r"e1 unit-1|!")
+
+    def cleaned_config(self, cfg):
+        cfg = super().cleaned_config(cfg)
+        search = self.rx_e1.search(cfg)
+        if search:
+            cfg = cfg[search.span()[0] :]
+        return cfg
