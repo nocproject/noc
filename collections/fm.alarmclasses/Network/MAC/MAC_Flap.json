@@ -13,7 +13,7 @@
             "model": "inv.Interface",
             "args": [{
                 "param": "interface",
-                "var": "frominterface"
+                "var": "from_interface"
             }]
         },
         {
@@ -21,7 +21,7 @@
             "model": "inv.Interface",
             "args": [{
                 "param": "interface",
-                "var": "tointerface"
+                "var": "to_interface"
             }]
         },
         {
