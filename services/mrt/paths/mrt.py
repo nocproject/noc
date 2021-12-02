@@ -43,8 +43,7 @@ async def _write_chunk(res_list, obj):
     logger.debug("%s|%s" % (len(data), data))
 
 
-async def _run_script(res_list, oid, script, args, span_id=0, bi_id=None):
-    current_user = User.get_by_username("admin")
+async def _run_script(res_list, current_user, oid, script, args, span_id=0, bi_id=None):
     service = get_service()
     with Span(
         server="MRT",
@@ -127,7 +126,13 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
                     await _write_chunk(res_list, r)
             futures.add(
                 _run_script(
-                    res_list, oid, d.script, dict(d.args), span_id=span.span_id, bi_id=ids.get(oid)
+                    res_list,
+                    current_user,
+                    oid,
+                    d.script,
+                    dict(d.args),
+                    span_id=span.span_id,
+                    bi_id=ids.get(oid),
                 )
             )
         # Wait for rest
