@@ -109,9 +109,7 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
         in_label=req,
     ) as span:
         if service.use_telemetry:
-            logger.info(
-                "[%s] Enable telemetry for task, user: %s", span.span_id, current_user
-            )
+            logger.info("[%s] Enable telemetry for task, user: %s", span.span_id, current_user)
         futures = set()
         res_list = []
         for d in req:
