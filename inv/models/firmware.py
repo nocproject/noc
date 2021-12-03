@@ -69,6 +69,27 @@ class Firmware(Document):
     def __str__(self):
         return self.full_name if self.full_name else self.version
 
+    def __eq__(self, other):
+        if other.profile != other.profile:
+            ...
+        if isinstance(other, Firmware):
+            other = other.version
+        return self.get_profile().cmp_version(self.version, other) == 0
+
+    def __lt__(self, other: "Firmware") -> bool:
+        if other.profile != other.profile:
+            ...
+        if isinstance(other, Firmware):
+            other = other.version
+        return self.get_profile().cmp_version(self.version, other) == -1
+
+    def __le__(self, other):
+        if other.profile != other.profile:
+            ...
+        if isinstance(other, Firmware):
+            other = other.version
+        return self.get_profile().cmp_version(self.version, other) in {-1, 0}
+
     def clean(self):
         self.full_name = "%s %s" % (self.profile.name, self.version)
         super().clean()
@@ -128,3 +149,15 @@ class Firmware(Document):
                 return firmware
             except NotUniqueError:
                 pass  # Already created by concurrent process, reread
+
+    def get_profile(self):
+        """
+        Getting profile methods
+        Exa:
+         fw.get_profile().cmp_version(i)
+        :return:
+        """
+        profile = getattr(self, "_profile", None)
+        if not profile:
+            self._profile = self.profile.get_profile()
+        return self._profile
