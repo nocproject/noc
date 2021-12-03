@@ -4,25 +4,25 @@
     "uuid": "c7ecc87a-070b-469a-9434-ffe3e924a76b",
     "is_unique": true,
     "reference": ["mac"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "MINOR",
-    "datasources": [
+    "components": [
         {
-            "name": "oneInterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "one_interface",
-                "managed_object": "managed_object"
-            }
+            "name": "oneinterface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "one_interface"
+            }]
         },
-
         {
-            "name": "twoInterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "two_interface",
-                "managed_object": "managed_object"
-            }
+            "name": "twointerface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "two_interface"
+            }]
         }
     ],
     "vars": [
@@ -41,17 +41,18 @@
         {
             "name": "one_description",
             "description": "Interface description",
-            "default": "=oneInterfaceDS.description"
+            "default": "=components.oneinterface.description"
         },
         {
             "name": "two_description",
             "description": "Interface description",
-            "default": "=twoInterfaceDS.description"
+            "default": "=components.twointerface.description"
         }
     ],
     "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
     "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }

@@ -4,16 +4,17 @@
     "uuid": "a567754e-8be6-498b-a790-97f34aa4d52b",
     "is_unique": true,
     "reference": ["interface"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -28,7 +29,7 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
@@ -47,5 +48,6 @@
                 "managed_object": "alarm.managed_object.id"
             }
         }
-    ]
+    ],
+    "recover_time": 300
 }

@@ -4,25 +4,25 @@
     "uuid": "c3a089e3-16b8-42aa-a4d2-801049177a22",
     "is_unique": true,
     "reference": ["interface", "vlan"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         },
-
         {
-            "name": "VCDS",
-            "datasource": "vc.VCDS",
-            "search": {
-                "l1": "vlan",
-                "managed_object": "managed_object"
-            }
+            "name": "vcds",
+            "model": "vc.VC",
+            "args": [{
+                "param": "l1",
+                "var": "vlan"
+            }]
         }
     ],
     "vars": [
@@ -37,27 +37,28 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         },
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=VCDS.name"
+            "default": "=components.vcds.name"
         },
         {
             "name": "vlan_description",
             "description": "Vlan description",
-            "default": "=VCDS.description"
+            "default": "=components.vcds.description"
         },
         {
             "name": "vlan_vc_domain",
             "description": "VC domain",
-            "default": "=VCDS.vc_domain"
+            "default": "=components.vcds.vc_domain"
         }
     ],
     "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
     "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
     "symptoms": "Lost traffic on specific vlan",
     "probable_causes": "",
-    "recommended_actions": "Check topology or use STP to avoid loops"
+    "recommended_actions": "Check topology or use STP to avoid loops",
+    "recover_time": 300
 }

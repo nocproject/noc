@@ -4,16 +4,17 @@
     "uuid": "aadd3309-c0d4-4f52-9a93-b6231eb25111",
     "is_unique": true,
     "reference": ["interface"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -24,12 +25,13 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
     "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": "Check hardware link and topology"
+    "recommended_actions": "Check hardware link and topology",
+    "recover_time": 300
 }
