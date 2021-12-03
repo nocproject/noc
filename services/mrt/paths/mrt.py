@@ -142,4 +142,4 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
     logger.info("Done")
     # Disable nginx proxy buffering
     headers = {"X-Accel-Buffering": "no"}
-    return Response(content=r"\n".join(res_list), media_type="text/html", headers=headers)
+    return Response(content="".join(res_list), media_type="text/html", headers=headers)
