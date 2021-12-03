@@ -4,16 +4,17 @@
     "uuid": "ba10cc93-f17e-4bca-b1e4-53294b614f6d",
     "is_unique": true,
     "reference": ["interface"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -28,12 +29,13 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "Port Security Violation on port {{interface}}{% if description %} ({{description}}){% endif %}{% if mac %}, MAC {{mac}}{% endif %}",
     "body_template": "Port Security Violation on port {{interface}}{% if description %} ({{description}}){% endif %}{% if mac %}, MAC {{mac}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }

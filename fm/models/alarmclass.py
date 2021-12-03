@@ -273,9 +273,9 @@ class AlarmClass(Document):
         if self.clear_handlers:
             r["clear_handlers"] = [h for h in self.clear_handlers]
         r["subject_template"] = self.subject_template
-        r["body_template"] = self.body_template
-        r["symptoms"] = self.symptoms
-        r["probable_causes"] = self.probable_causes
+        r["body_template"] = self.body_template or ""
+        r["symptoms"] = self.symptoms or ""
+        r["probable_causes"] = self.probable_causes or ""
         r["recommended_actions"] = self.recommended_actions or ""
         if self.root_cause:
             r["root_cause"] = [rr.json_data for rr in self.root_cause]

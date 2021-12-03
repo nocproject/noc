@@ -5,23 +5,22 @@
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         },
-
         {
-            "name": "VCDS",
-            "datasource": "vc.VCDS",
-            "search": {
-                "l1": "vlan",
-                "managed_object": "managed_object"
-            }
+            "name": "vcds",
+            "model": "vc.VC",
+            "args": [{
+                "param": "l1",
+                "var": "vlan"
+            }]
         }
     ],
     "vars": [
@@ -48,12 +47,12 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         },
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=VCDS.name"
+            "default": "=components.vcds.name"
         }
     ],
     "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",

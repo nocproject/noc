@@ -4,16 +4,17 @@
     "uuid": "e36bece7-964c-4267-8b5a-ef60faa46e24",
     "is_unique": true,
     "reference": ["interface", "sensor"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "CRITICAL",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -40,7 +41,7 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} threshold: {{interface}}{% if description %} ({{description}}){% endif %}",
@@ -59,5 +60,6 @@
                 "managed_object": "alarm.managed_object.id"
             }
         }
-    ]
+    ],
+    "recover_time": 300
 }

@@ -4,16 +4,17 @@
     "uuid": "e08eedd4-f661-419c-9529-0e475628239a",
     "is_unique": true,
     "reference": ["src_ip", "interface"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "InterfaceDS",
-            "datasource": "inv.InterfaceDS",
-            "search": {
-                "interface": "interface",
-                "managed_object": "managed_object"
-            }
+            "name": "interface",
+            "model": "inv.Interface",
+            "args": [{
+                "param": "interface",
+                "var": "interface"
+            }]
         }
     ],
     "vars": [
@@ -32,12 +33,13 @@
         {
             "name": "description",
             "description": "Interface description",
-            "default": "=InterfaceDS.description"
+            "default": "=components.interface.description"
         }
     ],
     "subject_template": "IP Spoofing detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
     "body_template": "IP Spoofing detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }
