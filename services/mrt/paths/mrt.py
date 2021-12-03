@@ -84,8 +84,6 @@ async def _run_script(res_list, current_user, oid, script, args, span_id=0, bi_i
 async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current_user)):
     service = get_service()
     metrics["mrt_requests"] += 1
-    # Disable nginx proxy buffering
-    # self.set_header("X-Accel-Buffering", "no")
     # Object ids
     ids = set(int(d.id) for d in req if hasattr(d, "id") and hasattr(d, "script"))
     logger.info(
@@ -142,4 +140,6 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
                 r = await f
                 await _write_chunk(res_list, r)
     logger.info("Done")
-    return Response(content=r"\n".join(res_list), media_type="text/html")
+    # Disable nginx proxy buffering
+    headers = {"X-Accel-Buffering": "no"}
+    return Response(content=r"\n".join(res_list), media_type="text/html", headers=headers)
