@@ -4,16 +4,17 @@
     "uuid": "b761d498-a29f-41e0-9e8d-20ce696394a2",
     "is_unique": true,
     "reference": ["mac"],
+    "is_ephemeral": false,
     "user_clearable": true,
     "default_severity__name": "WARNING",
-    "datasources": [
+    "components": [
         {
-            "name": "VCDS",
-            "datasource": "vc.VCDS",
-            "search": {
-                "l1": "vlan",
-                "managed_object": "managed_object"
-            }
+            "name": "vcds",
+            "model": "vc.VC",
+            "args": [{
+                "param": "l1",
+                "var": "vlan"
+            }]
         }
     ],
     "vars": [
@@ -32,22 +33,23 @@
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=VCDS.name"
+            "default": "=vcds.components.name"
         },
         {
             "name": "vlan_description",
             "description": "Vlan description",
-            "default": "=VCDS.description"
+            "default": "=vcds.components.description"
         },
         {
             "name": "vlan_vc_domain",
             "description": "VC domain",
-            "default": "=VCDS.vc_domain"
+            "default": "=vcds.components.vc_domain"
         }
     ],
     "subject_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
     "body_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "recover_time": 300
 }
