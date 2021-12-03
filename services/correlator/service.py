@@ -1106,15 +1106,15 @@ class CorrelatorService(TornadoService):
         Mark all resolved groups as permanent
         """
         ActiveAlarm._get_collection().update_many(
-            {"deferred_group": h_ref},
+            {"deferred_groups": {"$in": [h_ref]}},
             {"$push": {"groups": h_ref}, "$pullAll": {"deferred_groups": [h_ref]}},
         )
         # Reset affected cached values
         with ref_lock:
-            deprecated: List[str] = [
+            deprecated: List[Tuple[str]] = [
                 a_ref
                 for a_ref, alarm in self._reference_cache.items()
-                if alarm.deferred_groups and h_ref in alarm.deferred_groups
+                if alarm and alarm.deferred_groups and h_ref in alarm.deferred_groups
             ]
             for a_ref in deprecated:
                 del self._reference_cache[a_ref]
@@ -1162,9 +1162,9 @@ class CorrelatorService(TornadoService):
                     reference=group.reference,
                     labels=group.labels,
                 )
-                if not g_alarm:
+                if g_alarm:
                     # Update cache
-                    self._reference_cache[group.reference] = g_alarm
+                    self._reference_cache[(group.reference,)] = g_alarm
             if g_alarm:
                 active.append(g_alarm)
                 if def_h_ref:
