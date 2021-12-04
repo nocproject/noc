@@ -12,8 +12,7 @@ from itertools import chain
 from typing import Optional, Set, Any, Dict
 
 # Third-party modules
-from django.template import Template as DjangoTemplate
-from django.template import Context
+from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -249,7 +248,7 @@ class ActiveAlarm(Document):
         if to_save and not bulk:
             self.safe_save()
 
-    def clear_alarm(self, message, ts=None, force=False, source=None):
+    def clear_alarm(self, message, ts=None, force=False, source=None) -> Optional["ArchivedAlarm"]:
         """
         Clear alarm
         :param message: Log clearing message
@@ -391,7 +390,7 @@ class ActiveAlarm(Document):
         # Return archived
         return a
 
-    def get_template_vars(self):
+    def get_template_vars(self) -> Dict[str, Any]:
         """
         Prepare template variables
         """
@@ -400,31 +399,29 @@ class ActiveAlarm(Document):
         return vars
 
     @property
-    def subject(self):
+    def subject(self) -> str:
         if self.custom_subject:
             s = self.custom_subject
         else:
-            ctx = Context(self.get_template_vars())
-            s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
+            s = Jinja2Template(self.alarm_class.subject_template).render(self.get_template_vars())
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
     @property
-    def body(self):
-        ctx = Context(self.get_template_vars())
-        s = DjangoTemplate(self.alarm_class.body_template).render(ctx)
+    def body(self) -> str:
+        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
         return s
 
     @property
-    def components(self):
+    def components(self) -> "ComponentHub":
         components = getattr(self, "_components", None)
         if components:
             return components
         self._components = ComponentHub(self.alarm_class, self.managed_object, self.vars)
         return self._components
 
-    def subscribe(self, user):
+    def subscribe(self, user: "User"):
         """
         Change alarm's subscribers
         """
@@ -438,7 +435,7 @@ class ActiveAlarm(Document):
             )
             self.save()
 
-    def unsubscribe(self, user):
+    def unsubscribe(self, user: "User"):
         if self.is_subscribed(user):
             self.subscribers = [u.id for u in self.subscribers if u != user.id]
             self.log_message(
@@ -449,10 +446,10 @@ class ActiveAlarm(Document):
             )
             self.save()
 
-    def is_subscribed(self, user):
+    def is_subscribed(self, user: "User"):
         return user.id in self.subscribers
 
-    def acknowledge(self, user, msg=""):
+    def acknowledge(self, user: "User", msg=""):
         self.ack_ts = datetime.datetime.now()
         self.ack_user = user.username
         self.log = self.log + [
@@ -466,7 +463,7 @@ class ActiveAlarm(Document):
         ]
         self.save()
 
-    def unacknowledge(self, user, msg=""):
+    def unacknowledge(self, user: "User", msg=""):
         self.ack_ts = None
         self.ack_user = None
         self.log = self.log + [
@@ -481,12 +478,12 @@ class ActiveAlarm(Document):
         self.save()
 
     @property
-    def duration(self):
+    def duration(self) -> int:
         dt = datetime.datetime.now() - self.timestamp
         return dt.days * 86400 + dt.seconds
 
     @property
-    def display_duration(self):
+    def display_duration(self) -> str:
         duration = datetime.datetime.now() - self.timestamp
         secs = duration.seconds % 60
         mins = (duration.seconds / 60) % 60
@@ -504,7 +501,7 @@ class ActiveAlarm(Document):
         else:
             return AlarmSeverity.get_severity(self.severity).style
 
-    def get_root(self):
+    def get_root(self) -> "ActiveAlarm":
         """
         Get top-level root alarm
         """
