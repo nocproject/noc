@@ -15,7 +15,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     ObjectIdField,
 )
-from django.template import Template, Context
+from jinja2 import Template as Jinja2Template
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
@@ -64,14 +64,12 @@ class ArchivedEvent(Document):
 
     @property
     def subject(self):
-        ctx = Context(self.get_template_vars())
-        s = Template(self.event_class.subject_template).render(ctx)
+        s = Jinja2Template(self.event_class.subject_template).render(self.get_template_vars())
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
     @property
     def body(self):
-        ctx = Context(self.get_template_vars())
-        s = Template(self.event_class.body_template).render(ctx)
+        s = Jinja2Template(self.event_class.body_template).render(self.get_template_vars())
         return s

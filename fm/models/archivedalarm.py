@@ -10,7 +10,7 @@ import datetime
 from typing import Optional
 
 # Third-party modules
-from django.template import Template, Context
+from jinja2 import Template as Jinja2Template
 from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
@@ -150,16 +150,14 @@ class ArchivedAlarm(Document):
 
     @property
     def subject(self):
-        ctx = Context(self.get_template_vars())
-        s = Template(self.alarm_class.subject_template).render(ctx)
+        s = Jinja2Template(self.alarm_class.subject_template).render(self.get_template_vars())
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
 
     @property
     def body(self):
-        ctx = Context(self.get_template_vars())
-        s = Template(self.alarm_class.body_template).render(ctx)
+        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
         return s
 
     @property
