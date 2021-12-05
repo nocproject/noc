@@ -13,7 +13,8 @@ from typing import List
 
 # Third-party modules
 import orjson
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 
 # NOC modules
 from noc.aaa.models.user import User
@@ -142,4 +143,8 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
     logger.info("Done")
     # Disable nginx proxy buffering
     headers = {"X-Accel-Buffering": "no"}
-    return Response(content="".join(res_list), media_type="text/html", headers=headers)
+
+    def iterdata():
+        for item in res_list:
+            yield str(item)
+    return StreamingResponse(iterdata(), media_type="text/html", headers=headers)
