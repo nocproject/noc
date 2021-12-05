@@ -1,26 +1,26 @@
 //---------------------------------------------------------------------
-// vc.l2domainprofile application
+// vc.l2domain application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.vc.l2domainprofile.Application");
+console.debug("Defining NOC.vc.l2domain.Application");
 
-Ext.define("NOC.vc.l2domainprofile.Application", {
+Ext.define("NOC.vc.l2domain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.label.LabelField",
-        "NOC.vc.l2domainprofile.Model",
-        "NOC.wf.workflow.LookupField",
-        "NOC.main.style.LookupField",
+        "NOC.vc.l2domain.Model",
+        "NOC.core.StateField",
         "NOC.inv.resourcepool.LookupField",
-        "NOC.vc.vlantemplate.LookupField",
         "NOC.vc.vlanfilter.LookupField",
+        "NOC.vc.vlantemplate.LookupField",
+        "NOC.vc.l2domain.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
-    model: "NOC.vc.l2domainprofile.Model",
+    model: "NOC.vc.l2domain.Model",
     search: true,
-    helpId: "vlan-profile",
+    helpId: "l2domain-profile",
     rowClassField: "row_class",
 
     initComponent: function() {
@@ -33,11 +33,11 @@ Ext.define("NOC.vc.l2domainprofile.Application", {
                     width: 150
                 },
                 {
-                    text: __("Workflow"),
-                    dataIndex: "workflow",
-                    width: 100,
-                    renderer: NOC.render.Lookup("workflow")
-                },
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 150,
+                    renderer: NOC.render.Lookup("state")
+                }
             ],
 
             fields: [
@@ -55,16 +55,16 @@ Ext.define("NOC.vc.l2domainprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "workflow",
-                    xtype: "wf.workflow.LookupField",
-                    fieldLabel: __("Workflow"),
+                    name: "profile",
+                    xtype: "vc.l2domainprofile.LookupField",
+                    fieldLabel: __("Profile"),
                     allowBlank: false
                 },
                 {
-                    name: "style",
-                    xtype: "main.style.LookupField",
-                    fieldLabel: __("Style"),
-                    allowBlank: true
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: false
                 },
                 {
                     name: "template",
