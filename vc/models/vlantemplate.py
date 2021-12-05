@@ -54,13 +54,6 @@ class VLANTemplate(Document):
         "collection": "vlantemplates",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "parent",
-            "static_service_groups",
-            "effective_service_groups",
-            "static_client_groups",
-            "effective_client_groups",
-        ],
     }
 
     name = StringField()

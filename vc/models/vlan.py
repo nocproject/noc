@@ -24,7 +24,7 @@ import cachetools
 
 # NOC modules
 from .vlanprofile import VLANProfile
-from .l2domain import L2DomainProfile
+from .l2domain import L2Domain
 from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.inv.models.networksegment import NetworkSegment
@@ -50,7 +50,7 @@ class VLAN(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            {"fields": ["segment", "vlan"], "unique": True},
+            {"fields": ["l2domain", "vlan"], "unique": True},
             "expired",
             "labels",
             "effective_labels",
@@ -60,7 +60,7 @@ class VLAN(Document):
     name = StringField()
     profile = PlainReferenceField(VLANProfile)
     vlan = IntField(min_value=1, max_value=4095)
-    l2domain = PlainReferenceField(L2DomainProfile)
+    l2domain = PlainReferenceField(L2Domain)
     description = StringField()
     state = PlainReferenceField(State)
     project = ForeignKeyField(Project)
