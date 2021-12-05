@@ -12,7 +12,13 @@ import operator
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentListField, ReferenceField
+from mongoengine.fields import (
+    StringField,
+    LongField,
+    ListField,
+    EmbeddedDocumentListField,
+    ReferenceField,
+)
 import cachetools
 
 # NOC modules
@@ -42,15 +48,17 @@ class PoolItem(EmbeddedDocument):
 
 @Label.model
 @bi_sync
-@on_delete_check(
-    check=[("vc.VLAM", "l2domain")]
-)
+@on_delete_check(check=[("vc.VLAM", "l2domain")])
 class L2Domain(Document):
     meta = {
         "collection": "l2domains",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [{"unique": True, "fields": ["name", "pools.pool"]}, "labels", "effective_labels"],
+        "indexes": [
+            {"unique": True, "fields": ["name", "pools.pool"]},
+            "labels",
+            "effective_labels",
+        ],
     }
 
     name = StringField(unique=True)

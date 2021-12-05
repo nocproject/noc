@@ -32,24 +32,24 @@ logger = logging.getLogger(__name__)
 
 
 @Label.match_labels(category="l2filter")
-@on_delete_check(check=[("vc.L2Domain", "pool.vlan_filter"), ("vc.L2DomainProfile", "pool.vlan_filter")])
+@on_delete_check(
+    check=[("vc.L2Domain", "pool.vlan_filter"), ("vc.L2DomainProfile", "pool.vlan_filter")]
+)
 @on_save
 class VLANFilter(Document):
     meta = {
-        "collection": "l2filters",
+        "collection": "vlanfilters",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [
-            "expression_calc",
-        ],
+        "indexes": ["include_vlans", "exclude_vlans"],
     }
 
     name = StringField(unique=True)
     description = StringField()
-    # include_rules = ?include_expression (on web)
-    # exclude_rules = ?exclude_expression (on web)
-    expression = StringField()
-    expression_calc = ListField(IntField(min_value=0, max_value=4096))
+    include_expression = StringField()
+    exclude_expression = StringField()
+    include_vlans = ListField(IntField(min_value=1, max_value=4095))
+    exclude_vlans = ListField(IntField(min_value=1, max_value=4095))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _match_cache = cachetools.TTLCache(maxsize=50, ttl=30)
@@ -66,8 +66,10 @@ class VLANFilter(Document):
         """
         Check expression before save
         """
-        VLANFilter.compile(self.expression)
-        self.expression_calc = ranges_to_list(self.expression)
+        VLANFilter.compile(self.include_expression)
+        VLANFilter.compile(self.exclude_expression)
+        self.include_vlans = ranges_to_list(self.include_expression)
+        self.exclude_vlans = ranges_to_list(self.exclude_expression)
         super().save(*args, **kwargs)
 
     @classmethod

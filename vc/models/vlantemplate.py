@@ -13,7 +13,15 @@ import logging
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from typing import Optional, Iterable, Tuple, List
-from mongoengine.fields import StringField, BooleanField, ListField, ObjectIdField, EmbeddedDocumentListField, IntField, ReferenceField
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    ListField,
+    ObjectIdField,
+    EmbeddedDocumentListField,
+    IntField,
+    ReferenceField,
+)
 from mongoengine.errors import ValidationError
 import cachetools
 
@@ -30,7 +38,7 @@ id_lock = Lock()
 
 class VLANItem(EmbeddedDocument):
     vlan = IntField(required=True, min_value=1, max_value=4095)
-    name = StringField() # Autogenerate ?
+    name = StringField()  # Autogenerate ?
     description = StringField()
     profile = ReferenceField(VLANProfile, required=False)
 
@@ -58,11 +66,7 @@ class VLANTemplate(Document):
     name = StringField()
     description = StringField()
     type = StringField(
-        choices=[
-            ("global", "Global"),
-            ("l2domain", "L2 Domain"),
-            ("manual", "Manual")
-        ],
+        choices=[("global", "Global"), ("l2domain", "L2 Domain"), ("manual", "Manual")],
         required=True,
     )
     vlans = EmbeddedDocumentListField(VLANItem)
@@ -98,6 +102,7 @@ class VLANTemplate(Document):
         :return:
         """
         ...
+
 
 def allocate_vlans(template_id):
     template = VLANTemplate.get_by_id(template_id)
