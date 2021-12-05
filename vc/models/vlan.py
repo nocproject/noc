@@ -24,7 +24,7 @@ import cachetools
 
 # NOC modules
 from .vlanprofile import VLANProfile
-from .vpn import VPN
+from .l2domain import L2DomainProfile
 from noc.wf.models.state import State
 from noc.project.models.project import Project
 from noc.inv.models.networksegment import NetworkSegment
@@ -60,27 +60,10 @@ class VLAN(Document):
     name = StringField()
     profile = PlainReferenceField(VLANProfile)
     vlan = IntField(min_value=1, max_value=4095)
-    segment = PlainReferenceField(NetworkSegment)
+    l2domain = PlainReferenceField(L2DomainProfile)
     description = StringField()
     state = PlainReferenceField(State)
     project = ForeignKeyField(Project)
-    # Link to gathering VPN
-    vpn = PlainReferenceField(VPN)
-    # VxLAN VNI
-    vni = IntField()
-    # Translation rules when passing border
-    translation_rule = StringField(
-        choices=[
-            # Rewrite tag to parent vlan's
-            ("map", "map"),
-            # Append parent tag as S-VLAN
-            ("push", "push"),
-        ]
-    )
-    #
-    parent = PlainReferenceField("self")
-    # Automatically apply segment translation rule
-    apply_translation = BooleanField(default=True)
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
