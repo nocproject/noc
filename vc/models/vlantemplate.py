@@ -18,6 +18,7 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     ReferenceField,
 )
+from mongoengine.queryset.visitor import Q
 from typing import Optional, Iterable, Tuple
 from jinja2 import Template
 import cachetools
@@ -52,8 +53,7 @@ class VLANItem(EmbeddedDocument):
 
 
 @on_save
-@on_delete
-@on_delete_check(check=[("vc.L2DomainProfile", "template"), ("vc.L2Domain", "template")])
+@on_delete_check(check=[("vc.L2DomainProfile", "vlan_template"), ("vc.L2Domain", "vlan_template")])
 class VLANTemplate(Document):
     meta = {
         "collection": "vlantemplates",
@@ -85,30 +85,52 @@ class VLANTemplate(Document):
                 template_id=str(self.id),
             )
 
-    def iter_vlans(self) -> Iterable[Tuple[int, str, "VLANProfile"]]:
+    def iter_vlans(self) -> Iterable[Tuple[int, str, str, "VLANProfile"]]:
         """
-        Iterate over vlans
+        Iterate over template vlans
         :return:
         """
         for vi in self.vlans:
             for vlan in ranges_to_list(vi.vlan):
-                yield int(vlan), Template(vlan.name).render({"vlan": int(vlan)}), vi.profile
+                yield int(vlan), Template(vlan.name).render(
+                    {"vlan": int(vlan)}
+                ), vi.description, vi.profile
 
-    def allocate_template(self):
+    def allocate_template(self, l2_domain: str):
         """
 
         :return:
         """
         from .vlan import VLAN
 
-        for vlan_num, name, profile in self.iter_vlans():
-            vlan = VLAN(vlan=vlan_num, name=name, profile=profile, l2domain=None)  # ?
+        # @todo L2Domain pools filter ?
+        existing_vlans = set(VLAN.objects.filter(l2domain=l2_domain).values_list("vlan"))
+        for vlan_num, name, description, profile in self.iter_vlans():
+            if vlan_num in existing_vlans:
+                continue
+            vlan = VLAN(
+                vlan=vlan_num,
+                name=name,
+                description=description,
+                profile=profile,
+                l2domain=l2_domain,
+            )
             vlan.save()
 
 
 def allocate_vlans(template_id):
+    from noc.vc.models.l2domain import L2Domain
+    from noc.vc.models.l2domainprofile import L2DomainProfile
+
     template = VLANTemplate.get_by_id(template_id)
-    # Getting L2 Domain
     if not template:
+        logger.warning("VLAN Template with id: %s does not exist", template_id)
         return
-    template.allocate_vlans()
+    # Getting L2 Domain
+    q = Q(vlan_template=template_id)
+    profiles = list(L2DomainProfile.objects.filter(vlan_template=template_id).values_list("id"))
+    if profiles:
+        q |= Q(id__in=profiles)
+
+    for l2d in L2Domain.objects.filter(q):
+        template.allocate_template(l2d.id)

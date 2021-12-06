@@ -67,7 +67,7 @@ Ext.define("NOC.vc.l2domain.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "template",
+                    name: "vlan_template",
                     xtype: "vc.vlantemplate.LookupField",
                     fieldLabel: __("VLAN Template"),
                     allowBlank: true
