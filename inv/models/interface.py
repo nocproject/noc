@@ -465,7 +465,7 @@ class Interface(Document):
         yield Label.get_effective_regex_labels("interface_description", instance.description or "")
         if instance.managed_object:
             yield from filterfalse(
-                lambda x: x != "noc::is_linked::=",
+                lambda x: x == "noc::is_linked::=",
                 ManagedObject.iter_effective_labels(instance.managed_object),
             )
         if instance.service:
