@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import dateutil.parser
 import operator
 import re
 from threading import Lock
+from typing import List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -180,7 +181,7 @@ class Maintenance(Document):
                 )
 
     @classmethod
-    def currently_affected(cls):
+    def currently_affected(cls) -> List[int]:
         """
         Returns a list of currently affected object ids
         """

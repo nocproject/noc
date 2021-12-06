@@ -92,7 +92,7 @@ class AlarmEscalation(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> "AlarmEscalation":
         return AlarmEscalation.objects.filter(id=id).first()
 
     @property
