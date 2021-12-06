@@ -228,6 +228,8 @@ _MODELS = {
     "fm.ArchivedEvent": "noc.fm.models.archivedevent.ArchivedEvent",
     "fm.CloneClassificationRule": "noc.fm.models.cloneclassificationrule.CloneClassificationRule",
     "fm.Enumeration": "noc.fm.models.enumeration.Enumeration",
+    "fm.Escalation": "noc.fm.models.escalation.Escalation",
+    "fm.EscalationProfile": "noc.fm.models.escalationprofile.EscalationProfile",
     "fm.EventClass": "noc.fm.models.eventclass.EventClass",
     "fm.EventClassCategory": "noc.fm.models.eventclass.EventClassCategory",
     "fm.EventClassificationRule": "noc.fm.models.eventclassificationrule.EventClassificationRule",

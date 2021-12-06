@@ -10,14 +10,18 @@ import logging
 import datetime
 import operator
 import threading
+from typing import Iterable, Dict, List, Optional, Any, NoReturn
+from abc import ABC, abstractmethod
+
+# Third-party modules
+from bson import ObjectId
 
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmescalation import AlarmEscalation, EscalationItem as AEscalationItem
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -29,6 +33,11 @@ from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
+from noc.fm.models.escalation import Escalation, EscalationItem
+
+from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.lock.process import ProcessLock
+from noc.core.log import PrefixLoggerAdapter
 
 
 logger = logging.getLogger(__name__)
@@ -41,29 +50,203 @@ retry_lock = threading.Lock()
 next_retry = datetime.datetime.now()
 
 
-def escalate(
-    alarm_id,
-    escalation_id,
-    escalation_delay,
-    login="correlator",
-    timestamp_policy="a",
-    force=None,
-    *args,
-    **kwargs,
-):
-    def log(message, *args):
+class BaseSequence(ABC):
+    """
+    Base class for escalation/deescalation sequence
+    """
+
+    lock = ProcessLock(category="escalator", owner="escalator")
+
+    class StopSequence(Exception):
+        pass
+
+    def __init__(self, alarm_id: str, login: str = "correlator") -> None:
+        self.logger = PrefixLoggerAdapter(logger, str(alarm_id))
+        self.login: str = login
+
+    def retry_job(self, msg: str) -> NoReturn:
+        """
+        Reschedule current job and stop escalatio
+        """
+        global RETRY_DELTA, RETRY_TIMEOUT, next_retry, retry_lock
+
+        now = datetime.datetime.now()
+        retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
+        with retry_lock:
+            if retry < next_retry:
+                retry = next_retry
+            next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
+        delta = retry - now
+        delay = delta.seconds + (1 if delta.microseconds else 0)
+        Job.retry_after(delay, msg)
+
+    def stop_sequence(self) -> NoReturn:
+        """
+        Stop sequence
+        """
+        raise self.StopSequence
+
+    def run(self) -> None:
+        """
+        Start and process sequence
+        """
+        try:
+            self.process()
+        except self.StopSequence:
+            pass
+
+    @abstractmethod
+    def process(self) -> None:
+        """
+        Base logic
+        """
+
+
+class EscalationSequence(BaseSequence):
+    """
+    Process all escalation procedures
+    """
+
+    def __init__(
+        self,
+        alarm_id: str,
+        escalation_id: str,
+        escalation_delay: int,
+        login: str = "correlator",
+        timestamp_policy: str = "a",
+        force: bool = False,
+    ):
+        super().__init__(alarm_id=alarm_id, login=login)
+        self.alarm = self.get_alarm(alarm_id)
+        self.escalation = self.get_escalation(escalation_id)
+        self.escalation_delay = escalation_delay
+        self.timestamp_policy = timestamp_policy
+        self.force = force
+        self.alarm_ids: Dict[ObjectId, ActiveAlarm] = {}
+        self.escalation_doc: Escalation
+
+    def log_alarm(self, message: str, *args) -> None:
+        """
+        Log message to alarm
+        """
         msg = message % args
-        logger.info("[%s] %s", alarm_id, msg)
-        alarm.log_message(msg, to_save=True)
+        self.logger.info(msg)
+        self.alarm.log_message(msg, to_save=True)
 
-    def can_do(mo, e_type, force):
-        if force:
+    def get_alarm(self, alarm_id: str) -> ActiveAlarm:
+        """
+        Get active alarm by id. Raise StopSequence if
+        alarm is not found or already closed.
+        """
+        alarm = get_alarm(alarm_id)
+        if alarm is None:
+            self.logger.info("Missing alarm, skipping")
+            metrics["escalation_missed_alarm"] += 1
+            self.stop_sequence()
+        if alarm.status == "C":
+            logger.info("Alarm is closed, skipping")
+            metrics["escalation_already_closed"] += 1
+            self.stop_sequence()
+        return alarm
+
+    def get_escalation(self, escalation_id: str) -> AlarmEscalation:
+        """
+        Get alarm escalation by id. Raise StopSequence if not found.
+        """
+        escalation = AlarmEscalation.get_by_id(escalation_id)
+        if not escalation:
+            self.log_alarm(f"Escalation {escalation_id} is not found, skipping")
+            metrics["escalation_not_found"] += 1
+            self.stop_sequence()
+        return escalation
+
+    def get_span_sample(self) -> int:
+        """
+        Calculate effective sample for escalation span
+        """
+        if self.alarm.managed_object.tt_system:
+            return self.alarm.managed_object.tt_system.telemetry_sample
+        return PARENT_SAMPLE
+
+    def iter_escalation_items(self) -> Iterable[AEscalationItem]:
+        """
+        Iterate all applicable EscalationItems
+        """
+        for item in self.escalation.escalations:
+            if item.delay != self.escalation_delay:
+                continue  # Try other type
+            # Check administrative domain
+            if (
+                item.administrative_domain
+                and item.administrative_domain.id not in self.alarm.adm_path
+            ):
+                continue
+            # Check severity
+            if item.min_severity and self.alarm.severity < item.min_severity:
+                continue
+            # Check resource group
+            if (
+                item.resource_group
+                and str(item.resource_group.id)
+                not in self.alarm.managed_object.effective_service_groups
+            ):
+                continue
+            # Check time pattern
+            if item.time_pattern and not item.time_pattern.match(self.alarm.timestamp):
+                continue
+            # Render escalation message
+            if not item.template:
+                self.log_alarm("No escalation template, skipping")
+                continue
+            yield item
+
+    def check_throttling(self) -> None:
+        """
+        Check throttling limits. Retry job if overwhelmed.
+        """
+        limit = config.escalator.tt_escalation_limit
+        widow = datetime.datetime.now() - datetime.timedelta(seconds=config.escalator.ets)
+        n_escalated = ActiveAlarm._get_collection().count_documents(
+            {"escalation_ts": {"$gte": widow}}
+        )
+        n_escalated += ArchivedAlarm._get_collection().count_documents(
+            {"escalation_ts": {"$gte": widow}}
+        )
+        if n_escalated < limit:
+            return
+        self.logger.error(
+            "Escalation limit exceeded (%s/%s). Skipping",
+            n_escalated,
+            config.escalator.tt_escalation_limit,
+        )
+        metrics["escalation_throttled"] += 1
+        self.retry_job(f"Escalation limit exceeded ({n_escalated}/{limit}). Skipping")
+
+    def can_escalate(self) -> bool:
+        """
+        Return True if alarm can be escalated.
+        """
+        if self.force:
             return True
-        elif e_type == "E":
-            return mo.can_escalate()
-        elif e_type == "N":
-            return mo.can_notify()
+        return self.alarm.managed_object.can_escalate()
 
+    def can_notify(self) -> bool:
+        """
+        Return True if alarm can send notifications
+        """
+        if self.force:
+            return True
+        return self.alarm.managed_object.can_notify()
+
+    def get_timestamp(self) -> Optional[datetime.datetime]:
+        """
+        Get effective timestamp according to timestamp policy
+        """
+        if self.timestamp_policy == "a":
+            return self.alarm.timestamp
+        return None
+
+    @staticmethod
     def summary_to_list(summary, model):
         r = []
         for k in summary:
@@ -79,348 +262,661 @@ def escalate(
             ]
         return sorted(r, key=operator.itemgetter("order"))
 
-    logger.info("[%s] Performing escalations", alarm_id)
-    alarm = get_alarm(alarm_id)
-    if alarm is None:
-        logger.info("[%s] Missing alarm, skipping", alarm_id)
-        metrics["escalation_missed_alarm"] += 1
-        return
-    if alarm.status == "C":
-        logger.info("[%s] Alarm is closed, skipping", alarm_id)
-        metrics["escalation_already_closed"] += 1
-        return
-    if alarm.root:
-        log("[%s] Alarm is not root cause, skipping", alarm_id)
-        metrics["escalation_alarm_is_not_root"] += 1
-        return
-    #
-    escalation = AlarmEscalation.get_by_id(escalation_id)
-    if not escalation:
-        log("Escalation %s is not found, skipping", escalation_id)
-        metrics["escalation_not_found"] += 1
-        return
-    if alarm.managed_object.tt_system:
-        sample = alarm.managed_object.tt_system.telemetry_sample
-    else:
-        sample = PARENT_SAMPLE
-    with Span(client="escalator", sample=sample) as ctx:
-        alarm.set_escalation_context()
-        # Evaluate escalation chain
-        mo: ManagedObject = alarm.managed_object
-        for a in escalation.escalations:
-            if a.delay != escalation_delay:
-                continue  # Try other type
-            # Check administrative domain
-            if a.administrative_domain and a.administrative_domain.id not in alarm.adm_path:
-                continue
-            # Check severity
-            if a.min_severity and alarm.severity < a.min_severity:
-                continue
-            # Check resource group
-            if a.resource_group and str(a.resource_group.id) not in mo.effective_service_groups:
-                continue
-            # Check time pattern
-            if a.time_pattern and not a.time_pattern.match(alarm.timestamp):
-                continue
-            # Render escalation message
-            if not a.template:
-                log("No escalation template, skipping")
-                continue
-            # Check global limits
-            # @todo: Move into escalator service
-            # @todo: Process per-ttsystem limits
-            ets = datetime.datetime.now() - datetime.timedelta(seconds=config.escalator.ets)
-            ae = ActiveAlarm._get_collection().count_documents({"escalation_ts": {"$gte": ets}})
-            ae += ArchivedAlarm._get_collection().count_documents({"escalation_ts": {"$gte": ets}})
-            if ae >= config.escalator.tt_escalation_limit:
-                logger.error(
-                    "Escalation limit exceeded (%s/%s). Skipping",
-                    ae,
-                    config.escalator.tt_escalation_limit,
-                )
-                metrics["escalation_throttled"] += 1
-                alarm.set_escalation_error(
-                    "Escalation limit exceeded (%s/%s). Skipping"
-                    % (ae, config.escalator.tt_escalation_limit)
-                )
-                Job.retry_after(
-                    get_next_retry(),
-                    "Escalation limit exceeded (%s/%s). Skipping"
-                    % (ae, config.escalator.tt_escalation_limit),
-                )
-                return
-            # Check whether consequences has escalations
-            cons_escalated = sorted(alarm.iter_escalated(), key=operator.attrgetter("timestamp"))
-            affected_objects = sorted(alarm.iter_affected(), key=operator.attrgetter("name"))
-            # Check if alarm has merged downlinks
-            has_merged_downlinks = any(
-                True for a in ActiveAlarm.objects.filter(root=alarm.id, rca_type=RCA_DOWNLINK_MERGE)
-            )
-            #
-            segment = alarm.managed_object.segment
-            if segment.is_redundant:
-                uplinks = alarm.managed_object.data.uplinks
-                lost_redundancy = len(uplinks) > 1
-                affected_subscribers = summary_to_list(segment.total_subscribers, SubscriberProfile)
-                affected_services = summary_to_list(segment.total_services, ServiceProfile)
-            else:
-                lost_redundancy = False
-                affected_subscribers = []
-                affected_services = []
-            #
-            ctx = {
-                "alarm": alarm,
-                "affected_objects": affected_objects,
-                "cons_escalated": cons_escalated,
-                "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
-                "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
-                "total_services": summary_to_list(alarm.total_services, ServiceProfile),
-                "tt": None,
-                "lost_redundancy": lost_redundancy,
-                "affected_subscribers": affected_subscribers,
-                "affected_services": affected_services,
-                "has_merged_downlinks": has_merged_downlinks,
-            }
-            # Escalate to TT
-            if a.create_tt and can_do(mo, "E", force):
-                tt_id = None
-                if alarm.escalation_tt:
-                    log("Already escalated with TT #%s", alarm.escalation_tt)
-                else:
-                    pre_reason = escalation.get_pre_reason(mo.tt_system)
-                    active_maintenance = Maintenance.get_object_maintenance(mo)
-                    if active_maintenance:
-                        for m in active_maintenance:
-                            log(
-                                "Object is under maintenance: %s (%s-%s)",
-                                m.subject,
-                                m.start,
-                                m.stop,
-                            )
-                        metrics["escalation_stop_on_maintenance"] += 1
-                    elif pre_reason is not None:
-                        subject = a.template.render_subject(**ctx)
-                        body = a.template.render_body(**ctx)
-                        logger.debug(
-                            "[%s] Escalation message:\nSubject: %s\n%s", alarm_id, subject, body
-                        )
-                        log("Creating TT in system %s", mo.tt_system.name)
-                        tts = mo.tt_system.get_system()
-                        try:
-                            try:
-                                tt_id = tts.create_tt(
-                                    queue=mo.tt_queue,
-                                    obj=mo.tt_system_id,
-                                    reason=pre_reason,
-                                    subject=subject,
-                                    body=body,
-                                    login=login,
-                                    timestamp=alarm.timestamp if timestamp_policy == "a" else None,
-                                )
-                            except TemporaryTTError as e:
-                                metrics["escalation_tt_retry"] += 1
-                                log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
-                                mo.tt_system.register_failure()
-                                Job.retry_after(get_next_retry(), str(e))
-                            ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
-                            alarm.escalate(
-                                ctx["tt"],
-                                close_tt=a.close_tt,
-                                wait_tt=ctx["tt"] if a.wait_tt else None,
-                            )
-                            if tts.promote_group_tt and a.promote_group_tt:
-                                # Create group TT
-                                log("Promoting to group tt")
-                                gtt = tts.create_group_tt(tt_id, alarm.timestamp)
-                                # Append affected objects
-                                if a.promote_affected_tt:
-                                    for ao in alarm.iter_affected():
-                                        if ao.can_escalate(True):
-                                            if ao.tt_system == mo.tt_system:
-                                                log(
-                                                    "Appending object %s to group tt %s",
-                                                    ao.name,
-                                                    gtt,
-                                                )
-                                                try:
-                                                    tts.add_to_group_tt(gtt, ao.tt_system_id)
-                                                except TTError as e:
-                                                    alarm.set_escalation_error(
-                                                        "[%s] %s" % (mo.tt_system.name, e)
-                                                    )
-                                            else:
-                                                log(
-                                                    "Cannot append object %s to group tt %s: Belongs to other TT system",
-                                                    ao.name,
-                                                    gtt,
-                                                )
-                                        else:
-                                            log(
-                                                "Cannot append object %s to group tt %s: Escalations are disabled",
-                                                ao.name,
-                                                gtt,
-                                            )
-                            metrics["escalation_tt_create"] += 1
-                        except TTError as e:
-                            log("Failed to create TT: %s", e)
-                            metrics["escalation_tt_fail"] += 1
-                            alarm.log_message("Failed to escalate: %s" % e, to_save=True)
-                            alarm.set_escalation_error("[%s] %s" % (mo.tt_system.name, e))
-                    else:
-                        log("Cannot find pre reason")
-                        metrics["escalation_tt_fail"] += 1
-                if tt_id and cons_escalated:
-                    # Notify consequences
-                    for ca in cons_escalated:
-                        c_tt_name, c_tt_id = ca.escalation_tt.split(":")
-                        cts = TTSystem.get_by_name(c_tt_name)
-                        if cts:
-                            tts = cts.get_system()
-                            try:
-                                log("Appending comment to TT %s", tt_id)
-                                tts.add_comment(
-                                    c_tt_id,
-                                    body="Covered by TT %s" % tt_id,
-                                    login=login,
-                                    queue=mo.tt_queue,
-                                )
-                                metrics["escalation_tt_comment"] += 1
-                            except NotImplementedError:
-                                log(
-                                    "Cannot add comment to %s: Feature not implemented",
-                                    ca.escalation_tt,
-                                )
-                                metrics["escalation_tt_comment_fail"] += 1
-                            except TTError as e:
-                                log("Failed to add comment to %s: %s", ca.escalation_tt, e)
-                                metrics["escalation_tt_comment_fail"] += 1
-                        else:
-                            log("Failed to add comment to %s: Invalid TT system", ca.escalation_tt)
-                            metrics["escalation_tt_comment_fail"] += 1
-            # Send notification
-            if a.notification_group and can_do(mo, "N", force):
-                subject = a.template.render_subject(**ctx)
-                body = a.template.render_body(**ctx)
-                logger.debug("[%s] Notification message:\nSubject: %s\n%s", alarm_id, subject, body)
-                log("Sending notification to group %s", a.notification_group.name)
-                a.notification_group.notify(subject, body)
-                alarm.set_clear_notification(a.notification_group, a.clear_template)
-                metrics["escalation_notify"] += 1
-            #
-            if a.stop_processing:
-                logger.debug("Stopping processing")
-                break
-        nalarm = get_alarm(alarm_id)
-        if nalarm and nalarm.status == "C":
-            nalarm.log_message("Alarm has been closed during escalation. Try to deescalate")
-            logger.info("[%s] Alarm has been closed during escalation. Try to deescalate", alarm.id)
+    def check_closed(self) -> None:
+        """
+        Check if alarm has been closed during escalation. Try to deescalate
+        """
+        tt_id = self.escalation_doc.tt_id
+        if not tt_id:
+            return
+        alarm = get_alarm(self.alarm.id)
+        if alarm and alarm.status == "C":
+            alarm.log_message("Alarm has been closed during escalation. Try to deescalate")
+            self.logger.info("Alarm has been closed during escalation. Try to deescalate")
             metrics["escalation_closed_while_escalated"] += 1
-            if tt_id and not nalarm.escalation_tt:
-                nalarm.escalation_ts = datetime.datetime.now()
-                nalarm.escalation_tt = "%s:%s" % (mo.tt_system.name, tt_id)
-                nalarm.save()
-            if not nalarm.escalation_close_ts and not nalarm.escalation_close_error:
+            if tt_id and not alarm.escalation_tt:
+                alarm.escalation_ts = datetime.datetime.now()
+                alarm.escalation_tt = f"{self.alarm.managed_object.tt_system.name}:{tt_id}"
+                alarm.save()
+            if not alarm.escalation_close_ts and not alarm.escalation_close_error:
+                self.escalation_doc.save()  # Will be fetched later
                 notify_close(
-                    alarm_id=alarm_id,
-                    tt_id=nalarm.escalation_tt,
+                    alarm_id=self.alarm.id,
+                    tt_id=alarm.escalation_tt,
                     subject="Closing",
                     body="Closing",
-                    notification_group_id=alarm.clear_notification_group.id
-                    if alarm.clear_notification_group
+                    notification_group_id=self.alarm.clear_notification_group.id
+                    if self.alarm.clear_notification_group
                     else None,
-                    close_tt=alarm.close_tt,
-                    login=login,
+                    close_tt=self.alarm.close_tt,
+                    login=self.login,
+                    queue=self.alarm.managed_object.tt_queue,
+                )
+            return
+        if alarm == "A" and not alarm.escalation_tt and tt_id:
+            self.logger.error("[%s] Alarm without escalation TT: %s", tt_id)
+
+    def has_merged_downlinks(self):
+        """
+        Check if alarm has merged downlinks
+        """
+        return bool(
+            ActiveAlarm.objects.filter(root=self.alarm.id, rca_type=RCA_DOWNLINK_MERGE).first()
+        )
+
+    def get_ctx(self):
+        """
+        Get escalation context
+        """
+        affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
+        segment = self.alarm.managed_object.segment
+        if segment.is_redundant:
+            uplinks = self.alarm.managed_object.data.uplinks
+            lost_redundancy = len(uplinks) > 1
+            affected_subscribers = self.summary_to_list(
+                segment.total_subscribers, SubscriberProfile
+            )
+            affected_services = self.summary_to_list(segment.total_services, ServiceProfile)
+        else:
+            lost_redundancy = False
+            affected_subscribers = []
+            affected_services = []
+        cons_escalated = [
+            self.alarm_ids[x.alarm]
+            for x in self.escalation_doc.consequences
+            if x.is_already_escalated
+        ]
+        return {
+            "alarm": self.alarm,
+            "affected_objects": affected_objects,
+            "cons_escalated": cons_escalated,
+            "total_objects": self.summary_to_list(self.alarm.total_objects, ManagedObjectProfile),
+            "total_subscribers": self.summary_to_list(
+                self.alarm.total_subscribers, SubscriberProfile
+            ),
+            "total_services": self.summary_to_list(self.alarm.total_services, ServiceProfile),
+            "tt": None,
+            "lost_redundancy": lost_redundancy,
+            "affected_subscribers": affected_subscribers,
+            "affected_services": affected_services,
+            "has_merged_downlinks": self.has_merged_downlinks(),
+        }
+
+    def notify(self, item: AEscalationItem, ctx: Dict[str, Any]) -> None:
+        if not item.notification_group or not self.can_notify():
+            return
+        subject = item.template.render_subject(**ctx)
+        body = item.template.render_body(**ctx)
+        self.logger.debug("Notification message:\nSubject: %s\n%s", subject, body)
+        self.log_alarm(f"Sending notification to group {item.notification_group.name}")
+        item.notification_group.notify(subject, body)
+        self.alarm.set_clear_notification(item.notification_group, item.clear_template)
+        metrics["escalation_notify"] += 1
+
+    def is_under_maintenance(self) -> bool:
+        """
+        Check if current alarm is covered by existing maintenance.
+        Add maintenance details to alarm log when necessary.
+
+        :returns: True if object is under maintenance, False otherwise
+        """
+        if not self.escalation_doc.leader.is_maintenance:
+            return False
+        metrics["escalation_stop_on_maintenance"] += 1
+        return True
+
+    def is_already_escalated(self) -> bool:
+        """
+        Check if alarm is already escalated.
+        Add escalation details to alarm log when necessary.
+
+        :returns: True if alarm is already escalated, False otherwise
+        """
+        if not self.escalation_doc.leader.is_already_escalated:
+            return False
+        tt = self.escalation_doc.leader.current_tt_id
+        self.log_alarm(f"Already escalated with TT #{tt}")
+        return True
+
+    def create_tt(self, esc_item: AEscalationItem, ctx: Dict[str, Any]):
+        """
+        Create trouble ticket for alarm
+        """
+        mo = self.alarm.managed_object
+        pre_reason = self.escalation.get_pre_reason(mo.tt_system)
+        if pre_reason is None:
+            self.log_alarm("Cannot find pre reason")
+            metrics["escalation_tt_fail"] += 1
+            return None
+        subject = esc_item.template.render_subject(**ctx)
+        body = esc_item.template.render_body(**ctx)
+        self.logger.debug("Escalation message:\nSubject: %s\n%s", subject, body)
+        self.log_alarm(f"Creating TT in system {mo.tt_system.name}")
+        tts = mo.tt_system.get_system()
+        try:
+            try:
+                tt_id = tts.create_tt(
+                    queue=mo.tt_queue,
+                    obj=mo.tt_system_id,
+                    reason=pre_reason,
+                    subject=subject,
+                    body=body,
+                    login=self.login,
+                    timestamp=self.get_timestamp(),
+                )
+            except TemporaryTTError as e:
+                metrics["escalation_tt_retry"] += 1
+                self.log_alarm(f"Temporary error detected. Retry after {RETRY_TIMEOUT}s")
+                mo.tt_system.register_failure()
+                self.retry_job(str(e))
+            ctx["tt"] = f"{mo.tt_system.name}:{tt_id}"
+            self.alarm.escalate(
+                ctx["tt"],
+                close_tt=esc_item.close_tt,
+                wait_tt=ctx["tt"] if esc_item.wait_tt else None,
+            )
+            # Save to escalation context
+            self.escalation_doc.tt_id = ctx["tt"]
+            self.escalation_doc.leader.escalation_status = "ok"
+            # Promote to group tt
+            if tts.promote_group_tt and esc_item.promote_group_tt:
+                # Create group TT
+                self.log_alarm("Promoting to group tt")
+                gtt = tts.create_group_tt(tt_id, self.alarm.timestamp)
+                # Append affected objects
+                if esc_item.promote_affected_tt:
+                    for item in self.escalation_doc.consequences:
+                        # @todo: Check escalation status for already escalated and maintenance?
+                        alarm = self.alarm_ids[item.alarm]
+                        if not alarm.managed_object.can_escalate(True):
+                            err = f"Cannot append object {alarm.managed_object.name} to group tt {gtt}: Escalations are disabled"
+                            self.log_alarm(err)
+                            item.escalation_status = "fail"
+                            item.escalation_error = err
+                            continue
+                        if alarm.managed_object.tt_system != mo.tt_system:
+                            err = f"Cannot append object {alarm.managed_object.name} to group tt {gtt}: Belongs to other TT system"
+                            self.log_alarm(err)
+                            item.escalation_status = "fail"
+                            item.escalation_error = err
+                            continue
+                        self.log_alarm(
+                            f"Appending object {alarm.managed_object.name} to group tt {gtt}"
+                        )
+                        try:
+                            tts.add_to_group_tt(gtt, alarm.managed_object.tt_system_id)
+                        except TemporaryTTError as e:
+                            item.escalation_status = "temp"
+                            item.escalation_error = str(e)
+                        except TTError as e:
+                            item.escalation_status = "fail"
+                            item.escalation_error = str(e)
+            metrics["escalation_tt_create"] += 1
+        except TTError as e:
+            self.log_alarm(f"Failed to create TT: {e}")
+            metrics["escalation_tt_fail"] += 1
+            self.alarm.log_message(f"Failed to escalate: {e}", to_save=True)
+
+    def notify_escalated_consequences(self) -> None:
+        """
+        Append comments to all escalated consequences
+        """
+        if not self.escalation_doc.tt_id:
+            return
+        mo = self.alarm.managed_object
+        # Notify consequences
+        for item in self.escalation_doc.consequences:
+            if not item.is_already_escalated:
+                continue
+            alarm = self.alarm_ids[item.alarm]
+            tt_name, c_tt_id = alarm.escalation_tt.split(":")
+            cts = TTSystem.get_by_name(tt_name)
+            if not cts:
+                self.log_alarm(f"Failed to add comment to {alarm.escalation_tt}: Invalid TT system")
+                metrics["escalation_tt_comment_fail"] += 1
+                continue
+            tts = cts.get_system()
+            try:
+                self.log_alarm(f"Appending comment to TT {self.escalation_doc.tt_id}")
+                tts.add_comment(
+                    c_tt_id,
+                    body=f"Covered by TT {self.escalation_doc.tt_id}",
+                    login=self.login,
                     queue=mo.tt_queue,
                 )
-        elif nalarm == "A" and not nalarm.escalation_tt and tt_id:
-            logger.error("[%s] Alarm without escalation TT: %s", alarm.id, tt_id)
-        logger.info("[%s] Escalations loop end", alarm_id)
+                metrics["escalation_tt_comment"] += 1
+            except NotImplementedError:
+                self.log_alarm(
+                    f"Cannot add comment to {alarm.escalation_tt}: Feature not implemented"
+                )
+                metrics["escalation_tt_comment_fail"] += 1
+            except TTError as e:
+                self.log_alarm(f"Failed to add comment to {alarm.escalation_tt}: {e}")
+                metrics["escalation_tt_comment_fail"] += 1
 
+    def get_escalation_policy(self) -> EscalationPolicy:
+        """
+        Get effective escalation policy for alarm
+        """
+        labels: List[List[str]] = [self.alarm.effective_labels]
+        if self.alarm.groups:
+            # All groups
+            for doc in ActiveAlarm._get_collection().find(
+                {"reference": {"$in": self.alarm.groups}}, {"_id": 1, "effective_labels": 1}
+            ):
+                g_labels = doc.get("effective_labels") or []
+                if g_labels:
+                    labels.append(g_labels)
+        return EscalationPolicy.get_effective_policy(labels)
 
-def notify_close(
-    alarm_id, tt_id, subject, body, notification_group_id, close_tt=False, login=None, queue=None
-):
-    def log(message, *args):
-        msg = message % args
-        logger.info("[%s] %s", alarm_id, msg)
+    def get_escalation_doc(self) -> Optional[Escalation]:
+        """
+        Get escalation document structure filled with filled EscalationItems
+        """
+        policy = self.get_escalation_policy().name.lower()
+        iter_items = getattr(self, f"iter_alarms_{policy}", None)
+        if not iter_items:
+            self.logger.error("Unknown escalation policy `%s`. Skipping", policy)
+            return None
+        items = list(iter_items())
+        if not items:
+            return None
+        # @todo: Append profile
+        doc = Escalation(timestamp=datetime.datetime.now(), items=[])
+        for alarm in items:
+            if alarm.alarm_class.is_ephemeral:
+                # Group alarms are virtual and should be locked, but not escalated
+                doc.groups += [str(alarm.reference)]
+                continue
+            doc.items += [
+                EscalationItem(
+                    managed_object=alarm.managed_object,
+                    alarm=alarm.id,
+                )
+            ]
+            self.alarm_ids[alarm.id] = alarm
+        if not doc.items:
+            return None  # Only group alarms
+        return doc
 
-    login = login or "correlator"
-    if tt_id:
-        alarm = get_alarm(alarm_id)
-        alarm.set_escalation_close_ctx()
-        if (
-            alarm
-            and alarm.status == "C"
-            and (alarm.escalation_close_ts or alarm.escalation_close_error)
+    def iter_alarms_never(self) -> Iterable[ActiveAlarm]:
+        """
+        `never` escalationn policy. Yields not items
+        """
+        self.logger.info("Escalation is denied by policy")
+        yield from []
+
+    def iter_alarms_root(self) -> Iterable[ActiveAlarm]:
+        """
+        `root` escalation policy. If alarm is root cause, yield root alarm
+        and all the consequences
+        """
+        if self.alarm.root:
+            logger.info("[root] Alarm is not a root cause. Skipping")
+            return
+        yield self.alarm
+        yield from self.alarm.iter_consequences()
+
+    def iter_alarms_always(self) -> Iterable[ActiveAlarm]:
+        """
+        `always` escalation policy. Always escalate current alarm
+        """
+        yield self.alarm
+
+    def iter_alarms_root_first(self) -> Iterable[ActiveAlarm]:
+        """
+        `root_first` escalation policy. Always escalate current alarm
+        """
+        if self.alarm.root:
+            logger.info("[rootfirst] Alarm is not a root cause. Skipping")
+            return
+        # Check if any of groups already has any escalated root cause
+        if not self.alarm.groups:
+            yield from self.iter_alarms_root()
+            return
+        yield ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by(
+            "root", "-timestamp"
+        ).first()
+        yield from self.alarm.iter_grouped()
+
+    def iter_alarms_always_first(self) -> Iterable[ActiveAlarm]:
+        """
+        `always_first` escalation policy. Always escalate first alarm
+        """
+        if not self.alarm.groups:
+            yield from self.iter_alarms_always()
+            return
+        yield ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by("timestamp").first()
+        yield from self.alarm.iter_grouped()
+
+    def check_escalated(self):
+        """
+        Process escalation doc and fill already escalated alarms.
+        Note: Must be called under the lock
+        """
+        alarms = [item.alarm for item in self.escalation_doc.items]
+        esc_status: Dict[ObjectId, ObjectId] = {}
+        esc_tt: Dict[ObjectId, str] = {}
+        for doc in Escalation._get_collection().aggregate(
+            [
+                {"$match": {"close_timestamp": {"$exists": False}, "items.alarm": {"$in": alarms}}},
+                {"$project": {"_id": 1, "items": 1, "tt_id": 1}},
+                {"$unwind": "$items"},
+                {"$match": {"items.alarm": {"$in": alarms}}},
+            ]
         ):
-            log("Alarm is already deescalated")
+            esc_status[doc["items"]["alarm"]] = doc["_id"]
+            esc_tt[doc["items"]["alarm"]] = doc["tt_id"]
+        if not esc_status:
+            return  # No escalated docs
+        for item in self.escalation_doc.items:
+            if item.alarm in esc_status and item.is_new:
+                self.logger.info(
+                    "Alarm %s is already escalated with TT %s", item.alarm, esc_tt[item.alarm]
+                )
+                item.escalation_status = "exists"
+                item.current_escalation = esc_status[item.alarm]
+                item.current_tt_id = esc_tt[item.alarm]
+
+    def check_maintenance(self):
+        """
+        Process escalation doc and mark alarms covered by maintenance.
+        Note: Must be called under the lock
+        """
+        # @todo: Check maintenance for all consequences
+        if not self.escalation_doc.leader.is_new:
+            return
+        active_maintenance = Maintenance.get_object_maintenance(self.alarm.managed_object)
+        if not active_maintenance:
+            return
+        for m in active_maintenance:
+            self.log_alarm(f"Object is under maintenance: {m.subject} ({m.start}-{m.stop})")
+        self.escalation_doc.leader.escalation_status = "maintenance"
+
+    def process(self) -> None:
+        """
+        Escalation logic. Raising StopSequence forces premature stop.
+        """
+        self.logger.info("Performing escalations")
+        # Get items to escalate
+        e_doc = self.get_escalation_doc()
+        if not e_doc:
+            self.logger.info("Nothing to escalate. Skipping")
+            return
+        self.escalation_doc = e_doc
+        # Perform escalations
+        with Span(client="escalator", sample=self.get_span_sample()) as ctx, self.lock.acquire(
+            self.escalation_doc.get_lock_items()
+        ):
+            self.check_escalated()
+            self.check_maintenance()
+            self.alarm.set_escalation_context()
+            # Evaluate escalation chain
+            for esc_item in self.iter_escalation_items():
+                # Check global limits
+                # @todo: Move into escalator service
+                # @todo: Process per-ttsystem limits
+                self.check_throttling()
+                # Render escalation context
+                ctx = self.get_ctx()
+                # Escalate to TT
+                if esc_item.create_tt and self.can_escalate():
+                    if not self.is_already_escalated() and not self.is_under_maintenance():
+                        self.create_tt(esc_item, ctx)
+                        self.notify_escalated_consequences()
+                # Send notification
+                self.notify(esc_item, ctx)
+                #
+                if esc_item.stop_processing:
+                    logger.debug("Stopping processing")
+                    break
+            if self.escalation_doc.tt_id:
+                self.escalation_doc.save()
+        # Check if alarm has been closed during escalation
+        self.check_closed()
+        # Escalation process complete
+        self.logger.info("Escalation sequence is completed")
+
+
+class DeescalationSequence(BaseSequence):
+    def __init__(
+        self,
+        alarm_id: str,
+        tt_id: str,
+        subject: str,
+        body: str,
+        notification_group_id: Optional[str] = None,
+        close_tt: bool = False,
+        login: str = "corellator",
+        queue: Optional[str] = None,
+    ) -> None:
+        super().__init__(alarm_id=alarm_id, login=login)
+        self.alarm = self.get_alarm(alarm_id)
+        self.escalation_doc = self.get_escalation_doc()
+        self.notification_group = self.get_notification_group(notification_group_id)
+        self.tts = self.get_tts(tt_id)
+        self.tt_id = tt_id
+        self.to_close_tt = close_tt
+        self.subject = subject
+        self.body = body
+        self.queue = queue
+
+    def get_alarm(self, alarm_id: str) -> ArchivedAlarm:
+        """
+        Get active alarm by id. Raise StopSequence if
+        alarm is not found or not closed.
+        """
+        alarm = get_alarm(alarm_id)
+        if alarm is None:
+            self.logger.info("Missing alarm, skipping")
+            metrics["escalation_missed_alarm"] += 1
+            self.stop_sequence()
+        if alarm.status == "A":
+            logger.info("Alarm is not closed, skipping")
+            metrics["escalation_not_closed"] += 1
+            self.stop_sequence()
+        return alarm
+
+    def get_escalation_doc(self) -> Escalation:
+        """
+        Fetch current escalation doc to close
+        """
+        escalation_doc = Escalation.objects.filter(
+            close_timestamp__exists=False, items__0__alarm=self.alarm.id
+        ).first()
+        if not escalation_doc:
+            self.logger.error("Cannot find escalation document. Stoppinng")
+            self.stop_sequence()
+        self.escalation_doc = escalation_doc
+        return escalation_doc
+
+    def get_tts(self, tt_id: Optional[str]) -> Optional[TTSystem]:
+        """
+        Get TT System from tt_id
+        """
+        if not tt_id:
+            return None
+        tts_name = tt_id.split(":", 1)[0]
+        tts = TTSystem.get_by_name(tts_name)
+        if not tts:
+            self.logger.info("Failed to add comment to %s: Invalid TT system", tts_name)
+            metrics["escalation_tt_comment_fail"] += 1
+            return None
+        return tts
+
+    def get_notification_group(
+        self, notification_group_id: Optional[str]
+    ) -> Optional[NotificationGroup]:
+        """
+        Get notification group by id.
+
+        :returns: Notification group instance, if found, None otherwise
+        """
+        if not notification_group_id:
+            return None
+        return NotificationGroup.get_by_id(notification_group_id)
+
+    def get_remote_tt_id(self) -> str:
+        """
+        Get remote tt id
+        """
+        return self.tt_id.split(":", 1)[1]
+
+    def close_tt(self) -> None:
+        """
+        Close TT
+        """
+        if not self.tts:
+            return
+        try:
+            self.logger.info("Closing TT %s", self.tt_id)
+            self.tts.get_system().close_tt(
+                self.get_remote_tt_id(),
+                subject=self.subject,
+                body=self.body,
+                login=self.login,
+                queue=self.queue,
+            )
+            metrics["escalation_tt_close"] += 1
+            self.escalation_doc.leader.deescalation_status = "ok"
+            self.alarm.close_escalation()
+        except TemporaryTTError as e:
+            self.logger.info("Temporary error detected while closing tt %s: %s", self.tt_id, e)
+            metrics["escalation_tt_close_retry"] += 1
+            self.tts.register_failure()
+            self.alarm.set_escalation_close_error(
+                "[%s] %s" % (self.alarm.managed_object.tt_system.name, e)
+            )
+            self.escalation_doc.leader.escalation_status = "temp"
+            self.escalation_doc.leader.escalation_error = str(e)
+            self.escalation_doc.save()
+            self.retry_job(str(e))
+        except TTError as e:
+            self.logger.info("Failed to close tt %s: %s", self.tt_id, e)
+            metrics["escalation_tt_close_fail"] += 1
+            self.alarm.set_escalation_close_error(
+                "[%s] %s" % (self.alarm.managed_object.tt_system.name, e)
+            )
+            self.escalation_doc.leader.escalation_status = "fail"
+            self.escalation_doc.leader.escalation_error = str(e)
+
+    def comment_tt(self) -> None:
+        """Append comment to tt"""
+        if not self.tts:
+            return
+        try:
+            self.logger.info("Appending comment to TT %s", self.tt_id)
+            self.tts.get_system().add_comment(
+                self.get_remote_tt_id(),
+                subject=self.subject,
+                body=self.body,
+                login=self.login,
+                queue=self.queue,
+            )
+            self.escalation_doc.leader.deescalation_status = "ok"
+            metrics["escalation_tt_comment"] += 1
+        except TemporaryTTError as e:
+            self.logger.info("Failed to add comment to %s: %s", self.tt_id, e)
+            self.escalation_doc.leader.deescalation_status = "temp"
+            self.escalation_doc.leader.deescalation_error = str(e)
+            metrics["escalation_tt_comment_fail"] += 1
+        except TTError as e:
+            self.logger.info("Failed to add comment to %s: %s", self.tt_id, e)
+            self.escalation_doc.leader.deescalation_status = "fail"
+            metrics["escalation_tt_comment_fail"] += 1
+            self.escalation_doc.leader.deescalation_error = str(e)
+
+    def deescalate_tt(self) -> None:
+        """
+        Close TT
+        """
+        if not self.tt_id:
+            return
+        self.alarm.set_escalation_close_ctx()
+        if self.alarm.escalation_close_ts or self.alarm.escalation_close_error:
+            self.logger.info("Alarm is already deescalated")
             metrics["escalation_already_deescalated"] += 1
             return
         with Span(client="escalator", sample=PARENT_SAMPLE):
-            c_tt_name, c_tt_id = tt_id.split(":")
+            c_tt_name, c_tt_id = self.tt_id.split(":")
             cts = TTSystem.get_by_name(c_tt_name)
-            if cts:
-                tts = cts.get_system()
-                if close_tt:
-                    # Close tt
-                    try:
-                        log("Closing TT %s", tt_id)
-                        tts.close_tt(c_tt_id, subject=subject, body=body, login=login, queue=queue)
-                        metrics["escalation_tt_close"] += 1
-                        if alarm:
-                            alarm.close_escalation()
-                    except TemporaryTTError as e:
-                        log("Temporary error detected while closing tt %s: %s", tt_id, e)
-                        metrics["escalation_tt_close_retry"] += 1
-                        Job.retry_after(get_next_retry(), str(e))
-                        cts.register_failure()
-                        if alarm:
-                            alarm.set_escalation_close_error(
-                                "[%s] %s" % (alarm.managed_object.tt_system.name, e)
-                            )
-                    except TTError as e:
-                        log("Failed to close tt %s: %s", tt_id, e)
-                        metrics["escalation_tt_close_fail"] += 1
-                        if alarm:
-                            alarm.set_escalation_close_error(
-                                "[%s] %s" % (alarm.managed_object.tt_system.name, e)
-                            )
-                else:
-                    # Append comment to tt
-                    try:
-                        log("Appending comment to TT %s", tt_id)
-                        tts.add_comment(
-                            c_tt_id, subject=subject, body=body, login=login, queue=queue
-                        )
-                        metrics["escalation_tt_comment"] += 1
-                    except TTError as e:
-                        log("Failed to add comment to %s: %s", tt_id, e)
-                        metrics["escalation_tt_comment_fail"] += 1
-            else:
-                log("Failed to add comment to %s: Invalid TT system", tt_id)
+            if not cts:
+                self.logger.info("Failed to add comment to %s: Invalid TT system", self.tt_id)
                 metrics["escalation_tt_comment_fail"] += 1
-    if notification_group_id:
-        notification_group = NotificationGroup.get_by_id(notification_group_id)
-        if notification_group:
-            log("Sending notification to group %s", notification_group.name)
-            notification_group.notify(subject, body)
-            metrics["escalation_notify"] += 1
-        else:
-            log("Invalid notification group %s", notification_group_id)
+            if self.to_close_tt:
+                self.close_tt()
+            else:
+                self.comment_tt()
+
+    def notify(self) -> None:
+        """
+        Send notifications
+        """
+        if not self.notification_group:
+            return
+        self.logger.info("Sending notification to group %s", self.notification_group.name)
+        self.notification_group.notify(self.subject, self.body)
+        metrics["escalation_notify"] += 1
+
+    def process(self) -> None:
+        """
+        Perform deescalation sequence
+        """
+        with self.lock.acquire(self.escalation_doc.get_lock_items()):
+            ts = datetime.datetime.now()
+            self.deescalate_tt()
+            self.notify()
+            # Close escalation doc
+            self.escalation_doc.close_timestamp = ts
+            self.escalation_doc.save()
 
 
-def get_next_retry():
+def escalate(
+    alarm_id: str,
+    escalation_id: str,
+    escalation_delay: int,
+    login: str = "correlator",
+    timestamp_policy: str = "a",
+    force: bool = False,
+    *args,
+    **kwargs,
+):
     """
-    Return next retry considering throttling rate
-    :return:
+    Delayed job to start escalation process. Wrapper for EscalationSequence
     """
-    global RETRY_DELTA, RETRY_TIMEOUT, next_retry, retry_lock
+    try:
+        EscalationSequence(
+            alarm_id=alarm_id,
+            escalation_id=escalation_id,
+            escalation_delay=escalation_delay,
+            login=login,
+            timestamp_policy=timestamp_policy,
+            force=force,
+        ).run()
+    except BaseSequence.StopSequence:
+        pass
 
-    now = datetime.datetime.now()
-    retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
-    with retry_lock:
-        if retry < next_retry:
-            retry = next_retry
-        next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
-    delta = retry - now
-    return delta.seconds + (1 if delta.microseconds else 0)
+
+def notify_close(
+    alarm_id: str,
+    tt_id: str,
+    subject: str,
+    body: str,
+    notification_group_id: Optional[str] = None,
+    close_tt: bool = False,
+    login: str = "correlator",
+    queue: Optional[str] = None,
+):
+    try:
+        DeescalationSequence(
+            alarm_id=alarm_id,
+            tt_id=tt_id,
+            subject=subject,
+            body=body,
+            notification_group_id=notification_group_id,
+            close_tt=close_tt,
+            login=login,
+            queue=queue,
+        ).run()
+    except BaseSequence.StopSequence:
+        pass
