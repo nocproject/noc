@@ -9,7 +9,7 @@
 import datetime
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict
+from typing import Optional, Set, Any, Dict, Iterable
 
 # Third-party modules
 from django.template import Template as DjangoTemplate
@@ -813,10 +813,6 @@ class ActiveAlarm(Document):
             # Already closed, update archive
             ArchivedAlarm._get_collection().update_one(q, op)
 
-    def set_escalation_error(self, error):
-        self.escalation_error = error
-        self._get_collection().update_one({"_id": self.id}, {"$set": {"escalation_error": error}})
-
     def set_escalation_context(self):
         current_context, current_span = get_current_span()
         if current_context or self.escalation_ctx:
@@ -830,7 +826,7 @@ class ActiveAlarm(Document):
         self.clear_template = template
         self.safe_save(save_condition={"managed_object": {"$exists": True}, "id": self.id})
 
-    def iter_consequences(self):
+    def iter_consequences(self) -> Iterable["ActiveAlarm"]:
         """
         Generator yielding all consequences alarm
         """
@@ -838,13 +834,19 @@ class ActiveAlarm(Document):
             yield a
             yield from a.iter_consequences()
 
-    def iter_grouped(self):
+    def iter_groups(self) -> Iterable["ActiveAlarm"]:
         """
-        Generator yielding all alarm in group
+        Generator yielding all groups
         """
         for a in ActiveAlarm.objects.filter(groups__in=[self.reference]):
             yield a
-            yield from a.iter_grouped()
+
+    def iter_grouped(self) -> Iterable["ActiveAlarm"]:
+        """
+        Generator yielding all alarm in group
+        """
+        for a in ActiveAlarm.objects.filter(groups__in=self.groups):
+            yield a
 
     def iter_affected(self):
         """

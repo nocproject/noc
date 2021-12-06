@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Escalator
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
 import asyncio
+from typing import Dict, DefaultDict
 
 # NOC modules
 from noc.config import config
@@ -25,7 +26,7 @@ class EscalatorService(TornadoService):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.shards = {}
+        self.shards: Dict[str, Scheduler] = {}
 
     async def on_activate(self):
         self.apply_shards()
@@ -41,7 +42,7 @@ class EscalatorService(TornadoService):
 
     def apply_shards(self):
         # Get shards settings
-        shard_threads = defaultdict(int)
+        shard_threads: DefaultDict[str, int] = defaultdict(int)
         shard_threads[DEFAULT_TTSYSTEM_SHARD] = config.escalator.max_threads
         for s in TTSystem.objects.all():
             if not s.is_active:
