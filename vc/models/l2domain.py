@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+import itertools
 import operator
 
 # Third-party modules
@@ -19,14 +19,15 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     ReferenceField,
 )
+from mongoengine.errors import ValidationError
+from typing import Optional, Tuple, List
 import cachetools
 
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.style import Style
 from noc.main.models.label import Label
 from noc.wf.models.state import State
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.inv.models.resourcepool import ResourcePool
@@ -103,3 +104,44 @@ class L2Domain(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_l2domain")
+
+    def clean(self):
+        vlan_filters = list(
+            itertools.chain.from_iterable(
+                [v.vlan_filter.include_expression for v in self.pools if v.vlan_filter]
+            )
+        )
+        if len(vlan_filters) != len(set(vlan_filters)):
+            raise ValidationError("VLAN Filter overlapped")
+
+    def get_effective_pools(
+        self, vlan_filter: Optional["VLANFilter"] = None
+    ) -> List["ResourcePool"]:
+        return []
+
+    def get_effective_templates(self, type: Optional[str] = None) -> List["VLANTemplate"]:
+        return []
+
+    def get_free_vlan(self, vlan_filter: Optional["VLANFilter"] = None):
+        """
+        Find free label in VC Domain
+        :param vlan_filter: Optional VC Filter to restrict labels
+        :returns: Free label or None
+        :rtype: int or None
+        """
+        ...
+
+    def ensure_vlans(
+        self,
+        template: Optional["VLANTemplate"] = None,
+        range: Tuple[int, int] = None,
+        pool: "ResourcePool" = None,
+    ):
+        """
+
+        :param template:
+        :param range:
+        :param pool:
+        :return:
+        """
+        ...

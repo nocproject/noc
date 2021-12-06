@@ -42,13 +42,15 @@ Ext.define("NOC.vc.vlanfilter.Application", {
             name: "include_expression",
             xtype: "textfield",
             fieldLabel: __("Include Expression"),
-            allowBlank: false
+            allowBlank: false,
+            regex: /^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$/
         },
         {
             name: "exclude_expression",
             xtype: "textfield",
             fieldLabel: __("Exclude Expression"),
-            allowBlank: true
+            allowBlank: true,
+            regex: /^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$/
         },
         {
             name: "description",
@@ -59,8 +61,8 @@ Ext.define("NOC.vc.vlanfilter.Application", {
     ],
     filters: [
         {
-            title: __("By VC"),
-            name: "exclude_expression",
+            title: __("By VLAN"),
+            name: "include_expression",
             ftype: "vc"
         }
     ]

@@ -67,9 +67,10 @@ class VLANFilter(Document):
         Check expression before save
         """
         VLANFilter.compile(self.include_expression)
-        VLANFilter.compile(self.exclude_expression)
         self.include_vlans = ranges_to_list(self.include_expression)
-        self.exclude_vlans = ranges_to_list(self.exclude_expression)
+        if self.exclude_expression:
+            VLANFilter.compile(self.exclude_expression)
+            self.exclude_vlans = ranges_to_list(self.exclude_expression)
         super().save(*args, **kwargs)
 
     @classmethod

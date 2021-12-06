@@ -12,24 +12,23 @@ import logging
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from typing import Optional, Iterable, Tuple, List
 from mongoengine.fields import (
     StringField,
     BooleanField,
-    ListField,
-    ObjectIdField,
     EmbeddedDocumentListField,
-    IntField,
     ReferenceField,
 )
-from mongoengine.errors import ValidationError
+from typing import Optional, Iterable, Tuple
+from jinja2 import Template
 import cachetools
+
 
 # NOC modules
 from noc.core.model.decorator import on_save, on_delete, on_delete_check
 from noc.core.defer import defer
-from noc.core.hash import hash_int
+from noc.core.text import ranges_to_list
 from .vlanprofile import VLANProfile
+from .vlanfilter import VLANFilter
 
 
 logger = logging.getLogger(__name__)
@@ -45,6 +44,11 @@ class VLANItem(EmbeddedDocument):
 
     def __str__(self):
         return f"{self.vlan}: {self.name}"
+
+    def clean(self):
+        # Validate vlan and name
+        VLANFilter.compile(self.vlan)
+        Template(self.name).render({"vlan": 1})
 
 
 @on_save
@@ -77,9 +81,8 @@ class VLANTemplate(Document):
         # Allocate vlans when necessary
         if self.to_allocate_vlans:
             defer(
-                "noc.phone.models.phonerange.allocate_numbers",
-                key=hash_int(self.id),
-                range_id=str(self.id),
+                "noc.vc.models.vlantemplate.allocate_vlans",
+                template_id=str(self.id),
             )
 
     def iter_vlans(self) -> Iterable[Tuple[int, str, "VLANProfile"]]:
@@ -87,19 +90,25 @@ class VLANTemplate(Document):
         Iterate over vlans
         :return:
         """
-        for n in range(int(self.from_number), int(self.to_number) + 1):
-            yield str(n)
+        for vi in self.vlans:
+            for vlan in ranges_to_list(vi.vlan):
+                yield int(vlan), Template(vlan.name).render({"vlan": int(vlan)}), vi.profile
 
-    def allocate_templates(self):
+    def allocate_template(self):
         """
 
         :return:
         """
-        ...
+        from .vlan import VLAN
+
+        for vlan_num, name, profile in self.iter_vlans():
+            vlan = VLAN(vlan=vlan_num, name=name, profile=profile, l2domain=None)  # ?
+            vlan.save()
 
 
 def allocate_vlans(template_id):
     template = VLANTemplate.get_by_id(template_id)
+    # Getting L2 Domain
     if not template:
         return
     template.allocate_vlans()

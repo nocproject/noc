@@ -84,7 +84,7 @@ Ext.define("NOC.vc.l2domain.Application", {
                             editor: {
                                 xtype: "inv.resourcepool.LookupField"
                             },
-                            renderer: NOC.render.Lookup("resourcepool")
+                            renderer: NOC.render.Lookup("pool")
                         },
                         {
                             dataIndex: "description",
@@ -99,7 +99,7 @@ Ext.define("NOC.vc.l2domain.Application", {
                             editor: {
                                 xtype: "vc.vlanfilter.LookupField"
                             },
-                            renderer: NOC.render.Lookup("vlanfilter")
+                            renderer: NOC.render.Lookup("vlan_filter")
                         }
                     ]
                 },

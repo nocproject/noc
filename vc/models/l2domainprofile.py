@@ -8,6 +8,7 @@
 # Python modules
 from threading import Lock
 from typing import Optional
+import itertools
 import operator
 
 # Third-party modules
@@ -19,6 +20,7 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     ReferenceField,
 )
+from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC modules
@@ -114,3 +116,12 @@ class L2DomainProfile(Document):
             )
             l2p.save()
         return l2p
+
+    def clean(self):
+        vlan_filters = list(
+            itertools.chain.from_iterable(
+                [v.vlan_filter.include_expression for v in self.pools if v.vlan_filter]
+            )
+        )
+        if len(vlan_filters) != len(set(vlan_filters)):
+            raise ValidationError("VLAN Filter overlapped")

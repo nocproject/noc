@@ -64,9 +64,10 @@ Ext.define("NOC.vc.vlantemplate.Application", {
                     fieldLabel: __("VLANs"),
                     columns: [
                         {
-                            text: __("VLAN Tag"),
+                            text: __("VLANs"),
                             dataIndex: "vlan",
                             editor: "textfield",
+                            regex: /^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$/,
                             width: 200
                         },
                         {
@@ -88,7 +89,7 @@ Ext.define("NOC.vc.vlantemplate.Application", {
                             editor: {
                                 xtype: "vc.vlanprofile.LookupField"
                             },
-                            renderer: NOC.render.Lookup("vlanprofile")
+                            renderer: NOC.render.Lookup("profile")
                         }
                     ]
                 },
