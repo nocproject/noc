@@ -71,5 +71,5 @@ FROM nginx:alpine AS static
 
 RUN apk add --no-cache curl
 
-COPY --from=code /usr/local/lib/python3.8/site-packages/django /usr/lib/python3.8/site-packages/django
+COPY --from=code /usr/local/lib/python3.9/site-packages/django /usr/lib/python3.9/site-packages/django
 COPY --from=code /opt/noc/ui /opt/noc/ui
