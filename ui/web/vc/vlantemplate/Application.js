@@ -4,16 +4,16 @@
 // Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.vlantemplate.Application");
+console.debug("Defining NOC.vc.vlantemplate.Application");
 
-Ext.define("NOC.inv.vlantemplate.Application", {
+Ext.define("NOC.vc.vlantemplate.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.inv.vlantemplate.Model",
+        "NOC.vc.vlantemplate.Model",
         "NOC.vc.vlanprofile.LookupField",
         "Ext.ux.form.GridField"
     ],
-    model: "NOC.inv.vlantemplate.Model",
+    model: "NOC.vc.vlantemplate.Model",
     search: true,
     helpId: "reference-allocation-group",
 
@@ -66,9 +66,8 @@ Ext.define("NOC.inv.vlantemplate.Application", {
                         {
                             text: __("VLAN Tag"),
                             dataIndex: "vlan",
-                            editor: {
-                                xtype: "numberfield"
-                            }
+                            editor: "textfield",
+                            width: 200
                         },
                         {
                             dataIndex: "name",

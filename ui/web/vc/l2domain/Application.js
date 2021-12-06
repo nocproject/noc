@@ -15,7 +15,7 @@ Ext.define("NOC.vc.l2domain.Application", {
         "NOC.inv.resourcepool.LookupField",
         "NOC.vc.vlanfilter.LookupField",
         "NOC.vc.vlantemplate.LookupField",
-        "NOC.vc.l2domain.LookupField",
+        "NOC.vc.l2domainprofile.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.vc.l2domain.Model",
@@ -46,7 +46,7 @@ Ext.define("NOC.vc.l2domain.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "description",

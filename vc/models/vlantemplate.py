@@ -37,7 +37,8 @@ id_lock = Lock()
 
 
 class VLANItem(EmbeddedDocument):
-    vlan = IntField(required=True, min_value=1, max_value=4095)
+    # vlan = IntField(required=True, min_value=1, max_value=4095)
+    vlan = StringField(required=True)
     name = StringField()  # Autogenerate ?
     description = StringField()
     profile = ReferenceField(VLANProfile, required=False)

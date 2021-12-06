@@ -48,7 +48,7 @@ Ext.define("NOC.vc.vlanfilter.Application", {
             name: "exclude_expression",
             xtype: "textfield",
             fieldLabel: __("Exclude Expression"),
-            allowBlank: false
+            allowBlank: true
         },
         {
             name: "description",
