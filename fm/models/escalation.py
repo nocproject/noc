@@ -20,8 +20,7 @@ from typing import List, Set
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
-
-# from noc.fm.models.ttsystem import TTSystem
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from .escalationprofile import EscalationProfile
 
 
@@ -82,6 +81,10 @@ class Escalation(Document):
     items = ListField(EmbeddedDocumentField(EscalationItem))
     # List of group references, if any
     groups = ListField(BinaryField())
+    # Escalation summary
+    total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
+    total_services = ListField(EmbeddedDocumentField(SummaryItem))
+    total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
 
     def __str__(self) -> str:
         return str(id)

@@ -10,7 +10,8 @@ import logging
 import datetime
 import operator
 import threading
-from typing import Iterable, Dict, List, Optional, Any, NoReturn
+from typing import Iterable, Dict, DefaultDict, List, Optional, Any, NoReturn, Union
+from collections import defaultdict
 from abc import ABC, abstractmethod
 
 # Third-party modules
@@ -38,6 +39,7 @@ from noc.fm.models.escalation import Escalation, EscalationItem
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
+from sa.models.servicesummary import SummaryItem
 
 
 logger = logging.getLogger(__name__)
@@ -513,6 +515,16 @@ class EscalationSequence(BaseSequence):
         """
         Get escalation document structure filled with filled EscalationItems
         """
+
+        def update_totals_from_summary(
+            t_dict: DefaultDict[ObjectId, int], t_items: Iterable[SummaryItem]
+        ) -> None:
+            """
+            Update totals from alarm summary
+            """
+            for item in t_items:
+                t_dict[item.profile] += item.summary
+
         policy = self.get_escalation_policy().name.lower()
         iter_items = getattr(self, f"iter_alarms_{policy}", None)
         if not iter_items:
@@ -521,6 +533,10 @@ class EscalationSequence(BaseSequence):
         items = list(iter_items())
         if not items:
             return None
+        # Total counters
+        total_objects: DefaultDict[int, int] = defaultdict(int)
+        total_services: DefaultDict[ObjectId, int] = defaultdict(int)
+        total_subscribers: DefaultDict[ObjectId, int] = defaultdict(int)
         # @todo: Append profile
         doc = Escalation(timestamp=datetime.datetime.now(), items=[])
         for alarm in items:
@@ -535,8 +551,18 @@ class EscalationSequence(BaseSequence):
                 )
             ]
             self.alarm_ids[alarm.id] = alarm
+            # Update totals
+            total_objects[alarm.managed_object.object_profile.id] += 1
+            update_totals_from_summary(total_services, alarm.direct_services)
+            update_totals_from_summary(total_subscribers, alarm.direct_subscribers)
+
         if not doc.items:
             return None  # Only group alarms
+        doc.total_objects = [SummaryItem(profile=k, summary=v) for k, v in total_objects.items()]
+        doc.total_services = [SummaryItem(profile=k, summary=v) for k, v in total_services.items()]
+        doc.total_subscribers = [
+            SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
+        ]
         return doc
 
     def iter_alarms_never(self) -> Iterable[ActiveAlarm]:
