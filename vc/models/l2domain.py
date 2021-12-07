@@ -9,6 +9,7 @@
 from threading import Lock
 import itertools
 import operator
+from typing import Optional, List, Iterable
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -20,7 +21,6 @@ from mongoengine.fields import (
     ReferenceField,
 )
 from mongoengine.errors import ValidationError
-from typing import Optional, List
 import cachetools
 
 # NOC modules
@@ -36,6 +36,9 @@ from .vlantemplate import VLANTemplate
 from .l2domainprofile import L2DomainProfile
 
 id_lock = Lock()
+
+FREE_VLAN_STATE = "Free"
+FULL_VLAN_RANGE = set(range(1, 4096))
 
 
 class PoolItem(EmbeddedDocument):
@@ -110,11 +113,18 @@ class L2Domain(Document):
     def clean(self):
         vlan_filters = list(
             itertools.chain.from_iterable(
-                [v.vlan_filter.include_expression for v in self.pools if v.vlan_filter]
+                [
+                    pp.vlan_filter.include_vlans
+                    for pp in self.get_effective_pools()
+                    if pp.vlan_filter
+                ]
             )
         )
         if len(vlan_filters) != len(set(vlan_filters)):
             raise ValidationError("VLAN Filter overlapped")
+        vlan_template = self.get_effective_vlan_template()
+        if vlan_template and vlan_template.type != "l2domain":
+            raise ValidationError("Only l2domain VLAN Template type may be assign")
 
     def on_save(self):
         # Allocate vlans when necessary
@@ -122,44 +132,46 @@ class L2Domain(Document):
         if template:
             template.allocate_template(self.id)
 
-    def get_effective_pools(
-        self, vlan_filter: Optional["VLANFilter"] = None
-    ) -> List["PoolItem"]:
-        r = []
-        if self.profile.pools:
-            r += self.profile.pools
-        r += self.pools or []
-        return r
+    def get_effective_pools(self, pool: "ResourcePool" = None) -> List["PoolItem"]:
+        """
 
-    def get_effective_vlan_num(self, vlan_filter: Optional["VLANFilter"] = None) -> List[int]:
+        :param pool:
+        :return:
+        """
+        return list(
+            itertools.filterfalse(
+                lambda x: pool and pool == x.pool,
+                itertools.chain(self.profile.pools or [], self.pools or []),
+            )
+        )
+
+    def get_effective_vlan_num(
+        self,
+        vlan_filter: Optional["VLANFilter"] = None,
+        pool: "ResourcePool" = None,
+        policy_order: bool = False,
+    ) -> List[int]:
         """
         Build effective vlan number. Default - 1 - 4096 range
          If Set Pool - limit it by vlan_filter
         :param vlan_filter:
+        :param pool: ResourcePool
+        :param policy_order:  Return vlans in order by policy settings
         :return:
         """
         # Full VLAN range
-        vlans = set(range(1, 4096))
-        # Build VLAN Filter
-        v_filter = set(vlan_filter.include_vlans if vlan_filter else [])
-        v_filter |= set(
-            itertools.chain.from_iterable(
-                [v.vlan_filter.include_vlans for v in self.get_effective_pools() if v.vlan_filter]
-            )
-        )
-        # Build Exclude Filter
-        ve_filter = set(vlan_filter.exclude_vlans if vlan_filter else [])
-        ve_filter |= set(
-            itertools.chain.from_iterable(
-                [
-                    v.vlan_filter.exclude_vlans or []
-                    for v in self.get_effective_pools()
-                    if v.vlan_filter and v.vlan_filter.exclude_expression
-                ]
-            )
-        )
-        # Return effective vlans
-        return list(vlans.intersection(v_filter) - ve_filter)
+        vlans = FULL_VLAN_RANGE
+        if vlan_filter:
+            vlans = vlans & set(vlan_filter.include_vlans)
+        r = []
+        for pp in self.get_effective_pools(pool):
+            vlans = vlans & set(pp.vlan_filter.include_vlans)
+            if policy_order:
+                r += pp.pool.apply_resource_policy(list(vlans))
+        if not policy_order:
+            r = list(vlans)
+
+        return r
 
     def get_effective_vlan_template(self, type: Optional[str] = None) -> Optional["VLANTemplate"]:
         """
@@ -167,12 +179,46 @@ class L2Domain(Document):
         :param type:
         :return:
         """
-        if self.profile.vlan_template:
-            return self.profile.vlan_template
-        return self.vlan_template
+        if self.vlan_template:
+            return self.vlan_template
+        return self.profile.vlan_template
+
+    def get_used_vlan_labels(self) -> List[int]:
+        """
+        Return Used VLAN numbers - Not set by FREE_VLAN_STATE
+
+        :return:
+        """
+        from noc.wf.models.state import State
+        from .vlan import VLAN
+
+        used_states = list(State.objects.filter(name__ne=FREE_VLAN_STATE).values_list("id"))
+        return list(
+            VLAN.objects.filter(l2domain=self.id, state__in=used_states).values_list("vlan")
+        )
+
+    def iter_free_vlan_labels(
+        self,
+        vlan_filter: Optional["VLANFilter"] = None,
+        pool: "ResourcePool" = None,
+    ) -> Iterable[int]:
+        """
+        Iterator over free VLAN numbers
+        :param vlan_filter:
+        :param pool:
+        :return:
+        """
+        used_vlans = set(self.get_used_vlan_labels())
+        # @todo convert used vlans to vlan_filter
+        for r in self.get_effective_vlan_num(vlan_filter, pool, policy_order=True):
+            if r in used_vlans:
+                continue
+            yield r
 
     def get_free_vlan_num(
-        self, vlan_filter: Optional["VLANFilter"] = None, pool: "ResourcePool" = None
+        self,
+        vlan_filter: Optional["VLANFilter"] = None,
+        pool: "ResourcePool" = None,
     ) -> Optional[int]:
         """
         Find free label in L2 Domain
@@ -181,14 +227,5 @@ class L2Domain(Document):
         :returns: Free label or None
         :rtype: int or None
         """
-        from noc.wf.models.state import State
-        from .vlan import VLAN
 
-        states = list(State.objects.filter(is_productive=True).values_list("id"))
-        active_vlans = set(VLAN.objects.filter(l2domain=self.id, state__in=states).values_list("vlan"))
-        for pp in self.pools:
-            r = set(pp.vlan_filter.include_vlans) - active_vlans
-            if r:
-                return pp.pool.get_resource(list(r))
-        vlans = self.get_effective_vlan_num(vlan_filter)
-        return vlans[0] if vlans else None
+        return next(self.iter_free_vlan_labels(vlan_filter, pool), None)
