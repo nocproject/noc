@@ -101,7 +101,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                     msg["$op"] = "raise"
                     msg["vars"] = [
                         {
-                            "name": i["interface"],
+                            "interface": i["interface"],
                         }
                     ]
                     self.logger.info(f"Raise {alarm_class.name}: on interface {i['interface']}")
