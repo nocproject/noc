@@ -35,7 +35,6 @@ from noc.core.scheduler.job import Job
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
 from noc.fm.models.escalation import Escalation, EscalationItem
-
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter

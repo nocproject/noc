@@ -20,7 +20,7 @@ from typing import List, Set
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from .escalationprofile import EscalationProfile
 
 
