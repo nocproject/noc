@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interfaceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interfaceprofile.Application");
@@ -259,9 +259,18 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             },
                             {
                                 name: "status_discovery",
-                                xtype: "checkbox",
-                                boxLabel: __("Status Discovery"),
-                                allowBlank: true
+                                xtype: "combobox",
+                                fieldLabel: __("Status Discovery"),
+                                allowBlank: true,
+                                labelWidth: 200,
+                                defaultValue: "d",
+                                store: [
+                                    ["d", __("Disabled")],
+                                    ["e", __("Enable")],
+                                    ["c", __("Clear Alarm")],
+                                    ["rc", __("Raise & Clear Alarm")]
+                                ],
+                                uiStyle: "medium"
                             },
                             {
                                 name: "mac_discovery_policy",
