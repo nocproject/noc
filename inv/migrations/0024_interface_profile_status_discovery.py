@@ -21,7 +21,7 @@ class Migration(BaseMigration):
         # Migrate profiles
         p_coll = db["noc.interface_profiles"]
         for p in p_coll.find():
-            if p["status_discovery"]:
+            if p['status_discovery']:
                 p_coll.update_one({"_id": p["_id"]}, {"$set": {"status_discovery": "e"}})
             else:
                 p_coll.update_one({"_id": p["_id"]}, {"$set": {"status_discovery": "d"}})
