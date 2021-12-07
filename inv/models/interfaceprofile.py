@@ -124,7 +124,15 @@ class InterfaceProfile(Document):
         default="d",
     )
     # Collect and keep interface status
-    status_discovery = BooleanField(default=False)
+    status_discovery = StringField(
+        choices=[
+            ("d", "Disabled"),
+            ("e", "Enable"),
+            ("c", "Clear Alarm"),
+            ("rc", "Raise & Clear Alarm"),
+        ],
+        default="d",
+    )
     #
     allow_lag_mismatch = BooleanField(default=False)
     # Send up/down notifications
@@ -204,5 +212,7 @@ class InterfaceProfile(Document):
         """
         return list(
             x["_id"]
-            for x in InterfaceProfile._get_collection().find({"status_discovery": True}, {"_id": 1})
+            for x in InterfaceProfile._get_collection().find(
+                {"status_discovery": {"$ne": "d"}}, {"_id": 1}
+            )
         )
