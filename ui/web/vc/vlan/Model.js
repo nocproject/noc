@@ -38,34 +38,21 @@ Ext.define("NOC.vc.vlan.Model", {
             type: "string"
         },
         {
-            name: "parent",
-            type: "string"
-        },
-        {
-            name: "parent__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "labels",
             type: "auto"
         },
         {
-            name: "segment",
+            name: "l2domain",
             type: "string"
         },
         {
-            name: "segment__label",
+            name: "l2domain__label",
             type: "string",
             persist: false
         },
         {
             name: "remote_id",
             type: "string"
-        },
-        {
-            name: "vni",
-            type: "int"
         },
         {
             name: "project",
@@ -99,15 +86,6 @@ Ext.define("NOC.vc.vlan.Model", {
             name: "translation_rule",
             type: "string",
             defaultValue: "push"
-        },
-        {
-            name: "vpn",
-            type: "string"
-        },
-        {
-            name: "vpn__label",
-            type: "string",
-            persist: false
         },
         {
             name: "bi_id",

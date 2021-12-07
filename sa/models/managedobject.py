@@ -44,6 +44,7 @@ from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
+from noc.vc.models.l2domain import L2Domain
 from noc.main.models.label import Label
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
@@ -259,6 +260,8 @@ class ManagedObject(NOCModel):
     vc_domain = ForeignKey(
         "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True, on_delete=CASCADE
     )
+    #
+    l2_domain = DocumentReferenceField(L2Domain, null=True, blank=True)
     # CM
     config = GridVCSField("config")
     # Default VRF

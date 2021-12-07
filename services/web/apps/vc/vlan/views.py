@@ -13,9 +13,19 @@ from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vlan import VLAN
+from noc.vc.models.l2domain import L2Domain
+from noc.inv.models.resourcepool import ResourcePool
 from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
-
+from noc.sa.interfaces.base import (
+    DictParameter,
+    ModelParameter,
+    DocumentParameter,
+    ListOfParameter,
+    IntParameter,
+    ObjectIdParameter,
+    StringParameter,
+)
 
 @state_handler
 class VLANApplication(ExtDocApplication):
@@ -99,3 +109,13 @@ class VLANApplication(ExtDocApplication):
             "tagged": sorted(tagged, key=lambda x: x["managed_object_name"]),
             "l3": sorted(l3, key=lambda x: x["managed_object_name"]),
         }
+
+    @view(
+        url="^find_free/$",
+        method=["GET"],
+        access="read",
+        api=True,
+        validate={"l2_domain": DocumentParameter(L2Domain), "pool": DocumentParameter(ResourcePool)},
+    )
+    def api_find_free(self, request, l2_domain: "L2Domain", pool: "ResourcePool", **kwargs):
+        return l2_domain.get_free_vlan_num(pool=pool)

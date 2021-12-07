@@ -21,6 +21,7 @@ import cachetools
 from noc.core.lock.distributed import DistributedLock
 from noc.core.lock.base import get_locked_items
 from noc.models import get_model
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
@@ -34,6 +35,7 @@ def get_api_code_default():
     return "".join(random.choice(chars) for _ in range(20))
 
 
+@on_delete_check(check=[("vc.L2Domain", "pools.pool"), ("vc.L2DomainProfile", "pools.pool")])
 class ResourcePool(Document):
     """
     ResourcePool

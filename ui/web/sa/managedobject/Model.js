@@ -227,6 +227,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "l2_domain",
+            type: "int"
+        },
+        {
+            name: "l2_domain__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "vrf",
             type: "int"
         },

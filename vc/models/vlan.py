@@ -9,6 +9,7 @@
 from threading import Lock
 import operator
 import logging
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -26,13 +27,12 @@ from .vlanprofile import VLANProfile
 from .l2domain import L2Domain
 from noc.wf.models.state import State
 from noc.project.models.project import Project
-from noc.inv.models.networksegment import NetworkSegment
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.model.decorator import on_save
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
 
 @Label.model
 @bi_sync
-@on_delete_check(check=[("vc.VLAN", "parent"), ("vc.L2Domain", "l2domain")])
 @workflow
 @on_save
 class VLAN(Document):
@@ -89,50 +88,16 @@ class VLAN(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["VLAN"]:
         return VLAN.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["VLAN"]:
         return VLAN.objects.filter(bi_id=id).first()
 
     def clean(self):
         super().clean()
-        self.segment = NetworkSegment.get_border_segment(self.segment)
-        if self.translation_rule and not self.parent:
-            self.translation_rule = None
-
-    def refresh_translation(self):
-        """
-        Set VLAN translation according to segment settings
-        :return:
-        """
-        if not self.apply_translation:
-            return
-        # Find matching rule
-        for vt in self.segment.vlan_translation:
-            if vt.filter.check(self.vlan):
-                logger.debug(
-                    "[%s|%s|%s] Matching translation rule <%s|%s|%s>",
-                    self.segment.name,
-                    self.name,
-                    self.vlan,
-                    vt.filter.expression,
-                    vt.rule,
-                    vt.parent_vlan.vlan,
-                )
-                if self.parent != vt.parent_vlan or self.translation_rule != vt.translation_rule:
-                    self.modify(parent=vt.parent_vlan, translation_rule=vt.rule)
-                return
-        # No matching rule
-        if self.parent or self.translation_rule:
-            logger.debug("[%s|%s|%s] No matching translation rule, resetting")
-            if self.parent or self.translation_rule:
-                self.modify(parent=None, translation_rule=None)
-
-    def on_save(self):
-        self.refresh_translation()
 
     @classmethod
     def can_set_label(cls, label):

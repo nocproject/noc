@@ -906,6 +906,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     groupEdit: true
                                 },
                                 {
+                                    name: "l2_domain",
+                                    xtype: "vc.l2domain.LookupField",
+                                    fieldLabel: __("L2 Domain"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
                                     name: "autosegmentation_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Autosegmentation Policy"),

@@ -53,7 +53,7 @@ class PoolItem(EmbeddedDocument):
 @Label.model
 @bi_sync
 @on_save
-@on_delete_check(check=[("vc.VLAM", "l2domain")])
+@on_delete_check(check=[("vc.VLAN", "l2domain"), ("sa.ManagedObject", "l2_domain")])
 class L2Domain(Document):
     meta = {
         "collection": "l2domains",
@@ -98,13 +98,13 @@ class L2Domain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["L2DomainProfile"]:
-        return L2DomainProfile.objects.filter(id=id).first()
+    def get_by_id(cls, id) -> Optional["L2Domain"]:
+        return L2Domain.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> Optional["L2DomainProfile"]:
-        return L2DomainProfile.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, id) -> Optional["L2Domain"]:
+        return L2Domain.objects.filter(bi_id=id).first()
 
     @classmethod
     def can_set_label(cls, label):

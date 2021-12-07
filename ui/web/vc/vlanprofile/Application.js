@@ -36,18 +36,6 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     renderer: NOC.render.Lookup("workflow")
                 },
                 {
-                    text: __("Management"),
-                    dataIndex: "enable_management",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: __("Multicast"),
-                    dataIndex: "enable_multicast",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                },
-                {
                     text: __("Provisioning"),
                     dataIndex: "enable_provisioning",
                     width: 50,
@@ -80,16 +68,6 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     xtype: "main.style.LookupField",
                     fieldLabel: __("Style"),
                     allowBlank: true
-                },
-                {
-                    name: "enable_management",
-                    xtype: "checkbox",
-                    boxLabel: __("Enable Management")
-                },
-                {
-                    name: "enable_multicast",
-                    xtype: "checkbox",
-                    boxLabel: __("Enable Multicast")
                 },
                 {
                     name: "enable_provisioning",
