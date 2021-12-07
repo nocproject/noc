@@ -38,7 +38,7 @@ from noc.fm.models.escalation import Escalation, EscalationItem
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
-from sa.models.servicesummary import SummaryItem
+from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 
 
 logger = logging.getLogger(__name__)
@@ -557,7 +557,9 @@ class EscalationSequence(BaseSequence):
 
         if not doc.items:
             return None  # Only group alarms
-        doc.total_objects = [SummaryItem(profile=k, summary=v) for k, v in total_objects.items()]
+        doc.total_objects = [
+            ObjectSummaryItem(profile=k, summary=v) for k, v in total_objects.items()
+        ]
         doc.total_services = [SummaryItem(profile=k, summary=v) for k, v in total_services.items()]
         doc.total_subscribers = [
             SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
