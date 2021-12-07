@@ -20,8 +20,5 @@ class Migration(BaseMigration):
         db = self.mongo_db
         # Migrate profiles
         p_coll = db["noc.interface_profiles"]
-        for p in p_coll.find():
-            if p['status_discovery']:
-                p_coll.update_one({"_id": p["_id"]}, {"$set": {"status_discovery": "e"}})
-            else:
-                p_coll.update_one({"_id": p["_id"]}, {"$set": {"status_discovery": "d"}})
+        p_coll.update_many({"status_discovery": True}, {"$set": {"status_discovery": "e"}})
+        p_coll.update_many({"status_discovery": False}, {"$set": {"status_discovery": "d"}})
