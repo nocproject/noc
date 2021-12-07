@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # Interface Status check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import threading
 import operator
+import orjson
 
 # Third-party modules
 import cachetools
@@ -17,6 +18,7 @@ from pymongo.errors import BulkWriteError
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
+from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.interfaceprofile import InterfaceProfile
 
 ips_lock = threading.RLock()
@@ -35,7 +37,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=lambda _: ips_lock)
     def get_profiles(cls, x):
-        return list(InterfaceProfile.objects.filter(status_discovery=True))
+        return list(InterfaceProfile.objects.filter(status_discovery__ne="d"))
 
     def handler(self):
         def get_interface(name):
@@ -87,6 +89,32 @@ class InterfaceStatusCheck(DiscoveryCheck):
             if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
                 iface.set_oper_status(ostatus)
+                alarm_class = AlarmClass.get_by_name("Network | Link | Link Down")
+                msg = {
+                    "reference": f"e:{self.object.id}:{alarm_class.id}:{i['interface']}",
+                    "alarm_class": alarm_class.name,
+                }
+                if iface.profile.status_discovery in ["c", "rc"] and ostatus:
+                    msg["$op"] = "clear"
+                    self.logger.info(f"Clear {alarm_class.name}: on interface {i['interface']}")
+                if iface.profile.status_discovery == "rc" and ostatus is False:
+                    msg["$op"] = "raise"
+                    msg["vars"] = [
+                        {
+                            "interface": i["interface"],
+                        }
+                    ]
+                    self.logger.info(f"Raise {alarm_class.name}: on interface {i['interface']}")
+                if msg.get("$op"):
+                    stream, partition = self.object.alarms_stream_and_partition
+                    self.service.publish(
+                        orjson.dumps(msg),
+                        stream=stream,
+                        partition=partition,
+                    )
+                    self.logger.debug(
+                        "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
+                    )
         if bulk:
             self.logger.info("Committing changes to database")
             try:

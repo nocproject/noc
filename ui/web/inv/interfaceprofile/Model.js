@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interfaceprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interfaceprofile.Model");
@@ -39,8 +39,8 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         },
         {
             name: "status_discovery",
-            type: "bool",
-            defaultValue: false
+            type: "string",
+            defaultValue: "d"
         },
         {
             name: "allow_lag_mismatch",
