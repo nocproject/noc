@@ -81,14 +81,14 @@ class Firmware(Document):
             ...
         if isinstance(other, Firmware):
             other = other.version
-        return self.get_profile().cmp_version(self.version, other) == -1
+        return self.get_profile().cmp_version(self.version, other) < 0
 
     def __le__(self, other):
         if other.profile != other.profile:
             ...
         if isinstance(other, Firmware):
             other = other.version
-        return self.get_profile().cmp_version(self.version, other) in {-1, 0}
+        return self.get_profile().cmp_version(self.version, other) <= 0
 
     def clean(self):
         self.full_name = "%s %s" % (self.profile.name, self.version)
