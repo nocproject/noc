@@ -10,7 +10,7 @@ import logging
 import datetime
 import operator
 import threading
-from typing import Iterable, Dict, DefaultDict, List, Optional, Any, NoReturn, Union
+from typing import Iterable, Dict, DefaultDict, List, Optional, Any, NoReturn
 from collections import defaultdict
 from abc import ABC, abstractmethod
 
