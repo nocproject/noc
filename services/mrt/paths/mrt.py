@@ -38,13 +38,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-async def _write_chunk(res_list, obj):
+async def _write_chunk(obj):
     data = smart_text(orjson.dumps(obj))
-    res_list.append("%s|%s" % (len(data), data))
-    logger.debug("%s|%s" % (len(data), data))
+    data_str = "%s|%s" % (len(data), data)
+    logger.debug(data_str)
+    return data_str
 
 
-async def _run_script(res_list, current_user, oid, script, args, span_id=0, bi_id=None):
+async def _run_script(current_user, oid, script, args, span_id=0, bi_id=None):
     service = get_service()
     with Span(
         server="MRT",
@@ -55,7 +56,6 @@ async def _run_script(res_list, current_user, oid, script, args, span_id=0, bi_i
         client=current_user,
     ) as span:
         try:
-            await _write_chunk(res_list, {"id": str(oid), "running": True})
             logger.debug("[%s] Run script %s %s %s", span.context, oid, script, args)
             r = await service.sae.script(oid, script, args)
             metrics["mrt_success"] += 1
@@ -81,8 +81,7 @@ async def _run_script(res_list, current_user, oid, script, args, span_id=0, bi_i
             return {"id": str(oid), "result": r}
 
 
-@router.post("/api/mrt/")
-async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current_user)):
+async def _iterdata(req, current_user):
     service = get_service()
     metrics["mrt_requests"] += 1
     # Object ids
@@ -109,23 +108,22 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
         if service.use_telemetry:
             logger.info("[%s] Enable telemetry for task, user: %s", span.span_id, current_user)
         futures = set()
-        res_list = []
         for d in req:
             if not hasattr(d, "id") or not hasattr(d, "script"):
                 continue
             oid = int(d.id)
             if oid not in ids:
-                await _write_chunk(res_list, {"id": str(d["id"]), "error": "Access denied"})
+                yield await _write_chunk({"id": str(d.id), "error": "Access denied"})
                 metrics["mrt_access_denied"] += 1
                 continue
             while len(futures) >= config.mrt.max_concurrency:
                 done, futures = await asyncio.wait(futures, return_when=asyncio.FIRST_COMPLETED)
                 for f in done:
                     r = await f
-                    await _write_chunk(res_list, r)
+                    yield await _write_chunk(r)
+            yield await _write_chunk({"id": str(oid), "running": True})
             futures.add(
                 _run_script(
-                    res_list,
                     current_user,
                     oid,
                     d.script,
@@ -139,12 +137,12 @@ async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current
             done, futures = await asyncio.wait(futures, return_when=asyncio.FIRST_COMPLETED)
             for f in done:
                 r = await f
-                await _write_chunk(res_list, r)
+                yield await _write_chunk(r)
     logger.info("Done")
+
+
+@router.post("/api/mrt/")
+async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current_user)):
     # Disable nginx proxy buffering
     headers = {"X-Accel-Buffering": "no"}
-
-    def iterdata():
-        for item in res_list:
-            yield str(item)
-    return StreamingResponse(iterdata(), media_type="text/html", headers=headers)
+    return StreamingResponse(_iterdata(req, current_user), media_type="text/html", headers=headers)
