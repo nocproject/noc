@@ -25,7 +25,7 @@ import cachetools
 
 
 # NOC modules
-from noc.core.model.decorator import on_save, on_delete, on_delete_check
+from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.defer import defer
 from noc.core.text import ranges_to_list
 from .vlanprofile import VLANProfile

@@ -17,7 +17,6 @@ from mongoengine.fields import (
     LongField,
     ListField,
     IntField,
-    BooleanField,
     DateTimeField,
 )
 import cachetools
@@ -41,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 @Label.model
 @bi_sync
-@on_delete_check(check=[("vc.VLAN", "parent")])
+@on_delete_check(check=[("vc.VLAN", "parent"), ("vc.L2Domain", "l2domain")])
 @workflow
 @on_save
 class VLAN(Document):
