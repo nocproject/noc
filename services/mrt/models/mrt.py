@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
-# Pydentic models for mrt service
+# Pydentic models for MRT service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
