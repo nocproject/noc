@@ -59,7 +59,7 @@ from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.liftbridge.message import Message
 from noc.services.correlator.rcalock import RCALock
-from services.correlator.alarmrule import GroupItem
+from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
 
@@ -1222,7 +1222,7 @@ class CorrelatorService(TornadoService):
                 return
             for g_ref in group_refs:
                 for si in summary:
-                    totals[g_ref][si.profile] += si.summary
+                    totals[g_ref][si["profile"]] += si["summary"]
 
         all_groups = list(refs)
         if not all_groups:
@@ -1258,9 +1258,17 @@ class CorrelatorService(TornadoService):
                 {"reference": ref},
                 {
                     "$set": {
-                        "total_objects": ObjectSummaryItem.dict_to_items(total_objects[ref]),
-                        "total_services": SummaryItem.dict_to_items(total_services[ref]),
-                        "total_subscribers": SummaryItem.dict_to_items(total_subscribers[ref]),
+                        "total_objects": [
+                            si.to_mongo()
+                            for si in ObjectSummaryItem.dict_to_items(total_objects[ref])
+                        ],
+                        "total_services": [
+                            si.to_mongo() for si in SummaryItem.dict_to_items(total_services[ref])
+                        ],
+                        "total_subscribers": [
+                            si.to_mongo()
+                            for si in SummaryItem.dict_to_items(total_subscribers[ref])
+                        ],
                     }
                 },
             )
