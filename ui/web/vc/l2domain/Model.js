@@ -77,6 +77,11 @@ Ext.define("NOC.vc.l2domain.Model", {
             type: "int"
         },
         {
+            name: "count",
+            type: "integer",
+            persist: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

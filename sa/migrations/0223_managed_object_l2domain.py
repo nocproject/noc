@@ -13,6 +13,6 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
-            "sa_managedobject", "l2domain", DocumentReferenceField("self", null=True, blank=True)
+            "sa_managedobject", "l2_domain", DocumentReferenceField("self", null=True, blank=True)
         )
-        self.db.create_index("sa_managedobject", ["l2domain"], unique=False)
+        self.db.create_index("sa_managedobject", ["l2_domain"], unique=False)

@@ -37,7 +37,15 @@ Ext.define("NOC.vc.l2domain.Application", {
                     dataIndex: "state",
                     width: 150,
                     renderer: NOC.render.Lookup("state")
-                }
+                },
+                {
+                    text: __("Obj."),
+                    dataIndex: "count",
+                    width: 30,
+                    align: "right",
+                    sortable: false,
+                    renderer: NOC.render.Badge
+                },
             ],
 
             fields: [

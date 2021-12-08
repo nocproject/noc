@@ -8,9 +8,11 @@
 # Python modules
 from collections import defaultdict
 
+# Third-party modules
+from mongoengine import Q
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vlan import VLAN
 from noc.vc.models.l2domain import L2Domain
@@ -18,14 +20,9 @@ from noc.inv.models.resourcepool import ResourcePool
 from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import (
-    DictParameter,
-    ModelParameter,
     DocumentParameter,
-    ListOfParameter,
-    IntParameter,
-    ObjectIdParameter,
-    StringParameter,
 )
+
 
 @state_handler
 class VLANApplication(ExtDocApplication):
@@ -43,20 +40,44 @@ class VLANApplication(ExtDocApplication):
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
-    def clean_list_data(self, data):
+    def bulk_field_interfaces_count(self, data):
+        if not data:
+            return data
+
+        l2_domains = (d["l2domain"] for d in data)
+        objects = L2Domain.get_l2_domain_object_ids(l2_domains)
+        vlans = [d["vlan"] for d in data]
+        interfaces_count = SubInterface.objects.filter(
+            Q(managed_object__in=objects)
+            & (
+                Q(untagged_vlan__in=vlans, enabled_afi=["BRIDGE"])
+                | Q(tagged_vlans__in=vlans, enabled_afi=["BRIDGE"])
+                | Q(vlan_ids__in=vlans)
+            )
+        ).count()
+        for row in data:
+            row["interfaces_count"] = interfaces_count
+        return data
+
+    def bulk_field_prefixes(self, data):
+        if not data:
+            return data
+
+        for row in data:
+            row["prefixes"] = 0
         return data
 
     @view(url=r"^(?P<vlan_id>[0-9a-f]{24})/interfaces/$", method=["GET"], access="read", api=True)
-    def api_interfaces(self, request, vlan_id):
+    def api_interfaces(self, request, vlan_id: int):
         """
         Returns a dict of {untagged: ..., tagged: ...., l3: ...}
         :param request:
         :param vlan_id:
         :return:
         """
-        vlan = self.get_object_or_404(VLAN, id=vlan_id)
-        # Managed objects in VC domain
-        objects = NetworkSegment.get_vlan_domain_object_ids(vlan.segment)
+        vlan: "VLAN" = self.get_object_or_404(VLAN, id=vlan_id)
+        # Managed objects in L2 Domain
+        objects = L2Domain.get_l2_domain_object_ids((vlan.l2domain,))
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
@@ -115,7 +136,10 @@ class VLANApplication(ExtDocApplication):
         method=["GET"],
         access="read",
         api=True,
-        validate={"l2_domain": DocumentParameter(L2Domain), "pool": DocumentParameter(ResourcePool)},
+        validate={
+            "l2_domain": DocumentParameter(L2Domain),
+            "pool": DocumentParameter(ResourcePool, required=False),
+        },
     )
-    def api_find_free(self, request, l2_domain: "L2Domain", pool: "ResourcePool", **kwargs):
+    def api_find_free(self, request, l2_domain: "L2Domain", pool: "ResourcePool" = None, **kwargs):
         return l2_domain.get_free_vlan_num(pool=pool)

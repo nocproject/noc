@@ -83,17 +83,23 @@ Ext.define("NOC.vc.vlan.Model", {
             persist: false
         },
         {
-            name: "translation_rule",
-            type: "string",
-            defaultValue: "push"
-        },
-        {
             name: "bi_id",
             type: "string"
         },
         {
             name: "name",
             type: "string"
+        },
+        // Info fields
+        {
+            name: "interfaces_count",
+            type: "auto",
+            persist: false
+        },
+        {
+            name: "prefixes",
+            type: "auto",
+            persist: false
         },
         {
             name: "row_class",

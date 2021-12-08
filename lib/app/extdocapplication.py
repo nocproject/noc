@@ -21,7 +21,7 @@ from mongoengine.fields import (
     BinaryField,
     GeoPointField,
 )
-from mongoengine.errors import ValidationError
+from mongoengine.errors import ValidationError, NotUniqueError
 from mongoengine.queryset import Q
 
 # NOC modules
@@ -430,6 +430,10 @@ class ExtDocApplication(ExtApplication):
             o.save()
         except ValidationError as e:
             return self.response({"message": str(e)}, status=self.BAD_REQUEST)
+        except NotUniqueError:
+            return self.response(
+                {"message": "Duplicate Record (Already exists)"}, status=self.BAD_REQUEST
+            )
         # Reread result
         o = self.model.objects.get(**{self.pk: o.pk})
         if request.is_extjs:

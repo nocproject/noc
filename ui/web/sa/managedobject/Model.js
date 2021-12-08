@@ -228,7 +228,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "l2_domain",
-            type: "int"
+            type: "string"
         },
         {
             name: "l2_domain__label",

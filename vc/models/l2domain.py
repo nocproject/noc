@@ -89,6 +89,8 @@ class L2Domain(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _vlan_domains_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _vlan_domains_mo_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "Default Resource"
@@ -140,7 +142,7 @@ class L2Domain(Document):
         """
         return list(
             itertools.filterfalse(
-                lambda x: pool and pool == x.pool,
+                lambda x: pool and pool.id != x.pool.id,
                 itertools.chain(self.profile.pools or [], self.pools or []),
             )
         )
@@ -229,3 +231,16 @@ class L2Domain(Document):
         """
 
         return next(self.iter_free_vlan_labels(vlan_filter, pool), None)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_mo_cache"), lock=lambda _: id_lock)
+    def get_l2_domain_object_ids(cls, l2_domains: List["str"]):
+        """
+        Get list of all managed object ids belonging to
+        same L2 domain
+        :param l2_domains:
+        :return:
+        """
+        from noc.sa.models.managedobject import ManagedObject
+
+        return ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list("id", flat=True)

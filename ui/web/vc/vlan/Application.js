@@ -65,6 +65,21 @@ Ext.define("NOC.vc.vlan.Application", {
                     width: 75
                 },
                 {
+                    text: __("Int."),
+                    dataIndex: "interfaces_count",
+                    width: 50,
+                    sortable: false,
+                    align: "right",
+                    renderer: NOC.render.Clickable,
+                    onClick: me.onInterfacesCellClick
+                },
+                {
+                    text: __("Prefixes"),
+                    dataIndex: "prefixes",
+                    width: 100,
+                    sortable: false
+                },
+                {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
@@ -302,6 +317,12 @@ Ext.define("NOC.vc.vlan.Application", {
             name: "l2domain",
             ftype: "lookup",
             lookup: "vc.l2domain"
-        }
+        },
+        {
+            title: __("By State"),
+            name: "state",
+            ftype: "lookup",
+            lookup: "main.resourcestate"
+        },
     ]
 });
