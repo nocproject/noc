@@ -12,7 +12,7 @@ import datetime
 import re
 from collections import defaultdict
 import threading
-from typing import Union, Any, Iterable, Optional, Tuple, Dict, List, Set
+from typing import DefaultDict, Union, Any, Iterable, Optional, Tuple, Dict, List, Set
 import operator
 from itertools import chain
 from hashlib import sha512
@@ -23,6 +23,7 @@ from bson import ObjectId
 from dateutil.parser import parse as parse_date
 from pydantic import parse_obj_as, ValidationError
 import cachetools
+from pymongo import UpdateOne
 
 # NOC modules
 from noc.config import config
@@ -431,6 +432,7 @@ class CorrelatorService(TornadoService):
             severity,
         )
         # Create new alarm
+        direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
         direct_services = SummaryItem.dict_to_items(summary["service"])
         direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
         if event:
@@ -445,6 +447,7 @@ class CorrelatorService(TornadoService):
             severity=severity,
             vars=vars,
             reference=ref_hash,
+            direct_objects=direct_objects,
             direct_services=direct_services,
             direct_subscribers=direct_subscribers,
             total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
@@ -511,6 +514,8 @@ class CorrelatorService(TornadoService):
             )
         # Gather diagnostics when necessary
         AlarmDiagnosticConfig.on_raise(a)
+        # Update groups summary
+        await self.update_groups_summary(a.groups)
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
@@ -1195,10 +1200,73 @@ class CorrelatorService(TornadoService):
             ]
         ):
             r[doc["_id"]] = doc["n"]
+        left: List[bytes] = []
         for ref in groups:
             if r.get(ref, 0) == 0:
                 self.logger.info("Clear empty group %r", ref)
                 await self.clear_by_reference(ref, ts=ts)
+            else:
+                left.append(ref)
+        if left:
+            await self.update_groups_summary(left)
+
+    async def update_groups_summary(self, refs: Iterable[bytes]) -> None:
+        """
+        Recalculate summaries for all changed groups defined by references
+
+        :param refs: Iterable of group reference hashes
+        """
+
+        def update_totals(totals, group_refs, summary):
+            if not group_refs or not summary:
+                return
+            for g_ref in group_refs:
+                for si in summary:
+                    totals[g_ref][si.profile] += si.summary
+
+        all_groups = list(refs)
+        if not all_groups:
+            return
+        total_objects: DefaultDict[bytes, DefaultDict[int, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+        total_services: DefaultDict[bytes, DefaultDict[ObjectId, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+        total_subscribers: DefaultDict[bytes, DefaultDict[ObjectId, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
+        for doc in ActiveAlarm._get_collection().find(
+            {"groups": {"$in": list(all_groups)}},
+            {
+                "_id": 0,
+                "groups": 1,
+                "direct_objects": 1,
+                "direct_services": 1,
+                "direct_subscribers": 1,
+            },
+        ):
+            groups = doc.get("groups", [])
+            if not groups:
+                continue
+            update_totals(total_objects, groups, doc.get("direct_objects", []))
+            update_totals(total_services, groups, doc.get("direct_services", []))
+            update_totals(total_subscribers, groups, doc.get("direct_subscribers", []))
+        # Perform bulk update
+        bulk = [
+            UpdateOne(
+                {"reference": ref},
+                {
+                    "$set": {
+                        "total_objects": ObjectSummaryItem.dict_to_items(total_objects[ref]),
+                        "total_services": SummaryItem.dict_to_items(total_services[ref]),
+                        "total_subscribers": SummaryItem.dict_to_items(total_subscribers[ref]),
+                    }
+                },
+            )
+            for ref in all_groups
+        ]
+        ActiveAlarm._get_collection().bulk_write(bulk)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_reference_cache"), lock=lambda _: ref_lock)
