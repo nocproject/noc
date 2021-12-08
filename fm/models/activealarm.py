@@ -126,6 +126,7 @@ class ActiveAlarm(Document):
     wait_ts = DateTimeField()
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
+    direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
@@ -305,6 +306,7 @@ class ActiveAlarm(Document):
             closing_event=self.closing_event,
             reference=self.reference,
             reopens=self.reopens,
+            direct_objects=self.direct_objects,
             direct_services=self.direct_services,
             direct_subscribers=self.direct_subscribers,
             total_objects=self.total_objects,

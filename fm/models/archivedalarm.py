@@ -92,6 +92,7 @@ class ArchivedAlarm(Document):
     escalation_close_ctx = LongField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
+    direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
@@ -211,6 +212,7 @@ class ArchivedAlarm(Document):
             opening_event=self.opening_event,
             reference=self.reference,
             reopens=reopens + 1,
+            direct_objects=self.direct_objects,
             direct_services=self.direct_services,
             direct_subscribers=self.direct_subscribers,
             total_objects=self.total_objects,
