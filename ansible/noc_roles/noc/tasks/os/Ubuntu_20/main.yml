@@ -12,7 +12,7 @@
       - python3-venv
       - python3-virtualenv
       - git
-      - libjemalloc1
+      - libjemalloc2
       - gcc
       - libpq-dev
       - libffi6
