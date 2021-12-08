@@ -9,7 +9,7 @@
 from threading import Lock
 import itertools
 import operator
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterable, Dict
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -53,7 +53,10 @@ class PoolItem(EmbeddedDocument):
 @Label.model
 @bi_sync
 @on_save
-@on_delete_check(check=[("vc.VLAN", "l2domain"), ("sa.ManagedObject", "l2_domain")])
+@on_delete_check(
+    check=[("vc.VLAN", "l2domain"), ("sa.ManagedObject", "l2_domain")],
+    clean=[("inv.SubInterface", "l2domain")],
+)
 class L2Domain(Document):
     meta = {
         "collection": "l2domains",
@@ -113,6 +116,7 @@ class L2Domain(Document):
         return Label.get_effective_setting(label, "enable_l2domain")
 
     def clean(self):
+        # Check VLAN Filter Overlaps
         vlan_filters = list(
             itertools.chain.from_iterable(
                 [
@@ -124,6 +128,8 @@ class L2Domain(Document):
         )
         if len(vlan_filters) != len(set(vlan_filters)):
             raise ValidationError("VLAN Filter overlapped")
+        # Check Unique Pools overlap
+        # Check VLAN Template type
         vlan_template = self.get_effective_vlan_template()
         if vlan_template and vlan_template.type != "l2domain":
             raise ValidationError("Only l2domain VLAN Template type may be assign")
@@ -244,3 +250,14 @@ class L2Domain(Document):
         from noc.sa.models.managedobject import ManagedObject
 
         return ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list("id", flat=True)
+
+    @classmethod
+    def calculate_stats(cls, l2_domain: List[str]) -> Dict[str, int]:
+        """
+        Calculate statistics Pool usage
+        :param l2_domain:
+        :return:
+        """
+        # l2
+
+        return {}

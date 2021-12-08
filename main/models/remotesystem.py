@@ -76,6 +76,8 @@ class EnvItem(EmbeddedDocument):
         ("vc.VLANProfile", "remote_system"),
         ("vc.VPN", "remote_system"),
         ("vc.VPNProfile", "remote_system"),
+        ("vc.L2Domain", "remote_system"),
+        ("vc.L2DomainProfile", "remote_system"),
         ("wf.State", "remote_system"),
         ("wf.Transition", "remote_system"),
         ("wf.Workflow", "remote_system"),

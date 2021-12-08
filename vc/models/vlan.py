@@ -20,6 +20,7 @@ from mongoengine.fields import (
     IntField,
     DateTimeField,
 )
+from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC modules
@@ -98,6 +99,9 @@ class VLAN(Document):
 
     def clean(self):
         super().clean()
+        if not hasattr(self, "_changed_fields") or "l2domain" in self._changed_fields:
+            if self.vlan not in set(self.l2domain.get_effective_vlan_num()):
+                raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2domain} range")
 
     @classmethod
     def can_set_label(cls, label):

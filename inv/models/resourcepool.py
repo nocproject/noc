@@ -20,8 +20,8 @@ import cachetools
 # NOC Modules
 from noc.core.lock.distributed import DistributedLock
 from noc.core.lock.base import get_locked_items
-from noc.models import get_model
 from noc.core.model.decorator import on_delete_check
+from noc.models import get_model
 
 id_lock = threading.Lock()
 
