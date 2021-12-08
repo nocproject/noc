@@ -105,3 +105,10 @@ build_ubuntu18:
      - cloud
      - docker
 
+build_ubuntu20:
+   extends: .base_builder
+   variables:
+     SCENARIO_NAME: ubuntu20
+   tags:
+     - cloud
+     - docker
