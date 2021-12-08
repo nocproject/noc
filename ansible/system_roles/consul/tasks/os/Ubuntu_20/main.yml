@@ -1,7 +1,7 @@
 ---
 - name: Install Debian consul depends
   apt:
-    name: python-virtualenv
+    name: python3-virtualenv
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   environment:
