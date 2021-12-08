@@ -261,12 +261,14 @@ class Link(Document):
                     {"$match": {"linked_objects": {"$in": self.linked_objects}}},
                     {"$unwind": "$linked_objects"},
                     {"$group": {"_id": "$linked_objects", "count": {"$sum": 1}}},
-                    {"$match": {"count": {"$lt": 2}, "_id": {"$in": self.linked_objects}}},
+                    {"$match": {"count": {"$gt": 1}, "_id": {"$in": self.linked_objects}}},
                 ]
             )
         ]
-
-        Label.reset_model_labels("sa.ManagedObject", ["noc::is_linked::="], r)
+        # Not Reset device more that 1 link
+        rl = set(self.linked_objects) - set(r)
+        if rl:
+            Label.reset_model_labels("sa.ManagedObject", ["noc::is_linked::="], list(rl))
         # Assumption that Interface has only one Link :)
         Label.reset_model_labels(
             "inv.Interface", ["noc::is_linked::="], [i.id for i in self.interfaces]
