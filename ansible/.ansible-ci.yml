@@ -89,6 +89,14 @@ build_debian10:
     - cloud
     - docker
 
+build_debian11:
+  extends: .base_builder
+  variables:
+    SCENARIO_NAME: debian11
+  tags:
+    - cloud
+    - docker
+
 build_ubuntu18:
    extends: .base_builder
    variables:
