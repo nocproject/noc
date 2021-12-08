@@ -8,7 +8,6 @@
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
-from noc.services.mib.api.mib import MIBAPI
 
 
 class MIBService(FastAPIService):
