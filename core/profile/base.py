@@ -847,7 +847,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         setattr(script, name, f)
 
     @classmethod
-    def cmp_version(cls, v1, v2):
+    def cmp_version(cls, v1, v2) -> Optional[int]:
         """
         Compare two versions.
         Must return:
