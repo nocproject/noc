@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # metrics service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,13 +12,13 @@ import operator
 import time
 
 # NOC modules
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.core.debug import error_report
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.services.selfmon.loader import iter_collectors
 
 
-class SelfMonService(TornadoService):
+class SelfMonService(FastAPIService):
     name = "selfmon"
     use_mongo = True
 
