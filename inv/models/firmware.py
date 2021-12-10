@@ -70,22 +70,16 @@ class Firmware(Document):
         return self.full_name if self.full_name else self.version
 
     def __eq__(self, other):
-        if other.profile != other.profile:
-            ...
         if isinstance(other, Firmware):
             other = other.version
         return self.get_profile().cmp_version(self.version, other) == 0
 
     def __lt__(self, other: "Firmware") -> bool:
-        if other.profile != other.profile:
-            ...
         if isinstance(other, Firmware):
             other = other.version
         return self.get_profile().cmp_version(self.version, other) < 0
 
     def __le__(self, other):
-        if other.profile != other.profile:
-            ...
         if isinstance(other, Firmware):
             other = other.version
         return self.get_profile().cmp_version(self.version, other) <= 0
