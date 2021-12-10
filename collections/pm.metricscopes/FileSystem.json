@@ -1,0 +1,47 @@
+{
+    "name": "FileSystem",
+    "$collection": "pm.metricscopes",
+    "uuid": "fa4b9686-0209-4ef0-b998-67a2f7646740",
+    "table_name": "filesystem",
+    "description": "FileSystem",
+    "key_fields": [
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "agent",
+            "model": "pm.Agent"
+        },
+        {
+            "field_name": "object",
+            "model": "inv.Object"
+        }
+    ],
+    "enable_timedelta": false,
+    "labels": [
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::device::*",
+            "store_column": "device"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::fs::mountpoint::*",
+            "store_column": "mountpoint"
+        },
+        {
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::fs::type::*"
+        }
+    ]
+}
