@@ -63,8 +63,8 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 {
                     name: "object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
-                    fieldLabel: __("Profile"),
-                    allowBlank: false
+                    fieldLabel: __("Object Profile"),
+                    allowBlank: true
                 },
                 {
                     name: "platform",
@@ -77,6 +77,21 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     xtype: "inv.firmware.LookupField",
                     fieldLabel: __("Firmware"),
                     allowBlank: false
+                },
+                {
+                    name: "condition",
+                    xtype: "combobox",
+                    fieldLabel: __("Condition"),
+                    store: [
+                        ["<", "<"],
+                        ["<=", "<="],
+                        [">=", ">="],
+                        [">", ">"],
+                        ["=", "="],
+                    ],
+                    value: "=",
+                    allowBlank: false,
+                    uiStyle: "small"
                 },
                 {
                     name: "status",
