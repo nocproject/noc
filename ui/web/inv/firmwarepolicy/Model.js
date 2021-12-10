@@ -28,6 +28,10 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
             type: "string"
         },
         {
+            name: "condition",
+            type: "string"
+        },
+        {
             name: "platform",
             type: "string"
         },
