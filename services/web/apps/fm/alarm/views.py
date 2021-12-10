@@ -478,7 +478,7 @@ class AlarmApplication(ExtApplication):
             d["events"] = events
         # Alarms
         children = self.get_nested_alarms(alarm)
-        if not alarm.groups:
+        if alarm.groups:
             children += self.get_grouped_alarms(alarm)
         if children:
             d["alarms"] = {"expanded": True, "children": children}
