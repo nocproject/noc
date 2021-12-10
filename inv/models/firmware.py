@@ -69,20 +69,29 @@ class Firmware(Document):
     def __str__(self):
         return self.full_name if self.full_name else self.version
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Firmware") -> bool:
         if isinstance(other, Firmware):
             other = other.version
-        return self.get_profile().cmp_version(self.version, other) == 0
+        r = self.get_profile().cmp_version(self.version, other)
+        if r is None:
+            return False
+        return r == 0
 
     def __lt__(self, other: "Firmware") -> bool:
         if isinstance(other, Firmware):
             other = other.version
-        return self.get_profile().cmp_version(self.version, other) < 0
+        r = self.get_profile().cmp_version(self.version, other)
+        if r is None:
+            return False
+        return r < 0
 
-    def __le__(self, other):
+    def __le__(self, other: "Firmware") -> bool:
         if isinstance(other, Firmware):
             other = other.version
-        return self.get_profile().cmp_version(self.version, other) <= 0
+        r = self.get_profile().cmp_version(self.version, other)
+        if r is None:
+            return False
+        return r <= 0
 
     def clean(self):
         self.full_name = "%s %s" % (self.profile.name, self.version)

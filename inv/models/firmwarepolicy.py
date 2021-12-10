@@ -75,8 +75,7 @@ class FirmwarePolicy(Document):
         fps = cls.get_effective_policies(platform, version)
         if fps:
             return list(sorted(fps, key=lambda x: PRIORITY_ORDER.index(x.status)))[0].status
-        else:
-            return None
+        return None
 
     @classmethod
     def get_recommended_version(cls, platform):
