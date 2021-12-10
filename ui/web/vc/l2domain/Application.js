@@ -15,6 +15,7 @@ Ext.define("NOC.vc.l2domain.Application", {
         "NOC.inv.resourcepool.LookupField",
         "NOC.vc.vlanfilter.LookupField",
         "NOC.vc.vlantemplate.LookupField",
+        "NOC.vc.vlanprofile.LookupField",
         "NOC.vc.l2domainprofile.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
@@ -78,6 +79,12 @@ Ext.define("NOC.vc.l2domain.Application", {
                     name: "vlan_template",
                     xtype: "vc.vlantemplate.LookupField",
                     fieldLabel: __("VLAN Template"),
+                    allowBlank: true
+                },
+                {
+                    name: "default_vlan_profile",
+                    xtype: "vc.vlanprofile.LookupField",
+                    fieldLabel: __("Default VLAN Profile"),
                     allowBlank: true
                 },
                 {

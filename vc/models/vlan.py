@@ -9,7 +9,7 @@
 from threading import Lock
 import operator
 import logging
-from typing import Optional
+from typing import Optional, Iterable, List, Set
 
 # Third-party modules
 from mongoengine.document import Document
@@ -34,9 +34,14 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save
+from noc.inv.models.resourcepool import ResourcePool
+from noc.vc.models.vlanfilter import VLANFilter
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
+
+FREE_VLAN_STATE = "Free"
+FULL_VLAN_RANGE = set(range(1, 4096))
 
 
 @Label.model
@@ -102,6 +107,84 @@ class VLAN(Document):
         if not hasattr(self, "_changed_fields") or "l2domain" in self._changed_fields:
             if self.vlan not in set(self.l2domain.get_effective_vlan_num()):
                 raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2domain} range")
+
+    @classmethod
+    def iter_free(
+        cls,
+        l2_domain: "L2Domain",
+        pool: "ResourcePool" = None,
+        vlan_filter: "VLANFilter" = None,
+        limit: int = 1,
+        **kwargs,
+    ) -> Iterable["VLAN"]:
+        """
+        Iter Free VLANs
+        1. Check Exists VLANs with Free State
+        2. Create VLAN on free state when needed
+
+        :param pool: ResourcePool
+        :param l2_domain:
+        :param vlan_filter:
+        :param limit: Resource Count
+        :param kwargs: Additional hints for allocate
+        :return:
+        """
+        from noc.wf.models.state import State
+
+        if pool and not l2_domain.pools:
+            # L2Domain not supported allocated vlan by pool
+            return
+        vlans: Set[int] = FULL_VLAN_RANGE
+        if vlan_filter:
+            vlans & set(vlan_filter.include_vlans)
+        pools = l2_domain.get_effective_pools(pool)
+        for pp in pools:
+            vlans = vlans & set(pp.vlan_filter.include_vlans)
+        # Check pool in VLAN
+        free_states = list(State.objects.filter(name=FREE_VLAN_STATE).values_list("id"))
+        free_vlans = VLAN.objects.filter(
+            l2domain=l2_domain, vlan__in=list(vlans), state__in=free_states
+        ).limit(limit)
+        if pool and pool.strategy == "L":
+            free_vlans = free_vlans.sorted({"vlan": 1})
+        elif pool and pool.strategy == "F":
+            free_vlans = free_vlans.sorted({"vlan": -1})
+        allocated_count = 0
+        # Iter Free VLANs
+        for vlan in sorted(free_vlans, reverse=pool and pool.strategy == "L"):
+            yield vlan
+            allocated_count += 1
+            vlans.remove(vlan.vlan)
+        if allocated_count >= limit:
+            return
+        # @todo check Cooldown
+        # @todo raise Overflow Resource if len(vlans) < limit - allocated_count
+        # Iter vlan
+        for vlan in vlans:
+            if allocated_count >= limit:
+                break
+            vlan = cls.allocate(l2_domain, vlan)
+            if not vlan:
+                continue
+            yield vlan
+            allocated_count += 1
+
+    @classmethod
+    def allocate(cls, l2_domain: "L2Domain", vlan_num: int) -> Optional["VLAN"]:
+        """
+        Allocate vlan on L2Domain
+        :param l2_domain:
+        :param vlan_num:
+        :return:
+        """
+        vlan = VLAN(
+            vlan=vlan_num, l2_domain=l2_domain, profile=l2_domain.get_vlan_profile(), description=""
+        )
+        try:
+            vlan.save()
+        except Exception:
+            return None
+        return vlan
 
     @classmethod
     def can_set_label(cls, label):

@@ -31,6 +31,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.inv.models.resourcepool import ResourcePool
+from .vlanprofile import VLANProfile
 from .vlanfilter import VLANFilter
 from .vlantemplate import VLANTemplate
 from .l2domainprofile import L2DomainProfile
@@ -77,7 +78,7 @@ class L2Domain(Document):
     pools = EmbeddedDocumentListField(PoolItem)
     #
     vlan_template = ReferenceField(VLANTemplate)
-    # discovery_vlan_profile
+    default_vlan_profile = ReferenceField(VLANProfile, required=False)
     # local_filter
     # Labels
     labels = ListField(StringField())
@@ -152,6 +153,11 @@ class L2Domain(Document):
                 itertools.chain(self.profile.pools or [], self.pools or []),
             )
         )
+
+    def get_vlan_profile(self) -> Optional["VLANProfile"]:
+        if self.default_vlan_profile:
+            return self.default_vlan_profile
+        return None
 
     def get_effective_vlan_num(
         self,
