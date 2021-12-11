@@ -10,7 +10,7 @@ import operator
 import threading
 import random
 import string
-from typing import Optional, List, Callable
+from typing import Optional, List, Dict, Any, Iterable
 
 # Third-party modules
 from mongoengine.document import Document
@@ -106,7 +106,9 @@ class ResourcePool(Document):
         lock = DistributedLock(DISTRIBUTEDLOCK, owner)
         return lock.acquire([str(p.id) for p in pools], ttl=600)
 
-    def get_allocator(self) -> Optional[Callable]:
+    def get_allocator(
+        self, pools: List["ResourcePool"] = None, limit=1, **hints: Dict[str, Any]
+    ) -> Iterable:
         """
         Return ResourceAllocator method
         :return:
@@ -116,19 +118,11 @@ class ResourcePool(Document):
         model = get_model(TYPE_RESOURCE_MAP[self.type])
         if not hasattr(model, "iter_free"):
             raise NotImplementedError(f"Allocator interface on model {model} NotImpementer")
-        return getattr(model, "iter_free")
-
-    @classmethod
-    def allocate(cls, pools: List["ResourcePool"], **kwargs):
-        r = []
-        with ResourcePool.acquire(pools):
-            # Set Lock
-            for pool in pools:
-                allocator = pool.get_allocator()
-                for resource in allocator(**kwargs):
-                    resource.fire_event("reserve")
-                    r += [resource]
-        return r
+        try:
+            allocator = getattr(model, "iter_free")
+        except AttributeError as e:
+            raise AttributeError(f"Requred attribute {e}")
+        return allocator(pools, limit=limit, **hints)
 
     @classmethod
     def get_metrics(cls, pools: List["ResourcePool"]):
@@ -140,7 +134,7 @@ class ResourcePool(Document):
         :param pools:
         :return:
         """
-        pass
+        ...
 
     def check_threshold(self, used: int, total: int) -> bool:
         """
