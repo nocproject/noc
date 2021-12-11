@@ -193,6 +193,9 @@ Ext.define("NOC.main.label.Application", {
                         if(item.data.enable_workflowstate) {
                             r.push(__("Workflow State"));
                         }
+                        if(item.data.enable_firmwarepolicy) {
+                            r.push(__("Firmware Policy"));
+                        }
                         return r.join(", ");
                     }
                 },
@@ -431,6 +434,14 @@ Ext.define("NOC.main.label.Application", {
                                     name: "enable_agent",
                                     xtype: "checkbox",
                                     boxLabel: __("Agent"),
+                                    bind: {
+                                        disabled: "{is_regex}"
+                                    }
+                                },
+                                {
+                                    name: "enable_firmwarepolicy",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Firmware Policy"),
                                     bind: {
                                         disabled: "{is_regex}"
                                     }

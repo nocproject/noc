@@ -97,7 +97,7 @@ class VersionCheck(DiscoveryCheck):
         #
         dfp = self.object.get_denied_firmware_policy()
         if dfp != "I":
-            firmware_status = FirmwarePolicy.get_status(platform, version)
+            firmware_status = FirmwarePolicy.get_status(version, platform)
             if firmware_status == FS_DENIED:
                 self.logger.info("Firmware version is denied by policy")
                 if dfp in ("A", "S"):

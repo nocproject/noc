@@ -10,7 +10,6 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.inv.firmwarepolicy.Model",
-        "NOC.sa.managedobjectprofile.LookupField",
         "NOC.inv.firmware.LookupField",
         "NOC.inv.platform.LookupField",
         "Ext.ux.form.GridField"
@@ -58,7 +57,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     name: "platform",
                     xtype: "inv.platform.LookupField",
                     fieldLabel: __("Platform"),
-                    allowBlank: false,
+                    allowBlank: true,
                     uiStyle: "large"
                 },
                 {
@@ -94,6 +93,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                         ["n", "Not recommended"],
                         ["d", "Denied"]
                     ],
+                    value: "Acceptable",
                     uiStyle: "medium"
                 },
                 {
@@ -101,6 +101,15 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    query: {
+                        "enable_firmwarepolicy": true
+                    }
                 },
                 {
                     name: "management",
