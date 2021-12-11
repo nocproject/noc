@@ -20,10 +20,6 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
             type: "string"
         },
         {
-            name: "object_profile",
-            type: "int"
-        },
-        {
             name: "firmware",
             type: "string"
         },
@@ -36,6 +32,20 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
             type: "string"
         },
         {
+            name: "platform__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "labels",
+            type: "auto"
+        },
+        {
+            name: "effective_labels",
+            type: "auto",
+            persist: false
+        },
+        {
             name: "description",
             type: "string"
         },
@@ -45,11 +55,6 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
         },
         {
             name: "firmware__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "object_profile__label",
             type: "string",
             persist: false
         }

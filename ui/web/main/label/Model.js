@@ -108,6 +108,10 @@ Ext.define("NOC.main.label.Model", {
             type: "boolean"
         },
         {
+            name: "enable_firmwarepolicy",
+            type: "boolean"
+        },
+        {
           name: "enable_alarm",
           type: "boolean"
         },

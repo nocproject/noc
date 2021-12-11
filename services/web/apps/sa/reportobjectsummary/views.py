@@ -14,6 +14,7 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.core.translation import ugettext as _
 
 report_types = [
@@ -24,6 +25,13 @@ report_types = [
     ("platform", _("By Platform")),
     ("version", _("By Version")),
 ]
+
+fp_map = {
+    "r": "Recommended",
+    "a": "Acceptable",
+    "n": "Not recommended",
+    "d": "Denied",
+}
 
 
 class ReportForm(forms.Form):
@@ -60,10 +68,7 @@ class ReportObjectsSummary(SimpleReport):
             str(p["_id"]): p["name"]
             for p in Platform.objects.all().as_pymongo().scalar("id", "name")
         }
-        version = {
-            str(p["_id"]): p["version"]
-            for p in Firmware.objects.all().as_pymongo().scalar("id", "version")
-        }
+        version = {str(p.id): p for p in Firmware.objects.all()}
         profile = {
             str(p["_id"]): p["name"]
             for p in Profile.objects.all().as_pymongo().scalar("id", "name")
@@ -136,7 +141,7 @@ class ReportObjectsSummary(SimpleReport):
             )
 
         elif report_type == "version":
-            columns = [_("Profile"), _("Version")]
+            columns = [_("Profile"), _("Version"), _("Firmware Policy")]
             query = (
                 """select sam.profile, sam.version, COUNT(version)
                     from sa_managedobject sam %s%s group by 1,2 order by count(version) desc;"""
@@ -162,7 +167,13 @@ class ReportObjectsSummary(SimpleReport):
             elif report_type == "platform":
                 data += [(profile.get(c[0]), platform.get(c[1]), c[2])]
             elif report_type == "version":
-                data += [(profile.get(c[0]), version.get(c[1]), c[2])]
+                fw, fps = version.get(c[1]), None
+                if fw:
+                    try:
+                        fps = FirmwarePolicy.get_status(fw)
+                    except ValueError:
+                        pass
+                data += [(profile.get(c[0]), fw, fp_map.get(fps or "", fps or ""), c[2])]
             else:
                 data += [c]
 

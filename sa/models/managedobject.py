@@ -51,6 +51,7 @@ from noc.inv.models.capsitem import ModelCapsItem
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.project.models.project import Project
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from noc.core.model.fields import (
@@ -1962,6 +1963,10 @@ class ManagedObject(NOCModel):
             yield list(VCDomain.iter_lazy_labels(instance.vc_domain))
         if instance.tt_system:
             yield list(TTSystem.iter_lazy_labels(instance.tt_system))
+        if instance.version:
+            ep = FirmwarePolicy.get_effective_policies(instance.version, instance.platform)
+            if ep:
+                yield from [e.effective_labels for e in ep if e.effective_labels]
         if Interface.objects.filter(
             managed_object=instance.id, effective_labels="noc::is_linked::="
         ).first():
