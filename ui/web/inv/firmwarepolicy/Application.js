@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.firmwarepolicy.Application");
 Ext.define("NOC.inv.firmwarepolicy.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.label.LabelField",
         "NOC.inv.firmwarepolicy.Model",
         "NOC.inv.firmware.LookupField",
         "NOC.inv.platform.LookupField",
@@ -30,6 +31,11 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     dataIndex: "firmware",
                     renderer: NOC.render.Lookup("firmware"),
                     width: 200
+                },
+                {
+                    text: __("Condition"),
+                    dataIndex: "condition",
+                    width: 50
                 },
                 {
                     text: __("Status"),

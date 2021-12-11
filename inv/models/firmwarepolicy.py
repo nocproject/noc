@@ -131,7 +131,6 @@ class FirmwarePolicy(Document):
         )
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_effective_policy_cache"), lock=lambda _: id_lock)
     def get_effective_policies(
         cls, version: "Firmware", platform: Optional["Platform"] = None
     ) -> List["FirmwarePolicy"]:
@@ -143,9 +142,10 @@ class FirmwarePolicy(Document):
         """
         if not version:
             return []
-        fps = FirmwarePolicy.objects.filter()
+        q = Q(platform__exists=False)
         if platform:
-            fps = fps.filter(Q(platform=platform.id) | Q(platform__exists=False))
+            q |= Q(platform=platform.id)
+        fps = FirmwarePolicy.objects.filter(q)
         return [fp for fp in fps if fp.is_fw_match(version)]
 
     @classmethod

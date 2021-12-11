@@ -1966,7 +1966,7 @@ class ManagedObject(NOCModel):
         if instance.version:
             ep = FirmwarePolicy.get_effective_policies(instance.version, instance.platform)
             if ep:
-                yield [e.effective_labels for e in ep]
+                yield from [e.effective_labels for e in ep if e.effective_labels]
         if Interface.objects.filter(
             managed_object=instance.id, effective_labels="noc::is_linked::="
         ).first():
