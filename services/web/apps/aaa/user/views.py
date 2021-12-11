@@ -43,7 +43,7 @@ class UserApplication(ExtModelApplication):
     title = _("Users")
     app_alias = "auth"
     query_condition = "icontains"
-    query_fields = ["username"]
+    query_fields = ["username", "last_name", "email"]
     default_ordering = ["username"]
     clean_fields = {
         "username": UsernameParameter(),

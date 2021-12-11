@@ -111,6 +111,7 @@ class Label(Document):
     enable_administrativedomain = BooleanField(default=False)
     enable_authprofile = BooleanField(default=False)
     enable_commandsnippet = BooleanField(default=False)
+    enable_firmwarepolicy = BooleanField(default=False)
     #
     enable_allocationgroup = BooleanField(default=False)
     enable_networksegment = BooleanField(default=False)

@@ -6,18 +6,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import operator
+from threading import Lock
 from typing import Optional, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, ListField, EmbeddedDocumentField
+from mongoengine.queryset.visitor import Q
+import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.core.mongo.fields import PlainReferenceField
+from noc.main.models.label import Label
 from .firmware import Firmware
 from .platform import Platform
 
+id_lock = Lock()
 
 FS_RECOMMENDED = "r"
 FS_ACCEPTABLE = "a"
@@ -37,6 +42,7 @@ class ManagementPolicy(EmbeddedDocument):
     protocol = StringField(choices=[("cli", "CLI"), ("snmp", "SNMP"), ("http", "HTTP")])
 
 
+@Label.model
 class FirmwarePolicy(Document):
     meta = {
         "collection": "noc.firmwarepolicy",
@@ -45,15 +51,13 @@ class FirmwarePolicy(Document):
         "indexes": ["platform", "firmware"],
     }
     # Platform (Matched with get_version)
-    platform = PlainReferenceField(Platform)
+    platform = PlainReferenceField(Platform, required=False)
     #
     description = StringField()
     #
-    object_profile = ForeignKeyField(ManagedObjectProfile)
-    #
     condition = StringField(choices=["<", "<=", ">=", ">", "="], default="=")
     #
-    firmware = PlainReferenceField(Firmware)
+    firmware = PlainReferenceField(Firmware, required=True)
     status = StringField(
         choices=[
             (FS_RECOMMENDED, "Recommended"),
@@ -63,16 +67,30 @@ class FirmwarePolicy(Document):
         ]
     )
     #
+    # Labels
+    labels = ListField(StringField(max_length=250))
+    effective_labels = ListField(StringField(max_length=250))
+    #
     management = ListField(EmbeddedDocumentField(ManagementPolicy))
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _effective_policy_cache = cachetools.TTLCache(maxsize=100, ttl=600)
 
     def __str__(self):
         return f"{self.platform}: {self.condition} {self.firmware.version}"
 
     @classmethod
-    def get_status(cls, platform: "Platform", version: "Firmware") -> Optional[str]:
-        if not platform or not version:
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["FirmwarePolicy"]:
+        return FirmwarePolicy.objects.filter(id=id).first()
+
+    @classmethod
+    def get_status(
+        cls, version: "Firmware", platform: Optional["Platform"] = None
+    ) -> Optional[str]:
+        if not version:
             return None
-        fps = cls.get_effective_policies(platform, version)
+        fps = cls.get_effective_policies(version, platform)
         if fps:
             return list(sorted(fps, key=lambda x: PRIORITY_ORDER.index(x.status)))[0].status
         return None
@@ -116,11 +134,22 @@ class FirmwarePolicy(Document):
 
     @classmethod
     def get_effective_policies(
-        cls, platform: "Platform", version: "Firmware" = None
+        cls, version: "Firmware", platform: Optional["Platform"] = None
     ) -> List["FirmwarePolicy"]:
-        if not platform:
+        """
+
+        :param version:
+        :param platform:
+        :return:
+        """
+        if not version:
             return []
-        fps = FirmwarePolicy.objects.filter(platform=platform.id)
-        # if version:
-        #    fps = [fp for fp in fps if fp.is_fw_match(version)]
+        q = Q(platform__exists=False)
+        if platform:
+            q |= Q(platform=platform.id)
+        fps = FirmwarePolicy.objects.filter(q)
         return [fp for fp in fps if fp.is_fw_match(version)]
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_firmwarepolicy")
