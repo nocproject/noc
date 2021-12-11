@@ -472,7 +472,7 @@ class ManagedObjectCard(BaseCard):
             "hostname": hostname,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
+            "firmware_status": FirmwarePolicy.get_status(self.object.version, self.object.platform),
             "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
             "container_path": cp,
