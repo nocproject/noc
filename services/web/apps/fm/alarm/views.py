@@ -167,7 +167,7 @@ class AlarmApplication(ExtApplication):
         if "alarm_group" not in q:
             # Show all alarm
             q["alarm_group"] = "show"
-        if q["alarm_group"] == "only":
+        if q["alarm_group"] == "only" and status == "A":
             # Show Only Alarm without group
             q["groups"] = []
         del q["alarm_group"]
@@ -478,8 +478,8 @@ class AlarmApplication(ExtApplication):
             d["events"] = events
         # Alarms
         children = self.get_nested_alarms(alarm)
-        if alarm.groups:
-            children += self.get_grouped_alarms(alarm)
+        # Alarms Groups
+        children += self.get_grouped_alarms(alarm)
         if children:
             d["alarms"] = {"expanded": True, "children": children}
         # Subscribers
@@ -552,6 +552,10 @@ class AlarmApplication(ExtApplication):
                     "managed_object": a.managed_object.id,
                     "managed_object__label": a.managed_object.name,
                     "timestamp": self.to_json(a.timestamp),
+                    "groups": ", ".join(
+                        ag.alarm_class.name
+                        for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
+                    ),
                     "iconCls": "icon_error",
                     "row_class": s.style.css_class_name,
                 }
@@ -571,7 +575,7 @@ class AlarmApplication(ExtApplication):
         :return:
         """
         children = []
-        for a in ActiveAlarm.objects.filter(groups__in=[alarm.reference]):
+        for a in ActiveAlarm.objects.filter(groups__in=[alarm.reference], root__exists=False):
             s = AlarmSeverity.get_severity(a.severity)
             c = {
                 "id": str(a.id),
@@ -581,16 +585,14 @@ class AlarmApplication(ExtApplication):
                 "managed_object": a.managed_object.id,
                 "managed_object__label": a.managed_object.name,
                 "timestamp": self.to_json(a.timestamp),
+                "groups": ", ".join(
+                    ag.alarm_class.name for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
+                ),
                 "iconCls": "icon_error",
+                "leaf": True,
                 "row_class": s.style.css_class_name,
             }
-            nc = self.get_nested_alarms(a)
-            if nc:
-                c["children"] = nc
-                c["expanded"] = True
-            else:
-                c["leaf"] = True
-            children += [c]
+            children.append(c)
         return children
 
     @view(
