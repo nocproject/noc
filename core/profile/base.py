@@ -21,6 +21,7 @@ from noc.core.handler import get_handler
 from noc.core.comp import smart_text, smart_bytes
 from noc.core.deprecations import RemovedInNOC2003Warning
 from noc.core.snmp.get import _ResponseParser
+from noc.core.text import alnum_key
 
 
 class BaseProfileMetaclass(type):
@@ -859,8 +860,8 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         Default implementation compares a versions in format
         N1. .. .NM
         """
-        p1 = [int(x) for x in v1.split(".")]
-        p2 = [int(x) for x in v2.split(".")]
+
+        p1, p2 = alnum_key(v1), alnum_key(v2)
         # cmp-like semantic
         return (p1 > p2) - (p1 < p2)
 
