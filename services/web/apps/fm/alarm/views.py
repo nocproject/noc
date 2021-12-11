@@ -19,6 +19,7 @@ import bson
 import orjson
 from pymongo import ReadPreference
 from mongoengine.errors import DoesNotExist
+from mongoengine.queryset.visitor import Q
 
 # NOC modules
 from noc.config import config
@@ -478,8 +479,6 @@ class AlarmApplication(ExtApplication):
             d["events"] = events
         # Alarms
         children = self.get_nested_alarms(alarm)
-        # Alarms Groups
-        children += self.get_grouped_alarms(alarm)
         if children:
             d["alarms"] = {"expanded": True, "children": children}
         # Subscribers
@@ -534,65 +533,45 @@ class AlarmApplication(ExtApplication):
                 pass
         return subscribers
 
-    def get_nested_alarms(self, alarm):
+    def get_nested_alarms(self, alarm, include_groups=True):
         """
         Return nested alarms as a part of NodeInterface
         :param alarm:
+        :param include_groups
         :return:
         """
         children = []
         for ac in (ActiveAlarm, ArchivedAlarm):
-            for a in ac.objects.filter(root=alarm.id):
-                s = AlarmSeverity.get_severity(a.severity)
-                c = {
-                    "id": str(a.id),
-                    "subject": a.subject,
-                    "alarm_class": str(a.alarm_class.id),
-                    "alarm_class__label": a.alarm_class.name,
-                    "managed_object": a.managed_object.id,
-                    "managed_object__label": a.managed_object.name,
-                    "timestamp": self.to_json(a.timestamp),
-                    "groups": ", ".join(
-                        ag.alarm_class.name
-                        for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                    ),
-                    "iconCls": "icon_error",
-                    "row_class": s.style.css_class_name,
-                }
-                nc = self.get_nested_alarms(a)
-                if nc:
-                    c["children"] = nc
-                    c["expanded"] = True
-                else:
-                    c["leaf"] = True
-                children += [c]
-        return children
-
-    def get_grouped_alarms(self, alarm):
-        """
-        Return nested alarms as a part of NodeInterface
-        :param alarm:
-        :return:
-        """
-        children = []
-        for a in ActiveAlarm.objects.filter(groups__in=[alarm.reference], root__exists=False):
-            s = AlarmSeverity.get_severity(a.severity)
-            c = {
-                "id": str(a.id),
-                "subject": a.subject,
-                "alarm_class": str(a.alarm_class.id),
-                "alarm_class__label": a.alarm_class.name,
-                "managed_object": a.managed_object.id,
-                "managed_object__label": a.managed_object.name,
-                "timestamp": self.to_json(a.timestamp),
-                "groups": ", ".join(
-                    ag.alarm_class.name for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
-                ),
-                "iconCls": "icon_error",
-                "leaf": True,
-                "row_class": s.style.css_class_name,
-            }
-            children.append(c)
+            for a_type, query in [
+                ("nested", Q(root=alarm.id)),
+                ("groups", Q(groups__in=[alarm.reference])),
+            ]:
+                if a_type == "groups" and (not include_groups or ac is ArchivedAlarm):
+                    continue
+                for a in ac.objects.filter(query):
+                    s = AlarmSeverity.get_severity(a.severity)
+                    c = {
+                        "id": str(a.id),
+                        "subject": a.subject,
+                        "alarm_class": str(a.alarm_class.id),
+                        "alarm_class__label": a.alarm_class.name,
+                        "managed_object": a.managed_object.id,
+                        "managed_object__label": a.managed_object.name,
+                        "timestamp": self.to_json(a.timestamp),
+                        "groups": ", ".join(
+                            ag.alarm_class.name
+                            for ag in ActiveAlarm.objects.filter(reference__in=a.groups)
+                        ),
+                        "iconCls": "icon_error",
+                        "row_class": s.style.css_class_name,
+                    }
+                    nc = self.get_nested_alarms(a, include_groups=False)
+                    if nc:
+                        c["children"] = nc
+                        c["expanded"] = True
+                    else:
+                        c["leaf"] = True
+                    children += [c]
         return children
 
     @view(
