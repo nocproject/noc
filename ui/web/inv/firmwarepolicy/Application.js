@@ -21,27 +21,21 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: __("Profile"),
-                    dataIndex: "object_profile",
-                    renderer: NOC.render.Lookup("object_profile"),
-                    width: 150
-                },
-                {
                     text: __("Platform"),
                     dataIndex: "platform",
                     renderer: NOC.render.Lookup("platform"),
-                    width: 150
+                    width: 200
                 },
                 {
                     text: __("Firmware"),
                     dataIndex: "firmware",
                     renderer: NOC.render.Lookup("firmware"),
-                    width: 150
+                    width: 200
                 },
                 {
                     text: __("Status"),
                     dataIndex: "status",
-                    width: 50,
+                    width: 100,
                     renderer: NOC.render.Choices({
                         r: "Recommended",
                         a: "Acceptable",
@@ -61,22 +55,18 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
 
             fields: [
                 {
-                    name: "object_profile",
-                    xtype: "sa.managedobjectprofile.LookupField",
-                    fieldLabel: __("Object Profile"),
-                    allowBlank: true
-                },
-                {
                     name: "platform",
                     xtype: "inv.platform.LookupField",
                     fieldLabel: __("Platform"),
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "large"
                 },
                 {
                     name: "firmware",
                     xtype: "inv.firmware.LookupField",
                     fieldLabel: __("Firmware"),
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "large"
                 },
                 {
                     name: "condition",

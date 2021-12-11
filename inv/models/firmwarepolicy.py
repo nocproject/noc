@@ -63,6 +63,8 @@ class FirmwarePolicy(Document):
         ]
     )
     #
+    expose_labels = ListField(StringField())
+    #
     management = ListField(EmbeddedDocumentField(ManagementPolicy))
 
     def __str__(self):
@@ -124,3 +126,7 @@ class FirmwarePolicy(Document):
         # if version:
         #    fps = [fp for fp in fps if fp.is_fw_match(version)]
         return [fp for fp in fps if fp.is_fw_match(version)]
+
+    @classmethod
+    def iter_lazy_labels(cls, firmware: "Firmware"):
+        yield from FirmwarePolicy.get_effective_policies(version=firmware)
