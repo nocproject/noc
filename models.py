@@ -180,6 +180,7 @@ _MODELS = {
     "inv.ObjectLog": "noc.inv.models.objectlog.ObjectLog",
     "inv.ObjectModel": "noc.inv.models.objectmodel.ObjectModel",
     "inv.Platform": "noc.inv.models.platform.Platform",
+    "inv.ResourcePool": "noc.inv.models.resourcepool.ResourcePool",
     "inv.Sensor": "noc.inv.models.sensor.Sensor",
     "inv.SensorProfile": "noc.inv.models.sensor.SensorProfile",
     "inv.SubInterface": "noc.inv.models.subinterface.SubInterface",
