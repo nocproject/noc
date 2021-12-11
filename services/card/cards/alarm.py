@@ -123,12 +123,16 @@ class AlarmCard(BaseCard):
         return r
 
     def get_alarms(self):
-        def get_children(ca):
+        def get_children(ca, include_groups=True):
             ca._children = []
             for ac in [ActiveAlarm, ArchivedAlarm]:
-                for a in ac.objects.filter(root=ca.id):
-                    ca._children += [a]
-                    get_children(a)
+                for aa in ac.objects.filter(root=ca.id):
+                    ca._children += [aa]
+                    get_children(aa)
+            if include_groups:
+                for aa in ActiveAlarm.objects.filter(groups__in=[ca.reference], root__exists=False):
+                    ca._children += [aa]
+                    get_children(aa, include_groups=False)
 
         def flatten(ca, r, level):
             ca._level = level
