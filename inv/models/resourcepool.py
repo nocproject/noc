@@ -19,11 +19,13 @@ import cachetools
 
 # NOC Modules
 from noc.core.lock.distributed import DistributedLock
+from noc.core.lock.base import get_locked_items
 from noc.models import get_model
 
 id_lock = threading.Lock()
 
 DISTRIBUTEDLOCK = "resourcepool"
+DISTRIBUTEDLOCK_TTL = 600
 TYPE_RESOURCE_MAP = {"vlan": "vc.VLAN"}
 
 
@@ -87,7 +89,7 @@ class ResourcePool(Document):
         return ResourcePool.objects.filter(id=id).first()
 
     @classmethod
-    def acquire(cls, pools: List["ResourcePool"], owner: Optional[str]):
+    def acquire(cls, pools: List["ResourcePool"], owner: Optional[str] = None):
         """
         # Set Lock
         with ResourcePool.acquire([pool1, ..., poolN]):
@@ -103,8 +105,11 @@ class ResourcePool(Document):
         """
         owner = owner or get_api_code_default()
         # generate owner - request_id, BuildFunction
-        lock = DistributedLock(DISTRIBUTEDLOCK, owner)
-        return lock.acquire([str(p.id) for p in pools], ttl=600)
+        lock = DistributedLock(DISTRIBUTEDLOCK, owner, ttl=DISTRIBUTEDLOCK_TTL)
+        return lock.acquire([p.get_lock_name() for p in pools])
+
+    def get_lock_name(self):
+        return f"rp:{self.id}"
 
     def get_allocator(
         self, pools: List["ResourcePool"] = None, limit=1, **hints: Dict[str, Any]
@@ -113,6 +118,10 @@ class ResourcePool(Document):
         Return ResourceAllocator method
         :return:
         """
+        li = get_locked_items()
+        pools_s = {pp for pp in pools if pp.get_lock_name() not in li}
+        if pools_s:
+            raise RuntimeError("Attempting use of nested locks")
         if self.type not in TYPE_RESOURCE_MAP:
             raise NotImplementedError(f"Allocator for type {self.type} is NotImplemented")
         model = get_model(TYPE_RESOURCE_MAP[self.type])
