@@ -126,7 +126,7 @@
 
 Также в `Match Labels` доступны несколько служебных меток, полезных для использования в правилах:
 
-* `noc:;is_linked` - назначается на интерфейсы [Interface](../interface/index.md) и устройства [Managed Object](../managed-object/index.md) у которых есть связи [Link]()
+* `noc::is_linked` - назначается на интерфейсы [Interface](../interface/index.md) и устройства [Managed Object](../managed-object/index.md) у которых есть связи [Link]()
 * `noc::is_managed` - назначается на устройство [Managed Object](../managed-object/index.md) у которого выставлен признак управляемый (`Is Managed`)
 * `noc::is_fatal` - назначается на аварию, которая привела к останову опроса устройства
 
