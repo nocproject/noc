@@ -111,9 +111,7 @@ class ResourcePool(Document):
     def get_lock_name(self):
         return f"rp:{self.id}"
 
-    def get_allocator(
-        self, limit=1, **hints: Dict[str, Any]
-    ) -> Iterable:
+    def get_allocator(self, limit=1, **hints: Dict[str, Any]) -> Iterable:
         """
         Return ResourceAllocator method
         :return:
@@ -125,7 +123,7 @@ class ResourcePool(Document):
             raise NotImplementedError(f"Allocator for type {self.type} is NotImplemented")
         model = get_model(TYPE_RESOURCE_MAP[self.type])
         if not hasattr(model, "iter_free"):
-            raise NotImplementedError(f"Allocator interface on model {model} NotImpementer")
+            raise NotImplementedError(f"Allocator interface on model {model} NotImplementer")
         try:
             allocator = getattr(model, "iter_free")
         except AttributeError as e:
