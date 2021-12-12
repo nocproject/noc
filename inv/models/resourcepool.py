@@ -112,16 +112,15 @@ class ResourcePool(Document):
         return f"rp:{self.id}"
 
     def get_allocator(
-        self, pools: List["ResourcePool"] = None, limit=1, **hints: Dict[str, Any]
+        self, limit=1, **hints: Dict[str, Any]
     ) -> Iterable:
         """
         Return ResourceAllocator method
         :return:
         """
         li = get_locked_items()
-        pools_s = {pp for pp in pools if pp.get_lock_name() not in li}
-        if pools_s:
-            raise RuntimeError("Attempting use of nested locks")
+        if self.get_lock_name() not in li:
+            raise RuntimeError("Trying to allocate from non-locked pool")
         if self.type not in TYPE_RESOURCE_MAP:
             raise NotImplementedError(f"Allocator for type {self.type} is NotImplemented")
         model = get_model(TYPE_RESOURCE_MAP[self.type])
@@ -130,8 +129,8 @@ class ResourcePool(Document):
         try:
             allocator = getattr(model, "iter_free")
         except AttributeError as e:
-            raise AttributeError(f"Requred attribute {e}")
-        return allocator(pools, limit=limit, **hints)
+            raise AttributeError(f"Required attribute {e}")
+        return allocator(pools=[self], limit=limit, **hints)
 
     @classmethod
     def get_metrics(cls, pools: List["ResourcePool"]):
