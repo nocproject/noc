@@ -426,7 +426,7 @@ class EscalationSequence(BaseSequence):
                 gtt = tts.create_group_tt(tt_id, self.alarm.timestamp)
                 # Append affected objects
                 if esc_item.promote_affected_tt:
-                    for item in self.escalation_doc.consequences:
+                    for item in self.escalation_doc.items:
                         # @todo: Check escalation status for already escalated and maintenance?
                         alarm = self.alarm_ids[item.alarm]
                         if not alarm.managed_object.can_escalate(True):
