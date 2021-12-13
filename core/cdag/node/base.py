@@ -134,15 +134,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         return o
 
     def clone(self, graph, node_id: str) -> Optional["BaseCDAGNode"]:
-        if hasattr(self, "config_cls"):
-            config = {k: getattr(self.config, k) for k in self.iter_config_fields()}
-        else:
-            config = {}
         node = self.__class__(
             node_id,
             description=self.description,
             state={},
-            config=config,
+            config=self.config if hasattr(self, "config_cls") else None,
             sticky=self.sticky,
         )
         if self.allow_dynamic:
@@ -161,8 +157,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     def clean_config(self, config: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
         if not hasattr(self, "config_cls") or config is None:
             return None
-        # Shortcut, if config is already cleaned
-        if isinstance(config, BaseModel):
+        # Shortcut, if config is already cleaned (cloned copies)
+        if isinstance(config, BaseModel) or hasattr(config, "__slots__"):
             return config
         # Slotify to reduce memory usage
         cfg = self.config_cls(**config)
