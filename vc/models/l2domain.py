@@ -245,5 +245,4 @@ class L2Domain(Document):
         :return:
         """
         # l2
-        pools = l2_domains.get_effective_pools()
         return []

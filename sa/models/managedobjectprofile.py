@@ -242,8 +242,6 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
     # Prefix discovery (ConfDB)
     enable_box_discovery_prefix_confdb = models.BooleanField(default=False)
-    # Collect static vlans
-    enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD
     enable_box_discovery_bfd = models.BooleanField(default=False)
     # L2 topology using CDP
@@ -466,6 +464,19 @@ class ManagedObjectProfile(NOCModel):
     # Cache protocol neighbors up to *neighbor_cache_ttl* seconds
     # 0 - disable cache
     neighbor_cache_ttl = models.IntegerField("Neighbor Cache TTL", default=0)
+    # VLAN Discovery
+    vlan_interface_discovery = models.CharField(
+        "VLAN Interface Discovery Policy",
+        max_length=1,
+        choices=[("D", "Disable"), ("S", "Status Only"), ("V", "VLAN Sync")],
+        default="D",
+    )
+    vlan_vlandb_discovery = models.CharField(
+        "VLAN DB Discovery Policy",
+        max_length=1,
+        choices=[("D", "Disable"), ("S", "Status Only"), ("V", "VLAN Sync")],
+        default="D",
+    )
     # VPN discovery profiles
     vpn_profile_interface = DocumentReferenceField(VPNProfile, null=True, blank=True)
     vpn_profile_mpls = DocumentReferenceField(VPNProfile, null=True, blank=True)
