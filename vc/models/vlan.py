@@ -34,6 +34,7 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save
+from noc.core.perf import metrics
 from noc.inv.models.resourcepool import ResourcePool
 from noc.vc.models.vlanfilter import VLANFilter
 
@@ -170,18 +171,22 @@ class VLAN(Document):
             allocated_count += 1
 
     @classmethod
-    def allocate(cls, l2_domain: "L2Domain", vlan_id: int) -> Optional["VLAN"]:
+    def allocate(cls, l2_domain: "L2Domain", vlan_id: int, name: Optional[str] = None) -> Optional["VLAN"]:
         """
         Allocate vlan on L2Domain
         :param l2_domain:
         :param vlan_id:
+        :param name:
         :return:
         """
         vlan = VLAN(
             vlan=vlan_id, l2_domain=l2_domain, profile=l2_domain.get_vlan_profile(), description=""
         )
+        if name:
+            vlan.name = name
         try:
             vlan.save()
+            metrics["vlan_created"] += 1
         except Exception:
             return None
         return vlan

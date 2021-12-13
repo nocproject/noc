@@ -5,12 +5,24 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from dataclasses import dataclass
+from typing import List, Optional, Dict
+
 # NOC modules
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
-from noc.inv.models.networksegment import NetworkSegment
+from noc.vc.models.l2domain import L2Domain
 from noc.vc.models.vlan import VLAN
 from noc.core.perf import metrics
 from noc.sa.interfaces.igetvlans import IGetVlans
+
+
+@dataclass
+class DiscoveryVLAN(object):
+    id: int
+    l2domain: "L2Domain"
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 
 class VLANCheck(PolicyDiscoveryCheck):
@@ -31,17 +43,17 @@ class VLANCheck(PolicyDiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking VLANs")
-        if not self.object.segment.profile.enable_vlan:
+        object_l2domain: Optional["L2Domain"] = self.object.l2_domain
+        if object_l2domain.get_vlan_discovery_policy() == "D":
             self.logger.info(
-                "VLAN discovery is disabled for segment '%s'. Skipping", self.object.segment.name
+                "VLAN discovery is disabled for l2domain '%s'. Skipping", self.object.l2_domain.name
             )
             return
-        # Get effective border segment
-        segment = NetworkSegment.get_border_segment(self.object.segment)
         # Get list of VLANs from equipment
-        object_vlans = self.get_object_vlans(segment)
+        object_vlans = self.get_object_vlans(object_l2domain)
+        interface_vlans = self.get_interface_vlans(object_l2domain)
         # Merge with artifactory ones
-        collected_vlans = self.merge_vlans(object_vlans)
+        collected_vlans = self.merge_vlans(object_vlans + interface_vlans)
         # Check we have collected any VLAN
         if not collected_vlans:
             self.logger.info("No any VLAN collected. Skipping")
@@ -53,38 +65,19 @@ class VLANCheck(PolicyDiscoveryCheck):
         # Send "seen" events
         self.send_seen_events(ensured_vlans)
 
-    def ensure_vlan(self, segment, vlan_id, name, description, cache):
+    def ensure_vlans(self, vlans: List["DiscoveryVLAN"]) -> List["VLAN"]:
         """
         Refresh VLAN status in database, create when necessary
-        :param segment: NetworkSegment instance
-        :param vlan_id: VLAN id
-        :param name: VLAN name
-        :param description: VLAN description
-        :param cache: VLAN cache dictionary
+        :param vlans:
         :return:
         """
         # Get existing VLAN
-        if cache:
-            # Get from cache
-            metrics["vlan_cached_get"] += 1
-            vlan = cache.get((segment, vlan_id))
-        else:
-            # Get from database
-            metrics["vlan_db_get"] += 1
-            vlan = VLAN.objects.filter(segment=segment.id, vlan=vlan_id).first()
-        # Create VLAN when necessary
-        if not vlan:
-            self.logger.info("[%s] Creating VLAN %s(%s)", segment.name, vlan_id, name)
-            vlan = VLAN(
-                name=name,
-                profile=segment.profile.default_vlan_profile,
-                vlan=vlan_id,
-                segment=segment,
-                description=description,
-            )
-            vlan.save()
-            metrics["vlan_created"] += 1
-        return vlan
+        # 1. Getting pools
+        # 2. Getting vlans
+        # 3. Lock by pool
+        # 4. Allocate VLANs (separate method) if condition - create. Param sync_vlans
+        # 5. Return VLANs
+        return []
 
     def get_default_vlan_name(self, vlan_id):
         """
@@ -102,18 +95,26 @@ class VLANCheck(PolicyDiscoveryCheck):
         """
         return "Discovered at %s(%s)" % (self.object.name, self.object.address)
 
-    def get_object_vlans(self, segment):
+    def get_object_vlans(self, l2domain: "L2Domain") -> List["DiscoveryVLAN"]:
         """
         Get vlans from equipment
         :return:
         """
-        if self.object.segment.profile.enable_vlan:
-            self.logger.info("[%s] Collecting VLANs", self.object.segment.name)
+        if self.object.object_profile.vlan_vlandb_discovery == "D":
+            self.logger.info(
+                "VLAN Database Discovery is disabled. Skipping database vlan discovery"
+            )
+            return []
+        if self.object.l2domain.get_vlan_discovery_policy() == "D":
+            self.logger.info("[%s] Collecting VLANs", l2domain.name)
             obj_vlans = self.get_data()
             if obj_vlans:
                 return [
-                    # segment, vlan, name, description
-                    (segment, v["vlan_id"], v.get("name"), None)
+                    DiscoveryVLAN(
+                        id=v["vlan_id"],
+                        l2domain=l2domain,
+                        name=v.get("name"),
+                    )
                     for v in obj_vlans
                 ]
             self.logger.info("No any VLAN found")
@@ -124,13 +125,42 @@ class VLANCheck(PolicyDiscoveryCheck):
             )
             return []
 
-    def merge_vlans(self, vlans):
+    def get_interface_vlans(self, l2domain: "L2Domain") -> List["DiscoveryVLAN"]:
+        """
+        Get addresses from interface discovery artifact
+        :return:
+        """
+        self.logger.debug("Getting interface vlans")
+        if self.object.object_profile.vlan_interface_discovery == "D":
+            self.logger.info(
+                "VLAN Interface Discovery is disabled. Skipping interface vlan discovery"
+            )
+            return []
+        vlans = self.get_artefact("interface_assigned_vlans")
+        if not vlans:
+            self.logger.info("No interface_assigned_vlans artefact, skipping interface vlans")
+            return []
+        return [
+            DiscoveryVLAN(
+                id=v,
+                l2domain=l2domain,
+            )
+            for v in vlans
+        ]
+
+    def merge_vlans(self, vlans: List["DiscoveryVLAN"]) -> List["DiscoveryVLAN"]:
         """
         Merge object vlans with artifactory ones
         :param vlans:
         :return:
         """
-        # @todo: Collect artifact
+        r = []
+        proccessed = []
+        for v in vlans:
+            if v.id in proccessed:
+                continue
+            r.append(v)
+            proccessed.append(v.id)
         return vlans
 
     def get_segment_vlans(self, vlans):
