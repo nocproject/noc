@@ -32,7 +32,7 @@
   become: "True"
   yum:
     name: "{{ packages }}"
-    state: present
+    state: latest
     update_cache: "True"
   vars:
     packages:
