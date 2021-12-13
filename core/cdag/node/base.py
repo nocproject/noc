@@ -97,7 +97,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.description = description
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
-        self._subscribers: List[Tuple[BaseCDAGNode, str]] = []
+        self._subscribers: List[Tuple["BaseCDAGNode", str]] = []
         self._inputs = {i: 0 for i in self.iter_inputs()}
         # # Pre-calculated inputs
         self.const_inputs: Optional[Dict[str, ValueType]] = None
