@@ -34,6 +34,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.inv.models.resourcepool import ResourcePool
 from .vlanfilter import VLANFilter
 from .vlantemplate import VLANTemplate
+from .vlanprofile import VLANProfile
 
 id_lock = Lock()
 
@@ -70,6 +71,17 @@ class L2DomainProfile(Document):
     pools = EmbeddedDocumentListField(PoolItem)
     #
     vlan_template = ReferenceField(VLANTemplate)
+    default_vlan_profile = ReferenceField(VLANProfile, required=False)
+    # Discovery settings
+    vlan_discovery_policy = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("E", "Enable"),
+            ("S", "Status Only"),
+        ],
+        default="P",
+    )
+    vlan_discovery_filter = ReferenceField(VLANFilter)  # local_filter
     # local_filter
     # Labels
     labels = ListField(StringField())

@@ -10,7 +10,7 @@ import operator
 import threading
 import random
 import string
-from typing import Optional, List, Dict, Any, Iterable
+from typing import Optional, List, Iterator
 
 # Third-party modules
 from mongoengine.document import Document
@@ -113,7 +113,7 @@ class ResourcePool(Document):
     def get_lock_name(self):
         return f"rp:{self.id}"
 
-    def get_allocator(self, limit=1, **hints: Dict[str, Any]) -> Iterable:
+    def get_allocator(self, limit=1, **hints) -> Iterator:
         """
         Return ResourceAllocator method
         :return:
@@ -130,7 +130,7 @@ class ResourcePool(Document):
             allocator = getattr(model, "iter_free")
         except AttributeError as e:
             raise AttributeError(f"Required attribute {e}")
-        return allocator(pools=[self], limit=limit, **hints)
+        return allocator(pool=self, limit=limit, **hints)
 
     @classmethod
     def get_metrics(cls, pools: List["ResourcePool"]):

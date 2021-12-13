@@ -9,7 +9,7 @@
 from threading import Lock
 import operator
 import logging
-from typing import Optional, Iterable, List, Set
+from typing import Optional, Iterator, Set
 
 # Third-party modules
 from mongoengine.document import Document
@@ -61,10 +61,10 @@ class VLAN(Document):
         ],
     }
 
-    name = StringField()
-    profile = PlainReferenceField(VLANProfile)
+    name = StringField(default="")
+    profile = PlainReferenceField(VLANProfile, required=True)
     vlan = IntField(min_value=1, max_value=4095)
-    l2domain = PlainReferenceField(L2Domain)
+    l2domain = PlainReferenceField(L2Domain, required=True)
     description = StringField()
     state = PlainReferenceField(State)
     project = ForeignKeyField(Project)
@@ -116,7 +116,7 @@ class VLAN(Document):
         vlan_filter: "VLANFilter" = None,
         limit: int = 1,
         **kwargs,
-    ) -> Iterable["VLAN"]:
+    ) -> Iterator["VLAN"]:
         """
         Iter Free VLANs
         1. Check Exists VLANs with Free State
@@ -170,15 +170,15 @@ class VLAN(Document):
             allocated_count += 1
 
     @classmethod
-    def allocate(cls, l2_domain: "L2Domain", vlan_num: int) -> Optional["VLAN"]:
+    def allocate(cls, l2_domain: "L2Domain", vlan_id: int) -> Optional["VLAN"]:
         """
         Allocate vlan on L2Domain
         :param l2_domain:
-        :param vlan_num:
+        :param vlan_id:
         :return:
         """
         vlan = VLAN(
-            vlan=vlan_num, l2_domain=l2_domain, profile=l2_domain.get_vlan_profile(), description=""
+            vlan=vlan_id, l2_domain=l2_domain, profile=l2_domain.get_vlan_profile(), description=""
         )
         try:
             vlan.save()

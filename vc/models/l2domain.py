@@ -9,7 +9,7 @@
 from threading import Lock
 import itertools
 import operator
-from typing import Optional, List, Iterable, Dict
+from typing import Optional, List, Dict, Union
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -79,7 +79,17 @@ class L2Domain(Document):
     #
     vlan_template = ReferenceField(VLANTemplate)
     default_vlan_profile = ReferenceField(VLANProfile, required=False)
-    # local_filter
+    # Discovery settings
+    vlan_discovery_policy = StringField(
+        choices=[
+            ("P", "Profile"),
+            ("F", "Disable"),
+            ("E", "Enable"),
+            ("S", "Status Only"),
+        ],
+        default="P",
+    )
+    vlan_discovery_filter = ReferenceField(VLANFilter)  # local_filter
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -154,12 +164,40 @@ class L2Domain(Document):
             )
         )
 
-    def get_vlan_profile(self) -> Optional["VLANProfile"]:
+    def get_default_vlan_profile(self) -> Optional["VLANProfile"]:
+        """
+        Return Effective VLAN Profile
+        * L2Domain
+        * L2DomainProfile
+        * Default
+        :return:
+        """
         if self.default_vlan_profile:
             return self.default_vlan_profile
-        return None
+        if self.profile.default_vlan_profile:
+            return self.profile.default_vlan_profile
+        return VLANProfile.get_default_profile()
 
-    def get_effective_vlan_num(
+    def get_effective_vlan_template(self) -> Optional["VLANTemplate"]:
+        """
+        Return Effective VLAN Template
+        :return:
+        """
+        if self.vlan_template:
+            return self.vlan_template
+        return self.profile.vlan_template
+
+    def get_vlan_discovery_policy(self) -> str:
+        if self.vlan_discovery_policy:
+            return self.vlan_discovery_policy
+        return self.profile.vlan_discovery_policy
+
+    def get_vlan_discovery_filter(self) -> Optional["VLANFilter"]:
+        if self.vlan_discovery_filter:
+            return self.vlan_discovery_filter
+        return self.profile.vlan_discovery_filter
+
+    def get_effective_vlan_id(
         self,
         vlan_filter: Optional["VLANFilter"] = None,
         pool: "ResourcePool" = None,
@@ -184,65 +222,7 @@ class L2Domain(Document):
                 r += pp.pool.apply_resource_policy(list(vlans))
         if not policy_order:
             r = list(vlans)
-
         return r
-
-    def get_effective_vlan_template(self, type: Optional[str] = None) -> Optional["VLANTemplate"]:
-        """
-        Return Effective VLAN Template
-        :param type:
-        :return:
-        """
-        if self.vlan_template:
-            return self.vlan_template
-        return self.profile.vlan_template
-
-    def get_used_vlan_labels(self) -> List[int]:
-        """
-        Return Used VLAN numbers - Not set by FREE_VLAN_STATE
-
-        :return:
-        """
-        from noc.wf.models.state import State
-        from .vlan import VLAN
-
-        used_states = list(State.objects.filter(name__ne=FREE_VLAN_STATE).values_list("id"))
-        return list(
-            VLAN.objects.filter(l2domain=self.id, state__in=used_states).values_list("vlan")
-        )
-
-    def iter_free_vlan_labels(
-        self,
-        vlan_filter: Optional["VLANFilter"] = None,
-        pool: "ResourcePool" = None,
-    ) -> Iterable[int]:
-        """
-        Iterator over free VLAN numbers
-        :param vlan_filter:
-        :param pool:
-        :return:
-        """
-        used_vlans = set(self.get_used_vlan_labels())
-        # @todo convert used vlans to vlan_filter
-        for r in self.get_effective_vlan_num(vlan_filter, pool, policy_order=True):
-            if r in used_vlans:
-                continue
-            yield r
-
-    def get_free_vlan_num(
-        self,
-        vlan_filter: Optional["VLANFilter"] = None,
-        pool: "ResourcePool" = None,
-    ) -> Optional[int]:
-        """
-        Find free label in L2 Domain
-        :param vlan_filter: Optional VC Filter to restrict labels
-        :param pool:
-        :returns: Free label or None
-        :rtype: int or None
-        """
-
-        return next(self.iter_free_vlan_labels(vlan_filter, pool), None)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_mo_cache"), lock=lambda _: id_lock)
@@ -258,12 +238,12 @@ class L2Domain(Document):
         return ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list("id", flat=True)
 
     @classmethod
-    def calculate_stats(cls, l2_domain: List[str]) -> Dict[str, int]:
+    def calculate_stats(cls, l2_domains: List["L2Domain"]) -> List[Dict[str, Union[str, int]]]:
         """
         Calculate statistics Pool usage
-        :param l2_domain:
+        :param l2_domains:
         :return:
         """
         # l2
-
-        return {}
+        pools = l2_domains.get_effective_pools()
+        return []

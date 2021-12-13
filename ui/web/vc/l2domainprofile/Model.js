@@ -50,6 +50,19 @@ Ext.define("NOC.vc.l2domainprofile.Model", {
             persist: false
         },
         {
+            name: "vlan_discovery_policy",
+            type: "string"
+        },
+        {
+            name: "vlan_discovery_filter",
+            type: "string"
+        },
+        {
+            name: "vlan_discovery_filter__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "remote_system",
             type: "string"
         },

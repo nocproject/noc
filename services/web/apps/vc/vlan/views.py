@@ -7,6 +7,7 @@
 
 # Python modules
 from collections import defaultdict
+from typing import Optional
 
 # Third-party modules
 from mongoengine import Q
@@ -21,6 +22,7 @@ from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import (
     DocumentParameter,
+    IntParameter,
 )
 
 
@@ -132,14 +134,27 @@ class VLANApplication(ExtDocApplication):
         }
 
     @view(
-        url="^find_free/$",
+        url="^allocate/$",
         method=["GET"],
-        access="read",
+        access="allocate",
         api=True,
         validate={
             "l2_domain": DocumentParameter(L2Domain),
             "pool": DocumentParameter(ResourcePool, required=False),
+            "vlan_id": IntParameter(required=False, min_value=1, max_value=4096),
         },
     )
-    def api_find_free(self, request, l2_domain: "L2Domain", pool: "ResourcePool" = None, **kwargs):
-        return l2_domain.get_free_vlan_num(pool=pool)
+    def api_allocate_vlan(
+        self,
+        request,
+        l2_domain: "L2Domain",
+        pool: "ResourcePool",
+        vlan_id: Optional[int] = None,
+        **kwargs,
+    ):
+        with ResourcePool.acquire([pool]):
+            allocator = pool.get_allocator(l2_domain=l2_domain, vlan_id=vlan_id)
+            r = next(allocator, None)
+        if not r:
+            return self.NOT_FOUND
+        return r

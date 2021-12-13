@@ -67,6 +67,24 @@ Ext.define("NOC.vc.l2domainprofile.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "type",
+                    xtype: "combobox",
+                    fieldLabel: __("VLAN Discovery Policy"),
+                    allowBlank: false,
+                    defaultValue: "E",
+                    store: [
+                        ["D", "Disable"],
+                        ["E", "Enable"],
+                        ["S", "Status Only"]
+                    ]
+                },
+                {
+                    name: "vlan_discovery_filter",
+                    xtype: "vc.vlanfilter.LookupField",
+                    fieldLabel: __("VLAN Discovery Filter"),
+                    allowBlank: true
+                },
+                {
                     name: "vlan_template",
                     xtype: "vc.vlantemplate.LookupField",
                     fieldLabel: __("VLAN Template"),
