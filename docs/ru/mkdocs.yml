@@ -37,6 +37,7 @@ nav:
               - Dynamic Profile Classification: user/reference/concepts/dynamic-classification-policy/index.md
               - Event Class: user/reference/concepts/event-class/index.md
               - Внешнее хранилище: user/reference/concepts/external-storage/index.md
+              - FirmwarePolicy: user/reference/concepts/firmware-policy/index.md
               - Group: user/reference/concepts/group/index.md
               - Handler: user/reference/concepts/handler/index.md
               - Интерфейс: user/reference/concepts/interface/index.md
