@@ -20,7 +20,7 @@
 - name: Install CentOS system packages pre
   yum:
     name: "{{ packages }}"
-    state: present
+    state: latest
     update_cache: "True"
   become: "True"
   vars:
