@@ -146,9 +146,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             sticky=self.sticky,
         )
         if self.allow_dynamic:
-            for di, flag in self._inputs.items():
-                if flag & MASK_DYNAMIC:
-                    node.add_input(di)
+            for di in self.iter_mask_inputs(MASK_DYNAMIC):
+                node.add_input(di)
         graph.nodes[node_id] = node
         return node
 
@@ -162,6 +161,10 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     def clean_config(self, config: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
         if not hasattr(self, "config_cls") or config is None:
             return None
+        # Shortcut, if config is already cleaned
+        if isinstance(config, BaseModel):
+            return config
+        # Slotify to reduce memory usage
         cfg = self.config_cls(**config)
         return self.slotify(self.config_cls_slot, cfg)
 
@@ -182,7 +185,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             if not self._inputs[i] & MASK_BOUND:
                 yield i
 
-    def iterate_mask_inputs(self, mask: int) -> Iterable[str]:
+    def iter_mask_inputs(self, mask: int) -> Iterable[str]:
         """
         Iterate all inputs matching mask
         """
@@ -194,7 +197,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         Iterate all key inputs
         """
-        yield from self.iterate_mask_inputs(MASK_KEY)
+        yield from self.iter_mask_inputs(MASK_KEY)
 
     def activate(self, tx: Transaction, name: str, value: ValueType) -> None:
         """
@@ -207,12 +210,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if name not in self._inputs:
             raise KeyError(f"Invalid input: {name}")
         inputs = tx.get_inputs(self)
-        is_active = inputs[name] is not None
-        inputs[name] = value
-        if is_active or any(
-            True for n, v in inputs.items() if v is None and self.is_required_input(n)
-        ):
-            return  # Already activated or non-activated inputs
+        if inputs[name] is not None:
+            return  # Already activated
+        inputs[name] = value  # Activate input
+        if any(True for n, v in inputs.items() if v is None and self.is_required_input(n)):
+            return  # Non-activated inputs
         # Activate node, calculate value
         value = self.get_value(**inputs)
         if hasattr(self, "state_cls"):
