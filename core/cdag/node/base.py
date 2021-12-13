@@ -316,8 +316,6 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             )
         return None
 
-        return self.state
-
     def iter_subscribers(self) -> Iterable[Tuple["BaseCDAGNode", str]]:
         for node, name in self._subscribers:
             yield node, name
