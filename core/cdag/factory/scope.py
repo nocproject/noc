@@ -6,13 +6,40 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Callable, Optional, Dict, Any, List
+from dataclasses import dataclass
+from threading import Lock
 
 # NOC modules
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from .base import BaseCDAGFactory, FactoryCtx
 from ..graph import CDAG
+from ..node.metrics import MetricsNodeConfig
+from ..node.probe import ProbeNodeConfig
+
+
+cfg_lock = Lock()
+
+
+@dataclass
+class ProbeConfig(object):
+    name: str
+    description: str
+    config: ProbeNodeConfig
+
+
+@dataclass
+class ScopeConfig(object):
+    name: str
+    description: str
+    config: MetricsNodeConfig
+    cleaners: Dict[str, Callable]
+    probes: List[ProbeConfig]
+    key_fields: List[str]
+
+
+scope_config: Dict[str, ScopeConfig] = {}
 
 
 class MetricScopeCDAGFactory(BaseCDAGFactory):
@@ -34,39 +61,59 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
         self.spool = spool
         self.sticky = sticky
 
+    def get_scope_config(self) -> ScopeConfig:
+        sc = scope_config.get(self.scope.table_name)
+        if not sc:
+            sc = ScopeConfig(
+                name=self.scope.table_name,
+                description=f"{self.scope.name} metric sender",
+                config=MetricsNodeConfig(scope=self.scope.table_name, spool=self.spool),
+                cleaners={},
+                probes=[],
+                key_fields=[kf.field_name for kf in self.scope.key_fields],
+            )
+            for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
+                name = mt.field_name
+                sc.probes.append(
+                    ProbeConfig(
+                        name=name,
+                        description=f"Input collector for {name} metric",
+                        config=ProbeNodeConfig(
+                            unit=(mt.units.code or "1") if mt.units else "1",
+                            scale=mt.scale.code if mt.scale else "1",
+                        ),
+                    )
+                )
+                cleaner = mt.get_cleaner()
+                if cleaner:
+                    sc.cleaners[name] = cleaner
+            scope_config[self.scope.table_name] = sc
+        return sc
+
     def construct(self) -> None:
         # Construct probe nodes
-        probes = {}
-        cleaners = {}
-        for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
-            name = mt.field_name
-            probes[name] = self.graph.add_node(
-                name,
-                "probe",
-                description=f"Input collector for {name} metric",
-                config={
-                    "unit": (mt.units.code or "1") if mt.units else "1",
-                    "scale": mt.scale.code if mt.scale else "1",
-                },
-                sticky=self.sticky,
-            )
-            cleaner = mt.get_cleaner()
-            if cleaner:
-                cleaners[name] = cleaner
+        with cfg_lock:
+            cfg = self.get_scope_config()
         # Construct metric sender node
         ms = self.graph.add_node(
             "sender",
             "metrics",
-            description=f"{self.scope.name} metric sender",
-            config={"scope": self.scope.table_name, "spool": self.spool},
+            description=cfg.description,
+            config=cfg.config,
             sticky=self.sticky,
         )
-        # Connect to the probes
-        for name, node in probes.items():
-            node.subscribe(ms, name, dynamic=True)
+        # Construct probe nodes
+        for pc in cfg.probes:
+            probe = self.graph.add_node(
+                pc.name,
+                "probe",
+                description=pc.description,
+                config=pc.config,
+                sticky=self.sticky,
+            )
+            probe.subscribe(ms, pc.name, dynamic=True)
+        # Set cleaners
+        ms.set_scope_cleaners(cfg.name, cfg.cleaners)
         # Additional key fields
-        for kf in self.scope.key_fields:
-            ms.add_input(kf.field_name, is_key=True)
-        # Set up cleaners
-        for name, cleaner in cleaners.items():
-            ms.set_cleaner(name, cleaner)
+        for kf in cfg.key_fields:
+            ms.add_input(kf, is_key=True)

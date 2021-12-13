@@ -24,6 +24,9 @@ class MetricsNodeConfig(BaseModel):
 
 NS = 1_000_000_000
 
+# scope -> name -> cleaner
+scope_cleaners: Dict[str, Dict[str, Callable]] = {}
+
 
 class MetricsNode(BaseCDAGNode):
     """
@@ -34,22 +37,18 @@ class MetricsNode(BaseCDAGNode):
     categories = [Category.UTIL]
     config_cls = MetricsNodeConfig
     dot_shape = "folder"
-    __slots__ = ("cleaners",)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.cleaners: Dict[str, Callable] = {}
 
     def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[ValueType]:
         r = {}
         rk = {}
+        cleaners = scope_cleaners.get(self.config.scope) or {}
         for k, v in kwargs.items():
             if v is None:
                 continue
             if self.is_key_input(k):
                 rk[k] = v
                 continue
-            cleaner = self.cleaners.get(k)
+            cleaner = cleaners.get(k)
             if cleaner:
                 try:
                     v = cleaner(v)
@@ -68,21 +67,21 @@ class MetricsNode(BaseCDAGNode):
             get_service().register_metrics(self.config.scope, [r])
         return r
 
-    def set_cleaner(self, name: str, cleaner: Callable) -> None:
+    @staticmethod
+    def set_scope_cleaners(scope: str, cleaners: Dict[str, Callable]) -> None:
         """
-        Set ClickHouse field type for a given input
-        :param name:
-        :param cleaner: Callable to clean value or return None
-        :return:
+        Set cleaners for scope
+
+        :param scope: Scope name
+        :param cleaners: Scope cleaners
         """
-        self.cleaners[name] = cleaner
+        if scope not in scope_cleaners:
+            scope_cleaners[scope] = cleaners
 
     def clone(self, graph, node_id: str) -> Optional[BaseCDAGNode]:
         node = super().clone(graph, node_id)
         if not node:
             return None
-        for k, v in self.cleaners.items():
-            node.set_cleaner(k, v)
         for i in self.iter_key_inputs():
             node.mark_as_key(i)
         return node
