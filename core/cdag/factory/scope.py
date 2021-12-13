@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Callable, Optional, Dict, Any, List
+from typing import Callable, Optional, Dict, List
 from dataclasses import dataclass
 from threading import Lock
 
