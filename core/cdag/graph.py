@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CDAG
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,7 +33,6 @@ class CDAG(object):
         node_type: str,
         description: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None,
-        ctx: Optional[Dict[str, Any]] = None,
         sticky: bool = False,
     ) -> BaseCDAGNode:
         if node_id in self.nodes:
@@ -49,7 +48,6 @@ class CDAG(object):
             description=description,
             state=self.state.get(node_id),
             config=config,
-            ctx=ctx,
             sticky=sticky,
         )
 
@@ -102,8 +100,10 @@ class CDAG(object):
         # Merge subscribers
         for node_id, o_node in other.nodes.items():
             node = nodes[node_id]
-            for r_node, name in o_node.iter_subscribers():
-                node.subscribe(nodes[r_node.node_id], name, dynamic=r_node.is_dynamic_input(name))
+            for rs in o_node.iter_subscribers():
+                node.subscribe(
+                    nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
+                )
         #
         return self
 
@@ -157,7 +157,7 @@ class CDAG(object):
             r += tb_conn
         # Edges
         for node in self.nodes.values():
-            for r_node, in_name in node.iter_subscribers():
-                r += [f'  {n_map[node.node_id]} -> {n_map[r_node.node_id]} [label="{in_name}"];']
+            for rs in node.iter_subscribers():
+                r += [f'  {n_map[node.node_id]} -> {n_map[rs.node.node_id]} [label="{rs.input}"];']
         r += ["}"]
         return "\n".join(r)
