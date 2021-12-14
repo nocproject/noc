@@ -10,6 +10,7 @@ from typing import Any, Optional, Type, Dict, List, Iterable, Tuple
 from enum import Enum
 import inspect
 from dataclasses import dataclass
+import sys
 
 # Third-party modules
 from pydantic import BaseModel
@@ -48,7 +49,7 @@ class BaseCDAGNodeMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         sig = inspect.signature(n.get_value)
-        inputs = [x for x in sig.parameters if x != "self"]
+        inputs = [sys.intern(x) for x in sig.parameters if x != "self"]
         if "kwargs" in inputs:
             n.allow_dynamic = True
             inputs.remove("kwargs")
@@ -106,7 +107,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
         self._subscribers: List[Subscriber] = []
-        self._inputs = {i: 0 for i in self.iter_inputs()}
+        self._inputs = {sys.intern(i): 0 for i in self.iter_inputs()}
         # # Pre-calculated inputs
         self.const_inputs: Optional[Dict[str, ValueType]] = None
         self._const_value: Optional[ValueType] = None
@@ -263,6 +264,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param value:
         :return:
         """
+        name = sys.intern(name)
         if name not in self._inputs:
             raise KeyError(f"Invalid const input: {name}")
         if self.const_inputs is None:
@@ -282,6 +284,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         if node == self:
             raise ValueError("Cannot subscribe to self")
+        name = sys.intern(name)
         if self.has_subscriber(node, name):
             return
         if dynamic:
@@ -349,6 +352,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param name: Input name
         :return:
         """
+        name = sys.intern(name)
         if name in self._inputs:
             return
         if not self.allow_dynamic:
