@@ -31,7 +31,7 @@ class ReportObjectConfig(BaseReportColumn):
         value = (
             get_db()["noc.gridvcs.config.files"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-            .aggregate(pipeline)
+            .aggregate(pipeline, allowDiskUse=True)
         )
         for v in value:
             if not v["_id"]:
