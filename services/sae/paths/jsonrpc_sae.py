@@ -7,7 +7,7 @@
 
 # Third-party modules
 from fastapi import APIRouter
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse
 
 # NOC modules
 from noc.core.debug import error_report
@@ -39,6 +39,10 @@ async def api_mib(req: JSONRemoteProcedureCall):
         error = f"Failed: {e}"
     if isinstance(result, Redirect):
         location = result.location
-        result_redir = {"method": result.method, "params": result.params}
-        return RedirectResponse(url=location) # content=result_redir
+        result = {"method": result.method, "params": result.params, "id": req.id}
+        return JSONResponse(
+            content=result,
+            status_code=307,
+            headers={"location": location}
+        )
     return {"result": result, "error": error, "id": req.id}
