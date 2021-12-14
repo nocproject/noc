@@ -33,7 +33,12 @@ logger = logging.getLogger(__name__)
 
 @Label.match_labels(category="l2filter")
 @on_delete_check(
-    check=[("vc.L2Domain", "pool.vlan_filter"), ("vc.L2DomainProfile", "pool.vlan_filter")]
+    check=[
+        ("vc.L2Domain", "pool.vlan_filter"),
+        ("vc.L2Domain", "vlan_discovery_filter"),
+        ("vc.L2DomainProfile", "pool.vlan_filter"),
+        ("vc.L2DomainProfile", "vlan_discovery_filter"),
+    ]
 )
 @on_save
 class VLANFilter(Document):

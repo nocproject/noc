@@ -29,7 +29,12 @@ id_lock = Lock()
 @Label.model
 @bi_sync
 @on_delete_check(
-    check=[("vc.VLAN", "profile"), ("inv.NetworkSegmentProfile", "default_vlan_profile")]
+    check=[
+        ("vc.VLAN", "profile"),
+        ("vc.L2Domain", "default_vlan_profile"),
+        ("vc.L2DomainProfile", "default_vlan_profile"),
+        ("inv.NetworkSegmentProfile", "default_vlan_profile"),
+    ]
 )
 class VLANProfile(Document):
     meta = {
