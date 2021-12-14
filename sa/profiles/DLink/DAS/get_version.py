@@ -20,6 +20,9 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_descr = re.compile(r"Description\s+: (?P<platform>\S+)")
+    rx_vendor = re.compile(r"Vendor\s+: (?P<vendor>\S+)")
+    rx_serial = re.compile(r"SN\s+: S/N: (?P<serial>\S+)")
+    rx_hardware = re.compile(r"HW_Ver\s+: H/W Ver. : (?P<hardware>.+)\n")
     rx_ver = re.compile(
         r"^Object-id\s+: (?P<sys_oid>\S+)\s*\n"
         r"^Up Time\(HH:MM:SS\)\s+: .+\n"
@@ -54,6 +57,7 @@ class Script(BaseScript):
     }
 
     def execute_snmp(self, **kwargs):
+        vendor = "DLink"
         p = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
         platform = self.OID_TABLE[p]
         if platform == "DAS-32xx":
@@ -61,7 +65,12 @@ class Script(BaseScript):
             version = self.snmp.get("1.3.6.1.4.1.171.10.65.1.6.1.3.0")
         else:
             version = self.snmp.get("")
-        return {"vendor": "DLink", "platform": platform, "version": version}
+        if p == "1.3.6.1.4.1.3278.1.12":
+            n = self.snmp.get("1.3.6.1.2.1.1.5.0")
+            if n.startswith("FG-ACE-24"):
+                vendor = "Nateks"
+                platform = "FG-ACE-24"
+        return {"vendor": vendor, "platform": platform, "version": version}
 
     def get_conexant_platform(self):
         v = self.cli("get system manuf info", cached=True)
@@ -76,11 +85,27 @@ class Script(BaseScript):
         if not match:
             match = self.rx_ver2.search(v)
         if not platform.startswith("DAS-"):
-            platform = self.OID_TABLE[match.group("sys_oid")]
-            if platform == "DAS-32xx":
-                platform = self.get_conexant_platform()
-        r = {"vendor": "DLink", "platform": platform, "version": match.group("version")}
+            match1 = self.rx_vendor.search(v)
+            if match1 and match1.group("vendor").startswith("FG-ACE-24"):
+                r = {"vendor": "Nateks", "platform": "FG-ACE-24", "version": match.group("version")}
+            else:
+                platform = self.OID_TABLE[match.group("sys_oid")]
+                if platform == "DAS-32xx":
+                    platform = self.get_conexant_platform()
+                r = {"vendor": "DLink", "platform": platform, "version": match.group("version")}
+
         if match.group("hardware") and match.group("hardware").strip():
-            r["attributes"] = {}
-            r["attributes"]["HW version"] = match.group("hardware").strip()
+            hardware = match.group("hardware").strip()
+        else:
+            hardware = ""
+        try:
+            v = self.cli("get sys eeprom256")
+            serial = self.rx_serial.search(v).group("serial")
+            hardware = self.rx_hardware.search(v).group("hardware")
+        except self.CLISyntaxError:
+            serial = ""
+        r["attributes"] = {
+            "Serial Number": serial,
+            "HW version": hardware
+        }
         return r
