@@ -307,7 +307,10 @@ class ReportObjectDetailApplication(ExtApplication):
             .find({"hostname": {"$exists": 1}}, {"object": 1, "hostname": 1})
             .sort("object")
         }
-        rc = iter(ReportObjectConfig(mos_id))
+        if "last_config_ts" in columns_filter:
+            rc = iter(ReportObjectConfig(mos_id))
+        else:
+            rc = None
         segment_lookup = {}
         # ccc = iter(ReportObjectCaps(mos_id))
         if "segment" in columns_filter:
@@ -429,7 +432,7 @@ class ReportObjectDetailApplication(ExtApplication):
                             segment_lookup.get(m_segment, "") if segment_lookup else "",
                             next(iface_count)[0],
                             next(link_count)[0],
-                            next(rc)[0],
+                            next(rc)[0] if rc else "",
                             Project.get_by_id(project).name if project else "",
                         ]
                     ),
