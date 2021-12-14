@@ -84,7 +84,6 @@ class ConfigCDAGFactory(BaseCDAGFactory):
                 node_type=item.type,
                 description=item.description,
                 config=self.clean_node_config(node_id, item.config),
-                ctx=self.ctx,
                 sticky=item.sticky,
             )
             # Connect node
