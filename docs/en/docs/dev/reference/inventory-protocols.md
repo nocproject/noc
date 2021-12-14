@@ -67,6 +67,8 @@ cannot be put in slot, supporting only `TransEth40G`.
 | `1000BASET`        | 1000BASE-T, 1Gbit/s                                            | `1000BASET`              |
 | `1000BASETX`       | 1000BASE-TX, 1Gbit/s. This standard has never been implemented | `1000BASETX`             |
 |                    | on commercially available equipment; do not use it.            |                          |
+| `2.5GBASET`        | 2.5GBASE-T, 2.5Gbit/s                                          | `2.5GBASET`              |
+| `5GBASET`          | 5GBASE-T, 5Gbit/s                                              | `5GBASET`                |
 | `100BASESX`        | 100BASE-SX, 100Mbit/s, multimode, 850nm                        | `>100BASESX` - RX        |
 |                    |                                                                | `<100BASESX` - TX        |
 | `100BASELX10-1310` | 100BASE-LX10, 100Mbit/s, multimode, 1310nm, basic wavelength   | `>100BASELX10-1310` - RX |
