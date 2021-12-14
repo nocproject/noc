@@ -104,8 +104,5 @@ class Script(BaseScript):
             hardware = self.rx_hardware.search(v).group("hardware")
         except self.CLISyntaxError:
             serial = ""
-        r["attributes"] = {
-            "Serial Number": serial,
-            "HW version": hardware
-        }
+        r["attributes"] = {"Serial Number": serial, "HW version": hardware}
         return r
