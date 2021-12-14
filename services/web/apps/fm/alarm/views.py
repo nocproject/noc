@@ -546,9 +546,8 @@ class AlarmApplication(ExtApplication):
                 ("nested", Q(root=alarm.id)),
                 ("groups", Q(groups__in=[alarm.reference])),
             ]:
-                if (
-                    a_type == "groups"
-                    and ((not include_groups or ac is ArchivedAlarm) or not alarm.reference)
+                if a_type == "groups" and (
+                    (not include_groups or ac is ArchivedAlarm) or not alarm.reference
                 ):
                     continue
                 for a in ac.objects.filter(query):
