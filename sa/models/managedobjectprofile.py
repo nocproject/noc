@@ -468,13 +468,23 @@ class ManagedObjectProfile(NOCModel):
     vlan_interface_discovery = models.CharField(
         "VLAN Interface Discovery Policy",
         max_length=1,
-        choices=[("D", "Disable"), ("S", "Status Only"), ("V", "VLAN Sync")],
+        choices=[
+            ("D", "Disable"),
+            ("S", "Status Only"),
+            ("C", "Create only"),
+            ("V", "Create & Status"),
+        ],
         default="D",
     )
     vlan_vlandb_discovery = models.CharField(
         "VLAN DB Discovery Policy",
         max_length=1,
-        choices=[("D", "Disable"), ("S", "Status Only"), ("V", "VLAN Sync")],
+        choices=[
+            ("D", "Disable"),
+            ("S", "Status Only"),
+            ("C", "Create only"),
+            ("V", "Create & Status"),
+        ],
         default="D",
     )
     # VPN discovery profiles

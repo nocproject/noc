@@ -15,6 +15,7 @@ from noc.vc.models.l2domain import L2Domain
 from noc.vc.models.vlan import VLAN
 from noc.inv.models.resourcepool import ResourcePool
 from noc.sa.interfaces.igetvlans import IGetVlans
+from noc.core.text import list_to_ranges
 
 
 @dataclass
@@ -24,6 +25,7 @@ class DiscoveryVLAN(object):
     name: Optional[str] = None
     description: Optional[str] = None
     allow_allocate: bool = False
+    allow_seen: bool = True
 
 
 class VLANCheck(PolicyDiscoveryCheck):
@@ -110,17 +112,24 @@ class VLANCheck(PolicyDiscoveryCheck):
         r = []
         if not pools:
             for dvlan in create_vlans:
-                self.logger.info("[%s|%s] Create VLAN", l2domain.name, dvlan.id)
                 avlan = VLAN.allocate(l2_domain=l2domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
+                    avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
+            self.logger.info(
+                "[%s] Create VLANs: %s", l2domain.name, list_to_ranges([v.vlan for v in r])
+            )
             return r
         with ResourcePool.acquire(pools, owner=f"discovery-{self.object.id}"):
             for dvlan in create_vlans:
                 self.logger.info("[%s|%s] Create VLAN", l2domain.name, dvlan.id)
                 avlan = VLAN.allocate(l2_domain=l2domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
+                    avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
+                self.logger.info(
+                    "[%s] Create VLANs: %s", l2domain.name, list_to_ranges([v.vlan for v in r])
+                )
         return r
 
     def ensure_vlans(self, vlans: List["DiscoveryVLAN"]) -> List["VLAN"]:
@@ -143,7 +152,8 @@ class VLANCheck(PolicyDiscoveryCheck):
             processed_vlans = set()
             for vlan in VLAN.objects.filter(l2domain=l2domain, vlan__in=list(vlanid_map)):
                 processed_vlans.add(vlan.vlan)
-                result.append(vlan)
+                # @todo fix for some intelligence
+                vlan.__allow_seen = vlanid_map[vlan.vlan].allow_seen
             allocated_vlans: Set[int] = set(vlanid_map) - processed_vlans
             if allocated_vlans:
                 result += self.allocate_vlans(l2domain, [vlanid_map[av] for av in allocated_vlans])
@@ -167,7 +177,7 @@ class VLANCheck(PolicyDiscoveryCheck):
             vlan_filter = set(vlan_filter.include_vlans)
         allow_allocate = (
             l2domain.get_vlan_discovery_policy() == "E"
-            and self.object.object_profile.vlan_vlandb_discovery == "V"
+            and self.object.object_profile.vlan_vlandb_discovery in {"V", "C"}
         )
         return [
             DiscoveryVLAN(
@@ -175,9 +185,10 @@ class VLANCheck(PolicyDiscoveryCheck):
                 l2domain=l2domain,
                 name=v.get("name"),
                 allow_allocate=allow_allocate,
+                allow_seen=self.object.object_profile.vlan_vlandb_discovery in {"S", "V"},
             )
             for v in obj_vlans
-            if not vlan_filter or v in vlan_filter
+            if not vlan_filter or v["vlan_id"] in vlan_filter
         ]
 
     def get_interface_vlans(self, l2domain: "L2Domain") -> List["DiscoveryVLAN"]:
@@ -201,13 +212,14 @@ class VLANCheck(PolicyDiscoveryCheck):
             vlan_filter = set(vlan_filter.include_vlans)
         allow_allocate = (
             l2domain.get_vlan_discovery_policy() == "E"
-            and self.object.object_profile.vlan_interface_discovery == "V"
+            and self.object.object_profile.vlan_interface_discovery in {"V", "C"}
         )
         return [
             DiscoveryVLAN(
                 id=v,
                 l2domain=l2domain,
                 allow_allocate=allow_allocate,
+                allow_seen=self.object.object_profile.vlan_interface_discovery in {"S", "V"},
             )
             for v in vlans
             if not vlan_filter or v in vlan_filter
@@ -248,7 +260,8 @@ class VLANCheck(PolicyDiscoveryCheck):
         :return: None
         """
         for vlan in vlans:
-            vlan.fire_event("seen")
+            if vlan.__allow_seen:
+                vlan.fire_event("seen")
 
     def get_policy(self) -> str:
         return self.object.get_vlan_discovery_policy()
