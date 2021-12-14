@@ -79,7 +79,7 @@ class L2DomainProfile(Document):
             ("E", "Enable"),
             ("S", "Status Only"),
         ],
-        default="P",
+        default="E",
     )
     vlan_discovery_filter = ReferenceField(VLANFilter)  # local_filter
     # local_filter

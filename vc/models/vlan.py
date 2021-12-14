@@ -106,7 +106,7 @@ class VLAN(Document):
     def clean(self):
         super().clean()
         if not hasattr(self, "_changed_fields") or "l2domain" in self._changed_fields:
-            if self.vlan not in set(self.l2domain.get_effective_vlan_num()):
+            if self.vlan not in set(self.l2domain.get_effective_vlan_id()):
                 raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2domain} range")
 
     @classmethod
@@ -171,7 +171,9 @@ class VLAN(Document):
             allocated_count += 1
 
     @classmethod
-    def allocate(cls, l2_domain: "L2Domain", vlan_id: int, name: Optional[str] = None) -> Optional["VLAN"]:
+    def allocate(
+        cls, l2_domain: "L2Domain", vlan_id: int, name: Optional[str] = None
+    ) -> Optional["VLAN"]:
         """
         Allocate vlan on L2Domain
         :param l2_domain:
@@ -180,14 +182,18 @@ class VLAN(Document):
         :return:
         """
         vlan = VLAN(
-            vlan=vlan_id, l2_domain=l2_domain, profile=l2_domain.get_vlan_profile(), description=""
+            vlan=vlan_id,
+            l2domain=l2_domain,
+            profile=l2_domain.get_default_vlan_profile(),
+            description="",
         )
         if name:
             vlan.name = name
         try:
             vlan.save()
             metrics["vlan_created"] += 1
-        except Exception:
+        except Exception as e:
+            logger.warning("[%s|%s] Error when create vlan: %s", l2_domain.name, vlan_id, str(e))
             return None
         return vlan
 

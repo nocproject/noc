@@ -66,7 +66,8 @@ Ext.define("NOC.vc.l2domain.Model", {
         },
         {
             name: "vlan_discovery_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "P"
         },
         {
             name: "vlan_discovery_filter",

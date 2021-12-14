@@ -146,10 +146,15 @@ class L2Domain(Document):
             raise ValidationError("Only l2domain VLAN Template type may be assign")
 
     def on_save(self):
+        from noc.sa.models.managedobject import ManagedObject
+
         # Allocate vlans when necessary
         template = self.get_effective_vlan_template()
         if template:
             template.allocate_template(self.id)
+        if self._changed_fields and "profile" in self._changed_fields:
+            for mo_id in self.get_l2_domain_object_ids([str(self.id)]):
+                ManagedObject._reset_caches(mo_id)
 
     def get_effective_pools(self, pool: "ResourcePool" = None) -> List["PoolItem"]:
         """
@@ -188,9 +193,9 @@ class L2Domain(Document):
         return self.profile.vlan_template
 
     def get_vlan_discovery_policy(self) -> str:
-        if self.vlan_discovery_policy:
-            return self.vlan_discovery_policy
-        return self.profile.vlan_discovery_policy
+        if self.vlan_discovery_policy == "P":
+            return self.profile.vlan_discovery_policy
+        return self.vlan_discovery_policy
 
     def get_vlan_discovery_filter(self) -> Optional["VLANFilter"]:
         if self.vlan_discovery_filter:
@@ -225,7 +230,6 @@ class L2Domain(Document):
         return r
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_mo_cache"), lock=lambda _: id_lock)
     def get_l2_domain_object_ids(cls, l2_domains: List["str"]):
         """
         Get list of all managed object ids belonging to
