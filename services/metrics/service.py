@@ -186,8 +186,10 @@ class MetricsService(FastAPIService):
         # Subscribe
         for node_id, o_node in src.nodes.items():
             node = nodes[node_id]
-            for r_node, name in o_node.iter_subscribers():
-                node.subscribe(nodes[r_node.node_id], name, dynamic=r_node.is_dynamic_input(name))
+            for rs in o_node.iter_subscribers():
+                node.subscribe(
+                    nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
+                )
         # Return resulting cards
         return Card(
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},

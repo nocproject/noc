@@ -9,6 +9,7 @@
 from typing import Any, Optional, Type, Dict, List, Iterable, Tuple
 from enum import Enum
 import inspect
+from dataclasses import dataclass
 
 # Third-party modules
 from pydantic import BaseModel
@@ -34,6 +35,13 @@ class Category(str, Enum):
 MASK_BOUND = 1 << 0
 MASK_DYNAMIC = 1 << 1
 MASK_KEY = 1 << 2
+
+
+@dataclass
+class Subscriber(object):
+    __slots__ = ("node", "input")
+    node: "BaseCDAGNode"
+    input: str
 
 
 class BaseCDAGNodeMetaclass(type):
@@ -97,7 +105,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.description = description
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
-        self._subscribers: List[Tuple["BaseCDAGNode", str]] = []
+        self._subscribers: List[Subscriber] = []
         self._inputs = {i: 0 for i in self.iter_inputs()}
         # # Pre-calculated inputs
         self.const_inputs: Optional[Dict[str, ValueType]] = None
@@ -112,7 +120,6 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         description: Optional[str] = None,
         state: Optional[BaseModel] = None,
         config: Optional[BaseModel] = None,
-        ctx: Optional[Dict[str, Any]] = None,
         sticky: bool = False,
     ) -> Optional["BaseCDAGNode"]:
         """
@@ -217,8 +224,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             tx.update_state(self)
         # Notify all subscribers
         if value is not None:
-            for s_node, s_name in self._subscribers:
-                s_node.activate(tx, s_name, value)
+            for s in self.iter_subscribers():
+                s.node.activate(tx, s.input, value)
 
     def is_required_input(self, name: str) -> bool:
         """
@@ -262,8 +269,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             self.const_inputs = {}
         self.const_inputs[name] = value
         if self.is_const:
-            for node, name in self._subscribers:
-                node.activate_const(name, self._const_value)
+            for s in self.iter_subscribers():
+                s.node.activate_const(s.input, self._const_value)
 
     def subscribe(self, node: "BaseCDAGNode", name: str, dynamic: bool = False) -> None:
         """
@@ -275,11 +282,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         if node == self:
             raise ValueError("Cannot subscribe to self")
-        if (node, name) in self._subscribers:
+        if self.has_subscriber(node, name):
             return
         if dynamic:
             node.add_input(name)
-        self._subscribers += [(node, name)]
+        self._subscribers.append(Subscriber(node=node, input=name))
         node.mark_as_bound(name)
         if self.is_const:
             node.activate_const(name, self._const_value)
@@ -316,9 +323,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             )
         return None
 
-    def iter_subscribers(self) -> Iterable[Tuple["BaseCDAGNode", str]]:
-        for node, name in self._subscribers:
-            yield node, name
+    def iter_subscribers(self) -> Iterable[Subscriber]:
+        yield from self._subscribers
+
+    def has_subscriber(self, node: "BaseCDAGNode", input: str) -> bool:
+        return Subscriber(node=node, input=input) in self._subscribers
 
     @property
     def is_const(self) -> bool:
