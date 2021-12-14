@@ -10,6 +10,7 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from typing import Any, Dict, Tuple, Optional
+import sys
 
 # Third-party modules
 import orjson
@@ -37,6 +38,7 @@ class ScopeInfo(object):
 
 @dataclass
 class Card(object):
+    __slots__ = ("probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
 
@@ -177,7 +179,7 @@ class MetricsService(FastAPIService):
         """
 
         def unscope(x):
-            return x.rsplit("::", 1)[-1]
+            return sys.intern(x.rsplit("::", 1)[-1])
 
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
