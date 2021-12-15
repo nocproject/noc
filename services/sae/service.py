@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # SAE service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,18 +11,16 @@ import contextlib
 import threading
 
 # NOC modules
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.main.models.pool import Pool
-from noc.services.sae.api.sae import SAEAPI
 from noc.config import config
 
 # Third-party modules
 from psycopg2.pool import ThreadedConnectionPool
 
 
-class SAEService(TornadoService):
+class SAEService(FastAPIService):
     name = "sae"
-    api = [SAEAPI]
     # Some activator pools may be unavailable
     # while SAE remains healthy
     require_dcs_health = False
