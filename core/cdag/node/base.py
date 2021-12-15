@@ -40,9 +40,10 @@ MASK_KEY = 1 << 2
 
 @dataclass
 class Subscriber(object):
-    __slots__ = ("node", "input")
+    __slots__ = ("node", "input", "next")
     node: "BaseCDAGNode"
     input: str
+    next: Optional["Subscriber"]
 
 
 class BaseCDAGNodeMetaclass(type):
@@ -98,7 +99,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self,
         node_id: str,
         state: Optional[Dict[str, Any]] = None,
-        description: str = None,
+        description: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None,
         sticky: bool = False,
     ):
@@ -106,7 +107,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.description = description
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
-        self._subscribers: List[Subscriber] = []
+        self._subscribers: Optional[Subscriber] = None
         self._inputs = {sys.intern(i): 0 for i in self.iter_inputs()}
         # # Pre-calculated inputs
         self.const_inputs: Optional[Dict[str, ValueType]] = None
@@ -289,7 +290,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             return
         if dynamic:
             node.add_input(name)
-        self._subscribers.append(Subscriber(node=node, input=name))
+        self._subscribers = Subscriber(node=node, input=name, next=self._subscribers)
         node.mark_as_bound(name)
         if self.is_const:
             node.activate_const(name, self._const_value)
@@ -327,10 +328,16 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         return None
 
     def iter_subscribers(self) -> Iterable[Subscriber]:
-        yield from self._subscribers
+        """
+        Iterate all subscribers for node
+        """
+        s = self._subscribers
+        while s:
+            yield s
+            s = s.next
 
     def has_subscriber(self, node: "BaseCDAGNode", input: str) -> bool:
-        return Subscriber(node=node, input=input) in self._subscribers
+        return any(True for s in self.iter_subscribers() if s.node == node and s.input == input)
 
     @property
     def is_const(self) -> bool:
