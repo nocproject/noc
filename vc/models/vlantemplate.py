@@ -104,7 +104,7 @@ class VLANTemplate(Document):
         from .vlan import VLAN
 
         # @todo L2Domain pools filter ?
-        existing_vlans = set(VLAN.objects.filter(l2domain=l2_domain).values_list("vlan"))
+        existing_vlans = set(VLAN.objects.filter(l2_domain=l2_domain).values_list("vlan"))
         for vlan_num, name, description, profile in self.iter_vlans():
             if vlan_num in existing_vlans:
                 continue
@@ -113,7 +113,7 @@ class VLANTemplate(Document):
                 name=name,
                 description=description,
                 profile=profile,
-                l2domain=l2_domain,
+                l2_domain=l2_domain,
             )
             vlan.save()
 

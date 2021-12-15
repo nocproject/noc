@@ -55,7 +55,7 @@ class VLAN(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            {"fields": ["l2domain", "vlan"], "unique": True},
+            {"fields": ["l2_domain", "vlan"], "unique": True},
             "expired",
             "labels",
             "effective_labels",
@@ -105,9 +105,9 @@ class VLAN(Document):
 
     def clean(self):
         super().clean()
-        if not hasattr(self, "_changed_fields") or "l2domain" in self._changed_fields:
-            if self.vlan not in set(self.l2domain.get_effective_vlan_id()):
-                raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2domain} range")
+        if not hasattr(self, "_changed_fields") or "l2_domain" in self._changed_fields:
+            if self.vlan not in set(self.l2_domain.get_effective_vlan_id()):
+                raise ValidationError(f"VLAN {self.vlan} not in allowed {self.l2_domain} range")
 
     @classmethod
     def iter_free(
@@ -144,7 +144,7 @@ class VLAN(Document):
         # Check pool in VLAN
         free_states = list(State.objects.filter(name=FREE_VLAN_STATE).values_list("id"))
         free_vlans = VLAN.objects.filter(
-            l2domain=l2_domain, vlan__in=list(vlans), state__in=free_states
+            l2_domain=l2_domain, vlan__in=list(vlans), state__in=free_states
         ).limit(limit)
         if pool and pool.strategy == "L":
             free_vlans = free_vlans.sorted({"vlan": 1})
