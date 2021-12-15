@@ -16,3 +16,9 @@ class JSONRemoteProcedureCall(BaseModel):
     method: str
     params: List[Any]
     id: int
+
+
+class JSONRPCResponse(BaseModel):
+    result: Any
+    error: Any
+    id: int
