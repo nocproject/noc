@@ -42,14 +42,15 @@ class CDAG(object):
             raise ValueError("Invalid node type: %s" % node_type)
         config = config or {}
         #
-        return node_cls.construct(
-            self,
+        node = node_cls.construct(
             node_id,
             description=description,
             state=self.state.get(node_id),
             config=config,
             sticky=sticky,
         )
+        self.nodes[node_id] = node
+        return node
 
     def begin(self) -> Transaction:
         """
@@ -96,7 +97,7 @@ class CDAG(object):
                 nodes[node_id] = self.nodes[new_id]
             else:
                 # Clone
-                nodes[node_id] = node.clone(self, new_id)
+                nodes[node_id] = node.clone(new_id)
         # Merge subscribers
         for node_id, o_node in other.nodes.items():
             node = nodes[node_id]

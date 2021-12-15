@@ -61,12 +61,16 @@ class BaseCDAGNodeMetaclass(type):
         # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
         if hasattr(n, "config_cls"):
             n.config_cls_slot = type(
-                f"{n.config_cls.__name__}_Slot", (), {"__slots__": tuple(n.config_cls.__fields__)}
+                f"{n.config_cls.__name__}_Slot",
+                (),
+                {"__slots__": tuple(sys.intern(x) for x in n.config_cls.__fields__)},
             )
         # Slotted state
         if hasattr(n, "state_cls"):
             n.state_cls_slot = type(
-                f"{n.state_cls.__name__}_Slot", (), {"__slots__": tuple(n.state_cls.__fields__)}
+                f"{n.state_cls.__name__}_Slot",
+                (),
+                {"__slots__": tuple(sys.intern(x) for x in n.state_cls.__fields__)},
             )
         #
         return n
@@ -117,7 +121,6 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     @classmethod
     def construct(
         cls,
-        graph,
         node_id: str,
         description: Optional[str] = None,
         state: Optional[BaseModel] = None,
@@ -128,9 +131,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Construct node
         :return:
         """
-        node = cls(node_id, description=description, state=state, config=config, sticky=sticky)
-        graph.nodes[node_id] = node
-        return node
+        return cls(node_id, description=description, state=state, config=config, sticky=sticky)
 
     @staticmethod
     def slotify(slot_cls: Type, data: BaseModel) -> object:
@@ -142,7 +143,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             setattr(o, k, getattr(data, k))
         return o
 
-    def clone(self, graph, node_id: str) -> Optional["BaseCDAGNode"]:
+    def clone(self, node_id: str) -> Optional["BaseCDAGNode"]:
         node = self.__class__(
             node_id,
             description=self.description,
@@ -153,7 +154,6 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if self.allow_dynamic:
             for di in self.iter_mask_inputs(MASK_DYNAMIC):
                 node.add_input(di)
-        graph.nodes[node_id] = node
         return node
 
     def clean_state(self, state: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
@@ -386,3 +386,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         else:
             for i in self._inputs:
                 yield i, None
+
+    def freeze(self) -> None:
+        """
+        Freeze the node and reduce memory footprint.
+        No further graph construction manipulations are possible after
+        the freezing.
+        """
+        self.description = None
