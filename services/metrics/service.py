@@ -184,7 +184,7 @@ class MetricsService(FastAPIService):
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node_id, node in src.nodes.items():
-            nodes[node_id] = node.clone(self.graph, f"{prefix}::{node_id}")
+            nodes[node_id] = node.clone(f"{prefix}::{node_id}")
         # Subscribe
         for node_id, o_node in src.nodes.items():
             node = nodes[node_id]
@@ -192,6 +192,9 @@ class MetricsService(FastAPIService):
                 node.subscribe(
                     nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                 )
+        # Compact the strorage
+        for node in nodes.values():
+            node.freeze()
         # Return resulting cards
         return Card(
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},

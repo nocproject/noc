@@ -78,8 +78,8 @@ class MetricsNode(BaseCDAGNode):
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
 
-    def clone(self, graph, node_id: str) -> Optional[BaseCDAGNode]:
-        node = super().clone(graph, node_id)
+    def clone(self, node_id: str) -> Optional[BaseCDAGNode]:
+        node = super().clone(node_id)
         if not node:
             return None
         for i in self.iter_key_inputs():

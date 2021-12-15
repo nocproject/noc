@@ -47,7 +47,7 @@ class Transaction(object):
             return
         d = state.dict(exclude_none=True)
         if d:
-            self._states[node.node_id] = state.dict()
+            self._states[node.node_id] = d
 
     def get_changed_state(self) -> Dict[str, Any]:
         """
