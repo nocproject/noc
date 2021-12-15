@@ -65,7 +65,7 @@ class VLAN(Document):
     name = StringField(default="")
     profile = PlainReferenceField(VLANProfile, required=True)
     vlan = IntField(min_value=1, max_value=4095)
-    l2domain = PlainReferenceField(L2Domain, required=True)
+    l2_domain = PlainReferenceField(L2Domain, required=True)
     description = StringField()
     state = PlainReferenceField(State)
     project = ForeignKeyField(Project)
@@ -183,7 +183,7 @@ class VLAN(Document):
         """
         vlan = VLAN(
             vlan=vlan_id,
-            l2domain=l2_domain,
+            l2_domain=l2_domain,
             profile=l2_domain.get_default_vlan_profile(),
             description="",
         )

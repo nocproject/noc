@@ -36,8 +36,6 @@ class VLANCheck(PolicyDiscoveryCheck):
     name = "vlan"
     required_script = "get_vlans"
     # @todo: required_capabilities = ?
-    # Fetch all segment VLANs if exceeded
-    FULL_VLANS_THRESHOLD = 50
 
     VLAN_QUERY = """(
         Match("virtual-router", vr, "forwarding-instance", fi, "vlans", vlan) or
@@ -45,10 +43,10 @@ class VLANCheck(PolicyDiscoveryCheck):
     ) and Group("vlan")"""
 
     @staticmethod
-    def is_enabled_for_object(object):
+    def is_enabled_for_object(oo):
         return (
-            object.object_profile.vlan_interface_discovery != "D"
-            or object.object_profile.vlan_vlandb_discovery != "D"
+            oo.object_profile.vlan_interface_discovery != "D"
+            or oo.object_profile.vlan_vlandb_discovery != "D"
         )
 
     def handler(self):
@@ -83,19 +81,19 @@ class VLANCheck(PolicyDiscoveryCheck):
         #     source="vlan",
         # )
 
-    def allocate_vlans(self, l2domain: "L2Domain", vlans: List["DiscoveryVLAN"]) -> List["VLAN"]:
+    def allocate_vlans(self, l2_domain: "L2Domain", vlans: List["DiscoveryVLAN"]) -> List["VLAN"]:
         """
         1. Getting pools
         3. Lock by pool
         4. Allocate VLANs (separate method) if condition - create. Param sync_vlans
 
-        :param l2domain:
+        :param l2_domain:
         :param vlans:
         :return:
         """
-        pools = [p.pool for p in l2domain.get_effective_pools()]
+        pools = [p.pool for p in l2_domain.get_effective_pools()]
         # @todo Filter pool by allocate vland + pool filter
-        vlan_include_filter: Set[int] = set(l2domain.get_effective_vlan_id())
+        vlan_include_filter: Set[int] = set(l2_domain.get_effective_vlan_id())
         # Check VLANs for create
         create_vlans = []
         for dvlan in vlans:
@@ -112,23 +110,23 @@ class VLANCheck(PolicyDiscoveryCheck):
         r = []
         if not pools:
             for dvlan in create_vlans:
-                avlan = VLAN.allocate(l2_domain=l2domain, vlan_id=dvlan.id, name=dvlan.name)
+                avlan = VLAN.allocate(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
                     avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
             self.logger.info(
-                "[%s] Create VLANs: %s", l2domain.name, list_to_ranges([v.vlan for v in r])
+                "[%s] Create VLANs: %s", l2_domain.name, list_to_ranges([v.vlan for v in r])
             )
             return r
         with ResourcePool.acquire(pools, owner=f"discovery-{self.object.id}"):
             for dvlan in create_vlans:
-                self.logger.info("[%s|%s] Create VLAN", l2domain.name, dvlan.id)
-                avlan = VLAN.allocate(l2_domain=l2domain, vlan_id=dvlan.id, name=dvlan.name)
+                self.logger.info("[%s|%s] Create VLAN", l2_domain.name, dvlan.id)
+                avlan = VLAN.allocate(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)
                 if avlan:
                     avlan.__allow_seen = dvlan.allow_seen
                     r.append(avlan)
                 self.logger.info(
-                    "[%s] Create VLANs: %s", l2domain.name, list_to_ranges([v.vlan for v in r])
+                    "[%s] Create VLANs: %s", l2_domain.name, list_to_ranges([v.vlan for v in r])
                 )
         return r
 
@@ -150,7 +148,7 @@ class VLANCheck(PolicyDiscoveryCheck):
             l2domains_vlan_map[v.l2domain][v.id] = v
         for l2domain, vlanid_map in l2domains_vlan_map.items():
             processed_vlans = set()
-            for vlan in VLAN.objects.filter(l2domain=l2domain, vlan__in=list(vlanid_map)):
+            for vlan in VLAN.objects.filter(l2_domain=l2domain, vlan__in=list(vlanid_map)):
                 processed_vlans.add(vlan.vlan)
                 # @todo fix for some intelligence
                 vlan.__allow_seen = vlanid_map[vlan.vlan].allow_seen
@@ -159,10 +157,10 @@ class VLANCheck(PolicyDiscoveryCheck):
                 result += self.allocate_vlans(l2domain, [vlanid_map[av] for av in allocated_vlans])
         return result
 
-    def get_object_vlans(self, l2domain: "L2Domain") -> List["DiscoveryVLAN"]:
+    def get_object_vlans(self, l2_domain: "L2Domain") -> List["DiscoveryVLAN"]:
         """
         Get VLANs from equipment
-        :param l2domain:
+        :param l2_domain:
         :return:
         """
         if self.object.object_profile.vlan_vlandb_discovery == "D":
@@ -170,19 +168,19 @@ class VLANCheck(PolicyDiscoveryCheck):
                 "VLAN Database Discovery is disabled by Managed Object Profile policy. Skipping..."
             )
             return []
-        self.logger.info("[%s] Collecting VLANs", l2domain.name)
+        self.logger.info("[%s] Collecting VLANs", l2_domain.name)
         obj_vlans = self.get_data() or []
-        vlan_filter = l2domain.get_vlan_discovery_filter()
+        vlan_filter = l2_domain.get_vlan_discovery_filter()
         if vlan_filter:
             vlan_filter = set(vlan_filter.include_vlans)
         allow_allocate = (
-            l2domain.get_vlan_discovery_policy() == "E"
+            l2_domain.get_vlan_discovery_policy() == "E"
             and self.object.object_profile.vlan_vlandb_discovery in {"V", "C"}
         )
         return [
             DiscoveryVLAN(
                 id=v["vlan_id"],
-                l2domain=l2domain,
+                l2domain=l2_domain,
                 name=v.get("name"),
                 allow_allocate=allow_allocate,
                 allow_seen=self.object.object_profile.vlan_vlandb_discovery in {"S", "V"},
@@ -191,10 +189,10 @@ class VLANCheck(PolicyDiscoveryCheck):
             if not vlan_filter or v["vlan_id"] in vlan_filter
         ]
 
-    def get_interface_vlans(self, l2domain: "L2Domain") -> List["DiscoveryVLAN"]:
+    def get_interface_vlans(self, l2_domain: "L2Domain") -> List["DiscoveryVLAN"]:
         """
         Get VLANs from interface discovery artifact
-        :param l2domain:
+        :param l2_domain:
         :return:
         """
         self.logger.debug("Getting interface vlans")
@@ -207,17 +205,17 @@ class VLANCheck(PolicyDiscoveryCheck):
         if not vlans:
             self.logger.info("No interface_assigned_vlans artefact, skipping interface vlans")
             return []
-        vlan_filter = l2domain.get_vlan_discovery_filter()
+        vlan_filter = l2_domain.get_vlan_discovery_filter()
         if vlan_filter:
             vlan_filter = set(vlan_filter.include_vlans)
         allow_allocate = (
-            l2domain.get_vlan_discovery_policy() == "E"
+            l2_domain.get_vlan_discovery_policy() == "E"
             and self.object.object_profile.vlan_interface_discovery in {"V", "C"}
         )
         return [
             DiscoveryVLAN(
                 id=v,
-                l2domain=l2domain,
+                l2domain=l2_domain,
                 allow_allocate=allow_allocate,
                 allow_seen=self.object.object_profile.vlan_interface_discovery in {"S", "V"},
             )
@@ -225,19 +223,20 @@ class VLANCheck(PolicyDiscoveryCheck):
             if not vlan_filter or v in vlan_filter
         ]
 
-    def merge_vlans(self, vlans: List["DiscoveryVLAN"]) -> List["DiscoveryVLAN"]:
+    @staticmethod
+    def merge_vlans(vlans: List["DiscoveryVLAN"]) -> List["DiscoveryVLAN"]:
         """
         Merge object vlans with artifactory ones
         :param vlans:
         :return:
         """
         r = []
-        proccessed = []
+        processed = []
         for v in vlans:
-            if v.id in proccessed:
+            if v.id in processed:
                 continue
             r.append(v)
-            proccessed.append(v.id)
+            processed.append(v.id)
         return vlans
 
     def refresh_discovery_timestamps(self, vlans: List["VLAN"]):
@@ -253,7 +252,8 @@ class VLANCheck(PolicyDiscoveryCheck):
             self.logger.info("Bulk update %d timestamps", len(bulk))
             VLAN._get_collection().bulk_write(bulk, ordered=True)
 
-    def send_seen_events(self, vlans: List["VLAN"]):
+    @staticmethod
+    def send_seen_events(vlans: List["VLAN"]):
         """
         Send *seen* event to all vlans from list
         :param vlans: List of VLAN instances
