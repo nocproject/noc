@@ -1,0 +1,27 @@
+---
+- name: Remove {{ ct_service_name }} template
+  file:
+    state: absent
+  copy:
+    src: "{{ ct_service_source }}"
+    dest: "{{ consul_template_templates_dir }}/{{ ct_service_source }}"
+  when: not ct_service_source_template | bool
+  notify:
+    - reload consul-template
+
+- name: Remove {{ ct_service_name }} template
+  file:
+    state: absent
+  template:
+    src: "{{ ct_service_source }}"
+    dest: "{{ consul_template_templates_dir }}/{{ ct_service_source }}"
+  when: ct_service_source_template | bool
+  notify:
+    - reload consul-template
+
+- name: Remove template for {{ ct_service_name }}
+  file:
+    state: absent
+    path: "{{ consul_template_config_dir }}/{{ ct_service_name }}.conf"
+  notify:
+    - reload consul-template

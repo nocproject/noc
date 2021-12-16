@@ -2,19 +2,17 @@
 - name: add nsqd group
   group:
     name: nsq
+    state: absent
 
 - name: add nsqd user
   user:
     name: nsq
-    shell: "{{ fake_shell }}"
+    state: absent
 
-- name: create path for on-disk queue files
+- name: Delete all nsqd directories
   file:
     path: "{{ item.dir }}"
-    state: directory
-    mode: "{{ item.mode }}"
-    group: nsq
-    owner: nsq
+    state: absent
   with_items:
     - dir: "{{ nsqd_config_dir }}"
       mode: "u=rwx,g=rx,o=rx"
@@ -26,70 +24,21 @@
   tags:
     - requirements
 
-- name: install nsqlookupd config
-  template:
-    src: config/nsqlookupd.conf.j2
-    dest: "{{ nsqd_config_dir }}/nsqlookupd.conf"
-  notify: restart nsqlookupd
-  tags:
-    - config
-
-- name: create nsqd log dir
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: "u=rwx,g=r,o=r"
-    group: nsq
-    owner: nsq
-  when: "'FreeBSD' in ansible_system"
-  with_items:
-    - "{{ nsd_log_dir }}"
 
 - name: Enable nsqlookupd system service
   service:
     name: "nsqlookupd"
-    enabled: "True"
-    state: started
+    enabled: "False"
+    state: stopped
 
-- name: place nsqlookupd consul check
-  import_role:
-    name: consul
-    tasks_from: service
-  vars:
-    consul_service_name: nsqlookupd
-    consul_service_tags: ""
-    consul_service_port: "4160"
-    consul_service_check_type: "tcp"
-    consul_service_check_value: "127.0.0.1:4160"
-    consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: "False"
+- name: Delete all nsqdlookup consul checks
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - path: "{{ consul_configd_path }}/nsqlookupd.json"
+    - path: "{{ consul_configd_path }}/nsqlookupdhttp.json"
 
-- name: place nsqlookupdhttp consul check
-  import_role:
-    name: consul
-    tasks_from: service
-  vars:
-    consul_service_name: nsqlookupdhttp
-    consul_service_tags: ""
-    consul_service_port: "4161"
-    consul_service_check_type: "http"
-    consul_service_check_value: "http://127.0.0.1:4161/ping"
-    consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: "False"
-
-- name: Install nsqlookupd monitoring
-  include_role:
-    name: monitoring
-    tasks_from: monitor
-  vars:
-    monitoring_service_name: nsqlookupd
-    monitoring_service_tags: ""
-    monitoring_service_port: 4161
-    monitoring_service_address: "{{ ansible_host }}"
-    monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: "True"
-    monitoring_service_procstat_type: pattern
-    monitoring_service_procstat_value: nsqlookupd
-  when: has_svc_monitoring is defined
-  tags:
-    - monitoring
+- name: set nsqdlookupd removed flag
+  set_fact:
+    nsqlookupd_removed: "True"

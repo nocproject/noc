@@ -1,20 +1,19 @@
 ---
-- name: add nsqd group
+- name: Remove nsqd group
   group:
     name: nsq
+    state: absent
 
-- name: add nsqd user
+- name: Remove nsqd user
   user:
     name: nsq
     shell: "{{ fake_shell }}"
+    state: absent
 
-- name: create path for on-disk queue files
+- name: Remove path for on-disk queue files
   file:
     path: "{{ item.dir }}"
-    state: directory
-    mode: "{{ item.mode }}"
-    group: nsq
-    owner: nsq
+    state: absent
   with_items:
     - dir: "{{ nsqd_db_dir }}"
       mode: "0770"
@@ -23,15 +22,10 @@
     - dir: "{{ nsq_root }}"
       mode: "u=rwx,g=rx,o=rx"
 
-- name: include nsqd os specific tasks
-  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
-  tags:
-    - requirements
-
-- name: place nsqd ct template
+- name: remove nsqd ct template
   import_role:
     name: consul-template
-    tasks_from: service
+    tasks_from: deservice
   vars:
     ct_service_name: nsqd
     ct_service_source: "nsqd.conf.ctmpl"
@@ -40,56 +34,21 @@
     ct_service_command_timeout: "60s"
     ct_service_source_template: "True"
 
-- name: Enable nsq system service
+- name: Disable nsq system service
   service:
     name: "nsqd"
-    enabled: "True"
-  notify:
-    - reload consul-template
-    - restart nsqd
+    enabled: "False"
+    state: stopped
 
-- name: place nsqd consul check
-  import_role:
-    name: consul
-    tasks_from: service
-  vars:
-    consul_service_name: nsqd
-    consul_service_tags: ""
-    consul_service_port: "4150"
-    consul_service_check_type: "tcp"
-    consul_service_check_value: "127.0.0.1:4150"
-    consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: "False"
+- name: Delete all nsqd consul checks
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - path: "{{ consul_configd_path }}/nsqd.json"
+    - path: "{{ consul_configd_path }}/nsqdhttp.json"
 
-- name: place nsqdhttp consul check
-  import_role:
-    name: consul
-    tasks_from: service
-  vars:
-    consul_service_name: nsqdhttp
-    consul_service_tags: ""
-    consul_service_port: "4151"
-    consul_service_check_type: "http"
-    consul_service_check_value: "http://127.0.0.1:4151/ping"
-    consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: "False"
 
-- name: Install postgres monitoring
-  include_role:
-    name: monitoring
-    tasks_from: monitor
-  vars:
-    monitoring_service_name: nsq
-    monitoring_service_tags: ""
-    monitoring_service_port: 4151
-    monitoring_service_address: "{{ ansible_host }}"
-    monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: "True"
-    monitoring_service_procstat_type: pattern
-    monitoring_service_procstat_value: nsqd
-    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"]  # noqa 204
-    monitoring_config:
-      endpoints: ["http://{{ ansible_nodename }}:4151"]
-  when: has_svc_monitoring is defined
-  tags:
-    - monitoring
+- name: set nsqd removed flag
+  set_fact:
+    nsqd_removed: "True"
