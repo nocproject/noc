@@ -16,6 +16,7 @@ from noc.vc.models.vlan import VLAN
 from noc.inv.models.resourcepool import ResourcePool
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.text import list_to_ranges
+from noc.config import config
 
 
 @dataclass
@@ -118,7 +119,9 @@ class VLANCheck(PolicyDiscoveryCheck):
                 "[%s] Create VLANs: %s", l2_domain.name, list_to_ranges([v.vlan for v in r])
             )
             return r
-        with ResourcePool.acquire(pools, owner=f"discovery-{self.object.id}"):
+        with ResourcePool.acquire(
+            pools, owner=f"discovery-{config.pool}-{getattr(self.service, 'slot_number', '')}"
+        ):
             for dvlan in create_vlans:
                 self.logger.info("[%s|%s] Create VLAN", l2_domain.name, dvlan.id)
                 avlan = VLAN.allocate(l2_domain=l2_domain, vlan_id=dvlan.id, name=dvlan.name)

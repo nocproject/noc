@@ -43,9 +43,9 @@ Ext.define("NOC.vc.vlan.Application", {
                 },
                 {
                     text: __("L2 Domain"),
-                    dataIndex: "l2domain",
+                    dataIndex: "l2_domain",
                     width: 150,
-                    renderer: NOC.render.Lookup("l2domain")
+                    renderer: NOC.render.Lookup("l2_domain")
                 },
                 {
                     text: __("Profile"),
