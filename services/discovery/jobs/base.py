@@ -335,13 +335,16 @@ class MODiscoveryJob(PeriodicJob):
             d_vars = {"path": " | ".join(p.path), "message": p.message}
             if p.vars:
                 d_vars.update(p.vars)
+            labels = p.labels
+            if p.fatal:
+                labels += ["noc::is_fatal::="]
             details += [
                 {
                     "reference": f"d:{p.alarm_class}:{self.object.id}:{' | '.join(p.path)}",
                     "alarm_class": p.alarm_class,
                     "managed_object": self.object.id,
                     "timestamp": now,
-                    "labels": p.labels,
+                    "labels": labels,
                     "vars": d_vars,
                 }
             ]
