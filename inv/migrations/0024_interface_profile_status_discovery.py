@@ -5,10 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-
-# Third-party modules
-import cachetools
-
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
