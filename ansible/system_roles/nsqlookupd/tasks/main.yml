@@ -19,11 +19,12 @@
     - dir: "{{ nsq_root }}"
       mode: "u=rwx,g=rx,o=rx"
 
-- name: Enable nsqlookupd system service
+- name: Disable nsqlookupd system service
   service:
     name: "nsqlookupd"
     enabled: "False"
     state: stopped
+  ignore_errors: "True"
 
 - name: Delete all nsqdlookup consul checks
   file:

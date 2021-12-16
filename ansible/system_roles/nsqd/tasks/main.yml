@@ -39,6 +39,7 @@
     name: "nsqd"
     enabled: "False"
     state: stopped
+  ignore_errors: "True"
 
 - name: Delete all nsqd consul checks
   file:
@@ -47,7 +48,6 @@
   with_items:
     - path: "{{ consul_configd_path }}/nsqd.json"
     - path: "{{ consul_configd_path }}/nsqdhttp.json"
-
 
 - name: set nsqd removed flag
   set_fact:
