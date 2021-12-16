@@ -136,5 +136,5 @@ class L2DomainProfile(Document):
                 [v.vlan_filter.include_expression for v in self.pools if v.vlan_filter]
             )
         )
-        if len(vlan_filters) != len(set(vlan_filters)):
+        if vlan_filters and len(vlan_filters) != len(set(vlan_filters)):
             raise ValidationError("VLAN Filter overlapped")

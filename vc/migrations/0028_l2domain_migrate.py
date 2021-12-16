@@ -40,7 +40,6 @@ class Migration(BaseMigration):
                 "labels": [],
                 "effective_labels": [],
                 "bi_id": bson.Int64(bi_hash(l2d_prof_id)),
-                "vlan_discovery_filter": vlan_prof_id,
                 "vlan_discovery_policy": "E",
             }
         )
@@ -157,7 +156,7 @@ class Migration(BaseMigration):
         # VLAN Migration
         for vid, vc_domain, name, description in self.db.execute(
             """
-            SELECT l2, vc_domain, name, description
+            SELECT l2, vc_domain_id, name, description
             FROM vc_vc
             WHERE l1 != 1
             """
