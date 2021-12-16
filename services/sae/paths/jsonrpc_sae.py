@@ -19,13 +19,15 @@ from noc.services.sae.api.sae import SAEAPI
 
 router = APIRouter()
 
+service=get_service()
+api = SAEAPI(service, None, None)
+
 
 @router.post("/api/sae/", response_model=JSONRPCResponse)
 @router.post("/api/sae", response_model=JSONRPCResponse)
-async def api_sae(req: JSONRemoteProcedureCall, service=Depends(get_service)):
+async def api_sae(req: JSONRemoteProcedureCall):
     if req.method not in SAEAPI.get_methods():
         return {"error": f"Invalid method: '{req.method}'", "id": req.id}
-    api = SAEAPI(service, None, None)
     api_method = getattr(api, req.method)
     result = None
     error = None
