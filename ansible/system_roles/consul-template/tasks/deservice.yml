@@ -2,9 +2,7 @@
 - name: Remove {{ ct_service_name }} template
   file:
     state: absent
-  copy:
-    src: "{{ ct_service_source }}"
-    dest: "{{ consul_template_templates_dir }}/{{ ct_service_source }}"
+    path: '{{ consul_template_templates_dir }}/{{ ct_service_source.split(".")[-1] }}'
   when: not ct_service_source_template | bool
   notify:
     - reload consul-template
@@ -12,9 +10,7 @@
 - name: Remove {{ ct_service_name }} template
   file:
     state: absent
-  template:
-    src: "{{ ct_service_source }}"
-    dest: "{{ consul_template_templates_dir }}/{{ ct_service_source }}"
+    path: '{{ consul_template_templates_dir }}/{{ ct_service_source.split(".")[-1] }}'
   when: ct_service_source_template | bool
   notify:
     - reload consul-template
