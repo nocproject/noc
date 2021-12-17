@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 # NOC modules
@@ -19,7 +19,7 @@ from noc.services.sae.api.sae import SAEAPI
 
 router = APIRouter()
 
-service=get_service()
+service = get_service()
 api = SAEAPI(service, None, None)
 
 
