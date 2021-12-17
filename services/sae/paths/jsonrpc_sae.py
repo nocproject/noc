@@ -7,7 +7,7 @@
 
 # Third-party modules
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from fastapi.responses import ORJSONResponse
 
 # NOC modules
 from noc.core.debug import error_report
@@ -39,9 +39,9 @@ async def api_sae(req: JSONRemoteProcedureCall):
         error_report()
         error = f"Failed: {e}"
     if isinstance(result, Redirect):
-        return JSONResponse(
+        return ORJSONResponse(
             content={"method": result.method, "params": result.params, "id": req.id},
             status_code=307,
-            headers={"location": result.location}
+            headers={"location": result.location},
         )
     return {"result": result, "error": error, "id": req.id}
