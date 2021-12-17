@@ -180,6 +180,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         if not self.bound_inputs:
+            yield from self.iter_inputs()
             return
         for i in self.iter_inputs():
             if i not in self.bound_inputs:
