@@ -6,8 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import dataclasses
-from typing import Any, Optional, List, Iterable, Dict, Tuple, DefaultDict
+from typing import Any, Optional, List, Iterable, Dict, DefaultDict
 from collections import defaultdict
 from dataclasses import dataclass
 
