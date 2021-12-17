@@ -104,7 +104,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self.config = self.clean_config(config)
         self._subscribers: Optional[Subscriber] = None
         self.bound_inputs: Optional[Set[str]] = None  # Lives until .freeze()
-        self.dynamic_inputs: Optional[Set[str]] = None
+        self.dynamic_inputs: Optional[Dict[str, bool]] = None
         # # Pre-calculated inputs
         self.const_inputs: Optional[Dict[str, ValueType]] = None
         self._const_value: Optional[ValueType] = None
@@ -242,6 +242,16 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         return self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs
 
+    def is_key_input(self, name: str) -> bool:
+        """
+        Check if input is key one
+        """
+        return (
+            self.allow_dynamic
+            and self.dynamic_inputs
+            and bool(self.dynamic_inputs.get(name, False))
+        )
+
     def is_const_input(self, name: str) -> bool:
         """
         Check if input is const
@@ -345,7 +355,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self._const_value = self.get_value(**const_inputs)
         return True
 
-    def add_input(self, name: str) -> None:
+    def add_input(self, name: str, is_key: bool = False) -> None:
         """
         Add new dynamic input
         :param name: Input name
@@ -357,9 +367,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if self.has_input(name):
             return
         if self.dynamic_inputs is None:
-            self.dynamic_inputs = {name}
+            self.dynamic_inputs = {name: is_key}
         else:
-            self.dynamic_inputs.add(name)
+            self.dynamic_inputs[name] = is_key
 
     def iter_config_fields(self) -> Iterable[str]:
         """

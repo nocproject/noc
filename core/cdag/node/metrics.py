@@ -45,6 +45,9 @@ class MetricsNode(BaseCDAGNode):
         for k, v in kwargs.items():
             if v is None:
                 continue
+            if self.is_key_input(k):
+                rk[k] = v
+                continue
             cleaner = cleaners.get(k)
             if cleaner:
                 try:
