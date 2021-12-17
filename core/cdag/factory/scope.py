@@ -116,4 +116,4 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
         ms.set_scope_cleaners(cfg.name, cfg.cleaners)
         # Additional key fields
         for kf in cfg.key_fields:
-            ms.add_input(kf, is_key=True)
+            ms.add_input(kf)
