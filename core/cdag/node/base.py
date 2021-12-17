@@ -232,9 +232,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         Check if input is required
         """
-        if self.is_dynamic_input(name):
-            return False
-        return name in self.static_inputs
+        return not self.is_dynamic_input(name)
 
     def is_dynamic_input(self, name: str) -> bool:
         """
