@@ -229,7 +229,7 @@ async def fetch(
         content_type = "application/binary"
         if not isinstance(body, (str, bytes)):
             body = smart_text(orjson.dumps(body))
-            content_type = "text/json"
+            content_type = "application/json"
         body = smart_bytes(body)  # Here and below body is binary
         h = {"Host": str(u.netloc), "Connection": "close", "User-Agent": DEFAULT_USER_AGENT}
         if body and content_encoding:
