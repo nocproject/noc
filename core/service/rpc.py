@@ -62,7 +62,7 @@ class RPCProxy(object):
             async def make_call(url, body, limit=3):
                 req_headers = {
                     "X-NOC-Calling-Service": self._service.name,
-                    "Content-Type": "text/json",
+                    "Content-Type": "application/json",
                 }
                 sample = 1 if span_ctx and span_id else 0
                 with Span(
