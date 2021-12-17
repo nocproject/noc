@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # MetricsNode
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -77,11 +77,3 @@ class MetricsNode(BaseCDAGNode):
         """
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
-
-    def clone(self, node_id: str) -> Optional[BaseCDAGNode]:
-        node = super().clone(node_id)
-        if not node:
-            return None
-        for i in self.iter_key_inputs():
-            node.mark_as_key(i)
-        return node

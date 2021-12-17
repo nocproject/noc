@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Optional, List, Iterable, Dict, Tuple, DefaultDict
+from typing import Any, Optional, List, Iterable, Dict, DefaultDict
 from collections import defaultdict
+from dataclasses import dataclass
 
 # Third-party modules
 from pydantic import BaseModel
@@ -73,6 +74,13 @@ class SubgraphCDAGFactory(ConfigCDAGFactory):
         return config
 
 
+@dataclass
+class InputItem(object):
+    __slots__ = "node", "input"
+    node: BaseCDAGNode
+    input: str
+
+
 class SubgraphNode(BaseCDAGNode):
     """
     Execute nested subgraph
@@ -105,10 +113,13 @@ class SubgraphNode(BaseCDAGNode):
                 factory.set_node_config(m.node, m.param, config.get(m.name))
         factory.construct()
         # Build input mappings
-        self.input_mappings: Dict[str, Tuple[BaseCDAGNode, str]] = {}
+        self.input_mappings: Dict[str, InputItem] = {}
         if cfg.inputs:
             for m in cfg.inputs:
-                self.input_mappings[m.public_name] = (self.cdag.get_node(m.node), m.name)
+                node = self.cdag.get_node(m.node)
+                if not node:
+                    continue
+                self.input_mappings[m.public_name] = InputItem(node=node, input=m.name)
         # Inject measure node when necessary
         self.measure_node = None
         if cfg.output:
@@ -122,12 +133,18 @@ class SubgraphNode(BaseCDAGNode):
     def iter_inputs(self) -> Iterable[str]:
         yield from self.input_mappings
 
+    def has_input(self, name: str) -> bool:
+        return name in self.input_mappings
+
+    def is_required_input(self, name: str) -> bool:
+        return name in self.input_mappings
+
     def get_value(self, *args, **kwargs) -> Optional[ValueType]:
         # Start sub-transaction
         tx = self.cdag.begin()
         for p, v in kwargs.items():
-            node, param = self.input_mappings[p]
-            node.activate(tx, param, v)
+            im = self.input_mappings[p]
+            im.node.activate(tx, im.input, v)
         changed_state = tx.get_changed_state()
         if self.state.state is None and changed_state:
             self.state.state = {}
