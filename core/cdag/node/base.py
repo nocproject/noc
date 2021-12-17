@@ -144,8 +144,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             sticky=self.sticky,
         )
         if self.allow_dynamic and self.dynamic_inputs:
-            for di in self.dynamic_inputs:
-                node.add_input(di)
+            for di, is_key in self.dynamic_inputs.items():
+                node.add_input(di, is_key=is_key)
         return node
 
     def clean_state(self, state: Optional[Dict[str, Any]]) -> Optional[BaseModel]:
