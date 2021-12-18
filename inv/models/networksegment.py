@@ -66,7 +66,6 @@ class VLANTranslation(EmbeddedDocument):
         ("sa.ManagedObject", "segment"),
         ("inv.NetworkSegment", "parent"),
         ("inv.NetworkSegment", "sibling"),
-        ("vc.VLAN", "segment"),
     ]
 )
 @on_save

@@ -10,7 +10,7 @@ import operator
 import threading
 import random
 import string
-from typing import Optional, List, Dict, Any, Iterable
+from typing import Optional, List, Iterator
 
 # Third-party modules
 from mongoengine.document import Document
@@ -20,6 +20,7 @@ import cachetools
 # NOC Modules
 from noc.core.lock.distributed import DistributedLock
 from noc.core.lock.base import get_locked_items
+from noc.core.model.decorator import on_delete_check
 from noc.models import get_model
 
 id_lock = threading.Lock()
@@ -34,6 +35,7 @@ def get_api_code_default():
     return "".join(random.choice(chars) for _ in range(20))
 
 
+@on_delete_check(check=[("vc.L2Domain", "pools.pool"), ("vc.L2DomainProfile", "pools.pool")])
 class ResourcePool(Document):
     """
     ResourcePool
@@ -111,7 +113,7 @@ class ResourcePool(Document):
     def get_lock_name(self):
         return f"rp:{self.id}"
 
-    def get_allocator(self, limit=1, **hints: Dict[str, Any]) -> Iterable:
+    def get_allocator(self, limit=1, **hints) -> Iterator:
         """
         Return ResourceAllocator method
         :return:
@@ -128,7 +130,7 @@ class ResourcePool(Document):
             allocator = getattr(model, "iter_free")
         except AttributeError as e:
             raise AttributeError(f"Required attribute {e}")
-        return allocator(pools=[self], limit=limit, **hints)
+        return allocator(pool=self, limit=limit, **hints)
 
     @classmethod
     def get_metrics(cls, pools: List["ResourcePool"]):

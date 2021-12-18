@@ -43,6 +43,7 @@ id_lock = Lock()
         ("phone.PhoneRangeProfile", "style"),
         ("fm.ActiveAlarm", "custom_style"),
         ("vc.VLANProfile", "style"),
+        ("vc.L2DomainProfile", "style"),
     ]
 )
 class Style(NOCModel):

@@ -281,11 +281,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_vlan",
-            type: "boolean",
-            defaultValue: false
-        },
-        {
             name: "enable_box_discovery_bfd",
             type: "boolean",
             defaultValue: false
@@ -740,6 +735,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "vpn_profile_confdb__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "vlan_interface_discovery",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
+            name: "vlan_vlandb_discovery",
+            type: "string",
+            defaultValue: "D"
         },
         {
             name: "config_download_storage",
