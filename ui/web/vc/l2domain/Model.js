@@ -1,18 +1,26 @@
 //---------------------------------------------------------------------
-// vc.vlan Model
+// vc.l2domain Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.vc.vlan.Model");
+console.debug("Defining NOC.vc.l2domain.Model");
 
-Ext.define("NOC.vc.vlan.Model", {
+Ext.define("NOC.vc.l2domain.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/vc/vlan/",
+    rest_url: "/vc/l2domain/",
 
     fields: [
         {
             name: "id",
+            type: "string"
+        },
+        {
+            name: "name",
+            type: "string"
+        },
+        {
+            name: "description",
             type: "string"
         },
         {
@@ -21,45 +29,6 @@ Ext.define("NOC.vc.vlan.Model", {
         },
         {
             name: "profile__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "apply_translation",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
-            name: "vlan",
-            type: "int"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "labels",
-            type: "auto"
-        },
-        {
-            name: "l2_domain",
-            type: "string"
-        },
-        {
-            name: "l2domain__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "remote_id",
-            type: "string"
-        },
-        {
-            name: "project",
-            type: "string"
-        },
-        {
-            name: "project__label",
             type: "string",
             persist: false
         },
@@ -74,6 +43,42 @@ Ext.define("NOC.vc.vlan.Model", {
             persist: false
         },
         {
+            name: "pools",
+            type: "auto"
+        },
+        {
+            name: "vlan_template",
+            type: "string"
+        },
+        {
+            name: "vlan_template__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "default_vlan_profile",
+            type: "string"
+        },
+        {
+            name: "default_vlan_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "vlan_discovery_policy",
+            type: "string",
+            defaultValue: "P"
+        },
+        {
+            name: "vlan_discovery_filter",
+            type: "string"
+        },
+        {
+            name: "vlan_discovery_filter__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "remote_system",
             type: "string"
         },
@@ -83,41 +88,24 @@ Ext.define("NOC.vc.vlan.Model", {
             persist: false
         },
         {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "labels",
+            type: "auto"
+        },
+        {
             name: "bi_id",
-            type: "string"
+            type: "int"
         },
         {
-            name: "name",
-            type: "string"
-        },
-        // Info fields
-        {
-            name: "interfaces_count",
-            type: "auto",
-            persist: false
-        },
-        {
-            name: "prefixes",
-            type: "auto",
+            name: "count",
+            type: "integer",
             persist: false
         },
         {
             name: "row_class",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "first_discovered",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "last_seen",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "expired",
             type: "string",
             persist: false
         }

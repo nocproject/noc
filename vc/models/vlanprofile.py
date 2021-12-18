@@ -11,7 +11,7 @@ import operator
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField, BooleanField
+from mongoengine.fields import StringField, LongField, ListField
 import cachetools
 
 # NOC modules
@@ -29,7 +29,12 @@ id_lock = Lock()
 @Label.model
 @bi_sync
 @on_delete_check(
-    check=[("vc.VLAN", "profile"), ("inv.NetworkSegmentProfile", "default_vlan_profile")]
+    check=[
+        ("vc.VLAN", "profile"),
+        ("vc.L2Domain", "default_vlan_profile"),
+        ("vc.L2DomainProfile", "default_vlan_profile"),
+        ("inv.NetworkSegmentProfile", "default_vlan_profile"),
+    ]
 )
 class VLANProfile(Document):
     meta = {
@@ -41,12 +46,6 @@ class VLANProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
-    # VLAN is management VLAN
-    enable_management = BooleanField(default=False)
-    # VLAN is multicast VLAN
-    enable_multicast = BooleanField(default=False)
-    # VLAN should be automatically provisioned
-    enable_provisioning = BooleanField(default=False)
     # VLAN workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
@@ -63,6 +62,10 @@ class VLANProfile(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_PROFILE_NAME = "default"
+    DEFAULT_WORKFLOW_NAME = "Default Resource"
 
     def __str__(self):
         return self.name
@@ -80,3 +83,15 @@ class VLANProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_vlanprofile")
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
+    def get_default_profile(cls) -> "VLANProfile":
+        vp = VLANProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+        if not vp:
+            vp = VLANProfile(
+                name=cls.DEFAULT_PROFILE_NAME,
+                workflow=Workflow.objects.filter(name=cls.DEFAULT_WORKFLOW_NAME).first(),
+            )
+            vp.save()
+        return vp

@@ -46,20 +46,12 @@ Ext.define("NOC.vc.vlanprofile.Model", {
             type: "auto"
         },
         {
-            name: "enable_management",
-            type: "boolean"
-        },
-        {
             name: "remote_id",
             type: "string"
         },
         {
             name: "workflow",
             type: "string"
-        },
-        {
-            name: "enable_multicast",
-            type: "boolean"
         },
         {
             name: "bi_id",

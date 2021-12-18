@@ -1010,29 +1010,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             colspan: 3
                                         },
                                         {
-                                            name: "enable_box_discovery_vlan",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("VLAN"),
-                                            reference: "enableBoxDiscoveryVlan"
-                                        },
-                                        {
-                                            name: "vlan_discovery_policy",
-                                            xtype: "combobox",
-                                            fieldLabel: __("Policy"),
-                                            store: [
-                                                ["s", __("Script")],
-                                                ["S", __("Script, ConfDB")],
-                                                ["C", __("ConfDB, Script")],
-                                                ["c", __("ConfDB")]
-                                            ],
-                                            allowBlank: false,
-                                            bind: {
-                                                disabled: "{!enableBoxDiscoveryVlan.checked}"
-                                            },
-                                            uiStyle: "medium",
-                                            colspan: 2
-                                        },
-                                        {
                                             name: "enable_box_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
@@ -1267,6 +1244,75 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 render: me.addTooltip
                                             }
                                         }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("VLAN"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Source")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Policy")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
+                                        },
+                                        {
+                                            name: "vlan_interface_discovery",
+                                            xtype: "combobox",
+                                            store: [
+                                                ["D", __("Disable")],
+                                                ["S", __("State only")],
+                                                ["V", __("VLAN Sync")],
+                                            ],
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                        },
+                                        {
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Vlan DB")
+                                        },
+                                        {
+                                            name: "vlan_vlandb_discovery",
+                                            xtype: "combobox",
+                                            store: [
+                                                ["D", __("Disable")],
+                                                ["S", __("State only")],
+                                                ["V", __("VLAN Sync")],
+                                            ],
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                        },
+                                        {
+                                            name: "vlan_discovery_policy",
+                                            xtype: "combobox",
+                                            store: [
+                                                ["s", __("Script")],
+                                                ["S", __("Script, ConfDB")],
+                                                ["C", __("ConfDB, Script")],
+                                                ["c", __("ConfDB")]
+                                            ],
+                                            allowBlank: false,
+                                            uiStyle: "medium",
+                                        },
                                     ]
                                 },
                                 {

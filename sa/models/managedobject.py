@@ -44,6 +44,7 @@ from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
+from noc.vc.models.l2domain import L2Domain
 from noc.main.models.label import Label
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
@@ -99,7 +100,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 32
+MANAGEDOBJECT_CACHE_VERSION = 33
 CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
@@ -259,6 +260,8 @@ class ManagedObject(NOCModel):
     vc_domain = ForeignKey(
         "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True, on_delete=CASCADE
     )
+    #
+    l2_domain = DocumentReferenceField(L2Domain, null=True, blank=True)
     # CM
     config = GridVCSField("config")
     # Default VRF
@@ -829,7 +832,7 @@ class ManagedObject(NOCModel):
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         #
-        self._reset_caches()
+        self._reset_caches(self.id)
         cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
         if self.initial_data["id"] is None:
@@ -1402,7 +1405,7 @@ class ManagedObject(NOCModel):
             )
             # self.save()
             cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
-            self._reset_caches()
+            self._reset_caches(self.id)
         caps = {}
         for ci in new_caps:
             cn = Capability.get_by_id(ci["capability"])
@@ -1898,13 +1901,14 @@ class ManagedObject(NOCModel):
             return self.snmp_rate_limit
         return self.object_profile.snmp_rate_limit
 
-    def _reset_caches(self):
+    @classmethod
+    def _reset_caches(cls, mo_id: int):
         try:
-            del self._id_cache["managedobject-id-%s" % self.id]
+            del cls._id_cache[f"managedobject-id-{mo_id}"]
         except KeyError:
             pass
-        cache.delete("managedobject-id-%s" % self.id, version=MANAGEDOBJECT_CACHE_VERSION)
-        cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
+        cache.delete(f"managedobject-id-{mo_id}", version=MANAGEDOBJECT_CACHE_VERSION)
+        cache.delete(f"cred-{mo_id}", version=CREDENTIAL_CACHE_VERSION)
 
     @property
     def events_stream_and_partition(self) -> Tuple[str, int]:

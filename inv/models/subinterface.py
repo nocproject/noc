@@ -20,6 +20,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.change.decorator import change
 from noc.sa.models.service import Service
+from noc.vc.models.l2domain import L2Domain
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
 from .interfaceprofile import InterfaceProfile
@@ -70,6 +71,7 @@ class SubInterface(Document):
     interface = PlainReferenceField(Interface)
     managed_object = ForeignKeyField(ManagedObject)
     forwarding_instance = PlainReferenceField(ForwardingInstance, required=False)
+    l2_domain = PlainReferenceField(L2Domain, required=False)
     name = StringField()
     description = StringField(required=False)
     profile = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
