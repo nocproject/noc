@@ -61,6 +61,7 @@ STATE_JOB = "noc.core.wf.transition.state_job"
         ("sla.SLAProbe", "state"),
         ("vc.VLAN", "state"),
         ("vc.VPN", "state"),
+        ("vc.L2Domain", "state"),
     ]
 )
 @on_save

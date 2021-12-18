@@ -54,6 +54,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.inv.map.Maintenance",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.vc.vcdomain.LookupField",
+        "NOC.vc.l2domain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.fm.ttsystem.LookupField",
         "NOC.maintenance.maintenancetype.LookupField",
@@ -906,6 +907,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     groupEdit: true
                                 },
                                 {
+                                    name: "l2_domain",
+                                    xtype: "vc.l2domain.LookupField",
+                                    fieldLabel: __("L2 Domain"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
                                     name: "autosegmentation_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("Autosegmentation Policy"),
@@ -1653,10 +1661,10 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "ip.vrf"
         },
         {
-            title: __("By VC Domain"),
-            name: "vc_domain",
+            title: __("By L2 Domain"),
+            name: "l2_domain",
             ftype: "lookup",
-            lookup: "vc.vcdomain"
+            lookup: "vc.l2domain"
         },
         {
             title: __("By Controller"),

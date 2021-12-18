@@ -16,8 +16,7 @@ Ext.define("NOC.vc.vlan.Application", {
         "NOC.core.TemplatePreview",
         "NOC.core.StateField",
         "NOC.project.project.LookupField",
-        "NOC.vc.vpn.LookupField",
-        "NOC.vc.vlan.LookupField",
+        "NOC.vc.l2domain.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.vc.vlan.Model",
@@ -43,10 +42,10 @@ Ext.define("NOC.vc.vlan.Application", {
                     width: 150
                 },
                 {
-                    text: __("Segment"),
-                    dataIndex: "segment",
+                    text: __("L2 Domain"),
+                    dataIndex: "l2_domain",
                     width: 150,
-                    renderer: NOC.render.Lookup("segment")
+                    renderer: NOC.render.Lookup("l2_domain")
                 },
                 {
                     text: __("Profile"),
@@ -66,15 +65,19 @@ Ext.define("NOC.vc.vlan.Application", {
                     width: 75
                 },
                 {
-                    text: __("Translation"),
-                    dataIndex: "translation_rule",
-                    width: 50
+                    text: __("Int."),
+                    dataIndex: "interfaces_count",
+                    width: 50,
+                    sortable: false,
+                    align: "right",
+                    renderer: NOC.render.Clickable,
+                    onClick: me.onInterfacesCellClick
                 },
                 {
-                    text: __("Parent"),
-                    dataIndex: "parent",
-                    width: 200,
-                    renderer: NOC.render.Lookup("parent")
+                    text: __("Prefixes"),
+                    dataIndex: "prefixes",
+                    width: 100,
+                    sortable: false
                 },
                 {
                     text: __("Description"),
@@ -107,10 +110,9 @@ Ext.define("NOC.vc.vlan.Application", {
                     maxValue: 4095
                 },
                 {
-                    name: "segment",
-                    xtype: "noc.core.combotree",
-                    restUrl: "/inv/networksegment/",
-                    fieldLabel: __("Segment"),
+                    name: "l2domain",
+                    xtype: "vc.l2domain.LookupField",
+                    fieldLabel: __("L2 Domain"),
                     allowBlank: false
                 },
                 {
@@ -130,42 +132,6 @@ Ext.define("NOC.vc.vlan.Application", {
                     xtype: "project.project.LookupField",
                     fieldLabel: __("Project"),
                     allowBlank: true
-                },
-                {
-                    name: "vpn",
-                    xtype: "vc.vpn.LookupField",
-                    fieldLabel: __("VPN"),
-                    allowBlank: true
-                },
-                {
-                    name: "vni",
-                    xtype: "numberfield",
-                    fieldLabel: __("VNI"),
-                    allowBlank: true,
-                    minValue: 0,
-                    maxValue: (1 << 24) - 1
-                },
-                {
-                    name: "translation_rule",
-                    xtype: "combobox",
-                    fieldLabel: __("Translation Rule"),
-                    allowBlank: true,
-                    store: [
-                        ["map", "map"],
-                        ["push", "push"]
-                    ],
-                    uiStyle: "medium"
-                },
-                {
-                    name: "parent",
-                    xtype: "vc.vlan.LookupField",
-                    fieldLabel: __("Parent"),
-                    allowBlank: true
-                },
-                {
-                    name: "apply_translation",
-                    xtype: "checkbox",
-                    boxLabel: __("Apply Translation")
                 },
                 {
                     xtype: "fieldset",
@@ -347,10 +313,16 @@ Ext.define("NOC.vc.vlan.Application", {
     },
     filters: [
         {
-            title: __("By Segment"),
-            name: "segment",
-            ftype: "tree",
-            lookup: "inv.networksegment"
-        }
+            title: __("By L2 Domain"),
+            name: "l2domain",
+            ftype: "lookup",
+            lookup: "vc.l2domain"
+        },
+        {
+            title: __("By State"),
+            name: "state",
+            ftype: "lookup",
+            lookup: "main.resourcestate"
+        },
     ]
 });

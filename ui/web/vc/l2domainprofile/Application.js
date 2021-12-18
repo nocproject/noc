@@ -1,21 +1,24 @@
 //---------------------------------------------------------------------
-// vc.vlanprofile application
+// vc.l2domainprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2021 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.vc.vlanprofile.Application");
+console.debug("Defining NOC.vc.l2domainprofile.Application");
 
-Ext.define("NOC.vc.vlanprofile.Application", {
+Ext.define("NOC.vc.l2domainprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.core.label.LabelField",
-        "NOC.vc.vlanprofile.Model",
+        "NOC.vc.l2domainprofile.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",
+        "NOC.inv.resourcepool.LookupField",
+        "NOC.vc.vlantemplate.LookupField",
+        "NOC.vc.vlanfilter.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
-    model: "NOC.vc.vlanprofile.Model",
+    model: "NOC.vc.l2domainprofile.Model",
     search: true,
     helpId: "vlan-profile",
     rowClassField: "row_class",
@@ -35,12 +38,6 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     width: 100,
                     renderer: NOC.render.Lookup("workflow")
                 },
-                {
-                    text: __("Provisioning"),
-                    dataIndex: "enable_provisioning",
-                    width: 50,
-                    renderer: NOC.render.Bool
-                }
             ],
 
             fields: [
@@ -70,9 +67,60 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "enable_provisioning",
-                    xtype: "checkbox",
-                    boxLabel: __("Enable Provisioning")
+                    name: "type",
+                    xtype: "combobox",
+                    fieldLabel: __("VLAN Discovery Policy"),
+                    allowBlank: false,
+                    uiStyle: "medium",
+                    value: "E",
+                    store: [
+                        ["D", "Disable"],
+                        ["E", "Enable"],
+                        ["S", "Status Only"]
+                    ]
+                },
+                {
+                    name: "vlan_discovery_filter",
+                    xtype: "vc.vlanfilter.LookupField",
+                    fieldLabel: __("VLAN Discovery Filter"),
+                    allowBlank: true
+                },
+                {
+                    name: "vlan_template",
+                    xtype: "vc.vlantemplate.LookupField",
+                    fieldLabel: __("VLAN Template"),
+                    allowBlank: true
+                },
+                {
+                    name: "pools",
+                    xtype: "gridfield",
+                    fieldLabel: __("VLAN Pools"),
+                    columns: [
+                        {
+                            text: __("Pool"),
+                            dataIndex: "pool",
+                            width: 200,
+                            editor: {
+                                xtype: "inv.resourcepool.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("pool")
+                        },
+                        {
+                            dataIndex: "description",
+                            text: __("Description"),
+                            editor: "textfield",
+                            width: 150
+                        },
+                        {
+                            text: __("VLAN Filter"),
+                            dataIndex: "vlan_filter",
+                            width: 200,
+                            editor: {
+                                xtype: "vc.vlanfilter.LookupField"
+                            },
+                            renderer: NOC.render.Lookup("vlan_filter")
+                        }
+                    ]
                 },
                 {
                     xtype: "fieldset",
@@ -111,7 +159,7 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_vlanprofile": true
+                        "enable_l2domainprofile": true
                     },
                 }
             ]

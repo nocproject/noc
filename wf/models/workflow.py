@@ -45,6 +45,7 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("inv.SensorProfile", "workflow"),
         ("vc.VPNProfile", "workflow"),
         ("vc.VLANProfile", "workflow"),
+        ("vc.L2DomainProfile", "workflow"),
     ]
 )
 class Workflow(Document):

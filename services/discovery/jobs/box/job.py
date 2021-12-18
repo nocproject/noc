@@ -119,7 +119,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             IDCheck(self).run()
         if self.object.object_profile.enable_box_discovery_config:
             ConfigValidationCheck(self).run()
-        if self.object.object_profile.enable_box_discovery_vlan:
+        if VLANCheck.is_enabled_for_object(self.object):
             VLANCheck(self).run()
         if self.object.object_profile.enable_box_discovery_nri_portmap:
             NRIPortmapperCheck(self).run()

@@ -10,7 +10,7 @@ from collections import defaultdict
 from functools import partial
 
 # Third-party modules
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 
 # NOC modules
 from noc.core.text import ranges_to_list
@@ -77,6 +77,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.vrf_artefact = {}  # name -> {name:, type:, rd:}
         self.prefix_artefact = {}
         self.interface_prefix_artefact = []
+        self.interface_assigned_vlans: Set[int] = set()  # @todo l2domain
         self.is_confdb_source = False  # Set True if Interface source is ConfDB
 
     def handler(self):
@@ -192,6 +193,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.set_artefact("interface_macs", self.interface_macs)
         self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
+        self.set_artefact("interface_assigned_vlans", self.interface_assigned_vlans)
 
     def submit_forwarding_instance(self, name, type, rd, rt_export, rt_import, vr, vpn_id=None):
         if name == "default":
@@ -361,6 +363,10 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             si.save()
         if mac:
             self.interface_macs.add(mac)
+        if untagged_vlan:
+            self.interface_assigned_vlans.add(untagged_vlan)
+        if vlan_ids:
+            self.interface_assigned_vlans.update(set(vlan_ids))
         return si
 
     def cleanup_forwarding_instances(self, fi):
