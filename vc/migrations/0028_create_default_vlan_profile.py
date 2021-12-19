@@ -14,16 +14,16 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         # Create default VLAN Profile
-        # self.mongo_db["vlanprofiles"].insert_one(
-        #     {
-        #         "_id": ObjectId("61bee6a55c42c21338453612"),
-        #         "name": "default",
-        #         "workflow": ObjectId("5a01d980b6f529000100d37a"),
-        #         "labels": [],
-        #         "effective_labels": [],
-        #         "bi_id": 2881867143753311142,
-        #     }
-        # )
+        self.mongo_db["vlanprofiles"].insert_one(
+            {
+                "_id": ObjectId("61bee6a55c42c21338453612"),
+                "name": "default",
+                "workflow": ObjectId("5a01d980b6f529000100d37a"),
+                "labels": [],
+                "effective_labels": [],
+                "bi_id": 2881867143753311142,
+            }
+        )
         # Create default L2 Domain Profile
         self.mongo_db["l2domainprofiles"].insert_one(
             {
