@@ -21,13 +21,14 @@ class Migration(BaseMigration):
 
     def migrate(self):
         # Check VC - if count more 0 - migrate VC
-        (vc_count,) = self.db.execute(
-            """
-            SELECT count(*)
-            FROM vc_vc
-            WHERE l1 != 1
-            """
-        )
+        # (vc_count,) = self.db.execute(
+        #     """
+        #     SELECT count(*)
+        #     FROM vc_vc
+        #     WHERE l1 != 1
+        #     """
+        # )
+        vc_count = 0
         # VC Migration
         vlan_profile_id = bson.ObjectId("61bee6a55c42c21338453612")
         l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
@@ -52,8 +53,8 @@ class Migration(BaseMigration):
         vlans_update = []
         l2_domain_map = {}
         # NetworkSegment migrate to L2 Domain
-        for nsid, name, description in self.mongo_db["noc.networksegments"].find(
-            {"_id": {"$id": segments}}
+        for ns_id, name, description in self.mongo_db["noc.networksegments"].find(
+            {"_id": {"$id": {"$in": segments}}}
         ):
             l2dom_id = bson.ObjectId()
             l2_domains += [
@@ -70,8 +71,8 @@ class Migration(BaseMigration):
                     }
                 )
             ]
-            vlans_update += [UpdateMany({"segment": nsid}, {"$set": {"l2_domain": l2dom_id}})]
-            l2_domain_map[nsid] = l2dom_id
+            vlans_update += [UpdateMany({"segment": ns_id}, {"$set": {"l2_domain": l2dom_id}})]
+            l2_domain_map[ns_id] = l2dom_id
         if l2_domains:
             self.mongo_db["l2domains"].bulk_write(l2_domains)
         if vlans_update:
@@ -89,7 +90,8 @@ class Migration(BaseMigration):
 
     def vc_migrate(self, default_l2d_profile_id, default_vlan_profile):
         # Clean VLANs collection
-        self.mongo_db["vlans"].remove({})
+        v_coll = self.mongo_db["vlans"]
+        v_coll.remove({})
         l2_domains = []
         l2_domain_map = {}
         for vid, name, description in self.db.execute(
@@ -145,7 +147,7 @@ class Migration(BaseMigration):
             ]
         if vlans:
             # @todo Chunk
-            self.mongo_db["vlans"].bulk_write(vlans)
+            v_coll.bulk_write(vlans)
         # Update ManagedObject L2 Domain
         for vid, l2_d in l2_domain_map.items():
             self.db.execute(
