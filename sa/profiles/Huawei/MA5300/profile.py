@@ -46,7 +46,7 @@ class Profile(BaseProfile):
         re.compile(br"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
         re.compile(br"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
         re.compile(br"\r\nWarning: Battery is low power!"),
-        "\r",
+        b"\r",
     ]
     # to one SNMP GET request
     snmp_metrics_get_chunk = 30

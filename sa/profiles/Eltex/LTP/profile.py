@@ -15,24 +15,25 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.LTP"
-    pattern_username = r"(?<!Last>)([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
-    pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
-    pattern_unprivileged_prompt = r"^\S+>"
+
+    pattern_username = rb"(?<!Last>)([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
+    pattern_more = [(rb"--More-- ", b" "), (rb"\[Yes/press any key for no\]", b"Y")]
+    pattern_unprivileged_prompt = rb"^\S+>"
     pattern_syntax_error = (
-        r"(Command not found. Use '?' to view available commands|"
-        r"Incomplete command\s+|Invalid argument\s+|Unknown command)"
+        rb"(Command not found. Use '?' to view available commands|"
+        rb"Incomplete command\s+|Invalid argument\s+|Unknown command)"
     )
 
     #    command_disable_pager = "terminal datadump"
     #    command_super = "enable"
-    username_submit = "\r"
-    password_submit = "\r"
-    command_submit = "\r"
+    username_submit = b"\r"
+    password_submit = b"\r"
+    command_submit = b"\r"
 
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "save"
-    pattern_prompt = r"^\S+#"
+    pattern_prompt = rb"^\S+#"
 
     class switch(object):
         """Switch context manager to use with "with" statement"""

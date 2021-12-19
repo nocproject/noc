@@ -33,7 +33,7 @@ class Profile(BaseProfile):
         (rb"Is this ok \[y/N\]: ", b"y\n"),
     ]
     command_disable_pager = "LANG=en_US.UTF-8; PATH=$PATH:/sbin:/usr/sbin; PROMPT_COMMAND=''"
-    command_super = "sudo bash"
+    command_super = b"sudo bash"
     command_exit = "exit"
 
     INTERFACE_TYPES = {

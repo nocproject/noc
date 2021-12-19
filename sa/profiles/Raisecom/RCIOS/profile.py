@@ -15,7 +15,7 @@ class Profile(BaseProfile):
 
     pattern_username = rb"^([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)> "
-    pattern_super_password = r"^Enable: "
+    pattern_super_password = rb"^Enable: "
     cli_retries_super_password = 2
     command_super = b"enable"
     pattern_prompt = rb"^(?P<hostname>\S+)# "
