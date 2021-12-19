@@ -4,9 +4,6 @@
 # Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 
-# Third-party modules
-from bson import ObjectId
-
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
