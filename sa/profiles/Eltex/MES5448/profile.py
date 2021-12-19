@@ -25,13 +25,14 @@ def render_regexp(oid, value):
 
 class Profile(BaseProfile):
     name = "Eltex.MES5448"
-    pattern_more = [(r"--More-- or \(q\)uit", " ")]
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
-    pattern_prompt = r"^(?P<hostname>\S+)#"
+
+    pattern_more = [(rb"--More-- or \(q\)uit", b" ")]
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>"
+    pattern_prompt = rb"^(?P<hostname>\S+)#"
     pattern_syntax_error = (
-        r"^% (Unrecognized command|Incomplete command|"
-        r"Wrong number of parameters or invalid range, size or "
-        r"characters entered)$"
+        rb"^% (Unrecognized command|Incomplete command|"
+        rb"Wrong number of parameters or invalid range, size or "
+        rb"characters entered)$"
     )
     command_super = "enable"
     command_disable_pager = "terminal length 0"

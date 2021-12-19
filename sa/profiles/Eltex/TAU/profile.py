@@ -15,19 +15,20 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.TAU"
-    pattern_username = r"^\S+ [Ll]ogin:"
-    pattern_password = r"^[Pp]assword:"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
-    pattern_prompt = r"^(\S+# |> |config> |\[\S+\]\s*|root@\S+:(~|/\S+)\$)"
+
+    pattern_username = rb"^\S+ [Ll]ogin:"
+    pattern_password = rb"^[Pp]assword:"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>\s*"
+    pattern_prompt = rb"^(\S+# |> |config> |\[\S+\]\s*|root@\S+:(~|/\S+)\$)"
     pattern_more = (
-        r'Press any key to continue|\| Press any key to continue \| Press "q" to exit \| '
+        rb'Press any key to continue|\| Press any key to continue \| Press "q" to exit \| '
     )
-    pattern_syntax_error = r"Syntax error: Unknown command|-sh: .+: not found"
+    pattern_syntax_error = rb"Syntax error: Unknown command|-sh: .+: not found"
     command_exit = "exit"
     command_more = "\n"
     command_enter_config = "config"
     command_leave_config = "exit"
-    command_super = "enable"
+    command_super = b"enable"
     rogue_chars = [re.compile(rb"\^J"), b"\r"]
 
     matchers = {

@@ -25,8 +25,8 @@ class Profile(BaseProfile):
     pattern_prompt = (
         rb"^[\s\*]*(?P<hostname>[\S\s]+)(?<!Login)(?<!Password)\s*(\(\S+\)){0,4}(]|)[#>]"
     )
-    pattern_syntax_error = r"Syntax error"
-    pattern_operation_error = r"ERROR: Permission denied."
+    pattern_syntax_error = rb"Syntax error"
+    pattern_operation_error = rb"ERROR: Permission denied."
     pattern_more = [(rb"<SPACE> for next page, <CR> for next line, A for all, Q to quit", b"a")]
     command_exit = "exit"
 

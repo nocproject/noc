@@ -15,7 +15,7 @@ class Profile(BaseProfile):
     pattern_username = rb"^Username:"
     pattern_password = rb"^(Password:|Please input password:)"
     pattern_more = [
-        (rb"^\s+---- More ----$", " "),
+        (rb"^\s+---- More ----$", b" "),
         (rb"The current configuration will be written to the device. Are you sure? [Y/N]:", b"Y"),
         (rb"(To leave the existing filename unchanged, press the enter key):", b"\n"),
         (rb"flash:/startup.cfg exists, overwrite? [Y/N]:", b"Y"),
