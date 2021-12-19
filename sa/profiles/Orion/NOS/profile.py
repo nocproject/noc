@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
     pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = rb"^% \" .+ \"  Unknown command."
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal page-break disable"
     pattern_more = [(rb" --More-- ", b" ")]
     command_exit = "exit"

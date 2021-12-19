@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^\S+ #"
     pattern_more = [(rb"^--More-- or \(q\)uit$", b"\n")]
     pattern_syntax_error = rb"^(% Invalid input detected at|Command not found)"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "exit\nexit"
 
     terminal_length_changed = False

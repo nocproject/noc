@@ -19,6 +19,6 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
     pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = rb"% Parse error"
-    command_super = "enable"
+    command_super = b"enable"
     pattern_more = [(rb"--More-- \(q\) quit \(u\) pageup \(/\) search \(n\) repeat", b" ")]
     rogue_chars = [re.compile(rb"\r\s+\r"), b"\r"]

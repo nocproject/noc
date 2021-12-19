@@ -20,12 +20,12 @@ class Profile(BaseProfile):
 
     name = "Ericsson.SEOS"
 
-    pattern_more = rb"^---(more)---"
+    pattern_more = [(rb"^---(more)---", b"\r")]
     pattern_unprivileged_prompt = rb"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)>"
     pattern_prompt = rb"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)#"
     pattern_syntax_error = rb"% Invalid input at|% ERROR Invalid input detected"
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     rogue_chars = [re.compile(rb"\x08{4,}\S+"), b"\r"]

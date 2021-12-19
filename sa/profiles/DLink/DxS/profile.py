@@ -30,7 +30,7 @@ class Profile(BaseProfile):
     pattern_operation_error = (
         rb"This command can\'t be used when authentication policy is disabled."
     )
-    command_super = "enable admin"
+    command_super = b"enable admin"
     pattern_prompt = rb"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
     password_submit = b"\r\n"
     command_exit = "logout"

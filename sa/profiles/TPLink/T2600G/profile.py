@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = (
         rb".*(?:Error: (Invalid parameter.)|(Bad command)|(Missing parameter data)).*"
     )
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     command_disable_pager = "terminal length 0"
     username_submit = b"\r\n"

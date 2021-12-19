@@ -14,11 +14,11 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "NSN.hiX56xx"
 
-    pattern_more = rb"^ --More-- "
+    pattern_more = [(rb"^ --More-- ", b"\r")]
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "wr mem\n"

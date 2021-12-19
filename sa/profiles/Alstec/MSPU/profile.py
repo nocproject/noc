@@ -14,7 +14,7 @@ class Profile(BaseProfile):
     name = "Alstec.MSPU"
 
     pattern_prompt = rb"^\S+\s*\$> "
-    pattern_more = rb"^--More-- or \(q\)uit$"
+    pattern_more = [(rb"^--More-- or \(q\)uit$", b"\r")]
     pattern_syntax_error = rb"\^ error"
     command_exit = "exit"
 

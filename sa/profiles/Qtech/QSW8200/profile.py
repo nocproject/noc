@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"Error input in the position marke[td] by|%  Incomplete command"
     # Do not use this. Bogus hardware.
     # command_disable_pager = "terminal page-break disable"
-    command_super = "enable"
+    command_super = b"enable"
     command_submit = b"\r"
     command_exit = "quit"
 

@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     name = "Huawei.MA5300"
 
     pattern_more = [
-        (rb"--- More:", " "),
+        (rb"--- More:", b" "),
         (rb"[ ]+---- More \(Press CTRL\+C break\) ---[ ]+", b" "),  # [ ]+ use for save \n in output
         # stream, because more pattern remove from stream
         (rb"Note: Terminal", b"\n"),
@@ -30,7 +30,7 @@ class Profile(BaseProfile):
     pattern_username = rb"^Username:"
     pattern_password = rb"^Password:"
     command_exit = "logout"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "save"

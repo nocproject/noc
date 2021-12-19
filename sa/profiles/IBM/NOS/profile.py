@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal-length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
     requires_netmask_conversion = True

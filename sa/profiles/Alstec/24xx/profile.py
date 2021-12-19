@@ -31,7 +31,7 @@ class Profile(BaseProfile):
         (rb"Would you like to save them now\?", b"n"),
     ]
     pattern_syntax_error = rb"(ERROR: Wrong or incomplete command|Incomplete command\. Use \? to list commands|\^\n% Invalid input detected at '\^' marker)"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "logout"
     command_enter_config = "configure"
     command_leave_config = "exit"

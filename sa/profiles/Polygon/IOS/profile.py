@@ -13,13 +13,13 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Polygon.IOS"
 
-    pattern_more = [(rb"^ --More--", " "), (r"(?:\?|interfaces)\s*\[confirm\]", b" ")]
+    pattern_more = [(rb"^ --More--", b" "), (r"(?:\?|interfaces)\s*\[confirm\]", b" ")]
     pattern_unpriveleged_prompt = rb"^\S+?>"
     pattern_syntax_error = (
         rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     )
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"

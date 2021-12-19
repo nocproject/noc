@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Qtech.QSW2800"
     pattern_more = [
-        (rb"^\s*--More--\s*$", " "),
+        (rb"^\s*--More--\s*$", b" "),
         (rb"^Confirm to overwrite current startup-config configuration [Y/N]:", b"\nY\n"),
         (rb"^Confirm to overwrite current startup-config configuration", b"\ny\n"),
         (rb"^Confirm to overwrite the existed destination file?", b"\ny\n"),
@@ -28,7 +28,7 @@ class Profile(BaseProfile):
         rb"|Unknown command"
     )
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

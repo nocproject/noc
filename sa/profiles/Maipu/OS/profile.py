@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     ]
 
     command_exit = "quit"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure t"
     command_leave_config = "end"
     command_save_config = "save"

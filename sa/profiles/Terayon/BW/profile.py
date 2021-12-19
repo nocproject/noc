@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(.*\x00)?(?P<hostname>.+?)>"
     pattern_prompt = rb"Terayon CMTS#(\x1b\[K)?"
     pattern_syntax_error = rb"% invalid input"
-    command_super = "enable"
+    command_super = b"enable"
     command_submit = "\r"
     command_disable_pager = "terminal length 0"
     pattern_more = [(rb"--More--", b" ")]

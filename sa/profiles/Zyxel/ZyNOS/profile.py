@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^\S+?\s*(\S+|)#"
     pattern_more = [(rb"^-- more --.*?$", b" ")]
     pattern_zynos = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_exit = "exit"

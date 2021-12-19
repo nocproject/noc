@@ -15,7 +15,7 @@ class Profile(BaseProfile):
 
     pattern_username = rb"[Uu]ser: ?"
     pattern_unprivileged_prompt = rb"^\S*>"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = b"\x04"
     pattern_prompt = rb"^\S*#"
     password_submit = b"\r"

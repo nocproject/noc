@@ -20,7 +20,7 @@ class Profile(BaseProfile):
         (rb"^More: <space>,  Quit: q, One line: <return>", b" "),
         (rb"^.*?\[Yes/press any key for no\]\.*", b"Y"),
     ]
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

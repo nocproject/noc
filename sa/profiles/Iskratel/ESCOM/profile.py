@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = (
         rb"% Unrecognized command|% Wrong number of parameters|Incomplete command"
     )
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal datadump"
     pattern_more = [
         (rb"More: <space>,  Quit: q or CTRL+Z, One line: <return>", b" "),

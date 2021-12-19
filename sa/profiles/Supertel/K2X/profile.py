@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^\S+> "
     pattern_syntax_error = rb"^%\s+(Unrecognized command|Incomplete command|missing mandatory parameter|bad parameter value|Wrong number of parameters or invalid range, size or characters entered)$"
     command_disable_pager = "terminal datadump"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

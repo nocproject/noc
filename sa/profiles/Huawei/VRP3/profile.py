@@ -35,7 +35,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"Invalid parameter|Incorrect command|\%\s*Unknown command"
     config_volatile = ["^%.*?$"]
     command_disable_pager = "length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "save\ny\n"

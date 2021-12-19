@@ -26,7 +26,7 @@ class Profile(BaseProfile):
             b" ",
         ),
         (rb"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", b"y"),
-        (rb"^ --More-- $", " "),
+        (rb"^ --More-- $", b" "),
         (rb"^Confirm to overwrite current startup-config configuration", b"\ny\n"),
         (rb"^Confirm to overwrite the existed destination file?", b"\ny\n"),
         (rb"^Begin to receive file, please wait", b" "),
@@ -39,7 +39,7 @@ class Profile(BaseProfile):
         rb"command"
     )
     #    command_disable_pager = "terminal datadump"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_exit = "quit"

@@ -26,7 +26,7 @@ class Profile(BaseProfile):
     pattern_operation_error = (
         rb"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config."
     )
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal datadump"
     rogue_chars = [re.compile(rb"\r\n##+#\r\n"), "\r"]
     pattern_more = [

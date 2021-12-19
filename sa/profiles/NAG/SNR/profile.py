@@ -16,14 +16,14 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "NAG.SNR"
     pattern_more = [
-        (rb"^ --More-- ", "\n"),
+        (rb"^ --More-- ", b"\n"),
         (rb"^Confirm to overwrite current startup-config configuration \[Y/N\]:", b"y\n"),
     ]
     username_submit = b"\r"
     password_submit = b"\r"
     command_submit = b"\r"
     # command_disable_pager = "terminal length 200"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "exit"
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}

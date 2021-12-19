@@ -57,7 +57,7 @@ class Profile(BaseProfile):
     send_on_syntax_error = BaseProfile.send_backspaces
     config_volatile = ["^%.*?$"]
     command_disable_pager = "scroll 512"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "quit"
     command_save_config = "save\ny\n"

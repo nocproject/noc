@@ -15,7 +15,7 @@ class Profile(BaseProfile):
 
     pattern_more = [(rb"^--More-- ", b" ")]
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^\S+?#"
     command_disable_pager = "terminal length 0"
     requires_netmask_conversion = True

@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
     pattern_prompt = rb"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
     pattern_syntax_error = rb"\n% (Invalid|Ambiguous) word detected at"
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
     command_submit = b"\r\n"
     username_submit = b"\r\n"

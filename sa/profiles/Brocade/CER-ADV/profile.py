@@ -25,6 +25,6 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "write memory"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "exit/rexit"
     command_submit = b"\r"

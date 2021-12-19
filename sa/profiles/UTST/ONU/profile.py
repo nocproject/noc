@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     username_submit = b"\r"
     password_submit = b"\r"
     command_submit = b"\r"
-    command_super = "enable"
+    command_super = b"enable"
     pattern_unprivileged_prompt = rb"^ONU208i#|ONU2004>"
     pattern_prompt = rb"^ONU208i\(enable\)|ONU2004(?:i#|#)"
 

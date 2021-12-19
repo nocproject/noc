@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>\S+)#"
     pattern_syntax_error = rb"% Unknown command"
     command_disable_pager = ["terminal length 0", "terminal width 0"]
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "config"
     command_leave_config = "exit"
     command_save_config = "write"

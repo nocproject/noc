@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = (
         rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     )
-    command_super = "enable"
+    command_super = b"enable"
     command_leave_config = "exit"
     command_exit = "exit"
     command_save_config = "write\n"

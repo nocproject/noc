@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^\S+>"
     pattern_syntax_error = rb"% (?:Unrecognized|Incomplete) command"
     pattern_prompt = rb"^(?P<hostname>\S+(:\S+)*)#"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_exit = "exit"

@@ -14,14 +14,14 @@ class Profile(BaseProfile):
     name = "Cisco.SMB"
 
     pattern_more = [(rb"^More:", b" "), (rb"^Overwrite file \[startup-config\]", b"y")]
-    pattern_unprivileged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = (
         rb"% Invalid input detected at|% Ambiguous command:|"
         rb"% Incomplete command.|% Unrecognized command"
     )
     pattern_operation_error = rb"^%\s*bad"
     command_disable_pager = "terminal datadump"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"

@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Rubytech.l2ms"
 
-    pattern_more = [(rb"^Error1:", r"\n")]
+    pattern_more = [(rb"^Error1:", b"\n")]
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "save start\n"

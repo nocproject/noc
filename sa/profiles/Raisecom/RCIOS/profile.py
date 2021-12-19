@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)> "
     pattern_super_password = r"^Enable: "
     cli_retries_super_password = 2
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^(?P<hostname>\S+)# "
     command_exit = "exit"
     pattern_syntax_error = rb"% \".+\"  (?:Unknown command.)"

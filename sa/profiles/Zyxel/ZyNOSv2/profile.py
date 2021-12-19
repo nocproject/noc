@@ -14,5 +14,5 @@ class Profile(BaseProfile):
     name = "Zyxel.ZyNOSv2"
 
     pattern_prompt = rb"^\S+?>"
-    pattern_more = (rb"^---MORE---", b" ")
+    pattern_more = [(rb"^---MORE---", b" ")]
     enable_cli_session = False

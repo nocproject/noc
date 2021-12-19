@@ -25,7 +25,7 @@ class Profile(BaseProfile):
         rb"Available commands:|"
         rb"Next possible completions:)"
     )
-    command_super = "enable admin"
+    command_super = b"enable admin"
     pattern_prompt = rb"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager = ""
     command_exit = "logout"

@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_operation_error = rb"Error: Too many user login..."
     pattern_more = [(rb"\nPress any key to continue \(Q to quit\)", b" ")]
     # Are you sure to quit? yes[Y] or no[N]
-    command_super = "enable"
+    command_super = b"enable"
     rogue_chars = [re.compile(rb"^\s{10,}\r"), b"\r"]
     config_volatile = ["<entry1 sessionID=.+?/>"]
     username_submit = b"\r"

@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     name = "Juniper.JUNOSe"
 
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
     pattern_prompt = rb"^(?P<prompt>\S+?)(?::\S+?)?#"
     pattern_more = [(rb"^ --More-- ", b" ")]

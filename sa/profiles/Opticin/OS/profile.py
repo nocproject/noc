@@ -18,7 +18,7 @@ class Profile(BaseProfile):
         rb"% Unknown command|% Invalid input detected at|"
         rb"% Incomplete command|% Ambiguous command"
     )
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^(?P<hostname>[^\n]+)\\enable>"
     pattern_more = [
         (rb"----------MORE------------", b" "),

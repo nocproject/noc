@@ -31,7 +31,7 @@ class Profile(BaseProfile):
         rb"Error input in the position market by"
     )
     command_disable_pager = "terminal page-break disable"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

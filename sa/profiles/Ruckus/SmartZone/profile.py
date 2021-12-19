@@ -19,6 +19,6 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^\S*>"
     pattern_prompt = rb"^\S*#"
     command_submit = b"\n"
-    command_super = "enable force"
+    command_super = b"enable force"
     command_leave_config = "end"
     command_exit = "exit"

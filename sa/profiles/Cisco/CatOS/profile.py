@@ -14,7 +14,7 @@ class Profile(BaseProfile):
     name = "Cisco.CatOS"
 
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^\S+?\s+\(enable\)\s+"
     convert_mac = BaseProfile.convert_mac_to_dashed
     pattern_more = [(rb"^--More--$", b" "), (rb"^Do you wish to continue y/n [n]?", b"y\n")]

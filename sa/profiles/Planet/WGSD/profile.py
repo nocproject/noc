@@ -27,7 +27,7 @@ class Profile(BaseProfile):
         rb"characters entered)$"
     )
     command_disable_pager = "terminal datadump"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>\S+):%"
     pattern_more = [(rb"^--More--", b"g")]
     pattern_syntax_error = rb"syntax error, unexpected STRING|Command Abort, More Arguments need!"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "bye"
     rogue_chars = [re.compile(rb" \(\[q\]Quit,\[g\]Go to end,\[any key\]Continue...\)\r\n"), b"\r"]
 

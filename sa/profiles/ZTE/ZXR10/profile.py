@@ -23,7 +23,7 @@ class Profile(BaseProfile):
         rb"%\s+Invalid input detected at|%\s+Parameter too much|%\s+Command not found"
     )
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "write\n"

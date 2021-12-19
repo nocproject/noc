@@ -32,7 +32,7 @@ class Profile(BaseProfile):
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     command_submit = "\r"
-    command_super = "enable"
+    command_super = b"enable"
     password_submit = "\r"
     username_submit = "\r"
     # Iskratel SGR Not clearing command line when SyntaxError

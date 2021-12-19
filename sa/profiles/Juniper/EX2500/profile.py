@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Juniper.EX2500"
     pattern_more = [(rb"^--More--", b" "), (rb"^Sure you want to close this session", b"y\n")]
-    command_super = "enable"
+    command_super = b"enable"
     # command_enter_config = "configure terminal"
     # command_leave_config = "exit"
     pattern_unpriveleged_prompt = rb"(?P<hostname>\S+?> )"

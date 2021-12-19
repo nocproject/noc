@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_more = [(rb"^--More--.*", b"c")]
     command_submit = b"\r"
     command_save_config = "create config=boot1.cfg"
-    pattern_prompt = r"^Manager.*>"
+    pattern_prompt = rb"^Manager.*>"
     convert_mac = BaseProfile.convert_mac_to_dashed
 
     def convert_interface_name(self, s):
