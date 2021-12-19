@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_exit = "exit"
     pattern_prompt = rb"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True

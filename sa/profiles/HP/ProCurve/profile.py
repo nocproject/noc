@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     ]
     pattern_syntax_error = rb"Invalid input: "
     command_disable_pager = "terminal length 1000"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "write memory\n"

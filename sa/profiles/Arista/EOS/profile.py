@@ -22,7 +22,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"% Invalid input"
     pattern_more = [(rb"^ --More--", b"\n"), (rb"\?\s*\[confirm\]", b"\n")]
     command_submit = b"\r"
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
     convert_mac = BaseProfile.convert_mac_to_cisco
 

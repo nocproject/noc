@@ -15,16 +15,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Juniper.EX2500"
-    pattern_more = [(r"^--More--", " "), (r"^Sure you want to close this session", "y\n")]
-    command_super = "enable"
+    pattern_more = [(rb"^--More--", b" "), (rb"^Sure you want to close this session", b"y\n")]
+    command_super = b"enable"
     # command_enter_config = "configure terminal"
     # command_leave_config = "exit"
-    pattern_unpriveleged_prompt = r"(?P<hostname>\S+?> )"
-    pattern_prompt = r"(?P<hostname>\S+?# )"
+    pattern_unpriveleged_prompt = rb"(?P<hostname>\S+?> )"
+    pattern_prompt = rb"(?P<hostname>\S+?# )"
     command_exit = "exit\nexit"
 
     rogue_chars = [
-        "\r",
+        b"\r",
         re.compile(br"\n\n.*?\n"),
         re.compile(br"\n.*?:TELNET-ALERT:.*?\nvia TELNET/SSH From host .*?\n"),
     ]

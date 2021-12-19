@@ -17,25 +17,24 @@ class Profile(BaseProfile):
     name = "Linux.Alt"
 
     # supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
-    pattern_username = r"^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_password = r"^[Pp]assword:"
+    pattern_username = rb"^((?!Last)\S+ login|[Ll]ogin):"
+    pattern_password = rb"^[Pp]assword:"
 
     # use default BASH promt PS1='[\u@\h \W]\$ '
     # pattern_prompt = r"^\[\S+@\S+\s\S+](#|\$)\s"
-    pattern_prompt = r"\[\S+@\S+\s\S+](#|\$)\s"
+    pattern_prompt = rb"\[\S+@\S+\s\S+](#|\$)\s"
     pattern_syntax_error = (
-        r"^(bash: \S+: command not found...\r\n|-\w+: \w+: not found|"
-        r"-\w+: \w+: No such file or directory|\w+: \w+: command not found|"
-        r"\w+: \w+: \w+: No such file or directory)"
+        rb"^(bash: \S+: command not found...\r\n|-\w+: \w+: not found|"
+        rb"-\w+: \w+: No such file or directory|\w+: \w+: command not found|"
+        rb"\w+: \w+: \w+: No such file or directory)"
     )
     pattern_more = [
-        (r"Install package.*\[N/y\]\s$", "\n"),
-        (r"Is this ok \[y/N\]: ", "y\n"),
+        (rb"Install package.*\[N/y\]\s$", b"\n"),
+        (rb"Is this ok \[y/N\]: ", b"y\n"),
     ]
     command_disable_pager = "LANG=en_US.UTF-8; PATH=$PATH:/sbin:/usr/sbin; PROMPT_COMMAND=''"
     command_super = "sudo bash"
     command_exit = "exit"
-    command_more = "\n"
 
     INTERFACE_TYPES = {
         "et": "physical",  # No comment

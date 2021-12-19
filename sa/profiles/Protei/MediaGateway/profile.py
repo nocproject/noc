@@ -12,5 +12,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Protei.MediaGateway"
-    command_submit = "\r"
-    pattern_prompt = r"(^\S+\$|MAK>|MTU>|ITG>)"
+
+    command_submit = b"\r"
+    pattern_prompt = rb"(^\S+\$|MAK>|MTU>|ITG>)"

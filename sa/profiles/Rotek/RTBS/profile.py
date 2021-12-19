@@ -11,9 +11,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Rotek.RTBS"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
-    pattern_syntax_error = r"^\(ERROR\)"
-    command_submit = "\r"
+
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
+    pattern_syntax_error = rb"^\(ERROR\)"
+    command_submit = b"\r"
     command_exit = "logout"
 
     INTERFACE_TYPES = {

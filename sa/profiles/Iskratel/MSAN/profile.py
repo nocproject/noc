@@ -31,10 +31,10 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
-    command_submit = "\r"
-    command_super = "enable"
-    password_submit = "\r"
-    username_submit = "\r"
+    command_submit = b"\r"
+    command_super = b"enable"
+    password_submit = b"\r"
+    username_submit = b"\r"
     # Iskratel SGR Not clearing command line when SyntaxError
     send_on_syntax_error = b"\x1b[B"
     rogue_chars = [b"\r", b"\x00"]

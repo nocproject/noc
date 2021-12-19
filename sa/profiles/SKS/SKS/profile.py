@@ -15,22 +15,23 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "SKS.SKS"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>[^#\n]\S+)(?:\(e1\))?\s*#"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>[^#\n]\S+)(?:\(e1\))?\s*#"
     pattern_syntax_error = (
-        r"% Unrecognized command|% Wrong number of parameters|"
-        r"% Unrecognized host or address|"
-        r"Unknown command|Incomplete command|Too many parameters"
+        rb"% Unrecognized command|% Wrong number of parameters|"
+        rb"% Unrecognized host or address|"
+        rb"Unknown command|Incomplete command|Too many parameters"
     )
     pattern_operation_error = (
-        r"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config."
+        rb"%LCLI-W-E1MESSAGE: E1 units are not yet updated, cannot show running config."
     )
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal datadump"
     rogue_chars = [re.compile(rb"\r\n##+#\r\n"), "\r"]
     pattern_more = [
-        ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
-        ("^ --More-- ", " "),
+        (rb"More: <space>,  Quit: q or CTRL+Z, One line: <return>", b"a"),
+        (rb"^ --More-- ", b" "),
     ]
     config_volatile = [
         r"enable password 7 \S+( level \d+)?\n",

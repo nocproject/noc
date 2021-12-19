@@ -26,7 +26,6 @@ class Profile(BaseProfile):
     ]
     # pattern_more = "^Press any key to continue or Esc to stop scrolling.\r\n"
     pattern_syntax_error = rb"Illegal command name"
-    command_more = b" "
     command_exit = "exit"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]

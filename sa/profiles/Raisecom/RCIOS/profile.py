@@ -12,15 +12,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Raisecom.RCIOS"
-    pattern_username = r"^([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)> "
+
+    pattern_username = rb"^([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)> "
     pattern_super_password = r"^Enable: "
     cli_retries_super_password = 2
-    command_super = "enable"
-    pattern_prompt = r"^(?P<hostname>\S+)# "
+    command_super = b"enable"
+    pattern_prompt = rb"^(?P<hostname>\S+)# "
     command_exit = "exit"
-    pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
-    pattern_more = [(r"^--More-- \(\d+% of \d+ bytes\)", "r")]
+    pattern_syntax_error = rb"% \".+\"  (?:Unknown command.)"
+    pattern_more = [(rb"^--More-- \(\d+% of \d+ bytes\)", b"r")]
 
     config_tokenizer = "indent"
     config_tokenizer_settings = {

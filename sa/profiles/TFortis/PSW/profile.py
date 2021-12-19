@@ -12,12 +12,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "TFortis.PSW"
-    pattern_username = "User Name>"
-    username_submit = "\r\n"
-    password_submit = "\r\n"
-    command_submit = "\r\n"
-    pattern_password = "User Password>"
-    pattern_prompt = r"^TFortis .+#"
+
+    pattern_username = rb"User Name>"
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
+    command_submit = b"\r\n"
+    pattern_password = rb"User Password>"
+    pattern_prompt = rb"^TFortis .+#"
     rogue_chars = [b"\r", b"\x08*"]
     command_exit = "exit"
 

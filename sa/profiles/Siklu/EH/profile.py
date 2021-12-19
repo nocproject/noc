@@ -15,10 +15,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Siklu.EH"
-    pattern_username = "[Ll]ogin: "
-    pattern_password = "[Pp]assword: "
-    pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\"\,\(\)\/]+)?>"
-    command_submit = "\r"
+
+    pattern_username = rb"[Ll]ogin: "
+    pattern_password = rb"[Pp]assword: "
+    pattern_prompt = rb"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\"\,\(\)\/]+)?>"
+    command_submit = b"\r"
 
     rx_strip_cmd_repeat = re.compile(br".+\x1b\[\d+G\r?\n(.*)", re.MULTILINE | re.DOTALL)  # noqa
 

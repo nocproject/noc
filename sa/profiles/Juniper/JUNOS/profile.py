@@ -15,14 +15,14 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     # Ignore this line: 'Last login: Tue Sep 18 09:17:21 2018 from 10.10.0.1'
-    pattern_username = r"((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
+    pattern_username = rb"((?!Last)\S+ login|[Ll]ogin): (?!Sun|Mon|Tue|Wed|Thu|Fri|Sat)"
     pattern_prompt = (
-        r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?"
-        r"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
+        rb"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?"
+        rb"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     )
-    pattern_more = [(r"^---\(more.*?\)---", " "), (r"\? \[yes,no\] .*?", "y\n")]
-    pattern_syntax_error = r"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
-    pattern_operation_error = r"error: abnormal communication termination with"
+    pattern_more = [(rb"^---\(more.*?\)---", b" "), (rb"\? \[yes,no\] .*?", b"y\n")]
+    pattern_syntax_error = rb"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
+    pattern_operation_error = rb"error: abnormal communication termination with"
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"

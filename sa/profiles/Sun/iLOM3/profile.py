@@ -12,4 +12,5 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Sun.iLOM3"
-    pattern_prompt = r"^(?:\S* )?->"
+
+    pattern_prompt = rb"^(?:\S* )?->"

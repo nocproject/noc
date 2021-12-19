@@ -12,11 +12,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.ZyNOS_EE"
+
     pattern_password = "Password: "
-    pattern_prompt = r"^\S+?> "
-    pattern_more = r"^-- more --.*?$"
-    command_more = " "
+    pattern_prompt = rb"^\S+?> "
+    pattern_more = [(rb"^-- more --.*?$", b" ")]
+    pattern_syntax_error = rb"^Valid commands are:"
     command_exit = "exit"
     enable_cli_session = False
     command_save_config = "config save"
-    pattern_syntax_error = r"^Valid commands are:"

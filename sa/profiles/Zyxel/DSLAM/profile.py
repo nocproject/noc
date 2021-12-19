@@ -13,14 +13,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.DSLAM"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?>\s*"
-    pattern_syntax_error = "((Unknown|invalid) (command|input)|Commands are:)"
+
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?>\s*"
+    pattern_syntax_error = rb"((Unknown|invalid) (command|input)|Commands are:)"
     pattern_more = [
-        (r"Press any key to continue, 'n' to nopause,'e' to exit", "n"),
-        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n"),
+        (rb"Press any key to continue, 'n' to nopause,'e' to exit", b"n"),
+        (rb"Press any key to continue, 'e' to exit, 'n' for nopause", b"n"),
     ]
-    config_volatile = [r"^time\s+(\d+|date).*?^"]
-    command_more = "n"
+    config_volatile = [rb"^time\s+(\d+|date).*?^"]
     command_exit = "exit"
 
     def convert_interface_name(self, interface):

@@ -46,8 +46,7 @@ class Profile(BaseProfile):
         rb"Error:\s*Instance can not be used when stp in vbst mode"
     )
 
-    command_more = b" "
-    config_volatile = [rb"^%.*?$"]
+    config_volatile = [r"^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
     command_enter_config = "system-view"
     command_leave_config = "return"
