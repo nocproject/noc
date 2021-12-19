@@ -5,7 +5,7 @@
 # See LICENSE for details
 
 # Third-pary modules
-from bson import ObjectId
+from bson import ObjectId, int64
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -18,10 +18,12 @@ class Migration(BaseMigration):
             {
                 "_id": ObjectId("61bee6a55c42c21338453612"),
                 "name": "default",
+                "description": "Default VLAN Profile",
                 "workflow": ObjectId("5a01d980b6f529000100d37a"),
+                "style": None,
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": 2881867143753311142,
+                "bi_id": int64.Int64(2881867143753311142),
             }
         )
         # Create default L2 Domain Profile
@@ -29,11 +31,12 @@ class Migration(BaseMigration):
             {
                 "_id": ObjectId("61bee6f45c42c21338453613"),
                 "name": "default",
+                "description": "Default L2Domain Profile",
                 "workflow": ObjectId("5a01d980b6f529000100d37a"),
                 "pools": [],
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": 1009096612210647130,
+                "bi_id": int64.Int64(1009096612210647130),
                 "vlan_discovery_policy": "E",
             }
         )
@@ -42,11 +45,11 @@ class Migration(BaseMigration):
             {
                 "_id": ObjectId("61bee7425c42c21338453614"),
                 "name": "default",
-                "description": "Default L2 Domain Profile",
+                "description": "Default L2 Domain",
                 "profile": ObjectId("61bee6f45c42c21338453613"),
                 "pools": [],
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": 2470941926019864228,
+                "bi_id": int64.Int64(2470941926019864228),
             }
         )

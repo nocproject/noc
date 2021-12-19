@@ -63,7 +63,9 @@ class VLAN(Document):
     }
 
     name = StringField(default="")
-    profile = PlainReferenceField(VLANProfile, required=True)
+    profile = PlainReferenceField(
+        VLANProfile, required=True, default=VLANProfile.get_default_profile
+    )
     vlan = IntField(min_value=1, max_value=4095)
     l2_domain = PlainReferenceField(L2Domain, required=True)
     description = StringField()
