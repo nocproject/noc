@@ -16,15 +16,14 @@ from noc.core.validators import is_int
 
 class Profile(BaseProfile):
     name = "Eltex.MES24xx"
-    pattern_more = [(r"--More--", " ")]
-    pattern_prompt = r"(?P<hostname>\S+)(?:\(config[^\)]*\))?#\s*"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
-    pattern_syntax_error = r"^% Invalid (?:Command|input detected at)$"
+
+    pattern_more = [(rb"--More--", b" ")]
+    pattern_prompt = rb"(?P<hostname>\S+)(?:\(config[^\)]*\))?#\s*"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>\s*"
+    pattern_syntax_error = rb"^% Invalid (?:Command|input detected at)$"
     # command_disable_pager = "set cli pagination off"  - need conf t mode
-    config_tokenizer = "line"
-    config_tokenizer_settings = {"line_comment": "!"}
-    command_submit = "\r"
-    command_super = "enable"
+    command_submit = b"\r"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     rogue_chars = [

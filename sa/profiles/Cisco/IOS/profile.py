@@ -15,21 +15,23 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.IOS"
     pattern_more = [
-        (r"^ --More-- ", " "),
-        (r"(?:\?|interfaces)\s*\[confirm\]", "\n"),
-        (r"^Destination filename \[\S+\]", "\n"),
-        (r"^Proceed with reload\?\s*\[confirm\]", "y\n"),
+        (rb"^ --More-- ", b" "),
+        (rb"(?:\?|interfaces)\s*\[confirm\]", b"\n"),
+        (rb"^Destination filename \[\S+\]", b"\n"),
+        (rb"^Proceed with reload\?\s*\[confirm\]", b"y\n"),
     ]
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
-    pattern_operation_error = "Command authorization failed."
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = (
+        rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    )
+    pattern_operation_error = rb"Command authorization failed."
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco

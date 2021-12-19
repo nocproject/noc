@@ -15,9 +15,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.WOPLR"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#|~ #"
+
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*#|~ #"
     command_exit = "exit"
-    pattern_syntax_error = r"Invalid command\."
+    pattern_syntax_error = rb"Invalid command\."
 
     rx_physical = re.compile(r"^(wlan|eth|br|tun|gre)\d+$")
 
