@@ -29,4 +29,3 @@ class Profile(BaseProfile):
     command_disable_pager = "LANG=en_US.UTF-8 ; PATH=$PATH:/sbin:/usr/sbin ; PROMPT_COMMAND=''"
     command_super = b"sudo bash"
     command_exit = "exit"
-    command_more = "\n"

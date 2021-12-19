@@ -27,7 +27,7 @@ class Profile(BaseProfile):
         rb"-\w+: \w+: No such file or directory|\w+: \w+: command not found|"
         rb"\w+: \w+: \w+: No such file or directory)"
     )
-    pattern_more = [(rb"Install package.*\[N/y\]\s$", "\n"), (rb"Is this ok \[y/N\]: ", b"y\n")]
+    pattern_more = [(rb"Install package.*\[N/y\]\s$", b"\n"), (rb"Is this ok \[y/N\]: ", b"y\n")]
     command_disable_pager = "LANG=en_US.UTF-8 ; PATH=$PATH:/sbin:/usr/sbin ; PROMPT_COMMAND=''"
     command_super = b"sudo bash"
     command_exit = "exit"

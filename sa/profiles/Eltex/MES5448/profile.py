@@ -34,6 +34,6 @@ class Profile(BaseProfile):
         rb"Wrong number of parameters or invalid range, size or "
         rb"characters entered)$"
     )
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
     snmp_display_hints = {"1.3.6.1.4.1.4413.1.1.1.1.4.9.0": render_regexp}

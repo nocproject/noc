@@ -19,7 +19,6 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^\S+@(?P<hostname>\S+):~\$"
     pattern_prompt = rb"^\S+@(?P<hostname>\S+):~#"
     command_exit = "exit"
-    command_more = "\n"
 
     PLATFORMS = {"46": "RG-1404GF-W"}
 

@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     name = "Cisco.IOSXR"
 
     pattern_more = [(rb"^ --More--", b"\r")]
-    pattern_unprivileged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
     command_super = b"enable"
