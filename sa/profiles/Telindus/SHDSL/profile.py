@@ -10,6 +10,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Telindus.SHDSL"
-    username_submit = "\r"
-    password_submit = "\r"
+
+    username_submit = rb"\r"
+    password_submit = rb"\r"
     command_exit = "DISCONNECT"

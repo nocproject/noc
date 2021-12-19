@@ -16,12 +16,12 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "NAG.SNR"
     pattern_more = [
-        (r"^ --More-- ", "\n"),
-        (r"^Confirm to overwrite current startup-config configuration \[Y/N\]:", "y\n"),
+        (rb"^ --More-- ", "\n"),
+        (rb"^Confirm to overwrite current startup-config configuration \[Y/N\]:", b"y\n"),
     ]
-    username_submit = "\r"
-    password_submit = "\r"
-    command_submit = "\r"
+    username_submit = b"\r"
+    password_submit = b"\r"
+    command_submit = b"\r"
     # command_disable_pager = "terminal length 200"
     command_super = "enable"
     command_exit = "exit"

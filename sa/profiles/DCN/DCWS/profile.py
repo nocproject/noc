@@ -17,6 +17,5 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^\S+?>"
     command_super = "enable"
     pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
-    command_more = b"\n"
     command_submit = b"\n"
     command_exit = "exit"

@@ -27,7 +27,7 @@ class Profile(BaseProfile):
         (rb"More: <space>,  Quit: q or CTRL+Z, One line: <return>", b" "),
         (rb"--More--", b" "),
     ]
-    command_more = b"a"
+    # command_more = b"a"
 
     matchers = {"is_escom_l": {"platform": {"$in": ["ESCOM L"]}}}
     INTERFACE_TYPES = {

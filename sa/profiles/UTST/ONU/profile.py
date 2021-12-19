@@ -12,12 +12,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "UTST.ONU"
-    username_submit = "\r"
-    password_submit = "\r"
-    command_submit = "\r"
+
+    username_submit = b"\r"
+    password_submit = b"\r"
+    command_submit = b"\r"
     command_super = "enable"
-    pattern_unprivileged_prompt = r"^ONU208i#|ONU2004>"
-    pattern_prompt = r"^ONU208i\(enable\)|ONU2004(?:i#|#)"
+    pattern_unprivileged_prompt = rb"^ONU208i#|ONU2004>"
+    pattern_prompt = rb"^ONU208i\(enable\)|ONU2004(?:i#|#)"
 
     # pattern_prompt = r"^Select menu option.*:"
     # pattern_more = [

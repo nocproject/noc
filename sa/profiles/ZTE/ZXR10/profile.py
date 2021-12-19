@@ -13,13 +13,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "ZTE.ZXR10"
+
     pattern_more = [
-        (r"^ --More--", " "),
-        (r"^----- more ----- Press Q or Ctrl\+C to break -----", " "),
+        (rb"^ --More--", b" "),
+        (rb"^----- more ----- Press Q or Ctrl\+C to break -----", b" "),
     ]
-    pattern_unprivileged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = (
-        r"%\s+Invalid input detected at|%\s+Parameter too much|%\s+Command not found"
+        rb"%\s+Invalid input detected at|%\s+Parameter too much|%\s+Command not found"
     )
     command_disable_pager = "terminal length 0"
     command_super = "enable"

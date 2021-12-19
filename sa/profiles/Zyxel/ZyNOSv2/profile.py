@@ -12,6 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.ZyNOSv2"
-    pattern_prompt = r"^\S+?>"
-    command_more = " "
+
+    pattern_prompt = rb"^\S+?>"
+    pattern_more = (rb"^---MORE---", b" ")
     enable_cli_session = False

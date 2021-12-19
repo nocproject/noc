@@ -12,12 +12,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NSCComm.LPOS"
-    pattern_prompt = r"^(?P<hostname>\S+)\s+> "
+
+    pattern_prompt = rb"^(?P<hostname>\S+)\s+> "
     pattern_more = [
-        (r"^\s+Press any key to continue", "\r\n"),
-        (r"Press any letter key to start filtering items", "\x03\r"),
+        (rb"^\s+Press any key to continue", b"\r\n"),
+        (rb"Press any letter key to start filtering items", b"\x03\r"),
     ]
     command_exit = "exit"
-    username_submit = "\r"
-    password_submit = "\r"
-    command_submit = "\r"
+    username_submit = b"\r"
+    password_submit = b"\r"
+    command_submit = b"\r"

@@ -18,14 +18,14 @@ class Profile(BaseProfile):
     """
 
     name = "Juniper.JUNOSe"
-    pattern_unprivileged_prompt = r"^\S+?>"
+
+    pattern_unprivileged_prompt = rb"^\S+?>"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
-    pattern_prompt = r"^(?P<prompt>\S+?)(?::\S+?)?#"
-    pattern_more = r"^ --More-- "
-    command_more = " "
+    pattern_prompt = rb"^(?P<prompt>\S+?)(?::\S+?)?#"
+    pattern_more = [(rb"^ --More-- ", b" ")]
     command_exit = "exit"
-    pattern_syntax_error = r"% Invalid input detected at"
+    pattern_syntax_error = rb"% Invalid input detected at"
     config_volatile = [
         r"^! Configuration script being generated on.*?^",
         r"^(Please wait\.\.\.)\n",

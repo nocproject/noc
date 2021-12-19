@@ -12,13 +12,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Ruckus.ZoneDirector"
-    pattern_more = [(r"^Login as:$", "\n")]
-    pattern_username = "^[Pp]lease [Ll]ogin:"
-    pattern_password = "^[Pp]assword:"
-    pattern_unprivileged_prompt = r"^\S*>"
-    pattern_prompt = r"^\S*#"
-    command_more = "\n"
-    command_submit = "\n"
+
+    pattern_more = [(rb"^Login as:$", b"\n")]
+    pattern_username = b"^[Pp]lease [Ll]ogin:"
+    pattern_password = b"^[Pp]assword:"
+    pattern_unprivileged_prompt = rb"^\S*>"
+    pattern_prompt = rb"^\S*#"
+    command_submit = b"\n"
     command_super = "enable force"
     command_leave_config = "end"
     command_exit = "exit"

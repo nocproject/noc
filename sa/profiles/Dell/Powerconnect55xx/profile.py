@@ -15,14 +15,13 @@ class Profile(BaseProfile):
     name = "Dell.Powerconnect55xx"
 
     pattern_username = rb"[Uu]ser( [Nn]ame)?:"
-    pattern_more = rb"^More: \<space\>"
+    pattern_more = [(rb"^More: \<space\>", b" ")]
     pattern_unprivileged_prompt = rb"^\S+>"
     pattern_syntax_error = rb"% (?:Unrecognized|Incomplete) command"
     pattern_prompt = rb"^(?P<hostname>\S+(:\S+)*)#"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"
-    command_more = " "
     command_exit = "exit"
     command_save_config = "write"
     config_volatile = ["^%.*?$"]

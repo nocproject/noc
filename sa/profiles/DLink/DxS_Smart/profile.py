@@ -28,7 +28,6 @@ class Profile(BaseProfile):
     command_super = "enable admin"
     pattern_prompt = rb"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager = ""
-    command_more = " "
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]

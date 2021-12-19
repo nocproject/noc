@@ -13,13 +13,13 @@ import re
 
 class Profile(BaseProfile):
     name = "Nateks.FlexGain"
-    pattern_username = r"^\S+ login: "
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+):>"
-    pattern_prompt = r"^(?P<hostname>\S+):%"
-    pattern_more = r"^--More--"
-    pattern_syntax_error = r"syntax error, unexpected STRING|Command Abort, More Arguments need!"
+
+    pattern_username = rb"^\S+ login: "
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+):>"
+    pattern_prompt = rb"^(?P<hostname>\S+):%"
+    pattern_more = [(rb"^--More--", b"g")]
+    pattern_syntax_error = rb"syntax error, unexpected STRING|Command Abort, More Arguments need!"
     command_super = "enable"
-    command_more = "g"
     command_exit = "bye"
     rogue_chars = [re.compile(rb" \(\[q\]Quit,\[g\]Go to end,\[any key\]Continue...\)\r\n"), b"\r"]
 

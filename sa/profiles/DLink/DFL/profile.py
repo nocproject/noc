@@ -16,6 +16,6 @@ class Profile(BaseProfile):
 
     pattern_syntax_error = rb"Error: Unknown command:"
     pattern_prompt = rb"^(?P<hostname>\S+(:\S+)*):/> "
-    command_more = "a"
+    pattern_more = [(rb"^---MORE---", b"a")]
     command_exit = "logout"
     config_volatile = ["^%.*?$"]

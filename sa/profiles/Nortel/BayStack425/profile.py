@@ -12,11 +12,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Nortel.BayStack425"
-    pattern_username = "Enter Username:"
-    pattern_password = "Enter Password:"
-    pattern_prompt = r"^\S+?#"
+
+    pattern_username = rb"Enter Username:"
+    pattern_password = rb"Enter Password:"
+    pattern_prompt = rb"^\S+?#"
     pattern_more = [
-        ("^----More", " "),
-        ("ommand Line Interface...", "C"),
-        ("Enter Ctrl-Y to begin", "\x19"),
+        (rb"^----More", b" "),
+        (rb"ommand Line Interface...", b"C"),
+        (rb"Enter Ctrl-Y to begin", b"\x19"),
     ]

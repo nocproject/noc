@@ -9,5 +9,4 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^holding+@.*:"
     pattern_syntax_error = rb"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory|\w+: \w+: command not found|\w+: \w+: \w+: No such file or directory)"
     command_exit = "exit"
-    pattern_more = "--More--"
-    command_more = b"\n"
+    pattern_more = [(rb"--More--", b"\n")]

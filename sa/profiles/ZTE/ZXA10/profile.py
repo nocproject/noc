@@ -15,15 +15,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "ZTE.ZXA10"
-    pattern_more = r"^ --More--"
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"%Error \d+: (Incomplete command|Invalid input)"
+
+    pattern_more = rb"^ --More--"
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = rb"%Error \d+: (Incomplete command|Invalid input)"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "write\n"
-    pattern_prompt = r"^(?P<hostname>(?!#)\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>(?!#)\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = [r"^ntp clock-period .*?^"]

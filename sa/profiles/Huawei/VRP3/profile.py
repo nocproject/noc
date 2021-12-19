@@ -33,7 +33,6 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^[^>]\S+?>"
     pattern_prompt = rb"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = rb"Invalid parameter|Incorrect command|\%\s*Unknown command"
-    command_more = b" "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "length 0"
     command_super = "enable"

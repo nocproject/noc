@@ -14,7 +14,7 @@ class Profile(BaseProfile):
     name = "DCN.DCWL"
 
     pattern_prompt = rb"^(?P<hostname>\S+)\s*#|~ #"
-    command_more = b"\n"
+    pattern_more = [(rb"^---MORE---", b"\n"), (rb"^ --More-- ", b"\n")]
     command_submit = b"\n"
     command_exit = "exit"
     pattern_syntax_error = rb"Invalid command\."

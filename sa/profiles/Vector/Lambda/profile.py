@@ -13,11 +13,12 @@ from noc.core.snmp.render import render_mac
 
 class Profile(BaseProfile):
     name = "Vector.Lambda"
-    pattern_username = r"^ login: "
-    pattern_password = r"^ password: "
-    pattern_prompt = r"^>"
+
+    pattern_username = rb"^ login: "
+    pattern_password = rb"^ password: "
+    pattern_prompt = rb"^>"
     command_exit = "logout"
-    pattern_syntax_error = r"invalid command: .*"
+    pattern_syntax_error = rb"invalid command: .*"
 
     matchers = {
         "is_sysid_support": {"caps": {"$in": ["SNMP | OID | EnterpriseID"]}},

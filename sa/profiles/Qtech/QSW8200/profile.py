@@ -13,14 +13,15 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Qtech.QSW8200"
-    pattern_more = [(r"^ --More-- $", " ")]
-    pattern_unprivileged_prompt = r"^\S+>"
-    pattern_prompt = r"^(?P<hostname>\S+)?#"
-    pattern_syntax_error = r"Error input in the position marke[td] by|%  Incomplete command"
+
+    pattern_more = [(rb"^ --More-- $", b" ")]
+    pattern_unprivileged_prompt = rb"^\S+>"
+    pattern_prompt = rb"^(?P<hostname>\S+)?#"
+    pattern_syntax_error = rb"Error input in the position marke[td] by|%  Incomplete command"
     # Do not use this. Bogus hardware.
     # command_disable_pager = "terminal page-break disable"
     command_super = "enable"
-    command_submit = "\r"
+    command_submit = b"\r"
     command_exit = "quit"
 
     INTERFACE_TYPES = {

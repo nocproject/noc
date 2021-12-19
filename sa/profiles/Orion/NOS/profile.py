@@ -15,13 +15,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Orion.NOS"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    pattern_syntax_error = r"^% \" .+ \"  Unknown command."
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
+    pattern_syntax_error = rb"^% \" .+ \"  Unknown command."
     command_super = "enable"
     command_disable_pager = "terminal page-break disable"
-    pattern_more = " --More-- "
-    command_more = " "
+    pattern_more = [(rb" --More-- ", b" ")]
     command_exit = "exit"
     config_volatile = [
         r"radius(-| accounting-server )encrypt-key \S+\n",

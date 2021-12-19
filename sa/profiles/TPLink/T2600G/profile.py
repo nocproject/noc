@@ -14,19 +14,19 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "TPLink.T2600G"
-    pattern_username = r"^User:"
-    pattern_more = r"Press any key to continue \(Q to quit\)"
-    pattern_unprivileged_prompt = r"^\S+?>"
+
+    pattern_username = rb"^User:"
+    pattern_more = [(rb"Press any key to continue \(Q to quit\)", b" ")]
+    pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = (
-        r".*(?:Error: (Invalid parameter.)|(Bad command)|(Missing parameter data)).*"
+        rb".*(?:Error: (Invalid parameter.)|(Bad command)|(Missing parameter data)).*"
     )
     command_super = "enable"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     command_disable_pager = "terminal length 0"
-    username_submit = "\r\n"
-    password_submit = "\r\n"
-    command_submit = "\r\n"
-    command_more = " "
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
+    command_submit = b"\r\n"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_exit = "exit"

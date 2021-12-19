@@ -15,28 +15,28 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Qtech.QSW2800"
     pattern_more = [
-        (r"^\s*--More--\s*$", " "),
-        (r"^Confirm to overwrite current startup-config configuration " r"[Y/N]:", "\nY\n"),
-        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
-        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
+        (rb"^\s*--More--\s*$", " "),
+        (rb"^Confirm to overwrite current startup-config configuration [Y/N]:", b"\nY\n"),
+        (rb"^Confirm to overwrite current startup-config configuration", b"\ny\n"),
+        (rb"^Confirm to overwrite the existed destination file?", b"\ny\n"),
     ]
-    pattern_unprivileged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = rb"^\S+>"
     pattern_syntax_error = (
-        r"% (?:Invalid input detected at '\^' marker|"
-        r"(?:Ambiguous|Incomplete|.+Unknown) command)|"
-        r"Error input in the position market by"
-        r"|Unknown command"
+        rb"% (?:Invalid input detected at '\^' marker|"
+        rb"(?:Ambiguous|Incomplete|.+Unknown) command)|"
+        rb"Error input in the position market by"
+        rb"|Unknown command"
     )
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    username_submit = "\r\n"
-    password_submit = "\r\n"
-    command_submit = "\r"
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
+    command_submit = b"\r"
     pattern_prompt = (
-        r"^(?P<hostname>[a-zA-Z0-9]\S{0,30})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
+        rb"^(?P<hostname>[a-zA-Z0-9]\S{0,30})(?:\(sdiag\))?(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
     )
 
     config_tokenizer = "indent"

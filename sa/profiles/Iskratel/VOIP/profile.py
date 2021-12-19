@@ -19,9 +19,8 @@ class Profile(BaseProfile):
     # pattern_unprivileged_prompt = r"^\S+?>"
     pattern_username = rb"^user id :"
     pattern_prompt = rb"^=>"
-    pattern_more = rb"^Press any key to continue or Esc to stop scrolling."
+    pattern_more = [(rb"^Press any key to continue or Esc to stop scrolling.", b" ")]
     pattern_syntax_error = rb"Syntax error|Command line error|Illegal command name"
-    command_more = " "
     command_exit = "exit"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]

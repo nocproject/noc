@@ -12,5 +12,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Raritan.DominionSX"
-    pattern_prompt = r"^(\S+ > )+"
-    pattern_more = "--More-- Press <ENTER> to continue."
+
+    pattern_prompt = rb"^(\S+ > )+"
+    pattern_more = rb"--More-- Press <ENTER> to continue."

@@ -14,14 +14,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Nateks.FlexGainACE24"
-    pattern_more = [(r"^Login Successful------", "\n\r")]
+    pattern_more = [(rb"^Login Successful------", b"\n\r")]
     pattern_syntax_error = (
-        r"% Invalid input detected at|% Ambiguous command:|" r"% Incomplete command."
+        rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     )
-    pattern_username = "[Ll]ogin:"
-    pattern_password = "[Pp]assword:"
+    pattern_username = br"[Ll]ogin:"
+    pattern_password = rb"[Pp]assword:"
 
-    pattern_prompt = r"(^\$\s+|^>\s)"
+    pattern_prompt = rb"(^\$\s+|^>\s)"
     # pattern_unprivileged_prompt = r"$\s"
     command_exit = "exit"
     command_save_config = "commit\n"

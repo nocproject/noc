@@ -55,7 +55,6 @@ class Profile(BaseProfile):
     )
     # Found on MA5616, V800R015C10
     send_on_syntax_error = BaseProfile.send_backspaces
-    command_more = b" "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "scroll 512"
     command_super = "enable"
