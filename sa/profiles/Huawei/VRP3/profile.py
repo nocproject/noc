@@ -16,23 +16,24 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Huawei.VRP3"
-    pattern_username = r"^>(?:\>| )User name( \(<\d+ chars\))?:"
-    pattern_password = r"^>(?:\>| )(?:User )?[Pp]assword( \(<\d+ chars\))?:"
+
+    pattern_username = rb"^>(?:\>| )User name( \(<\d+ chars\))?:"
+    pattern_password = rb"^>(?:\>| )(?:User )?[Pp]assword( \(<\d+ chars\))?:"
     pattern_more = [
-        (r"^--More\(Enter: next line, spacebar: next page, " r"any other key: quit\)--", " "),
-        (r"\[<frameId/slotId>\]", "\n"),
-        (r"\{ <cr>(\|\S+\<K\>|frameid/slotid\<S\>\<1,15\>|spm\<K\>)+ \}:", "\n"),
-        (r"\{ ((groupindex|vlan)\<K\>\|)+<cr> \}:", "\n"),
-        (r"\(y/n\) \[n\]", "y\n"),
-        (r"\(y/n\) \[y\]", "y\n"),
-        (r"\[to\]\:", "\n"),
-        (r"{\s+ifNo.<U><1,4>\s+}:", "\n"),
+        (rb"^--More\(Enter: next line, spacebar: next page, any other key: quit\)--", b" "),
+        (rb"\[<frameId/slotId>\]", b"\n"),
+        (rb"\{ <cr>(\|\S+\<K\>|frameid/slotid\<S\>\<1,15\>|spm\<K\>)+ \}:", b"\n"),
+        (rb"\{ ((groupindex|vlan)\<K\>\|)+<cr> \}:", b"\n"),
+        (rb"\(y/n\) \[n\]", b"y\n"),
+        (rb"\(y/n\) \[y\]", b"y\n"),
+        (rb"\[to\]\:", b"\n"),
+        (rb"{\s+ifNo.<U><1,4>\s+}:", b"\n"),
     ]
     # Do not match this line: "\r\n>>User name: "
-    pattern_unprivileged_prompt = r"^[^>]\S+?>"
-    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
-    pattern_syntax_error = r"Invalid parameter|Incorrect command|\%\s*Unknown command"
-    command_more = " "
+    pattern_unprivileged_prompt = rb"^[^>]\S+?>"
+    pattern_prompt = rb"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
+    pattern_syntax_error = rb"Invalid parameter|Incorrect command|\%\s*Unknown command"
+    command_more = b" "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "length 0"
     command_super = "enable"

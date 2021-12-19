@@ -12,10 +12,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "InfiNet.WANFlexX"
-    pattern_more = [(r"^-- more --$", " ")]
-    pattern_prompt = r"(?P<hostname>\S+?)[#|\$]\d+>"
-    command_submit = "\r"
-    username_submit = "\r"
-    password_submit = "\r"
+
+    pattern_more = [(rb"^-- more --$", b" ")]
+    pattern_prompt = rb"(?P<hostname>\S+?)[#|\$]\d+>"
+    command_submit = b"\r"
+    username_submit = b"\r"
+    password_submit = b"\r"
     command_exit = "exit"
-    pattern_syntax_error = r"Unknown command\. Use \? for help"
+    pattern_syntax_error = rb"Unknown command\. Use \? for help"

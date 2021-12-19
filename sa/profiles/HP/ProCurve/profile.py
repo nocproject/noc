@@ -12,13 +12,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "HP.ProCurve"
-    pattern_prompt = r"^[a-zA-Z0-9- _/.]+?(\(\S+\))?# "
-    pattern_unprivileged_prompt = r"^[a-zA-Z0-9- _/.]+?> "
+
+    pattern_prompt = rb"^[a-zA-Z0-9- _/.]+?(\(\S+\))?# "
+    pattern_unprivileged_prompt = rb"^[a-zA-Z0-9- _/.]+?> "
     pattern_more = [
-        ("Press any key to continue", "\n"),
-        ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " "),
+        (rb"Press any key to continue", b"\n"),
+        (rb"-- MORE --, next page: Space, next line: Enter, quit: Control-C", b" "),
     ]
-    pattern_syntax_error = r"Invalid input: "
+    pattern_syntax_error = rb"Invalid input: "
     command_disable_pager = "terminal length 1000"
     command_super = "enable"
     command_enter_config = "configure"

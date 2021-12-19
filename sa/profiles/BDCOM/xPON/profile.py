@@ -12,11 +12,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "BDCOM.xPON"
-    pattern_more = [(r"^ --More-- ", " "), (r"\(y/n\) \[n\]", "y\n")]
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
-    pattern_prompt = r"^(?P<hostname>\S+)#"
-    pattern_syntax_error = r"% Unknown command"
-    command_more = " "
+
+    pattern_more = [(rb"^ --More-- ", b" "), (rb"\(y/n\) \[n\]", b"y\n")]
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>"
+    pattern_prompt = rb"^(?P<hostname>\S+)#"
+    pattern_syntax_error = rb"% Unknown command"
+    command_more = b" "
     command_disable_pager = ["terminal length 0", "terminal width 0"]
     command_super = "enable"
     command_enter_config = "config"

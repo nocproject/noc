@@ -16,12 +16,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "H3C.VRP"
-    pattern_more = "^  ---- More ----"
-    pattern_prompt = r"^[<#]\S+?[>#]"
-    command_more = " "
+
+    pattern_more = [(rb"^  ---- More ----", b" ")]
+    pattern_prompt = rb"^[<#]\S+?[>#]"
     config_volatile = [r"^%.*?$"]
     command_disable_pager = ""
-    pattern_syntax_error = r"% Wrong parameter|% Unrecognized command found at"
+    pattern_syntax_error = rb"% Wrong parameter|% Unrecognized command found at"
 
     matchers = {
         "is_old_version": {"version": {"$regex": r"3\.02.*"}},

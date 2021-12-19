@@ -12,12 +12,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DxS_Industrial_CLI"
-    pattern_more = r"CTRL\+C.+?a A[Ll][Ll]\s*"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+?)>"
-    pattern_prompt = r"^(?P<hostname>\S+?)#"
-    pattern_syntax_error = r"% Invalid input detected at"
+
+    pattern_more = [(rb"CTRL\+C.+?a A[Ll][Ll]\s*", b"a")]
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+?)>"
+    pattern_prompt = rb"^(?P<hostname>\S+?)#"
+    pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
-    command_more = "a"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"

@@ -12,17 +12,18 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Force10.FTOS"
-    pattern_more = "^ ?--More--"
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Error: Invalid input at"
-    pattern_operation_error = r"% Error: "
+
+    pattern_more = b"^ ?--More--"
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = rb"% Error: Invalid input at"
+    pattern_operation_error = rb"% Error: "
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "write memory"
-    pattern_prompt = r"^\S+?#"
-    command_submit = "\r"
+    pattern_prompt = rb"^\S+?#"
+    command_submit = b"\r"
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     matchers = {

@@ -13,6 +13,6 @@ class Profile(BaseProfile):
     name = "Cambium.ePMP"
     # pattern_username = "([Uu][Bb][Nn][Tt] login|[Ll]ogin):"
     # pattern_more = "CTRL\+C.+?a All"
-    pattern_prompt = r"^(?P<hostname>\S+)>"
+    pattern_prompt = rb"^(?P<hostname>\S+)>"
     # command_more = "a"
     # config_volatile = ["^%.*?$"]

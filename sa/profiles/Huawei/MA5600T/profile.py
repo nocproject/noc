@@ -15,47 +15,47 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Huawei.MA5600T"
-    pattern_username = r"^>[>\s]User name(|\s\([<\s\w]+\)):"
-    pattern_password = r"^>[>\s](?:User )?[Pp]assword(|\s\([<\s\w]+\)):"
+    pattern_username = rb"^>[>\s]User name(|\s\([<\s\w]+\)):"
+    pattern_password = rb"^>[>\s](?:User )?[Pp]assword(|\s\([<\s\w]+\)):"
     pattern_more = [
-        (r"---- More \( Press 'Q' to break \) ----", " "),
-        (r"\[<frameId/slotId>\]", "\n"),
-        (r"\(y/n\) \[n\]", "y\n"),
-        (r"\[to\]\:", "\n"),
-        (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
-        (r"\{ \<cr\>\|ont\<K\> \}\:", "\n"),
-        (r"\{ \<cr\>|port\<K\> \}:", "\n"),
-        (r"Are you sure to modify system time?", "n\n"),
-        (r"Are you sure to log out?", "y\n"),
-        (r"\{ <cr>\|configuration<K>\|data<K> \}", "\n"),
-        (r"\{ <cr>\|mode<K> \}", "\n"),
-        (r"\{ <cr>\|frameid\/slotid\<S\>\<Length \d+\-15\>(?:\|spm\<K\>|) \}\:", "\n"),
-        (r"\{ (?:spm\<K\>\|)?\<cr\>\|frameid/slotid\<S\>\<\d+,15\> \}\:", "\n"),
-        (r"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\>(\|\|\<K\>|) \}", "\n"),
-        (r"\{ <cr>(\|\S+\<K\>)+ \}", "\n"),
-        (r"\{ (\|\S+\<K\>)+ \}", "\n"),
-        (r"\{ groupindex\<K\>\|<cr> \}\:", "\n"),
-        (r"\{ \<cr\>\|instance\<K\>\|port\<K\> \}\:", "\n"),
-        (r"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", "\n"),
+        (rb"---- More \( Press 'Q' to break \) ----", b" "),
+        (rb"\[<frameId/slotId>\]", b"\n"),
+        (rb"\(y/n\) \[n\]", b"y\n"),
+        (rb"\[to\]\:", b"\n"),
+        (rb"\{ \<cr\>\|vpi\<K\> \}\:", b"\n"),
+        (rb"\{ \<cr\>\|ont\<K\> \}\:", b"\n"),
+        (rb"\{ \<cr\>|port\<K\> \}:", b"\n"),
+        (rb"Are you sure to modify system time?", b"n\n"),
+        (rb"Are you sure to log out?", b"y\n"),
+        (rb"\{ <cr>\|configuration<K>\|data<K> \}", b"\n"),
+        (rb"\{ <cr>\|mode<K> \}", b"\n"),
+        (rb"\{ <cr>\|frameid\/slotid\<S\>\<Length \d+\-15\>(?:\|spm\<K\>|) \}\:", b"\n"),
+        (rb"\{ (?:spm\<K\>\|)?\<cr\>\|frameid/slotid\<S\>\<\d+,15\> \}\:", b"\n"),
+        (rb"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\>(\|\|\<K\>|) \}", b"\n"),
+        (rb"\{ <cr>(\|\S+\<K\>)+ \}", b"\n"),
+        (rb"\{ (\|\S+\<K\>)+ \}", b"\n"),
+        (rb"\{ groupindex\<K\>\|<cr> \}\:", b"\n"),
+        (rb"\{ \<cr\>\|instance\<K\>\|port\<K\> \}\:", b"\n"),
+        (rb"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", b"\n"),
         # The ONT automatic loading policy will be deleted
-        (r"\s*Are you sure to proceed\(y/n\)\[[yn]\]", "y\n"),
+        (rb"\s*Are you sure to proceed\(y/n\)\[[yn]\]", b"y\n"),
     ]
     # { <cr>|backplane<K>|frameid/slotid<S><Length 3-15>||<K> }:
-    pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = (
-        r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?(\(diagnose\))?(#$|#\s|%%)"
+        rb"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?(\(diagnose\))?(#$|#\s|%%)"
     )
-    pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
+    pattern_syntax_error = rb"(% Unknown command|  Incorrect command:)"
     pattern_operation_error = (
-        r"(Configuration console time out, please retry to log on|"
-        r"\s*Failure:\s*System is busy, please retry after a while|"
-        r"It will take several minutes to save configuration file, please wait|"
-        r"Failure:\s*System is reading or writing flash, please retry after a while|"
-        r"Failure:\s*Command can not be executed rightly, the cause is:\s*Loading\s*\(backuping,rollbacking...\) command being executed. Please retry later)"
+        rb"(Configuration console time out, please retry to log on|"
+        rb"\s*Failure:\s*System is busy, please retry after a while|"
+        rb"It will take several minutes to save configuration file, please wait|"
+        rb"Failure:\s*System is reading or writing flash, please retry after a while|"
+        rb"Failure:\s*Command can not be executed rightly, the cause is:\s*Loading\s*\(backuping,rollbacking...\) command being executed. Please retry later)"
     )
     # Found on MA5616, V800R015C10
     send_on_syntax_error = BaseProfile.send_backspaces
-    command_more = " "
+    command_more = b" "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "scroll 512"
     command_super = "enable"

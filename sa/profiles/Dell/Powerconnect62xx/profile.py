@@ -13,11 +13,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Dell.Powerconnect62xx"
-    pattern_username = "[Uu]ser( [Nn]ame)?:"
-    pattern_more = "--More--"
-    pattern_unprivileged_prompt = r"^\S+>"
-    pattern_syntax_error = r"% Invalid input detected at"
-    pattern_prompt = r"^(?P<hostname>\S+(:\S+)*)#"
+
+    pattern_username = rb"[Uu]ser( [Nn]ame)?:"
+    pattern_more = rb"--More--"
+    pattern_unprivileged_prompt = rb"^\S+>"
+    pattern_syntax_error = rb"% Invalid input detected at"
+    pattern_prompt = rb"^(?P<hostname>\S+(:\S+)*)#"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"

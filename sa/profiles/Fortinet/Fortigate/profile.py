@@ -12,6 +12,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Fortinet.Fortigate"
-    pattern_more = "^--More--"
-    pattern_prompt = r"^\S+\ [#\$]"
-    command_more = " "
+
+    pattern_more = [(rb"^--More--", b" ")]
+    pattern_prompt = r"b^\S+\ [#\$]"

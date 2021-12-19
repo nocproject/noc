@@ -15,30 +15,31 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Huawei.MA5300"
+
     pattern_more = [
-        (r"--- More:", " "),
-        (r"[ ]+---- More \(Press CTRL\+C break\) ---[ ]+", " "),  # [ ]+ use for save \n in output
+        (rb"--- More:", " "),
+        (rb"[ ]+---- More \(Press CTRL\+C break\) ---[ ]+", b" "),  # [ ]+ use for save \n in output
         # stream, because more pattern remove from stream
-        (r"Note: Terminal", "\n"),
-        (r"Warning: Battery is low power!", "\n"),
-        (r"\{\s<cr>.*\s\}:", "\n"),
-        (r"^Are you sure?\[Y/N\]", "y\n"),
-        (r"^\{ terminal\<K\> \}\:", "terminal\n"),
-        (r"\{ <cr>\|interface<K> \}\:", "\n"),
+        (rb"Note: Terminal", b"\n"),
+        (rb"Warning: Battery is low power!", b"\n"),
+        (rb"\{\s<cr>.*\s\}:", b"\n"),
+        (rb"^Are you sure?\[Y/N\]", b"y\n"),
+        (rb"^\{ terminal\<K\> \}\:", b"terminal\n"),
+        (rb"\{ <cr>\|interface<K> \}\:", b"\n"),
     ]
-    pattern_username = r"^Username:"
-    pattern_password = r"^Password:"
+    pattern_username = rb"^Username:"
+    pattern_password = rb"^Password:"
     command_exit = "logout"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "save"
     enable_cli_session = False  # With False mixin commands output over script
-    pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
-    pattern_unprivileged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
+    pattern_prompt = rb"(?P<hostname>\S+)(?:\(.*)?#"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
     pattern_syntax_error = (
-        r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|"
-        r"System is busy, please try after a while)"
+        rb"(% Unknown command, the error locates at \'^\'|  Logged Fail!|"
+        rb"System is busy, please try after a while)"
     )
     rogue_chars = [
         re.compile(br"\x1b\[39D\s+\x1b\[39D"),

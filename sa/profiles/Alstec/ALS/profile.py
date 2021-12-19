@@ -12,13 +12,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alstec.ALS"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
+    pattern_syntax_error = rb"% Unrecognized command|% Wrong number of parameters"
     command_super = "enable"
     command_disable_pager = "terminal datadump"
-    pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
-    command_more = "a"
+    pattern_more = [(rb"More: <space>,  Quit: q or CTRL+Z, One line: <return>", b"a")]
 
     INTERFACE_TYPES = {
         "e": "physical",  # Ethernet

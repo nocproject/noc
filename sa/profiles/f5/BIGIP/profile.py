@@ -12,11 +12,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "f5.BIGIP"
-    pattern_prompt = r"^(?P<user>\S+?)@(?P<part>\(.+?\))\(tmos\)# "
+
+    pattern_prompt = rb"^(?P<user>\S+?)@(?P<part>\(.+?\))\(tmos\)# "
     pattern_more = [
-        (r"^---\(less \d+%\)---", " "),
-        (r"^\(END\)", "q"),
-        (r"Display all \d+ items\? \(y/n\) ", "y"),
+        (rb"^---\(less \d+%\)---", b" "),
+        (rb"^\(END\)", b"q"),
+        (rb"Display all \d+ items\? \(y/n\) ", b"y"),
     ]
     command_exit = "quit"
 

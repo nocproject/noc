@@ -17,13 +17,13 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DGS3100"
     pattern_more = [
-        (r"CTRL\+C.+?a All", "a"),
-        (r"CTRL\+C.+?a ALL ", "a"),
-        (r"\[Yes/press any key for no\]", "Y"),
+        (rb"CTRL\+C.+?a All", b"a"),
+        (rb"CTRL\+C.+?a ALL ", b"a"),
+        (rb"\[Yes/press any key for no\]", b"Y"),
     ]
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+):(3|6|user|operator)#"
-    pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
-    pattern_prompt = r"^(?P<hostname>\S+)#"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+):(3|6|user|operator)#"
+    pattern_syntax_error = rb"(Command: .+|Invalid input detected at)"
+    pattern_prompt = rb"^(?P<hostname>\S+)#"
     rogue_chars = [re.compile(rb"^\s{45,}"), b"\r"]
     command_more = "a"
     command_exit = "logout"

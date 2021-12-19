@@ -15,9 +15,9 @@ from noc.core.validators import is_int
 
 class Profile(BaseProfile):
     name = "3Com.SuperStack3_4400"
-    pattern_prompt = r"^Select menu option.*:"
-    pattern_more = [(r"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", "\r\n")]
-    command_submit = "\r\n"
+    pattern_prompt = rb"^Select menu option.*:"
+    pattern_more = [(rb"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", b"\r\n")]
+    command_submit = b"\r\n"
     username_submit = "\r\n"
     password_submit = "\r\n"
     command_exit = "logout"

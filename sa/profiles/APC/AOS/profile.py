@@ -12,10 +12,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "APC.AOS"
-    pattern_username = r"^User Name\s+:"
-    username_submit = "\r"
-    pattern_password = r"^Password\s+:"
-    password_submit = "\r"
-    pattern_prompt = r"^(\S+)?>"
-    pattern_more = r"^Press <ENTER> to continue...$"
-    command_submit = "\r"
+
+    pattern_username = rb"^User Name\s+:"
+    username_submit = b"\r"
+    pattern_password = rb"^Password\s+:"
+    password_submit = b"\r"
+    pattern_prompt = rb"^(\S+)?>"
+    pattern_more = rb"^Press <ENTER> to continue...$"
+    command_submit = b"\r"

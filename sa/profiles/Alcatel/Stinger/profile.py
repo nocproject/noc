@@ -11,7 +11,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alcatel.Stinger"
-    pattern_prompt = r"^\S+>"
-    pattern_username = "User: "
-    pattern_password = "Password: "
+
+    pattern_prompt = rb"^\S+>"
+    pattern_username = rb"User: "
+    pattern_password = rb"Password: "
     command_exit = "quit"
