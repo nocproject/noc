@@ -14,49 +14,12 @@ from noc.core.bi.decorator import bi_hash
 
 
 class Migration(BaseMigration):
-    depends_on = [("sa", "0223_managed_object_l2domain")]
+    depends_on = [
+        ("sa", "0223_managed_object_l2domain"),
+        ("vc", "0028_create_default_vlan_profile"),
+    ]
 
     def migrate(self):
-        # Create default VLAN Profile
-        vlan_prof_id = bson.ObjectId()
-        self.mongo_db["vlanprofiles"].insert_one(
-            {
-                "_id": vlan_prof_id,
-                "name": "default",
-                "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
-                "labels": [],
-                "effective_labels": [],
-                "bi_id": bson.Int64(bi_hash(vlan_prof_id)),
-            }
-        )
-        # Create default L2 Domain Profile
-        l2d_prof_id = bson.ObjectId()
-        self.mongo_db["l2domainprofiles"].insert_one(
-            {
-                "_id": l2d_prof_id,
-                "name": "default",
-                "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
-                "pools": [],
-                "labels": [],
-                "effective_labels": [],
-                "bi_id": bson.Int64(bi_hash(l2d_prof_id)),
-                "vlan_discovery_policy": "E",
-            }
-        )
-        # Create default L2 Domain
-        l2dom_id = bson.ObjectId()
-        self.mongo_db["l2domains"].insert_one(
-            {
-                "_id": l2dom_id,
-                "name": "default",
-                "description": "Default L2 Domain Profile",
-                "profile": l2d_prof_id,
-                "pools": [],
-                "labels": [],
-                "effective_labels": [],
-                "bi_id": bson.Int64(bi_hash(l2dom_id)),
-            }
-        )
         # Check VC - if count more 0 - migrate VC
         (vc_count,) = self.db.execute(
             """
@@ -66,14 +29,16 @@ class Migration(BaseMigration):
             """
         )
         # VC Migration
+        vlan_profile_id = bson.ObjectId("61bee6a55c42c21338453612")
+        l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
         if vc_count:
-            self.vc_migrate(l2d_prof_id, vlan_prof_id)
+            self.vc_migrate(l2domain_profile_id, vlan_profile_id)
         # VLAN Migration
         vlans = self.mongo_db["vlans"].count({"vlan": {"$ne": 1}})
         if not vc_count and vlans:
-            self.vlan_mirate(l2d_prof_id)
+            self.vlan_migrate(l2domain_profile_id)
 
-    def vlan_mirate(self, default_l2d_profile_id):
+    def vlan_migrate(self, default_l2d_profile_id):
         v_coll = self.mongo_db["vlans"]
         # VLAN Segments
         segments = [
