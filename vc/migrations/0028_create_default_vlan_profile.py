@@ -13,7 +13,7 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-        pass
+        ...
         # Create default VLAN Profile
         # self.mongo_db["vlanprofiles"].insert_one(
         #     {
