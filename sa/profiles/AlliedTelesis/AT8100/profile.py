@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)> "
     pattern_prompt = rb"^(?P<hostname>\S+)# "
     pattern_more = [(rb"^--More--\s*", b" ")]
-    command_super = "enable"
+    command_super = b"enable"
     command_submit = b"\r\n"
     username_submit = b"\r"
     password_submit = b"\r"

@@ -17,7 +17,7 @@ from noc.core.confdb.syntax.patterns import ANY
 class Profile(BaseProfile):
     name = "Raisecom.ROS"
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^\S+?#"
     command_exit = "exit"
     pattern_more = [(rb"^ --More--\s*", b" ")]

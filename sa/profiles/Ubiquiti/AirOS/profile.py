@@ -13,10 +13,10 @@ from noc.core.snmp.render import render_mac
 
 class Profile(BaseProfile):
     name = "Ubiquiti.AirOS"
-    pattern_username = r"([Uu][Bb][Nn][Tt] login|[Ll]ogin):"
-    pattern_more = r"CTRL\+C.+?a All"
-    pattern_prompt = r"^\S+?(\.v(?P<version>\S+))?#"
-    command_more = "a"
+
+    pattern_username = rb"([Uu][Bb][Nn][Tt] login|[Ll]ogin):"
+    pattern_more = [(rb"CTRL\+C.+?a All", b"a")]
+    pattern_prompt = rb"^\S+?(\.v(?P<version>\S+))?#"
     config_volatile = [r"^%.*?$"]
 
     snmp_display_hints = {"1.2.840.10036.2.1.1.1": render_mac}

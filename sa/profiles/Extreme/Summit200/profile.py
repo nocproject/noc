@@ -17,9 +17,8 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>\S+)\:\d+ #"
     pattern_syntax_error = rb"Syntax error at token"
     # command_disable_pager = "disable clipaging"
-    pattern_more = rb"Press <SPACE> to continue or <Q> to quit:"
+    pattern_more = [(rb"Press <SPACE> to continue or <Q> to quit:", b" ")]
     command_exit = "exit"
-    command_more = " "
     config_tokenizer = "line"
     config_tokenizer_settings = {"line_comment": "#"}
     config_volatile = [r"generated \S{3} \S{3} \d+ \d\S+\d \d{4}"]

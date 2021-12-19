@@ -23,16 +23,16 @@ class Profile(BaseProfile):
             rb"System will reboot immediately after upgrade firmware complete\, continue\? \(y\/n\)\s*",
             b"y",
         ),
+        (rb"^---MORE---", b"a"),
     ]
     pattern_unprivileged_prompt = rb"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = rb"(Available commands|Next possible completions|Ambiguous token):"
     pattern_operation_error = (
         rb"This command can\'t be used when authentication policy is disabled."
     )
-    command_super = "enable admin"
+    command_super = b"enable admin"
     pattern_prompt = rb"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
     password_submit = b"\r\n"
-    command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
     rogue_chars = [re.compile(rb"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), b"\r"]

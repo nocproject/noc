@@ -12,12 +12,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Rotek.RTBSv1"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*>|\W*?#\s+?"
-    pattern_syntax_error = r"(ERROR|show: not found)"
-    command_submit = "\r"
+
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*>|\W*?#\s+?"
+    pattern_syntax_error = rb"(ERROR|show: not found)"
+    command_submit = b"\r"
     enable_cli_session = False
     rogue_chars = [re.compile(rb"\x1b7\x1b\[r\x1b\[999;999H\x1b\[6n")]
     command_exit = "exit\rlogout"
+
     INTERFACE_TYPES = {
         "et": "physical",
         "lo": "loopback",

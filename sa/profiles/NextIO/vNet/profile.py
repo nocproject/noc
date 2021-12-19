@@ -12,6 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NextIO.vNet"
-    pattern_syntax_error = r"^ERROR: Invalid command -"
-    pattern_operation_error = r"^ERROR: "
-    pattern_prompt = r"^(?P<hostname>\S+)> "
+
+    pattern_syntax_error = rb"^ERROR: Invalid command -"
+    pattern_operation_error = rb"^ERROR: "
+    pattern_prompt = rb"^(?P<hostname>\S+)> "

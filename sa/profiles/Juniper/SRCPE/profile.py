@@ -12,7 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Juniper.SRCPE"
-    pattern_prompt = r"^\S*>"
-    pattern_more = r"^ -- MORE -- "
-    command_more = " "
+
+    pattern_prompt = rb"^\S*>"
+    pattern_more = [(rb"^ -- MORE -- ", b" ")]
     rogue_chars = []

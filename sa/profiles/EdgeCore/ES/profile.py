@@ -19,7 +19,7 @@ class Profile(BaseProfile):
 
     pattern_unprivileged_prompt = rb"^(?P<hostname>[^\n]+)>"
     pattern_syntax_error = rb"% Invalid input detected at|% Incomplete command"
-    command_super = "enable"
+    command_super = b"enable"
     pattern_prompt = rb"^(?P<hostname>[^\n]+)(?:\(config[^)]*\))?#"
     pattern_more = [
         (rb"---?More---?", b" "),

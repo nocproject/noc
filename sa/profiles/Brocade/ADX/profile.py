@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     )
     pattern_prompt = rb"^\S*@(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     pattern_syntax_error = rb"Invalid input ->|Ambiguous input ->|Incomplete command."
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
     command_enter_config = "configure terminal"
     command_leave_config = "end"

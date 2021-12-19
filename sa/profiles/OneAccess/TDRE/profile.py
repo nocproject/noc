@@ -15,13 +15,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "OneAccess.TDRE"
-    pattern_more = "^--More--"
-    pattern_prompt = r"^\S*>"
-    command_more = " "
+
+    pattern_more = [(rb"^--More--", b" ")]
+    pattern_prompt = rb"^\S*>"
     command_exit = "DISCONNECT"
-    command_submit = "\r\n"
-    username_submit = "\r"
-    password_submit = "\r"
+    command_submit = b"\r\n"
+    username_submit = b"\r"
+    password_submit = b"\r"
     rogue_chars = [
         re.compile(b"Login successful -- CLI active -- connecting with device\r\n>"),
         b"\r",

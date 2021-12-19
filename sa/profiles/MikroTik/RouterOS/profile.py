@@ -14,16 +14,17 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "MikroTik.RouterOS"
-    command_submit = "\r"
+
+    command_submit = b"\r"
     command_exit = "quit"
-    pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] [^>]*> "
+    pattern_prompt = rb"\[(?P<prompt>[^\]@]+@.+?)\] [^>]*> "
     pattern_more = [
-        ('Please press "Enter" to continue!', "\n"),
-        ("q to abort", "q"),
-        (r"\[Q quit\|.+\]", " "),
-        (r"\[[yY]/[nN]\]", "y"),
+        (rb'Please press "Enter" to continue!', b"\n"),
+        (rb"q to abort", b"q"),
+        (rb"\[Q quit\|.+\]", b" "),
+        (rb"\[[yY]/[nN]\]", b"y"),
     ]
-    pattern_syntax_error = r"bad command name"
+    pattern_syntax_error = rb"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
     rogue_chars = [b"\r", b"\x00"]

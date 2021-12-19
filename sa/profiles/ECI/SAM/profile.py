@@ -23,8 +23,8 @@ class Profile(BaseProfile):
 
     # pattern_prompt = r"^Select menu option.*:"
     pattern_more = [
-        (r"Enter <CR> for more or 'q' to quit--:", "\r"),
-        (r"press <SPACE> to continue or <ENTER> to quit", "               \n"),
+        (rb"Enter <CR> for more or 'q' to quit--:", b"\r"),
+        (rb"press <SPACE> to continue or <ENTER> to quit", b"               \n"),
     ]
     command_exit = "logout"
     # telnet_slow_send_password = True

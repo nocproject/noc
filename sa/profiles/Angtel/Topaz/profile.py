@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
     pattern_prompt = rb"^(?P<hostname>\S+)\s*(?:\(config[^\)]*\))?#"
     pattern_syntax_error = rb"% Unrecognized command|% Wrong number of parameters"
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal datadump"
     # rogue_chars = [re.compile(r"\[\x1b\[1mN\x1b\[0m\]")]
     pattern_more = [
