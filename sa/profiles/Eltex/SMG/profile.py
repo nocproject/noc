@@ -12,7 +12,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.SMG"
+
     # pattern_username = r"^\S+ login: "
     # pattern_prompt = r"^(?P<hostname>\S+)# "
-    pattern_prompt = r"(SMG2016> )|(/[\w/]+ # )"
+    pattern_prompt = rb"(SMG2016> )|(/[\w/]+ # )"
     command_exit = "exit"

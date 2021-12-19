@@ -18,27 +18,28 @@ from noc.core.snmp.render import render_mac
 
 class Profile(BaseProfile):
     name = "Eltex.MES"
+
     pattern_more = [
-        (r"^More: <space>,  Quit: q, One line: <return>$", " "),
-        (r"\[Yes/press any key for no\]", "Y"),
-        (r"<return>, Quit: q or <ctrl>", " "),
-        (r"q or <ctrl>+z", " "),
-        (r"Overwrite file \[startup-config\].... \(Y\/N\)", "Y"),
-        (r"Would you like to continue \? \(Y\/N\)\[N\]", "Y"),
-        (r"Clear Logging File \? \(Y\/N\)\[N\]", "Y"),
+        (rb"^More: <space>,  Quit: q, One line: <return>$", b" "),
+        (rb"\[Yes/press any key for no\]", b"Y"),
+        (rb"<return>, Quit: q or <ctrl>", b" "),
+        (rb"q or <ctrl>+z", b" "),
+        (rb"Overwrite file \[startup-config\].... \(Y\/N\)", b"Y"),
+        (rb"Would you like to continue \? \(Y\/N\)\[N\]", b"Y"),
+        (rb"Clear Logging File \? \(Y\/N\)\[N\]", b"Y"),
     ]
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = (
-        r"% (Unrecognized command|Incomplete command|"
-        r"Wrong number of parameters or invalid range, size or "
-        r"characters entered)"
+        rb"% (Unrecognized command|Incomplete command|"
+        rb"Wrong number of parameters or invalid range, size or "
+        rb"characters entered)"
     )
     command_disable_pager = "terminal datadump"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?" r"(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?(?:\(config[^\)]*\))?#"
     rogue_chars = [re.compile(rb"\d+-\w+-\d+\s\d+:\d+:\d+\s\%\S+\:.+"), b"\r"]
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10

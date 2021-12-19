@@ -12,11 +12,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.WOP"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#|~ #"
-    command_more = "\n"
-    command_submit = "\n"
+
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*#|~ #"
+    command_more = b"\n"
+    command_submit = b"\n"
     command_exit = "exit"
-    pattern_syntax_error = r"Invalid command\."
+    pattern_syntax_error = rb"Invalid command\."
 
     INTERFACE_TYPES = {
         "lo": "loopback",  # Loopback

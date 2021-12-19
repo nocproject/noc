@@ -15,15 +15,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.MA4000"
-    pattern_username = r"^\S+ login: "
-    pattern_more = [(r"^--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
+
+    pattern_username = rb"^\S+ login: "
+    pattern_more = [(rb"^--More-- ", b" "), (rb"\[Yes/press any key for no\]", b"Y")]
     rogue_chars = [
         re.compile(br"\r\s{9}\r"),
         re.compile(br"^\s+VLAN Table\r\n\s+\~+\r\n", re.MULTILINE),
         b"\r",
     ]
-    pattern_syntax_error = r"^Unknown command"
-    pattern_prompt = r"^(?P<hostname>\S+)# "
+    pattern_syntax_error = rb"^Unknown command"
+    pattern_prompt = rb"^(?P<hostname>\S+)# "
     command_exit = "exit"
     telnet_naws = b"\x00\x7f\x00\x7f"
 
