@@ -21,7 +21,9 @@ class Profile(BaseProfile):
         (rb"^Proceed with reload\?\s*\[confirm\]", b"y\n"),
     ]
     pattern_unprivileged_prompt = rb"^\S+?>"
-    pattern_syntax_error = rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    pattern_syntax_error = (
+        rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    )
     pattern_operation_error = rb"Command authorization failed."
     command_disable_pager = "terminal length 0"
     command_super = b"enable"

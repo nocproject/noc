@@ -20,9 +20,9 @@ class Profile(BaseProfile):
     pattern_password = rb"^[Pp]assword:"
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>\s*"
     pattern_prompt = rb"^(\S+# |> |config> |\[\S+\]\s*|root@\S+:(~|/\S+)\$)"
-    pattern_more = [(
-        rb'Press any key to continue|\| Press any key to continue \| Press "q" to exit \| ', b"\n"
-    )]
+    pattern_more = [
+        (rb'Press any key to continue|\| Press any key to continue \| Press "q" to exit \| ', b"\n")
+    ]
     pattern_syntax_error = rb"Syntax error: Unknown command|-sh: .+: not found"
     command_exit = "exit"
     command_enter_config = "config"
