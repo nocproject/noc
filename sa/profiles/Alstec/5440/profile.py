@@ -12,6 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alstec.5440"
-    pattern_prompt = r"^ > "
-    pattern_syntax_error = r"telnetd:error:"
+
+    pattern_prompt = rb"^ > "
+    pattern_syntax_error = rb"telnetd:error:"
     command_exit = "logout"

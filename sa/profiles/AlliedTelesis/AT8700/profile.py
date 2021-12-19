@@ -13,13 +13,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8700"
-    pattern_more = (
-        r"^--More--\s*\(<space> = next page, <CR> = one line, " r"C = continuous, Q = quit\)"
-    )
-    command_more = "c"
-    command_submit = "\r"
-    username_submit = "\r"
+    pattern_more = [
+        (rb"^--More--\s*\(<space> = next page, <CR> = one line, C = continuous, Q = quit\)", b"c")
+    ]
+    command_submit = b"\r"
+    username_submit = b"\r"
     command_save_config = "save configuration"
     # pattern_prompt = r"^(?P<hostname>[\S\s]+)>"
-    pattern_prompt = r"^(Manager)\s*(?P<hostname>\S+)>"
+    pattern_prompt = rb"^(Manager)\s*(?P<hostname>\S+)>"
     command_exit = "logout"

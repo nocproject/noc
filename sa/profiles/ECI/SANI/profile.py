@@ -12,8 +12,9 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "ECI.SANI"
-    pattern_username = r"^login : "
-    pattern_password = r"^password : "
-    pattern_prompt = r"^( >>|\S+ >(?: \S+ >)?)"
-    pattern_more = [(r"press <SPACE> to continue or <ENTER> to quit", "               \n")]
+
+    pattern_username = rb"^login : "
+    pattern_password = rb"^password : "
+    pattern_prompt = rb"^( >>|\S+ >(?: \S+ >)?)"
+    pattern_more = [(rb"press <SPACE> to continue or <ENTER> to quit", b"               \n")]
     command_exit = "logout"

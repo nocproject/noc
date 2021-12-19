@@ -15,22 +15,23 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Iskratel.MBAN"
+
     # Iskratel do not have "enable_super" command
     # pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_username = r"^user id :"
-    pattern_prompt = r"^\S+?>"
+    pattern_username = rb"^user id :"
+    pattern_prompt = rb"^\S+?>"
     pattern_more = [
-        (r"^Press any key to continue or Esc to stop scrolling.\r\n", " "),
-        (r"^Press any key to continue", " "),  # Need more examples
+        (rb"^Press any key to continue or Esc to stop scrolling.\r\n", b" "),
+        (rb"^Press any key to continue", b" "),  # Need more examples
     ]
     # pattern_more = "^Press any key to continue or Esc to stop scrolling.\r\n"
-    pattern_syntax_error = r"Illegal command name"
-    command_more = " "
+    pattern_syntax_error = rb"Illegal command name"
+    command_more = b" "
     command_exit = "exit"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     enable_cli_session = False
-    command_submit = "\r\n"
+    command_submit = b"\r\n"
     rogue_chars = [b"\r\x00"]
 
     rx_iface_match = re.compile(r"^(\w+?)(\d+)$")

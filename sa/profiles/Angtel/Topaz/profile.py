@@ -12,16 +12,17 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Angtel.Topaz"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*(?:\(config[^\)]*\))?#"
-    pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*(?:\(config[^\)]*\))?#"
+    pattern_syntax_error = rb"% Unrecognized command|% Wrong number of parameters"
     command_super = "enable"
     command_disable_pager = "terminal datadump"
     # rogue_chars = [re.compile(r"\[\x1b\[1mN\x1b\[0m\]")]
     pattern_more = [
-        (r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
-        (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n"),
-        (r"^\s*This action will cause loss of configuration.Proceed\?\s*\(Y/N\)", "Y\n"),
+        (rb"More: <space>,  Quit: q or CTRL+Z, One line: <return>", b"a"),
+        (rb"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", b"Y\n"),
+        (rb"^\s*This action will cause loss of configuration.Proceed\?\s*\(Y/N\)", b"Y\n"),
     ]
     command_exit = "exit"
 

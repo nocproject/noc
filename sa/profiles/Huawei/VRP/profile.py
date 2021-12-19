@@ -21,33 +21,33 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Huawei.VRP"
     pattern_more = [
-        (r"^  ---- More ----\s*", " "),
-        (r"[Cc]ontinue?\S+", "y\n\r"),
-        (r"[Cc]onfirm?\S+", "y\n\r"),
-        (r"\s*[Aa]re you sure?\S+", "y\n\r"),
-        (r"^Delete flash:", "y\n\r"),
-        (r"^Squeeze flash:", "y\n\r"),
-        (r"^The password needs to be changed\. Change now\? \[Y\/N\]\:", "n\n\r"),
-        (r"unchanged press the enter key\)\:", "\n"),
+        (rb"^  ---- More ----\s*", b" "),
+        (rb"[Cc]ontinue?\S+", b"y\n\r"),
+        (rb"[Cc]onfirm?\S+", b"y\n\r"),
+        (rb"\s*[Aa]re you sure?\S+", b"y\n\r"),
+        (rb"^Delete flash:", b"y\n\r"),
+        (rb"^Squeeze flash:", b"y\n\r"),
+        (rb"^The password needs to be changed\. Change now\? \[Y\/N\]\:", b"n\n\r"),
+        (rb"unchanged press the enter key\)\:", b"\n"),
     ]
     pattern_prompt = (
-        r"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=\+]+)"
-        r"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
+        rb"^[<#\[](~|\*|)(?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=\+]+)"
+        rb"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
     )
     pattern_syntax_error = (
-        r"(ERROR: |% Wrong parameter found at|"
-        r"% Unrecognized command found at|"
-        r"Error:Too many parameters found|"
-        r"% Too many parameters found at|"
-        r"% Ambiguous command found at|"
-        r"Error:\s*Unrecognized command found at|"
-        r"Error:\s*Wrong parameter found at|"
-        r"Error:\s*Incomplete command found at)|"
-        r"Error:\s*Instance can not be used when stp in vbst mode"
+        rb"(ERROR: |% Wrong parameter found at|"
+        rb"% Unrecognized command found at|"
+        rb"Error:Too many parameters found|"
+        rb"% Too many parameters found at|"
+        rb"% Ambiguous command found at|"
+        rb"Error:\s*Unrecognized command found at|"
+        rb"Error:\s*Wrong parameter found at|"
+        rb"Error:\s*Incomplete command found at)|"
+        rb"Error:\s*Instance can not be used when stp in vbst mode"
     )
 
-    command_more = " "
-    config_volatile = [r"^%.*?$"]
+    command_more = b" "
+    config_volatile = [rb"^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
     command_enter_config = "system-view"
     command_leave_config = "return"

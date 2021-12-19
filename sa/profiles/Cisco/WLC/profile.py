@@ -12,9 +12,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.WLC"
-    pattern_username = r"^User:"
-    pattern_more = [(r"--More-- or \(q\)uit", " ")]
-    pattern_prompt = r"^\(Cisco Controller\)\s+>"
+
+    pattern_username = rb"^User:"
+    pattern_more = [(rb"--More-- or \(q\)uit", b" ")]
+    pattern_prompt = rb"^\(Cisco Controller\)\s+>"
     requires_netmask_conversion = True
 
     matchers = {"is_platform_5508": {"platform": {"$regex": r"AIR-CT5508.*"}}}

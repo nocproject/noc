@@ -15,16 +15,19 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Iskratel.ESCOM"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters|Incomplete command"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
+    pattern_syntax_error = (
+        rb"% Unrecognized command|% Wrong number of parameters|Incomplete command"
+    )
     command_super = "enable"
     command_disable_pager = "terminal datadump"
     pattern_more = [
-        (r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", " "),
-        (r"--More--", " "),
+        (rb"More: <space>,  Quit: q or CTRL+Z, One line: <return>", b" "),
+        (rb"--More--", b" "),
     ]
-    command_more = "a"
+    command_more = b"a"
 
     matchers = {"is_escom_l": {"platform": {"$in": ["ESCOM L"]}}}
     INTERFACE_TYPES = {

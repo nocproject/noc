@@ -13,11 +13,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8000S"
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_prompt = r"^\S+?#"
+
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_prompt = rb"^\S+?#"
     pattern_more = [
-        (r"^More: <space>,  Quit: q, One line: <return>", " "),
-        (r"^.*?\[Yes/press any key for no\]\.*", "Y"),
+        (rb"^More: <space>,  Quit: q, One line: <return>", b" "),
+        (rb"^.*?\[Yes/press any key for no\]\.*", b"Y"),
     ]
     command_super = "enable"
     command_enter_config = "configure"

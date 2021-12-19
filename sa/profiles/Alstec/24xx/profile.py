@@ -16,21 +16,21 @@ from noc.core.confdb.syntax.patterns import ANY
 
 class Profile(BaseProfile):
     name = "Alstec.24xx"
-    pattern_username = r"^User:"
-    pattern_unprivileged_prompt = r"^(?P<hostname>[ \S]+) >"
-    pattern_prompt = r"^(?=[^#])(?P<hostname>\S+?)(\s\([\S ]+?\)){0,3} #"
+    pattern_username = rb"^User:"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>[ \S]+) >"
+    pattern_prompt = rb"^(?=[^#])(?P<hostname>\S+?)(\s\([\S ]+?\)){0,3} #"
     # (?=[^#]) fix if use banner '# Banner message #' format
     pattern_more = [
-        (r"^--More-- or \(q\)uit$", " "),
+        (rb"^--More-- or \(q\)uit$", b" "),
         (
-            r"This operation may take a few minutes.\n"
-            r"Management interfaces will not be available during this time.\n"
-            r"Are you sure you want to save\?\s*\(y/n\):\s*",
-            "y\n",
+            rb"This operation may take a few minutes.\n"
+            rb"Management interfaces will not be available during this time.\n"
+            rb"Are you sure you want to save\?\s*\(y/n\):\s*",
+            b"y\n",
         ),
-        (r"Would you like to save them now\?", "n"),
+        (rb"Would you like to save them now\?", b"n"),
     ]
-    pattern_syntax_error = r"(ERROR: Wrong or incomplete command|Incomplete command\. Use \? to list commands|\^\n% Invalid input detected at '\^' marker)"
+    pattern_syntax_error = rb"(ERROR: Wrong or incomplete command|Incomplete command\. Use \? to list commands|\^\n% Invalid input detected at '\^' marker)"
     command_super = "enable"
     command_exit = "logout"
     command_enter_config = "configure"

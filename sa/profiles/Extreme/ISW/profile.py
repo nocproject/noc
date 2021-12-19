@@ -12,10 +12,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Extreme.ISW"
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_prompt = r"^(?P<hostname>\S+)#"
-    pattern_syntax_error = r"% (Incomplete command|Invalid (input|word) detected at)"
-    pattern_more = [(r"^-- more --, next page: Space, continue: g, quit: \^C", "g")]
+
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_prompt = rb"^(?P<hostname>\S+)#"
+    pattern_syntax_error = rb"% (Incomplete command|Invalid (input|word) detected at)"
+    pattern_more = [(rb"^-- more --, next page: Space, continue: g, quit: \^C", b"g")]
     command_exit = "exit"
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 

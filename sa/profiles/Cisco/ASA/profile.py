@@ -11,16 +11,18 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.ASA"
-    pattern_more = "^<--- More --->"
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
-    pattern_username = r"^\s*([Uu]ser ?[Nn]ame|[Ll]ogin): ?"  # Fix for exclude "...Last login: 10:48:33 MS..." match
+
+    pattern_more = [(rb"^<--- More --->", b" ")]
+    pattern_prompt = rb"^\S+?#"
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = (
+        rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    )
+    pattern_username = rb"^\s*([Uu]ser ?[Nn]ame|[Ll]ogin): ?"  # Fix for exclude "...Last login: 10:48:33 MS..." match
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "logout"
-    pattern_prompt = r"^\S+?#"
-    command_more = " "
     command_disable_pager = "terminal pager 0"
     config_volatile = [r"\sat\s\d+:\d+:\d+\.\d+\s\S+\s\S+\s\S+\s\d+\s\d+\n"]
 

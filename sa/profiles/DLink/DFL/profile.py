@@ -13,8 +13,9 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DFL"
-    pattern_syntax_error = r"Error: Unknown command:"
-    pattern_prompt = r"^(?P<hostname>\S+(:\S+)*):/> "
+
+    pattern_syntax_error = rb"Error: Unknown command:"
+    pattern_prompt = rb"^(?P<hostname>\S+(:\S+)*):/> "
     command_more = "a"
     command_exit = "logout"
     config_volatile = ["^%.*?$"]

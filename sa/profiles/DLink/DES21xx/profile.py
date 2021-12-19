@@ -13,9 +13,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DES21xx"
-    pattern_prompt = r"^\S+?>"
+
+    pattern_prompt = rb"^\S+?>"
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     telnet_slow_send_password = True
-    command_submit = "\r"
+    command_submit = b"\r"

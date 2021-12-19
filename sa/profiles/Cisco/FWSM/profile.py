@@ -12,8 +12,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.FWSM"
-    pattern_more = "^<--- More --->"
-    pattern_unprivileged_prompt = r"^\S+?>"
+
+    pattern_more = [(rb"^<--- More --->", b" ")]
+    pattern_unprivileged_prompt = rb"^\S+?>"
     command_super = "enable"
-    pattern_prompt = r"^\S+?#"
-    command_more = " "
+    pattern_prompt = rb"^\S+?#"

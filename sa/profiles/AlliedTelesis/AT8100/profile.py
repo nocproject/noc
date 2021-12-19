@@ -16,14 +16,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8100"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)> "
-    pattern_prompt = r"^(?P<hostname>\S+)# "
-    pattern_more = r"^--More--\s*"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)> "
+    pattern_prompt = rb"^(?P<hostname>\S+)# "
+    pattern_more = [(rb"^--More--\s*", b" ")]
     command_super = "enable"
-    command_more = " "
-    command_submit = "\r\n"
-    username_submit = "\r"
-    password_submit = "\r"
+    command_submit = b"\r\n"
+    username_submit = b"\r"
+    password_submit = b"\r"
     command_disable_pager = "terminal length 0"
     command_exit = "exit"
 

@@ -15,10 +15,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Ericsson.MINI_LINK"
-    pattern_more = "^---(more)---"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
-    pattern_prompt = r"^(?P<hostname>\S+)#"
-    pattern_syntax_error = r"% Invalid input at"
+
+    pattern_more = rb"^---(more)---"
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>"
+    pattern_prompt = rb"^(?P<hostname>\S+)#"
+    pattern_syntax_error = rb"% Invalid input at"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"

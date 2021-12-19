@@ -12,4 +12,5 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Brocade.FabricOS"
-    pattern_prompt = r"\S+:\S+>"
+
+    pattern_prompt = rb"\S+:\S+>"

@@ -16,26 +16,27 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Extreme.XOS"
-    pattern_prompt = r"^(\*\s)?(Slot-\d+ )?\S+? #"
-    pattern_syntax_error = r"%% (Incomplete command|Invalid input detected at)"
+
+    pattern_prompt = rb"^(\*\s)?(Slot-\d+ )?\S+? #"
+    pattern_syntax_error = rb"%% (Incomplete command|Invalid input detected at)"
     command_disable_pager = "disable clipaging"
     pattern_more = [
-        (r"^Press <SPACE> to continue or <Q> to quit:", " "),
+        (rb"^Press <SPACE> to continue or <Q> to quit:", b" "),
         (
-            r"^Do you want to continue with download and remove existing files from internal-memory\? \(y/N\)",
-            "y\n",
+            rb"^Do you want to continue with download and remove existing files from internal-memory\? \(y/N\)",
+            b"y\n",
         ),
         (
-            r"Do you want to install image after downloading\? \(y - yes, n - no, \<cr\> - cancel\)",
-            "y\n",
+            rb"Do you want to install image after downloading\? \(y - yes, n - no, \<cr\> - cancel\)",
+            b"y\n",
         ),
-        (r"Are you sure you want to reboot the stack\? \(y/N\)", "y\n"),
+        (rb"Are you sure you want to reboot the stack\? \(y/N\)", b"y\n"),
         (
-            r"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
-            r"(y - save and reboot, n - reboot without save, <cr> - cancel command)",
-            "y\n",
+            rb"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
+            rb"(y - save and reboot, n - reboot without save, <cr> - cancel command)",
+            b"y\n",
         ),
-        (r"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", "y\n"),
+        (rb"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", b"y\n"),
     ]
 
     def get_interface_names(self, name):

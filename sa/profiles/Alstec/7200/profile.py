@@ -14,11 +14,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alstec.7200"
-    pattern_username = r"^User:"
-    pattern_unprivileged_prompt = r"^\S+ >"
-    pattern_prompt = r"^\S+ #"
-    pattern_more = r"^--More-- or \(q\)uit$"
-    pattern_syntax_error = r"^(% Invalid input detected at|Command not found)"
+    pattern_username = rb"^User:"
+    pattern_unprivileged_prompt = rb"^\S+ >"
+    pattern_prompt = rb"^\S+ #"
+    pattern_more = [(rb"^--More-- or \(q\)uit$", b"\n")]
+    pattern_syntax_error = rb"^(% Invalid input detected at|Command not found)"
     command_super = "enable"
     command_exit = "exit\nexit"
 

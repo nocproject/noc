@@ -17,16 +17,16 @@ from noc.core.script.error import NotSupportedError
 
 class Profile(BaseProfile):
     name = "DLink.DxS_Smart"
-    pattern_more = [(r"--More--", " "), (r"CTRL\+C.+?(a All)|(r Refresh)", "a")]
-    pattern_unprivileged_prompt = r"^\S+:(3|6|user|operator)#"
+    pattern_more = [(rb"--More--", b" "), (rb"CTRL\+C.+?(a All)|(r Refresh)", b"a")]
+    pattern_unprivileged_prompt = rb"^\S+:(3|6|user|operator)#"
     pattern_syntax_error = (
-        r"(?:% Invalid Command|"
-        r"% Invalid input detected at|"
-        r"Available commands:|"
-        r"Next possible completions:)"
+        rb"(?:% Invalid Command|"
+        rb"% Invalid input detected at|"
+        rb"Available commands:|"
+        rb"Next possible completions:)"
     )
     command_super = "enable admin"
-    pattern_prompt = r"(?P<hostname>\S+(:\S+)*)[#>]"
+    pattern_prompt = rb"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager = ""
     command_more = " "
     command_exit = "logout"

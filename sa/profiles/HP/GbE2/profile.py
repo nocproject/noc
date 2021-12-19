@@ -12,9 +12,9 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "HP.GbE2"
-    pattern_more = "Press q to quit, any other key to continue"
-    pattern_prompt = r"^>> [^#]+# "
-    command_more = " "
+
+    pattern_more = [(rb"Press q to quit, any other key to continue", b" ")]
+    pattern_prompt = rb"^>> [^#]+# "
     command_leave_config = "apply"
     command_save_config = "save\ny\n"
     config_volatile = [r"^/\* Configuration dump taken.*?$"]

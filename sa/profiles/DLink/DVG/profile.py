@@ -12,17 +12,18 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DVG"
-    submit_command = "\r"
-    username_submit = "\n\r"
-    password_submit = "\r\n"
-    pattern_username = r"^(User: |\S+ login: )"
+
+    submit_command = b"\r"
+    username_submit = b"\n\r"
+    password_submit = b"\r\n"
+    pattern_username = rb"^(User: |\S+ login: )"
     pattern_more = [
-        (r"^Disconnect Now? (Y/N)", "Y"),
-        (r"^More: <space>,  Quit: q, One line: <return>$", " "),
+        (rb"^Disconnect Now? (Y/N)", b"Y"),
+        (rb"^More: <space>,  Quit: q, One line: <return>$", b" "),
     ]
-    pattern_syntax_error = r"^\s+\^\s+(\[Command Not Found\]|Option Not Found)$"
+    pattern_syntax_error = rb"^\s+\^\s+(\[Command Not Found\]|Option Not Found)$"
     command_enter_config = "CD /"
     command_leave_config = "SUBMIT"
     command_save_config = "SAVE"
-    pattern_prompt = r"^(>|\$) "
+    pattern_prompt = rb"^(>|\$) "
     command_exit = "exit"

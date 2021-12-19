@@ -12,15 +12,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.SCOS"
-    pattern_more = [(r"--More--", " "), (r"\?\s*\[confirm\]", "\n")]
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% invalid input |% Ambiguous command:|% Incomplete command."
+
+    pattern_more = [(rb"--More--", b" "), (rb"\?\s*\[confirm\]", b"\n")]
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = rb"% invalid input |% Ambiguous command:|% Incomplete command."
     #    command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
 

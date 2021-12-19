@@ -13,10 +13,11 @@ from noc.core.validators import is_int
 
 class Profile(BaseProfile):
     name = "Extreme.Summit200"
-    pattern_prompt = r"^(?P<hostname>\S+)\:\d+ #"
-    pattern_syntax_error = r"Syntax error at token"
+
+    pattern_prompt = rb"^(?P<hostname>\S+)\:\d+ #"
+    pattern_syntax_error = rb"Syntax error at token"
     # command_disable_pager = "disable clipaging"
-    pattern_more = r"Press <SPACE> to continue or <Q> to quit:"
+    pattern_more = rb"Press <SPACE> to continue or <Q> to quit:"
     command_exit = "exit"
     command_more = " "
     config_tokenizer = "line"
