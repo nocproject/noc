@@ -38,15 +38,15 @@ class Migration(BaseMigration):
             }
         )
         # Create default L2 Domain
-        # self.mongo_db["l2domains"].insert_one(
-        #     {
-        #         "_id": ObjectId("61bee7425c42c21338453614"),
-        #         "name": "default",
-        #         "description": "Default L2 Domain Profile",
-        #         "profile": ObjectId("61bee6f45c42c21338453613"),
-        #         "pools": [],
-        #         "labels": [],
-        #         "effective_labels": [],
-        #         "bi_id": 2470941926019864228,
-        #     }
-        # )
+        self.mongo_db["l2domains"].insert_one(
+            {
+                "_id": ObjectId("61bee7425c42c21338453614"),
+                "name": "default",
+                "description": "Default L2 Domain Profile",
+                "profile": ObjectId("61bee6f45c42c21338453613"),
+                "pools": [],
+                "labels": [],
+                "effective_labels": [],
+                "bi_id": 2470941926019864228,
+            }
+        )
