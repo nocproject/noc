@@ -15,15 +15,15 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NSN.TIMOS"
-    pattern_username = "[Ll]ogin: "
-    pattern_password = "[Pp]assword: "
-    pattern_prompt = r"^\S+?#"
-    pattern_more = r"^Press any key to continue.*$"
-    pattern_syntax_error = r"Error: Bad command\.|Error: Invalid parameter\."
+
+    pattern_username = rb"[Ll]ogin: "
+    pattern_password = rb"[Pp]assword: "
+    pattern_prompt = rb"^\S+?#"
+    pattern_more = [(rb"^Press any key to continue.*$", b" ")]
+    pattern_syntax_error = rb"Error: Bad command\.|Error: Invalid parameter\."
     command_disable_pager = "environment no more"
     command_exit = "logout"
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
-    command_more = " "
     rogue_chars = [re.compile(rb"\r\s+\r"), b"\r"]
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#", "end_of_context": "exit", "string_quote": '"'}

@@ -15,17 +15,17 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.MSAN"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\'`\s/]+?)(config|chips|bridge|ethernet|adsl|gshdsl|vlan1q)?[#>]\s*"
+
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\.\'`\s/]+?)(config|chips|bridge|ethernet|adsl|gshdsl|vlan1q)?[#>]\s*"
     # pattern_unprivileged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?>\s*"
-    pattern_syntax_error = "((Unknown|invalid) (command|input)|Commands are:)"
+    pattern_syntax_error = rb"((Unknown|invalid) (command|input)|Commands are:)"
     pattern_more = [
-        (r"Press any key to continue, 'n' to nopause,'e' to exit", "n"),
-        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n"),
-        (r"Using command \"stop\" to terminate", "stop"),
-        (r"continue...", " "),
+        (rb"Press any key to continue, 'n' to nopause,'e' to exit", b"n"),
+        (rb"Press any key to continue, 'e' to exit, 'n' for nopause", b"n"),
+        (rb"Using command \"stop\" to terminate", b"stop"),
+        (rb"continue...", b" "),
     ]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
-    command_more = "n"
 
     snmp_metrics_get_chunk = 30
     snmp_metrics_get_timeout = 3

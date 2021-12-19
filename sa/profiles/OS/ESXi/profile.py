@@ -12,16 +12,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "OS.ESXi"
+
     # pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_unprivileged_prompt = r"^([\w\~\-\.\/]*\s+)\$\s*"
-    pattern_prompt = r"^([\w\~\-\.\/]*\s+)#\s*"
+    pattern_unprivileged_prompt = rb"^([\w\~\-\.\/]*\s+)\$\s*"
+    pattern_prompt = rb"^([\w\~\-\.\/]*\s+)#\s*"
     pattern_syntax_error = (
-        r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory"
-        r"|\w+: \w+: command not found"
-        r"|\w+: \w+: \w+: No such file or directory)"
+        rb"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory"
+        rb"|\w+: \w+: command not found"
+        rb"|\w+: \w+: \w+: No such file or directory)"
     )
     command_disable_pager = "export LANG=en_GB.UTF-8"
     # command_super = "su"
     command_exit = "exit"
-    pattern_more = "--More--"
-    command_more = "\n"
+    pattern_more = [(rb"--More--", b"\n")]

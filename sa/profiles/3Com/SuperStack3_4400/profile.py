@@ -18,8 +18,8 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^Select menu option.*:"
     pattern_more = [(rb"(|-- )Enter <CR> for more or 'q' to quit(--|\s--):", b"\r\n")]
     command_submit = b"\r\n"
-    username_submit = "\r\n"
-    password_submit = "\r\n"
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
     command_exit = "logout"
     convert_mac = BaseProfile.convert_mac_to_dashed
 

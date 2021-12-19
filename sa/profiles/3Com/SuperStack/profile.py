@@ -14,6 +14,6 @@ class Profile(BaseProfile):
     name = "3Com.SuperStack"
     pattern_prompt = rb"^Select menu option.*:"
     pattern_more = [(rb"Enter <CR> for more or 'q' to quit--:", b"\r")]
-    command_submit = "\r"
+    command_submit = b"\r"
     telnet_send_on_connect = b"\r"
     convert_mac = BaseProfile.convert_mac_to_dashed

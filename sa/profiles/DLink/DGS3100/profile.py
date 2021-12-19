@@ -20,12 +20,12 @@ class Profile(BaseProfile):
         (rb"CTRL\+C.+?a All", b"a"),
         (rb"CTRL\+C.+?a ALL ", b"a"),
         (rb"\[Yes/press any key for no\]", b"Y"),
+        (rb"^---MORE---", b"a"),
     ]
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+):(3|6|user|operator)#"
     pattern_syntax_error = rb"(Command: .+|Invalid input detected at)"
     pattern_prompt = rb"^(?P<hostname>\S+)#"
     rogue_chars = [re.compile(rb"^\s{45,}"), b"\r"]
-    command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]

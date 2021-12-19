@@ -16,28 +16,27 @@ from noc.core.validators import is_int
 
 class Profile(BaseProfile):
     name = "Qtech.QSW2500"
+
     pattern_more = [
-        (r"^ --More-- $", " "),
-        (r"^Confirm to overwrite current startup-config configuration " r"[Y/N]:", "\nY\n"),
-        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
-        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
+        (rb"^ --More-- $", b" "),
+        (rb"^Confirm to overwrite current startup-config configuration [Y/N]:", b"\nY\n"),
+        (rb"^Confirm to overwrite current startup-config configuration", b"\ny\n"),
+        (rb"^Confirm to overwrite the existed destination file?", b"\ny\n"),
     ]
-    pattern_unprivileged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = rb"^\S+>"
     pattern_syntax_error = (
-        r"% (?:Invalid input detected at '\^' marker|"
-        r"(?:Ambiguous|Incomplete|.+Unknown) command)|"
-        r"Error input in the position market by"
+        rb"% (?:Invalid input detected at '\^' marker|"
+        rb"(?:Ambiguous|Incomplete|.+Unknown) command)|"
+        rb"Error input in the position market by"
     )
     command_disable_pager = "terminal page-break disable"
     telnet_send_on_connect = b"\n"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    command_submit = "\r"
-    pattern_prompt = (
-        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" r"(?:\(config[^\)]*\))?#"
-    )
+    command_submit = b"\r"
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
 
     rx_ver = re.compile(
         r"^\s*Product name: (?P<platform>\S+)\s*\n"

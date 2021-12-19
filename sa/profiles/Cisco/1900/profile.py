@@ -16,5 +16,5 @@ class Profile(BaseProfile):
     pattern_more = [(rb"\[K\] Command Line", b"K"), (rb"--More--$", b" ")]
 
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     convert_mac = BaseProfile.convert_mac_to_cisco

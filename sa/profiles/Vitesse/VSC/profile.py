@@ -13,15 +13,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Vitesse.VSC"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
-    pattern_syntax_error = r"\n% (Invalid|Ambiguous) word detected at"
-    command_super = "enable"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
+    pattern_syntax_error = rb"\n% (Invalid|Ambiguous) word detected at"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
-    command_submit = "\r"
-    username_submit = "\r"
-    password_submit = "\r\n"
-    pattern_more = [(r"-- more --, next page: Space, continue: g, quit:", "g\n")]
+    command_submit = b"\r"
+    username_submit = b"\r"
+    password_submit = b"\r\n"
+    pattern_more = [(rb"-- more --, next page: Space, continue: g, quit:", b"g\n")]
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

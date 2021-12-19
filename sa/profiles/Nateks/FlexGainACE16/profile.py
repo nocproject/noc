@@ -11,16 +11,17 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Nateks.FlexGainACE16"
-    pattern_more = [
-        (r"^logged on; type `exit' to close connection.", "\n"),
-        (r"^Press 'y' to continue, 'n' to break and press Enter", "\n"),
-        (r"^Yes or No <y/n>", "y\n"),
-    ]
-    pattern_syntax_error = r"% Unknown action |% Ambiguous command:"
-    pattern_username = "user:"
-    pattern_password = "[Pp]assword:"
-    command_submit = "\n"
 
-    pattern_prompt = r"^IPDSLAM#"
+    pattern_more = [
+        (rb"^logged on; type `exit' to close connection.", b"\n"),
+        (rb"^Press 'y' to continue, 'n' to break and press Enter", b"\n"),
+        (rb"^Yes or No <y/n>", b"y\n"),
+    ]
+    pattern_syntax_error = rb"% Unknown action |% Ambiguous command:"
+    pattern_username = rb"user:"
+    pattern_password = rb"[Pp]assword:"
+    command_submit = b"\n"
+
+    pattern_prompt = rb"^IPDSLAM#"
     command_exit = "exit"
     command_save_config = "commit\n"

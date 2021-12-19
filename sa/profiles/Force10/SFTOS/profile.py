@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"% Invalid input detected at "
     pattern_operation_error = rb"% Error: "
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "write memory"

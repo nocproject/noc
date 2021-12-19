@@ -12,21 +12,22 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Opticin.OS"
-    pattern_unprivileged_prompt = r"^(?P<hostname>[^\n]+)h>"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>[^\n]+)h>"
     pattern_syntax_error = (
-        r"% Unknown command|% Invalid input detected at|"
-        r"% Incomplete command|% Ambiguous command"
+        rb"% Unknown command|% Invalid input detected at|"
+        rb"% Incomplete command|% Ambiguous command"
     )
-    command_super = "enable"
-    pattern_prompt = r"^(?P<hostname>[^\n]+)\\enable>"
+    command_super = b"enable"
+    pattern_prompt = rb"^(?P<hostname>[^\n]+)\\enable>"
     pattern_more = [
-        (r"----------MORE------------", " "),
-        (r"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", " "),
-        (r"Startup configuration file name", "\n"),
+        (rb"----------MORE------------", b" "),
+        (rb"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", b" "),
+        (rb"Startup configuration file name", b"\n"),
     ]
     config_volatile = ["\x08+"]
     rogue_chars = [b"\r"]
-    command_submit = "\r"
+    command_submit = b"\r"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "copy config flash"

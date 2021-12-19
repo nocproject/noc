@@ -12,9 +12,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Vyatta.Vyatta"
-    pattern_username = r"[Ll]ogin: (?!\S+)"
-    pattern_prompt = r"^(?P<username>\S+)@(?P<hostname>\S+):[^$]+\$ "
-    pattern_more = [(r"^:", " "), (r"\[confirm\]", "\n")]
+
+    pattern_username = rb"[Ll]ogin: (?!\S+)"
+    pattern_prompt = rb"^(?P<username>\S+)@(?P<hostname>\S+):[^$]+\$ "
+    pattern_more = [(rb"^:", b" "), (rb"\[confirm\]", b"\n")]
     command_disable_pager = "set terminal length 0"
     command_enter_config = "configure"
     command_leave_config = "commit\nexit"

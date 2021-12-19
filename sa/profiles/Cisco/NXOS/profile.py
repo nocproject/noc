@@ -15,7 +15,7 @@ class Profile(BaseProfile):
 
     pattern_more = [(rb"^--More--", b"\n")]
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"

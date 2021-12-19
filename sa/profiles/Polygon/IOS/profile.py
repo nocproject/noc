@@ -12,16 +12,19 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Polygon.IOS"
-    pattern_more = [(r"^ --More--", " "), (r"(?:\?|interfaces)\s*\[confirm\]", " ")]
-    pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+
+    pattern_more = [(rb"^ --More--", b" "), (rb"(?:\?|interfaces)\s*\[confirm\]", b" ")]
+    pattern_unpriveleged_prompt = rb"^\S+?>"
+    pattern_syntax_error = (
+        rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    )
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]

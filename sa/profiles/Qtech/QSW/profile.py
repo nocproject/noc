@@ -16,34 +16,35 @@ from noc.core.lldp import LLDP_PORT_SUBTYPE_COMPONENT, LLDP_PORT_SUBTYPE_NAME
 
 class Profile(BaseProfile):
     name = "Qtech.QSW"
-    pattern_username = r"^(Username\(1-32 chars\)|[Ll]ogin):"
-    pattern_password = r"^Password(\(1-16 chars\)|):"
+
+    pattern_username = rb"^(Username\(1-32 chars\)|[Ll]ogin):"
+    pattern_password = rb"^Password(\(1-16 chars\)|):"
     pattern_more = [
         (
-            r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
-            r"to next page\.\.\.\.",
-            " ",
+            rb"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
+            rb"to next page\.\.\.\.",
+            b" ",
         ),
-        (r"^Startup config in flash will be updated, are you sure\(y/n\)\? " r"\[n\]", "y"),
-        (r"^ --More-- $", " "),
-        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
-        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
-        (r"^Begin to receive file, please wait", " "),
-        (r"#####", " "),
+        (rb"^Startup config in flash will be updated, are you sure\(y/n\)\? \[n\]", b"y"),
+        (rb"^ --More-- $", b" "),
+        (rb"^Confirm to overwrite current startup-config configuration", b"\ny\n"),
+        (rb"^Confirm to overwrite the existed destination file?", b"\ny\n"),
+        (rb"^Begin to receive file, please wait", b" "),
+        (rb"#####", b" "),
     ]
-    pattern_unprivileged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = rb"^\S+>"
     pattern_syntax_error = (
-        r"% (Unrecognized command, and error|Invalid input) detected at "
-        r"'\^' marker.|% Ambiguous command:|interface error!|Incomplete "
-        r"command"
+        rb"% (Unrecognized command, and error|Invalid input) detected at "
+        rb"'\^' marker.|% Ambiguous command:|interface error!|Incomplete "
+        rb"command"
     )
     #    command_disable_pager = "terminal datadump"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure"
     command_leave_config = "end"
     command_exit = "quit"
     command_save_config = "copy running-config startup-config"
-    pattern_prompt = r"^\S+#"
+    pattern_prompt = rb"^\S+#"
     rogue_chars = [
         re.compile(rb"\s*\x1b\[74D\s+\x1b\[74D"),
         re.compile(rb"\s*\x1b\[74D\x1b\[K"),

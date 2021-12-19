@@ -12,16 +12,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Upvel.UP"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
-    pattern_syntax_error = r"\n% (Invalid|Ambiguous) word detected at"
-    command_super = "enable"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)\s*>"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
+    pattern_syntax_error = rb"\n% (Invalid|Ambiguous) word detected at"
+    command_super = b"enable"
     command_disable_pager = "terminal length 0"
-    command_submit = "\r\n"
-    username_submit = "\r\n"
-    password_submit = "\r\n"
-    pattern_more = "-- more --, next page: Space, continue: g, quit: ^"
-    command_more = "g"
+    command_submit = b"\r\n"
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
+    pattern_more = [(rb"-- more --, next page: Space, continue: g, quit: ^", b"g")]
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"

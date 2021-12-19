@@ -13,15 +13,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NSN.hiX56xx"
-    pattern_more = "^ --More-- "
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at"
+
+    pattern_more = [(rb"^ --More-- ", b"\n")]
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "wr mem\n"
-    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\((config|bridge)[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>\S+?)(?:-\d+)?(?:\((config|bridge)[^\)]*\))?#"
 
     def shutdown_session(self, script):
         script.cli("terminal no length")

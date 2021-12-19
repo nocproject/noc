@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"% Unknown command.|% Command incomplete."
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_prompt = rb"^\S+\(config\)?#"
-    command_super = "enable"
+    command_super = b"enable"
     command_disable_pager = "screen lines 0"
 
     def convert_interface_name(self, interface):

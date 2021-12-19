@@ -15,4 +15,4 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^\S+?#"
     command_submit = b"\r"
     pattern_unprivileged_prompt = rb"^\S+?>"
-    command_super = "enable"
+    command_super = b"enable"

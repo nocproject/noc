@@ -13,12 +13,12 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Force10.FTOS"
 
-    pattern_more = b"^ ?--More--"
+    pattern_more = [(rb"^ ?--More--", b"\n")]
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Error: Invalid input at"
     pattern_operation_error = rb"% Error: "
     command_disable_pager = "terminal length 0"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "write memory"

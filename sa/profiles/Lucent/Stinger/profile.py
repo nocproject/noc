@@ -12,8 +12,9 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Lucent.Stinger"
-    pattern_syntax_error = r"(error: shelf: unknown value)"
-    pattern_username = r"User:\s*"
-    pattern_password = r"Password:\s*"
-    pattern_prompt = r"(?P<hostname>\S+)>"
+
+    pattern_syntax_error = rb"(error: shelf: unknown value)"
+    pattern_username = rb"User:\s*"
+    pattern_password = rb"Password:\s*"
+    pattern_prompt = rb"(?P<hostname>\S+)>"
     command_exit = "quit"

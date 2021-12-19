@@ -14,11 +14,12 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Planar.SDO3000"
-    pattern_username = r"Login: "
-    pattern_password = r"Password: "
-    pattern_prompt = r"Select:"
-    pattern_more = [(r"^Press <Enter> to continue or <Esc> to cancel\.", "\n")]
-    username_submit = "\r\n"
-    password_submit = "\r\n"
+
+    pattern_username = rb"Login: "
+    pattern_password = rb"Password: "
+    pattern_prompt = rb"Select:"
+    pattern_more = [(rb"^Press <Enter> to continue or <Esc> to cancel\.", b"\n")]
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
     command_exit = "0"
     rogue_chars = [b"\r", re.compile(br"(\x1b\[\S\S)+(;1H)?")]
