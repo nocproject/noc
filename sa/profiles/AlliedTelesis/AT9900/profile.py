@@ -12,10 +12,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT9900"
-    pattern_username = r"^.*\slogin: "
-    pattern_more = r"^--More--.*"
-    command_more = "c"
-    command_submit = "\r"
+
+    pattern_username = rb"^.*\slogin: "
+    pattern_more = [(rb"^--More--.*", b"c")]
+    command_submit = b"\r"
     command_save_config = "create config=boot1.cfg"
     pattern_prompt = r"^Manager.*>"
     convert_mac = BaseProfile.convert_mac_to_dashed

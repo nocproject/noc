@@ -12,10 +12,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DCN.DCWS"
-    pattern_more = [(r"^ --More-- ", "\n")]
-    pattern_unprivileged_prompt = r"^\S+?>"
+
+    pattern_more = [(rb"^ --More-- ", b"\n")]
+    pattern_unprivileged_prompt = rb"^\S+?>"
     command_super = "enable"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    command_more = "\n"
-    command_submit = "\n"
+    pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
+    command_more = b"\n"
+    command_submit = b"\n"
     command_exit = "exit"

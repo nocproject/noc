@@ -16,11 +16,12 @@ from noc.sa.interfaces.base import InterfaceTypeError
 
 class Profile(BaseProfile):
     name = "Arista.EOS"
-    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
-    pattern_prompt = r"^(?P<hostname>\S+)#"
-    pattern_syntax_error = r"% Invalid input"
-    pattern_more = [(r"^ --More--", "\n"), (r"\?\s*\[confirm\]", "\n")]
-    command_submit = "\r"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>\S+)>"
+    pattern_prompt = rb"^(?P<hostname>\S+)#"
+    pattern_syntax_error = rb"% Invalid input"
+    pattern_more = [(rb"^ --More--", b"\n"), (rb"\?\s*\[confirm\]", b"\n")]
+    command_submit = b"\r"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     convert_mac = BaseProfile.convert_mac_to_cisco

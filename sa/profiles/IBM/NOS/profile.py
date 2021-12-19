@@ -13,10 +13,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "IBM.NOS"
-    pattern_more = r"^--More--"
-    pattern_prompt = r"^\S+?#"
-    pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at"
+
+    pattern_more = rb"^--More--"
+    pattern_prompt = rb"^\S+?#"
+    pattern_unprivileged_prompt = rb"^\S+?>"
+    pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal-length 0"
     command_super = "enable"
     command_exit = "exit"

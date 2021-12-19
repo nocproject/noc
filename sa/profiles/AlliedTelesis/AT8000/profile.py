@@ -13,12 +13,14 @@ import re
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8000"
-    pattern_more = "^--More-- <Space> = next page, <CR> = one line, C = continuous, " "Q = quit"
-    command_more = "c"
-    command_submit = "\r\n"
-    username_submit = "\r"
-    password_submit = "\r"
-    pattern_prompt = r"^Manager::(?P<hostname>\S+)\$"
+
+    pattern_more = [
+        (rb"^--More-- <Space> = next page, <CR> = one line, C = continuous, Q = quit", b"c")
+    ]
+    command_submit = b"\r\n"
+    username_submit = b"\r"
+    password_submit = b"\r"
+    pattern_prompt = rb"^Manager::(?P<hostname>\S+)\$"
 
     rx_vlan = re.compile(
         r"^\s*VLAN Name\s*.+ (?P<name>\S+)\s*\n"

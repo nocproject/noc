@@ -15,10 +15,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alcatel.AOS"
-    pattern_username = "[Ll]ogin :"
-    pattern_password = "[Pp]assword :"
-    pattern_prompt = r"^(\S*->|(?P<hostname>\S+)# )"
-    pattern_syntax_error = "ERROR: Invalid entry:"
+    pattern_username = rb"[Ll]ogin :"
+    pattern_password = rb"[Pp]assword :"
+    pattern_prompt = rb"^(\S*->|(?P<hostname>\S+)# )"
+    pattern_syntax_error = rb"ERROR: Invalid entry:"
     command_save_config = "write memory\r\ncopy working certified"
     command_exit = "exit"
 

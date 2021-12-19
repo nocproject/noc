@@ -12,16 +12,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "3Com.4500"
-    pattern_username = r"^Username:"
-    pattern_password = r"^(Password:|Please input password:)"
+    pattern_username = rb"^Username:"
+    pattern_password = rb"^(Password:|Please input password:)"
     pattern_more = [
-        (r"^\s+---- More ----$", " "),
-        (r"The current configuration will be written to the device. Are you sure? [Y/N]:", "Y"),
-        (r"(To leave the existing filename unchanged, press the enter key):", "\n"),
-        (r"flash:/startup.cfg exists, overwrite? [Y/N]:", "Y"),
+        (rb"^\s+---- More ----$", " "),
+        (rb"The current configuration will be written to the device. Are you sure? [Y/N]:", b"Y"),
+        (rb"(To leave the existing filename unchanged, press the enter key):", b"\n"),
+        (rb"flash:/startup.cfg exists, overwrite? [Y/N]:", b"Y"),
     ]
-    pattern_prompt = r"^[<\[]\S+[>\]]"
-    pattern_syntax_error = r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
+    pattern_prompt = rb"^[<\[]\S+[>\]]"
+    pattern_syntax_error = rb"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
     command_save_config = "save"
     # command_enter_config = "system-view"
     command_leave_config = "return"

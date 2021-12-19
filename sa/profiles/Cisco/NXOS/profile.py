@@ -12,15 +12,16 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Cisco.NXOS"
-    pattern_more = [(r"^--More--", "\n")]
-    pattern_unprivileged_prompt = r"^\S+?>"
+
+    pattern_more = [(rb"^--More--", b"\n")]
+    pattern_unprivileged_prompt = rb"^\S+?>"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^\S+?#"
-    pattern_syntax_error = r"% Invalid command at"
+    pattern_prompt = rb"^\S+?#"
+    pattern_syntax_error = rb"% Invalid command at"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = ["^!Time:.*?^"]

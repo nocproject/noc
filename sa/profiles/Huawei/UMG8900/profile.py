@@ -12,10 +12,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Huawei.UMG8900"
-    pattern_username = "Login :"
-    pattern_password = "Password :"
-    pattern_more = r"^Press CTRL\+C to break, other key to continue\.\.\."
-    pattern_prompt = r"mml>"
+
+    pattern_username = b"Login :"
+    pattern_password = b"Password :"
+    pattern_more = rb"^Press CTRL\+C to break, other key to continue\.\.\."
+    pattern_prompt = rb"mml>"
     command_more = " "
     rogue_chars = [b"\r"]
     config_volatile = [r"^\+\+\+.*?$"]

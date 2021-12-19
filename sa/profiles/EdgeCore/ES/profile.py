@@ -16,19 +16,20 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "EdgeCore.ES"
-    pattern_unprivileged_prompt = r"^(?P<hostname>[^\n]+)>"
-    pattern_syntax_error = r"% Invalid input detected at|% Incomplete command"
+
+    pattern_unprivileged_prompt = rb"^(?P<hostname>[^\n]+)>"
+    pattern_syntax_error = rb"% Invalid input detected at|% Incomplete command"
     command_super = "enable"
-    pattern_prompt = r"^(?P<hostname>[^\n]+)(?:\(config[^)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>[^\n]+)(?:\(config[^)]*\))?#"
     pattern_more = [
-        (r"---?More---?", " "),
-        (r"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", " "),
-        (r"Are you sure to delete non-active file", "Y\n\n"),
-        (r"Startup configuration file name", "\n\n\n"),
+        (rb"---?More---?", b" "),
+        (rb"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", b" "),
+        (rb"Are you sure to delete non-active file", b"Y\n\n"),
+        (rb"Startup configuration file name", b"\n\n\n"),
     ]
     config_volatile = ["\x08+"]
     rogue_chars = [b"\r"]
-    command_submit = "\r"
+    command_submit = b"\r"
     cli_timeout_prompt = 120
     command_enter_config = "configure"
     command_leave_config = "end"

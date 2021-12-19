@@ -12,13 +12,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "ECI.SAM"
-    pattern_username = r"^[Ll]ogin :"
-    pattern_password = r"^[Pp]assword :"
-    username_submit = "\r\n"
-    password_submit = "\r\n"
-    command_submit = "\r\n"
-    pattern_prompt = r"^( >>|\S+ >(?: \S+ >)?|\S+ (?:\- SHOW(?:\\\S+)?)?>)"
-    pattern_syntax_error = r": no such command"
+
+    pattern_username = rb"^[Ll]ogin :"
+    pattern_password = rb"^[Pp]assword :"
+    username_submit = b"\r\n"
+    password_submit = b"\r\n"
+    command_submit = b"\r\n"
+    pattern_prompt = rb"^( >>|\S+ >(?: \S+ >)?|\S+ (?:\- SHOW(?:\\\S+)?)?>)"
+    pattern_syntax_error = rb": no such command"
 
     # pattern_prompt = r"^Select menu option.*:"
     pattern_more = [

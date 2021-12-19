@@ -15,20 +15,21 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.DSLAM"
-    pattern_username = r"(?<!Last )[Ll]ogin: "
-    pattern_more = [(r"--More-- ", " "), (r"\[Yes/press any key for no\]", "Y")]
+
+    pattern_username = rb"(?<!Last )[Ll]ogin: "
+    pattern_more = [(rb"--More-- ", b" "), (rb"\[Yes/press any key for no\]", b"Y")]
     pattern_prompt = (
-        r"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@\#]+)> (?!Command not found|fail to run,)"
+        rb"(?P<hostname>\S[A-Za-z0-9-_ \:\.\*\'\,\(\)\/\@\#]+)> (?!Command not found|fail to run,)"
     )
-    pattern_syntax_error = r"Command not found|fail to run,"
+    pattern_syntax_error = rb"Command not found|fail to run,"
     pattern_operation_error = (
-        r"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
+        rb"ERROR: Can't stat show result|ALARM: Board temperature mount to limit"
     )
     # command_disable_pager = "terminal datadump"
     # command_super = "enable"
-    username_submit = "\r"
-    password_submit = "\r"
-    command_submit = "\r"
+    username_submit = b"\r"
+    password_submit = b"\r"
+    command_submit = b"\r"
 
     command_enter_config = "configure"
     command_leave_config = "exit"

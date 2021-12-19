@@ -12,6 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "HP.iLO2"
-    pattern_username = r"Login Name:"
-    pattern_prompt = r"hpiLO->"
-    command_submit = "\r"
+
+    pattern_username = rb"Login Name:"
+    pattern_prompt = rb"hpiLO->"
+    command_submit = b"\r"

@@ -12,9 +12,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Intracom.UltraLink"
-    pattern_prompt = r"^(?P<hostname>\S+)>"
+
+    pattern_prompt = rb"^(?P<hostname>\S+)>"
     command_exit = "exit"
-    pattern_syntax_error = r"Syntax Error: Invalid Command"
+    pattern_syntax_error = rb"Syntax Error: Invalid Command"
     command_save_config = "config save"
 
     def cleaned_config(self, config):

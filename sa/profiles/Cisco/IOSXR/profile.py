@@ -16,13 +16,14 @@ from noc.sa.interfaces.base import InterfaceTypeError
 
 class Profile(BaseProfile):
     name = "Cisco.IOSXR"
-    pattern_more = r"^ --More--"
+
+    pattern_more = [(rb"^ --More--", b"\r")]
     pattern_unprivileged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at"
+    pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_exit = "exit"
-    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = rb"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
 

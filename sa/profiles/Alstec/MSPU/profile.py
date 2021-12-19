@@ -12,9 +12,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alstec.MSPU"
-    pattern_prompt = r"^\S+\s*\$> "
-    pattern_more = r"^--More-- or \(q\)uit$"
-    pattern_syntax_error = r"\^ error"
+
+    pattern_prompt = rb"^\S+\s*\$> "
+    pattern_more = rb"^--More-- or \(q\)uit$"
+    pattern_syntax_error = rb"\^ error"
     command_exit = "exit"
 
     INTERFACE_TYPES = {

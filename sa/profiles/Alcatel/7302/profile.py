@@ -16,12 +16,11 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alcatel.7302"
-    pattern_prompt = r"^(?:typ:|leg:|)\S+(?:>|#)"
-    pattern_syntax_error = r"invalid token"
-    pattern_more = r"Press <space>\(page\)/<enter>\(line\)/q\(quit\) to continue..."
+    pattern_prompt = rb"^(?:typ:|leg:|)\S+(?:>|#)"
+    pattern_syntax_error = rb"invalid token"
+    pattern_more = [(rb"Press <space>\(page\)/<enter>\(line\)/q\(quit\) to continue...", b" ")]
     command_save_config = "admin software-mngt shub database save"
     command_exit = "logout"
-    command_more = " "
 
     @staticmethod
     def get_slot(slot_id: int) -> Tuple[int, int, int]:

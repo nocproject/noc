@@ -18,18 +18,20 @@ from noc.core.lldp import LLDP_PORT_SUBTYPE_ALIAS, LLDP_PORT_SUBTYPE_MAC, LLDP_P
 class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = [
-        (r"CTRL\+C.+?a A[Ll][Ll]\s*", "a"),
+        (rb"CTRL\+C.+?a A[Ll][Ll]\s*", b"a"),
         (
-            r"System will reboot immediately after upgrade firmware complete\, continue\? \(y\/n\)\s*",
-            "y",
+            rb"System will reboot immediately after upgrade firmware complete\, continue\? \(y\/n\)\s*",
+            b"y",
         ),
     ]
-    pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
-    pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
-    pattern_operation_error = r"This command can\'t be used when authentication policy is disabled."
+    pattern_unprivileged_prompt = rb"\S+:(3|6|user|operator)# ?"
+    pattern_syntax_error = rb"(Available commands|Next possible completions|Ambiguous token):"
+    pattern_operation_error = (
+        rb"This command can\'t be used when authentication policy is disabled."
+    )
     command_super = "enable admin"
-    pattern_prompt = r"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
-    password_submit = "\r\n"
+    pattern_prompt = rb"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
+    password_submit = b"\r\n"
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
