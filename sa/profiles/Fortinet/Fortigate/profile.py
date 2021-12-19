@@ -14,4 +14,4 @@ class Profile(BaseProfile):
     name = "Fortinet.Fortigate"
 
     pattern_more = [(rb"^--More--", b" ")]
-    pattern_prompt = r"b^\S+\ [#\$]"
+    pattern_prompt = rb"b^\S+\ [#\$]"

@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Polygon.IOS"
 
-    pattern_more = [(rb"^ --More--", b" "), (r"(?:\?|interfaces)\s*\[confirm\]", b" ")]
+    pattern_more = [(rb"^ --More--", b" "), (rb"(?:\?|interfaces)\s*\[confirm\]", b" ")]
     pattern_unpriveleged_prompt = rb"^\S+?>"
     pattern_syntax_error = (
         rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."

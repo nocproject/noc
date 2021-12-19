@@ -13,4 +13,4 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Audiocodes.Mediant2000"
 
-    pattern_more = [(rb"^ -- More --", b"\r")]
+    pattern_more = [(rb"^ -- More --", b"\n")]

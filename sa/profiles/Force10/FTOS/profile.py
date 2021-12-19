@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Force10.FTOS"
 
-    pattern_more = [(rb"^ ?--More--", b"\r")]
+    pattern_more = [(rb"^ ?--More--", b"\n")]
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Error: Invalid input at"
     pattern_operation_error = rb"% Error: "

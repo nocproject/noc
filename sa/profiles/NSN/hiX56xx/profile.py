@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "NSN.hiX56xx"
 
-    pattern_more = [(rb"^ --More-- ", b"\r")]
+    pattern_more = [(rb"^ --More-- ", b"\n")]
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Invalid input detected at"
     command_disable_pager = "terminal length 0"

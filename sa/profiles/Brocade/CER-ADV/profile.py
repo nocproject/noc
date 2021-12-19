@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^\\S*@(?P<hostname>[a-zA-Z0-9]\\S*?)(?:-\\d+)?(?:\\(config[^\\)]*\\))?#"
     pattern_unprivileged_prompt = rb"^\\S+?>"
     pattern_syntax_error = rb"Invalid input ->|Ambiguous input ->|Incomplete command."
-    pattern_username = "Login"
+    pattern_username = rb"Login"
     username_submit = b"\r"
     password_submit = b"\r"
     command_disable_pager = "skip-page-display"

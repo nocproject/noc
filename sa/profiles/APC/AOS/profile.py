@@ -18,5 +18,5 @@ class Profile(BaseProfile):
     pattern_password = rb"^Password\s+:"
     password_submit = b"\r"
     pattern_prompt = rb"^(\S+)?>"
-    pattern_more = [(rb"^Press <ENTER> to continue...$", b"\r")]
+    pattern_more = [(rb"^Press <ENTER> to continue...$", b"\n")]
     command_submit = b"\r"

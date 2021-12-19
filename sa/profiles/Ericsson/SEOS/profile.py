@@ -20,7 +20,7 @@ class Profile(BaseProfile):
 
     name = "Ericsson.SEOS"
 
-    pattern_more = [(rb"^---(more)---", b"\r")]
+    pattern_more = [(rb"^---(more)---", b"\n")]
     pattern_unprivileged_prompt = rb"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)>"
     pattern_prompt = rb"^(?:\[(?P<context>\S+)\])?(?P<hostname>\S+)#"
     pattern_syntax_error = rb"% Invalid input at|% ERROR Invalid input detected"

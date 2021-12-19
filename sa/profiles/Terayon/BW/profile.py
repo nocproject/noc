@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"Terayon CMTS#(\x1b\[K)?"
     pattern_syntax_error = rb"% invalid input"
     command_super = b"enable"
-    command_submit = "\r"
+    command_submit = b"\r"
     command_disable_pager = "terminal length 0"
     pattern_more = [(rb"--More--", b" ")]
     rogue_chars = [re.compile(rb"\x1b\[19D\r\x00Terayon CMTS#"), b"\r"]

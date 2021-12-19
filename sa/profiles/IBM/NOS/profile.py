@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "IBM.NOS"
 
-    pattern_more = rb"^--More--"
+    pattern_more = [(rb"^--More--", b"\n")]
     pattern_prompt = rb"^\S+?#"
     pattern_unprivileged_prompt = rb"^\S+?>"
     pattern_syntax_error = rb"% Invalid input detected at"

@@ -14,4 +14,4 @@ class Profile(BaseProfile):
     name = "Raritan.DominionSX"
 
     pattern_prompt = rb"^(\S+ > )+"
-    pattern_more = [(rb"--More-- Press <ENTER> to continue.", b"\r")]
+    pattern_more = [(rb"--More-- Press <ENTER> to continue.", b"\n")]
