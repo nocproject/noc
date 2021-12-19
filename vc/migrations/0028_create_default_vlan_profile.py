@@ -5,52 +5,48 @@
 # See LICENSE for details
 
 # Third-party modules
-import bson
+from bson import ObjectId
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from noc.core.bi.decorator import bi_hash
 
 
 class Migration(BaseMigration):
     def migrate(self):
         # Create default VLAN Profile
-        vlan_prof_id = bson.ObjectId("61bee6a55c42c21338453612")
         self.mongo_db["vlanprofiles"].insert_one(
             {
-                "_id": vlan_prof_id,
+                "_id": ObjectId("61bee6a55c42c21338453612"),
                 "name": "default",
-                "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
+                "workflow": ObjectId("5a01d980b6f529000100d37a"),
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": bson.Int64(bi_hash(vlan_prof_id)),
+                "bi_id": 2881867143753311142,
             }
         )
         # Create default L2 Domain Profile
-        l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
         self.mongo_db["l2domainprofiles"].insert_one(
             {
-                "_id": l2domain_profile_id,
+                "_id": ObjectId("61bee6f45c42c21338453613"),
                 "name": "default",
-                "workflow": bson.ObjectId("5a01d980b6f529000100d37a"),
+                "workflow": ObjectId("5a01d980b6f529000100d37a"),
                 "pools": [],
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": bson.Int64(bi_hash(l2domain_profile_id)),
+                "bi_id": 1009096612210647130,
                 "vlan_discovery_policy": "E",
             }
         )
         # Create default L2 Domain
-        l2dom_id = bson.ObjectId("61bee7425c42c21338453614")
         self.mongo_db["l2domains"].insert_one(
             {
-                "_id": l2dom_id,
+                "_id": ObjectId("61bee7425c42c21338453614"),
                 "name": "default",
                 "description": "Default L2 Domain Profile",
-                "profile": l2domain_profile_id,
+                "profile": ObjectId("61bee6f45c42c21338453613"),
                 "pools": [],
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": bson.Int64(bi_hash(l2dom_id)),
+                "bi_id": 2470941926019864228,
             }
         )
