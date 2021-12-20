@@ -130,9 +130,14 @@ class L2DomainProfile(Document):
         return l2p
 
     def clean(self):
+        if self.vlan_template and self.vlan_template.type != "l2domain":
+            raise ValidationError("Only l2domain VLAN Template type may be assign")
+        pools = [v.pool.id for v in self.pools]
+        if len(pools) != len(set(pools)):
+            raise ValidationError("Resource Pools must by unique")
         vlan_filters = list(
             itertools.chain.from_iterable(
-                [v.vlan_filter.include_expression for v in self.pools if v.vlan_filter]
+                [v.vlan_filter.include_vlans for v in self.pools if v.vlan_filter]
             )
         )
         if vlan_filters and len(vlan_filters) != len(set(vlan_filters)):
