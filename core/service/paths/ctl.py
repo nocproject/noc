@@ -45,7 +45,7 @@ async def stop_prof():
 
     if not yappi.is_running():
         return "Not running"
-
+    yappi.stop()
     return "Profiling stopped"
 
 
