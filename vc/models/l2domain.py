@@ -151,7 +151,7 @@ class L2Domain(Document):
         template = self.get_effective_vlan_template()
         if template:
             template.allocate_template(self.id)
-        if self._changed_fields and "profile" in self._changed_fields:
+        if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
             for mo_id in self.get_l2_domain_object_ids([str(self.id)]):
                 ManagedObject._reset_caches(mo_id)
 
