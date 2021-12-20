@@ -16,14 +16,13 @@ class Migration(BaseMigration):
         # Create default VLAN Profile
         self.mongo_db["vlanprofiles"].insert_one(
             {
-                "_id": ObjectId("61bee6a55c42c21338453612"),
+                "_id": ObjectId("61bffba63adaa22083f2abfc"),
                 "name": "default",
                 "description": "Default VLAN Profile",
                 "workflow": ObjectId("5a01d980b6f529000100d37a"),
-                "style": None,
                 "labels": [],
                 "effective_labels": [],
-                "bi_id": int64.Int64(2881867143753311142),
+                "bi_id": int64.Int64(7743152101335604792),
             }
         )
         # Create default L2 Domain Profile

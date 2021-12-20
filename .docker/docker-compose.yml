@@ -2,7 +2,7 @@ version: "2.4"
 
 services:
   mongo:
-    image: "mongo:4.2"
+    image: "mongo:4.4"
     command: mongod --wiredTigerCacheSizeGB 1.5 --bind_ip_all --keyFile=mongodb.key --replSet noc --port 27017
     entrypoint:
         - sh
@@ -24,7 +24,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: noc
 
   mongodb-repl-set-init:
-    image: "mongo:4.2"
+    image: "mongo:4.4"
     depends_on:
       mongo:
         condition: service_started
