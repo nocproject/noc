@@ -122,7 +122,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["KO-01M", "KO-01m", "KO01M"]
+            "part_no": ["KO-01M", "KO-01m", "KO-02", "KO01M"]
         },
         "dimensions": {
             "depth": 35,
