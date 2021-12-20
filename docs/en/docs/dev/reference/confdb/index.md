@@ -1,35 +1,35 @@
 # ConfDB Overview
 
 `ConfDB` is a common term for complex of measures for high-level device configuration
-processing within NOC. Vendors tend to invent own configuration
+processing within NOC. Vendors tend to invent their own configuration
 formats, often mimicking each other, and to introduce incompatibilities
 between releases and platforms. Besides simple change tracking and
-regular expression search, the multi-vendor configuration processing
-may be very challenging task.
+regular expression search, multi-vendor configuration processing
+may be a very challenging task.
 
-NOC addresses the challenge with following approach:
+NOC addresses the challenge with the following approach:
 
-* `Decomposition` - complex task may be split to simple steps
+* `Decomposition` - complex task may be split into simple steps
 * `Reusability` - all tools may be reused whenever possible
-* `Pipelining` - each steps combined together into configuration processing pipelines
-* `Clean contract between steps` - each step performs own task. Steps accept
-  predictable result from previous steps and pass predictable result to following steps
+* `Pipelining` - each step combined into configuration processing pipelines
+* `Clean contract between steps` - each step performs its own task. Steps accept
+  a predictable result from previous steps and pass a predictable result to following steps
 * `Clean API` - each step must be understandable and easy to implement
-* `Quick result` - First result must be reached easily and quickly. Then you can became to
+* `Quick result` - First result must be reached easily and quickly. Then you can become to
   implement more complex things
 
 To better understand the concept of `ConfDB` one should refer
-to widely-used concept in programming languages - `Virtual Machines`.
-`Virtual Machine` (VM) is the fictional computer with own `native assembly`
-language (or machine codes). Its sometimes easier to break the
+to a widely-used concept in programming languages - `Virtual Machines`.
+`Virtual Machine` (VM) is the fictional computer with its own `native assembly`
+language (or machine codes). It's sometimes easier to break the
 task of compiling the program from programming language to target
-processor to two steps: to compile to fictional machine codes and
-to compile from fictional codes to target ones. The benefits in clear
+processor into two steps: to compile to fictional machine codes and
+to compile from fictional codes to target ones. The benefits in a clear
 separation of common functions, suitable for all target platforms,
-and of specific functions, addressed for single platform. Common functions
+and of specific functions, addressed for a single platform. Common functions
 moved to the left (Code -> VM translation), while specific moved to
 the right (VM -> Target platform translation). Hence VM represents
-clean contract between hardware-dependent and hardware independentent functions.
+the clean contract between hardware-dependent and hardware independentent functions.
 
 Device configuration is the programming language of target platform.
 So we can split the task of configuration analysis by applying
@@ -40,7 +40,7 @@ parts are moved to the left. All hardware-independentent parts are moved
 to the right and may be reused.
 
 ## ConfDB pipeline stages
-Config processing pipeline and stages are represented on chart below
+Config processing pipeline and stages are represented on the chart below
 
 ```mermaid
 graph TD
