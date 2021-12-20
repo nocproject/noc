@@ -352,6 +352,7 @@ Ext.define("NOC.core.label.LabelField", {
             }
         });
         labelField.setValue(newVal);
+        me.inputEl.dom.value = '';
     },
 
     onTriggerClick: function(el) {
