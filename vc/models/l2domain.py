@@ -127,7 +127,7 @@ class L2Domain(Document):
 
     def clean(self):
         pools = [pp.pool.id for pp in self.get_effective_pools()]
-        if len(pools) != list(set(pools)):
+        if len(pools) != len(set(pools)):
             raise ValidationError("Resource Pool must by unique")
         # Check VLAN Filter Overlaps
         vlan_filters = list(
