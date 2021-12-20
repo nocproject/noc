@@ -35,13 +35,6 @@ class Profile(BaseProfile):
     # Version format:
     # <major>.<minor><sep><patch>
     #
-    rx_ver = re.compile(r"\d+")
-
-    @classmethod
-    def cmp_version(cls, x, y):
-        a = [int(z) for z in cls.rx_ver.findall(x)]
-        b = [int(z) for z in cls.rx_ver.findall(y)]
-        return (a > b) - (a < b)
 
     rx_interface_name = re.compile(r"^.+ Port\s+(?P<port>\d+)\s+on Unit (?P<unit>\d+)")
     rx2_interface_name = re.compile(r"^.+ Port\s+(?P<port>\d+)\s*")

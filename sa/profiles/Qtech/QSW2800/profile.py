@@ -68,9 +68,9 @@ class Profile(BaseProfile):
         N1. .. .NM
         On Qtech.QSW2800
         """
-        a = [int(x) for x in v1.split("(")[0].split(".")]
-        b = [int(x) for x in v2.split("(")[0].split(".")]
-        return (a > b) - (a < b)
+        # a = [int(x) for x in v1.split("(")[0].split(".")]
+        # b = [int(x) for x in v2.split("(")[0].split(".")]
+        return super().cmp_version(v1, v2)
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
     rx_split_ifname = re.compile(r"^(Eth|Et)\s*(\d+(?:\/\d+)*)$")

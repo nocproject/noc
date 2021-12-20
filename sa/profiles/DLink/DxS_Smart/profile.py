@@ -41,7 +41,6 @@ class Profile(BaseProfile):
     # Version format:
     # <major>.<minor><sep><patch>
     #
-    rx_ver = re.compile(r"\d+")
 
     platforms = {
         "DGS-1210-10P": "1.3.6.1.4.1.171.10.76.12",
@@ -72,11 +71,6 @@ class Profile(BaseProfile):
         "DGS-1500-52": "1.3.6.1.4.1.171.10.126.4.1",
         "DXS-1210-10TS": "1.3.6.1.4.1.171.10.139.2.1",
     }
-
-    def cmp_version(self, x, y):
-        a = [int(z) for z in self.rx_ver.findall(x)]
-        b = [int(z) for z in self.rx_ver.findall(y)]
-        return (a > b) - (a < b)
 
     def convert_interface_name(self, s):
         if s.startswith("Slot0/"):
