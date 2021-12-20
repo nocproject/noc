@@ -64,7 +64,6 @@ class L2Domain(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            {"unique": True, "fields": ["name", "pools.pool"]},
             "labels",
             "effective_labels",
         ],
