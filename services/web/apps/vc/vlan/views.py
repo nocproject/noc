@@ -14,16 +14,15 @@ from mongoengine import Q
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.decorators.state import state_handler
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.resourcepool import ResourcePool
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.interfaces.base import DocumentParameter, IntParameter
 from noc.vc.models.vlan import VLAN
 from noc.vc.models.l2domain import L2Domain
-from noc.inv.models.resourcepool import ResourcePool
-from noc.lib.app.decorators.state import state_handler
+from noc.core.ip import IP
 from noc.core.translation import ugettext as _
-from noc.sa.interfaces.base import (
-    DocumentParameter,
-    IntParameter,
-)
 
 
 @state_handler
@@ -46,27 +45,62 @@ class VLANApplication(ExtDocApplication):
         if not data:
             return data
 
-        l2_domains = (d["l2domain"] for d in data)
-        objects = L2Domain.get_l2_domain_object_ids(l2_domains)
+        l2_domains = (d["l2_domain"] for d in data)
+        objects = dict(
+            mo
+            for mo in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
+                "id", "l2_domain"
+            )
+        )
         vlans = [d["vlan"] for d in data]
-        interfaces_count = SubInterface.objects.filter(
-            Q(managed_object__in=objects)
+        interfaces_count = defaultdict(int)
+        for si in SubInterface.objects.filter(
+            Q(managed_object__in=list(objects))
             & (
                 Q(untagged_vlan__in=vlans, enabled_afi=["BRIDGE"])
                 | Q(tagged_vlans__in=vlans, enabled_afi=["BRIDGE"])
                 | Q(vlan_ids__in=vlans)
             )
-        ).count()
+        ).only("managed_object"):
+            interfaces_count[objects[si.managed_object.id]] += 1
         for row in data:
-            row["interfaces_count"] = interfaces_count
+            row["interfaces_count"] = interfaces_count.get(row["l2_domain"], 0)
         return data
 
     def bulk_field_prefixes(self, data):
         if not data:
             return data
+        l2_domains = (d["l2_domain"] for d in data)
+        objects = dict(
+            mo
+            for mo in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
+                "id", "l2_domain"
+            )
+        )
+
+        vlans = [d["vlan"] for d in data]
+
+        prefixes = defaultdict(set)
+
+        # @todo: Exact match on vlan_ids
+        for si in SubInterface.objects.filter(
+            Q(managed_object__in=list(objects))
+            & Q(vlan_ids__in=vlans)
+            & (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
+        ).only("managed_object", "enabled_afi", "ipv4_addresses", "ipv6_addresses", "vlan_ids"):
+            if "IPv4" in si.enabled_afi:
+                prefixes[(objects[si["managed_object"].id], si["vlan_ids"][0])].update(
+                    {IP.prefix(ip).first for ip in si.ipv4_addresses}
+                )
+            if "IPv6" in si.enabled_afi:
+                prefixes[(objects[si["managed_object"].id], si["vlan_ids"][0])].update(
+                    {IP.prefix(ip).first for ip in si.ipv6_addresses}
+                )
 
         for row in data:
-            row["prefixes"] = 0
+            row["prefixes"] = [
+                str(x.first) for x in sorted(prefixes.get((row["l2_domain"], row["vlan"]), []))
+            ]
         return data
 
     @view(url=r"^(?P<vlan_id>[0-9a-f]{24})/interfaces/$", method=["GET"], access="read", api=True)
@@ -79,7 +113,7 @@ class VLANApplication(ExtDocApplication):
         """
         vlan: "VLAN" = self.get_object_or_404(VLAN, id=vlan_id)
         # Managed objects in L2 Domain
-        objects = L2Domain.get_l2_domain_object_ids((vlan.l2domain,))
+        objects = L2Domain.get_l2_domain_object_ids((vlan.l2_domain.id,))
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
