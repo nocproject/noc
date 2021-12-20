@@ -46,7 +46,7 @@ Ext.define("NOC.vc.vlan.Model", {
             type: "string"
         },
         {
-            name: "l2domain__label",
+            name: "l2_domain__label",
             type: "string",
             persist: false
         },
