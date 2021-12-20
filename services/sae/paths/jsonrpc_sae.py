@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from fastapi import APIRouter, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter
+from fastapi.responses import ORJSONResponse
 
 # NOC modules
 from noc.core.debug import error_report
@@ -19,13 +19,15 @@ from noc.services.sae.api.sae import SAEAPI
 
 router = APIRouter()
 
+service = get_service()
+api = SAEAPI(service, None, None)
+
 
 @router.post("/api/sae/", response_model=JSONRPCResponse)
 @router.post("/api/sae", response_model=JSONRPCResponse)
-async def api_sae(req: JSONRemoteProcedureCall, service=Depends(get_service)):
+async def api_sae(req: JSONRemoteProcedureCall):
     if req.method not in SAEAPI.get_methods():
         return {"error": f"Invalid method: '{req.method}'", "id": req.id}
-    api = SAEAPI(service, None, None)
     api_method = getattr(api, req.method)
     result = None
     error = None
@@ -37,9 +39,9 @@ async def api_sae(req: JSONRemoteProcedureCall, service=Depends(get_service)):
         error_report()
         error = f"Failed: {e}"
     if isinstance(result, Redirect):
-        return JSONResponse(
+        return ORJSONResponse(
             content={"method": result.method, "params": result.params, "id": req.id},
             status_code=307,
-            headers={"location": result.location}
+            headers={"location": result.location},
         )
     return {"result": result, "error": error, "id": req.id}
