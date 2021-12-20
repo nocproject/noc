@@ -7,7 +7,7 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Optional
+from typing import Optional, Dict, List
 
 # Third-party modules
 from mongoengine import Q
@@ -23,6 +23,7 @@ from noc.vc.models.vlan import VLAN
 from noc.vc.models.l2domain import L2Domain
 from noc.core.ip import IP
 from noc.core.translation import ugettext as _
+from noc.core.cache.decorator import cachedmethod
 
 
 @state_handler
@@ -41,30 +42,52 @@ class VLANApplication(ExtDocApplication):
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
+    @cachedmethod(key="vlans-interface-count-%s")
+    def get_l2domain_interfaces_count(self, mos: List[int]) -> Dict[int, int]:
+        """
+        Calculate VLAN Count by interface on ManagedObject list
+        :param mos:
+        :return:
+        """
+        coll = SubInterface._get_collection()
+        r = {}
+        for rec in coll.aggregate(
+            [
+                {"$match": {"managed_object": {"$in": mos}}},
+                {
+                    "$project": {
+                        "uvlans": ["$untagged_vlan"],
+                        "tvlans": "$tagged_vlans",
+                        "vlan_ids": 1,
+                    }
+                },
+                {"$project": {"vlans": {"$setUnion": ["$uvlans", "$tvlans", "$vlan_ids"]}}},
+                {"$unwind": "$vlans"},
+                {"$group": {"_id": "$vlans", "count": {"$sum": 1}}},
+            ]
+        ):
+            if not rec["_id"]:
+                continue
+            r[rec["_id"]] = rec["count"]
+        return r
+
     def bulk_field_interfaces_count(self, data):
         if not data:
             return data
-
         l2_domains = (d["l2_domain"] for d in data)
-        objects = dict(
-            mo
-            for mo in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
-                "id", "l2_domain"
-            )
-        )
-        vlans = [d["vlan"] for d in data]
-        interfaces_count = defaultdict(int)
-        for si in SubInterface.objects.filter(
-            Q(managed_object__in=list(objects))
-            & (
-                Q(untagged_vlan__in=vlans, enabled_afi=["BRIDGE"])
-                | Q(tagged_vlans__in=vlans, enabled_afi=["BRIDGE"])
-                | Q(vlan_ids__in=vlans)
-            )
-        ).only("managed_object"):
-            interfaces_count[objects[si.managed_object.id]] += 1
+        objects = defaultdict(list)
+        # @todo group by for speedup
+        for mo_id, l2_domain in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
+            "id", "l2_domain"
+        ):
+            objects[l2_domain].append(mo_id)
+        interfaces_count = {}
+        for l2_domain in objects:
+            r = self.get_l2domain_interfaces_count(objects[l2_domain])
+            for vlan in r:
+                interfaces_count[(l2_domain, vlan)] = r[vlan]
         for row in data:
-            row["interfaces_count"] = interfaces_count.get(row["l2_domain"], 0)
+            row["interfaces_count"] = interfaces_count.get((row["l2_domain"], row["vlan"]), 0)
         return data
 
     def bulk_field_prefixes(self, data):
