@@ -110,7 +110,7 @@ Ext.define("NOC.vc.vlan.Application", {
                     maxValue: 4095
                 },
                 {
-                    name: "l2domain",
+                    name: "l2_domain",
                     xtype: "vc.l2domain.LookupField",
                     fieldLabel: __("L2 Domain"),
                     allowBlank: false
