@@ -78,7 +78,7 @@ class TgSenderService(FastAPIService):
         # If len(body) > 4096 use /sendDocument
         # Bots can currently send files of any type of up to 50 MB in size
         if len(body) > body_l:
-            caption = f"\* {subject} \*\*\n\n {body[0:500]}..."
+            caption = f"* {subject} **\n\n {body[0:500]}..."
             t_type = "/sendDocument"
         time.sleep(config.tgsender.retry_timeout)
         if self.url:
