@@ -126,6 +126,9 @@ class L2Domain(Document):
         return Label.get_effective_setting(label, "enable_l2domain")
 
     def clean(self):
+        pools = [pp.pool.id for pp in self.get_effective_pools()]
+        if len(pools) != list(set(pools)):
+            raise ValidationError("Resource Pool must by unique")
         # Check VLAN Filter Overlaps
         vlan_filters = list(
             itertools.chain.from_iterable(

@@ -21,7 +21,7 @@ class Migration(BaseMigration):
     def migrate(self):
         # Create default VLAN Profile
         # Check VC - if count more 0 - migrate VC
-        (vc_count,), = self.db.execute(
+        ((vc_count,),) = self.db.execute(
             """
             SELECT count(*)
             FROM vc_vc
