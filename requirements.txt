@@ -21,7 +21,7 @@
 
 # Basic node requirements
 Django==3.1.13
-FastAPI==0.70.1
+FastAPI==0.63.0
 Jinja2==2.8
 PyYAML==6.0
 Pygments==2.10.0
