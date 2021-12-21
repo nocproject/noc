@@ -18,14 +18,14 @@ import orjson
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 from noc.services.trapcollector.sourceconfig import SourceConfig
 from noc.core.ioloop.timers import PeriodicCallback
 
 
-class TrapCollectorService(TornadoService):
+class TrapCollectorService(FastAPIService):
     name = "trapcollector"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
