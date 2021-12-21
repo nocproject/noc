@@ -49,7 +49,7 @@
         }
     ],
     "subject_template": "OSPF lost {% if area %}area {{area}} {% endif %}adjacency to {{neighbor}}. Reason: {{reason}}",
-    "body_template": "OSPF lost {% area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
+    "body_template": "OSPF lost {% if area %}area {{area}} {% endif %}{% if vrf %}VRF {{vrf}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
     "symptoms": "Routing table changes and possible lost of connectivity",
     "probable_causes": "Link failure or protocol misconfiguration",
     "recommended_actions": "Check links and local and neighbor router configuration",

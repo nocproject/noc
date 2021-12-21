@@ -14,8 +14,8 @@
             "description": "Alarm Group name"
         }
     ],
-    "subject_template": "Group Alarm {{alarm.vars.name]}}",
-    "body_template": "Alarm by group {{alarm.vars.name]}}",
+    "subject_template": "Group Alarm {{alarm.vars.name}}",
+    "body_template": "Alarm by group {{alarm.vars.name}}",
     "symptoms": null,
     "probable_causes": null,
     "recommended_actions": "Ignore this"
