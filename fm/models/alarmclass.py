@@ -25,7 +25,9 @@ from mongoengine.fields import (
     LongField,
     ObjectIdField,
 )
+from mongoengine.errors import ValidationError
 import cachetools
+import jinja2
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -238,6 +240,17 @@ class AlarmClass(Document):
             return handlers
 
         return _get_handlers(self)
+
+    def clean(self):
+        try:
+            jinja2.Template(self.subject_template)
+        except jinja2.TemplateSyntaxError as e:
+            raise ValidationError(f"Subject template error {e}")
+        try:
+            jinja2.Template(self.body_template)
+        except jinja2.TemplateSyntaxError as e:
+            raise ValidationError(f"Subject body error {e}")
+        super().clean()
 
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
