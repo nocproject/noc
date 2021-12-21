@@ -122,9 +122,9 @@ class Migration(BaseMigration):
             self.mongo_db["l2domains"].bulk_write(l2_domains)
         vlans = []
         # VC -> VLAN Migration
-        for v_num, vc_domain, name, description in self.db.execute(
+        for v_num, v_name, vc_domain, name, description in self.db.execute(
             """
-            SELECT l1, vc_domain_id, name, description
+            SELECT l1, name, vc_domain_id, name, description
             FROM vc_vc
             WHERE l1 != 1 and vc_domain_id != 1
             """
@@ -134,7 +134,7 @@ class Migration(BaseMigration):
                 InsertOne(
                     {
                         "_id": vlan_id,
-                        "name": "Data1",
+                        "name": v_name,
                         "profile": default_vlan_profile,
                         "vlan": v_num,
                         "l2_domain": l2_domain_map.get(vc_domain, default_l2d_profile_id),
