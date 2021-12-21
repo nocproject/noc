@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 from typing import Any, Dict, Tuple, Optional
 import sys
+import asyncio
 
 # Third-party modules
 import orjson
@@ -24,6 +25,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
+from noc.services.metrics.changelog import ChangeLog
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
@@ -52,12 +54,28 @@ class MetricsService(FastAPIService):
         self.scopes: Dict[str, ScopeInfo] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
-        self.graph = CDAG("metrics", state=self.get_state())
+        self.graph: Optional[CDAG] = None
+        self.change_log: Optional[ChangeLog] = None
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
+        self.change_log = ChangeLog(f"metrics-{self.slot_number}")
         self.load_scopes()
+        self.graph = CDAG("metrics", state=self.change_log.get_state())
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
+        asyncio.create_task(self.log_runner())
+
+    async def on_deactivate(self):
+        if self.change_log:
+            await self.change_log.flush()
+            self.change_log = None
+
+    async def log_runner(self):
+        self.logger.info("Run log runner")
+        while True:
+            await asyncio.sleep(1.0)
+            if self.change_log:
+                await self.change_log.flush()
 
     async def on_metrics(self, msg: Message) -> None:
         data = orjson.loads(msg.value)
@@ -201,21 +219,6 @@ class MetricsService(FastAPIService):
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
         )
 
-    def get_state(self) -> Dict[str, Any]:
-        """
-        Load state for cold start
-        :return:
-        """
-        ...
-
-    def send_state_wal(self, data: Dict[str, Any]) -> None:
-        """
-        Send incremental state change
-        :param data:
-        :return:
-        """
-        ...
-
     def activate_card(self, card: Card, si: ScopeInfo, data: Dict[str, Any]) -> None:
         units = data.get("_units") or {}
         tx = self.graph.begin()
@@ -239,7 +242,7 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         # Save state change
-        self.send_state_wal(tx.get_changed_state())
+        self.change_log.feed(tx.get_changed_state())
 
 
 if __name__ == "__main__":

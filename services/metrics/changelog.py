@@ -1,0 +1,168 @@
+#!./bin/python
+# ----------------------------------------------------------------------
+# State Change Log
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2021 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
+from typing import Any, Dict, List, Iterable
+import pickle
+import lzma
+import logging
+import datetime
+
+# Third-party modules
+from pymongo import InsertOne, DeleteMany, ASCENDING, DESCENDING
+from pymongo.collection import Collection
+from bson import ObjectId
+
+# NOC modules
+from noc.core.lock.distributed_async import DistributedAsyncLock
+from noc.core.mongo.connection_async import get_db
+
+
+class ChangeLog(object):
+    LOCK_CATEGORY = "metrics"
+    COLL_NAME = "metricslog"
+    MAX_DATA = 15_000_000
+
+    def __init__(self, owner: str):
+        self.owner = owner
+        self.state: Dict[str, Dict[str, Any]] = {}
+        self.logger = logging.getLogger(__name__)
+
+    async def get_state(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Retrieve current state snapshot
+        """
+        self.logger.info("Retrieving current state")
+        coll = self.get_collection()
+        lock = DistributedAsyncLock(self.LOCK_CATEGORY, owner=self.owner)
+        state = {}
+        async with lock.acquire(["*"]):
+            self.logger.info("Lock acquired")
+            n = 0
+            async for doc in coll.find({}).sort([("_id", ASCENDING)]):
+                d = doc.get("data")
+                if not d:
+                    continue
+                state.update(self.decode(doc["data"]))
+                n += 1
+        self.logger.info("%d states are retrieved from %d log items", len(state), n)
+        return state
+
+    @classmethod
+    def get_collection(cls) -> Collection:
+        """
+        Get mongo collection instance
+        """
+        return get_db()[cls.COLL_NAME]
+
+    async def flush(self) -> None:
+        """
+        Store all collected changes
+        """
+        # @todo: Lock
+        coll = self.get_collection()
+        bulk = [
+            InsertOne({"_id": ObjectId(), "data": c_data})
+            for c_data in self.iter_state_bulks(self.state)
+        ]
+        await coll.bulk_write(bulk, ordered=True)
+        self.state = {}  # Reset
+
+    @staticmethod
+    def encode(data: Dict[str, Dict[str, Any]]) -> bytes:
+        """
+        Encode state to bytes
+        """
+        r = pickle.dumps(data, protocol=pickle.HIGHEST_PROTOCOL)
+        return lzma.compress(r)
+
+    @staticmethod
+    def decode(data: bytes) -> Dict[str, Dict[str, Any]]:
+        """
+        Decode bytes to state
+        """
+        r = lzma.decompress(data)
+        return pickle.loads(r)
+
+    async def feed(self, state: Dict[str, Dict[str, Any]]) -> None:
+        """
+        Feed change to log
+        """
+        # @todo: Lock
+        if state:
+            self.state.update(state)
+
+    @classmethod
+    def iter_state_bulks(cls, state: Dict[str, Dict[str, Any]]) -> Iterable[bytes]:
+        """
+        Compress state to binary chunks up to MAX_DATA size
+        """
+        c_data = cls.encode(state)
+        if len(c_data) > cls.MAX_DATA:
+            yield c_data  # Fit
+            return
+        # Too large, split in halves
+        parts: List[Dict[str, Dict[str, Any]]] = [{}, {}]
+        lp = len(parts)
+        for n, key in enumerate(state):
+            parts[n % lp][key] = state[key]
+        for p in parts:
+            if p:
+                yield from cls.iter_state_bulks(p)
+
+    async def compact(self) -> None:
+        """
+        Compact log
+        """
+        self.logger.info("Compacting log")
+        coll = self.get_collection()
+        lock = DistributedAsyncLock(self.LOCK_CATEGORY, owner=self.owner)
+        state = {}
+        n = 0
+        nn = 0
+        prev_size = 0
+        next_size = 0
+        async with lock.acquire(["*"]):
+            self.logger.info("Lock acquired")
+            # Get maximal id
+            max_id = await coll.find_one({}, {"_id": 1}, sort=[("_id", DESCENDING)])
+            if not max_id:
+                self.logger.info("Nothing to compact")
+                return
+            t_mark = max_id.generation_time
+            t_mark_id = ObjectId.from_datetime(t_mark)
+            # Read all states
+            async for doc in coll.find({"_id": {"$lte": t_mark_id}}, {"_id": 1, "data": 1}).sort(
+                [("_id", ASCENDING)]
+            ):
+                d = doc.get("data")
+                if not d:
+                    continue
+                cd = self.decode(d)
+                state.update(cd)
+                n += 1
+                prev_size += len(cd)
+            if not state:
+                self.logger.info("Nothing to compact")
+                return
+            self.logger.info("Compacting %d log items (%d bytes)", n, prev_size)
+            # Split to chunks when necessary
+            bulk = []
+            for c_data in self.iter_state_bulks(state):
+                t_mark -= datetime.timedelta(seconds=1)
+                bulk.append(InsertOne({"_id": ObjectId.from_datetime(t_mark), "data": c_data}))
+                nn += 1
+                next_size += len(c_data)
+            bulk.append(DeleteMany({"_id": {"$lte": t_mark_id}}))
+            await coll.bulk_write(bulk, ordered=True)
+            self.logger.info(
+                "Compacted to %d records (%d bytes). %.2f ratio",
+                nn,
+                next_size,
+                float(prev_size) / float(next_size),
+            )
