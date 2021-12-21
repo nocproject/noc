@@ -46,7 +46,7 @@
 ### Singlenode installation
 
 1. Ставим флажки напротив следующих сервисов:
-	* [activator](https://docs.getnoc.com/master/en/admin/reference/services/icqsender/)
+	* [activator](https://docs.getnoc.com/master/en/admin/reference/services/activator/)
 	* [bi](https://docs.getnoc.com/master/en/admin/reference/services/bi/)
 	* [card](https://docs.getnoc.com/master/en/admin/reference/services/card/)
 	* [ch_datasource](https://docs.getnoc.com/master/en/admin/reference/services/datasource/)
@@ -65,7 +65,7 @@
 	* liftbridge
 	* [login](https://docs.getnoc.com/master/en/admin/reference/services/login/)
 	* [mailsender](https://docs.getnoc.com/master/en/admin/reference/services/mailsender/)
-	* mib
+	* [mib](https://docs.getnoc.com/master/en/admin/reference/services/mib/)
 	* mongod
 	* [mrt](https://docs.getnoc.com/master/en/admin/reference/services/mrt/)
 	* nats
@@ -77,10 +77,10 @@
 	* postgres
 	* [sae](https://docs.getnoc.com/master/en/admin/reference/services/sae/)
 	* [scheduler](https://docs.getnoc.com/master/en/admin/reference/services/scheduler/)
-	* selfmon
+	* [selfmon](https://docs.getnoc.com/master/en/admin/reference/services/selfmon/)
 	* [syslogcollector](https://docs.getnoc.com/master/en/admin/reference/services/syslogcollector/)
-	* trapcollector
-	* web
+	* [trapcollector](https://docs.getnoc.com/master/en/admin/reference/services/trapcollector/)
+	* [web](https://docs.getnoc.com/master/en/admin/reference/services/web/)
 
 2. Нажимаем кнопку Save
 
