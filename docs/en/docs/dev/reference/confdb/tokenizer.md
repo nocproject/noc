@@ -2,38 +2,40 @@
 
 `Tokenizing` is the process of transforming input device configuration
 to a stream of the `tokens`. Tokenizer accepts raw config and yields
-lines of parsed `tokens`. For example, raw config::
+lines of parsed `tokens`. For example, raw config:
 
+```
   interface Fa0/1
     description Some interface
     ip address 10.0.0.1 255.255.255.0
+```
 
-converted into::
+converted into:
 
+```
   ["interface", "Fa0/1"]
   ["interface", "Fa0/1", "description", "Some", "interface"]
   ["interface", "Fa0/1", "ip", "address", "10.0.0.1", "255.255.255.0"]
+```
 
-Tokenizer must fulfill following requirements:
+Tokenizer must fulfill the following requirements:
 
 * Knows nothing about the meaning of config
-* Low memory usage. Output tokens must be yield whenever ready
-* Backward references should be avoided. Tokenizer should operate current window
-  like a tape. Forward and backward rewinds must be avoided.
+* Low memory usage. Output tokens must be yielded whenever ready
+* Backward references should be avoided. Tokenizer should operate on the current window
+  just like tape. Forward and backward rewinds must be avoided.
 * Output tokens should be grouped and analyzed easy
-* Original context should be preserved whenever possible. See at expanding `interface Fa0/1` in following lines
-* Each line of tokens should be further processed independentently of each other
+* Original context should be preserved whenever possible. See at expanding `interface Fa0/1` in the following lines
+* Each line of tokens should be further processed independently of each other
 
-It may seems that you need separate tokenizer per each platform. Luckily you are not.
-Though various configuration format have different meaning, almost all
-them maintains some `code style`. Like some languages are indent-based (Python)
+It may seem that you need a separate tokenizer for each platform. Luckily you are not.
+Though various configuration formats have different meaning, almost all
+of them maintains some `code style`. Like some languages are indent-based (Python)
 and some are curly-bracket-based (C, PHP), and some even all-parenthesis (LISP),
 there are well distinguishable groups of syntaxes. So the real device configurations
-are groupped in large syntax families with very few exceptions. Usually you can
-choose one of existing tokenizers and apply some configuration rather than
-create own tokenizer for a new platform from zero ground.
-
-
+are grouped in large syntax families with very few exceptions. Usually, you can
+choose one of the existing tokenizers and apply some configuration rather than
+create your own tokenizer for a new platform from zero ground.
 
 ## Tokenizers
 
@@ -56,11 +58,11 @@ graph TD
 
 **line**(eol="\n", tab_width=0, line_comment=None, inline_comment=None, keep_indent=False, string_quote=None, rewrite=None)
 
-    Basic tokenizer, converting line of config into line of tokens,
+    Basic tokenizer, converting line of config into the line of tokens,
     separating by spaces and
     grouping strings together into single tokens and removing comments.
     Line tokenizer is suitable when each line of configuration is
-    completely self-sufficient and does not depends on previous or
+    completely self-sufficient and does not depend on previous or
     following lines.
     Though usable by itself, usually used as base class for more
     advanced tokenizers.
