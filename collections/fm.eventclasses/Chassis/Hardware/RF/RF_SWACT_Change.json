@@ -18,8 +18,8 @@
             "required": false
         }
     ],
-    "subject_template": "RF SWACT {{unit} Change. Status code: {{reason}}",
-    "body_template": "RF SWACT {{unit} Change. Status code: {{reason}}",
+    "subject_template": "RF SWACT {{unit}} Change. Status code: {{reason}}",
+    "body_template": "RF SWACT {{unit}} Change. Status code: {{reason}}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""
