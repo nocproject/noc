@@ -12,6 +12,7 @@ import pickle
 import lzma
 import logging
 import datetime
+import asyncio
 
 # Third-party modules
 from pymongo import InsertOne, DeleteMany, ASCENDING, DESCENDING
@@ -32,6 +33,7 @@ class ChangeLog(object):
         self.owner = owner
         self.state: Dict[str, Dict[str, Any]] = {}
         self.logger = logging.getLogger(__name__)
+        self.lock = asyncio.Lock()
 
     async def get_state(self) -> Dict[str, Dict[str, Any]]:
         """
@@ -64,14 +66,14 @@ class ChangeLog(object):
         """
         Store all collected changes
         """
-        # @todo: Lock
         coll = self.get_collection()
-        bulk = [
-            InsertOne({"_id": ObjectId(), "data": c_data})
-            for c_data in self.iter_state_bulks(self.state)
-        ]
-        await coll.bulk_write(bulk, ordered=True)
-        self.state = {}  # Reset
+        async with self.lock:
+            bulk = [
+                InsertOne({"_id": ObjectId(), "data": c_data})
+                for c_data in self.iter_state_bulks(self.state)
+            ]
+            await coll.bulk_write(bulk, ordered=True)
+            self.state = {}  # Reset
 
     @staticmethod
     def encode(data: Dict[str, Dict[str, Any]]) -> bytes:
@@ -93,8 +95,9 @@ class ChangeLog(object):
         """
         Feed change to log
         """
-        # @todo: Lock
-        if state:
+        if not state:
+            return
+        async with self.lock:
             self.state.update(state)
 
     @classmethod
