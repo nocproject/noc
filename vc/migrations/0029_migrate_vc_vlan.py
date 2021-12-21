@@ -29,7 +29,7 @@ class Migration(BaseMigration):
             """
         )
         # VC Migration
-        l2domain_profile_id = bson.ObjectId("61bee7425c42c21338453614")
+        l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
         vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
         if vc_count:
             self.vc_migrate(l2domain_profile_id, vlan_profile_id)
@@ -99,7 +99,7 @@ class Migration(BaseMigration):
             """
             SELECT id, name, description
             FROM vc_vcdomain
-            WHERE name != 'default'
+            WHERE id != 1
             """
         ):
             l2domain_id = bson.ObjectId()
@@ -124,9 +124,9 @@ class Migration(BaseMigration):
         # VC -> VLAN Migration
         for v_num, vc_domain, name, description in self.db.execute(
             """
-            SELECT l2, vc_domain_id, name, description
+            SELECT l1, vc_domain_id, name, description
             FROM vc_vc
-            WHERE l1 != 1
+            WHERE l1 != 1 and vc_domain_id != 1
             """
         ):
             vlan_id = bson.ObjectId()
