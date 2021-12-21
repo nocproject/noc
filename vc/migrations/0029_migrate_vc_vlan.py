@@ -40,6 +40,7 @@ class Migration(BaseMigration):
 
     def vlan_migrate(self, default_l2d_profile_id):
         v_coll = self.mongo_db["vlans"]
+        v_coll.drop_indexes()
         # VLAN Segments
         segments = [
             s["_id"]
@@ -81,15 +82,17 @@ class Migration(BaseMigration):
             self.db.execute(
                 """
                 UPDATE sa_managedobject
-                SET l2_domain = '%s'
-                WHERE segment = '%s'
+                SET l2_domain = %s
+                WHERE segment = %s
                 """,
                 [str(l2_d), str(ns_id)],
             )
 
     def vc_migrate(self, default_l2d_profile_id, default_vlan_profile):
         # Clean VLANs collection
-        self.mongo_db["vlans"].remove({})
+        v_coll = self.mongo_db["vlans"]
+        v_coll.drop_indexes()
+        v_coll.remove({})
         l2_domains = []
         l2_domain_map = {}
         for vid, name, description in self.db.execute(
@@ -153,7 +156,7 @@ class Migration(BaseMigration):
             self.db.execute(
                 """
                 UPDATE sa_managedobject
-                SET l2_domain = '%s'
+                SET l2_domain = %s
                 WHERE vc_domain_id = %s
                 """,
                 [str(l2_d), vid],
