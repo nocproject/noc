@@ -18,7 +18,7 @@ import orjson
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
@@ -26,7 +26,7 @@ from noc.services.syslogcollector.sourceconfig import SourceConfig
 from noc.core.ioloop.timers import PeriodicCallback
 
 
-class SyslogCollectorService(TornadoService):
+class SyslogCollectorService(FastAPIService):
     name = "syslogcollector"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
