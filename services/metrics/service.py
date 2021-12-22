@@ -12,6 +12,8 @@ from collections import defaultdict
 from typing import Any, Dict, Tuple, Optional
 import sys
 import asyncio
+import codecs
+import hashlib
 
 # Third-party modules
 import orjson
@@ -156,6 +158,14 @@ class MetricsService(FastAPIService):
             tuple(iter_key_labels()),
         )
 
+    @staticmethod
+    def get_key_hash(k: MetricKey) -> str:
+        """
+        Calculate persistent hash for metric key
+        """
+        d = hashlib.sha512(str(k).encode("utf-8")).digest()
+        return str(codecs.encode(d, "base-64")[:7])
+
     def get_card(self, k: MetricKey) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
@@ -170,7 +180,7 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = self.project_cdag(cdag, prefix=str(hash(k)))
+        card = self.project_cdag(cdag, prefix=self.get_key_hash(k))
         self.cards[k] = card
         return card
 
