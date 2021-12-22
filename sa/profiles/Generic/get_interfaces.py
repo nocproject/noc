@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import re
 from typing import (
     Dict,
     Optional,
@@ -54,6 +55,8 @@ class Script(BaseScript):
         "00:01:02:03:04:05",  # Very Smart+ programmer
         "FF:FF:FF:FF:FF:FF",  # Broadcast
     }
+
+    rx_vlan_interface = re.compile(r"^vlan\w*?\s*?(?P<vlan_num>\d+)$", re.IGNORECASE)
 
     def get_bridge_ifindex_mappings(self) -> Dict[int, int]:
         """
@@ -265,6 +268,11 @@ class Script(BaseScript):
                         "ipv4_addresses": [IPv4(*i) for i in ips[ifindex]],
                     }
                 ]
+                vlan_iface_match = self.rx_vlan_interface.match(iface["name"])
+                if vlan_iface_match and is_vlan(vlan_iface_match.group("vlan_num")):
+                    iface["subinterfaces"][-1]["vlan_ids"] = [
+                        int(vlan_iface_match.group("vlan_num"))
+                    ]
             if ifindex in switchports:
                 sub = {
                     "name": iface["name"],
