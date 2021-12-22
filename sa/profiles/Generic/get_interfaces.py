@@ -56,7 +56,7 @@ class Script(BaseScript):
         "FF:FF:FF:FF:FF:FF",  # Broadcast
     }
 
-    rx_vlan_num = re.compile(r"^vlan\w*?\s*?(?P<vlan_num>\d+)$", re.IGNORECASE)
+    rx_vlan_interface = re.compile(r"^vlan\w*?\s*?(?P<vlan_num>\d+)$", re.IGNORECASE)
 
     def get_bridge_ifindex_mappings(self) -> Dict[int, int]:
         """
@@ -268,9 +268,11 @@ class Script(BaseScript):
                         "ipv4_addresses": [IPv4(*i) for i in ips[ifindex]],
                     }
                 ]
-                vlan_match = self.rx_vlan_num.match(iface["name"])
-                if vlan_match and is_vlan(vlan_match.group("vlan_num")):
-                    iface["subinterfaces"][-1]["vlan_ids"] = int(vlan_match.group("vlan_num"))
+                vlan_iface_match = self.rx_vlan_interface.match(iface["name"])
+                if vlan_iface_match and is_vlan(vlan_iface_match.group("vlan_num")):
+                    iface["subinterfaces"][-1]["vlan_ids"] = [
+                        int(vlan_iface_match.group("vlan_num"))
+                    ]
             if ifindex in switchports:
                 sub = {
                     "name": iface["name"],
