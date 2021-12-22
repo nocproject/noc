@@ -29,7 +29,7 @@ class Migration(BaseMigration):
             """
         )
         # VC Migration
-        l2domain_profile_id = bson.ObjectId("61bee7425c42c21338453614")
+        l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
         vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
         if vc_count:
             self.vc_migrate(l2domain_profile_id, vlan_profile_id)
@@ -40,6 +40,7 @@ class Migration(BaseMigration):
 
     def vlan_migrate(self, default_l2d_profile_id):
         v_coll = self.mongo_db["vlans"]
+        v_coll.drop_indexes()
         # VLAN Segments
         segments = [
             s["_id"]
@@ -81,22 +82,24 @@ class Migration(BaseMigration):
             self.db.execute(
                 """
                 UPDATE sa_managedobject
-                SET l2_domain = '%s'
-                WHERE segment = '%s'
+                SET l2_domain = %s
+                WHERE segment = %s
                 """,
                 [str(l2_d), str(ns_id)],
             )
 
     def vc_migrate(self, default_l2d_profile_id, default_vlan_profile):
         # Clean VLANs collection
-        self.mongo_db["vlans"].remove({})
+        v_coll = self.mongo_db["vlans"]
+        v_coll.drop_indexes()
+        v_coll.remove({})
         l2_domains = []
         l2_domain_map = {}
         for vid, name, description in self.db.execute(
             """
             SELECT id, name, description
             FROM vc_vcdomain
-            WHERE name != 'default'
+            WHERE id != 1
             """
         ):
             l2domain_id = bson.ObjectId()
@@ -119,11 +122,11 @@ class Migration(BaseMigration):
             self.mongo_db["l2domains"].bulk_write(l2_domains)
         vlans = []
         # VC -> VLAN Migration
-        for v_num, vc_domain, name, description in self.db.execute(
+        for v_num, v_name, vc_domain, name, description in self.db.execute(
             """
-            SELECT l2, vc_domain_id, name, description
+            SELECT l1, name, vc_domain_id, name, description
             FROM vc_vc
-            WHERE l1 != 1
+            WHERE l1 != 1 and vc_domain_id != 1
             """
         ):
             vlan_id = bson.ObjectId()
@@ -131,7 +134,7 @@ class Migration(BaseMigration):
                 InsertOne(
                     {
                         "_id": vlan_id,
-                        "name": "Data1",
+                        "name": v_name,
                         "profile": default_vlan_profile,
                         "vlan": v_num,
                         "l2_domain": l2_domain_map.get(vc_domain, default_l2d_profile_id),
@@ -153,7 +156,7 @@ class Migration(BaseMigration):
             self.db.execute(
                 """
                 UPDATE sa_managedobject
-                SET l2_domain = '%s'
+                SET l2_domain = %s
                 WHERE vc_domain_id = %s
                 """,
                 [str(l2_d), vid],
