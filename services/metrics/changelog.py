@@ -68,6 +68,8 @@ class ChangeLog(object):
         """
         coll = self.get_collection()
         async with self.lock:
+            if not self.state:
+                return  # Nothing to flush
             bulk = [
                 InsertOne({"_id": ObjectId(), "data": c_data})
                 for c_data in self.iter_state_bulks(self.state)
