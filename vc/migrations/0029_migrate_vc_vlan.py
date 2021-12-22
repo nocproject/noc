@@ -53,9 +53,7 @@ class Migration(BaseMigration):
         vlans_update = []
         l2_domain_map = {}
         # NetworkSegment migrate to L2 Domain
-        for segment in self.mongo_db["noc.networksegments"].find(
-            {"_id": {"$in": segments}}
-        ):
+        for segment in self.mongo_db["noc.networksegments"].find({"_id": {"$in": segments}}):
             l2domain_id = bson.ObjectId()
             l2_domains += [
                 InsertOne(
