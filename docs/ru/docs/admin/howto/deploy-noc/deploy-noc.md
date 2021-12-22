@@ -22,7 +22,7 @@
 
 ![](./img/tower-create-dc.png)
 
-## Создать пул [(Pools)](https://code.getnoc.com/noc/noc/-/edit/master/docs/en/docs/user/reference/concepts/pool/index.md)
+## Скачать новые файлы плейбуков для установки [(Pools)](https://code.getnoc.com/noc/noc/-/edit/master/docs/en/docs/user/reference/concepts/pool/index.md)
 
 1. `Environments` → `Pull`
 2. Дожидаемся уведомления `Pull complete`
@@ -84,7 +84,7 @@
 
 2. Нажимаем кнопку Save
 
-![](./img/6.png)
+![](./img/tower-add-service.png)
 
 ### Multinode installation
 
