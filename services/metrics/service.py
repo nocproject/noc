@@ -166,7 +166,7 @@ class MetricsService(FastAPIService):
         Calculate persistent hash for metric key
         """
         d = hashlib.sha512(str(k).encode("utf-8")).digest()
-        return str(codecs.encode(d, "base-64")[:7])
+        return codecs.encode(d, "base-64")[:7].decode("utf-8")
 
     def get_card(self, k: MetricKey) -> Optional[Card]:
         """
