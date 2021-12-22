@@ -106,7 +106,7 @@ class ChangeLog(object):
         Compress state to binary chunks up to MAX_DATA size
         """
         c_data = cls.encode(state)
-        if len(c_data) > cls.MAX_DATA:
+        if len(c_data) < cls.MAX_DATA:
             yield c_data  # Fit
             return
         # Too large, split in halves

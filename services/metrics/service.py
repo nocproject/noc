@@ -20,6 +20,7 @@ import orjson
 from noc.core.service.fastapi import FastAPIService
 from noc.core.liftbridge.message import Message
 from noc.core.perf import metrics
+from noc.core.mongo.connection_async import connect_async
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
@@ -60,8 +61,9 @@ class MetricsService(FastAPIService):
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
         self.change_log = ChangeLog(f"metrics-{self.slot_number}")
+        connect_async()
         self.load_scopes()
-        self.graph = CDAG("metrics", state=self.change_log.get_state())
+        self.graph = CDAG("metrics", state=await self.change_log.get_state())
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
         asyncio.create_task(self.log_runner())
 
@@ -242,7 +244,7 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         # Save state change
-        self.change_log.feed(tx.get_changed_state())
+        asyncio.create_task(self.change_log.feed(tx.get_changed_state()))
 
 
 if __name__ == "__main__":
