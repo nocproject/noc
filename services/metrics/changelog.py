@@ -72,6 +72,7 @@ class ChangeLog(object):
                 InsertOne({"_id": ObjectId(), "data": c_data})
                 for c_data in self.iter_state_bulks(self.state)
             ]
+            self.logger.debug("Flush State Record: %d", len(bulk))
             await coll.bulk_write(bulk, ordered=True)
             self.state = {}  # Reset
 

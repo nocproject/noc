@@ -64,8 +64,8 @@ class MetricsService(FastAPIService):
         connect_async()
         self.load_scopes()
         self.graph = CDAG("metrics", state=await self.change_log.get_state())
-        await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
         asyncio.create_task(self.log_runner())
+        await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
 
     async def on_deactivate(self):
         if self.change_log:
