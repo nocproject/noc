@@ -1,47 +1,47 @@
 # Деплоим NOC
 
-## Необходимо сменить админский пароль
+## Необходимо сменить пароль администратора
 
-1. Навести курсор в правый верхний угол и нажать Change Password…
+1. Навести курсор в правый верхний угол и нажать `Change Password…`
 
 ![](./img/tower-main-window.png)
 
-## Cоздать окружение(environment)
+## Cоздать окружение (Environment)
 
-1. Environments → Create new
+1. `Environments` → `Create new`
 2. В поле Url вводим днс имя, если его нет, то вводим IP адрес  сервера где будет находиться NOC
 3. В поле Type — указываем Evaluation или Production  
-4. Дальше сохраняем нажав кнопку Save
+4. Дальше сохраняем, нажав кнопку Save
 
 ![](./img/tower-create-env.png)
 
 ## Создать датацентр(Datacenters)
 
-1. Datacenters → Create new
-2. Вводим в поле Name имя dc1 и нажимаем Save
+1. `Datacenters` → `Create new`
+2. Вводим в поле Name имя dc1 и нажимаем `Save`
 
 ![](./img/tower-create-dc.png)
 
 ## Создать пул [(Pools)](https://code.getnoc.com/noc/noc/-/edit/master/docs/en/docs/user/reference/concepts/pool/index.md)
 
-1. Environments → Pull
-2. Дожидаемся уведомления Pull complete
+1. `Environments` → `Pull`
+2. Дожидаемся уведомления `Pull complete`
 
 ![](./img/tower-pull-playbooks.png)
 
-## Выбрать машины(Nodes)
+## Добавить машины (Nodes)
 
-1. Nodes → Create new
+1. `Nodes` → `Create new`
 2. В поле Name вводим имя сервера которое станет его хостнеймом,например centos7-02
 3. В поле Datacenter выбрать dc1
 4. В поле Node Type выбрать Linux, если ставите NOC на сервер с ОС семейства Linux, если ОС FreeBSD, то выбираем FreeBSD
 5. В поле IP Address вводим ip-адрес сервера куда будет задеплоен NOC
 6. В поле Login As вводим ansible
-7. Нажимаем Save
+7. Нажимаем `Save`
 
 ![](./img/tower-add-node.png)
 
-## Выбираем сервисы которые необходимо задеплоить(Services)
+## Выбираем сервисы, которые необходимо задеплоить (Services)
 
 ### Singlenode installation
 
@@ -92,6 +92,6 @@
 
 ## 7)Деплоим сервисы NOC
 
-1. Переходим во вкладку Environments, нажимаем на кнопку Deploy и устанавливаем сервисы NOC’а на сервер
+1. Переходим во вкладку `Environments`, нажимаем на кнопку `Deploy` и устанавливаем сервисы NOC’а на сервер
 
 ![](./img/tower-run-deploy.png)
