@@ -102,8 +102,7 @@ class L2Domain(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _vlan_domains_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _vlan_domains_mo_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _l2_domains_mo_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "Default Resource"
@@ -232,7 +231,8 @@ class L2Domain(Document):
         return r
 
     @classmethod
-    def get_l2_domain_object_ids(cls, l2_domains: List["str"]):
+    @cachetools.cachedmethod(operator.attrgetter("_l2_domains_mo_cache"), lock=lambda _: id_lock)
+    def get_l2_domain_object_ids(cls, l2_domains: Union[str, List["str"]]):
         """
         Get list of all managed object ids belonging to
         same L2 domain
@@ -241,7 +241,11 @@ class L2Domain(Document):
         """
         from noc.sa.models.managedobject import ManagedObject
 
-        return ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list("id", flat=True)
+        if not isinstance(l2_domains, list):
+            l2_domains = [l2_domains]
+        return list(
+            ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list("id", flat=True)
+        )
 
     @classmethod
     def calculate_stats(cls, l2_domains: List["L2Domain"]) -> List[Dict[str, Union[str, int]]]:
