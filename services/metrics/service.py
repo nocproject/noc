@@ -81,6 +81,7 @@ class MetricsService(FastAPIService):
 
     async def on_metrics(self, msg: Message) -> None:
         data = orjson.loads(msg.value)
+        state = {}
         for item in data:
             scope = item.get("scope")
             if not scope:
@@ -110,7 +111,10 @@ class MetricsService(FastAPIService):
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
-            self.activate_card(card, si, item)
+            state.update(self.activate_card(card, si, item))
+        # Save state change
+        if state:
+            await self.change_log.feed(state)
 
     def load_scopes(self):
         """
@@ -221,7 +225,12 @@ class MetricsService(FastAPIService):
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
         )
 
-    def activate_card(self, card: Card, si: ScopeInfo, data: Dict[str, Any]) -> None:
+    def activate_card(
+        self, card: Card, si: ScopeInfo, data: Dict[str, Any]
+    ) -> Dict[str, Dict[str, Any]]:
+        """
+        Activate card and return changed state
+        """
         units = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
@@ -243,8 +252,7 @@ class MetricsService(FastAPIService):
                     sender.activate(tx, kf, kv)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
-        # Save state change
-        asyncio.create_task(self.change_log.feed(tx.get_changed_state()))
+        return tx.get_changed_state()
 
 
 if __name__ == "__main__":
