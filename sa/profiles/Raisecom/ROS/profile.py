@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+from dateutil.parser import parse, ParserError
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -42,6 +43,33 @@ class Profile(BaseProfile):
         "is_gazelle": {"platform": {"$regex": r"^[SR]\d+[Ii]\S+"}},
         "is_ifname_use": {"platform": {"$regex": "QSW-8200"}},
     }
+
+    rx_date_format = re.compile(r"(\S+)\s*\((.+)\)")
+    rx_path_version = re.compile(r"(\S+)\s*\((\S+)\)")
+
+    @classmethod
+    def cmp_version(cls, v1, v2):
+        """
+        Compare two versions.
+        Default implementation compares a versions in format
+        N1. .. .NM
+        On Qtech.QSW2800
+        """
+        if not cls.rx_path_version.match(v1) and cls.rx_date_format.match(v1):
+            v_part, d_part = cls.rx_date_format.match(v1).groups()
+            try:
+                d_part = parse(d_part)
+                v1 = f"{v_part} {d_part.isoformat()}"
+            except ParserError:
+                pass
+        if not cls.rx_path_version.match(v2) and cls.rx_date_format.match(v2):
+            v_part, d_part = cls.rx_date_format.match(v2).groups()
+            try:
+                d_part = parse(d_part)
+                v2 = f"{v_part} {d_part.isoformat()}"
+            except ParserError:
+                pass
+        return super().cmp_version(v1, v2)
 
     rx_port = re.compile(r"^[Pp]ort(|\s+)(?P<port>\d+)")  # Port1-FastEthernet,port 1
     rx_port_ip = re.compile(r"^(IP|ip interface)(|\s+)(?P<port>\d+)")  # ip interface 0, IP0
