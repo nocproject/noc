@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+from dateutil.parser import parse, ParserError
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -60,6 +61,9 @@ class Profile(BaseProfile):
         "is_stackable": {"platform": {"$regex": r"QSW-8200-28F-AC-DC"}},
     }
 
+    rx_date_format = re.compile(r"(\S+)\s*\((.+)\)")
+    rx_path_version = re.compile(r"(\S+)\s*\((\S+)\)")
+
     @classmethod
     def cmp_version(cls, v1, v2):
         """
@@ -68,9 +72,21 @@ class Profile(BaseProfile):
         N1. .. .NM
         On Qtech.QSW2800
         """
-        a = [int(x) for x in v1.split("(")[0].split(".")]
-        b = [int(x) for x in v2.split("(")[0].split(".")]
-        return (a > b) - (a < b)
+        if not cls.rx_path_version.match(v1) and cls.rx_date_format.match(v1):
+            v_part, d_part = cls.rx_date_format.match(v1).groups()
+            try:
+                d_part = parse(d_part)
+                v1 = f"{v_part} {d_part.isoformat()}"
+            except ParserError:
+                pass
+        if not cls.rx_path_version.match(v2) and cls.rx_date_format.match(v2):
+            v_part, d_part = cls.rx_date_format.match(v2).groups()
+            try:
+                d_part = parse(d_part)
+                v2 = f"{v_part} {d_part.isoformat()}"
+            except ParserError:
+                pass
+        return super().cmp_version(v1, v2)
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
     rx_split_ifname = re.compile(r"^(Eth|Et)\s*(\d+(?:\/\d+)*)$")
