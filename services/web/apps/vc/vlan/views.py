@@ -42,13 +42,14 @@ class VLANApplication(ExtDocApplication):
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
-    @cachedmethod(key="vlans-interface-count-%s")
-    def get_l2domain_interfaces_count(self, mos: List[int]) -> Dict[int, int]:
+    @cachedmethod(key="vlans-interface-count-%s", ttl=180)
+    def get_l2domain_interfaces_count(self, l2_domain: str) -> Dict[int, int]:
         """
         Calculate VLAN Count by interface on ManagedObject list
-        :param mos:
+        :param l2_domain:
         :return:
         """
+        mos = L2Domain.get_l2_domain_object_ids(l2_domain)
         coll = SubInterface._get_collection()
         r = {}
         for rec in coll.aggregate(
@@ -83,7 +84,7 @@ class VLANApplication(ExtDocApplication):
             objects[l2_domain].append(mo_id)
         interfaces_count = {}
         for l2_domain in objects:
-            r = self.get_l2domain_interfaces_count(objects[l2_domain])
+            r = self.get_l2domain_interfaces_count(l2_domain)
             for vlan in r:
                 interfaces_count[(l2_domain, vlan)] = r[vlan]
         for row in data:
@@ -136,7 +137,7 @@ class VLANApplication(ExtDocApplication):
         """
         vlan: "VLAN" = self.get_object_or_404(VLAN, id=vlan_id)
         # Managed objects in L2 Domain
-        objects = L2Domain.get_l2_domain_object_ids((vlan.l2_domain.id,))
+        objects = L2Domain.get_l2_domain_object_ids(vlan.l2_domain.id)
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
