@@ -76,6 +76,12 @@ class Profile(BaseProfile):
     # Version format:
     # <major>.<minor><sep><patch>
     #
+    rx_ver = re.compile(r"\d+")
+
+    def cmp_version(self, x, y):
+        a = [int(z) for z in self.rx_ver.findall(x)]
+        b = [int(z) for z in self.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     """
     IF-MIB:IfDescr
