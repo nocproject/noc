@@ -59,13 +59,15 @@ class MetricsService(FastAPIService):
         self.cards: Dict[MetricKey, Card] = {}
         self.graph: Optional[CDAG] = None
         self.change_log: Optional[ChangeLog] = None
+        self.start_state: Dict[str, Dict[str, Any]] = {}
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
         self.change_log = ChangeLog(f"metrics-{self.slot_number}")
         connect_async()
         self.load_scopes()
-        self.graph = CDAG("metrics", state=await self.change_log.get_state())
+        self.start_state = await self.change_log.get_state()
+        self.graph = CDAG("metrics")
         asyncio.create_task(self.log_runner())
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
 
@@ -218,7 +220,9 @@ class MetricsService(FastAPIService):
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node_id, node in src.nodes.items():
-            nodes[node_id] = node.clone(f"{prefix}::{node_id}")
+            new_id = f"{prefix}::{node_id}"
+            state = self.start_state.pop(new_id, None)
+            nodes[node_id] = node.clone(new_id, state=state)
         # Subscribe
         for node_id, o_node in src.nodes.items():
             node = nodes[node_id]

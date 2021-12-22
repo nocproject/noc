@@ -135,11 +135,11 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             setattr(o, k, getattr(data, k))
         return o
 
-    def clone(self, node_id: str) -> Optional["BaseCDAGNode"]:
+    def clone(self, node_id: str, state: Optional[Dict[str, Any]]) -> Optional["BaseCDAGNode"]:
         node = self.__class__(
             node_id,
             description=self.description,
-            state={},
+            state=state,
             config=self.config if hasattr(self, "config_cls") else None,
             sticky=self.sticky,
         )
