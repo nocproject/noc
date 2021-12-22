@@ -95,6 +95,7 @@ class SubgraphNode(BaseCDAGNode):
     def __init__(
         self,
         node_id: str,
+        prefix: Optional[str] = None,
         state: Optional[Dict[str, Any]] = None,
         description: str = None,
         config: Optional[Dict[str, Any]] = None,
@@ -127,7 +128,12 @@ class SubgraphNode(BaseCDAGNode):
             self.cdag.get_node(cfg.output).subscribe(self.measure_node, "x")
         # Construct all the rest
         super().__init__(
-            node_id=node_id, state=state, description=description, config=config, sticky=sticky
+            node_id=node_id,
+            prefix=prefix,
+            state=state,
+            description=description,
+            config=config,
+            sticky=sticky,
         )
 
     def iter_inputs(self) -> Iterable[str]:

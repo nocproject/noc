@@ -222,7 +222,7 @@ class MetricsService(FastAPIService):
         for node_id, node in src.nodes.items():
             new_id = f"{prefix}::{node_id}"
             state = self.start_state.pop(new_id, None)
-            nodes[node_id] = node.clone(new_id, state=state)
+            nodes[node_id] = node.clone(node_id, prefix=prefix, state=state)
         # Subscribe
         for node_id, o_node in src.nodes.items():
             node = nodes[node_id]
