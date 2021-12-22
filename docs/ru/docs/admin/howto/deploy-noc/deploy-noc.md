@@ -4,7 +4,7 @@
 
 1. Навести курсор в правый верхний угол и нажать Change Password…
 
-![](./img/1.png)
+![](./img/tower-main-window.png)
 
 ## Cоздать окружение(environment)
 
@@ -13,21 +13,21 @@
 3. В поле Type — указываем Evaluation или Production  
 4. Дальше сохраняем нажав кнопку Save
 
-![](./img/2.png)
+![](./img/tower-create-env.png)
 
 ## Создать датацентр(Datacenters)
 
 1. Datacenters → Create new
 2. Вводим в поле Name имя dc1 и нажимаем Save
 
-![](./img/3.png)
+![](./img/tower-create-dc.png)
 
 ## Создать пул [(Pools)](https://code.getnoc.com/noc/noc/-/edit/master/docs/en/docs/user/reference/concepts/pool/index.md)
 
 1. Environments → Pull
 2. Дожидаемся уведомления Pull complete
 
-![](./img/4.png)
+![](./img/tower-pull-playbooks.png)
 
 ## Выбрать машины(Nodes)
 
@@ -39,7 +39,7 @@
 6. В поле Login As вводим ansible
 7. Нажимаем Save
 
-![](./img/5.png)
+![](./img/tower-add-node.png)
 
 ## Выбираем сервисы которые необходимо задеплоить(Services)
 
@@ -94,4 +94,4 @@
 
 1. Переходим во вкладку Environments, нажимаем на кнопку Deploy и устанавливаем сервисы NOC’а на сервер
 
-![](./img/7.png)
+![](./img/tower-run-deploy.png)
