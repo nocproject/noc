@@ -22,7 +22,7 @@
 # Basic node requirements
 Django==3.1.13
 FastAPI==0.63.0
-Jinja2==2.8
+Jinja2==2.11.3
 PyYAML==6.0
 Pygments==2.10.0
 XlsxWriter==3.0.2
@@ -45,17 +45,17 @@ mongoengine==0.22.1
 motor==2.5.1
 networkx==2.6.3
 numpy==1.20.2
-orjson==3.6.4
+orjson==3.6.5
 progressbar2==3.55.0
-protobuf==3.15.8
+protobuf==3.19.0
 psycopg2==2.8.6
 pydantic==1.8.2
-pymongo==3.12.1
+pymongo==3.12.2
 pyproj==3.2.1
 python-consul==1.1.0
 python-creole==1.4.10
 python-dateutil==2.8.2
-python-jose[cryptography]==3.2.0
+python-jose[cryptography]==3.3.0
 python-multipart==0.0.5
 pytz==2021.1
 requests==2.26.0
@@ -86,7 +86,7 @@ ldap3==2.8.1; extra == "login-ldap"
 # Login PAM
 python-pam==1.8.4; extra == "login-pam"
 # Login RADIUS
-pyrad==2.0; extra == "login-radius"
+pyrad==2.4; extra == "login-radius"
 # Standalone node with supervisor
 supervisor==4.1.0; extra == "supervisor"
 supervisor-serialrestart==0.1.1; extra == "supervisor"
