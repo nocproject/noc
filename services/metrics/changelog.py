@@ -20,7 +20,6 @@ from pymongo.collection import Collection
 from bson import ObjectId
 
 # NOC modules
-from noc.core.lock.distributed_async import DistributedAsyncLock
 from noc.core.mongo.connection_async import get_db
 
 
@@ -31,7 +30,6 @@ class ChangeLog(object):
 
     def __init__(self, slot: int):
         self.slot = slot
-        self.owner = f"metrics-{slot}"
         self.state: Dict[str, Dict[str, Any]] = {}
         self.logger = logging.getLogger(__name__)
         self.lock = asyncio.Lock()
@@ -42,9 +40,8 @@ class ChangeLog(object):
         """
         self.logger.info("Retrieving current state")
         coll = self.get_collection()
-        lock = DistributedAsyncLock(self.LOCK_CATEGORY, owner=self.owner)
         state = {}
-        async with lock.acquire([f"slot-{self.slot}"]):
+        async with self.lock:
             self.logger.info("Lock acquired")
             n = 0
             async for doc in coll.find({"slot": self.slot}).sort([("_id", ASCENDING)]):
@@ -128,13 +125,12 @@ class ChangeLog(object):
         """
         self.logger.info("Compacting log")
         coll = self.get_collection()
-        lock = DistributedAsyncLock(self.LOCK_CATEGORY, owner=self.owner)
         state = {}
         n = 0
         nn = 0
         prev_size = 0
         next_size = 0
-        async with lock.acquire([f"slot-{self.slot}"]):
+        async with self.lock:
             self.logger.info("Lock acquired")
             # Get maximal id
             max_id = await coll.find_one(

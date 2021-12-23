@@ -66,9 +66,11 @@ class MetricsService(FastAPIService):
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
+        await self.change_log.compact()  # @todo: Configurable
         self.start_state = await self.change_log.get_state()
         self.graph = CDAG("metrics")
         asyncio.create_task(self.log_runner())
+        asyncio.create_task(self.compact_runnner())
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
 
     async def on_deactivate(self):
@@ -79,9 +81,15 @@ class MetricsService(FastAPIService):
     async def log_runner(self):
         self.logger.info("Run log runner")
         while True:
-            await asyncio.sleep(1.0)
+            await asyncio.sleep(1.0)  # @todo: Configurable
             if self.change_log:
                 await self.change_log.flush()
+
+    async def compact_runnner(self):
+        self.logger.info("Run compact runner")
+        while True:
+            await asyncio.sleep(300.0)  # @todo: Configurable
+            await self.change_log.compact()
 
     async def on_metrics(self, msg: Message) -> None:
         data = orjson.loads(msg.value)
