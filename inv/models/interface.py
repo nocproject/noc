@@ -466,7 +466,7 @@ class Interface(Document):
         if instance.managed_object:
             yield from filterfalse(
                 lambda x: x == "noc::is_linked::=",
-                ManagedObject.iter_effective_labels(instance.managed_object),
+                instance.managed_object.get_effective_labels(),
             )
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
