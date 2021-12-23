@@ -194,7 +194,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             return True
         if mop.enable_box_discovery_interface and mo.get_interface_discovery_policy() != "s":
             return True
-        if mop.enable_box_discovery_vlan and mo.get_interface_discovery_policy() != "s":
+        if mop.vlan_vlandb_discovery != "D" and mo.get_vlan_discovery_policy() != "s":
             return True
         if (
             mop.enable_box_discovery_vpn_confdb
