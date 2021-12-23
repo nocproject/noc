@@ -89,6 +89,17 @@ class Token(object):
             self.lock.release_by_lock_id(self.lock_id)
         locked_items.set(None)
 
+    async def __aenter__(self):
+        if locked_items.get() is not None:
+            raise RuntimeError("Attempting use of nested locks")
+        self.lock_id = await self.lock.acquire_by_items(self.items, ttl=self.ttl)
+        locked_items.set(set(self.items))
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        if self.lock_id:
+            await self.lock.release_by_lock_id(self.lock_id)
+        locked_items.set(None)
+
 
 def get_locked_items() -> Set[str]:
     """

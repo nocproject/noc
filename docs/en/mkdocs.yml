@@ -1365,6 +1365,7 @@ nav:
               - "[mailsender] section": admin/reference/config/mailsender.md
               - "[memcached] section": admin/reference/config/memcached.md
               - "[message] section": admin/reference/config/message.md
+              - "[metrics] section": admin/reference/config/metrics.md
               - "[mongo] section": admin/reference/config/mongo.md
               - "[mrt] section": admin/reference/config/mrt.md
               - "[nbi] section": admin/reference/config/nbi.md

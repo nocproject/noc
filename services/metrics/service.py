@@ -11,6 +11,10 @@ from dataclasses import dataclass
 from collections import defaultdict
 from typing import Any, Dict, Tuple, Optional
 import sys
+import asyncio
+import codecs
+import hashlib
+import random
 
 # Third-party modules
 import orjson
@@ -19,11 +23,14 @@ import orjson
 from noc.core.service.fastapi import FastAPIService
 from noc.core.liftbridge.message import Message
 from noc.core.perf import metrics
+from noc.core.mongo.connection_async import connect_async
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
+from noc.services.metrics.changelog import ChangeLog
+from noc.config import config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
@@ -52,15 +59,50 @@ class MetricsService(FastAPIService):
         self.scopes: Dict[str, ScopeInfo] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
-        self.graph = CDAG("metrics", state=self.get_state())
+        self.graph: Optional[CDAG] = None
+        self.change_log: Optional[ChangeLog] = None
+        self.start_state: Dict[str, Dict[str, Any]] = {}
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
+        self.change_log = ChangeLog(self.slot_number)
+        connect_async()
         self.load_scopes()
+        if config.metrics.compact_on_start:
+            await self.change_log.compact()
+        self.start_state = await self.change_log.get_state()
+        self.graph = CDAG("metrics")
+        if config.metrics.flush_interval > 0:
+            asyncio.create_task(self.log_runner())
+        if config.metrics.compact_interval > 0:
+            asyncio.create_task(self.compact_runnner())
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
+
+    async def on_deactivate(self):
+        if self.change_log:
+            await self.change_log.flush()
+            self.change_log = None
+        if config.metrics.compact_on_stop:
+            await self.change_log.compact()
+
+    async def log_runner(self):
+        self.logger.info("Run log runner")
+        while True:
+            await asyncio.sleep(config.metrics.flush_interval)
+            if self.change_log:
+                await self.change_log.flush()
+
+    async def compact_runnner(self):
+        self.logger.info("Run compact runner")
+        # Randomize compaction on different slots to prevent the load spikes
+        await asyncio.sleep(random.random() * config.metrics.compact_interval)
+        while True:
+            await self.change_log.compact()
+            await asyncio.sleep(config.metrics.compact_interval)
 
     async def on_metrics(self, msg: Message) -> None:
         data = orjson.loads(msg.value)
+        state = {}
         for item in data:
             scope = item.get("scope")
             if not scope:
@@ -90,7 +132,10 @@ class MetricsService(FastAPIService):
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
-            self.activate_card(card, si, item)
+            state.update(self.activate_card(card, si, item))
+        # Save state change
+        if state:
+            await self.change_log.feed(state)
 
     def load_scopes(self):
         """
@@ -132,6 +177,14 @@ class MetricsService(FastAPIService):
             tuple(iter_key_labels()),
         )
 
+    @staticmethod
+    def get_key_hash(k: MetricKey) -> str:
+        """
+        Calculate persistent hash for metric key
+        """
+        d = hashlib.sha512(str(k).encode("utf-8")).digest()
+        return codecs.encode(d, "base-64")[:7].decode("utf-8")
+
     def get_card(self, k: MetricKey) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
@@ -146,7 +199,7 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = self.project_cdag(cdag, prefix=str(hash(k)))
+        card = self.project_cdag(cdag, prefix=self.get_key_hash(k))
         self.cards[k] = card
         return card
 
@@ -184,7 +237,9 @@ class MetricsService(FastAPIService):
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node_id, node in src.nodes.items():
-            nodes[node_id] = node.clone(f"{prefix}::{node_id}")
+            new_id = f"{prefix}::{node_id}"
+            state = self.start_state.pop(new_id, None)
+            nodes[node_id] = node.clone(node_id, prefix=prefix, state=state)
         # Subscribe
         for node_id, o_node in src.nodes.items():
             node = nodes[node_id]
@@ -201,22 +256,12 @@ class MetricsService(FastAPIService):
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
         )
 
-    def get_state(self) -> Dict[str, Any]:
+    def activate_card(
+        self, card: Card, si: ScopeInfo, data: Dict[str, Any]
+    ) -> Dict[str, Dict[str, Any]]:
         """
-        Load state for cold start
-        :return:
+        Activate card and return changed state
         """
-        ...
-
-    def send_state_wal(self, data: Dict[str, Any]) -> None:
-        """
-        Send incremental state change
-        :param data:
-        :return:
-        """
-        ...
-
-    def activate_card(self, card: Card, si: ScopeInfo, data: Dict[str, Any]) -> None:
         units = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
@@ -238,8 +283,7 @@ class MetricsService(FastAPIService):
                     sender.activate(tx, kf, kv)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
-        # Save state change
-        self.send_state_wal(tx.get_changed_state())
+        return tx.get_changed_state()
 
 
 if __name__ == "__main__":
