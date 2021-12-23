@@ -64,7 +64,7 @@ class SAEAPI(API):
     """
 
     async def resolve_activator(self, pool):
-        sn = "activator-%s" % pool
+        sn = f"activator-{pool}"
         for i in range(config.sae.activator_resolution_retries):
             try:
                 svc = await self.service.dcs.resolve(
@@ -79,7 +79,7 @@ class SAEAPI(API):
     async def get_activator_url(self, pool):
         svc = await self.resolve_activator(pool)
         if svc:
-            return "http://%s/api/activator/" % svc
+            return f"http://{svc}/api/activator/"
         else:
             metrics["error", ("type", "empty_activator_list_response")] += 1
             return None
@@ -94,21 +94,21 @@ class SAEAPI(API):
         :param timeout: Script timeout in seconds
         """
         # Resolve object data
-        data = await self.service.run_in_executor("db", self.get_object_data, object_id)
+        data = self.get_object_data(object_id)
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
             metrics["error", ("type", "pool_not_found")] += 1
             raise APIError("Pool not found")
         # Check script is exists
-        script_name = "%s.%s" % (data["profile"], script)
+        script_name = f'{data["profile"]}.{script}'
         if not loader.has_script(script_name):
             metrics["error", ("type", "invalid_scripts_request")] += 1
             raise APIError("Invalid script")
         #
         url = await self.get_activator_url(pool)
         if not url:
-            raise APIError("No active activators for pool '%s'" % pool)
+            raise APIError(f"No active activators for pool '{pool}'")
         return self.redirect(
             url,
             "script",
@@ -125,7 +125,7 @@ class SAEAPI(API):
     @api
     async def get_credentials(self, object_id):
         # Resolve object data
-        data = await self.service.run_in_executor("db", self.get_object_data, object_id)
+        data = self.get_object_data(object_id)
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
