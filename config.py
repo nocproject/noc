@@ -803,6 +803,12 @@ class Config(BaseConfig):
         enable_mongo_quantiles = BooleanParameter(default=False)
         enable_postgres_quantiles = BooleanParameter(default=False)
 
+    class metrics(ConfigSection):
+        compact_on_start = BooleanParameter(default=True)
+        compact_on_stop = BooleanParameter(default=False)
+        flush_interval = SecondsParameter(default="1")
+        compact_interval = SecondsParameter(default="5m")
+
     # pylint: disable=super-init-not-called
     def __init__(self):
         self.setup_logging()

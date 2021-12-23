@@ -78,7 +78,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     state_cls_slot: Type  # Filled by metaclass
 
     __slots__ = (
-        "node_id",
+        "_node_id",
+        "_prefix",
         "description",
         "state",
         "config",
@@ -93,12 +94,14 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     def __init__(
         self,
         node_id: str,
+        prefix: Optional[str] = None,
         state: Optional[Dict[str, Any]] = None,
         description: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None,
         sticky: bool = False,
     ):
-        self.node_id = node_id
+        self._node_id = sys.intern(node_id)
+        self._prefix = sys.intern(prefix) if prefix else None
         self.description = description
         self.state = self.clean_state(state)
         self.config = self.clean_config(config)
@@ -110,10 +113,17 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self._const_value: Optional[ValueType] = None
         self.sticky = sticky
 
+    @property
+    def node_id(self):
+        if self._prefix:
+            return f"{self._prefix}::{self._node_id}"
+        return self._node_id
+
     @classmethod
     def construct(
         cls,
         node_id: str,
+        prefix: Optional[str] = None,
         description: Optional[str] = None,
         state: Optional[BaseModel] = None,
         config: Optional[BaseModel] = None,
@@ -123,7 +133,14 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Construct node
         :return:
         """
-        return cls(node_id, description=description, state=state, config=config, sticky=sticky)
+        return cls(
+            node_id,
+            prefix=prefix,
+            description=description,
+            state=state,
+            config=config,
+            sticky=sticky,
+        )
 
     @staticmethod
     def slotify(slot_cls: Type, data: BaseModel) -> object:
@@ -135,11 +152,14 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             setattr(o, k, getattr(data, k))
         return o
 
-    def clone(self, node_id: str) -> Optional["BaseCDAGNode"]:
+    def clone(
+        self, node_id: str, prefix: Optional[str] = None, state: Optional[Dict[str, Any]] = None
+    ) -> Optional["BaseCDAGNode"]:
         node = self.__class__(
             node_id,
+            prefix=prefix,
             description=self.description,
-            state={},
+            state=state,
             config=self.config if hasattr(self, "config_cls") else None,
             sticky=self.sticky,
         )
