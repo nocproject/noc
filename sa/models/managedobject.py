@@ -113,6 +113,7 @@ class CapsItems(BaseModel):
 
 
 id_lock = Lock()
+e_labels_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -568,6 +569,7 @@ class ManagedObject(NOCModel):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _e_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
         return self.name
@@ -1907,6 +1909,10 @@ class ManagedObject(NOCModel):
             del cls._id_cache[f"managedobject-id-{mo_id}"]
         except KeyError:
             pass
+        try:
+            del cls._e_labels_cache[mo_id]
+        except KeyError:
+            pass
         cache.delete(f"managedobject-id-{mo_id}", version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete(f"cred-{mo_id}", version=CREDENTIAL_CACHE_VERSION)
 
@@ -1931,6 +1937,10 @@ class ManagedObject(NOCModel):
         stream = f"dispose.{fm_pool}"
         return stream, 0
 
+    @cachetools.cached(_e_labels_cache, key=lambda x: str(x.id), lock=e_labels_lock)
+    def get_effective_labels(self):
+        return Label.merge_labels(ManagedObject.iter_effective_labels(self))
+
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
         from noc.inv.models.interface import Interface
@@ -1943,8 +1953,6 @@ class ManagedObject(NOCModel):
         yield list(ManagedObjectProfile.iter_lazy_labels(instance.object_profile))
         if instance.effective_service_groups:
             yield ResourceGroup.get_lazy_labels(instance.effective_service_groups)
-            # for rg in ResourceGroup.objects.filter(id__in=instance.effective_service_groups):
-            #    yield list(ResourceGroup.iter_lazy_labels(rg))
         yield Label.get_effective_regex_labels("managedobject_name", instance.name)
         lazy_profile_labels = list(Profile.iter_lazy_labels(instance.profile))
         yield Label.ensure_labels(lazy_profile_labels, enable_managedobject=True)
