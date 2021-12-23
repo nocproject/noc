@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Internal monitoring metrics
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ from noc.config import config
 from .base import Summary, TargetedStream
 
 DEFAULT_TARGETS = [
-    (q, config.metrics.default_quantiles_epsilon) for q in config.metrics.default_quantiles
+    (q, config.perfomance.default_quantiles_epsilon) for q in config.perfomance.default_quantiles
 ]
 DEFAULT_QUANTILE_SCALE = 1000000
 Q_SUFFIX = "_@q"
@@ -20,10 +20,10 @@ Q_SUFFIX_LEN = len(Q_SUFFIX)
 class Quantile(Summary):
     def __init__(self, scale=DEFAULT_QUANTILE_SCALE):
         super().__init__(
-            config.metrics.default_quantiles_window,
+            config.perfomance.default_quantiles_window,
             1,
             TargetedStream,
-            config.metrics.default_quantiles_buffer,
+            config.perfomance.default_quantiles_buffer,
             DEFAULT_TARGETS,
         )
         self.scale = scale
@@ -34,11 +34,11 @@ class Quantile(Summary):
             name = name[:-Q_SUFFIX_LEN]
         # Prepare labels
         ext_labels = ['%s="%s"' % (i.lower(), labels[i]) for i in labels]
-        for quantile in config.metrics.default_quantiles:
+        for quantile in config.perfomance.default_quantiles:
             (value,) = self.query(quantile, 0)
             all_labels = ext_labels + [
                 'quantile="%s"' % quantile,
-                'window="%s"' % config.metrics.default_quantiles_window,
+                'window="%s"' % config.perfomance.default_quantiles_window,
             ]
             yield "# TYPE %s untyped" % name
             yield "%s{%s} %s" % (name, ",".join(all_labels), float(value) / self.scale)
