@@ -1365,7 +1365,6 @@ nav:
               - "[mailsender] section": admin/reference/config/mailsender.md
               - "[memcached] section": admin/reference/config/memcached.md
               - "[message] section": admin/reference/config/message.md
-              - "[metrics] section": admin/reference/config/metrics.md
               - "[mongo] section": admin/reference/config/mongo.md
               - "[mrt] section": admin/reference/config/mrt.md
               - "[nbi] section": admin/reference/config/nbi.md
@@ -1373,6 +1372,7 @@ nav:
               - "[nsqlookupd] section": admin/reference/config/nsqlookupd.md
               - "[path] section": admin/reference/config/path.md
               - "[peer] section": admin/reference/config/peer.md
+              - "[performance] section": admin/reference/config/performance.md
               - "[pg] section": admin/reference/config/pg.md
               - "[ping] section": admin/reference/config/ping.md
               - "[proxy] section": admin/reference/config/proxy.md

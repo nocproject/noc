@@ -784,7 +784,7 @@ class Config(BaseConfig):
         max_prefix_length = IntParameter(default=24)
         rpsl_inverse_pref_style = BooleanParameter(default=False)
 
-    class metrics(ConfigSection):
+    class perfomance(ConfigSection):
         default_hist = ListParameter(
             item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
         )
@@ -856,7 +856,7 @@ class Config(BaseConfig):
             url += [",".join(str(h) for h in hosts)]
             url += ["/%s" % self.mongo.db]
             self._mongo_connection_args["host"] = "".join(url)
-            if self.metrics.enable_mongo_hist:
+            if self.perfomance.enable_mongo_hist:
                 from noc.core.mongo.monitor import MongoCommandSpan
 
                 self._mongo_connection_args["event_listeners"] = [MongoCommandSpan()]
@@ -911,14 +911,14 @@ class Config(BaseConfig):
         :return: List of hist config or None
         """
         # Check hist is enabled
-        if not getattr(self.metrics, "enable_%s_hist" % name, False):
+        if not getattr(self.perfomance, f"enable_{name}_hist", False):
             return None
         # Get config
-        cfg = getattr(self.metrics, "%s_hist" % name)
+        cfg = getattr(self.perfomance, f"{name}_hist")
         if cfg:
             return cfg
         # Fallback to defaults
-        return self.metrics.default_hist or None
+        return self.perfomance.default_hist or None
 
     def get_quantiles_config(self, name):
         """
@@ -926,7 +926,7 @@ class Config(BaseConfig):
         :return: True if quantile is enabled
         """
         # Check quantiles is enabled
-        return getattr(self.metrics, "enable_%s_quantiles" % name, False)
+        return getattr(self.perfomance, f"enable_{name}_quantiles", False)
 
 
 config = Config()
