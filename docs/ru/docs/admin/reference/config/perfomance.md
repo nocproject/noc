@@ -1,4 +1,4 @@
-# [metrics] section
+# [perfomance] section
 
 Metrics service configuration
 
