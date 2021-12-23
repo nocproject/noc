@@ -139,7 +139,7 @@ class ChangeLog(object):
             if not max_id:
                 self.logger.info("Nothing to compact")
                 return
-            t_mark = max_id.generation_time
+            t_mark = max_id["_id"].generation_time
             t_mark_id = ObjectId.from_datetime(t_mark)
             # Read all states
             async for doc in coll.find(
