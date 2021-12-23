@@ -29,8 +29,9 @@ class ChangeLog(object):
     COLL_NAME = "metricslog"
     MAX_DATA = 15_000_000
 
-    def __init__(self, owner: str):
-        self.owner = owner
+    def __init__(self, slot: int):
+        self.slot = slot
+        self.owner = f"metrics-{slot}"
         self.state: Dict[str, Dict[str, Any]] = {}
         self.logger = logging.getLogger(__name__)
         self.lock = asyncio.Lock()
@@ -43,10 +44,10 @@ class ChangeLog(object):
         coll = self.get_collection()
         lock = DistributedAsyncLock(self.LOCK_CATEGORY, owner=self.owner)
         state = {}
-        async with lock.acquire(["*"]):
+        async with lock.acquire([f"slot-{self.slot}"]):
             self.logger.info("Lock acquired")
             n = 0
-            async for doc in coll.find({}).sort([("_id", ASCENDING)]):
+            async for doc in coll.find({"slot": self.slot}).sort([("_id", ASCENDING)]):
                 d = doc.get("data")
                 if not d:
                     continue
@@ -71,7 +72,7 @@ class ChangeLog(object):
             if not self.state:
                 return  # Nothing to flush
             bulk = [
-                InsertOne({"_id": ObjectId(), "data": c_data})
+                InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data})
                 for c_data in self.iter_state_bulks(self.state)
             ]
             self.logger.debug("Flush State Record: %d", len(bulk))
@@ -133,19 +134,21 @@ class ChangeLog(object):
         nn = 0
         prev_size = 0
         next_size = 0
-        async with lock.acquire(["*"]):
+        async with lock.acquire([f"slot-{self.slot}"]):
             self.logger.info("Lock acquired")
             # Get maximal id
-            max_id = await coll.find_one({}, {"_id": 1}, sort=[("_id", DESCENDING)])
+            max_id = await coll.find_one(
+                {"slot": self.slot}, {"_id": 1}, sort=[("_id", DESCENDING)]
+            )
             if not max_id:
                 self.logger.info("Nothing to compact")
                 return
             t_mark = max_id.generation_time
             t_mark_id = ObjectId.from_datetime(t_mark)
             # Read all states
-            async for doc in coll.find({"_id": {"$lte": t_mark_id}}, {"_id": 1, "data": 1}).sort(
-                [("_id", ASCENDING)]
-            ):
+            async for doc in coll.find(
+                {"_id": {"$lte": t_mark_id}, "slot": self.slot}, {"_id": 1, "data": 1}
+            ).sort([("_id", ASCENDING)]):
                 d = doc.get("data")
                 if not d:
                     continue
@@ -161,10 +164,14 @@ class ChangeLog(object):
             bulk = []
             for c_data in self.iter_state_bulks(state):
                 t_mark -= datetime.timedelta(seconds=1)
-                bulk.append(InsertOne({"_id": ObjectId.from_datetime(t_mark), "data": c_data}))
+                bulk.append(
+                    InsertOne(
+                        {"_id": ObjectId.from_datetime(t_mark), "slot": self.slot, "data": c_data}
+                    )
+                )
                 nn += 1
                 next_size += len(c_data)
-            bulk.append(DeleteMany({"_id": {"$lte": t_mark_id}}))
+            bulk.append(DeleteMany({"_id": {"$lte": t_mark_id}, "slot": self.slot}))
             await coll.bulk_write(bulk, ordered=True)
             self.logger.info(
                 "Compacted to %d records (%d bytes). %.2f ratio",

@@ -63,7 +63,7 @@ class MetricsService(FastAPIService):
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
-        self.change_log = ChangeLog(f"metrics-{self.slot_number}")
+        self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
         self.start_state = await self.change_log.get_state()
