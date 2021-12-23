@@ -37,5 +37,4 @@ graph LR
 
 ## Configuration
 
-`metricscollector` service may be configured via [[metrics]](../config/metrics.md)
-config section.
+`metrics` service may be configured via [metrics]() config section.
