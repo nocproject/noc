@@ -6,13 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
+from contextlib import contextmanager
+from dataclasses import dataclass
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.typing import ValueType
 from noc.core.cdag.tx import Transaction
+from noc.core.service.loader import get_service, set_service
+from noc.core.service.stub import ServiceStub
 
 
 class NodeCDAG(object):
@@ -46,3 +53,58 @@ class NodeCDAG(object):
 
     def get_changed_state(self) -> Dict[str, Any]:
         return self.tx.get_changed_state()
+
+
+@contextmanager
+def publish_service():
+    """
+    Publish-testing context
+
+    Usage:
+
+    with publish_service() as svc:
+        ...
+        msg = next(svc.iter_published())
+    """
+    prev_svc = get_service()
+    svc = PublishStub()
+    set_service(svc)
+    yield svc
+    set_service(prev_svc)
+
+
+@dataclass
+class PublishMsg(object):
+    value: Any
+    stream: str
+    partition: Optional[int] = None
+    key: Optional[bytes] = None
+    headers: Optional[Dict[str, bytes]] = None
+
+
+class PublishStub(ServiceStub):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.messages: List[PublishMsg] = []
+
+    def publish(
+        self,
+        value: bytes,
+        stream: str,
+        partition: Optional[int] = None,
+        key: Optional[bytes] = None,
+        headers: Optional[Dict[str, bytes]] = None,
+    ):
+        self.messages.append(
+            PublishMsg(
+                value=orjson.loads(value),
+                stream=stream,
+                partition=partition,
+                key=key,
+                headers=headers,
+            )
+        )
+
+    def iter_published(self):
+        yield from self.messages
+        self.messages = []
