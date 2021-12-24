@@ -102,6 +102,7 @@ Ext.define('NOC.LoginView', {
                 , method: 'POST'
                 , success: Ext.Function.pass(this.onLoginSuccess, this.onLoginFailure)
                 , failure: this.onLoginFailure
+                , defaultPostHeader : 'application/json'
             });
         }
     }
