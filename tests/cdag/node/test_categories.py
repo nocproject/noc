@@ -33,7 +33,7 @@ CATEGORIES = {
     Category.ACTIVATION: {"indicator", "logistic", "relu", "softplus"},
     Category.COMPARE: {"eq", "ne"},
     Category.DEBUG: {"state"},
-    Category.UTIL: {"key", "metrics", "none", "one", "probe", "subgraph", "value"},
+    Category.UTIL: {"alarm", "key", "metrics", "none", "one", "probe", "subgraph", "value"},
     Category.STATISTICS: {"mean", "std"},
     Category.ML: {"gauss"},
     Category.WINDOW: {"expdecay", "nth", "percentile", "sumstep"},
