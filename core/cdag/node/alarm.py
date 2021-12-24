@@ -45,9 +45,9 @@ class AlarmNode(BaseCDAGNode):
 
     def get_value(self, x: ValueType) -> Optional[ValueType]:
         if self.state.active and x < self.config.deactivation_level:
-            self.raise_alarm()
-        elif not self.state.active and x >= self.config.activation_level:
             self.clear_alarm()
+        elif not self.state.active and x >= self.config.activation_level:
+            self.raise_alarm()
         return None
 
     def raise_alarm(self):
