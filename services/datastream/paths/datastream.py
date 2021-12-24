@@ -183,7 +183,7 @@ class DatastreamAPI(object):
         async def inner_datastream(
             limit: Optional[int] = datastream.DEFAULT_LIMIT,
             ds_filter: Optional[List[str]] = Query(None, alias="filter"),
-            ds_id: Optional[List[str]] = Query(None, aplias="id"),
+            ds_id: Optional[List[str]] = Query(None, alias="id"),
             ds_format: Optional[str] = Query(None, alias="format"),
             ds_from: Optional[str] = Query(None, alias="from"),
             ds_filter_policy: Optional[str] = Query(
