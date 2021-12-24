@@ -1377,8 +1377,6 @@ nav:
               - "[mongo] section": admin/reference/config/mongo.md
               - "[mrt] section": admin/reference/config/mrt.md
               - "[nbi] section": admin/reference/config/nbi.md
-              - "[nsqd] section": admin/reference/config/nsqd.md
-              - "[nsqlookupd] section": admin/reference/config/nsqlookupd.md
               - "[path] section": admin/reference/config/path.md
               - "[peer] section": admin/reference/config/peer.md
               - "[performance] section": admin/reference/config/performance.md
