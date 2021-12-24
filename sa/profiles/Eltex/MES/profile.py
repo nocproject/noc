@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ class Profile(BaseProfile):
 
     matchers = {
         "is_has_image": {"image": {"$regex": r"^\S+"}},
-        "is_has_chgroup": {"version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9])"}},
+        "is_has_chgroup": {"version": {"$regex": r"^([12]\.[15]\.4[4-9]|4\.0\.[1,5-9]|6\.1\.2)"}},
         "is_3124": {"platform": {"$regex": "3[13](24|48)"}},
     }
 
