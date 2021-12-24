@@ -158,3 +158,60 @@ def test_alarm(config, values, expected, state):
                 assert "timestamp" in msg.value
                 # Check labels
                 assert msg.value["labels"] == cfg["labels"]
+
+
+@pytest.mark.parametrize(
+    "config,expected",
+    [
+        # No vars
+        (None, None),
+        # Empty list
+        ({"vars": []}, None),
+        # Fixed values
+        (
+            {"vars": [{"name": "x", "value": "test"}, {"name": "y", "value": "test!"}]},
+            {"x": "test", "y": "test!"},
+        ),
+        # Templated values
+        (
+            {
+                "vars": [
+                    {"name": "x", "value": "{{x}}"},
+                    {"name": "level", "value": "{{config.activation_level}}"},
+                    {"name": "deactivation", "value": "{{config.deactivation_level}}"},
+                    {
+                        "name": "span",
+                        "value": "{{config.activation_level - config.deactivation_level}}",
+                    },
+                ]
+            },
+            {"x": "1.0", "level": "1.0", "deactivation": "0.5", "span": "0.5"},
+        ),
+    ],
+)
+def test_alarm_vars(config, expected):
+    default_cfg = {
+        "reference": "test:1",
+        "pool": "TEST",
+        "partition": 3,
+        "alarm_class": "Test",
+        "managed_object": "777",
+        "labels": ["l1", "l2"],
+        "activation_level": 1.0,
+        "deactivation_level": 0.5,
+    }
+    cfg = default_cfg.copy()
+    if config:
+        cfg.update(config)
+    cdag = NodeCDAG("alarm", cfg)
+    with publish_service() as svc:
+        cdag.begin()
+        cdag.activate("x", 1.0)
+        messages = list(svc.iter_published())
+        assert len(messages) == 1, "Lost message"
+        msg = messages[0]
+        if expected is None:
+            assert "vars" not in msg.value
+        else:
+            assert "vars" in msg.value
+            assert msg.value["vars"] == expected

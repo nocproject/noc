@@ -12,6 +12,7 @@ import datetime
 # Third-party modules
 from pydantic import BaseModel
 import orjson
+from jinja2 import Template
 
 # NOC modules
 from .base import BaseCDAGNode, ValueType, Category
@@ -20,6 +21,11 @@ from noc.core.service.loader import get_service
 
 class AlarmNodeState(BaseModel):
     active: bool = False
+
+
+class VarItem(BaseModel):
+    name: str
+    value: str
 
 
 class AlarmNodeConfig(BaseModel):
@@ -31,6 +37,7 @@ class AlarmNodeConfig(BaseModel):
     labels: Optional[List[str]]
     activation_level: float = 1.0
     deactivation_level: float = 1.0
+    vars: Optional[List[VarItem]]
 
 
 class AlarmNode(BaseCDAGNode):
@@ -47,13 +54,18 @@ class AlarmNode(BaseCDAGNode):
         if self.state.active and x < self.config.deactivation_level:
             self.clear_alarm()
         elif not self.state.active and x >= self.config.activation_level:
-            self.raise_alarm()
+            self.raise_alarm(x)
         return None
 
-    def raise_alarm(self):
+    def raise_alarm(self, x: ValueType):
         """
         Raise alarm
         """
+
+        def q(v):
+            template = Template(v)
+            return template.render(x=x, config=self.config)
+
         msg = {
             "$op": "raise",
             "reference": self.config.reference,
@@ -62,6 +74,9 @@ class AlarmNode(BaseCDAGNode):
             "alarm_class": self.config.alarm_class,
             "labels": self.config.labels if self.config.labels else [],
         }
+        # Render vars
+        if self.config.vars:
+            msg["vars"] = {v.name: q(v.value) for v in self.config.vars}
         svc = get_service()
         svc.publish(
             orjson.dumps(msg), stream=f"dispose.{self.config.pool}", partition=self.config.partition
