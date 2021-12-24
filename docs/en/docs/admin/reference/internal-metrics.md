@@ -73,41 +73,6 @@ Supports the following tags:
 | ----------- | ----------------------------------------------------------------------- | ----------------- | ----------------------------------------------------------- |
 | rpc_call    | method (method name), called_service (name of the service being called) | http_client.fetch | The number of calls to a specific method in a given service |
 
-### NSQ client metrics
-
-The client is used to work with the service queue - NSQD.
-Used for two options:
-
-- Subscription ( subscribe) on topic ( topic). For new messages
-- Sending ( pub, publich) new messages in the topic ( topic)
-
-The client provides the following metrics:
-
-| Metric name                   | Tag value                                 | A place           | Physical meaning                                                |
-| ----------------------------- | ----------------------------------------- | ----------------- | --------------------------------------------------------------- |
-| `nsq_msg_in_<topic>`          | {{ no }}                          | Service.subscribe | Number of received (from topic) messages                        |
-| `nsq_msg_decode_fail_<topic>` | {{ no }}                          | Service.subscribe | The number of received messages when decoding an error occurred |
-| `nsq_msg_processed_<topic>`   | {{ no }}                          | Service.subscribe | The number of processed messages                                |
-| `nsq_msg_deferred_<topic>`    | {{ no }}                          | Service.subscribe |
-| error                         | `type:nsqlookupd_query_error_code_<code>` | reader            | Error when accessing HTTPLookupD                                |
-| error                         | `type:nsqlookupd_invalid_json_<code>`     | reader            | Error decoding a message received from HTTPLookupD              |
-
-### NSQ TopicQueue metrics
-
-TopicQueue is the service's internal buffering queue between NSQ
-message producing threads and the NSQ publisher.
-
-The TopicQueue provides following metrics:
-
-| Metric Name           | Tag value      | A place    | Physical meaning                                                                   |
-| --------------------- | -------------- | ---------- | ---------------------------------------------------------------------------------- |
-| nsq_msg_put           | `topic:<name>` | TopicQueue | Amount of messages submitted to TopicQueue                                         |
-| nsq_msg_put_size      | `topic:<name>` | TopicQueue | Total size of messages submitted to TopicQueue (in octets)                         |
-| nsq_msg_get           | `topic:<name>` | TopicQueue | Amount of messages fetched from TopicQueue                                         |
-| nsq_msg_get_size      | `topic:<name>` | TopicQueue | Total size of messages fetched from TopicQueue (in octets)                         |
-| nsq_msg_requeued      | `topic:<name>` | TopicQueue | Amount of messages returned to TopicQueue due to publishing errors                 |
-| nsq_msg_requeued_size | `topic:<name>` | TopicQueue | Total size of messages returned to TopicQueue due to publishing errors (in octets) |
-
 ### DCS metrics
 
 DCS client is used to work with the services service Consul.
