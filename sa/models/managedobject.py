@@ -1938,7 +1938,7 @@ class ManagedObject(NOCModel):
         return stream, 0
 
     @cachetools.cached(_e_labels_cache, key=lambda x: str(x.id), lock=e_labels_lock)
-    def get_effective_labels(self):
+    def get_effective_labels(self) -> List[str]:
         return Label.merge_labels(ManagedObject.iter_effective_labels(self))
 
     @classmethod

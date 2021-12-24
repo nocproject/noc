@@ -8,7 +8,6 @@
 # Python modules
 import datetime
 import logging
-from itertools import filterfalse
 
 # Third-party modules
 from mongoengine.document import Document
@@ -173,7 +172,7 @@ class Interface(Document):
         try:
             super().save(*args, **kwargs)
         except Exception as e:
-            raise ValueError("%s: %s" % (e.__doc__, e.message))
+            raise ValueError(f"{e.__doc__}: {str(e)}")
         if not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
             ServiceSummary.refresh_object(self.managed_object)
 
@@ -464,10 +463,11 @@ class Interface(Document):
         yield Label.get_effective_regex_labels("interface_name", instance.name)
         yield Label.get_effective_regex_labels("interface_description", instance.description or "")
         if instance.managed_object:
-            yield from filterfalse(
-                lambda x: x == "noc::is_linked::=",
-                instance.managed_object.get_effective_labels(),
-            )
+            yield [
+                ll
+                for ll in instance.managed_object.get_effective_labels()
+                if ll != "noc::is_linked::="
+            ]
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
         if instance.is_linked:
