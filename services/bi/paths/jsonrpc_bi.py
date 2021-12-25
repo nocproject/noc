@@ -25,22 +25,43 @@ RequestHandler = namedtuple("RequestHandler", ["current_user"])
 router = APIRouter()
 
 
-@router.post("/api/bi/")
-@router.post("/api/bi")
-def api_bi(req: JSONRemoteProcedureCall, current_user: User = Depends(get_current_user)):
-    if req.method not in BIAPI.get_methods():
-        return {"error": f"Invalid method: '{req.method}'", "id": req.id}
-    service = get_service()
-    request_handler = RequestHandler(current_user)
-    api = BIAPI(service, None, request_handler)
-    api_method = getattr(api, req.method)
-    result = None
-    error = None
-    try:
-        result = api_method(*req.params)
-    except NOCError as e:
-        error = f"Failed: {e}"
-    except Exception as e:
-        error_report()
-        error = f"Failed: {e}"
-    return {"result": result, "error": error, "id": req.id}
+class JSONRPCAPI(object):
+    def __init__(self, router: APIRouter):
+        self.router = router
+        self.api_name = "datastream"
+        self.setup_routes()
+
+    def api_bi(self, req: JSONRemoteProcedureCall, current_user: User = Depends(get_current_user)):
+        if req.method not in BIAPI.get_methods():
+            return {"error": f"Invalid method: '{req.method}'", "id": req.id}
+        service = get_service()
+        request_handler = RequestHandler(current_user)
+        api = BIAPI(service, None, request_handler)
+        api_method = getattr(api, req.method)
+        result = None
+        error = None
+        try:
+            result = api_method(*req.params)
+        except NOCError as e:
+            error = f"Failed: {e}"
+        except Exception as e:
+            error_report()
+            error = f"Failed: {e}"
+        return {"result": result, "error": error, "id": req.id}
+
+    def setup_routes(self):
+        for path in ("/api/bi/", "/api/bi"):
+            self.router.add_api_route(
+                path=path,
+                endpoint=self.api_bi,
+                methods=["POST"],
+                # dependencies=[Depends(self.get_verify_token_hander(ds))],
+                # response_model=ds.model,
+                # tags=self.openapi_tags,
+                # name=f"{self.api_name}_get_{ds.name}",
+                # description=f"Getinng info {ds.name} datastream",
+            )
+
+
+# Install endpoints
+JSONRPCAPI(router)
