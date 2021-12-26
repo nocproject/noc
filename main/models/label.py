@@ -171,7 +171,7 @@ class Label(Document):
     # Object id in remote system
     remote_id = StringField()
     # Caches
-    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=120)
     _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _rx_labels_cache = cachetools.TTLCache(maxsize=20, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
@@ -769,18 +769,18 @@ class Label(Document):
     def get_instance_profile(
         profile_model,
         instance,
-        *args,
+        labels: List[str] = None,
         **kwargs,
     ) -> Optional[str]:
         """
         Return Profile ID for instance if it support Labels Classification
         :param instance:
         :param profile_model:
-        :param args:
+        :param labels: Labels for profile classification
         :param kwargs:
         :return:
         """
-        effective_labels = Label.merge_labels(instance.iter_effective_labels(instance))
+        effective_labels = labels or Label.merge_labels(instance.iter_effective_labels(instance))
         if is_document(instance):
             coll = profile_model._get_collection()
             pipeline = [

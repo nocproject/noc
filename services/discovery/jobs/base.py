@@ -21,7 +21,7 @@ import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from builtins import str, object
 
 # NOC modules
@@ -562,7 +562,14 @@ class DiscoveryCheck(object):
     def handler(self):
         pass
 
-    def update_if_changed(self, obj, values, ignore_empty=None, wait=True, bulk=None):
+    def update_if_changed(
+        self,
+        obj,
+        values: Dict[str, Any],
+        ignore_empty: List[str] = None,
+        wait: bool = True,
+        bulk: Optional[List[str]] = None,
+    ):
         """
         Update fields if changed.
         :param obj: Document instance
@@ -597,7 +604,7 @@ class DiscoveryCheck(object):
                 obj.save(**kwargs)
         return changes
 
-    def log_changes(self, msg, changes):
+    def log_changes(self, msg: str, changes: List[Tuple[str, Any]]):
         """
         Log changes
         :param msg: Message
