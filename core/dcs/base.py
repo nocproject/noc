@@ -280,7 +280,7 @@ class ResolverBase(object):
             await asyncio.wait_for(
                 self.ready_event_async.wait(), timeout or config.dcs.resolution_timeout
             )
-        except asyncio.TimeoutError:
+        except (asyncio.TimeoutError, asyncio.exceptions.TimeoutError):
             metrics["errors", ("type", "dcs_resolver_timeout")] += 1
             if self.critical:
                 self.dcs.set_faulty_status("Failed to resolve %s: Timeout" % self.name)

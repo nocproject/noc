@@ -130,7 +130,7 @@ class MMLBase(BaseCLI):
                 metrics["mml_read_bytes", ("proto", self.name)] += len(r)
                 if self.script.to_track:
                     self.script.push_cli_tracking(r, self.state)
-            except asyncio.TimeoutError:
+            except (asyncio.TimeoutError, asyncio.exceptions.TimeoutError):
                 self.logger.info("Timeout error")
                 metrics["mml_timeouts", ("proto", self.name)] += 1
                 # Stream must be closed to prevent hanging read callbacks

@@ -73,7 +73,7 @@ class SessionStore(object):
         # Running on main service's event loop
         try:
             await asyncio.sleep(timeout)
-        except asyncio.CancelledError:
+        except (asyncio.CancelledError, asyncio.exceptions.CancelledError):
             return
         with self._lock:
             item = self._sessions.get(session)

@@ -67,7 +67,7 @@ class LiftBridgeQueue(object):
         if timeout:
             try:
                 await asyncio.wait_for(self.waiter.wait(), timeout)
-            except asyncio.TimeoutError:
+            except (asyncio.TimeoutError, asyncio.exceptions.TimeoutError):
                 return None
         else:
             await self.waiter.wait()
@@ -111,7 +111,7 @@ class LiftBridgeQueue(object):
         if timeout:
             try:
                 await asyncio.wait_for(self.drain_waiter.wait(), timeout)
-            except asyncio.TimeoutError:
+            except (asyncio.TimeoutError, asyncio.exceptions.TimeoutError):
                 pass
         else:
             await self.drain_waiter.wait()

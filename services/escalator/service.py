@@ -37,7 +37,7 @@ class EscalatorService(TornadoService):
             try:
                 await self.shards[s].shutdown()
                 self.logger.info("Shard %s is down", s)
-            except asyncio.TimeoutError:
+            except (asyncio.TimeoutError, asyncio.exceptions.TimeoutError):
                 self.logger.info("Cannot shutdown shard %s cleanly: Timeout", s)
 
     def apply_shards(self):

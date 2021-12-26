@@ -196,7 +196,7 @@ class RTSPBase(BaseCLI):
                 metrics["cli_read_bytes", ("proto", self.name)] += len(r)
                 if self.script.to_track:
                     self.script.push_cli_tracking(r, self.state)
-            except asyncio.TimeoutError:
+            except (asyncio.TimeoutError, asyncio.exceptions.TimeoutError):
                 self.logger.info("Timeout error")
                 metrics["cli_timeouts", ("proto", self.name)] += 1
                 # IOStream must be closed to prevent hanging read callbacks
