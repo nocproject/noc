@@ -37,7 +37,7 @@ class AlarmCard(BaseCard):
             return a
         else:
             metrics["error", ("type", "no_such_alarm")] += 1
-            return None
+            raise self.NotFoundError()
 
     def get_data(self):
         if not self.object:
