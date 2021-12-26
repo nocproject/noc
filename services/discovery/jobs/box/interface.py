@@ -346,7 +346,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     # ip_unnumbered_subinterface
                     "ifindex": ifindex,
                     # Update effective labels for exists subifaces
-                    "effective_labels": Label.merge_labels(si.iter_effective_labels()),
+                    "effective_labels": Label.merge_labels(SubInterface.iter_effective_labels(si)),
                 },
                 ignore_empty=ignore_empty,
             )
