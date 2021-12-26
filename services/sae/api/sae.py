@@ -18,6 +18,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.capability import Capability
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.main.models.template import Template
 from noc.main.models.extstorage import ExtStorage
 from noc.core.cache.decorator import cachedmethod
@@ -241,15 +242,21 @@ class SAEAPI(API):
         # Build version
         if vendor and platform and version:
             vendor = Vendor.get_by_id(vendor)
+            fw = Firmware.get_by_id(version)
+            platform = Platform.get_by_id(platform)
             version = {
                 "vendor": vendor.code[0] if vendor.code else vendor.name,
-                "platform": Platform.get_by_id(platform).name,
-                "version": Firmware.get_by_id(version).version,
+                "platform": platform.name,
+                "version": fw.version,
             }
             if sw_image:
                 version["image"] = sw_image
             if attrs:
                 version["attributes"] = attrs
+            fwp = FirmwarePolicy.get_effective_policies(fw, platform)
+            if fwp and fwp[0].management in {"cli", "snmp"}:
+                # CSH
+                credentials["access_preference"] = {"cli": "C", "snmp": "S"}
         else:
             version = None
         # Beef processing

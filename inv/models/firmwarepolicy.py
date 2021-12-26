@@ -18,6 +18,7 @@ import cachetools
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.label import Label
 from .firmware import Firmware
 from .platform import Platform
@@ -42,13 +43,15 @@ class ManagementPolicy(EmbeddedDocument):
     protocol = StringField(choices=[("cli", "CLI"), ("snmp", "SNMP"), ("http", "HTTP")])
 
 
+@on_delete
+@on_save
 @Label.model
 class FirmwarePolicy(Document):
     meta = {
         "collection": "noc.firmwarepolicy",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["platform", "firmware"],
+        "indexes": ["platform", "firmware", {"fields": ("firmware", "condition"), "unique": True}],
     }
     # Platform (Matched with get_version)
     platform = PlainReferenceField(Platform, required=False)
@@ -94,6 +97,24 @@ class FirmwarePolicy(Document):
         if fps:
             return list(sorted(fps, key=lambda x: PRIORITY_ORDER.index(x.status)))[0].status
         return None
+
+    def on_save(self):
+        labels = [
+            ll for ll in self.labels if Label.get_effective_setting(ll, "enable_managedobject")
+        ]
+        if not labels:
+            return
+        if (
+            not hasattr(self, "_changed_fields")
+            or "labels" in self._changed_fields
+            or "firmware" in self._changed_fields
+            or "condition" in self._changed_fields
+        ):
+            self.set_labels(labels)
+
+    def on_delete(self):
+        if self.labels:
+            self.reset_labels()
 
     @classmethod
     def get_recommended_version(cls, platform):
@@ -153,3 +174,47 @@ class FirmwarePolicy(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_firmwarepolicy")
+
+    def get_affected_firmwares(self) -> List["Firmware"]:
+        r = [
+            fw
+            for fw in Firmware.objects.filter(profile=self.firmware.profile)
+            if self.is_fw_match(fw)
+        ]
+        return r
+
+    def get_affected_managed_objects_ids(self) -> List[int]:
+        from noc.sa.models.managedobject import ManagedObject
+
+        firmwares = self.get_affected_firmwares()
+        if not firmwares:
+            return []
+        return list(ManagedObject.objects.filter(version__in=firmwares).values_list("id"))
+
+    def set_labels(self, labels: List[str] = None):
+        from django.db import connection
+
+        fws = [str(fw.id) for fw in self.get_affected_firmwares()]
+        sql = f"""
+        UPDATE sa_managedobject
+        SET effective_labels=ARRAY (
+        SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e)
+        )
+        WHERE version = ANY (%s::text[])
+        """
+        cursor = connection.cursor()
+        cursor.execute(sql, [labels or self.labels, fws])
+
+    def reset_labels(self):
+        from django.db import connection
+
+        fws = [str(fw.id) for fw in self.get_affected_firmwares()]
+
+        sql = f"""
+        UPDATE sa_managedobject
+         SET effective_labels=array(
+         SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[])
+         ) WHERE effective_labels && %s::varchar[] AND version = ANY (%s::text[])
+         """
+        cursor = connection.cursor()
+        cursor.execute(sql, [self.labels, self.labels, fws])
