@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Iterable, List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -15,12 +15,15 @@ from mongoengine.fields import StringField, IntField, ListField, ReferenceField
 # NOC modules
 from noc.config import config
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.change.decorator import change
 from noc.sa.models.service import Service
 from noc.vc.models.l2domain import L2Domain
+from noc.vc.models.vcfilter import VCFilter
+from noc.main.models.label import Label
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
 from .interfaceprofile import InterfaceProfile
@@ -49,6 +52,7 @@ TUNNEL_TYPES = (
 )
 
 
+@Label.model
 @change
 class SubInterface(Document):
     meta = {
@@ -66,6 +70,8 @@ class SubInterface(Document):
             "forwarding_instance",
             "service",
             {"fields": ["ipv4_addresses"], "sparse": True},
+            "labels",
+            "effective_labels",
         ],
     }
     interface = PlainReferenceField(Interface)
@@ -98,9 +104,12 @@ class SubInterface(Document):
     project = ForeignKeyField(Project)
     #
     service = ReferenceField(Service)
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     def __str__(self):
-        return "%s %s" % (self.interface.managed_object.name, self.name)
+        return f"{self.managed_object.name} {self.name}"
 
     @classmethod
     def get_by_id(cls, id) -> Optional["SubInterface"]:
@@ -122,8 +131,33 @@ class SubInterface(Document):
     def effective_vc_domain(self):
         return self.interface.effective_vc_domain
 
+    @property
+    def effective_vlan_domain(self):
+        if self.l2_domain:
+            return self.l2_domain
+        return self.managed_object.l2_domain
+
     def get_profile(self):
         if self.profile:
             return self.profile
         else:
             return self.interface.profile
+
+    @classmethod
+    def can_set_label(cls, label):
+        return False
+
+    @classmethod
+    def iter_effective_labels(cls, instance: "SubInterface") -> Iterable[List[str]]:
+        if instance.tagged_vlans:
+            lazy_tagged_vlans_labels = list(
+                VCFilter.iter_lazy_labels(instance.tagged_vlans, "tagged")
+            )
+            yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
+        if instance.untagged_vlan:
+            lazy_untagged_vlans_labels = list(
+                VCFilter.iter_lazy_labels([instance.untagged_vlan], "untagged")
+            )
+            yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
+        if instance.ipv4_addresses:
+            yield list(PrefixTable.iter_lazy_labels(instance.ipv4_addresses))

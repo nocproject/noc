@@ -51,7 +51,7 @@ class VCFilter(NOCModel):
     description = models.TextField("Description", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _match_cache = cachetools.TTLCache(maxsize=50, ttl=30)
+    _match_cache = cachetools.TTLCache(maxsize=50, ttl=120)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
