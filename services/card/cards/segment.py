@@ -14,7 +14,6 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.objectstatus import ObjectStatus
-from noc.vc.models.vlan import VLAN
 
 
 class SegmentCard(BaseCard):
