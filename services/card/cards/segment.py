@@ -71,9 +71,6 @@ class SegmentCard(BaseCard):
             ]
         # Calculate VLANs
         vlans = []
-        if self.object.vlan_border:
-            vlans = list(VLAN.objects.filter(segment=self.object.id).order_by("vlan"))
-        #
         return {
             "object": self.object,
             "managed_objects": sorted(objects, key=operator.itemgetter("name")),
