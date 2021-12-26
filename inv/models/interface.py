@@ -497,5 +497,3 @@ class Interface(Document):
 # Avoid circular references
 from noc.sa.models.servicesummary import ServiceSummary
 from .link import Link
-from noc.main.models.prefixtable import PrefixTable
-from noc.vc.models.vcfilter import VCFilter
