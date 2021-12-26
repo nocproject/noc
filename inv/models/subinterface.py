@@ -70,6 +70,8 @@ class SubInterface(Document):
             "forwarding_instance",
             "service",
             {"fields": ["ipv4_addresses"], "sparse": True},
+            "labels",
+            "effective_labels",
         ],
     }
     interface = PlainReferenceField(Interface)
@@ -107,7 +109,7 @@ class SubInterface(Document):
     effective_labels = ListField(StringField())
 
     def __str__(self):
-        return "%s %s" % (self.interface.managed_object.name, self.name)
+        return f"{self.managed_object.name} {self.name}"
 
     @classmethod
     def get_by_id(cls, id) -> Optional["SubInterface"]:
@@ -146,7 +148,7 @@ class SubInterface(Document):
         return False
 
     @classmethod
-    def iter_effective_labels(cls, instance: "Interface") -> Iterable[List[str]]:
+    def iter_effective_labels(cls, instance: "SubInterface") -> Iterable[List[str]]:
         if instance.tagged_vlans:
             lazy_tagged_vlans_labels = list(
                 VCFilter.iter_lazy_labels(instance.tagged_vlans, "tagged")

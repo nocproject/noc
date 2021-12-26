@@ -10,7 +10,7 @@ from collections import defaultdict
 from functools import partial
 
 # Third-party modules
-from typing import Dict, List, Tuple, Set
+from typing import Dict, List, Tuple, Set, Any, Optional
 
 # NOC modules
 from noc.core.text import ranges_to_list
@@ -72,11 +72,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.get_interface_profile = partial(Label.get_instance_profile, InterfaceProfile)
         # @todo bulk
         self.confd_interface_profile_map = List[Tuple[str, InterfaceProfile]]
-        self.interface_macs = set()
+        self.interface_macs: Set[str] = set()
         self.seen_interfaces = []
-        self.vrf_artefact = {}  # name -> {name:, type:, rd:}
+        self.vrf_artefact: Dict[str, Dict[str, Any]] = {}  # name -> {name:, type:, rd:}
         self.prefix_artefact = {}
-        self.interface_prefix_artefact = []
+        self.interface_prefix_artefact: List[str] = []
         self.interface_assigned_vlans: Set[int] = set()  # @todo l2domain
         self.is_confdb_source = False  # Set True if Interface source is ConfDB
 
@@ -93,7 +93,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             # Apply forwarding instance
             forwarding_instance = self.submit_forwarding_instance(
                 name=fi["forwarding_instance"],
-                type=fi["type"],
+                fi_type=fi["type"],
                 rd=fi.get("rd"),
                 rt_export=fi.get("rt_export"),
                 rt_import=fi.get("rt_import"),
@@ -121,7 +121,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 iface = self.submit_interface(
                     name=i["name"],
                     default_name=i.get("default_name"),
-                    type=i["type"],
+                    i_type=i["type"],
                     mac=mac,
                     description=i.get("description"),
                     aggregated_interface=agg,
@@ -170,6 +170,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 self.cleanup_subinterfaces(
                     forwarding_instance, iface, [si["name"] for si in i["subinterfaces"]]
                 )
+                # Update effective_labels
+                if hasattr(iface, "_refresh_labels"):
+                    iface.save()
                 # Perform interface classification
                 self.interface_classification(iface)
                 # Store for future collation
@@ -181,7 +184,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         # Delete hanging interfaces
         self.cleanup_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
-        self.cleanup_forwarding_instances(fi["forwarding_instance"] for fi in result)
+        self.cleanup_forwarding_instances([fi["forwarding_instance"] for fi in result])
         self.resolve_properties()
         self.update_caps(
             {"DB | Interfaces": Interface.objects.filter(managed_object=self.object.id).count()},
@@ -195,7 +198,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
         self.set_artefact("interface_assigned_vlans", self.interface_assigned_vlans)
 
-    def submit_forwarding_instance(self, name, type, rd, rt_export, rt_import, vr, vpn_id=None):
+    def submit_forwarding_instance(self, name, fi_type, rd, rt_export, rt_import, vr, vpn_id=None):
         if name == "default":
             return None
         rt_export = rt_export or []
@@ -207,7 +210,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             changes = self.update_if_changed(
                 forwarding_instance,
                 {
-                    "type": type,
+                    "type": fi_type,
                     "name": name,
                     "vpn_id": vpn_id,
                     "rd": rd,
@@ -215,13 +218,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "rt_import": rt_import,
                 },
             )
-            self.log_changes("Forwarding instance '%s' has been changed" % name, changes)
+            self.log_changes(f"Forwarding instance '{name}' has been changed", changes)
         else:
-            self.logger.info("Create forwarding instance '%s' (%s)", name, type)
+            self.logger.info("Create forwarding instance '%s' (%s)", name, fi_type)
             forwarding_instance = ForwardingInstance(
                 managed_object=self.object.id,
                 name=name,
-                type=type,
+                type=fi_type,
                 vpn_id=vpn_id,
                 rd=rd,
                 rt_export=rt_export,
@@ -241,15 +244,15 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     def submit_interface(
         self,
-        name,
-        type,
-        default_name=None,
-        mac=None,
-        description=None,
+        name: str,
+        i_type: str,
+        default_name: Optional[str] = None,
+        mac: Optional[str] = None,
+        description: Optional[str] = None,
         aggregated_interface=None,
-        enabled_protocols=None,
-        ifindex=None,
-        hints=None,
+        enabled_protocols: List[str] = None,
+        ifindex: Optional[int] = None,
+        hints: List[str] = None,
     ):
         enabled_protocols = enabled_protocols or []
         iface = self.get_interface_by_name(name)
@@ -262,7 +265,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 iface,
                 {
                     "default_name": default_name,
-                    "type": type,
+                    "type": i_type,
                     "mac": mac,
                     "description": description,
                     "aggregated_interface": aggregated_interface,
@@ -272,14 +275,14 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 },
                 ignore_empty=ignore_empty,
             )
-            self.log_changes("Interface '%s' has been changed" % name, changes)
+            self.log_changes(f"Interface '{name}' has been changed", changes)
         else:
             # Create interface
             self.logger.info("Creating interface '%s'", name)
             iface = Interface(
                 managed_object=self.object.id,
                 name=name,
-                type=type,
+                type=i_type,
                 mac=mac,
                 description=description,
                 aggregated_interface=aggregated_interface,
@@ -294,24 +297,31 @@ class InterfaceCheck(PolicyDiscoveryCheck):
 
     def submit_subinterface(
         self,
-        forwarding_instance,
-        interface,
-        name,
-        description=None,
-        mac=None,
-        vlan_ids=None,
-        enabled_afi=[],
-        ipv4_addresses=[],
-        ipv6_addresses=[],
-        iso_addresses=[],
-        vpi=None,
-        vci=None,
-        enabled_protocols=[],
-        untagged_vlan=None,
-        tagged_vlans=[],
-        ifindex=None,
+        forwarding_instance: "ForwardingInstance",
+        interface: "Interface",
+        name: str,
+        description: Optional[str] = None,
+        mac: Optional[str] = None,
+        vlan_ids: List[int] = None,
+        enabled_afi: List[str] = None,
+        ipv4_addresses: List[str] = None,
+        ipv6_addresses: List[str] = None,
+        iso_addresses: List[str] = None,
+        vpi: Optional[int] = None,
+        vci: Optional[int] = None,
+        enabled_protocols: List[str] = None,
+        untagged_vlan: Optional[int] = None,
+        tagged_vlans: List[int] = None,
+        ifindex: Optional[int] = None,
     ):
         mac = mac or interface.mac
+        enabled_afi, enabled_protocols = enabled_afi or [], enabled_protocols or []
+        ipv4_addresses, ipv6_addresses, iso_addresses = (
+            ipv4_addresses or [],
+            ipv6_addresses or [],
+            iso_addresses or [],
+        )
+        tagged_vlans = tagged_vlans or []
         si = self.get_subinterface(interface, name)
         if si:
             ignore_empty = ["ifindex"]
@@ -335,10 +345,14 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "tagged_vlans": tagged_vlans,
                     # ip_unnumbered_subinterface
                     "ifindex": ifindex,
+                    # Update effective labels for exists subifaces
+                    "effective_labels": Label.merge_labels(si.iter_effective_labels()),
                 },
                 ignore_empty=ignore_empty,
             )
-            self.log_changes("Subinterface '%s' has been changed" % name, changes)
+            if changes:
+                interface._refresh_labels = True
+            self.log_changes(f"Subinterface '{name}' has been changed", changes)
         else:
             self.logger.info("Creating subinterface '%s'", name)
             si = SubInterface(
@@ -361,6 +375,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 ifindex=ifindex,
             )
             si.save()
+            interface._refresh_labels = True
         if mac:
             self.interface_macs.add(mac)
         if untagged_vlan:
@@ -369,13 +384,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             self.interface_assigned_vlans.update(set(vlan_ids))
         return si
 
-    def cleanup_forwarding_instances(self, fi):
+    def cleanup_forwarding_instances(self, fi: List[str]):
         """
         Delete hanging forwarding instances
         :param fi: generator yielding instance names
         :return:
         """
-        db_fi = set(
+        db_fi: Set[str] = set(
             i["name"]
             for i in ForwardingInstance.objects.filter(managed_object=self.object.id).only("name")
         )
@@ -384,13 +399,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             for dfi in ForwardingInstance.objects.filter(managed_object=self.object.id, name=i):
                 dfi.delete()
 
-    def cleanup_interfaces(self, interfaces):
+    def cleanup_interfaces(self, interfaces: List[str]):
         """
         Delete hanging interfaces
         :param interfaces: generator yielding interfaces names
         :return:
         """
-        db_iface = set(
+        db_iface: Set[str] = set(
             i["name"] for i in Interface.objects.filter(managed_object=self.object.id).only("name")
         )
         for i in db_iface - set(interfaces):
@@ -399,7 +414,12 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if di:
                 di.delete()
 
-    def cleanup_subinterfaces(self, forwarding_instance, interface, subinterfaces):
+    def cleanup_subinterfaces(
+        self,
+        forwarding_instance: "ForwardingInstance",
+        interface: "Interface",
+        subinterfaces: List[str],
+    ):
         """
         Delete hanging subinterfaces
         :return:
@@ -411,9 +431,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         qs = SubInterface.objects.filter(
             managed_object=self.object.id, interface=interface.id, forwarding_instance=fi
         )
-        db_siface = set(i["name"] for i in qs.only("name"))
+        db_siface: Set[str] = set(i["name"] for i in qs.only("name"))
         for i in db_siface - set(subinterfaces):
-            self.logger.info("Removing subinterface %s" % i)
+            self.logger.info("Removing subinterface %s", i)
             dsi = SubInterface.objects.filter(
                 managed_object=self.object.id, interface=interface.id, name=i
             ).first()
@@ -465,7 +485,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         if iface.profile_locked:
             return
         try:
-            p_id = self.get_interface_profile(iface)
+            p_id = self.get_interface_profile(iface, labels=iface.effective_labels)
         except NotImplementedError:
             self.logger.error("Uses not implemented rule")
             return
@@ -546,7 +566,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 iface.save()  # Signals will be sent
 
     @staticmethod
-    def in_lag(x):
+    def in_lag(x) -> bool:
         return "aggregated_interface" in x and bool(x["aggregated_interface"])
 
     def get_policy(self):
@@ -555,7 +575,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
     def get_data_from_script(self):
         return self.object.scripts.get_interfaces()
 
-    def get_data_from_confdb(self):
+    def get_data_from_confdb(self) -> List[Dict[str, Any]]:
         self.is_confdb_source = True
         # Get interfaces and parse result
         interfaces = {d["if_name"]: d for d in self.confdb.query(self.IF_QUERY)}
@@ -596,7 +616,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 r["interfaces"] = {}
             if_name = d["if_name"]
             p_iface = interfaces.get(if_name)
-            iface = r["interfaces"].get(if_name)
+            iface: Dict[str, Any] = r["interfaces"].get(if_name)
             if iface is None:
                 iface = {
                     "name": if_name,
@@ -620,7 +640,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                             iface["enabled_protocols"] += ["LACP"]
                     if if_name in aggregated:
                         iface["aggregated_interface"] = aggregated[if_name]
-            unit = iface["subinterfaces"].get(d["unit"])
+            unit: Dict[str, Any] = iface["subinterfaces"].get(d["unit"])
             if unit is None:
                 unit = {"name": d["unit"], "enabled_afi": []}
                 iface["subinterfaces"][d["unit"]] = unit

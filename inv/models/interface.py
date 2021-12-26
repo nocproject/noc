@@ -454,6 +454,8 @@ class Interface(Document):
 
     @classmethod
     def iter_effective_labels(cls, instance: "Interface") -> Iterable[List[str]]:
+        from noc.inv.models.subinterface import SubInterface
+
         yield list(instance.labels or [])
         if instance.hints:
             # Migrate to labels
@@ -473,19 +475,23 @@ class Interface(Document):
         if instance.is_linked:
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]
-        for si in instance.parent.subinterface_set.filter(enabled_afi__in=["BRIDGE", "IPv4"]):
-            if si.tagged_vlans:
-                lazy_tagged_vlans_labels = list(
-                    VCFilter.iter_lazy_labels(si.tagged_vlans, "tagged")
-                )
-                yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
-            if si.untagged_vlan:
-                lazy_untagged_vlans_labels = list(
-                    VCFilter.iter_lazy_labels([si.untagged_vlan], "untagged")
-                )
-                yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
-            if si.ipv4_addresses:
-                yield list(PrefixTable.iter_lazy_labels(si.ipv4_addresses))
+        for el in SubInterface.objects.filter(
+            enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent
+        ).scalar("effective_labels"):
+            yield el
+        # for ipv4_addresses, tagged_vlans, untagged_vlan in SubInterface.objects.filter(
+        #     enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent
+        # ).scalar("ipv4_addresses", "tagged_vlans", "untagged_vlan"):
+        #     if tagged_vlans:
+        #         lazy_tagged_vlans_labels = list(VCFilter.iter_lazy_labels(tagged_vlans, "tagged"))
+        #         yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
+        #     if untagged_vlan:
+        #         lazy_untagged_vlans_labels = list(
+        #             VCFilter.iter_lazy_labels([untagged_vlan], "untagged")
+        #         )
+        #         yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
+        #     if ipv4_addresses:
+        #         yield list(PrefixTable.iter_lazy_labels(ipv4_addresses))
 
 
 # Avoid circular references

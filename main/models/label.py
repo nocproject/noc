@@ -171,7 +171,7 @@ class Label(Document):
     # Object id in remote system
     remote_id = StringField()
     # Caches
-    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=120)
     _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _rx_labels_cache = cachetools.TTLCache(maxsize=20, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
