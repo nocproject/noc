@@ -147,8 +147,8 @@ class AlarmHeatCard(BaseCard):
             for x, y in o_data:
                 data = {}
                 for mo, w in o_data[x, y]:
-                    if mo not in data:
-                        data[mo] = w
+                    if mo["name"] not in data:
+                        data[mo["name"]] = w
                 data = sorted(data, key=lambda z: data[z], reverse=True)[: self.TOOLTIP_LIMIT]
                 points += [
                     geojson.Feature(
@@ -156,7 +156,8 @@ class AlarmHeatCard(BaseCard):
                         properties={
                             "alarms": len(t_data[x, y]),
                             "objects": [
-                                {"id": mo.id, "name": mo.name, "address": mo.address} for mo in mos
+                                {"id": mo["id"], "name": mo["name"], "address": mo["address"]}
+                                for mo in mos
                             ],
                         },
                     )
