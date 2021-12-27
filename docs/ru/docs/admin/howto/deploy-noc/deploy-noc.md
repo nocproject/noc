@@ -71,8 +71,6 @@
 	* nats
 	* nginx
 	* noc
-	* nsqd **_(deprecated in version 20.4)_**
-	* nsqlookupd **_(deprecated in version 20.4)_**
 	* [ping](https://docs.getnoc.com/master/en/admin/reference/services/ping)
 	* postgres
 	* [sae](https://docs.getnoc.com/master/en/admin/reference/services/sae/)
