@@ -17,7 +17,7 @@ from noc.core.debug import error_report
 from noc.core.error import NOCError
 from noc.core.service.deps.user import get_current_user
 from noc.core.service.loader import get_service
-from noc.core.service.models.jsonrpc import JSONRemoteProcedureCall
+from noc.core.service.models.jsonrpc import JSONRemoteProcedureCall, JSONRPCResponse
 from noc.services.bi.api.bi import BIAPI
 
 RequestHandler = namedtuple("RequestHandler", ["current_user"])
@@ -28,7 +28,9 @@ router = APIRouter()
 class JSONRPCAPI(object):
     def __init__(self, router: APIRouter):
         self.router = router
-        self.api_name = "datastream"
+        self.openapi_tags = ["JSON-RPC API"]
+        self.api_name = "api_bi"
+        self.api_description = "Service BI API"
         self.setup_routes()
 
     def api_bi(self, req: JSONRemoteProcedureCall, current_user: User = Depends(get_current_user)):
@@ -55,11 +57,10 @@ class JSONRPCAPI(object):
                 path=path,
                 endpoint=self.api_bi,
                 methods=["POST"],
-                # dependencies=[Depends(self.get_verify_token_hander(ds))],
-                # response_model=ds.model,
-                # tags=self.openapi_tags,
-                # name=f"{self.api_name}_get_{ds.name}",
-                # description=f"Getinng info {ds.name} datastream",
+                response_model=JSONRPCResponse,
+                tags=self.openapi_tags,
+                name=self.api_name,
+                description=self.api_description,
             )
 
 
