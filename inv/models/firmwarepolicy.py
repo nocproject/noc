@@ -195,7 +195,7 @@ class FirmwarePolicy(Document):
         from django.db import connection
 
         fws = [str(fw.id) for fw in self.get_affected_firmwares()]
-        sql = f"""
+        sql = """
         UPDATE sa_managedobject
         SET effective_labels=ARRAY (
         SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e)
@@ -210,7 +210,7 @@ class FirmwarePolicy(Document):
 
         fws = [str(fw.id) for fw in self.get_affected_firmwares()]
 
-        sql = f"""
+        sql = """
         UPDATE sa_managedobject
          SET effective_labels=array(
          SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[])
