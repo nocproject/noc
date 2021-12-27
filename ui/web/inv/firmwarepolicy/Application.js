@@ -99,7 +99,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                         ["n", "Not recommended"],
                         ["d", "Denied"]
                     ],
-                    value: "Acceptable",
+                    value: "a",
                     uiStyle: "medium"
                 },
                 {

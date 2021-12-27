@@ -17,7 +17,8 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
         },
         {
             name: "status",
-            type: "string"
+            type: "string",
+            defaultValue: "a"
         },
         {
             name: "firmware",
@@ -25,7 +26,8 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
         },
         {
             name: "condition",
-            type: "string"
+            type: "string",
+            defaultValue: "="
         },
         {
             name: "platform",
