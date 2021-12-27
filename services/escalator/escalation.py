@@ -470,6 +470,9 @@ class EscalationSequence(BaseSequence):
             if not item.is_already_escalated:
                 continue
             alarm = self.alarm_ids[item.alarm]
+            if not alarm.escalation_tt:
+                # Already appended on top tt
+                continue
             tt_name, c_tt_id = alarm.escalation_tt.split(":")
             cts = TTSystem.get_by_name(tt_name)
             if not cts:
