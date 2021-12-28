@@ -1,6 +1,6 @@
 # [discovery] section
 
-Discovery service configuration
+[Discovery](../services/discovery.md) service configuration
 
 ## max_threads
 

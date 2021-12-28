@@ -1,6 +1,6 @@
 # [datasource] section
 
-Datasource service configuration
+[Datasource](../services/datasource.md) service configuration
 
 ## chunk_size
 

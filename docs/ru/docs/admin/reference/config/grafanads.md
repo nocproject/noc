@@ -1,6 +1,6 @@
 # [grafanads] section
 
-Grafanads service configuration
+[Grafanads](../services/grafanads.md) service configuration
 
 ## db_threads
 

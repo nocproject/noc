@@ -1,6 +1,6 @@
 # [classifier] section
 
-Classifier service configuration
+[Classifier](../services/classifier.md) service configuration
 
 ## lookup_handler
 

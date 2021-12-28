@@ -1,6 +1,6 @@
 # [bi] section
 
-Bi service configuration
+[Bi](../services/bi.md) service configuration
 
 ## language
 

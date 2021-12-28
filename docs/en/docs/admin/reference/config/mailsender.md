@@ -1,6 +1,6 @@
 # [mailsender] section
 
-Mailsender service configuration
+[Mailsender](../services/mailsender.md) service configuration
 
 ## smtp_server
 

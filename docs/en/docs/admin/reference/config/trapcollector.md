@@ -1,6 +1,6 @@
 # [trapcollector] section
 
-Trapcollector service configuration
+[Trapcollector](../services/trapcollector.md) service configuration
 
 ## listen
 

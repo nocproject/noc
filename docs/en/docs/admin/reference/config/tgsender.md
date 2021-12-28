@@ -1,6 +1,6 @@
 # [tgsender] section
 
-Tgsender service configuration
+[Tgsender](../services/tgsender.md) service configuration
 
 ## token
 

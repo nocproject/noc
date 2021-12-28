@@ -1,6 +1,6 @@
 # [activator] section
 
-Activator service configuration
+[Activator](../services/activator.md) service configuration
 
 ## tos
 
