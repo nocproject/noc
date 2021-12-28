@@ -1,6 +1,6 @@
 # [datastream] section
 
-Datastream service configuration
+[Datastream](../services/datastream.md) service configuration
 
 ## enable_administrativedomain
 

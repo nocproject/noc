@@ -1,6 +1,6 @@
 # [escalator] section
 
-Escalator service configuration
+[Escalator](../services/escalator.md) service configuration
 
 ## max_threads
 

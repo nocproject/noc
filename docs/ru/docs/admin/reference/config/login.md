@@ -1,6 +1,6 @@
 # [login] section
 
-Login service configuration
+[Login](../services/login.md) service configuration
 
 ## methods
 

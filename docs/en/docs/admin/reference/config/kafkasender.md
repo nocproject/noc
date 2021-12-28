@@ -1,6 +1,6 @@
 # [kafkasender] section
 
-Kafkasender service configuration
+[Kafkasender](../services/kafkasender.md) service configuration
 
 ## bootstrap_servers
 

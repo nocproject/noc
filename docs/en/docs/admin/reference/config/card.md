@@ -1,6 +1,6 @@
 # [card] section
 
-Card service configuration
+[Card](../services/card.md) service configuration
 
 ## language
 

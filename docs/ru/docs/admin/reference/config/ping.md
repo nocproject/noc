@@ -1,6 +1,6 @@
 # [ping] section
 
-Ping service configuration
+[Ping](../services/ping.md) service configuration
 
 ## throttle_threshold
 
