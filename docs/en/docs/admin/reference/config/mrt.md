@@ -1,6 +1,6 @@
 # [mrt] section
 
-Mrt service configuration
+[Mrt](../services/mrt.md) service configuration
 
 ## max_concurrency
 

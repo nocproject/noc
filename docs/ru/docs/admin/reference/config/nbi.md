@@ -1,6 +1,6 @@
 # [nbi] section
 
-Nbi service configuration
+[Nbi](../services/nbi.md) service configuration
 
 ## max_threads
 

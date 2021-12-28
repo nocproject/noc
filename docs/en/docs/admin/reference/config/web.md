@@ -1,6 +1,6 @@
 # [web] section
 
-Web service configuration
+[Web](../services/web.md) service configuration
 
 ## theme
 

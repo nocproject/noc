@@ -1,6 +1,6 @@
 # [correlator] section
 
-Correlator service configuration
+[Correlator](../services/correlator.md) service configuration
 
 ## max_threads
 

@@ -1,6 +1,6 @@
 # [syslogcollector] section
 
-Syslogcollector service configuration
+[Syslogcollector](../services/syslogcollector.md) service configuration
 
 ## listen
 

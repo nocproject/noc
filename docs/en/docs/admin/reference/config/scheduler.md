@@ -1,6 +1,6 @@
 # [scheduler] section
 
-Scheduler service configuration
+[Scheduler](../services/scheduler.md) service configuration
 
 ## max_threads
 

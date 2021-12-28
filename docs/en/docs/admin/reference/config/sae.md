@@ -1,6 +1,6 @@
 # [sae] section
 
-Sae service configuration
+[Sae](../services/sae.md) service configuration
 
 ## db_threads
 

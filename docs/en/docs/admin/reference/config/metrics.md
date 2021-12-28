@@ -1,6 +1,6 @@
 # [metrics] section
 
-`metrics` service configuration
+[metrics](../services/metrics.md) service configuration
 
 ## compact_on_start
 
