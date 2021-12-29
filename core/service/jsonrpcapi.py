@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends
 from noc.aaa.models.user import User
 from noc.core.debug import error_report
 from noc.core.error import NOCError
-from noc.core.service.deps.user import get_current_user
+from noc.core.service.deps.user import get_current_user_or_none
 from noc.core.service.loader import get_service
 from noc.core.service.models.jsonrpc import JSONRemoteProcedureCall, JSONRPCResponse
 
@@ -47,7 +47,7 @@ class JSONRPCAPI(object):
         return [m for m in dir(cls) if getattr(getattr(cls, m), "api", False)]
 
     def api_endpoint(
-        self, req: JSONRemoteProcedureCall, current_user: User = Depends(get_current_user)
+        self, req: JSONRemoteProcedureCall, current_user: User = Depends(get_current_user_or_none)
     ):
         """Endpoint for FastAPI route.
 
