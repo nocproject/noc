@@ -118,6 +118,45 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     }
                 },
                 {
+                    name: "access_preference",
+                    xtype: "combobox",
+                    fieldLabel: __("Access Preference"),
+                    tooltip: __(
+                        "Preference mode with worked profile script. <br/>" +
+                        "!! Work if Device Profile supported. <br/>" +
+                        "Profile (default) - use Object Profile settings <br/>" +
+                        "S - Use only SNMP when access to device" +
+                        "CLI Only - Use only CLI when access to device" +
+                        "SNMP, CLI - Use SNMP, if not avail swithc to CLI" +
+                        "CLI, SNMP - Use CLI, if not avail swithc to SNMP"
+                    ),
+                    allowBlank: true,
+                    store: [
+                        ["S", __("SNMP Only")],
+                        ["C", __("CLI Only")],
+                        ["SC", __("SNMP, CLI")],
+                        ["CS", __("CLI, SNMP")]
+                    ],
+                    listeners: {
+                        render: me.addTooltip
+                    }
+                },
+                {
+                    name: "snmp_rate_limit",
+                    xtype: "numberfield",
+                    fieldLabel: __("SNMP Rate limit"),
+                    tooltip: __(
+                        'Limit SNMP (Query per second).'
+                    ),
+                    allowBlank: true,
+                    hideTrigger: true,
+                    minValue: 0,
+                    maxValue: 99,
+                    listeners: {
+                        render: me.addTooltip
+                    }
+                },
+                {
                     name: "management",
                     xtype: "gridfield",
                     fieldLabel: __("Management"),

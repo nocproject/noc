@@ -8,11 +8,11 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, ListField, EmbeddedDocumentField
+from mongoengine.fields import StringField, ListField, EmbeddedDocumentField, IntField
 from mongoengine.queryset.visitor import Q
 import cachetools
 
@@ -73,6 +73,20 @@ class FirmwarePolicy(Document):
     # Labels
     labels = ListField(StringField(max_length=250))
     effective_labels = ListField(StringField(max_length=250))
+    # Object Discovery Settings
+    access_preference = StringField(
+        "CLI Privilege Policy",
+        max_length=8,
+        choices=[
+            # ("P", "Profile"),
+            ("S", "SNMP Only"),
+            ("C", "CLI Only"),
+            ("SC", "SNMP, CLI"),
+            ("CS", "CLI, SNMP"),
+        ],
+        required=False,
+    )
+    snmp_rate_limit = IntField(default=0)
     #
     management = ListField(EmbeddedDocumentField(ManagementPolicy))
 
@@ -169,7 +183,11 @@ class FirmwarePolicy(Document):
         if platform:
             q |= Q(platform=platform.id)
         fps = FirmwarePolicy.objects.filter(q)
-        return [fp for fp in fps if fp.is_fw_match(version)]
+        return list(
+            sorted(
+                [fp for fp in fps if fp.is_fw_match(version)], key=operator.attrgetter("firmware")
+            )
+        )
 
     @classmethod
     def can_set_label(cls, label):
@@ -218,3 +236,12 @@ class FirmwarePolicy(Document):
          """
         cursor = connection.cursor()
         cursor.execute(sql, [self.labels, self.labels, fws])
+
+    @property
+    def object_settings(self) -> Dict[str, Any]:
+        r = {}
+        if self.access_preference:
+            r["access_preference"] = self.access_preference
+        if self.snmp_rate_limit:
+            r["snmp_rate_limit"] = self.snmp_rate_limit
+        return r

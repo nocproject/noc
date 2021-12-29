@@ -188,7 +188,7 @@ class ManagedObject(NOCModel):
     # Firmware version to upgrade
     # Empty, when upgrade not scheduled
     next_version = DocumentReferenceField(Firmware, null=True, blank=True)
-    object_profile = CachedForeignKey(
+    object_profile: "ManagedObjectProfile" = CachedForeignKey(
         ManagedObjectProfile, verbose_name="Object Profile", on_delete=CASCADE
     )
     description = CharField("Description", max_length=256, null=True, blank=True)
@@ -1687,8 +1687,10 @@ class ManagedObject(NOCModel):
     def get_access_preference(self):
         if self.access_preference == "P":
             return self.object_profile.access_preference
-        else:
-            return self.access_preference
+        if self.version:
+            fw_settings = self.version.get_effective_discovery_settings()
+            return fw_settings.get("access_preference", self.object_profile.snmp_rate_limit)
+        return self.access_preference
 
     def get_event_processing_policy(self):
         if self.event_processing_policy == "P":
@@ -1901,6 +1903,9 @@ class ManagedObject(NOCModel):
         """
         if self.snmp_rate_limit > 0:
             return self.snmp_rate_limit
+        if self.version:
+            fw_settings = self.version.get_effective_discovery_settings()
+            return fw_settings.get("snmp_rate_limit", self.object_profile.snmp_rate_limit)
         return self.object_profile.snmp_rate_limit
 
     @classmethod

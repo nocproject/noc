@@ -173,10 +173,10 @@ class SAEAPI(API):
             ap_snmp_ro,
             ap_snmp_rw,
             privilege_policy,
-            snmp_rate_limit,
+            o_snmp_rate_limit,
             p_privilege_policy,
             p_snmp_rate_limit,
-            access_preference,
+            o_access_preference,
             p_access_preference,
             beef_storage_id,
             beef_path_template_id,
@@ -208,9 +208,11 @@ class SAEAPI(API):
             raise_privileges = p_privilege_policy == "E"
         else:
             raise_privileges = False
-        if access_preference == "P":
+        access_preference = o_access_preference
+        if o_access_preference == "P":
             access_preference = p_access_preference
-        if not snmp_rate_limit:
+        snmp_rate_limit = o_snmp_rate_limit
+        if not o_snmp_rate_limit:
             snmp_rate_limit = p_snmp_rate_limit
         # Build credentials
         credentials = {
@@ -241,15 +243,22 @@ class SAEAPI(API):
         # Build version
         if vendor and platform and version:
             vendor = Vendor.get_by_id(vendor)
+            firmware = Firmware.get_by_id(version)
             version = {
                 "vendor": vendor.code[0] if vendor.code else vendor.name,
                 "platform": Platform.get_by_id(platform).name,
-                "version": Firmware.get_by_id(version).version,
+                "version": firmware.version,
             }
             if sw_image:
                 version["image"] = sw_image
             if attrs:
                 version["attributes"] = attrs
+            # Apply firmware policy discovery settings
+            fws = firmware.get_effective_discovery_settings()
+            if o_access_preference == "P" and "access_preference" in fws:
+                credentials["access_preference"] = fws["access_preference"]
+            if o_access_preference == "P" and "snmp_rate_limit" in fws:
+                credentials["snmp_rate_limit"] = fws["snmp_rate_limit"]
         else:
             version = None
         # Beef processing
