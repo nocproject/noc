@@ -5,14 +5,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Header, HTTPException
 
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.debug import error_report
 from noc.core.error import NOCError
-from noc.core.service.deps.user import get_current_user_or_none
 from noc.core.service.loader import get_service
 from noc.core.service.models.jsonrpc import JSONRemoteProcedureCall, JSONRPCResponse
 
@@ -32,6 +34,8 @@ class JSONRPCAPI(object):
     openapi_tags = []
     # url-path for API endpoint (without closing /), e.g. /api/service_name
     url_path = None
+    # Indicates whether the REMOTE-HTTP header is required in the request
+    auth_required = False
 
     def __init__(self, router: APIRouter):
         self.service = get_service()
@@ -47,7 +51,9 @@ class JSONRPCAPI(object):
         return [m for m in dir(cls) if getattr(getattr(cls, m), "api", False)]
 
     def api_endpoint(
-        self, req: JSONRemoteProcedureCall, current_user: User = Depends(get_current_user_or_none)
+        self,
+        req: JSONRemoteProcedureCall,
+        remote_user: Optional[str] = Header(None, alias="Remote-User")
     ):
         """Endpoint for FastAPI route.
 
@@ -55,9 +61,21 @@ class JSONRPCAPI(object):
 
         """
 
+        def get_current_user(remote_user):
+            if not self.auth_required:
+                return None
+            if not remote_user:
+                raise HTTPException(403, "Not authorized")
+            user = User.get_by_username(remote_user)
+            if not user:
+                raise HTTPException(403, "Not authorized")
+            if not user.is_active:
+                raise HTTPException(403, "Not authorized")
+            return user
+
+        self.current_user = get_current_user(remote_user)
         if req.method not in self.get_methods():
             return {"error": f"Invalid method: '{req.method}'", "id": req.id}
-        self.current_user = current_user
         api_method = getattr(self, req.method)
         result = None
         error = None

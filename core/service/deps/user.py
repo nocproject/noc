@@ -33,23 +33,6 @@ def get_current_user(remote_user: Optional[str] = Header(None, alias="Remote-Use
     return user
 
 
-def get_current_user_or_none(remote_user: Optional[str] = Header(None, alias="Remote-User")):
-    """
-    Get request current user or None if the header is missing
-
-    :param remote_user:
-    :return:
-    """
-    if not remote_user:
-        return None
-    user = User.get_by_username(remote_user)
-    if not user:
-        raise HTTPException(403, "Not authorized")
-    if not user.is_active:
-        raise HTTPException(403, "Not authorized")
-    return user
-
-
 def get_user_scope(
     scopes: SecurityScopes, remote_user: Optional[str] = Header(None, alias="Remote-User")
 ) -> User:

@@ -67,6 +67,7 @@ class _BIAPI(JSONRPCAPI):
     api_description = "Service BI API"
     openapi_tags = ["JSON-RPC API"]
     url_path = "/api/bi"
+    auth_required = True
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _model_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
