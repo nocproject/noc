@@ -1,9 +1,9 @@
-# ---------------------------------------------------------------------
-# BI API
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# ----------------------------------------------------------------------
+# BI JSON-RPC API endpoint
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
 import datetime
@@ -14,16 +14,18 @@ from collections import defaultdict
 
 # Third-party modules
 import bson
+from fastapi import APIRouter
 import orjson
 import uuid
 from mongoengine.queryset import Q
 import cachetools
 
 # NOC modules
-from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.loader import loader
 from noc.core.bi.dictionaries.loader import loader as dict_loader
+from noc.core.service.api import APIError, api, executor
+from noc.core.service.jsonrpcapi import JSONRPCAPI
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.pm.models.metricscope import MetricScope
@@ -33,6 +35,9 @@ from noc.sa.interfaces.base import DictListParameter, DictParameter, IntParamete
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 from noc.core.translation import ugettext as _
+
+
+router = APIRouter()
 
 # Access items validations
 I_VALID = DictListParameter(
@@ -55,12 +60,14 @@ ds_lock = threading.Lock()
 model_lock = threading.Lock()
 
 
-class BIAPI(API):
-    """
-    Monitoring API
-    """
+class _BIAPI(JSONRPCAPI):
+    """BI API."""
 
-    name = "bi"
+    api_name = "api_bi"
+    api_description = "Service BI API"
+    openapi_tags = ["JSON-RPC API"]
+    url_path = "/api/bi"
+    auth_required = True
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
     _model_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
@@ -230,7 +237,7 @@ class BIAPI(API):
         if not model:
             metrics["error", ("type", "query_invalid_datasource")] += 1
             raise APIError("Invalid datasource")
-        return model.query(query, self.handler.current_user)
+        return model.query(query, self.current_user)
 
     @executor("query")
     @api
@@ -247,7 +254,7 @@ class BIAPI(API):
         :param query:
         :return:
         """
-        user = self.handler.current_user
+        user = self.current_user
         groups = user.groups.values_list("id", flat=True)
         aq = (
             Q(owner=user.id) | Q(owner=None) | Q(access__user=user.id) | Q(access__group__in=groups)
@@ -278,7 +285,7 @@ class BIAPI(API):
         :param id:
         :return:
         """
-        user = self.handler.current_user
+        user = self.current_user
         groups = user.groups.values_list("id", flat=True)
         d = Dashboard.objects.filter(id=id).first()
         if not d:
@@ -333,7 +340,7 @@ class BIAPI(API):
             if d:
                 metrics["error", ("type", "bad_dashboard_name")] += 1
                 raise APIError("Dashboard name exists")
-            d = Dashboard(id=str(bson.ObjectId()), owner=self.handler.current_user)
+            d = Dashboard(id=str(bson.ObjectId()), owner=self.current_user)
         d.format = config.get("format", 1)
         config["id"] = str(d.id)
         d.config = zlib.compress(orjson.dumps(config))
@@ -427,7 +434,7 @@ class BIAPI(API):
                 ]
             }
 
-        result = model.query(query, self.handler.current_user)
+        result = model.query(query, self.current_user)
         tree = {}
         for row in result["result"]:
             names = reversed([x[1:-1] for x in row[0][1:-1].split(",")])
@@ -502,9 +509,9 @@ class BIAPI(API):
         d = self._get_dashboard(id["id"])
         if not d:
             return None
-        if self.handler.current_user.is_superuser:
+        if self.current_user.is_superuser:
             return DAL_ADMIN
-        return d.get_user_access(self.handler.current_user)
+        return d.get_user_access(self.current_user)
 
     def _set_dashboard_access(self, id, items, acc_limit=""):
         """
@@ -520,8 +527,8 @@ class BIAPI(API):
             self.logger.error("Dashboards not find %s", id)
             metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
-        if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
-            self.logger.error("Access for user Dashboards %s", self.handler.current_user)
+        if d.get_user_access(self.current_user) < DAL_ADMIN:
+            self.logger.error("Access for user Dashboards %s", self.current_user)
             metrics["error", ("type", "no_permissions_to_set_permissions")] += 1
             raise APIError("User have no permission to set permissions")
         access = []
@@ -588,3 +595,7 @@ class BIAPI(API):
         if not id.get("id"):
             return False
         return self._set_dashboard_access(id.get("id"), items.get("items"), acc_limit="user")
+
+
+# Install endpoints
+_BIAPI(router)

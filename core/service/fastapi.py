@@ -29,7 +29,8 @@ from .middleware.span import SpanMiddleware
 
 class FastAPIService(BaseService):
     BASE_OPENAPI_TAGS_DOCS = {
-        "internal": "NOC internal API, including healthchecks, monitoring and tooling"
+        "internal": "NOC internal API, including healthchecks, monitoring and tooling",
+        "JSON-RPC API": "Implemented by JSON-RPC specification 1.0",
     }
     # Additional OpenAPI tags docs, tag -> description
     OPENAPI_TAGS_DOCS: Dict[str, str] = {}

@@ -7,16 +7,12 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.ui import UIService
-from noc.services.bi.api.bi import BIAPI
-from noc.core.service.authapi import AuthAPIRequestHandler
+from noc.core.service.fastapi import FastAPIService
 from noc.config import config
 
 
-class BIService(UIService):
+class BIService(FastAPIService):
     name = "bi"
-    api = [BIAPI]
-    api_request_handler = AuthAPIRequestHandler
     use_translation = True
     use_mongo = True
     if config.features.traefik:
