@@ -268,6 +268,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                     ["d", __("Disabled")],
                                     ["e", __("Enable")],
                                     ["c", __("Clear Alarm")],
+                                    ["ca", __("Clear Alarm if Admin Down")],
                                     ["rc", __("Raise & Clear Alarm")]
                                 ],
                                 uiStyle: "medium"
