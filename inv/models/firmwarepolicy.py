@@ -20,6 +20,7 @@ import cachetools
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.label import Label
+from noc.core.cache.base import cache
 from .firmware import Firmware
 from .platform import Platform
 
@@ -112,6 +113,17 @@ class FirmwarePolicy(Document):
         return None
 
     def on_save(self):
+        from noc.sa.models.managedobject import CREDENTIAL_CACHE_VERSION
+
+        access_change = hasattr(self, "_changed_fields") and (
+            "access_preference" in self._changed_fields or "snmp_rate_limit" in self._changed_fields
+        )
+        if access_change or (not hasattr(self, "_changed_fields") and self.access_preference):
+            cache.delete_many(
+                [f"cred-{x}" for x in self.get_affected_managed_objects_ids()],
+                version=CREDENTIAL_CACHE_VERSION,
+            )
+
         labels = [
             ll for ll in self.labels if Label.get_effective_setting(ll, "enable_managedobject")
         ]
@@ -206,7 +218,9 @@ class FirmwarePolicy(Document):
         firmwares = self.get_affected_firmwares()
         if not firmwares:
             return []
-        return list(ManagedObject.objects.filter(version__in=firmwares).values_list("id"))
+        return list(
+            ManagedObject.objects.filter(version__in=firmwares).values_list("id", flat=True)
+        )
 
     def set_labels(self, labels: List[str] = None):
         from django.db import connection
