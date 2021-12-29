@@ -39,27 +39,48 @@ class InterfaceStatusCheck(DiscoveryCheck):
     def get_profiles(cls, x):
         return list(InterfaceProfile.objects.filter(status_discovery__ne="d"))
 
-    def iface_alarm(self, ostatus, astatus, iface):
-        alarm_class = AlarmClass.get_by_name("Network | Link | Link Down")
+    @staticmethod
+    @cachetools.cached({})
+    def get_ac_link_down() -> "AlarmClass":
+        return AlarmClass.get_by_name("Network | Link | Link Down")
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=lambda _: ips_lock)
+    def get_profiles(cls, x):
+        return list(InterfaceProfile.objects.filter(status_discovery__ne="d"))
+
+    def iface_alarm(self, o_status: bool, a_status: bool, iface: "Interface"):
+        """
+        Sync 'Network | Link | Link Down' Alarm Class to correlator
+        * c - Send `clear` message for 'Link Down' message if Oper -> Up
+        * ca - Send `clear` message for 'Link Down' message if Oper -> Up or Admin -> Down
+        * rc - Send `raise` message if Oper -> Down and `clear` if Oper -> Up or Admin -> Down
+        :param o_status:
+        :param a_status:
+        :param iface:
+        :return:
+        """
+        alarm_class = self.get_ac_link_down()
         msg = {
             "reference": f"e:{self.object.id}:{alarm_class.id}:{iface.name}",
             "alarm_class": alarm_class.name,
         }
-        if iface.profile.status_discovery == "ca" and astatus is False:
+        if iface.profile.status_discovery == "ca" and a_status is False:
             msg["$op"] = "clear"
             self.logger.info(
                 f"Clear {alarm_class.name}: on interface {iface.name}. Reason: Admin Status Down"
             )
-        if iface.profile.status_discovery in ["c", "rc", "ca"] and ostatus:
+        if iface.profile.status_discovery in {"c", "rc", "ca"} and o_status:
             msg["$op"] = "clear"
             self.logger.info(f"Clear {alarm_class.name}: on interface {iface.name}")
-        if iface.profile.status_discovery == "rc" and ostatus is False and astatus is True:
+        if iface.profile.status_discovery == "rc" and o_status is False and a_status is True:
             msg["$op"] = "raise"
             msg["vars"] = [
                 {
                     "interface": iface.name,
                 }
             ]
+
             self.logger.info(f"Raise {alarm_class.name}: on interface {iface.name}")
         if msg.get("$op"):
             stream, partition = self.object.alarms_stream_and_partition
@@ -122,11 +143,11 @@ class InterfaceStatusCheck(DiscoveryCheck):
             astatus = i.get("admin_status")
             if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
-                if iface.profile.status_discovery in ["c", "rc", "ca"]:
+                if iface.profile.status_discovery in {"c", "rc", "ca"}:
                     self.iface_alarm(ostatus, astatus, iface)
                 iface.set_oper_status(ostatus)
             if (
-                iface.profile.status_discovery == ["ca"]
+                iface.profile.status_discovery == "ca"
                 and iface.admin_status != astatus
                 and astatus is not None
             ):
