@@ -10,6 +10,7 @@ import os
 import threading
 import operator
 import uuid
+from typing import Dict, Optional, Union
 
 # Third-party modules
 from mongoengine.document import Document
@@ -65,6 +66,7 @@ class Firmware(Document):
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
+    _object_settings_cache = cachetools.TTLCache(100, ttl=600)
 
     def __str__(self):
         return self.full_name if self.full_name else self.version
@@ -110,17 +112,17 @@ class Firmware(Document):
         return r <= 0
 
     def clean(self):
-        self.full_name = "%s %s" % (self.profile.name, self.version)
+        self.full_name = f"{self.profile.name} {self.version}"
         super().clean()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["Firmware"]:
         return Firmware.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["Firmware"]:
         return Firmware.objects.filter(bi_id=id).first()
 
     def to_json(self):
@@ -146,7 +148,7 @@ class Firmware(Document):
         key=lambda p, v, vv: "%s-%s-%s" % (p.id, v.id, vv),
         lock=lambda _: id_lock,
     )
-    def ensure_firmware(cls, profile, vendor, version):
+    def ensure_firmware(cls, profile, vendor, version) -> Optional["Firmware"]:
         """
         Get or create firmware by profile, vendor and version
         :param profile:
@@ -180,3 +182,14 @@ class Firmware(Document):
         if not profile:
             self._profile = self.profile.get_profile()
         return self._profile
+
+    @cachetools.cached(_object_settings_cache, key=lambda x: str(x.id))
+    def get_effective_object_settings(self) -> Dict[str, Union[str, int]]:
+        r = {}
+        for fwp in FirmwarePolicy.get_effective_policies(self):
+            if fwp.object_settings:
+                r.update(fwp.object_settings)
+        return r
+
+
+from .firmwarepolicy import FirmwarePolicy

@@ -106,13 +106,56 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    uiStyle: "large",
                     allowBlank: true
+                },
+                {
+                    name: "access_preference",
+                    xtype: "combobox",
+                    fieldLabel: __("Access Preference"),
+                    tooltip: __(
+                        "Preference mode with worked profile script. <br/>" +
+                        "!! Work if Device Profile supported. <br/>" +
+                        "Profile (default) - use Object Profile settings <br/>" +
+                        "S - Use only SNMP when access to device" +
+                        "CLI Only - Use only CLI when access to device" +
+                        "SNMP, CLI - Use SNMP, if not avail swithc to CLI" +
+                        "CLI, SNMP - Use CLI, if not avail swithc to SNMP"
+                    ),
+                    allowBlank: true,
+                    uiStyle: "medium",
+                    store: [
+                        ["S", __("SNMP Only")],
+                        ["C", __("CLI Only")],
+                        ["SC", __("SNMP, CLI")],
+                        ["CS", __("CLI, SNMP")]
+                    ],
+                    listeners: {
+                        render: me.addTooltip
+                    }
+                },
+                {
+                    name: "snmp_rate_limit",
+                    xtype: "numberfield",
+                    fieldLabel: __("SNMP Rate limit"),
+                    tooltip: __(
+                        'Limit SNMP (Query per second).'
+                    ),
+                    allowBlank: true,
+                    hideTrigger: true,
+                    uiStyle: "medium",
+                    minValue: 0,
+                    maxValue: 99,
+                    listeners: {
+                        render: me.addTooltip
+                    }
                 },
                 {
                     name: "labels",
                     xtype: "labelfield",
                     fieldLabel: __("Labels"),
                     allowBlank: true,
+                    uiStyle: "large",
                     query: {
                         "enable_firmwarepolicy": true
                     }
@@ -120,6 +163,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 {
                     name: "management",
                     xtype: "gridfield",
+                    uiStyle: "medium",
                     fieldLabel: __("Management"),
                     columns: [
                         {
