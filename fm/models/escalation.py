@@ -19,6 +19,7 @@ from typing import List, Set
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.model.decorator import on_save
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from .escalationprofile import EscalationProfile
@@ -65,6 +66,7 @@ class EscalationItem(EmbeddedDocument):
         return self.escalation_status == "maintenance"
 
 
+@on_save
 class Escalation(Document):
     meta = {
         "collection": "escalations",
@@ -107,3 +109,17 @@ class Escalation(Document):
     @property
     def consequences(self) -> List[EscalationItem]:
         return self.items[1:]
+
+    def on_save(self):
+        if hasattr(self, "_changed_fields") and "close_timestamp" in self._changed_fields:
+            for alarm in ActiveAlarm.objects.filter(id__in=[item.alarm for item in self.items]):
+                # Trigger escalations
+                if alarm.managed_object.tt_system.alarm_consequence_policy == "D":
+                    return
+                AlarmEscalation.watch_escalations(
+                    alarm, timestamp_policy=alarm.managed_object.tt_system.alarm_consequence_policy
+                )
+
+
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.activealarm import ActiveAlarm
