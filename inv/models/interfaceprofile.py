@@ -129,6 +129,7 @@ class InterfaceProfile(Document):
             ("d", "Disabled"),
             ("e", "Enable"),
             ("c", "Clear Alarm"),
+            ("ca", "Clear Alarm if Admin Down"),
             ("rc", "Raise & Clear Alarm"),
         ],
         default="d",
