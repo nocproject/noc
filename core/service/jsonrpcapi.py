@@ -62,10 +62,11 @@ class JSONRPCAPI(object):
         """
 
         def get_current_user(remote_user):
-            if not self.auth_required:
-                return None
             if not remote_user:
-                raise HTTPException(403, "Not authorized")
+                if not self.auth_required:
+                    return None
+                else:
+                    raise HTTPException(403, "Not authorized")
             user = User.get_by_username(remote_user)
             if not user:
                 raise HTTPException(403, "Not authorized")
