@@ -75,7 +75,6 @@ class FirmwarePolicy(Document):
     effective_labels = ListField(StringField(max_length=250))
     # Object Discovery Settings
     access_preference = StringField(
-        "CLI Privilege Policy",
         max_length=8,
         choices=[
             # ("P", "Profile"),

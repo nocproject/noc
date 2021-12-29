@@ -254,7 +254,7 @@ class SAEAPI(API):
             if attrs:
                 version["attributes"] = attrs
             # Apply firmware policy discovery settings
-            fws = firmware.get_effective_discovery_settings()
+            fws = firmware.get_effective_object_settings()
             if o_access_preference == "P" and "access_preference" in fws:
                 credentials["access_preference"] = fws["access_preference"]
             if o_access_preference == "P" and "snmp_rate_limit" in fws:

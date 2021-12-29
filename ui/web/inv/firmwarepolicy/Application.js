@@ -106,16 +106,8 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    uiStyle: "large",
                     allowBlank: true
-                },
-                {
-                    name: "labels",
-                    xtype: "labelfield",
-                    fieldLabel: __("Labels"),
-                    allowBlank: true,
-                    query: {
-                        "enable_firmwarepolicy": true
-                    }
                 },
                 {
                     name: "access_preference",
@@ -131,6 +123,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                         "CLI, SNMP - Use CLI, if not avail swithc to SNMP"
                     ),
                     allowBlank: true,
+                    uiStyle: "medium",
                     store: [
                         ["S", __("SNMP Only")],
                         ["C", __("CLI Only")],
@@ -150,6 +143,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     ),
                     allowBlank: true,
                     hideTrigger: true,
+                    uiStyle: "medium",
                     minValue: 0,
                     maxValue: 99,
                     listeners: {
@@ -157,8 +151,19 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     }
                 },
                 {
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Labels"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    query: {
+                        "enable_firmwarepolicy": true
+                    }
+                },
+                {
                     name: "management",
                     xtype: "gridfield",
+                    uiStyle: "medium",
                     fieldLabel: __("Management"),
                     columns: [
                         {

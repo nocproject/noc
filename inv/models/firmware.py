@@ -112,7 +112,7 @@ class Firmware(Document):
         return r <= 0
 
     def clean(self):
-        self.full_name = "%s %s" % (self.profile.name, self.version)
+        self.full_name = f"{self.profile.name} {self.version}"
         super().clean()
 
     @classmethod
@@ -183,11 +183,11 @@ class Firmware(Document):
             self._profile = self.profile.get_profile()
         return self._profile
 
-    @cachetools.cached(_object_settings_cache, key=lambda x: str(x.id), lock=lambda _: id_lock)
+    @cachetools.cached(_object_settings_cache, key=lambda x: str(x.id))
     def get_effective_object_settings(self) -> Dict[str, Union[str, int]]:
         r = {}
         for fwp in FirmwarePolicy.get_effective_policies(self):
-            if fwp.discovery_settings:
+            if fwp.object_settings:
                 r.update(fwp.object_settings)
         return r
 

@@ -1685,12 +1685,12 @@ class ManagedObject(NOCModel):
         return self.get_autosegmentation_policy() == "e"
 
     def get_access_preference(self):
-        if self.access_preference == "P":
-            return self.object_profile.access_preference
+        if self.access_preference != "P":
+            return self.access_preference
         if self.version:
-            fw_settings = self.version.get_effective_discovery_settings()
-            return fw_settings.get("access_preference", self.object_profile.snmp_rate_limit)
-        return self.access_preference
+            fw_settings = self.version.get_effective_object_settings()
+            return fw_settings.get("access_preference", self.object_profile.access_preference)
+        return self.object_profile.access_preference
 
     def get_event_processing_policy(self):
         if self.event_processing_policy == "P":
