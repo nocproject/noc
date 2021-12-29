@@ -52,6 +52,14 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
             type: "string"
         },
         {
+            name: "access_preference",
+            type: "string"
+        },
+        {
+            name: "snmp_rate_limit",
+            type: "int"
+        },
+        {
             name: "management",
             type: "auto"
         },

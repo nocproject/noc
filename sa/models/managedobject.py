@@ -181,14 +181,14 @@ class ManagedObject(NOCModel):
     )
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
-    profile = DocumentReferenceField(Profile, null=False, blank=False)
-    vendor = DocumentReferenceField(Vendor, null=True, blank=True)
-    platform = DocumentReferenceField(Platform, null=True, blank=True)
-    version = DocumentReferenceField(Firmware, null=True, blank=True)
+    profile: "Profile" = DocumentReferenceField(Profile, null=False, blank=False)
+    vendor: "Vendor" = DocumentReferenceField(Vendor, null=True, blank=True)
+    platform: "Platform" = DocumentReferenceField(Platform, null=True, blank=True)
+    version: "Firmware" = DocumentReferenceField(Firmware, null=True, blank=True)
     # Firmware version to upgrade
     # Empty, when upgrade not scheduled
     next_version = DocumentReferenceField(Firmware, null=True, blank=True)
-    object_profile = CachedForeignKey(
+    object_profile: "ManagedObjectProfile" = CachedForeignKey(
         ManagedObjectProfile, verbose_name="Object Profile", on_delete=CASCADE
     )
     description = CharField("Description", max_length=256, null=True, blank=True)
@@ -234,7 +234,7 @@ class ManagedObject(NOCModel):
     trap_community = CharField("Trap Community", blank=True, null=True, max_length=64)
     snmp_ro = CharField("RO Community", blank=True, null=True, max_length=64)
     snmp_rw = CharField("RW Community", blank=True, null=True, max_length=64)
-    snmp_rate_limit = IntegerField(default=0)
+    snmp_rate_limit: int = IntegerField(default=0)
     access_preference = CharField(
         "CLI Privilege Policy",
         max_length=8,
@@ -1685,10 +1685,12 @@ class ManagedObject(NOCModel):
         return self.get_autosegmentation_policy() == "e"
 
     def get_access_preference(self):
-        if self.access_preference == "P":
-            return self.object_profile.access_preference
-        else:
+        if self.access_preference != "P":
             return self.access_preference
+        if self.version:
+            fw_settings = self.version.get_effective_object_settings()
+            return fw_settings.get("access_preference", self.object_profile.access_preference)
+        return self.object_profile.access_preference
 
     def get_event_processing_policy(self):
         if self.event_processing_policy == "P":
@@ -1901,6 +1903,9 @@ class ManagedObject(NOCModel):
         """
         if self.snmp_rate_limit > 0:
             return self.snmp_rate_limit
+        if self.version:
+            fw_settings = self.version.get_effective_object_settings()
+            return fw_settings.get("snmp_rate_limit", self.object_profile.snmp_rate_limit)
         return self.object_profile.snmp_rate_limit
 
     @classmethod
