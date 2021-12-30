@@ -383,7 +383,7 @@ class Script(BaseScript):
         elif ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
             # Sup2
             return "SUP", self.slot_id, pid
-        elif name.startswith("module "):
+        elif name.startswith("module ") or name.startswith("SPA subslot "):
             # Linecards or supervisors
             if pid.startswith("RSP") or (
                 (pid.startswith("WS-SUP") or pid.startswith("VS-S"))
