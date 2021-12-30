@@ -472,13 +472,15 @@ class Interface(Document):
             ]
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
-        if instance.is_linked:
+        if instance.parent.id and instance.is_linked:
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]
-        for el in SubInterface.objects.filter(
-            enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
-        ).scalar("effective_labels"):
-            yield el
+        if instance.parent.id:
+            # When create id is None
+            for el in SubInterface.objects.filter(
+                enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
+            ).scalar("effective_labels"):
+                yield el
         # for ipv4_addresses, tagged_vlans, untagged_vlan in SubInterface.objects.filter(
         #     enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent
         # ).scalar("ipv4_addresses", "tagged_vlans", "untagged_vlan"):
