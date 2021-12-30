@@ -15,28 +15,7 @@
         },
         {
             "name": "spa0",
-            "description": "SPA subslot x/0",
-            "direction": "i",
-            "gender": "f",
-            "type__name": "Cisco | SPA"
-        },
-        {
-            "name": "spa1",
-            "description": "SPA subslot x/1",
-            "direction": "i",
-            "gender": "f",
-            "type__name": "Cisco | SPA"
-        },
-        {
-            "name": "spa2",
-            "description": "SPA subslot x/2",
-            "direction": "i",
-            "gender": "f",
-            "type__name": "Cisco | SPA"
-        },
-        {
-            "name": "spa3",
-            "description": "SPA subslot x/3",
+            "description": "SPA subslot 0",
             "direction": "i",
             "gender": "f",
             "type__name": "Cisco | SPA"
