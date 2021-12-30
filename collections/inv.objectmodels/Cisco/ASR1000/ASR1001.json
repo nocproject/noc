@@ -34,7 +34,7 @@
             "gender": "f",
             "name": "r0",
             "type__name": "Cisco | ASR1000 | RP"
-        }
+        },
         {
             "description": "Embedded Services Processor slot",
             "direction": "i",
