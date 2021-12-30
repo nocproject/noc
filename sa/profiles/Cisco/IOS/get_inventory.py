@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2021 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -62,7 +62,8 @@ class Script(BaseScript):
     )
     rx_c4900m = re.compile(r"^Cisco Systems, Inc. (?P<part_no>\S+) \d+ slot switch")
     rx_slot_id = re.compile(
-        r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)(?P<slot_id>[\d|\w]+).*", re.IGNORECASE
+        r"^.*(slot|[tr|b]ay|pem|supply|fan|module|disk|card)(\s*:?)(?P<slot_id>[\d|\w]+).*",
+        re.IGNORECASE,
     )
     rx_psu1 = re.compile(r"(?:PS|Power Supply) (?P<number>\d+) ")
     rx_psu2 = re.compile(r"Power Supply (?P<number>\d+)$")
@@ -272,12 +273,18 @@ class Script(BaseScript):
                 # Cisco ISR series not have PID for motherboard
                 if "1921" in name:
                     return "MOTHERBOARD", None, "CISCO1921-MB"
+                elif "2921" in name:
+                    return "MOTHERBOARD", None, "CISCO2921-MB"
+                elif "2811" in name:
+                    return "MOTHERBOARD", None, "CISCO2811-MB"
+                elif "2821" in name:
+                    return "MOTHERBOARD", None, "CISCO2821-MB"
+                elif "2851" in name:
+                    return "MOTHERBOARD", None, "CISCO2851-MB"
                 elif "2901" in name:
                     return "MOTHERBOARD", None, "CISCO2901-MB"
                 elif "2911" in name:
                     return "MOTHERBOARD", None, "CISCO2911-MB"
-                elif "2921" in name:
-                    return "MOTHERBOARD", None, "CISCO2921-MB"
             pid = ""
             match = self.rx_slot_id.search(name)
             if match:
@@ -406,7 +413,12 @@ class Script(BaseScript):
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
                 if pid in ("ASR1001", "ASR1001-X"):
-                    return "RP", self.slot_id, pid + "-RP"
+                    if "Route Processor" in descr:
+                        return "RP", self.slot_id, pid + "-RP"
+                    elif "SPA Interface Processor" in descr:
+                        return "SIP", self.slot_id, pid + "-SIP"
+                    elif "Embedded Services Processor" in descr:
+                        return "ESP", self.slot_id, pid + "-ESP"
                 return "MOTHERBOARD", self.slot_id, pid
         elif (
             pid.startswith("WS-X64")
@@ -512,10 +524,16 @@ class Script(BaseScript):
             return "VTT", self.slot_id, pid
         elif "Compact Flash Disk" in descr:
             # Compact Flash
-            return "Flash | CF", name, pid
+            match = self.rx_slot_id.search(name)
+            if match:
+                self.slot_id = int(match.group("slot_id"))
+            return "Flash | CF", self.slot_id, pid
         elif "PCMCIA Flash Disk" in descr:
             # PCMCIA Flash
-            return "Flash | PCMCIA", name, pid
+            match = self.rx_slot_id.search(name)
+            if match:
+                self.slot_id = int(match.group("slot_id"))
+            return "Flash | PCMCIA", self.slot_id, pid
         elif name.startswith("StackPort"):
             match = self.rx_stack1.search(name)
             if match:
