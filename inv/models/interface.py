@@ -476,7 +476,7 @@ class Interface(Document):
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]
         for el in SubInterface.objects.filter(
-            enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent
+            enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
         ).scalar("effective_labels"):
             yield el
         # for ipv4_addresses, tagged_vlans, untagged_vlan in SubInterface.objects.filter(
