@@ -417,6 +417,8 @@ class Script(BaseScript):
                         return "RP", self.slot_id, pid + "-RP"
                     elif "SPA Interface Processor" in descr:
                         return "SIP", self.slot_id, pid + "-SIP"
+                    elif "Shared Port Adapter" in descr:
+                        return "SPA", self.slot_id, pid + "-SPA"
                     elif "Embedded Services Processor" in descr:
                         return "ESP", self.slot_id, pid + "-ESP"
                 return "MOTHERBOARD", self.slot_id, pid
