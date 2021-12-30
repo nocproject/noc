@@ -117,7 +117,9 @@ class Escalation(Document):
                 if alarm.managed_object.tt_system.alarm_consequence_policy == "D":
                     return
                 AlarmEscalation.watch_escalations(
-                    alarm, timestamp_policy=alarm.managed_object.tt_system.alarm_consequence_policy
+                    alarm,
+                    delay=30,
+                    timestamp_policy=alarm.managed_object.tt_system.alarm_consequence_policy,
                 )
 
 

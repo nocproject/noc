@@ -108,13 +108,13 @@ class AlarmEscalation(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_ac_cache"), lock=lambda _: ac_lock)
-    def get_class_escalations(cls, alarm_class):
+    def get_class_escalations(cls, alarm_class: "AlarmClass"):
         if hasattr(alarm_class, "id"):
             alarm_class = alarm_class.id
         return list(AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm_class))
 
     @classmethod
-    def watch_escalations(cls, alarm, force=None, timestamp_policy="a"):
+    def watch_escalations(cls, alarm, force: bool = False, delay: int = None, timestamp_policy="a"):
         if alarm.alarm_class.is_ephemeral:
             # Ephemeral alarm has not escalated
             return
@@ -150,8 +150,7 @@ class AlarmEscalation(Document):
                 elif et > now:
                     # A delay is needed for the alarm tree to assemble
                     delay = 60 if force else (et - now).total_seconds()
-                else:
-                    delay = None
+
                 call_later(
                     "noc.services.escalator.escalation.escalate",
                     scheduler="escalator",
