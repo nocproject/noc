@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | ASR1000 | ARS1001 SIP",
+    "$collection": "inv.objectmodels",
+    "uuid": "37cd7040-008f-4a9b-944d-3a7057efd21a",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1001 Series SPA Interface Processor",
+    "cr_context": "SIP",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ASR1000 | SIP"
+        },
+        {
+            "name": "spa0",
+            "description": "SPA subslot x/0",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "name": "spa1",
+            "description": "SPA subslot x/1",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "name": "spa2",
+            "description": "SPA subslot x/2",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | SPA"
+        },
+        {
+            "name": "spa3",
+            "description": "SPA subslot x/3",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Cisco | SPA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1001-SIP"]
+        }
+    }
+}
