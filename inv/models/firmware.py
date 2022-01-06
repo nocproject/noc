@@ -111,6 +111,9 @@ class Firmware(Document):
             return False
         return r <= 0
 
+    def __hash__(self):
+        return hash(f"{self.profile.id}{self.vendor.id}{self.version}")
+
     def clean(self):
         self.full_name = f"{self.profile.name} {self.version}"
         super().clean()
