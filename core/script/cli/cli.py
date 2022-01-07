@@ -227,8 +227,6 @@ class CLI(BaseCLI):
 
     async def parse_object_stream(self, parser=None, cmd_next=None, cmd_stop=None):
         """
-        :param cmd:
-        :param command_submit:
         :param parser: callable accepting buffer and returning
                        (key, data, rest) or None.
                        key - string with object distinguisher
@@ -256,9 +254,9 @@ class CLI(BaseCLI):
             if (
                 self.profile.rx_pattern_syntax_error
                 and not self.ignore_errors
-                and self.profile.rx_pattern_syntax_error.search(self.buffer)
+                and self.profile.rx_pattern_syntax_error.search(buffer)
             ):
-                error_text = self.buffer
+                error_text = buffer
                 if self.profile.send_on_syntax_error:
                     await self.on_error_sequence(
                         self.profile.send_on_syntax_error, self.command, error_text
@@ -268,9 +266,9 @@ class CLI(BaseCLI):
             # Then check for operation error
             if (
                 self.profile.rx_pattern_operation_error_str
-                and self.profile.rx_pattern_operation_error.search(self.buffer)
+                and self.profile.rx_pattern_operation_error.search(buffer)
             ):
-                self.error = self.script.CLIOperationError(self.buffer)
+                self.error = self.script.CLIOperationError(buffer)
                 break
             # Parse all possible objects
             while buffer:
