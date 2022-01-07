@@ -28,7 +28,7 @@ Ext.define("NOC.peer.as.Model", {
             type: "string"
         },
         {
-            name: "project",
+            name: "project__label",
             type: "string",
             persist: false
         },
