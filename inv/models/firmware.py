@@ -188,11 +188,10 @@ class Firmware(Document):
 
     @cachetools.cached(_object_settings_cache, key=lambda x: str(x.id))
     def get_effective_object_settings(self) -> Dict[str, Union[str, int]]:
+        from .firmwarepolicy import FirmwarePolicy
+
         r = {}
         for fwp in FirmwarePolicy.get_effective_policies(self):
             if fwp.object_settings:
                 r.update(fwp.object_settings)
         return r
-
-
-from .firmwarepolicy import FirmwarePolicy
