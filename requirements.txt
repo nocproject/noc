@@ -68,7 +68,7 @@ ssh2-python==0.26.0; extra == "activator"
 # Classifier
 bitarray==2.3.4; extra == "classifier"
 # esmre==0.5.2; extra == "classifier"
-git+git://github.com/wharris/esmre.git@main#esmre
+git+https://github.com/wharris/esmre.git@main#esmre
 # Cache-Redis
 hiredis==1.1.0; extra == "cache-redis"
 redis==3.5.3; extra == "cache-redis"
