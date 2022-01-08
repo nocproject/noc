@@ -16,8 +16,6 @@ from noc.core.clickhouse.fields import (
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
 from noc.core.translation import ugettext as _
 
 
