@@ -186,7 +186,7 @@ class Config(BaseConfig):
 
     class correlator(ConfigSection):
         max_threads = IntParameter(default=20)
-        topology_rca_window = IntParameter(default=0)
+        topology_rca_window = SecondsParameter(default=0)
         discovery_delay = SecondsParameter(default="10M")
         auto_escalation = BooleanParameter(default=True)
         rca_lock_initial_timeout = FloatParameter(default=0.1)
