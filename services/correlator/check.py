@@ -10,7 +10,6 @@ import logging
 
 # NOC modules
 from noc.fm.models.utils import get_alarm
-from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
