@@ -58,12 +58,14 @@ logger = logging.getLogger(__name__)
 @resourcegroup
 @Label.model
 @on_delete_check(
+    clean=[
+        ("inv.Interface", "aggregated_interface"),
+    ],
     ignore=[
         ("inv.Link", "interfaces"),
-        ("inv.Interface", "aggregated_interface"),
         ("inv.SubInterface", "interface"),
         ("inv.MACDB", "interface"),
-    ]
+    ],
 )
 class Interface(Document):
     """
