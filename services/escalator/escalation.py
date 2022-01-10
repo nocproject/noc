@@ -916,6 +916,7 @@ class DeescalationSequence(BaseSequence):
             call_later(
                 "noc.services.escalator.escalation.check_close",
                 scheduler="escalator",
+                pool=self.alarm.managed_object.escalator_shard,
                 delay=30,
                 doc_id=str(self.escalation_doc.id),
             )
@@ -923,6 +924,7 @@ class DeescalationSequence(BaseSequence):
 
 class CloseCheckSequence(BaseSequence):
     def __init__(self, doc_id: str):
+        super().__init__(doc_id)
         self.escalation_doc = self.get_escalation_doc(doc_id)
 
     def get_escalation_doc(self, doc_id: str) -> Escalation:
