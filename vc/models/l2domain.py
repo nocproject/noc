@@ -154,7 +154,7 @@ class L2Domain(Document):
         if template:
             template.allocate_template(self.id)
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
-            for mo_id in self.get_l2_domain_object_ids([str(self.id)]):
+            for mo_id in self.get_l2_domain_object_ids(str(self.id)):
                 ManagedObject._reset_caches(mo_id)
 
     def get_effective_pools(self, pool: "ResourcePool" = None) -> List["PoolItem"]:
@@ -232,19 +232,17 @@ class L2Domain(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_l2_domains_mo_cache"), lock=lambda _: id_lock)
-    def get_l2_domain_object_ids(cls, l2_domains: Union[str, List["str"]]):
+    def get_l2_domain_object_ids(cls, l2_domain: str):
         """
         Get list of all managed object ids belonging to
         same L2 domain
-        :param l2_domains:
+        :param l2_domain:
         :return:
         """
         from noc.sa.models.managedobject import ManagedObject
 
-        if not isinstance(l2_domains, list):
-            l2_domains = [l2_domains]
         return list(
-            ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list("id", flat=True)
+            ManagedObject.objects.filter(l2_domain=l2_domain).values_list("id", flat=True)
         )
 
     @classmethod
