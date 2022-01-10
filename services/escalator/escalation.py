@@ -983,15 +983,18 @@ def escalate(
     """
     Delayed job to start escalation process. Wrapper for EscalationSequence
     """
-    EscalationSequence(
-        alarm_id=alarm_id,
-        escalation_id=escalation_id,
-        escalation_delay=escalation_delay,
-        login=login,
-        timestamp_policy=timestamp_policy,
-        force=force,
-        prev_escalation=prev_escalation,
-    ).run()
+    try:
+        EscalationSequence(
+            alarm_id=alarm_id,
+            escalation_id=escalation_id,
+            escalation_delay=escalation_delay,
+            login=login,
+            timestamp_policy=timestamp_policy,
+            force=force,
+            prev_escalation=prev_escalation,
+        ).run()
+    except BaseSequence.StopSequence:
+        pass
 
 
 def notify_close(
@@ -1004,20 +1007,26 @@ def notify_close(
     login: str = "correlator",
     queue: Optional[str] = None,
 ):
-    DeescalationSequence(
-        alarm_id=alarm_id,
-        tt_id=tt_id,
-        subject=subject,
-        body=body,
-        notification_group_id=notification_group_id,
-        close_tt=close_tt,
-        login=login,
-        queue=queue,
-    ).run()
+    try:
+        DeescalationSequence(
+            alarm_id=alarm_id,
+            tt_id=tt_id,
+            subject=subject,
+            body=body,
+            notification_group_id=notification_group_id,
+            close_tt=close_tt,
+            login=login,
+            queue=queue,
+        ).run()
+    except BaseSequence.StopSequence:
+        pass
 
 
 def check_close(doc_id: str) -> None:
     """
     Check all nested alarms are closed, reescalate when necessary
     """
-    CloseCheckSequence(doc_id=doc_id).run()
+    try:
+        CloseCheckSequence(doc_id=doc_id).run()
+    except BaseSequence.StopSequence:
+        pass
