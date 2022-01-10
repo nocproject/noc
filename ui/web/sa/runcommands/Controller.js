@@ -486,7 +486,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
             '/api/mrt/',
             true
         );
-        xhr.setRequestHeader('Content-Type', 'text/json');
+        xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.onprogress = function() {
             // Parse incoming chunks
             var ft = xhr.responseText.substr(offset),
