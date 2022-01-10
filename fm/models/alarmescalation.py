@@ -10,6 +10,7 @@ import logging
 import operator
 from threading import Lock
 import datetime
+from typing import Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -114,7 +115,14 @@ class AlarmEscalation(Document):
         return list(AlarmEscalation.objects.filter(alarm_classes__alarm_class=alarm_class))
 
     @classmethod
-    def watch_escalations(cls, alarm, force=None, timestamp_policy="a"):
+    def watch_escalations(
+        cls,
+        alarm,
+        force: bool = False,
+        timestamp_policy: str = "a",
+        defer: bool = True,
+        prev_escalation: Optional[str] = None,
+    ):
         if alarm.alarm_class.is_ephemeral:
             # Ephemeral alarm has not escalated
             return
@@ -152,17 +160,30 @@ class AlarmEscalation(Document):
                     delay = 60 if force else (et - now).total_seconds()
                 else:
                     delay = None
-                call_later(
-                    "noc.services.escalator.escalation.escalate",
-                    scheduler="escalator",
-                    pool=alarm.managed_object.escalator_shard,
-                    delay=delay,
-                    max_runs=esc.max_escalation_retries,
-                    alarm_id=alarm.id,
-                    escalation_id=esc.id,
-                    escalation_delay=e_item.delay,
-                    force=force,
-                    timestamp_policy=timestamp_policy,
-                )
+                if defer:
+                    call_later(
+                        "noc.services.escalator.escalation.escalate",
+                        scheduler="escalator",
+                        pool=alarm.managed_object.escalator_shard,
+                        delay=delay,
+                        max_runs=esc.max_escalation_retries,
+                        alarm_id=alarm.id,
+                        escalation_id=esc.id,
+                        escalation_delay=e_item.delay,
+                        force=force,
+                        timestamp_policy=timestamp_policy,
+                        prev_escalation=prev_escalation,
+                    )
+                else:
+                    from noc.services.escalator.escalation import escalate
+
+                    escalate(
+                        alarm_id=alarm.id,
+                        escalation_id=esc.id,
+                        escalation_delay=e_item.delay,
+                        force=force,
+                        timestamp_policy=timestamp_policy,
+                        prev_escalation=prev_escalation,
+                    )
                 if e_item.stop_processing:
                     break

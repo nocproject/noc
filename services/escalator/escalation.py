@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Escalation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021, The NOC Project
+# Copyright (C) 2007-2022, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -116,9 +116,11 @@ class EscalationSequence(BaseSequence):
         login: str = "correlator",
         timestamp_policy: str = "a",
         force: bool = False,
+        prev_escalation: Optional[str] = None,
     ):
         super().__init__(alarm_id=alarm_id, login=login)
         self.alarm = self.get_alarm(alarm_id)
+        self.prev_escalation = ObjectId(prev_escalation) if prev_escalation else None
         self.escalation = self.get_escalation(escalation_id)
         self.escalation_delay = escalation_delay
         self.timestamp_policy = timestamp_policy
@@ -540,7 +542,9 @@ class EscalationSequence(BaseSequence):
         total_services: DefaultDict[ObjectId, int] = defaultdict(int)
         total_subscribers: DefaultDict[ObjectId, int] = defaultdict(int)
         # @todo: Append profile
-        doc = Escalation(timestamp=datetime.datetime.now(), items=[])
+        doc = Escalation(
+            timestamp=datetime.datetime.now(), items=[], prev_escalation=self.prev_escalation
+        )
         for alarm in items:
             if alarm.alarm_class.is_ephemeral:
                 # Group alarms are virtual and should be locked, but not escalated
@@ -888,6 +892,13 @@ class DeescalationSequence(BaseSequence):
         self.notification_group.notify(self.subject, self.body)
         metrics["escalation_notify"] += 1
 
+    def has_active_alarms(self) -> bool:
+        """
+        Returns true if escalation doc has active alarms
+        """
+        alarm_ids = [a.alarm for a in self.escalation_doc.items]
+        return bool(ActiveAlarm.objects.filter(id__id=alarm_ids))
+
     def process(self) -> None:
         """
         Perform deescalation sequence
@@ -899,6 +910,57 @@ class DeescalationSequence(BaseSequence):
             # Close escalation doc
             self.escalation_doc.close_timestamp = ts
             self.escalation_doc.save()
+        # Run deescalation check when nessessary
+        if self.has_active_alarms():
+            ...
+
+
+class CloseCheckSequence(BaseSequence):
+    def __init__(self, doc_id: str):
+        self.escalation_doc = self.get_escalation_doc(doc_id)
+
+    def get_escalation_doc(self, doc_id: str) -> Escalation:
+        """
+        Get escalation doc or stop the sequence
+        """
+        doc = Escalation.objects.filter(id=doc_id).first()
+        if not doc:
+            self.logger.error("Cannot find escalation doc. Stopping")
+            self.stop_sequence()
+        return doc
+
+    def iter_active_alarms(self) -> Iterable[ActiveAlarm]:
+        """
+        Iterate the active alarms related to the escalation doc
+        """
+        alarm_ids = [i.alarm for i in self.escalation_doc.items]
+        yield from ActiveAlarm.objects.filter(id__in=alarm_ids)
+
+    def process(self):
+        """
+        Perform deescalation check. Run escalation sequence for all active alarms.
+        """
+        self.logger.info("[%s] Checking deescalation", self.escalation_doc.id)
+        active_alarms = {a.id: a for a in self.iter_active_alarms()}
+        if not active_alarms:
+            self.logger.info("[%s] All alarms are cleared, stopping", self.escalation_doc.id)
+            return
+        for i in self.escalation_doc.items:
+            alarm = active_alarms.get(i.alarm)
+            if not alarm:
+                continue
+            if alarm.managed_object.tt_system.alarm_consequence_policy == "D":
+                continue
+            # Reescalate
+            AlarmEscalation.watch_escalations(
+                alarm,
+                timestamp_policy=alarm.managed_object.tt_system.alarm_consequence_policy,
+                defer=False,
+                prev_escalation=str(self.escalation_doc.id),
+            )
+            i.deescalation_status = "reescalated"
+        # Update escalation doc
+        self.escalation_doc.save()
 
 
 def escalate(
@@ -908,23 +970,22 @@ def escalate(
     login: str = "correlator",
     timestamp_policy: str = "a",
     force: bool = False,
+    prev_escalation: Optional[str] = None,
     *args,
     **kwargs,
 ):
     """
     Delayed job to start escalation process. Wrapper for EscalationSequence
     """
-    try:
-        EscalationSequence(
-            alarm_id=alarm_id,
-            escalation_id=escalation_id,
-            escalation_delay=escalation_delay,
-            login=login,
-            timestamp_policy=timestamp_policy,
-            force=force,
-        ).run()
-    except BaseSequence.StopSequence:
-        pass
+    EscalationSequence(
+        alarm_id=alarm_id,
+        escalation_id=escalation_id,
+        escalation_delay=escalation_delay,
+        login=login,
+        timestamp_policy=timestamp_policy,
+        force=force,
+        prev_escalation=prev_escalation,
+    ).run()
 
 
 def notify_close(
@@ -937,16 +998,20 @@ def notify_close(
     login: str = "correlator",
     queue: Optional[str] = None,
 ):
-    try:
-        DeescalationSequence(
-            alarm_id=alarm_id,
-            tt_id=tt_id,
-            subject=subject,
-            body=body,
-            notification_group_id=notification_group_id,
-            close_tt=close_tt,
-            login=login,
-            queue=queue,
-        ).run()
-    except BaseSequence.StopSequence:
-        pass
+    DeescalationSequence(
+        alarm_id=alarm_id,
+        tt_id=tt_id,
+        subject=subject,
+        body=body,
+        notification_group_id=notification_group_id,
+        close_tt=close_tt,
+        login=login,
+        queue=queue,
+    ).run()
+
+
+def check_close(doc_id: str) -> None:
+    """
+    Check all nested alarms are closed, reescalate when necessary
+    """
+    CloseCheckSequence(doc_id=doc_id).run()
