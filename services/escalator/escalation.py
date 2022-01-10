@@ -897,7 +897,7 @@ class DeescalationSequence(BaseSequence):
         Returns true if escalation doc has active alarms
         """
         alarm_ids = [a.alarm for a in self.escalation_doc.items]
-        return bool(ActiveAlarm.objects.filter(id__id=alarm_ids))
+        return bool(ActiveAlarm.objects.filter(id__in=alarm_ids))
 
     def process(self) -> None:
         """
