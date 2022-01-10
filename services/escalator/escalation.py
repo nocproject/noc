@@ -39,6 +39,7 @@ from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.lock.process import ProcessLock
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
+from noc.core.defer import call_later
 
 
 logger = logging.getLogger(__name__)
@@ -912,7 +913,12 @@ class DeescalationSequence(BaseSequence):
             self.escalation_doc.save()
         # Run deescalation check when nessessary
         if self.has_active_alarms():
-            ...
+            call_later(
+                "noc.services.escalator.escalation.check_close",
+                scheduler="escalator",
+                delay=30,
+                doc_id=str(self.escalation_doc.id),
+            )
 
 
 class CloseCheckSequence(BaseSequence):
