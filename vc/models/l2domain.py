@@ -241,9 +241,7 @@ class L2Domain(Document):
         """
         from noc.sa.models.managedobject import ManagedObject
 
-        return list(
-            ManagedObject.objects.filter(l2_domain=l2_domain).values_list("id", flat=True)
-        )
+        return list(ManagedObject.objects.filter(l2_domain=l2_domain).values_list("id", flat=True))
 
     @classmethod
     def calculate_stats(cls, l2_domains: List["L2Domain"]) -> List[Dict[str, Union[str, int]]]:
