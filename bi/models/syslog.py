@@ -16,8 +16,6 @@ from noc.core.clickhouse.fields import (
 )
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
 from noc.core.translation import ugettext as _
 
 
@@ -35,22 +33,4 @@ class Syslog(Model):
 
     @classmethod
     def transform_query(cls, query, user):
-        if not user or user.is_superuser:
-            return query  # No restrictions
-        # Get user domains
-        domains = UserAccess.get_domains(user)
-        # Resolve domains against dict
-        domain_ids = [x.bi_id for x in AdministrativeDomainM.objects.filter(id__in=domains)]
-        filter = query.get("filter", {})
-        dl = len(domain_ids)
-        if not dl:
-            return None
-        elif dl == 1:
-            q = {"$eq": [{"$field": "administrative_domain"}, domain_ids[0]]}
-        else:
-            q = {"$in": [{"$field": "administrative_domain"}, domain_ids]}
-        if filter:
-            query["filter"] = {"$and": [query["filter"], q]}
-        else:
-            query["filter"] = q
         return query
