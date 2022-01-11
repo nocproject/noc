@@ -316,7 +316,7 @@ class EscalationSequence(BaseSequence):
         affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
         segment = self.alarm.managed_object.segment
         if segment.is_redundant:
-            uplinks = self.alarm.managed_object.data.uplinks
+            uplinks = self.alarm.managed_object.uplinks
             lost_redundancy = len(uplinks) > 1
             affected_subscribers = self.summary_to_list(
                 segment.total_subscribers, SubscriberProfile

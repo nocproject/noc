@@ -171,7 +171,7 @@ class ManagedObjectCard(BaseCard):
         if did and did.hostname:
             hostname = did.hostname
         # Links
-        uplinks = set(self.object.data.uplinks)
+        uplinks = set(self.object.uplinks)
         if len(uplinks) > 1:
             if self.object.segment.lost_redundancy:
                 redundancy = "L"
