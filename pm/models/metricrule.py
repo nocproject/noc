@@ -6,12 +6,28 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import ListField, DictField, StringField, BooleanField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    ListField,
+    DictField,
+    StringField,
+    BooleanField,
+    EmbeddedDocumentField,
+)
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from .metricaction import MetricAction
+
+
+class MetricRuleItem(EmbeddedDocument):
+    metric_action = PlainReferenceField(MetricAction)
+    match_labels = ListField(StringField())
+    is_active = BooleanField(default=True)
+    config = DictField()
+
+    def __str__(self) -> str:
+        return str(self.metric_action)
 
 
 class MetricRule(Document):
@@ -20,10 +36,11 @@ class MetricRule(Document):
         "strict": False,
         "auto_create_index": False,
     }
-    metric_action = PlainReferenceField(MetricAction)
-    labels = ListField(StringField())
+    name = StringField()
+    description = StringField()
+    match_labels = ListField(StringField())
     is_active = BooleanField(default=True)
-    config = DictField()
+    items = ListField(EmbeddedDocumentField(MetricRuleItem))
 
     def __str__(self) -> str:
         return str(id(self))

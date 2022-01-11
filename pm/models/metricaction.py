@@ -97,7 +97,7 @@ class ActionItem(EmbeddedDocument):
         return r
 
 
-@on_delete_check(check=[("pm.MetricRule", "metric_action")])
+@on_delete_check(check=[("pm.MetricRule", "items.metric_action")])
 class MetricAction(Document):
     meta = {
         "collection": "metricactions",
