@@ -65,9 +65,8 @@ class Command(BaseCommand):
         r = []
         for mo in mos:
             uplink1, uplink2 = "", ""
-            d = ObjectData.get_by_id(mo)
-            if d:
-                uplinks = [ManagedObject.get_by_id(u) for u in d.uplinks]
+            if mo.uplinks:
+                uplinks = [ManagedObject.get_by_id(u) for u in mo.uplinks]
                 uplinks = [u for u in uplinks if u]
                 if uplinks:
                     uplink1 = nq(uplinks.pop(0).name)

@@ -9,7 +9,7 @@
 import logging
 
 # NOC modules
-from noc.sa.models.objectdata import ObjectData
+from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 
 logger = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def check_segment_redundancy(alarm):
         )
         if d["managed_object"] != mo.id
     ]
-    uplinks = ObjectData.uplinks_for_objects(alarms)
+    uplinks = ManagedObject.uplinks_for_objects(alarms)
     if not any(x for x in uplinks.values() if len(x) > 1):
         logger.info("[%s] Redundancy recovered for %s", alarm.id, seg.name)
         seg.set_lost_redundancy(False)
