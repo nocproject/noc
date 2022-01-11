@@ -32,7 +32,6 @@ from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.core.comp import smart_text
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.objectdata import ObjectData
 from noc.core.mongo.connection import get_db
 from noc.core.translation import ugettext as _
 from noc.config import config

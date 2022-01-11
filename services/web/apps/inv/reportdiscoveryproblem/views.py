@@ -14,7 +14,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobject import ManagedObjectProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.objectdata import ObjectData
 from noc.main.models.pool import Pool
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform

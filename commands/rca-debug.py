@@ -15,7 +15,6 @@ from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.sa.models.objectdata import ObjectData
 from noc.config import config
 
 
