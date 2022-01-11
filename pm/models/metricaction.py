@@ -27,7 +27,7 @@ from noc.core.model.decorator import on_delete_check
 from .metrictype import MetricType
 
 
-class ActionVar(EmbeddedDocument):
+class ActionParam(EmbeddedDocument):
     name = StringField()
     description = StringField()
 
@@ -111,7 +111,7 @@ class MetricAction(Document):
     description = StringField()
     metric_type = PlainReferenceField(MetricType)
     actions = ListField(EmbeddedDocumentField(ActionItem))
-    vars = ListField(EmbeddedDocument(ActionVar))
+    params = ListField(EmbeddedDocumentField(ActionParam))
 
     def __str__(self) -> str:
         return self.name
@@ -127,8 +127,8 @@ class MetricAction(Document):
         }
         if self.description:
             r["description"] = self.description
-        if self.vars:
-            r["vars"] = [v.json_data for v in self.vars]
+        if self.params:
+            r["params"] = [v.json_data for v in self.params]
         return r
 
     def to_json(self) -> str:
