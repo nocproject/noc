@@ -34,7 +34,7 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
-from noc.core.defer import call_later, defer
+from noc.core.defer import call_later
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.notificationgroup import NotificationGroup
 
