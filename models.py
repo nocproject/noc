@@ -254,6 +254,7 @@ _MODELS = {
     "pm.AgentProfile": "noc.pm.models.agent.AgentProfile",
     "pm.Scale": "noc.pm.models.scale.Scale",
     "pm.MeasurementUnits": "noc.pm.models.measurementunits.MeasurementUnits",
+    "pm.MetricRule": "noc.pm.models.metricrule.MetricRule",
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
     "pm.ThresholdProfile": "noc.pm.models.thresholdprofile.ThresholdProfile",
