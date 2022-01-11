@@ -350,10 +350,8 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
         if cmap[-1] > 17:
             mos_id = list(mos.values_list("id", flat=True))
             uplinks = {obj: [] for obj in mos_id}
-            for d in ObjectData._get_collection().find(
-                {"_id": {"$in": mos_id}}, {"_id": 1, "uplinks": 1}
-            ):
-                uplinks[d["_id"]] = d.get("uplinks", [])
+            for mo_id, uplinks in mos.values_list("id", "uplinks"):
+                uplinks[mo_id] = uplinks or []
             rld = load(mos_id)
 
             for mo in uplinks:

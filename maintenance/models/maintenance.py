@@ -240,20 +240,23 @@ def update_affected_objects(maintenance_id):
     """
 
     def get_downlinks(objects):
-        r = set()
         # Get all additional objects which may be affected
-        for d in ObjectData._get_collection().find({"uplinks": {"$in": list(objects)}}, {"_id": 1}):
-            if d["_id"] not in objects:
-                r.add(d["_id"])
+        r = {
+            mo_id
+            for mo_id in ManagedObject.objects.filter(uplinks__overlap=list(objects)).values_list(
+                "id", flat=True
+            )
+            if mo_id not in objects
+        }
         if not r:
             return r
         # Leave only objects with all uplinks affected
         rr = set()
-        for d in ObjectData._get_collection().find(
-            {"_id": {"$in": list(r)}}, {"_id": 1, "uplinks": 1}
+        for mo_id, uplinks in ManagedObject.objects.filter(uplinks__overlap=list(r)).values_list(
+            "id", "uplinks"
         ):
-            if len([1 for u in d["uplinks"] if u in objects]) == len(d["uplinks"]):
-                rr.add(d["_id"])
+            if len([1 for u in uplinks if u in objects]) == len(uplinks):
+                rr.add(mo_id)
         return rr
 
     def get_segment_objects(segment):

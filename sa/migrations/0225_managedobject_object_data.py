@@ -15,7 +15,6 @@ from noc.core.model.fields import ObjectIDArrayField
 
 
 class Migration(BaseMigration):
-
     def migrate(self):
         # Create uplinks fields
         self.db.add_column(
@@ -42,10 +41,10 @@ class Migration(BaseMigration):
         self.db.add_column(
             "sa_managedobject",
             "segment_path",
-            ObjectIDArrayField(db_index=True, default="{}"),
+            ObjectIDArrayField(db_index=False, default="{}"),
         )
         self.db.add_column(
             "sa_managedobject",
             "container_path",
-            ObjectIDArrayField(db_index=True, default="{}"),
+            ObjectIDArrayField(db_index=False, default="{}"),
         )
