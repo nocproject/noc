@@ -11,7 +11,7 @@ Ext.define("NOC.pm.metricaction.Application", {
     requires: [
         "NOC.pm.metricaction.Model",
         "NOC.core.JSONPreview",
-        "NOC.pm.metrictype.Model",
+        "NOC.pm.metrictype.LookupField",
         "NOC.core.ListFormField",
         "Ext.ux.form.GridField"
     ],
@@ -106,7 +106,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             xtype: "cmtext",
                             fieldLabel: __("Compose Node"),
                             labelAlign: "top",
-                            allowBlank: false,
+                            allowBlank: true,
                             mode: "json"
                         },
                         {
@@ -137,7 +137,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             xtype: "cmtext",
                             fieldLabel: __("Activation Node"),
                             labelAlign: "top",
-                            allowBlank: false,
+                            allowBlank: true,
                             mode: "json"
                         },
                         {
@@ -145,7 +145,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             xtype: "cmtext",
                             fieldLabel: __("Alarm Node"),
                             labelAlign: "top",
-                            allowBlank: false,
+                            allowBlank: true,
                             mode: "json"
                         },
                     ]

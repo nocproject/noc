@@ -16,11 +16,15 @@ Ext.define("NOC.pm.metricaction.Model", {
             type: "string"
         },
         {
-            name: "name",
+            name: "uuid",
             type: "string"
         },
         {
             name: "description",
+            type: "string"
+        },
+        {
+            name: "name",
             type: "string"
         },
         {
@@ -40,5 +44,10 @@ Ext.define("NOC.pm.metricaction.Model", {
             name: "params",
             type: "auto"
         },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
+        }
     ]
 });
