@@ -79,7 +79,7 @@ class AlarmHeatCard(BaseCard):
         if not self.current_user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(self.current_user))
         for mo in mos:
-            res[mo.pop("id")] = mo
+            res[mo["id"]] = mo
         mos_id = list(res.keys())
         if ms == 0:
             mos_id = list(set(list(res.keys())) - set(Maintenance.currently_affected()))
