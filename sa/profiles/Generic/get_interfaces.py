@@ -295,6 +295,10 @@ class Script(BaseScript):
             if ifindex in ips:
                 sub["enabled_afi"] = ["IPv4"]
                 sub["ipv4_addresses"] = [IPv4(*i) for i in ips[ifindex]]
+            if ifindex in portchannels:
+                # For Juniper Aggregated Interface use unit - '.0' ifindex
+                interfaces[ifname]["aggregated_interface"] = ifaces[portchannels[ifindex]]["name"]
+                interfaces[ifname]["enabled_protocols"] = ["LACP"]
             if num.isdigit():
                 vlan_ids = int(sub["name"].rsplit(".", 1)[-1])
                 if is_vlan(vlan_ids):
