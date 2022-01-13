@@ -4,7 +4,7 @@ forms:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: selfmon service <br/>
-      <strong>Long description</strong>: Displays annotations on grafanas graphs with alarms info <br/>
+      <strong>Long description</strong>: Provides metrics about system in prometheus format <br/>
       <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
       <strong>docs</strong>: <a href=https://docs.getnoc.com/master/en/admin/reference/services/selfmon/ target=_blank>selfmon</a><br/>
       <strong>Placement constraint</strong>: None<br/>
@@ -25,6 +25,26 @@ forms:
         - warning
         - error
         - critical
+    enable_fm:
+      label: "enable_fm"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_inventory:
+      label: "enable_inventory"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_liftbridge:
+      label: "enable_liftbridge"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
+    enable_managedobject:
+      label: "enable_liftbridge"
+      type: bool
+      default: True  # yamllint disable-line rule:truthy
+    enable_task:
+      label: "enable_liftbridge"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
 
 services:
   selfmon:
