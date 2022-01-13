@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional
+from typing import Optional, Iterable
 
 # Third-party modules
 from jinja2 import Template as Jinja2Template
@@ -261,6 +261,15 @@ class ArchivedAlarm(Document):
             if a.managed_object not in seen:
                 seen.add(a.managed_object)
                 yield a.managed_object
+
+    def iter_grouped(self) -> Iterable["ArchivedAlarm"]:
+        """
+        Generator yielding all alarm in group
+        """
+        if not self.groups:
+            return
+        for a in ArchivedAlarm.objects.filter(groups__in=self.groups):
+            yield a
 
     def set_escalation_close_error(self, error):
         self.escalation_error = error
