@@ -13,6 +13,7 @@ from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
 
 CHUNK = 500
+DEFAULT_L2_DOMAIN_ID = bson.ObjectId("61bee7425c42c21338453614")
 
 
 class Migration(BaseMigration):
@@ -93,7 +94,7 @@ class Migration(BaseMigration):
         v_coll.drop_indexes()
         v_coll.remove({})
         l2_domains = []
-        l2_domain_map = {}
+        l2_domain_map = {1: DEFAULT_L2_DOMAIN_ID}
         for vid, name, description in self.db.execute(
             """
             SELECT id, name, description
@@ -120,14 +121,22 @@ class Migration(BaseMigration):
         if l2_domains:
             self.mongo_db["l2domains"].bulk_write(l2_domains)
         vlans = []
+        processed_vlans = set()
         # VC -> VLAN Migration
-        for v_num, v_name, vc_domain, name, description in self.db.execute(
+        for v_num, v_name, vc_domain_id, name, description in self.db.execute(
             """
             SELECT l1, name, vc_domain_id, name, description
             FROM vc_vc
-            WHERE l1 != 1 and vc_domain_id != 1
+            WHERE l1 != 1 and l2 != 1
             """
         ):
+            if vc_domain_id not in l2_domain_map:
+                print(f"Unknown VC Domain: {vc_domain_id}")
+                continue
+            l2_domain_id = l2_domain_map.get(vc_domain_id, DEFAULT_L2_DOMAIN_ID)
+            if (l2_domain_id, v_num) in processed_vlans:
+                print(f"Duplicate VLAN number on domain: {vc_domain_id}")
+                continue
             vlan_id = bson.ObjectId()
             vlans += [
                 InsertOne(
@@ -136,7 +145,7 @@ class Migration(BaseMigration):
                         "name": v_name,
                         "profile": default_vlan_profile,
                         "vlan": v_num,
-                        "l2_domain": l2_domain_map.get(vc_domain, default_l2d_profile_id),
+                        "l2_domain": l2_domain_id,
                         "labels": [],
                         "effective_labels": [],
                         "bi_id": bson.Int64(bi_hash(vlan_id)),
@@ -145,6 +154,7 @@ class Migration(BaseMigration):
                     }
                 )
             ]
+            processed_vlans.add((l2_domain_id, v_num))
         if len(vlans) > CHUNK:
             self.mongo_db["vlans"].bulk_write(vlans)
             vlans = []
