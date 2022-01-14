@@ -17,6 +17,7 @@ from noc.core.mongo.connection import get_db
 # NOC modules
 from noc.core.migration.base import BaseMigration
 from noc.core.bi.decorator import bi_hash
+from noc.core.validators import is_objectid
 
 selector = namedtuple(
     "MOSSelector",
@@ -92,6 +93,9 @@ class ManagedObjectSelectorLabels(object):
     @classmethod
     def get_mongo_name_by_id(cls, collection, oid: str) -> Optional[str]:
         coll = get_db()[collection]
+        if not is_objectid(oid):
+            print(f"[migrate_object_selector_resource] Unknown OID {oid}")
+            return None
         r = coll.find_one({"_id": bson.ObjectId(oid)}, {"name": 1})
         if not r:
             return None
