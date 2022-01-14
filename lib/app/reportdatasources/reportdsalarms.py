@@ -366,7 +366,7 @@ class ReportDsAlarms(ReportDataSource):
                 "location": ", ".join(
                     ll
                     for ll in (
-                        loc.location(aa["container_path"][-1]) if aa["container_path"] else ""
+                        loc.location(aa["container_path"][-1]) if aa.get("container_path") else ""
                     )
                     if ll
                 )

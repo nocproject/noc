@@ -217,14 +217,14 @@ class ResourceGroup(Document):
             hasattr(self, "_changed_fields")
             and "dynamic_service_labels" in self._changed_fields
             and self.technology.service_model
-        ):
+        ) or (not hasattr(self, "_changed_fields") and self.dynamic_service_labels):
             self.unset_service_group(self.technology.service_model)
             self.add_service_group(self.technology.service_model)
         if (
             hasattr(self, "_changed_fields")
             and "dynamic_client_labels" in self._changed_fields
             and self.technology.client_model
-        ):
+        ) or (not hasattr(self, "_changed_fields") and self.dynamic_client_labels):
             self.unset_client_group(self.technology.client_model)
             self.add_client_group(self.technology.client_model)
 
