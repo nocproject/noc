@@ -110,7 +110,7 @@ class IPAMApplication(ExtApplication):
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
             return self.response_forbidden("Invalid AFI")
-        if request.POST:
+        if request.body:
             d = orjson.loads(request.body)
             prefix = d["jump"].strip()
             # Interpolate prefix
