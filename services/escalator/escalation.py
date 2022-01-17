@@ -47,6 +47,7 @@ logger = logging.getLogger(__name__)
 RETRY_TIMEOUT = config.escalator.retry_timeout
 # @fixme have to be checked
 RETRY_DELTA = 60 / max(config.escalator.tt_escalation_limit - 1, 1)
+ESCALATION_CHECk_CLOSE_DELAY = 30
 
 retry_lock = threading.Lock()
 next_retry = datetime.datetime.now()
@@ -917,7 +918,7 @@ class DeescalationSequence(BaseSequence):
                 "noc.services.escalator.escalation.check_close",
                 scheduler="escalator",
                 pool=self.alarm.managed_object.escalator_shard,
-                delay=30,
+                delay=self.alarm.alarm_class.recover_time + ESCALATION_CHECk_CLOSE_DELAY,
                 doc_id=str(self.escalation_doc.id),
             )
 
