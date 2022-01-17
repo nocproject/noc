@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | MES24xx | sysDescr.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "3ca93335-d54d-4e53-a1e0-f3a31bfc8f55",
+    "description": "On 10.2.7.2 fixed sysObjectID\n\nEltex MES2408B\nEltex MES2408C\nEltex MES2408CP\nEltex MES2428\nEltex MES2428B\nEltex MES2428P",
+    "preference": 900,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^(MES-24|MES24\\d+)",
+    "action": "match",
+    "profile__name": "Eltex.MES24xx"
+}
