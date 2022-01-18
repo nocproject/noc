@@ -2,7 +2,7 @@
 # Vendor: CData
 # OS:     xPON
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,12 +23,3 @@ class Profile(BaseProfile):
     command_save_config = "save"
     command_exit = "exit"
     config_volatile = ["^%.*?$"]
-
-
-#    def convert_interface_name(self, interface):
-#        if interface.startswith("g"):
-#            return "GigaEthernet" + interface[1:]
-#        elif interface.startswith("epon"):
-#            return "EPON" + interface[4:]
-#        else:
-#            return interface
