@@ -347,6 +347,70 @@ class StringListParameter(ListOfParameter):
         )
 
 
+class LabelParameter(Parameter):
+    """
+    Check value is string
+    """
+
+    def __init__(
+        self,
+        required=True,
+        default=None,
+        choices=None,
+        aliases=None,
+        default_scope=None,
+        allowed_scopes=None,
+    ):
+        self.choices = set(choices) if choices else None
+        self.aliases = aliases
+        self.default_scope = default_scope
+        self.allowed_scopes = allowed_scopes or set()
+        super().__init__(required=required, default=default)
+
+    def clean(self, value):
+        if not isinstance(value, str):
+            if value is None and self.default is not None:
+                return self.default
+            try:
+                value = str(value)
+            except Exception:
+                self.raise_error(value)
+        if self.aliases:
+            value = self.aliases.get(value, value)
+        if self.choices and value not in self.choices:
+            self.raise_error(value)
+        s, *v = value.rsplit("::", 1)
+        if not v and not self.default_scope:
+            self.raise_error(value, msg="Label without scope is not allowed")
+        elif not v:
+            value = f"{self.default_scope}::{value}"
+        if self.allowed_scopes and s not in self.allowed_scopes:
+            self.raise_error(value, msg=f"Not allowed scope: {s}")
+        return value
+
+
+class LabelListParameter(ListOfParameter):
+    """ """
+
+    def __init__(
+        self,
+        required=True,
+        default=None,
+        convert=False,
+        choices=None,
+        default_scope=None,
+        allowed_scopes=None,
+    ):
+        super().__init__(
+            element=LabelParameter(
+                choices=choices, default_scope=default_scope, allowed_scopes=allowed_scopes
+            ),
+            required=required,
+            default=default,
+            convert=convert,
+        )
+
+
 class DictParameter(Parameter):
     """
     Check value is a dict
