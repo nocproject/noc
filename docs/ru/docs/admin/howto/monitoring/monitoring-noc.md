@@ -103,6 +103,7 @@ networks:
 2. Создаём директорию **grafana**, а в ней создаём директорию **data**
 ```
 mkdir -p grafana/data/
+```
 3. Качаем дашборды и датасорсы: 
 ```
 git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git grafana
