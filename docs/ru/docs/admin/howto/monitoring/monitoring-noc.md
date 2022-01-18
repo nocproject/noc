@@ -318,5 +318,5 @@ cd /etc/docker-compose/mon/
 ```
 2.Запускаем мониторинг
 ```
-docker-compouse up -d
+docker-compose up -d
 ```
