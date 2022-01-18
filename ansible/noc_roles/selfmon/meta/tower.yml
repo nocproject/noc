@@ -38,11 +38,11 @@ forms:
       type: bool
       default: False  # yamllint disable-line rule:truthy
     enable_managedobject:
-      label: "enable_liftbridge"
+      label: "enable_managedobject"
       type: bool
       default: True  # yamllint disable-line rule:truthy
     enable_task:
-      label: "enable_liftbridge"
+      label: "enable_task"
       type: bool
       default: False  # yamllint disable-line rule:truthy
 
