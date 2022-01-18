@@ -9,7 +9,7 @@
 
 1. Создаём директорию в которой должен лежать **docker-compose.yml**
 ```
-mkdir /etc/mon/ 
+mkdir /etc/docker-compose/mon/ 
 ```
 со следующим содержимым:
 ```
@@ -24,9 +24,9 @@ services:
     user: '0'
     volumes:
       - "./grafana/data/:/var/lib/grafana/"
-      - "./grafana/grafana-selfmon-dashboards/dashboards/noc/:/var/lib/grafana/dashboards"
-      - "./grafana/grafana-selfmon-dashboards/provisioning/datasources/:/etc/grafana/provisioning/datasources/" 
-      - "./grafana/grafana-selfmon-dashboards/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/"
+      - "./grafana/dashboards/noc/:/var/lib/grafana/dashboards"
+      - "./grafana/provisioning/datasources/:/etc/grafana/provisioning/datasources/" 
+      - "./grafana/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/"
     networks:
       - mon
 
@@ -103,20 +103,22 @@ networks:
 2. Создаём директорию **grafana**, а в ней создаём директорию **data**
 ```
 mkdir -p grafana/data/
+3. Качаем дашборды и датасорсы: 
 ```
-3. Переходим из директории в которой лежит **docker-compose.yml**, в директорию **grafana**
-4. качаем дашборды и датасорсы: 
+git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git grafana
 ```
-git clone https://code.getnoc.com:noc/grafana-selfmon-dashboards.git
+4. Переходим обратно в директорию где лежит **docker-compose.yml** и создаём директорию **vm**
 ```
-5. Переходим обратно в директорию где лежит **docker-compose.yml** и создаём директорию **vm**
+cd ..
 ```
-cd .. \
+```
 mkdir vm
 ```
-6. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** 
+5. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** 
 ```
 mkdir vmdata
+```
+```
 touch prometheus.yml
 ```
 со следующим содержимым:
@@ -176,7 +178,7 @@ scrape_configs:
 ```
 5. Качаем правила алертинга в директорию **vm**:
 ```
-git clone https://code.getnoc.com:noc/noc-prometheus-alerts.git
+git clone https://code.getnoc.com/noc/noc-prometheus-alerts.git
 ```
 6. В директорию **vm** создаём файл **alertmanager.yml** 
 ```
@@ -222,9 +224,13 @@ inhibit_rules:
 7. Создаём директорию **telegrambot**, а в ней создаём два файла **config.yaml** и **template.tmpl** не забываю подставлять свои значения.
 ```
 mkdir telegrambot
-touch ./telegrambot/config.yaml \
+```
+```
+touch ./telegrambot/config.yaml
+```
+```
 touch ./telegrambot/template.tmpl
-````
+```
 config.yaml:
 ```
 telegram_token: "<token от бота в telegram>"
@@ -289,31 +295,16 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
 {{- end -}}
 {{- end -}}
 ```
-## Настраиваем конфиг selfmon
+## Настраиваем selfmon
 
-1. Переходим в директорию /opt/noc/etc/ и редактируем файл settings.yml
-2. Файл должен содержать следующие значения:
-```
-selfmon:
-  enable_fm: true
-  enable_inventory: true
-  enable_liftbridge: false
-  enable_managedobject: true
-  enable_task: true
-  fm_ttl: 30
-  inventory_ttl: 30
-  liftbridge_ttl: 30
-  managedobject_ttl: 30
-  task_ttl: 30
-consul:
-  release: 10M
-```
 
 ## Ребутаем сервисы NOC
 
 1. Переходим в директорию где лжеит noc (/opt/noc)
-2. Выполняем команду ./noc ctl restart all
-
+2. Выполняем команду: 
+```
+./noc ctl restart all
+```
 ## Запускаем мониторинг
 
 1. Переходим в директорию где лежит docker-compose.yml
