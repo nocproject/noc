@@ -298,6 +298,11 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
 ```
 ## Настраиваем selfmon
 
+1. Заходим в веб-интерфейс NOC Tower <ip адрес сервера с Tower>:8888
+2. Выбираем в Environment и нажимаем Pull
+![](./img/1.png)
+3. Далее переходим в Services, выбираем selfmon, отмечаем флажками что хотим мониторить
+![](./img/2.png)
 
 ## Ребутаем сервисы NOC
 
