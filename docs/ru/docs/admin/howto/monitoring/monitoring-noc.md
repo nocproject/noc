@@ -1,13 +1,13 @@
 # Мониторим NOC
 
-## Устанавлием Docker и Docker-compose
+## Устанавливаем Docker и Docker-compose
 
 1. Установка Docker https://docs.docker.com/engine/install/
 2. Установка Docker Compose https://docs.docker.com/compose/install/ 
 
 ## Создаём docker-compose.yml со всем его окружением 
 
-1. Создаём **docker-compose.yml**
+1. Создаём в любой удобной для вас директории **docker-compose.yml**
 ```
 version: '3'
 services:
@@ -97,10 +97,25 @@ networks:
   mon:  
 ```
 2. Создаём директорию **grafana**, а в ней создаём директорию **data**
+```
+mkdir -p grafana/data/
+```
 3. Переходим из директории в которой лежит **docker-compose.yml**, в директорию **grafana**
-4. Делаем git clone git@code.getnoc.com:noc/grafana-selfmon-dashboards.git
+4. качаем дашборды и датасорсы: 
+```
+git clone https://code.getnoc.com:noc/grafana-selfmon-dashboards.git
+```
 5. Переходим обратно в директорию где лежит **docker-compose.yml** и создаём директорию **vm**
-6. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** со следующим содержимым:
+```
+cd .. \
+mkdir vm
+```
+6. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** 
+```
+mkdir vmdata
+touch prometheus.yml
+```
+со следующим содержимым:
 ```
 # my global config
 # собирать будем раз в 10 секунд
@@ -155,8 +170,15 @@ scrape_configs:
         labels:
            env: 'dev' # указываем тут тип инсталляции нока
 ```
-5. Делаем git clone git@code.getnoc.com:noc/noc-prometheus-alerts.git, в директорию **vm**
-6. В директорию **vm** создаём файл **alertmanager.yml** со следующим содержимым подставляя свои данные:
+5. Качаем правила алертинга в директорию **vm**:
+```
+git clone https://code.getnoc.com:noc/noc-prometheus-alerts.git
+```
+6. В директорию **vm** создаём файл **alertmanager.yml** 
+```
+touch alertmanager.yml
+```
+со следующим содержимым подставляя свои данные:
 ```
 global:
   resolve_timeout: 5m
@@ -194,6 +216,11 @@ inhibit_rules:
 ```
 
 7. Создаём директорию **telegrambot**, а в ней создаём два файла **config.yaml** и **template.tmpl** не забываю подставлять свои значения.
+```
+mkdir telegrambot
+touch ./telegrambot/config.yaml \
+touch ./telegrambot/template.tmpl
+````
 config.yaml:
 ```
 telegram_token: "<token от бота в telegram>"
@@ -257,6 +284,25 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
   {{ range $key, $value := $val.Annotations -}}
 {{- end -}}
 {{- end -}}
+```
+## Настраиваем конфиг selfmon
+
+1. Переходим в директорию /opt/noc/etc/ и редактируем файл settings.yml
+2. Файл должен содержать следующие значения:
+```
+selfmon:
+  enable_fm: true
+  enable_inventory: true
+  enable_liftbridge: false
+  enable_managedobject: true
+  enable_task: true
+  fm_ttl: 30
+  inventory_ttl: 30
+  liftbridge_ttl: 30
+  managedobject_ttl: 30
+  task_ttl: 30
+consul:
+  release: 10M
 ```
 
 ## Ребутаем сервисы NOC
