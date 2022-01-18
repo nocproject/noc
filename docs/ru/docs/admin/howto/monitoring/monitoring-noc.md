@@ -25,8 +25,8 @@ services:
     volumes:
       - "./grafana/data/:/var/lib/grafana/"
       - "./grafana/dashboards/noc/:/var/lib/grafana/dashboards"
-      - "./grafana/provisioning/datasources/:/etc/grafana/provisioning/datasources/" 
-      - "./grafana/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/"
+      - "./grafana/grafana-selfmon-dashboards/provisioning/datasources/:/etc/grafana/provisioning/datasources/" 
+      - "./grafana/grafana-selfmon-dashboards/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/"
     networks:
       - mon
 
@@ -102,25 +102,22 @@ networks:
 ```
 2. Создаём директорию **grafana**, а в ней создаём директорию **data**
 ```
-mkdir -p grafana/data/
+mkdir -p /etc/docker-compose/mon/grafana/data/
 ```
 3. Качаем дашборды и датасорсы: 
 ```
-git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git grafana
+git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git /etc/docker-compose/mon/grafana/grafana-selfmon-dashboards/
 ```
-4. Переходим обратно в директорию где лежит **docker-compose.yml** и создаём директорию **vm**
+4. Cоздаём директорию **vm**:
 ```
-cd ..
-```
-```
-mkdir vm
+mkdir /etc/docker-compose/mon/vm
 ```
 5. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** 
 ```
-mkdir vmdata
+mkdir /etc/docker-compose/mon/vm/vmdata/
 ```
 ```
-touch prometheus.yml
+touch /etc/docker-compose/mon/vm/prometheus.yml
 ```
 со следующим содержимым:
 ```
@@ -179,11 +176,11 @@ scrape_configs:
 ```
 5. Качаем правила алертинга в директорию **vm**:
 ```
-git clone https://code.getnoc.com/noc/noc-prometheus-alerts.git
+git clone https://code.getnoc.com/noc/noc-prometheus-alerts.git /etc/docker-compose/mon/vm/noc-prometheus-alerts/
 ```
 6. В директорию **vm** создаём файл **alertmanager.yml** 
 ```
-touch alertmanager.yml
+touch /etc/docker-compose/mon/vm/alertmanager.yml
 ```
 со следующим содержимым подставляя свои данные:
 ```
@@ -224,13 +221,13 @@ inhibit_rules:
 
 7. Создаём директорию **telegrambot**, а в ней создаём два файла **config.yaml** и **template.tmpl** не забываю подставлять свои значения.
 ```
-mkdir telegrambot
+mkdir /etc/docker-compose/mon/vm/telegrambot
 ```
 ```
-touch ./telegrambot/config.yaml
+touch /etc/docker-compose/mon/vm/telegrambot/config.yaml
 ```
 ```
-touch ./telegrambot/template.tmpl
+touch /etc/docker-compose/mon/vm/telegrambot/template.tmpl
 ```
 config.yaml:
 ```
