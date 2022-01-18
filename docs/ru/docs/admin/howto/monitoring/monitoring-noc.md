@@ -1,0 +1,266 @@
+# Мониторим NOC
+
+## Устанавлием Docker и Docker-compose
+
+1. Установка Docker https://docs.docker.com/engine/install/
+2. Установка Docker Compose https://docs.docker.com/compose/install/ 
+
+## Создаём docker-compose.yml со всем его окружением 
+
+1. Создаём **docker-compose.yml**
+```
+version: '3'
+services:
+ 
+  grafana:      
+    image: grafana/grafana-oss
+    restart: always
+    ports:
+      - 3000:3000
+    user: '0'
+    volumes:
+      - "./grafana/data/:/var/lib/grafana/"
+      - "./grafana/grafana-selfmon-dashboards/dashboards/noc/:/var/lib/grafana/dashboards"
+      - "./grafana/grafana-selfmon-dashboards/provisioning/datasources/:/etc/grafana/provisioning/datasources/" 
+      - "./grafana/grafana-selfmon-dashboards/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/"
+    networks:
+      - mon
+
+  vmagent:
+    image: victoriametrics/vmagent
+    depends_on:
+      - "vm"
+    ports:
+      - 8429:8429
+    volumes:
+      - "./vm/vmagentdata:/vmagentdata"        
+      - "./vm/prometheus.yml:/etc/prometheus/prometheus.yml"
+    command:
+      - '--promscrape.config=/etc/prometheus/prometheus.yml'
+      - '--remoteWrite.url=http://vm:8428/api/v1/write'
+    restart: always
+    networks:
+      - mon
+
+  vm:
+    image: victoriametrics/victoria-metrics
+    ports:
+      - 8428:8428
+    volumes:        
+      - "./vm/vmdata/:/storage"
+    command:
+      - '--storageDataPath=/storage'
+      - '--retentionPeriod=60d'
+      - '--httpListenAddr=:8428'
+    restart: always
+    networks:
+      - mon
+    
+  alertmanager:
+    image: prom/alertmanager
+    restart: always
+    volumes:
+      - "./vm:/alertmanager"
+    command:
+      - --config.file=/alertmanager/alertmanager.yml
+      - --web.external-url=https://alertmanager:9093
+    networks:
+      - mon
+  
+  prometheus-bot:
+    image: tienbm90/prometheus-bot:0.0.1
+    volumes:
+      - ./vm/telegrambot/config.yaml:/config.yaml
+      - ./vm/telegrambot/:/etc/telegrambot/
+    networks:
+      - mon
+    restart: always
+
+  vmalert:
+    image: victoriametrics/vmalert
+    depends_on:
+      - "vm"
+      - "alertmanager"
+    volumes:
+      - "./vm/noc-prometheus-alerts/:/etc/alerts/"
+    command:
+      - '--datasource.url=http://victoriametrics:8428/'
+      - '--remoteRead.url=http://victoriametrics:8428/'
+      - '--remoteWrite.url=http://victoriametrics:8428/'
+      - '--notifier.url=http://alertmanager:9093/'
+      - '--rule=/etc/alerts/*.rules.yml'
+    networks:
+      - mon
+    restart: always
+
+networks:
+  mon:  
+```
+2. Создаём директорию **grafana**, а в ней создаём директорию **data**
+3. Переходим из директории в которой лежит **docker-compose.yml**, в директорию **grafana**
+4. Делаем git clone git@code.getnoc.com:noc/grafana-selfmon-dashboards.git
+5. Переходим обратно в директорию где лежит **docker-compose.yml** и создаём директорию **vm**
+6. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** со следующим содержимым:
+```
+# my global config
+# собирать будем раз в 10 секунд
+global:
+  scrape_interval:     10s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 10s # By default, scrape targets every 15 seconds.
+ 
+# у нас есть правила алертинга для системы
+rule_files:
+  - noc-prometheus-alerts/*.rules.yml
+ 
+# у нас есть алертменеджер живет там то
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets:
+        - alertmanagers:9093
+ 
+# важная секция. сбор метрик
+scrape_configs:
+  # самомониторинг прометея
+  - job_name: 'vmagent'
+    static_configs:
+      - targets: ['vmagent:8429']
+        labels:
+           env: 'infrastructure'
+
+  - job_name : 'victoriametrics'
+    static_configs:
+      - targets: ['vm:8428']
+ 
+  # собираем метрики с ноковских демонов. ищем их через консул
+  - job_name: 'noc'
+    consul_sd_configs:
+      - server: '<ip-адрес сервера с ноком>:8500' # например 192.168.1.25
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*,noc,.*
+        action: keep
+      - source_labels: [__meta_consul_service]
+        target_label: job
+      - source_labels: [env]
+        target_label: env
+        replacement: "dev" # указываем тут тип инсталляции нока
+
+  # собираем метрики с кликхауса
+  - job_name: 'ch'
+    scrape_interval:     30s
+    static_configs:
+      - targets:
+        - <ip-адрес сервера на котором утсановлен clickhouse>:9116 # если вы выбрали тип инсталляции при помощи docker и хотите использовать имя вместо ip-адреса, то необходимо дать доступ контейнеру на чтение файла "/etc/hosts"
+        labels:
+           env: 'dev' # указываем тут тип инсталляции нока
+```
+5. Делаем git clone git@code.getnoc.com:noc/noc-prometheus-alerts.git, в директорию **vm**
+6. В директорию **vm** создаём файл **alertmanager.yml** со следующим содержимым подставляя свои данные:
+```
+global:
+  resolve_timeout: 5m
+  smtp_from: alertmanager@prometheus.example.com
+  smtp_smarthost: mx1.example.com:25
+  smtp_require_tls: false
+ 
+route:
+  receiver: 'prometheus-bot'
+  routes:
+    - receiver: 'prometheus-bot'
+      group_interval: 10m
+ 
+receivers:
+- name: 'prometheus-bot'
+  webhook_configs:
+   - url: 'http://prometheus-bot:9087/alert/<id чат телеграмма>'
+    
+- name: email
+  email_configs:
+  - send_resolved: false
+    to: XXX@example.com
+    headers:
+      From: alertmanager@prometheus.example.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: XXXXXXX@example.com
+    html: '{{ template "email.default.html" . }}'
+    
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+```
+
+7. Создаём директорию **telegrambot**, а в ней создаём два файла **config.yaml** и **template.tmpl** не забываю подставлять свои значения.
+config.yaml:
+```
+telegram_token: "<token от бота в telegram>"
+template_path: "/etc/telegrambot/template.tmpl"
+time_zone: "Europe/Moscow"
+split_token: "|"
+time_outdata: "02/01/2006 15:04:05"
+split_msg_byte: 10000
+```
+
+template.tmpl:
+```
+{{ $length := len .GroupLabels -}} {{ if ne $length 0 }}
+<b>Grouped for:</b>
+{{ range $key,$val := .GroupLabels -}}
+    {{$key}} = <code>{{$val}}</code>
+{{ end -}}
+{{ end -}}
+
+{{if eq .Status "firing"}}
+Status: <b>{{.Status | str_UpperCase}} 🔥</b>
+{{end -}}
+
+{{if eq .Status "resolved"}}
+Status: <b>{{.Status | str_UpperCase}} ✅</b>
+{{end }}
+<b>Active Alert List:</b>
+{{- range $val := .Alerts }}
+  Alert: {{ $val.Labels.alertname }}
+  {{if HasKey $val.Annotations "message" -}} 
+  Message:{{ $val.Annotations.message }}
+  {{end -}}
+  {{if HasKey $val.Annotations "summary" -}} 
+  Summary:{{ $val.Annotations.summary }}
+  {{end -}}
+  {{if HasKey $val.Annotations "description" -}} 
+  Description:{{ $val.Annotations.description }}
+  {{end -}}
+  {{if HasKey $val.Labels "name" -}} 
+  Name:{{ $val.Labels.name }}
+  {{end -}}
+  {{if HasKey $val.Labels "partititon" -}} 
+  Partition:{{ $val.Labels.partition}}
+  {{end -}}
+  {{if HasKey $val.Labels "group" -}} 
+  Group:{{ $val.Labels.group }}
+  {{end -}}
+  {{if HasKey $val.Labels "instance" -}} 
+  Instance:{{ $val.Labels.instance }}
+  {{end -}}
+  {{if HasKey $val.Labels "queue" -}} 
+  Queue:{{ $val.Labels.queue }}
+  {{end -}}
+  {{if HasKey $val.Labels "pool" -}} 
+  Pool:{{ $val.Labels.pool }}
+  {{end -}}
+  {{if HasKey $val.Annotations "value" -}} 
+  Value:{{ $val.Annotations.value }}
+  {{end -}}
+  Active from: {{ $val.StartsAt | str_FormatDate }}
+  {{ range $key, $value := $val.Annotations -}}
+{{- end -}}
+{{- end -}}
+```
+
+## Ребутаем сервисы NOC
+
+1. Переходим в директорию где лжеит noc (/opt/noc)
+2. Выполняем команду ./noc ctl restart all
+
