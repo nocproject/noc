@@ -303,6 +303,8 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
 ![](./img/pull-enviroments.png)
 3. Далее переходим в Services, выбираем selfmon, отмечаем флажками что хотим мониторить
 ![](./img/selfmon-service.png)
+4. Деплоим изменения
+![](./img/deploy-tower.png)
 
 ## Ребутаем сервисы NOC
 
@@ -315,7 +317,7 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
 
 1. Переходим в директорию где лежит docker-compose.yml
 ```
-cd /etc/mon/
+cd /etc/docker-compose/mon/
 ```
 2.Запускаем мониторинг
 ```
