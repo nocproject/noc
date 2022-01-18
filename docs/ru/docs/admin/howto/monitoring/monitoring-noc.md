@@ -6,7 +6,7 @@
 2. Установка Docker Compose https://docs.docker.com/compose/install/ 
 
 ## Создаём docker-compose.yml со всем его окружением 
-
+(все команды запускаем от пользователя root)
 1. Создаём директорию в которой должен лежать **docker-compose.yml**
 ```
 mkdir /etc/docker-compose/mon/ 
