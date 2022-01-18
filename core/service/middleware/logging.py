@@ -15,6 +15,8 @@ from starlette.types import Scope, Receive, Send
 from noc.core.perf import metrics
 from noc.core.comp import smart_text
 
+PREFIX_NBI = "/api/nbi/"
+
 
 class LoggingMiddleware(object):
     def __init__(self, app, logger=None):
@@ -48,10 +50,32 @@ class LoggingMiddleware(object):
                 self.logger.debug("Monitoring request (%s)", scope["client"][0])
                 metrics["mon_requests"] += 1
             else:
-                if scope["query_string"]:
-                    path = "%s?%s" % (path, smart_text(scope["query_string"]))
-                remote_ip = scope["client"][0]
-                status = 200
-                self.logger.info("%s %s (%s) %.2fms", method, path, remote_ip, 1000.0 * (t1 - t0))
-                metrics["http_requests", ("method", method.lower())] += 1
-                metrics["http_response", ("status", status)] += 1
+                if scope["path"].startswith(PREFIX_NBI):
+                    remote_ip = scope["client"][0]
+                    headers = {t[0]: t[1] for t in scope["headers"]}
+                    user = headers.get("Remote-User", "-")
+                    if user != "-":
+                        user = smart_text(user)
+                    agent = headers.get("User-Agent", "-")
+                    referer = headers.get("Referer", "-")
+                    self.logger.info(
+                        '%s %s - "%s %s" HTTP/1.1 %s "%s" %s %.2fms',
+                        remote_ip,
+                        user,
+                        method,
+                        path,
+                        status,
+                        referer,
+                        agent,
+                        1000.0 * (t1 - t0),
+                    )
+                    api_name = scope["path"].split(PREFIX_NBI)[1].split('/')[0]
+                    metrics["api_requests", ("api", api_name)] += 1
+                else:
+                    if scope["query_string"]:
+                        path = "%s?%s" % (path, smart_text(scope["query_string"]))
+                    remote_ip = scope["client"][0]
+                    status = 200
+                    self.logger.info("%s %s (%s) %.2fms", method, path, remote_ip, 1000.0 * (t1 - t0))
+                    metrics["http_requests", ("method", method.lower())] += 1
+                    metrics["http_response", ("status", status)] += 1
