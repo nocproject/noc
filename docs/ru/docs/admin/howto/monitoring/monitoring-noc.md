@@ -9,7 +9,7 @@
 (все команды запускаем от пользователя root)
 1. Создаём директорию в которой должен лежать **docker-compose.yml**
 ```
-mkdir /etc/docker-compose/mon/ 
+mkdir -p /etc/docker-compose/mon/ 
 ```
 со следующим содержимым:
 ```
@@ -24,7 +24,7 @@ services:
     user: '0'
     volumes:
       - "./grafana/data/:/var/lib/grafana/"
-      - "./grafana/dashboards/noc/:/var/lib/grafana/dashboards"
+      - "./grafana/grafana-selfmon-dashboards/dashboards/noc/:/var/lib/grafana/dashboards"
       - "./grafana/grafana-selfmon-dashboards/provisioning/datasources/:/etc/grafana/provisioning/datasources/" 
       - "./grafana/grafana-selfmon-dashboards/provisioning/dashboards/:/etc/grafana/provisioning/dashboards/"
     networks:
