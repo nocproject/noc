@@ -99,7 +99,7 @@ class BaseBioSegPolicy(object):
             self.logger.info("Moving %s from %s to %s", mo.name, src.name, dst.name)
             mo.segment = dst
             mo.save()
-            mo._reset_caches()
+            ManagedObject._reset_caches(mo.id)
             dp += mo.object_profile.level
         self.logger.info(
             "%s power is increased from %d to %d (+%d)", dst.name, dst_pwr, dst_pwr + dp, dp

@@ -24,6 +24,7 @@ from noc.models import get_model, is_document
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
+from noc.core.defer import defer
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
@@ -218,15 +219,65 @@ class ResourceGroup(Document):
             and "dynamic_service_labels" in self._changed_fields
             and self.technology.service_model
         ) or (not hasattr(self, "_changed_fields") and self.dynamic_service_labels):
+            invalidate_instance_ids = set(
+                self.get_resource_group_instance_set(self.technology.service_model, self.id)
+            )
             self.unset_service_group(self.technology.service_model)
             self.add_service_group(self.technology.service_model)
+            invalidate_instance_ids |= set(
+                self.get_resource_group_instance_set(self.technology.service_model, self.id)
+            )
+            if invalidate_instance_ids:
+                defer(
+                    "noc.inv.models.resourcegroup.invalidate_instance_cache",
+                    model_id=self.technology.service_model,
+                    ids=list(invalidate_instance_ids),
+                )
         if (
             hasattr(self, "_changed_fields")
             and "dynamic_client_labels" in self._changed_fields
             and self.technology.client_model
         ) or (not hasattr(self, "_changed_fields") and self.dynamic_client_labels):
+            invalidate_instance_ids = set(
+                self.get_resource_group_instance_set(
+                    self.technology.client_model, self.id, is_client=True
+                )
+            )
             self.unset_client_group(self.technology.client_model)
             self.add_client_group(self.technology.client_model)
+            invalidate_instance_ids |= set(
+                self.get_resource_group_instance_set(
+                    self.technology.client_model, self.id, is_client=True
+                )
+            )
+            if invalidate_instance_ids:
+                defer(
+                    "noc.inv.models.resourcegroup.invalidate_instance_cache",
+                    model_id=self.technology.client_model,
+                    ids=list(invalidate_instance_ids),
+                )
+
+    @classmethod
+    def get_resource_group_instance_set(
+        cls, model_id: str, resource_group: str, is_client: bool = False
+    ) -> List[str]:
+        """
+        Getting instance id that setting ResourceGroup
+        :return:
+        """
+        model = get_model(model_id)
+        if is_document(model):
+            if is_client:
+                model = model.objects.filter(effective_client_groups=resource_group)
+            else:
+                model = model.objects.filter(effective_service_groups=resource_group)
+            return list(model.values_list("id"))
+        else:
+            if is_client:
+                model = model.objects.filter(effective_client_groups__contains=str(resource_group))
+            else:
+                model = model.objects.filter(effective_service_groups__contains=str(resource_group))
+            return list(model.values_list("id", flat=True))
 
     @staticmethod
     def _remove_group(
@@ -503,3 +554,21 @@ class ResourceGroup(Document):
                 o = model.objects.get(**q)
                 objects.add(o)
         return list(objects)
+
+
+def invalidate_instance_cache(model_id: str, ids: List[int]):
+    """
+    Defer task for invalidate instance with __reset_caches
+    :param model_id:
+    :param ids:
+    :return:
+    """
+    if not model_id:
+        return
+    print(f"[{model_id}] Invalidate instances cache: {len(ids)}")
+    model = get_model(model_id)
+    if not hasattr(model, "_reset_caches"):
+        return
+
+    for o_id in ids:
+        model._reset_caches(o_id)
