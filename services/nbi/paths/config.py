@@ -9,10 +9,9 @@
 # from typing import Optional
 
 # Third-party modules
-from fastapi import APIRouter, Response, Path, Header, Request
+from fastapi import APIRouter, Response, Path, Header
 
 # NOC modules
-from noc.core.perf import metrics
 from noc.core.service.loader import get_service
 from noc.sa.models.managedobject import ManagedObject
 
@@ -51,18 +50,6 @@ def _handler(access_header, object_id, revision=None):
     if config is None:
         return 204, ""
     return 200, config
-
-
-@service.app.middleware("http")
-async def update_metrics(request: Request, call_next):
-    def to_suppress_writing_metrics():
-        return path in ("/health/", "/health", "/metrics", "/mon/", "/mon")
-
-    response = await call_next(request)
-    path = request.scope["path"]
-    if not to_suppress_writing_metrics():
-        metrics["api_requests", ("api", API_NAME)] += 1
-    return response
 
 
 @router.get("/api/nbi/config/{object_id}")
