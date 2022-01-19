@@ -31,3 +31,38 @@
     - consul_address!='node_ip'
   tags:
     - config
+
+- name: Add Consul apt key
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add Consul repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install Ubuntu packages
+  apt:
+    name: consul
+    state: present
+    update_cache: "True"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  notify:
+    - restart consul
+  tags:
+    - requirements
+

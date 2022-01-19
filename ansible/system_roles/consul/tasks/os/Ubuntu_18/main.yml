@@ -43,7 +43,7 @@
 
 - name: Add Consul repo
   apt_repository:
-    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com bionic main"
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
     state: present
     update_cache: "True"
   environment:
