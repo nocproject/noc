@@ -8,6 +8,7 @@
 # Python modules
 import operator
 import threading
+import logging
 from typing import List, Union, Optional
 
 # Third-party modules
@@ -29,6 +30,8 @@ from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from .technology import Technology
+
+logger = logging.getLogger(__name__)
 
 id_lock = threading.Lock()
 rx_labels_lock = threading.Lock()
@@ -219,65 +222,47 @@ class ResourceGroup(Document):
             and "dynamic_service_labels" in self._changed_fields
             and self.technology.service_model
         ) or (not hasattr(self, "_changed_fields") and self.dynamic_service_labels):
-            invalidate_instance_ids = set(
-                self.get_resource_group_instance_set(self.technology.service_model, self.id)
-            )
-            self.unset_service_group(self.technology.service_model)
-            self.add_service_group(self.technology.service_model)
-            invalidate_instance_ids |= set(
-                self.get_resource_group_instance_set(self.technology.service_model, self.id)
-            )
-            if invalidate_instance_ids:
+            changed_ids = []
+            self.unset_service_group(self.technology.service_model, changed_ids=changed_ids)
+            self.add_service_group(self.technology.service_model, changed_ids=changed_ids)
+            if changed_ids:
                 defer(
                     "noc.inv.models.resourcegroup.invalidate_instance_cache",
                     model_id=self.technology.service_model,
-                    ids=list(invalidate_instance_ids),
+                    ids=list(set(changed_ids)),
                 )
         if (
             hasattr(self, "_changed_fields")
             and "dynamic_client_labels" in self._changed_fields
             and self.technology.client_model
         ) or (not hasattr(self, "_changed_fields") and self.dynamic_client_labels):
-            invalidate_instance_ids = set(
-                self.get_resource_group_instance_set(
-                    self.technology.client_model, self.id, is_client=True
-                )
-            )
-            self.unset_client_group(self.technology.client_model)
-            self.add_client_group(self.technology.client_model)
-            invalidate_instance_ids |= set(
-                self.get_resource_group_instance_set(
-                    self.technology.client_model, self.id, is_client=True
-                )
-            )
-            if invalidate_instance_ids:
+            changed_ids = []
+            self.unset_client_group(self.technology.client_model, changed_ids=changed_ids)
+            self.add_client_group(self.technology.client_model, changed_ids=changed_ids)
+            if changed_ids:
                 defer(
                     "noc.inv.models.resourcegroup.invalidate_instance_cache",
                     model_id=self.technology.client_model,
-                    ids=list(invalidate_instance_ids),
+                    ids=list(set(changed_ids)),
                 )
 
     @classmethod
-    def get_resource_group_instance_set(
+    def get_model_instance_ids(
         cls, model_id: str, resource_group: str, is_client: bool = False
-    ) -> List[str]:
+    ) -> List[Union[int, str]]:
         """
-        Getting instance id that setting ResourceGroup
+        Getting model instance ids that setting ResourceGroup
         :return:
         """
         model = get_model(model_id)
+        query = f"effective_{'client' if is_client else 'service'}_groups"
         if is_document(model):
-            if is_client:
-                model = model.objects.filter(effective_client_groups=resource_group)
-            else:
-                model = model.objects.filter(effective_service_groups=resource_group)
-            return list(model.values_list("id"))
-        else:
-            if is_client:
-                model = model.objects.filter(effective_client_groups__contains=str(resource_group))
-            else:
-                model = model.objects.filter(effective_service_groups__contains=str(resource_group))
-            return list(model.values_list("id", flat=True))
+            return list(model.objects.filter(**{query: resource_group}).values_list("id"))
+        return list(
+            model.objects.filter(**{f"{query}__contains": str(resource_group)}).values_list(
+                "id", flat=True
+            )
+        )
 
     @staticmethod
     def _remove_group(
@@ -352,20 +337,34 @@ class ResourceGroup(Document):
             cursor = connection.cursor()
             cursor.execute(sql, [labels])
 
-    def unset_service_group(self, model_id: str):
+    def unset_service_group(self, model_id: str, changed_ids: Optional[List[str]] = None):
+        """
+        Remove ServiceGroup from model
+        :param model_id:
+        :param changed_ids:
+        :return:
+        """
+        if changed_ids is not None:
+            changed_ids += self.get_model_instance_ids(model_id, self.id)
         self._remove_group(model_id, self.id)
 
-    def unset_client_group(self, model_id: str):
+    def unset_client_group(self, model_id: str, changed_ids: Optional[List[str]] = None):
+        if changed_ids is not None:
+            changed_ids += self.get_model_instance_ids(model_id, self.id, is_client=True)
         self._remove_group(model_id, self.id, is_client=True)
 
-    def add_service_group(self, model_id: str):
+    def add_service_group(self, model_id: str, changed_ids: Optional[List[str]] = None):
         # @todo optimize for one operation
         for ml in self.dynamic_service_labels:
             self._add_group(model_id, self.id, ml.labels)
+        if changed_ids is not None:
+            changed_ids += self.get_model_instance_ids(model_id, self.id)
 
-    def add_client_group(self, model_id: str):
+    def add_client_group(self, model_id: str, changed_ids: Optional[List[str]] = None):
         for ml in self.dynamic_service_labels:
             self._add_group(model_id, self.id, ml.labels, is_client=True)
+        if changed_ids is not None:
+            changed_ids += self.get_model_instance_ids(model_id, self.id, is_client=True)
 
     @classmethod
     def get_dynamic_service_groups(cls, labels: List[str], model: str) -> List[str]:
@@ -565,7 +564,7 @@ def invalidate_instance_cache(model_id: str, ids: List[int]):
     """
     if not model_id:
         return
-    print(f"[{model_id}] Invalidate instances cache: {len(ids)}")
+    logger.info(f"[{model_id}] Invalidate instances cache: {len(ids)}")
     model = get_model(model_id)
     if not hasattr(model, "_reset_caches"):
         return
