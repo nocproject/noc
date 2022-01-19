@@ -31,3 +31,4 @@
     - consul_address!='node_ip'
   tags:
     - config
+

@@ -47,10 +47,10 @@
   tags:
     - requirements
 
-- name: Install OS packages and consul - remotely
-  import_tasks: install.yml
-  tags:
-    - requirements
+#- name: Install OS packages and consul - remotely
+#  import_tasks: install.yml
+#  tags:
+#    - requirements
 
 - name: Consul config
   import_tasks: config.yml
