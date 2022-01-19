@@ -60,7 +60,7 @@
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   environment:
     https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ htpp_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   notify:
     - restart consul
   tags:
