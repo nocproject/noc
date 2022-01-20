@@ -70,6 +70,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             },
                             minValue: 0,
                             defaultValue: 0,
+                            width: 50
                         },
                         {
                             text: __("Window (sec.)"),
@@ -79,6 +80,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             },
                             minValue: 0,
                             defaultValue: 0,
+                            width: 50
                         },
                         {
                             text: __("Reference Template"),
@@ -91,15 +93,27 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             dataIndex: "alarm_class",
                             editor: "fm.alarmclass.LookupField",
                             renderer: NOC.render.Lookup("alarm_class"),
-                            width: 250
+                            width: 200
                         },
                         {
                             text: __("Title Template"),
                             dataIndex: "title_template",
                             editor: "textfield",
                             allowBlank: true,
-                            flex: 1
+                            width: 200
                         },
+                        {
+                            text: __("Labels"),
+                            dataIndex: "labels",
+                            renderer: NOC.render.LabelField,
+                            allowBlank: true,
+                            editor: {
+                                xtype: "labelfield",
+                                query: {
+                                    "enable_alarm": true
+                                }},
+                            width: 200
+                        }
                     ]
                 },
                 {

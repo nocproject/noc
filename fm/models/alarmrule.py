@@ -58,6 +58,8 @@ class Group(EmbeddedDocument):
     min_threshold = IntField(default=0)
     # Correlation window in seconds to check min_threshold
     window = IntField(default=0)
+    # Labels for set Group Alarm
+    labels = ListField(StringField())
 
     def __str__(self):
         return f'{self.alarm_class or ""}/{self.title_template or ""}: {self.reference_template}'

@@ -82,6 +82,7 @@ class AlarmRule(object):
                     title_template=Template(group.title_template),
                     min_threshold=group.min_threshold or 0,
                     window=group.window or 0,
+                    labels=group.labels or [],
                 )
             )
         return rule
