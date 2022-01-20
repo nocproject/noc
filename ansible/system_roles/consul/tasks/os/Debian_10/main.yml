@@ -31,6 +31,7 @@
     - consul_address!='node_ip'
   tags:
     - config
+
 - name: Add Consul apt key
   apt_key:
     url: https://apt.releases.hashicorp.com/gpg

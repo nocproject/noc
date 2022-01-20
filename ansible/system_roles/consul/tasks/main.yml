@@ -49,9 +49,9 @@
 
 - name: Install OS packages and consul - remotely
   import_tasks: install.yml
+  when: ansible_distribution == 'FreeBSD_12' or ansible_distribution == 'OracleLinux_7'
   tags:
     - requirements
-  when: ansible_distribution == 'FreeBSD_12' or ansible_distribution == 'OracleLinux_7' 
 
 - name: Consul config
   import_tasks: config.yml

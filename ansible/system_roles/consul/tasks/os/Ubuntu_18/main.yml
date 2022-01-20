@@ -1,5 +1,5 @@
 ---
-- name: Install Debian consul depends
+- name: Install Ubuntu consul depends
   apt:
     name: python-virtualenv
     update_cache: "True"
@@ -54,7 +54,7 @@
 
 - name: Install Ubuntu packages
   apt:
-    name: consul
+    name: consul={{ consul_version }}
     state: present
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"

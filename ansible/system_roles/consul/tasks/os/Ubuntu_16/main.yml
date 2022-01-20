@@ -1,5 +1,5 @@
 ---
-- name: Install Debian consul depends
+- name: Install Ubuntu consul depends
   apt:
     name: python-virtualenv
     update_cache: "True"
