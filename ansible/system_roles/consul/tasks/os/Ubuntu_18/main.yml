@@ -65,5 +65,3 @@
     - restart consul
   tags:
     - requirements
-
-
