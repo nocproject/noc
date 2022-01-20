@@ -58,7 +58,6 @@
     state: present
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
-    allow_downgrade: "Yes"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
