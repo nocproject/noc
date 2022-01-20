@@ -22,6 +22,10 @@ class Script(BaseScript):
         r"(?:\-|\d+)\s+(?:\-|\d+)\s+(?P<type>dynamic|static)\s*\n",
         re.MULTILINE,
     )
+    rx_line2 = re.compile(
+        r"^\s*(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interface>[xgpl]\S+\d)\s+(?P<type>dynamic|static)\s*\n",
+        re.MULTILINE,
+    )
 
     def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
         r = []
@@ -46,4 +50,17 @@ class Script(BaseScript):
                         "type": {"dynamic": "D", "static": "S"}[match.group("type").lower()],
                     }
                 ]
+            if len(r) == 0:
+                for match in self.rx_line2.finditer(v):
+                    if mac is not None:
+                        if match.group("mac") != mac:
+                            continue
+                    r += [
+                        {
+                            "vlan_id": match.group("vlan_id"),
+                            "mac": match.group("mac"),
+                            "interfaces": [match.group("interface")],
+                            "type": {"dynamic": "D", "static": "S"}[match.group("type").lower()],
+                        }
+                    ]
         return r
