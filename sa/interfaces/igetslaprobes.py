@@ -13,6 +13,7 @@ from .base import (
     StringListParameter,
     BooleanParameter,
     IntParameter,
+    LabelListParameter,
 )
 
 
@@ -58,6 +59,6 @@ class IGetSLAProbes(BaseInterface):
             "target": StringParameter(),
             "hw_timestamp": BooleanParameter(default=False),
             # Custom field
-            "tags": StringListParameter(required=False),
+            "tags": LabelListParameter(required=False, default_scope="noc::sla::tag"),
         }
     )
