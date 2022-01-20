@@ -103,8 +103,10 @@ class SLACheck(DiscoveryCheck):
                 tos=new_data.get("tos", 0),
                 target=new_data["target"],
                 hw_timestamp=new_data.get("hw_timestamp", False),
-                labels=new_data.get("tags", []),
             )
+            if new_data.get("tags"):
+                probe.labels = [ll for ll in new_data["tags"] if SLAProbe.can_set_label(ll)]
+                probe.extra_labels["sa"] = new_data["tags"]
             probe.save()
             if not new_data["status"]:
                 probe.fire_event("down")
