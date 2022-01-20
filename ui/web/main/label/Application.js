@@ -482,6 +482,11 @@ Ext.define("NOC.main.label.Application", {
                                     name: "enable_interface",
                                     xtype: "checkbox",
                                     boxLabel: __("Interface")
+                                },
+                                {
+                                    name: "enable_alarm",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Alarm")
                                 }
                             ]
                         },
