@@ -106,7 +106,11 @@ class SLAProbe(Document):
 
     def clean(self):
         if self.extra_labels:
-            self.labels += [ll for ll in Label.merge_labels(self.extra_labels.values()) if SLAProbe.can_set_label(ll)]
+            self.labels += [
+                ll
+                for ll in Label.merge_labels(self.extra_labels.values())
+                if SLAProbe.can_set_label(ll)
+            ]
 
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self):

@@ -414,6 +414,7 @@ class Label(Document):
         enable_managedobject=False,
         enable_slaprobe=False,
         enable_interface=False,
+        enable_sensor=False,
         bg_color1=0xFFFFFF,
         fg_color1=0x000000,
         bg_color2=0xFFFFFF,
@@ -430,6 +431,7 @@ class Label(Document):
         :param enable_managedobject:
         :param enable_slaprobe:
         :param enable_interface:
+        :param enable_sensor:
         :param bg_color1:
         :param fg_color1:
         :param bg_color2:
@@ -455,6 +457,8 @@ class Label(Document):
             settings["enable_slaprobe"] = enable_slaprobe
         if enable_interface:
             settings["enable_interface"] = enable_interface
+        if enable_sensor:
+            settings["enable_sensor"] = enable_sensor
         if bg_color1 and bg_color1 != 0xFFFFFF:
             settings["bg_color1"] = bg_color1
         if fg_color1:
