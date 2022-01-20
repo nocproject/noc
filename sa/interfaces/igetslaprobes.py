@@ -10,7 +10,6 @@ from noc.core.interface.base import BaseInterface
 from .base import (
     DictListParameter,
     StringParameter,
-    StringListParameter,
     BooleanParameter,
     IntParameter,
     LabelListParameter,

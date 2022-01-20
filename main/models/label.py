@@ -102,8 +102,6 @@ class Label(Document):
     is_regex = BooleanField(default=False)
     # For scoped - to propagating settings on own labels
     propagate = BooleanField(default=False)
-    # Allow SA interface labels control
-    allow_sa_script = BooleanField(default=False)
     # Label scope
     enable_agent = BooleanField(default=False)
     enable_service = BooleanField(default=False)
