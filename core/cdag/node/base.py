@@ -194,6 +194,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if self.allow_dynamic and self.dynamic_inputs:
             yield from self.dynamic_inputs
 
+    def first_input(self) -> Optional[str]:
+        """
+        Get first input name
+        """
+        try:
+            return next(self.iter_inputs())
+        except StopIteration:
+            return None
+
     def iter_unbound_inputs(self) -> Iterable[str]:
         """
         Iterate all unbound inputs

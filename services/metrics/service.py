@@ -9,6 +9,7 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
+from lib2to3.pytree import Base
 from typing import Any, Dict, Tuple, Optional
 import sys
 import asyncio
@@ -30,6 +31,7 @@ from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.services.metrics.changelog import ChangeLog
+from noc.services.metrics.rule import iter_rules
 from noc.config import config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
@@ -199,7 +201,7 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = self.project_cdag(cdag, prefix=self.get_key_hash(k))
+        card = self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k)
         self.cards[k] = card
         return card
 
@@ -224,7 +226,7 @@ class MetricsService(FastAPIService):
         self.scope_cdag[k[0]] = cdag
         return cdag
 
-    def project_cdag(self, src: CDAG, prefix: str) -> Card:
+    def project_cdag(self, src: CDAG, prefix: str, k: MetricKey) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src:
@@ -234,19 +236,54 @@ class MetricsService(FastAPIService):
         def unscope(x):
             return sys.intern(x.rsplit("::", 1)[-1])
 
+        def clone_and_add_node(n: BaseCDAGNode) -> BaseCDAGNode:
+            """
+            Clone node and add it to the graph
+            """
+            node_id = n.node_id
+            state_id = f"{prefix}::{node_id}"
+            state = self.start_state.pop(state_id, None)
+            new_node = n.clone(node_id, prefix=prefix, state=state)
+            nodes[node_id] = new_node
+            return new_node
+
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
-        for node_id, node in src.nodes.items():
-            new_id = f"{prefix}::{node_id}"
-            state = self.start_state.pop(new_id, None)
-            nodes[node_id] = node.clone(node_id, prefix=prefix, state=state)
+        for node in src.nodes.values():
+            clone_and_add_node(node)
         # Subscribe
-        for node_id, o_node in src.nodes.items():
-            node = nodes[node_id]
+        for o_node in src.nodes.values():
+            node = nodes[o_node.node_id]
             for rs in o_node.iter_subscribers():
                 node.subscribe(
                     nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                 )
+        # Apply rules
+        for item in iter_rules(k[0], k[2]):
+            prev: Optional[BaseCDAGNode] = nodes.get(item.metric_type.field_name)
+            if not prev:
+                self.logger.error("Cannot find probe node %s", item.metric_type.field_name)
+                continue
+            if item.compose_node:
+                compose_node = clone_and_add_node(item.compose_node)
+                if item.compose_inputs:
+                    for probe_name, input_name in item.compose_inputs.items():
+                        probe_node = nodes.get(probe_name)
+                        if not probe_node:
+                            self.logger.error("Cannot find probe node %s", probe_node)
+                            continue
+                        probe_node.subscribe(compose_node, input_name)
+                else:
+                    prev.subscribe(compose_node, compose_node.first_input())
+                prev = compose_node
+            if item.activation_node:
+                activation_node = clone_and_add_node(item.activation_node)
+                prev.subscribe(activation_node, activation_node.first_input())
+                prev = activation_node
+            if item.alarm_node:
+                alarm_node = clone_and_add_node(item.alarm_node)
+                prev.subscribe(alarm_node, alarm_node.first_input())
+                prev = alarm_node
         # Compact the strorage
         for node in nodes.values():
             node.freeze()
