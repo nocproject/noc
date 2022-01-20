@@ -467,7 +467,7 @@ class AssetCheck(DiscoveryCheck):
                     label=sf.get("description"),
                     snmp_oid=sf.get("snmp_oid"),
                     ipmi_id=sf.get("ipmi_id"),
-                    labels=si.get("labels"),
+                    labels=sf.get("labels"),
                 )
                 del self.sensors[(obj, sn)]
             else:
@@ -557,13 +557,14 @@ class AssetCheck(DiscoveryCheck):
             sensor.protocol = "ipmi"
             sensor.ipmi_id = ipmi_id
         sa_labels = sensor.extra_labels.get("sa", [])
-        for ll in labels or []:
+        labels = labels or []
+        for ll in labels:
             if ll in sa_labels:
                 continue
             self.logger.info("[%s] Ensure Sensor label: %s", sensor.id, ll)
             Label.ensure_label(ll, enable_sensor=True)
         if labels != sa_labels:
-            remove_labels = set(sa_labels).difference(labels)
+            remove_labels = set(sa_labels).difference(set(labels))
             if remove_labels:
                 sensor.labels = [ll for ll in sensor.labels if ll not in remove_labels]
             sensor.extra_labels["sa"] = labels
