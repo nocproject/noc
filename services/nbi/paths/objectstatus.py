@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Callable
+from typing import List, Union, Callable
 
 # Third-party modules
-from fastapi import APIRouter, Response, Header
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 # NOC modules
@@ -20,7 +20,7 @@ router = APIRouter()
 
 
 class RequestModel(BaseModel):
-    objects: List[str]
+    objects: List[Union[str, int]]
 
 
 class Status(BaseModel):
@@ -32,7 +32,7 @@ class ResponseModel(BaseModel):
     statuses: List[Status]
 
 
-class _ObjectStatusAPI(NBIAPI):
+class ObjectStatusAPI(NBIAPI):
     api_name = "objectstatus"
     openapi_tags = ["objectstatus API"]
 
@@ -51,28 +51,21 @@ class _ObjectStatusAPI(NBIAPI):
         async def objectstatus_handler(
             req: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
         ):
-            def _handler(objects_):
-                if not self.access_granted(access_header):
-                    return 403, FORBIDDEN_MESSAGE
-                # Validate
-                try:
-                    objects = [int(o) for o in objects_]
-                except ValueError as e:
-                    return 400, "Bad request: %s" % e
-                statuses = ObjectStatus.get_statuses(objects)
-                r = {
-                    "statuses": [{"id": str(o), "status": statuses.get(o, False)} for o in objects]
-                }
-                return 200, r
-
-            code, result = _handler(req.objects)
-            if isinstance(result, str):
-                return Response(status_code=code, content=result, media_type="text/plain")
-            else:
-                return result
+            if not self.access_granted(access_header):
+                raise HTTPException(403, FORBIDDEN_MESSAGE)
+            # Validate
+            try:
+                objects = [int(o) for o in req.objects]
+            except ValueError as e:
+                raise HTTPException(400, "Bad request: %s" % e)
+            statuses = ObjectStatus.get_statuses(objects)
+            result = {
+                "statuses": [{"id": str(o), "status": statuses.get(o, False)} for o in objects]
+            }
+            return result
 
         return objectstatus_handler
 
 
 # Install router
-_ObjectStatusAPI(router)
+ObjectStatusAPI(router)
