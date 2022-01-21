@@ -33,6 +33,7 @@ def check_close_consequence(alarm_id):
     # Trigger escalations
     if alarm.managed_object.tt_system.alarm_consequence_policy == "D":
         return
+    # @todo check if root is not escalated
     # Do not remove, if escalation is not performed escalation doc not created
     AlarmEscalation.watch_escalations(
         alarm, timestamp_policy=alarm.managed_object.tt_system.alarm_consequence_policy
