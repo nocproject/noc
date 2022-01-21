@@ -18,7 +18,7 @@ consul_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_version }}_SHA256SUMS
 python_consul_version: 1.1.0
 
 ### Paths
-consul_bin_path: "/bin"
+consul_bin_path: "/usr/bin/"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
 consul_pid_path: "/var/run/consul/consul.pid"
