@@ -108,5 +108,5 @@
 
 - name: Delete consul.hcl
   file:
-    path: /etc/consul.d/consul.hcl  
+    path: /etc/consul.d/consul.hcl
     state: absent
