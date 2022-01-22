@@ -15,11 +15,19 @@ class Script(BaseScript):
     interface = IGetInventory
 
     nano_input_config_map = {
-        0: {"type": "volt", "units": "Volt AC"},
-        1: {"type": "in", "units": "StatusEnum"},
-        2: {"type": "relay", "units": "StatusEnum"},
-        3: {"type": "counter", "units": "Scalar"},
-        4: {"type": "vibration", "units": "Scalar"},
+        0: {
+            "type": "volt",
+            "units": "Volt AC",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::voltage"],
+        },
+        1: {"type": "in", "units": "StatusEnum", "labels": ["noc::sensor::placement::external"]},
+        2: {"type": "relay", "units": "StatusEnum", "labels": ["noc::sensor::placement::external"]},
+        3: {
+            "type": "counter",
+            "units": "Scalar",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::counter"],
+        },
+        4: {"type": "vibration", "units": "Scalar", "labels": ["noc::sensor::placement::external"]},
     }
 
     def get_oid(self, p_type, num):
@@ -42,6 +50,7 @@ class Script(BaseScript):
                 "status": 1,
                 "description": "Значение температуры с внутреннего датчика",
                 "measurement": "Celsius",
+                "labels": ["noc::sensor::placement::internal", "noc::sensor::mode::temperature"],
                 "snmp_oid": "1.3.6.1.4.1.51315.1.1.0",
             },
             # Supply voltage
@@ -50,6 +59,7 @@ class Script(BaseScript):
                 "status": 1,
                 "description": "Напряжение питания устройства",
                 "measurement": "Volt AC",
+                "labels": ["noc::sensor::placement::internal", "noc::sensor::mode::voltage"],
                 "snmp_oid": "1.3.6.1.4.1.51315.1.14.0",
             },
         ]
@@ -70,6 +80,10 @@ class Script(BaseScript):
                         "status": True,
                         "description": f"Универсальных вход {num}",
                         "measurement": "Ampere",
+                        "labels": [
+                            "noc::sensor::placement::external",
+                            "noc::sensor::mode::current",
+                        ],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.19.0",
                     }
                 ]
@@ -81,6 +95,7 @@ class Script(BaseScript):
                     "status": True,
                     "description": f"Универсальных вход {num}",
                     "measurement": self.nano_input_config_map[num]["units"],
+                    "labels": self.nano_input_config_map[num]["labels"],
                     "snmp_oid": oid,
                 }
             ]
@@ -93,6 +108,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Значение напряжения сети",
                         "measurement": "Volt AC",
+                        "labels": ["noc::sensor::placement::elmeter", "noc::sensor::mode::voltage"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.21.0",
                     },
                     {
@@ -100,6 +116,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Значение потребляемого тока",
                         "measurement": "Ampere",
+                        "labels": ["noc::sensor::placement::elmeter", "noc::sensor::mode::current"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.22.0",
                     },
                     {
@@ -107,6 +124,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Суммарное значение потреблённой мощности по тарифу 1",
                         "measurement": "Kilowatt-hour",
+                        "labels": ["noc::sensor::placement::elmeter", "noc::sensor::mode::kwh"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.23.0",
                     },
                     {
@@ -114,6 +132,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Суммарное значение потреблённой мощности по тарифу 2",
                         "measurement": "Kilowatt-hour",
+                        "labels": ["noc::sensor::placement::elmeter", "noc::sensor::mode::kwh"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.24.0",
                     },
                     {
@@ -121,6 +140,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Суммарное значение потреблённой мощности",
                         "measurement": "Kilowatt-hour",
+                        "labels": ["noc::sensor::placement::elmeter", "noc::sensor::mode::kwh"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.25.0",
                     },
                 ]
@@ -132,6 +152,7 @@ class Script(BaseScript):
                     "status": v != 0,
                     "description": "Флаг наличия связи с ИБП по порту RS-232",
                     "measurement": "StatusEnum",
+                    "labels": ["noc::sensor::placement::internal"],
                     "snmp_oid": "1.3.6.1.4.1.51315.1.29.0",
                 },
             ]
@@ -142,6 +163,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Текущее состояние ИБП",
                         "measurement": "StatusEnum",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.27.0",
                     },
                     {
@@ -149,6 +171,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Текущее состояние батареи ИБП",
                         "measurement": "StatusEnum",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.38.0",
                     },
                     {
@@ -156,6 +179,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Текущий статус bypass",
                         "measurement": "StatusEnum",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.31.0",
                     },
                     {
@@ -163,6 +187,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Текущий режим работы ИБП",
                         "measurement": "StatusEnum",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.32.0",
                     },
                     {
@@ -170,6 +195,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Входное напряжение.",
                         "measurement": "Volt AC",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.33.0",
                     },
                     {
@@ -177,6 +203,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Значение частоты сети",
                         "measurement": "Hertz",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.34.0",
                     },
                     {
@@ -184,6 +211,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Выходное напряжение.",
                         "measurement": "Volt AC",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.35.0",
                     },
                     {
@@ -191,6 +219,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Нагрузка ИБП в %.",
                         "measurement": "Percent",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.37.0",
                     },
                     {
@@ -198,6 +227,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Нагрузка ИБП в W.",
                         "measurement": "Watt",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.36.0",
                     },
                     {
@@ -205,6 +235,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Напряжение  батареи  ИБП.",
                         "measurement": "Volt AC",
+                        "labels": ["noc::sensor::placement::ups", "noc::sensor::mode::voltage"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.40.0",
                     },
                     {
@@ -212,6 +243,7 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Ёмкость батареи в %.",
                         "measurement": "Percent",
+                        "labels": ["noc::sensor::placement::ups"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.41.0",
                     },
                     {
@@ -219,18 +251,31 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "ИБП. Температура батареи",
                         "measurement": "Celsius",
+                        "labels": ["noc::sensor::placement::ups", "noc::sensor::mode::temperature"],
                         "snmp_oid": "1.3.6.1.4.1.51315.1.39.0",
                     },
                 ]
         return r
 
     femto_input_config_map = {
-        0: {"type": "in", "units": "StatusEnum"},
-        1: {"type": "volt", "units": "Volt AC"},
-        2: {"type": "counter", "units": "Scalar"},
-        3: {"type": "vibration", "units": "Scalar"},
-        4: {"type": "impedance", "units": "Scalar"},
-        9: {"type": "ups", "units": "Scalar"},
+        0: {"type": "in", "units": "StatusEnum", "labels": ["noc::sensor::placement::external"]},
+        1: {
+            "type": "volt",
+            "units": "Volt AC",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::voltage"],
+        },
+        2: {
+            "type": "counter",
+            "units": "Scalar",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::counter"],
+        },
+        3: {"type": "vibration", "units": "Scalar", "labels": []},
+        4: {
+            "type": "impedance",
+            "units": "Scalar",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::impedance"],
+        },
+        9: {"type": "ups", "units": "Scalar", "labels": ["noc::sensor::placement::ups"]},
     }
 
     def get_femto_sensors(self):
@@ -250,6 +295,7 @@ class Script(BaseScript):
                 "status": 1,
                 "description": "Значение температуры с выносного датчика",
                 "measurement": "Celsius",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::temperature"],
                 "snmp_oid": "1.3.6.1.3.55.1.2.1.0",
             },
         ]
@@ -266,6 +312,7 @@ class Script(BaseScript):
                     "status": True,
                     "description": f"Универсальных вход {num}",
                     "measurement": self.femto_input_config_map[in_config]["units"],
+                    "labels": self.femto_input_config_map[in_config]["labels"],
                     "snmp_oid": oid,
                 }
             ]

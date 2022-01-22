@@ -15,12 +15,24 @@ class Script(BaseScript):
     interface = IGetInventory
 
     femto_input_config_map = {
-        0: {"type": "in", "units": "StatusEnum"},
-        1: {"type": "volt", "units": "Volt AC"},
-        2: {"type": "counter", "units": "Scalar"},
-        3: {"type": "vibration", "units": "Scalar"},
-        4: {"type": "impedance", "units": "Scalar"},
-        9: {"type": "ups", "units": "Scalar"},
+        0: {"type": "in", "units": "StatusEnum", "labels": ["noc::sensor::placement::external"]},
+        1: {
+            "type": "volt",
+            "units": "Volt AC",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::voltage"],
+        },
+        2: {
+            "type": "counter",
+            "units": "Scalar",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::counter"],
+        },
+        3: {"type": "vibration", "units": "Scalar", "labels": []},
+        4: {
+            "type": "impedance",
+            "units": "Scalar",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::impedance"],
+        },
+        9: {"type": "ups", "units": "Scalar", "labels": ["noc::sensor::placement::ups"]},
     }
 
     def get_sensors(self):
@@ -43,6 +55,10 @@ class Script(BaseScript):
                     "status": -55 < temp < 600,
                     "description": "Значение температуры с выносного датчика",
                     "measurement": "Celsius",
+                    "labels": [
+                        "noc::sensor::placement::external",
+                        "noc::sensor::mode::temperature",
+                    ],
                     "snmp_oid": "1.3.6.1.3.55.1.2.1.0",
                 },
             ]
@@ -60,6 +76,7 @@ class Script(BaseScript):
                     "status": True,
                     "description": f"Универсальных вход {num}",
                     "measurement": self.femto_input_config_map[in_config]["units"],
+                    "labels": self.femto_input_config_map[in_config]["labels"],
                     "snmp_oid": oid,
                 }
             ]

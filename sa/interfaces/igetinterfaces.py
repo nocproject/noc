@@ -372,8 +372,8 @@ class IGetInterfaces(BaseInterface):
                     # noc::interface::role::uni/nni
                     # noc::topology::direction::uplink
                     "hints": LabelListParameter(
-                        choices=["uplink", "uni", "nni"],
                         required=False,
+                        default_scope="noc::interface::hints",
                         allowed_scopes=[
                             "noc::topology::direction",
                             "noc::interface::role",

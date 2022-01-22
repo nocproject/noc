@@ -469,9 +469,9 @@ class Interface(Document):
         from noc.inv.models.subinterface import SubInterface
 
         yield list(instance.labels or [])
-        if instance.hints:
-            # Migrate to labels
-            yield Label.ensure_labels(instance.hints, enable_interface=True)
+        # if instance.hints:
+        #     # Migrate to labels
+        #     yield Label.ensure_labels(instance.hints, enable_interface=True)
         # if instance.profile.labels:
         #     yield list(instance.profile.labels)
         yield Label.get_effective_regex_labels("interface_name", instance.name)
@@ -493,19 +493,6 @@ class Interface(Document):
                 enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
             ).scalar("effective_labels"):
                 yield el
-        # for ipv4_addresses, tagged_vlans, untagged_vlan in SubInterface.objects.filter(
-        #     enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent
-        # ).scalar("ipv4_addresses", "tagged_vlans", "untagged_vlan"):
-        #     if tagged_vlans:
-        #         lazy_tagged_vlans_labels = list(VCFilter.iter_lazy_labels(tagged_vlans, "tagged"))
-        #         yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
-        #     if untagged_vlan:
-        #         lazy_untagged_vlans_labels = list(
-        #             VCFilter.iter_lazy_labels([untagged_vlan], "untagged")
-        #         )
-        #         yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
-        #     if ipv4_addresses:
-        #         yield list(PrefixTable.iter_lazy_labels(ipv4_addresses))
 
 
 # Avoid circular references

@@ -189,7 +189,7 @@ class Script(BaseScript):
                     port_id = "ethernet:" + ifname.split(":")[-1]
                 else:
                     port_id = ifname
-                hints = ["nni"]
+                hints = ["noc::topology::direction::nni"]
             else:
                 port_id = ifname.split(":", 1)[-1]
                 slot_id = tuple(port_id.split("/")[:-1])
@@ -358,7 +358,7 @@ class Script(BaseScript):
                 hints = []
                 if iftype == 6:
                     ifname = "ethernet:%s" % (port_id[-1] - 2)
-                    hints = ["nni"]
+                    hints = ["noc::topology::direction::nni"]
                 ethernet[ifindex] = {
                     "name": ifname,
                     "snmp_ifindex": ifindex,
