@@ -586,6 +586,17 @@ class DiscoveryCheck(object):
         ignore_empty = ignore_empty or []
         for k, v in values.items():
             vv = getattr(obj, k)
+            if hasattr(obj, "extra_labels") and k == "extra_labels":
+                # Processed extra_labels
+                sa_labels = obj.extra_labels.get("sa", [])
+                if v != sa_labels:
+                    remove_labels = set(sa_labels).difference(v)
+                    if remove_labels:
+                        obj.labels = [ll for ll in obj.labels if ll not in remove_labels]
+                        changes += [("labels", obj.labels)]
+                    obj.extra_labels["sa"] = v
+                    changes += [("extra_labels", {"sa": sa_labels})]
+                continue
             if v != vv:
                 if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:
                     if k in ignore_empty and (v is None or v == ""):

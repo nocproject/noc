@@ -63,6 +63,12 @@ class SLACheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Removing probe", group, p.name)
                 p.fire_event("missed")
                 continue
+            extra_labels = set(p.extra_labels.get("sa", []))
+            for ll in new_data.get("tags", []):
+                if ll in extra_labels:
+                    continue
+                self.logger.info("[%s] Ensure SLA label: %s", p.id, ll)
+                Label.ensure_label(ll, enable_slaprobe=True)
             self.update_if_changed(
                 p,
                 {
@@ -71,10 +77,8 @@ class SLACheck(DiscoveryCheck):
                     "tos": new_data.get("tos", 0),
                     "target": new_data["target"],
                     "hw_timestamp": new_data.get("hw_timestamp", False),
-                    "labels": [
-                        ll
-                        for ll in new_data.get("tags", [])
-                        if Label.get_effective_setting(ll, "enable_slaprobe")
+                    "extra_labels": [
+                        ll for ll in new_data.get("tags", []) if SLAProbe.can_set_label(ll)
                     ],
                 },
             )
@@ -99,8 +103,10 @@ class SLACheck(DiscoveryCheck):
                 tos=new_data.get("tos", 0),
                 target=new_data["target"],
                 hw_timestamp=new_data.get("hw_timestamp", False),
-                labels=new_data.get("tags", []),
             )
+            if new_data.get("tags"):
+                probe.labels = [ll for ll in new_data["tags"] if SLAProbe.can_set_label(ll)]
+                probe.extra_labels["sa"] = new_data["tags"]
             probe.save()
             if not new_data["status"]:
                 probe.fire_event("down")

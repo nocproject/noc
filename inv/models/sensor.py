@@ -14,7 +14,7 @@ from typing import Dict, Optional, Iterable, List
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, LongField, ListField, DateTimeField
+from mongoengine.fields import StringField, IntField, LongField, ListField, DateTimeField, DictField
 import cachetools
 
 # NOC modules
@@ -83,6 +83,7 @@ class Sensor(Document):
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    extra_labels = DictField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -103,6 +104,14 @@ class Sensor(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return Sensor.objects.filter(bi_id=id).first()
+
+    def clean(self):
+        if self.extra_labels:
+            self.labels += [
+                ll
+                for ll in Label.merge_labels(self.extra_labels.values())
+                if Sensor.can_set_label(ll)
+            ]
 
     @property
     def munits(self) -> MeasurementUnits:

@@ -10,9 +10,9 @@ from noc.core.interface.base import BaseInterface
 from .base import (
     DictListParameter,
     StringParameter,
-    StringListParameter,
     BooleanParameter,
     IntParameter,
+    LabelListParameter,
 )
 
 
@@ -58,6 +58,6 @@ class IGetSLAProbes(BaseInterface):
             "target": StringParameter(),
             "hw_timestamp": BooleanParameter(default=False),
             # Custom field
-            "tags": StringListParameter(required=False),
+            "tags": LabelListParameter(required=False, default_scope="noc::sla::tag"),
         }
     )
