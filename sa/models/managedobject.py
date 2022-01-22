@@ -834,7 +834,7 @@ class ManagedObject(NOCModel):
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         #
-        self._reset_caches(self.id)
+        self._reset_caches(self.id, credential=True)
         cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
         if self.initial_data["id"] is None:
@@ -1407,7 +1407,7 @@ class ManagedObject(NOCModel):
             )
             # self.save()
             cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
-            self._reset_caches(self.id)
+            self._reset_caches(self.id, credential=True)
         caps = {}
         for ci in new_caps:
             cn = Capability.get_by_id(ci["capability"])
@@ -1909,7 +1909,7 @@ class ManagedObject(NOCModel):
         return self.object_profile.snmp_rate_limit
 
     @classmethod
-    def _reset_caches(cls, mo_id: int):
+    def _reset_caches(cls, mo_id: int, credential: bool = False):
         try:
             del cls._id_cache[f"managedobject-id-{mo_id}"]
         except KeyError:
@@ -1919,7 +1919,8 @@ class ManagedObject(NOCModel):
         except KeyError:
             pass
         cache.delete(f"managedobject-id-{mo_id}", version=MANAGEDOBJECT_CACHE_VERSION)
-        cache.delete(f"cred-{mo_id}", version=CREDENTIAL_CACHE_VERSION)
+        if credential:
+            cache.delete(f"cred-{mo_id}", version=CREDENTIAL_CACHE_VERSION)
 
     @property
     def events_stream_and_partition(self) -> Tuple[str, int]:
