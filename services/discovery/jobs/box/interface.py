@@ -276,7 +276,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "enabled_protocols": enabled_protocols,
                     "ifindex": ifindex,
                     "hints": labels or [],
-                    "external_labels": [ll for ll in labels if Interface.can_set_label(ll)],
+                    "extra_labels": [ll for ll in labels if Interface.can_set_label(ll)],
                 },
                 ignore_empty=ignore_empty,
             )
