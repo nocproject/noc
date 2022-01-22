@@ -23,6 +23,7 @@ from .base import (
     StringParameter,
     BooleanParameter,
     IntParameter,
+    LabelListParameter,
 )
 
 
@@ -368,7 +369,17 @@ class IGetInterfaces(BaseInterface):
                     "description": StringParameter(required=False),
                     "mac": MACAddressParameter(required=False),
                     "snmp_ifindex": IntParameter(required=False),
-                    "hints": StringListParameter(choices=["uplink", "uni", "nni"], required=False),
+                    # noc::interface::role::uni/nni
+                    # noc::topology::direction::uplink
+                    "hints": LabelListParameter(
+                        choices=["uplink", "uni", "nni"],
+                        required=False,
+                        allowed_scopes=[
+                            "noc::topology::direction",
+                            "noc::interface::role",
+                            "noc::interface::hints",
+                        ],
+                    ),
                     "subinterfaces": ListOfParameter(
                         element=DictParameter(
                             attrs={

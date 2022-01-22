@@ -19,6 +19,7 @@ import cachetools
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.main.models.label import Label
 from noc.inv.models.objectmodel import ObjectModel, ConnectionRule
 from noc.inv.models.object import Object, ObjectAttr
 from noc.inv.models.vendor import Vendor
@@ -466,6 +467,7 @@ class AssetCheck(DiscoveryCheck):
                     label=sf.get("description"),
                     snmp_oid=sf.get("snmp_oid"),
                     ipmi_id=sf.get("ipmi_id"),
+                    labels=sf.get("labels"),
                 )
                 del self.sensors[(obj, sn)]
             else:
@@ -482,6 +484,7 @@ class AssetCheck(DiscoveryCheck):
                 label=si.get("description"),
                 snmp_oid=si.get("snmp_oid"),
                 ipmi_id=si.get("ipmi_id"),
+                labels=si.get("labels"),
             )
 
     def submit_sensor(
@@ -493,6 +496,7 @@ class AssetCheck(DiscoveryCheck):
         label: Optional[str] = None,
         snmp_oid: Optional[str] = None,
         ipmi_id: Optional[str] = None,
+        labels: List[str] = None,
     ):
         self.logger.info("[%s|%s] Creating new sensor '%s'", obj.name if obj else "-", "-", name)
         s = Sensor(
@@ -517,6 +521,11 @@ class AssetCheck(DiscoveryCheck):
                 "-",
                 name,
             )
+        if labels is not None:
+            for ll in labels:
+                Label.ensure_label(ll)
+            s.labels = [ll for ll in labels if Sensor.can_set_label(ll)]
+            s.extra_labels = {"sa": s.labels}
         s.save()
         s.seen(source="asset")
 
@@ -528,6 +537,7 @@ class AssetCheck(DiscoveryCheck):
         label: Optional[str] = None,
         snmp_oid: Optional[str] = None,
         ipmi_id: Optional[str] = None,
+        labels: Optional[List[str]] = None,
     ):
         sensor.seen(source="asset")
         if not status:
@@ -546,6 +556,18 @@ class AssetCheck(DiscoveryCheck):
         elif ipmi_id and sensor.ipmi_id != ipmi_id:
             sensor.protocol = "ipmi"
             sensor.ipmi_id = ipmi_id
+        sa_labels = sensor.extra_labels.get("sa", [])
+        labels = labels or []
+        for ll in labels:
+            if ll in sa_labels:
+                continue
+            self.logger.info("[%s] Ensure Sensor label: %s", sensor.id, ll)
+            Label.ensure_label(ll, enable_sensor=True)
+        if labels != sa_labels:
+            remove_labels = set(sa_labels).difference(set(labels))
+            if remove_labels:
+                sensor.labels = [ll for ll in sensor.labels if ll not in remove_labels]
+            sensor.extra_labels["sa"] = labels
         sensor.save()
 
     def normalize_sensor_units(self, units: str) -> MeasurementUnits:

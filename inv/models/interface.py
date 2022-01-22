@@ -19,6 +19,7 @@ from mongoengine.fields import (
     DateTimeField,
     ReferenceField,
     ObjectIdField,
+    DictField,
 )
 from pymongo import ReadPreference
 from typing import Optional, Iterable, List
@@ -130,6 +131,7 @@ class Interface(Document):
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    extra_labels = DictField()
 
     PROFILE_LINK = "profile"
 
@@ -139,6 +141,14 @@ class Interface(Document):
     @classmethod
     def get_by_id(cls, id) -> Optional["Interface"]:
         return Interface.objects.filter(id=id).first()
+
+    def clean(self):
+        if self.extra_labels:
+            self.labels += [
+                ll
+                for ll in Label.merge_labels(self.extra_labels.values())
+                if Interface.can_set_label(ll)
+            ]
 
     @classmethod
     def get_component(
