@@ -22,6 +22,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Значение температуры с внутреннего датчика",
                 "measurement": "Celsius",
+                "labels": ["noc::sensor::placement::internal", "noc::sensor::mode::temperature"],
                 "snmp_oid": "1.3.6.1.4.1.35419.20.1.140.0",
             },
             {

@@ -24,6 +24,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Дверь",
                 "measurement": "StatusEnum",
+                "labels": ["noc::sensor::placement::door"],
                 "snmp_oid": "1.3.6.1.4.1.27142.1.2.45.1.5.7.0",
             },
             # temp1
@@ -32,6 +33,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Значение температуры с датчика",
                 "measurement": "Celsius",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::temperature"],
                 "snmp_oid": "1.3.6.1.4.1.27142.1.2.45.1.5.6.0",
             },
         ]
@@ -43,6 +45,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Напряжени питания",
                 "measurement": "Volt AC",
+                "labels": ["noc::sensor::placement::psu", "noc::sensor::mode::voltage"],
                 "snmp_oid": "1.3.6.1.4.1.27142.1.2.45.1.3.6.0",
             },
             # temp1
@@ -51,6 +54,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Температура блока питания",
                 "measurement": "Celsius",
+                "labels": ["noc::sensor::placement::psu", "noc::sensor::mode::temperature"],
                 "snmp_oid": "1.3.6.1.4.1.27142.1.2.45.1.3.8.0",
             },
         ]

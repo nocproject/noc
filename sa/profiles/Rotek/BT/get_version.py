@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Rotek.BT.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # NOC modules
@@ -21,6 +21,9 @@ class Script(BaseScript):
         platform = v["model"]
         if "," in platform:
             platform = platform.split(",")[0]
+        if platform == "RT-Pwr":
+            # Version 1.4.0-b32048bc return RT-Pwr
+            platform = "RT-Pwr-220-U"
         return {
             "vendor": "Rotek",
             "version": v["fwversion"],
@@ -54,6 +57,9 @@ class Script(BaseScript):
             version = oid.split()[1].strip()
             if "," in platform:
                 platform = platform.split(",")[0]
+            if platform == "RT-Pwr":
+                # Version 1.4.0-b32048bc return RT-Pwr
+                platform = "RT-Pwr-220-U"
             result = {
                 "vendor": "Rotek",
                 "version": version,

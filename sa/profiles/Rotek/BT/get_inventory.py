@@ -22,6 +22,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Дверь",
                 "measurement": "StatusEnum",
+                "labels": ["noc::sensor::placement::external"],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.1.0",
             },
             # v230
@@ -38,6 +39,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Температура в шкафу",
                 "measurement": "Celsius",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::temperature"],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.2.0",
             },
         ]
@@ -47,6 +49,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Ток потребления нагрузки",
                 "measurement": "Ampere",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::current"],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.3.0",
             },
             {
@@ -54,6 +57,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "ИБП. Напряжение на АКБ",
                 "measurement": "Volt AC",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::voltage"],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.6.0",
             },
             {
@@ -61,6 +65,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Ток заряда АКБ",
                 "measurement": "Ampere",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::current"],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.5.0",
             },
         ]
