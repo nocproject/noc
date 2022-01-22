@@ -21,6 +21,7 @@ from mongoengine.fields import (
     LongField,
     IntField,
     ReferenceField,
+    DictField,
 )
 import cachetools
 
@@ -83,6 +84,7 @@ class SLAProbe(Document):
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
+    extra_labels = DictField()
     #
     service = ReferenceField(Service)
 
@@ -101,6 +103,14 @@ class SLAProbe(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return SLAProbe.objects.filter(bi_id=id).first()
+
+    def clean(self):
+        if self.extra_labels:
+            self.labels += [
+                ll
+                for ll in Label.merge_labels(self.extra_labels.values())
+                if SLAProbe.can_set_label(ll)
+            ]
 
     @cachetools.cached(_target_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_target(self):

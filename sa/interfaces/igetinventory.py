@@ -15,6 +15,7 @@ from .base import (
     StringListParameter,
     REStringParameter,
     OIDParameter,
+    LabelListParameter,
 )
 
 
@@ -69,6 +70,8 @@ class IGetInventory(BaseInterface):
                     "status": BooleanParameter(default=True),
                     # Optional description
                     "description": StringParameter(required=False),
+                    #
+                    "labels": LabelListParameter(required=False),
                     # MeasurementUnit Name
                     "measurement": StringParameter(default="Scalar"),
                     # Collected hints

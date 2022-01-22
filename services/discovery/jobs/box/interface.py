@@ -127,7 +127,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     aggregated_interface=agg,
                     enabled_protocols=i.get("enabled_protocols", []),
                     ifindex=i.get("snmp_ifindex"),
-                    hints=i.get("hints", []),
+                    labels=i.get("hints", []),
                 )
                 icache[i["name"]] = iface
                 # Submit subinterfaces
@@ -252,10 +252,14 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         aggregated_interface=None,
         enabled_protocols: List[str] = None,
         ifindex: Optional[int] = None,
-        hints: List[str] = None,
+        labels: List[str] = None,
     ):
         enabled_protocols = enabled_protocols or []
         iface = self.get_interface_by_name(name)
+        labels = labels or []
+        for ll in labels:
+            if Interface.can_set_label(ll):
+                Label.ensure_label(ll, enable_interface=True)
         if iface:
             ignore_empty = ["ifindex"]
             if self.is_confdb_source:
@@ -271,7 +275,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "aggregated_interface": aggregated_interface,
                     "enabled_protocols": enabled_protocols,
                     "ifindex": ifindex,
-                    "hints": hints or [],
+                    "hints": labels or [],
+                    "external_labels": [ll for ll in labels if Interface.can_set_label(ll)],
                 },
                 ignore_empty=ignore_empty,
             )
@@ -289,6 +294,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 enabled_protocols=enabled_protocols,
                 ifindex=ifindex,
             )
+            if labels:
+                iface.labels = [ll for ll in labels if Interface.can_set_label(ll)]
+                iface.extra_labels["sa"] = labels
             iface.save()
             self.set_interface(name, iface)
         if mac:
