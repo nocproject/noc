@@ -333,7 +333,7 @@ class Script(BaseScript):
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
                         "enabled_protocols": [],
-                        "hints": ["uplink"],
+                        "hints": ["noc::interface::role::uplink"],
                         "subinterfaces": [
                             {
                                 "name": ifname,
@@ -375,7 +375,7 @@ class Script(BaseScript):
                 for p_name, p in ports.items():
                     if self.is_gpon_uplink:
                         ifindex = self.snmp_index("XG-PON", 0, slot, int(p["num"]))
-                        hints = ["uplink"]
+                        hints = ["noc::interface::role::uplink"]
                     else:
                         ifindex = self.snmp_index("GPON", 0, slot, int(p["num"]))
                         hints = []
