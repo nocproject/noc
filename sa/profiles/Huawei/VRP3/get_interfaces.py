@@ -85,7 +85,7 @@ class Script(BaseScript):
                 "name": "FE:0/0/1",
                 "type": "physical",
                 "mac": mac,
-                "hints": ["uplink"],
+                "hints": ["noc::interface::role::uplink"],
                 "subinterfaces": [],
             }
         ]
@@ -101,7 +101,7 @@ class Script(BaseScript):
             vlans += [v["vlan_id"]]
         iface = {
             "name": "FE:0/0/1",
-            "hints": ["nni"],
+            "hints": ["noc::topology::direction::nni"],
             "type": "physical",
             "subinterfaces": [
                 {"name": "FE:0/0/1", "enabled_afi": ["BRIDGE"], "tagged_vlans": vlans}
@@ -110,7 +110,7 @@ class Script(BaseScript):
         interfaces += [iface]
         iface = {
             "name": "FE:0/0/2",
-            "hints": ["nni"],
+            "hints": ["noc::topology::direction::nni"],
             "type": "physical",
             "subinterfaces": [
                 {"name": "FE:0/0/2", "enabled_afi": ["BRIDGE"], "tagged_vlans": vlans}

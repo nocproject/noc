@@ -279,6 +279,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "extra_labels": [ll for ll in labels if Interface.can_set_label(ll)],
                 },
                 ignore_empty=ignore_empty,
+                update_effective_labels=True,
             )
             self.log_changes(f"Interface '{name}' has been changed", changes)
         else:
