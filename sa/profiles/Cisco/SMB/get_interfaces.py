@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.text import parse_table
 
@@ -25,18 +25,6 @@ class Script(BaseScript):
         r"(?P<mdix_mode>\S+)\s*)?$",
         re.IGNORECASE,
     )
-
-    INTERFACE_TYPES = {
-        "Et": "physical",  # Ethernet
-        "Fa": "physical",  # FastEthernet
-        "Gi": "physical",  # GigabitEthernet
-        "Te": "physical",  # TenGigabitEthernet
-        "Lo": "loopback",  # Loopback
-        "Po": "aggregated",  # Port-channel/Portgroup
-        "Tu": "tunnel",  # Tunnel
-        "Vl": "SVI",  # Vlan
-        "oo": "management",  # oob
-    }
 
     def execute_cli(self):
 
@@ -63,7 +51,7 @@ class Script(BaseScript):
                 oper_status = True
             interface = {
                 "name": iface,
-                "type": self.INTERFACE_TYPES.get(iface[:2], "unknown"),
+                "type": self.profile.get_interface_type(iface),
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "subinterfaces": [
@@ -104,7 +92,7 @@ class Script(BaseScript):
                 oper_status = row[5].strip().lower() == "up"
             interface = {
                 "name": iface,
-                "type": self.INTERFACE_TYPES.get(iface[:2], "unknown"),
+                "type": self.profile.get_interface_type(iface),
                 "oper_status": oper_status,
                 "subinterfaces": [
                     {"name": iface, "oper_status": oper_status, "enabled_afi": ["BRIDGE"]}

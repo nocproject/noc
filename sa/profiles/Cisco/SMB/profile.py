@@ -38,6 +38,22 @@ class Profile(BaseProfile):
             return "oob"
         return self.convert_interface_name_cisco(interface)
 
+    INTERFACE_TYPES = {
+        "Et": "physical",  # Ethernet
+        "Fa": "physical",  # FastEthernet
+        "Gi": "physical",  # GigabitEthernet
+        "Te": "physical",  # TenGigabitEthernet
+        "Lo": "loopback",  # Loopback
+        "Po": "aggregated",  # Port-channel/Portgroup
+        "Tu": "tunnel",  # Tunnel
+        "Vl": "SVI",  # Vlan
+        "oo": "management",  # oob
+    }
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name[:2], "unknown")
+
     def setup_session(self, script):
         script.cli("terminal no prompt")
 
