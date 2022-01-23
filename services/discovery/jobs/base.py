@@ -27,6 +27,7 @@ from builtins import str, object
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.core.models.problem import ProblemItem
+from noc.main.models.label import Label, MATCH_OPS
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -562,6 +563,19 @@ class DiscoveryCheck(object):
     def handler(self):
         pass
 
+    @staticmethod
+    def build_effective_labels(obj) -> List[str]:
+        """
+        Build object effective labels
+        :param obj:
+        :return:
+        """
+        return [
+            ll
+            for ll in Label.merge_labels(obj.iter_effective_labels(obj))
+            if obj.can_set_label(ll) or ll[-1] in MATCH_OPS
+        ]
+
     def update_if_changed(
         self,
         obj,
@@ -569,6 +583,7 @@ class DiscoveryCheck(object):
         ignore_empty: List[str] = None,
         wait: bool = True,
         bulk: Optional[List[str]] = None,
+        update_effective_labels: bool = False,
     ):
         """
         Update fields if changed.
@@ -579,6 +594,7 @@ class DiscoveryCheck(object):
         :param ignore_empty: List of fields which may be ignored if empty
         :param wait: Wait for operation to complete. set write concern to 0 if False
         :param bulk: Execute as the bulk op instead
+        :param update_effective_labels:
         :returns: List of changed (key, value)
         :rtype: list
         """
@@ -603,6 +619,10 @@ class DiscoveryCheck(object):
                         continue
                     setattr(obj, k, v)
                     changes += [(k, v)]
+        if update_effective_labels and hasattr(obj, "effective_labels"):
+            el = self.build_effective_labels(obj)
+            if set(el) != set(getattr(obj, "effective_labels", [])):
+                changes += [("effective_labels", el)]
         if changes:
             if bulk is not None:
                 op = {"$set": dict(changes)}
