@@ -51,7 +51,7 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
-    rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)\w*[\).]\S*")
+    rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+):?(\d+)?\w*[\).]\S*")
 
     matchers = {
         "is_platform_7200": {"platform": {"$regex": r"720[0146]|730[14]"}},

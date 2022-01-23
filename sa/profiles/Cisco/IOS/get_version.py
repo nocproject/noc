@@ -28,7 +28,7 @@ class Script(BaseScript):
     )
     rx_snmp_ver = re.compile(
         r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
-        r"Software \((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^,]+),",
+        r"Software \((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
     rx_platform = re.compile(
