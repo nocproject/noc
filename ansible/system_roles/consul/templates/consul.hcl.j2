@@ -4,9 +4,11 @@ addresses = {
     http = "{{ consul_http_bind_address }}"
     https = "{{ consul_https_bind_address }}"
   }
-{% if consul_ports -%}
-ports = {{ consul_ports }}
-{% endif -%}
+ports = { 
+  "dns" = {{ consul_http }}
+  "http" = {{ consul_https }}
+  "https" = {{ consul_https }}
+}
 {% if consul_recursors|length > 0 -%}
 recursors = [ {% set comma = joiner(", ") -%}
 {% for recursor in consul_recursors -%}
