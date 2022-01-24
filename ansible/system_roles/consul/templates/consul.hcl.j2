@@ -5,8 +5,8 @@ addresses = {
     https = "{{ consul_https_bind_address }}"
   }
 ports = { 
-  "dns" = {{ consul_http }}
-  "http" = {{ consul_https }}
+  "dns" = {{ consul_dns }}
+  "http" = {{ consul_http }}
   "https" = {{ consul_https }}
 }
 {% if consul_recursors|length > 0 -%}
