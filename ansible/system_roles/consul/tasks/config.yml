@@ -112,7 +112,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
-  notify:  
+  notify:
     - restart consul
   tags:
     - config
