@@ -48,9 +48,9 @@ consul_bind_address: "{{ ansible_host }}"
 
 ### Ports
 consul_ports:
-  http: 8500
-  https: -1
-  dns: 8600
+  http = 8500
+  https = -1
+  dns = 8600
 
 ## ACL
 consul_acl_enable: "True"

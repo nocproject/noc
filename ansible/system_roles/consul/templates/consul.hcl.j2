@@ -10,9 +10,9 @@ ports = {{ consul_ports | to_nice_json }}
 {% if consul_recursors|length > 0 -%}
 recursors = [ {% set comma = joiner(", ") -%}
 {% for recursor in consul_recursors -%}
-{{ comma() }}"{{ recursor }}"
+{{ comma() }}"{{ recursor }}" ]
 {%- endfor %}
-{% endif -%} ]
+{% endif -%}
 
 ui = true
 bootstrap = true
@@ -29,8 +29,8 @@ disable_update_check = true
 retry_interval = "3s"
 retry_join = [ {% set comma_nodes = joiner(", ") -%}
 {% for n in groups['svc-consul-server'] %}
-{{ comma_nodes() }}"{{ hostvars[n].ansible_host }}"
-{% endfor %} ] 
+{{ comma_nodes() }}"{{ hostvars[n].ansible_host }}" ]
+{% endfor %}
 limits = {
       http_max_conns_per_client = 1000
 }
