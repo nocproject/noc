@@ -113,7 +113,7 @@
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
   with_items:
-    - dest: "{{ consul_config_path }}/consul.hcl"
+    - dest: "{{ consul_configd_path }}/consul.hcl"
   notify:
     - restart consul
   tags:
