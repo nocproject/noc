@@ -151,6 +151,9 @@ nav:
                   - Brocade.CER: user/reference/profiles/Brocade/Brocade.CER.md
                   - Brocade.FabricOS: user/reference/profiles/Brocade/Brocade.FabricOS.md
                   - Brocade.IronWare: user/reference/profiles/Brocade/Brocade.IronWare.md
+              - CData:
+                  - Overview: user/reference/profiles/CData/index.md
+                  - CData.xPON: user/reference/profiles/CData/CData.xPON.md
               - Cambium:
                   - Overview: user/reference/profiles/Cambium/index.md
                   - Cambium.ePMP: user/reference/profiles/Cambium/Cambium.ePMP.md
