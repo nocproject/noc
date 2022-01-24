@@ -1,7 +1,3 @@
-data_dir = {{ consul_data_path }}
-client_addr = 0.0.0.0
-ui = true
-
 bind_addr = "{{ consul_bind_address }}"
 addresses = {
     dns = "{{ consul_dns_bind_address }}"
@@ -12,10 +8,10 @@ addresses = {
 ports = {{ consul_ports | to_nice_json }}
 {% endif -%}
 {% if consul_recursors|length > 0 -%}
-recursors = [ {% set comma = joiner(", ") -%}
+recursors = {% set comma = joiner(", ") -%}
 {% for recursor in consul_recursors -%}
 {{ comma() }}"{{ recursor }}"
-{%- endfor %} ]
+{%- endfor %}
 {% endif -%}
 bootstrap = false
 server = true
@@ -29,12 +25,12 @@ enable_syslog = {{ consul_syslog_enable|lower }}
 enable_local_script_checks = true
 disable_update_check = true
 retry_interval = "3s"
-retry_join = [ {% set comma_nodes = joiner(", ") -%}
+retry_join = {% set comma_nodes = joiner(", ") -%}
 {% for n in groups['svc-consul-server'] %}
 {{ comma_nodes() }}"{{ hostvars[n].ansible_host }}"
-{% endfor %}]
+{% endfor %}
 limits = {
       http_max_conns_per_client = 1000
   }
-}
+
 
