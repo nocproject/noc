@@ -106,7 +106,19 @@
     - "'prod' in noc_env_type"
     - "ansible_kernel is version('4.1.0', '<')"
 
-- name: Delete consul.hcl
-  file:
-    path: /etc/consul.d/consul.hcl
-    state: absent
+- name: Create consul.hcl
+  template:
+    src: consul.hcl.j2
+    dest: "{{ item.dest }}"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+  no_log: "{{ tower_show_secrets }}"
+  with_items:
+    - dest: "{{ consul_config_path }}/consul.hcl"
+      when: "{{ consul_power == 'agent' }}"
+  when:
+    item.when
+  notify:
+    restart consul
+  tags:
+    - config
