@@ -11,7 +11,12 @@
   tags:
     - config
 
-# Add user
+- name: Add Consul group
+  group:
+    name: "{{ consul_group }}"
+    state: present
+    system: "True"
+
 - name: Add Consul user
   user:
     name: "{{ consul_user }}"

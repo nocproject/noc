@@ -14,6 +14,7 @@ consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_versi
 consul_temp_file: "{{ tower_dist_dir }}/{{ consul_pkg }}"
 consul_temp_unarchive: "/tmp/consul/{{ consul_version }}"
 consul_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_version }}_SHA256SUMS"
+consul_version: "1.8.6"
 
 python_consul_version: 1.1.0
 
@@ -27,7 +28,7 @@ consul_scripts_path: "{{ consul_configd_path }}/scripts"
 
 ### System user and group
 consul_user: "consul"
-consul_group: "bin"
+consul_group: "consul"
 
 ### Consul settings
 consul_datacenter: "{{ noc_env | lower }}"
