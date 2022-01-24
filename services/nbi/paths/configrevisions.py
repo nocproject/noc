@@ -6,53 +6,64 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-# from typing import Optional
+from typing import List, Callable
 
 # Third-party modules
-from fastapi import APIRouter, Response, Header
+from fastapi import APIRouter, Header, HTTPException
+from pydantic import BaseModel  # constr, validator
 
 # NOC modules
-from noc.core.service.loader import get_service
 from noc.sa.models.managedobject import ManagedObject
-
-API_NAME = __name__.split(".")[-1]
-
-API_ACCESS_HEADER = "X-NOC-API-Access"
-ACCESS_TOKENS_SET = {"nbi:*", f"nbi:{API_NAME}"}
-
-FORBIDDEN_MESSAGE = "<html><title>403: Forbidden</title><body>403: Forbidden</body></html>"
+from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 
 router = APIRouter()
 
-service = get_service()
-executor = service.get_executor("max")
+# TimestampType = constr(regex="^[a-z]$")
 
 
-def _access_granted(access_header):
-    a_set = set(access_header.split(","))
-    if ACCESS_TOKENS_SET & a_set:
-        return True
-    return False
+class Revision(BaseModel):
+    # timestamp: TimestampType
+    timestamp: str
+    revision: str
+
+    # @validator("timestamp")
+    # def check_timestamp(cls, v):  # pylint: disable=no-self-argument
+    #    print("v", v, type(v))
+    #    return v
 
 
-def _handler(access_header, object_id):
-    if not _access_granted(access_header):
-        return 403, FORBIDDEN_MESSAGE
-    mo = ManagedObject.get_by_id(int(object_id))
-    if not mo:
-        return 404, "Not Found"
-    revs = [
-        {"revision": str(r.id), "timestamp": r.ts.isoformat()} for r in mo.config.get_revisions()
-    ]
-    return 200, revs
+class ConfigRevisionsAPI(NBIAPI):
+    api_name = "configrevisions"
+    openapi_tags = ["configrevisions API"]
+
+    def get_routes(self):
+        route = {
+            "path": "/api/nbi/configrevisions/{object_id}",
+            "method": "GET",
+            "endpoint": self.get_configrevisions_handler(),
+            "response_model": List[Revision],
+            "name": "configrevisions",
+            "description": "Get all config revisions for Managed Object with id `object_id`",
+        }
+        return [route]
+
+    def get_configrevisions_handler(self) -> Callable:
+        async def handler(
+            object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+        ):
+            if not self.access_granted(access_header):
+                raise HTTPException(403, FORBIDDEN_MESSAGE)
+            mo = ManagedObject.get_by_id(object_id)
+            if not mo:
+                raise HTTPException(404, "Not Found")
+            revs = [
+                {"revision": str(r.id), "timestamp": r.ts.isoformat()}
+                for r in mo.config.get_revisions()
+            ]
+            return revs
+
+        return handler
 
 
-@router.get("/api/nbi/configrevisions/{object_id}")
-async def api_configrevisions(
-    object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
-):
-    code, result = await executor.submit(_handler, access_header, object_id)
-    if isinstance(result, str):
-        return Response(status_code=code, content=result, media_type="text/plain")
-    else:
-        return result
+# Install router
+ConfigRevisionsAPI(router)
