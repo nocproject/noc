@@ -112,12 +112,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    when: "{{ consul_power == 'server' }}"
-  when:
-    item.when
-  notify:
-    restart consul
+  notify:  
+    - restart consul
   tags:
     - config
