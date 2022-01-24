@@ -5,7 +5,7 @@ addresses = {
     https = "{{ consul_https_bind_address }}"
   }
 {% if consul_ports -%}
-ports = {{ consul_ports | to_nice_yaml }}
+ports = {{ consul_ports }}
 {% endif -%}
 {% if consul_recursors|length > 0 -%}
 recursors = [ {% set comma = joiner(", ") -%}
