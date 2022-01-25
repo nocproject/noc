@@ -1,22 +1,22 @@
 ---
 # File: config.yml - Consul configuration tasks
 
-#- name: Bootstrap configuration
-#  template:
-#    src: config_bootstrap.json.j2
-#    dest: "{{ item.dest }}"
-#    owner: "{{ consul_user }}"
-#    group: "{{ consul_group }}"
-#  no_log: "{{ tower_show_secrets }}"
-#  with_items:
-#    - dest: "{{ consul_config_path }}/config.json"
-#      when: "{{ consul_power == 'bootstrap' }}"
-#  when:
-#    - item.when
-#  notify:
-#    - restart consul
-#  tags:
-#    - config
+# - name: Bootstrap configuration
+#   template:
+#     src: config_bootstrap.json.j2
+#     dest: "{{ item.dest }}"
+#     owner: "{{ consul_user }}"
+#     group: "{{ consul_group }}"
+#   no_log: "{{ tower_show_secrets }}"
+#   with_items:
+#     - dest: "{{ consul_config_path }}/config.json"
+#       when: "{{ consul_power == 'bootstrap' }}"
+#   when:
+#     - item.when
+#   notify:
+#     - restart consul
+#   tags:
+#     - config
 
 - name: Server configuration
   template:
