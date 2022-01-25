@@ -11,22 +11,22 @@
   tags:
     - config
 
-- name: Add Consul group
-  group:
-    name: "{{ consul_group }}"
-    state: present
-    system: "True"
+#- name: Add Consul group
+#  group:
+#    name: "{{ consul_group }}"
+#    state: present
+#    system: "True"
 
-- name: Add Consul user
-  user:
-    name: "{{ consul_user }}"
-    comment: "Consul user"
-    group: "{{ consul_group }}"
-    system: "True"
-    home: "{{ consul_home }}"
-    shell: "/bin/sh"
-  tags:
-    - config
+#- name: Add Consul user
+#  user:
+#    name: "{{ consul_user }}"
+#    comment: "Consul user"
+#    group: "{{ consul_group }}"
+#    system: "True"
+#    home: "{{ consul_home }}"
+#    shell: "/bin/sh"
+#  tags:
+#    - config
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"

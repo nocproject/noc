@@ -106,15 +106,15 @@
     - "'prod' in noc_env_type"
     - "ansible_kernel is version('4.1.0', '<')"
 
-- name: Create consul.hcl
-  template:
-    src: consul.hcl.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  with_items:
-    - dest: "{{ consul_configd_path }}/consul.hcl"
-  notify:
-    - restart consul
-  tags:
-    - config
+#- name: Create consul.hcl
+#  template:
+#    src: consul.hcl.j2
+#    dest: "{{ item.dest }}"
+#    owner: "{{ consul_user }}"
+#    group: "{{ consul_group }}"
+#  with_items:
+#    - dest: "{{ consul_configd_path }}/consul.hcl"
+#  notify:
+#    - restart consul
+#  tags:
+#    - config
