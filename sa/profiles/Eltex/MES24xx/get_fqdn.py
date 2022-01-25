@@ -22,10 +22,10 @@ class Script(BaseScript):
 
     def execute_cli(self):
         fqdn = ""
-        v = self.scripts.get_config()
+        v = self.cli("show startup-config", cached=True)
         match = self.rx_hostname.search(v)
         if match:
-            fqdn = match.group("hostname")
+            fqdn = match.group("hostname").strip('"')
             match = self.rx_domain_name.search(v)
             if match:
                 fqdn = fqdn + "." + match.group("domain")
