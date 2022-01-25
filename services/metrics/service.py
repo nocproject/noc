@@ -10,7 +10,7 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from lib2to3.pytree import Base
-from typing import Any, Dict, Tuple, Optional
+from typing import Any, Dict, Tuple, List, Optional
 import sys
 import asyncio
 import codecs
@@ -116,7 +116,7 @@ class MetricsService(FastAPIService):
                 self.logger.debug("Unknown scope: %s", item)
                 metrics["discard", ("reason", "unknown_scope")] += 1
                 return  # Unknown scope
-            labels = item.get("labels")
+            labels = item.get("labels") or []
             if si.key_labels and not labels:
                 self.logger.debug("No labels: %s", item)
                 metrics["discard", ("reason", "no_labels")] += 1
@@ -130,7 +130,7 @@ class MetricsService(FastAPIService):
                 self.logger.debug("Missed key label: %s", item)
                 metrics["discard", ("reason", "missed_keylabel")] += 1
                 return  # Missed key label
-            card = self.get_card(mk)
+            card = self.get_card(mk, labels)
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
@@ -187,10 +187,12 @@ class MetricsService(FastAPIService):
         d = hashlib.sha512(str(k).encode("utf-8")).digest()
         return codecs.encode(d, "base-64")[:7].decode("utf-8")
 
-    def get_card(self, k: MetricKey) -> Optional[Card]:
+    def get_card(self, k: MetricKey, labels: List[str]) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
         :param k: (scope, ((key field, key value), ...), (key label, ...))
+        :param labels: List of all labels
+
         :return:
         """
         card = self.cards.get(k)
@@ -201,7 +203,7 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k)
+        card = self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k, labels=labels)
         self.cards[k] = card
         return card
 
@@ -226,7 +228,7 @@ class MetricsService(FastAPIService):
         self.scope_cdag[k[0]] = cdag
         return cdag
 
-    def project_cdag(self, src: CDAG, prefix: str, k: MetricKey) -> Card:
+    def project_cdag(self, src: CDAG, prefix: str, k: MetricKey, labels: List[str]) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src:
@@ -259,7 +261,7 @@ class MetricsService(FastAPIService):
                     nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                 )
         # Apply rules
-        for item in iter_rules(k[0], k[2]):
+        for item in iter_rules(k[0], labels):
             prev: Optional[BaseCDAGNode] = nodes.get(item.metric_type.field_name)
             if not prev:
                 self.logger.error("Cannot find probe node %s", item.metric_type.field_name)
