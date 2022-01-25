@@ -54,12 +54,12 @@ class Script(BaseScript):
         else:
             descr = None
 
-        platform = None
+        platform, revision = None, None
         match = self.rx_platform.search(plat)
         if match:
             platform = match.group("platform")
             platform = platform.split(".")[8]
-            platform = self.profile.get_platform(platform)
+            platform, revision = self.profile.get_platform(platform)
         elif self.has_capability("Stack | Members"):
             # Try to obtain platform from description
             if descr and descr.startswith("MES"):
@@ -84,7 +84,9 @@ class Script(BaseScript):
         r = {"type": "CHASSIS", "vendor": "ELTEX", "part_no": [platform]}
         if serial:
             r["serial"] = serial.group("serial")
-        if hardware:
+        if revision:
+            r["revision"] = revision.split(".")[-1]
+        elif hardware:
             r["revision"] = hardware.group("hardware")
         if descr:
             r["description"] = descr

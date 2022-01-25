@@ -99,10 +99,12 @@ class Profile(BaseProfile):
         "116": "MES-3308F",
         "120": "MES-3348F",
         "136": "MES-5316A",
+        "190": ("MES-3324F", "rev.B"),  # rev.B
     }
 
     def get_platform(self, s):
-        return self.PLATFORMS.get(s)
+        platform, *revision = self.PLATFORMS.get(s)
+        return platform, revision[0] if revision else None
 
     INTERFACE_TYPES = {
         "as": "physical",  # Async

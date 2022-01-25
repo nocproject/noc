@@ -35,29 +35,40 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         try:
-            platform = self.snmp.get(mib["SNMPv2-MIB::sysObjectID.0"], cached=True)
+            platform = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0], cached=True)
             platform = platform.split(".")[8]
-            platform = self.profile.get_platform(platform.split(")")[0])
-            version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992", cached=True)
-            bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.67108992", cached=True)
-            hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.67108992", cached=True)
-            serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.67108992", cached=True)
+            platform, revision = self.profile.get_platform(platform.split(")")[0])
+            version = self.snmp.get(mib["ENTITY-MIB::entPhysicalSoftwareRev", 67108992])
+            try:
+                bootprom = self.snmp.get(mib["ENTITY-MIB::entPhysicalFirmwareRev", 67108992])
+            except self.snmp.SNMPError:
+                bootprom = None
+            try:
+                hardware = self.snmp.get(mib["ENTITY-MIB::entPhysicalHardwareRev", 67108992])
+            except self.snmp.SNMPError:
+                hardware = None
+            serial = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 67108992])
             if not version:
                 # rndBrgVersion
                 version = self.snmp.get("1.3.6.1.4.1.89.2.4.0", cached=True)
             if not serial:
                 # rlPhdUnitGenParamSerialNum
                 serial = self.snmp.get("1.3.6.1.4.1.89.53.14.1.5.1", cached=True)
-            return {
+            r = {
                 "vendor": "Eltex",
                 "platform": platform,
                 "version": version,
                 "attributes": {
-                    "Boot PROM": bootprom,
-                    "HW version": hardware,
                     "Serial Number": serial,
                 },
             }
+            if bootprom:
+                r["attributes"]["Boot PROM"] = bootprom
+            if hardware:
+                r["attributes"]["HW version"] = hardware
+            if revision:
+                r["attributes"]["revision"] = revision
+            return r
         except self.snmp.TimeOutError:
             raise self.UnexpectedResultError
 
@@ -83,7 +94,7 @@ class Script(BaseScript):
         match = self.rx_platform.search(plat)
         platform = match.group("platform")
         platform = platform.split(".")[8]
-        platform = self.profile.get_platform(platform)
+        platform, revision = self.profile.get_platform(platform)
 
         match = self.rx_version1.search(ver)
         if match:
@@ -124,4 +135,6 @@ class Script(BaseScript):
             res["attributes"]["Boot PROM"] = bootprom.group("bootprom")
         if hardware:
             res["attributes"]["HW version"] = hardware.group("hardware")
+        if revision:
+            res["attributes"]["revision"] = revision
         return res
