@@ -10,18 +10,18 @@
   tags:
     - requirements
 
-#- name: systemd script
-#  template:
-#    src: consul_systemd.service.j2
-#    dest: /lib/systemd/system/consul.service
-#    owner: root
-#    group: root
-#    mode: 0644
-#  tags:
-#    - config
-#  notify:
-#    - reload systemd
-#    - restart consul
+- name: systemd script
+  template:
+    src: consul_systemd.service.j2
+    dest: /lib/systemd/system/consul.service
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - config
+  notify:
+    - reload systemd
+    - restart consul
 
 - name: Expose consul_bind_address as fact
   set_fact:
