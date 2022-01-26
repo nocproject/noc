@@ -10,18 +10,18 @@
   tags:
     - requirements
 
-#- name: systemd script
-#  template:
-#    src: consul_systemd.service.j2
-#    dest: /lib/systemd/system/consul.service
-#    owner: root
-#    group: root
-#    mode: 0644
-#  tags:
-#    - config
-#  notify:
-#    - reload systemd
-#    - restart consul
+- name: systemd script
+  template:
+    src: consul_systemd.service.j2
+    dest: /lib/systemd/system/consul.service
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - config
+  notify:
+    - reload systemd
+    - restart consul
 
 - name: check firewalld state
   systemd:
@@ -65,7 +65,7 @@
   yum_repository:
     name: consul
     description: consul repository
-    baseurl: "https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
     enabled: "True"
   environment:
     http_proxy: "{{ http_proxy }}"
