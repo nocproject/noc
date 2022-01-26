@@ -74,13 +74,13 @@
 #    - repo
 
 - name: Add Consul repository
-  shell: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-  args:
-    creates: /etc/yum.repos.d/centos_o.repo
+  shell: |
+    yum install -y yum-utils 
+    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 
 - name: Install Consul
   yum:
-    name: consul=1.7.8
+    name: consul={{ consul_version }}
     state: present
     update_cache: "True"
     allow_downgrade: "True"
