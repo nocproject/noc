@@ -29,6 +29,7 @@ consul_scripts_path: "{{ consul_configd_path }}/scripts"
 ### System user and group
 consul_user: "consul"
 consul_group: "consul"
+#consul_group: "consul"
 
 ### Consul settings
 consul_datacenter: "{{ noc_env | lower }}"
