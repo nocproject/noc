@@ -80,7 +80,7 @@
 
 - name: Install Consul
   yum:
-    name: consul={{ consul_version }}
+    name: consul=1.7.8
     state: present
     update_cache: "True"
     allow_downgrade: "True"
