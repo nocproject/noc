@@ -41,13 +41,31 @@
     state: stopped
   ignore_errors: "True"
 
-- name: Delete all nsqd consul checks
-  file:
-    path: "{{ item.path }}"
-    state: absent
-  with_items:
-    - path: "{{ consul_configd_path }}/nsqd.json"
-    - path: "{{ consul_configd_path }}/nsqdhttp.json"
+- name: remove nsqd consul check
+  import_role:
+    name: consul
+    tasks_from: deservice
+  vars:
+    consul_service_name: nsqd
+    consul_service_tags: ""
+    consul_service_port: "4150"
+    consul_service_check_type: "tcp"
+    consul_service_check_value: "127.0.0.1:4150"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "False"
+
+- name: remove nsqdhttp consul check
+  import_role:
+    name: consul
+    tasks_from: deservice
+  vars:
+    consul_service_name: nsqdhttp
+    consul_service_tags: ""
+    consul_service_port: "4151"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://127.0.0.1:4151/ping"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "False"
 
 - name: set nsqd removed flag
   set_fact:

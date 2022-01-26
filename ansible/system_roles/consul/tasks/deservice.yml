@@ -1,0 +1,7 @@
+---
+- name: Remove "{{ consul_service_name }}" service file
+  file:
+    state: absent
+    path: "{{ consul_configd_path }}/{{ consul_service_name }}.json"
+  notify:
+    - reload consul

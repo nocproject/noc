@@ -26,13 +26,19 @@
     state: stopped
   ignore_errors: "True"
 
-- name: Delete all nsqdlookup consul checks
-  file:
-    path: "{{ item.path }}"
-    state: absent
-  with_items:
-    - path: "{{ consul_configd_path }}/nsqlookupd.json"
-    - path: "{{ consul_configd_path }}/nsqlookupdhttp.json"
+- name: remove nsqlookupd consul check
+  import_role:
+    name: consul
+    tasks_from: deservice
+  vars:
+    consul_service_name: nsqlookupd
+
+- name: remove nsqlookupdhttp consul check
+  import_role:
+    name: consul
+    tasks_from: deservice
+  vars:
+    consul_service_name: nsqlookupdhttp
 
 - name: set nsqdlookupd removed flag
   set_fact:
