@@ -65,7 +65,7 @@
   yum_repository:
     name: consul
     description: consul repository
-    baseurl: https://rpm.releases.hashicorp.com/RHEL/hashicorp
+    baseurl: https://rpm.releases.hashicorp.com/RHEL
     enabled: "True"
   environment:
     http_proxy: "{{ http_proxy }}"
