@@ -61,17 +61,22 @@
   tags:
     - config
 
+#- name: Add Consul repository
+#  yum_repository:
+#    name: consul
+#    description: consul repository
+#    baseurl: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+#    enabled: "True"
+#  environment:
+#    http_proxy: "{{ http_proxy }}"
+#    https_proxy: "{{ http_proxy }}"
+#  tags:
+#    - repo
+
 - name: Add Consul repository
-  yum_repository:
-    name: consul
-    description: consul repository
-    baseurl: https://rpm.releases.hashicorp.com/RHEL
-    enabled: "True"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-  tags:
-    - repo
+  shell: yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+  args:
+    creates: /etc/yum.repos.d/centos_o.repo
 
 - name: Install Consul
   yum:
