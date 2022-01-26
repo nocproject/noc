@@ -14,7 +14,7 @@ consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_versi
 consul_temp_file: "{{ tower_dist_dir }}/{{ consul_pkg }}"
 consul_temp_unarchive: "/tmp/consul/{{ consul_version }}"
 consul_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_version }}_SHA256SUMS"
-consul_version: "1.11.1"
+consul_version: "1.11.2"
 
 python_consul_version: 1.1.0
 

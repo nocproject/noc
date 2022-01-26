@@ -14,10 +14,10 @@
   roles:
     - role: consul
       when: consul_complete is not defined
-    - role: goss
-      tags: [goss]
-      vars:
-        goss_service_name: consul
+#    - role: goss
+#      tags: [goss]
+#      vars:
+#        goss_service_name: consul
   post_tasks:
     - name: set consul complete
       set_fact:

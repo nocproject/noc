@@ -18,30 +18,30 @@
   tags:
     - config
 
-- name: Server configuration
-  template:
-    src: config_server.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_power == 'server' }}"
-  when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
+# - name: Server configuration
+#  template:
+#    src: config_server.json.j2
+#    dest: "{{ item.dest }}"
+#    owner: "{{ consul_user }}"
+#    group: "{{ consul_group }}"
+#  no_log: "{{ tower_show_secrets }}"
+#  with_items:
+#    - dest: "{{ consul_config_path }}/config.json"
+#      when: "{{ consul_power == 'server' }}"
+#  when:
+#    - item.when
+#  notify:
+#    - restart consul
+#  tags:
+#    - config
 
-- name: Changed rules on config.json
-  file:
-    path: "{{ consul_config_path }}/config.json"
-    state: file
-    owner: "{{ consul_group }}"
-  tags:
-    - config
+#- name: Changed rules on config.json
+#  file:
+#    path: "{{ consul_config_path }}/config.json"
+#    state: file
+#    owner: "{{ consul_group }}"
+#  tags:
+#    - config
 
 - name: Client configuration
   template:
