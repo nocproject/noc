@@ -24,6 +24,15 @@ class Script(BaseScript):
 
     rx_ver = re.compile(r"(Steer|Appl\.|Package)\s*Version\.+\s*(?P<version>\S+)")
 
+    def execute_snmp(self, **kwargs):
+        version = self.snmp.get("1.3.6.1.4.1.1332.1.1.5.1.3.1.0")
+        return {
+            "vendor": "Iskratel",
+            "platform": "Iskratel SGR",
+            "version": version,
+            # "attributes": {"Serial Number": serial},
+        }
+
     def execute_cli(self):
         v = self.cli("show hardware", cached=True)
         match = self.rx_platform.search(v)
