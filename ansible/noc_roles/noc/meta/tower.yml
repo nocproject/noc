@@ -60,7 +60,6 @@ services:
     depends:
       - postgres
       - mongod
-      - nsqd
       - nginx
       - clickhouse
       - liftbridge
