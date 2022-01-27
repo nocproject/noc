@@ -81,7 +81,7 @@ class Profile(BaseProfile):
             match = self.rx_hw2.search(c)
             return match.groupdict()
 
-    rx_iface = re.compile(f"[01]/\d+")
+    rx_iface = re.compile(r"[01]/\d+")
 
     @classmethod
     def get_interface_type(cls, name):
