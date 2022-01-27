@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # config API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -64,8 +64,7 @@ class ConfigAPI(NBIAPI):
         async def handler(
             object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
         ):
-            result = self._handler(access_header, object_id)
-            return result
+            return self._handler(access_header, object_id)
 
         return handler
 
@@ -75,8 +74,7 @@ class ConfigAPI(NBIAPI):
             revision: str = Path(..., regex="^[0-9a-f]{24}$"),
             access_header: str = Header(..., alias=API_ACCESS_HEADER),
         ):
-            result = self._handler(access_header, object_id, revision)
-            return result
+            return self._handler(access_header, object_id, revision)
 
         return handler
 

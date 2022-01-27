@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # configrevisions API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,18 +18,10 @@ from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 
 router = APIRouter()
 
-# TimestampType = constr(regex="^[a-z]$")
-
 
 class Revision(BaseModel):
-    # timestamp: TimestampType
     timestamp: str
     revision: str
-
-    # @validator("timestamp")
-    # def check_timestamp(cls, v):  # pylint: disable=no-self-argument
-    #    print("v", v, type(v))
-    #    return v
 
 
 class ConfigRevisionsAPI(NBIAPI):
@@ -56,11 +48,10 @@ class ConfigRevisionsAPI(NBIAPI):
             mo = ManagedObject.get_by_id(object_id)
             if not mo:
                 raise HTTPException(404, "Not Found")
-            revs = [
+            return [
                 {"revision": str(r.id), "timestamp": r.ts.isoformat()}
                 for r in mo.config.get_revisions()
             ]
-            return revs
 
         return handler
 
