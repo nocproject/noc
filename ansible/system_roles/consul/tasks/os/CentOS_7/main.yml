@@ -73,9 +73,15 @@
 #  tags:
 #    - repo
 
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+
 - name: Add Consul repository
-  shell: |
-    yum install -y yum-utils 
+  shell:
     yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 
 - name: Install Consul
