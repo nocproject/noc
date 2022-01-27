@@ -23,8 +23,6 @@
     path: "{{ item.dir }}"
     state: absent
   with_items:
-    - dir: "{{ nsqd_config_dir }}"
-      mode: "u=rwx,g=rx,o=rx"
     - dir: "{{ nsq_root }}"
       mode: "u=rwx,g=rx,o=rx"
 
