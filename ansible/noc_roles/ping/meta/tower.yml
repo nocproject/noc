@@ -60,6 +60,4 @@ services:
       user: root
     depends:
       - noc
-      - nsqlookupd
-      - nsqd
       - datastream
