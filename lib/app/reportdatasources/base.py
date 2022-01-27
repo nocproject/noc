@@ -374,6 +374,8 @@ class ReportDataSource(object):
         self.start: datetime.datetime = start or self.end - datetime.timedelta(days=1)
         self.start = self.start.replace(tzinfo=None)
         self.user = user
+        if self.start and self.end and self.start >= self.end:
+            raise ValueError("End query timestamp must be more Start")
 
     @classmethod
     def get_config(cls) -> ReportConfig:
@@ -522,7 +524,7 @@ class CHTableReportDataSource(ReportDataSource):
         """
         select, group = [], []
         if self.max_intervals:
-            minutes = ((self.end - self.start).total_seconds() / 60) / self.max_intervals
+            minutes = max(((self.end - self.start).total_seconds() / 60) / self.max_intervals, 1)
             select += [f"toStartOfInterval(ts, INTERVAL {minutes} minute) AS ts"]
             group += ["ts"]
         elif self.interval and self.interval not in self.group_intervals:
