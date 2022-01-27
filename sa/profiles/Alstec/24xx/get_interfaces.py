@@ -69,7 +69,11 @@ class Script(BaseScript):
         :return:
         """
         for ifname in list(sorted(interfaces, reverse=True, key=alnum_key))[:3]:
-            v = self.cli("show port description %s" % ifname)
+            try:
+                v = self.cli("show port description %s" % ifname)
+            except self.CLISyntaxError:
+                self.logger.error("'show port description' is not supported")
+                break
             if not v:
                 continue
             r = parse_kv(self.description_map, v, sep=".")
