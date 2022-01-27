@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ASR1000 | ASR1001 ESP",
+    "$collection": "inv.objectmodels",
+    "uuid": "1ee36f3f-1b45-4f4f-90db-9f84335f0b60",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR 1001 Embedded Services Processor",
+    "cr_context": "ESP",
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Cisco | ASR1000 | ESP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1001-ESP"]
+        }
+    }
+}
