@@ -2,7 +2,7 @@
 - block:
 
     - name: Role nsqlookupd is not needed anymore
-      debug:
+      fail:
         msg: 'Uncheck all "nsqlookupd" roles in Tower at Services section'
       when:
         - nsqlookupd_removed is defined and nsqlookupd_removed

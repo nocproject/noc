@@ -2,7 +2,7 @@
 - block:
 
     - name: Role nsqd is not needed anymore
-      debug:
+      fail:
         msg: 'Uncheck all "nsqd" roles in Tower at Services section'
       when:
         - nsqd_removed is defined and nsqd_removed
