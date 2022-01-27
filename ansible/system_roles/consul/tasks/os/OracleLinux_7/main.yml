@@ -60,3 +60,26 @@
     - consul_address!='node_ip'
   tags:
     - config
+
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+
+- name: Add Consul repository
+  shell:
+    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+- name: Install Consul
+  yum:
+    name: consul-{{ consul_version_rh }}
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+  tags:
+    - requirements
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"

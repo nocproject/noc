@@ -59,21 +59,20 @@
   tags:
     - config
 
+- name: Install yum-utils
+  yum:
+    name: yum-utils
+    state: present
+    update_cache: "True"
+    allow_downgrade: "True"
+
 - name: Add Consul repository
-  yum_repository:
-    name: consul
-    description: consul repository
-    baseurl: "https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo"
-    enabled: "True"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-  tags:
-    - repo
+  shell:
+    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 
 - name: Install Consul
   yum:
-    name: consul={{ consul_version }}
+    name: consul-{{ consul_version_rh }}
     state: present
     update_cache: "True"
     allow_downgrade: "True"
@@ -82,3 +81,4 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+
