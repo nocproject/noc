@@ -22,42 +22,10 @@
             "type__name": "Cisco | ASR1000 | ASR1001 PSU"
         },
         {
-            "description": "Gi0/0/0",
+            "description": "SPA Interface Processor slot",
             "direction": "i",
             "gender": "f",
-            "name": "Gi0_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Gi0/0/1",
-            "direction": "i",
-            "gender": "f",
-            "name": "Gi1_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Gi0/0/2",
-            "direction": "i",
-            "gender": "f",
-            "name": "Gi2_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Gi0/0/3",
-            "direction": "i",
-            "gender": "f",
-            "name": "Gi3_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "SPA Interface Processor slot 1",
-            "direction": "i",
-            "gender": "f",
-            "name": "sip1",
+            "name": "sip0",
             "type__name": "Cisco | ASR1000 | SIP"
         },
         {
@@ -66,6 +34,13 @@
             "gender": "f",
             "name": "r0",
             "type__name": "Cisco | ASR1000 | RP"
+        },
+        {
+            "description": "Embedded Services Processor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "f0",
+            "type__name": "Cisco | ASR1000 | ESP"
         }
     ],
     "data": {
