@@ -92,6 +92,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "Flash | CF",
+            "scope": "mb",
+            "target_connection": "disk{N}",
+            "target_number": "",
+            "target_type": "MOTHERBOARD"
+        },
+        {
+            "match_connection": "in",
             "match_type": "PSU",
             "scope": "chassis",
             "target_connection": "psu",

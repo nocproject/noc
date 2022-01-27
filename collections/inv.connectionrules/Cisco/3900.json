@@ -84,6 +84,14 @@
         },
         {
             "match_connection": "in",
+            "match_type": "Flash | CF",
+            "scope": "spe",
+            "target_connection": "disk{N}",
+            "target_number": "",
+            "target_type": "SPE"
+        },
+        {
+            "match_connection": "in",
             "match_type": "PSU",
             "scope": "chassis",
             "target_connection": "psu{N}",

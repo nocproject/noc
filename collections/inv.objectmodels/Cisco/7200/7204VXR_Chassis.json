@@ -47,14 +47,14 @@
             "description": "PSU0",
             "direction": "i",
             "gender": "f",
-            "name": "pwr0",
+            "name": "psu0",
             "type__name": "Cisco | 7200 | PWR-7200"
         },
         {
             "description": "PSU1",
             "direction": "i",
             "gender": "f",
-            "name": "pwr1",
+            "name": "psu1",
             "type__name": "Cisco | 7200 | PWR-7200"
         }
     ],
