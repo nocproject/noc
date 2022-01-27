@@ -524,7 +524,7 @@ class CHTableReportDataSource(ReportDataSource):
         """
         select, group = [], []
         if self.max_intervals:
-            minutes = min(((self.end - self.start).total_seconds() / 60) / self.max_intervals, 1)
+            minutes = max(((self.end - self.start).total_seconds() / 60) / self.max_intervals, 1)
             select += [f"toStartOfInterval(ts, INTERVAL {minutes} minute) AS ts"]
             group += ["ts"]
         elif self.interval and self.interval not in self.group_intervals:
