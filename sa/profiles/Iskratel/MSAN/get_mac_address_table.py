@@ -32,7 +32,7 @@ class Script(BaseScript):
         r"^(?P<mac>\S+)\s+(?P<interface>\d+/\d+)\s+(?P<type>\S+)\s*\n", re.MULTILINE
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-addr-table"
         if interface is not None:
             cmd += " interface %s" % interface

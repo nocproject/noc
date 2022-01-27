@@ -80,3 +80,13 @@ class Profile(BaseProfile):
         else:
             match = self.rx_hw2.search(c)
             return match.groupdict()
+
+    rx_iface = re.compile(r"[01]/\d+")
+
+    @classmethod
+    def get_interface_type(cls, name):
+        if cls.rx_iface.match(name):
+            return "physical"
+        if name == "2/1":
+            return "aggregated"
+        return "other"

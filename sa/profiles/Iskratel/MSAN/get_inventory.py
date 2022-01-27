@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Iskratel.MSAN.get_inventory"
     interface = IGetInventory
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         v = self.profile.get_hardware(self)
         r = {"vendor": "ISKRATEL", "part_no": v["part_no"], "serial": v["serial"]}
         if v["number"]:
