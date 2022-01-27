@@ -28,7 +28,7 @@ class Script(BaseScript):
         version = self.snmp.get("1.3.6.1.4.1.1332.1.1.5.1.3.1.0")
         return {
             "vendor": "Iskratel",
-            "platform": "Iskratel SGR",
+            "platform": "SGR",
             "version": version,
             # "attributes": {"Serial Number": serial},
         }

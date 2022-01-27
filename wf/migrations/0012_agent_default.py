@@ -220,7 +220,7 @@ class Migration(BaseMigration):
                     "expose_datastream": False,
                 }
                 for label, descr in [
-                    ("noc::agent*", "Agent authentication precessed labels"),
+                    ("noc::agent::*", "Agent authentication precessed labels"),
                     ("noc::agent::auth::none", "Agent is not authenticate and "),
                     (
                         "noc::agent::auth::pre",
