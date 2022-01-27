@@ -1,13 +1,22 @@
 ---
-- name: add nsqd group
+- name: Disable nsqlookupd system service
+  service:
+    name: "nsqlookupd"
+    enabled: "False"
+    state: stopped
+  ignore_errors: "True"
+
+- name: Remove nsqd group
   group:
     name: nsq
     state: absent
+  ignore_errors: "True"
 
-- name: add nsqd user
+- name: Remove nsqd user
   user:
     name: nsq
     state: absent
+  ignore_errors: "True"
 
 - name: Delete all nsqd directories
   file:
@@ -18,13 +27,6 @@
       mode: "u=rwx,g=rx,o=rx"
     - dir: "{{ nsq_root }}"
       mode: "u=rwx,g=rx,o=rx"
-
-- name: Disable nsqlookupd system service
-  service:
-    name: "nsqlookupd"
-    enabled: "False"
-    state: stopped
-  ignore_errors: "True"
 
 - name: remove nsqlookupd consul check
   import_role:

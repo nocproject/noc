@@ -1,14 +1,22 @@
 ---
+- name: Disable nsq system service
+  service:
+    name: "nsqd"
+    enabled: "False"
+    state: stopped
+  ignore_errors: "True"
+
 - name: Remove nsqd group
   group:
     name: nsq
     state: absent
+  ignore_errors: "True"
 
 - name: Remove nsqd user
   user:
     name: nsq
-    shell: "{{ fake_shell }}"
     state: absent
+  ignore_errors: "True"
 
 - name: Remove path for on-disk queue files
   file:
@@ -33,13 +41,6 @@
     ct_service_command: "{{ reload_command }}"
     ct_service_command_timeout: "60s"
     ct_service_source_template: "True"
-
-- name: Disable nsq system service
-  service:
-    name: "nsqd"
-    enabled: "False"
-    state: stopped
-  ignore_errors: "True"
 
 - name: remove nsqd consul check
   import_role:
