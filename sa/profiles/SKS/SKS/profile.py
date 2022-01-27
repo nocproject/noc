@@ -130,10 +130,13 @@ class Profile(BaseProfile):
         return cls.INTERFACE_TYPES.get(name[:2].lower())
 
     rx_e1 = re.compile(r"e1 unit-1|!")
+    rx_snmp = re.compile(r"snmp-server community 7 (\w+) ")
 
     def cleaned_config(self, cfg):
         cfg = super().cleaned_config(cfg)
         search = self.rx_e1.search(cfg)
         if search:
             cfg = cfg[search.span()[0] :]
+        # SKS-16E1-IP-ES-L
+        cfg = self.rx_snmp.sub("snmp-server community 7 XXXXX ", cfg)
         return cfg
