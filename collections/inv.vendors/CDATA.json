@@ -1,0 +1,8 @@
+{
+    "name": "C-Data",
+    "uuid": "ee76423d-cef1-4791-bea2-aad1f67034bc",
+    "full_name": "C-Data",
+    "code": ["CDATA"],
+    "site": "https://cdatatec.com.cn/",
+    "$collection": "inv.vendors"
+}
