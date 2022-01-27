@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Custom python module importer
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import sys
 import os
 import importlib
+from contextlib import contextmanager
 
 # NOC modules
 from noc.config import config
@@ -202,6 +203,23 @@ def _get_loader():
         NOCSpeedupLoader.ROOT = alt_speedup
         loader_map[NOCSpeedupLoader.PREFIX] = NOCSpeedupLoader
     return ImportRouter(loader_map)
+
+
+@contextmanager
+def prefer_site_packages():
+    """
+    Temporary remove script directory from import path to avoid naming clashes.
+    Usage
+
+    ```
+    with prefer_site_packages():
+        import dns
+    ```
+    """
+    prev = sys.path
+    sys.path = [x for x in sys.path if x]
+    yield
+    sys.path = prev
 
 
 # Install loader
