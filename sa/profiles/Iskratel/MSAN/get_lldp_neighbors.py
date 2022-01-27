@@ -31,7 +31,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         try:
             v = self.cli("show lldp remote-device all")
