@@ -2,7 +2,6 @@
     "name": "ElectronR | KO01M sysObjectID",
     "$collection": "sa.profilecheckrules",
     "uuid": "fdfd1f5d-a6d8-4146-8882-8f3f5b27705f",
-    "description": null,
     "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
