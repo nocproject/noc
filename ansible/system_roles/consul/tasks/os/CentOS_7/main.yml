@@ -90,7 +90,7 @@
     description: consul repository
     baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
     enabled: "True"
-    gpgcheck: yes
+    gpgcheck: "True"
     gpgkey: https://rpm.releases.hashicorp.com/gpg
 
 - name: Install Consul
