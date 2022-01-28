@@ -73,16 +73,25 @@
 #  tags:
 #    - repo
 
-- name: Install yum-utils
-  yum:
-    name: yum-utils
-    state: present
-    update_cache: "True"
-    allow_downgrade: "True"
+#- name: Install yum-utils
+#  yum:
+#    name: yum-utils
+#    state: present
+#    update_cache: "True"
+#    allow_downgrade: "True"
+
+#- name: Add Consul repository
+#  shell:
+#    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 
 - name: Add Consul repository
-  shell:
-    yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+  yum_repository:
+    name: consul
+    description: consul repository
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+    enabled: "True"
+    gpgcheck: yes
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
 
 - name: Install Consul
   yum:
