@@ -747,7 +747,7 @@ class AssetCheck(DiscoveryCheck):
             mtype = name[24:].upper().replace("-", "")
             if "BASE" in mtype:
                 speed, ot = mtype.split("BASE", 1)
-                spd = {"100": "100M", "1000": "1G", "10G": "10G"}.get(speed)
+                spd = {"100": "100M", "1000": "1G", "10/100/1000": "1G", "10G": "10G"}.get(speed)
                 if spd:
                     m = "NoName | Transceiver | %s | %s %s" % (spd, ff, ot)
                 else:
