@@ -48,6 +48,10 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
+    rx_neighbor_table = re.compile(
+        r"^(\S+|\S+\n\S+)\s+(?P<local_iface>(?:Gig|TGi)\d\/\d+)\s+", re.MULTILINE
+    )
+
     def execute_cli(self):
         r = []
         try:
@@ -94,10 +98,15 @@ class Script(BaseScript):
                 neighbor["remote_system_name"] = i[3]
             r += [{"local_interface": i[0], "neighbors": [neighbor]}]
         if not t:
-            for iface in self.scripts.get_interface_status():
-                c = self.cli(
-                    "show lldp neighbors interface %s" % iface["interface"], ignore_errors=True
-                )
+            # Fix for SKS-16E1-IP-ES-L, Reduce 'show lldp neighbors interface XXX' command
+            # because multiple run causes stuck cli on device.
+            match = self.rx_neighbor_table.findall(v)
+            if match:
+                ifaces = [x[1] for x in match]
+            else:
+                ifaces = [x["interface"] for x in self.scripts.get_interface_status()]
+            for iface in ifaces:
+                c = self.cli(f"show lldp neighbors interface {iface}", ignore_errors=True)
                 c = c.replace("\n\n", "\n")
                 neighbors = []
                 for match in self.rx_neighbor.finditer(c):
@@ -152,5 +161,5 @@ class Script(BaseScript):
                         neighbor["remote_system_description"] = system_descr
                     neighbors += [neighbor]
                 if neighbors:
-                    r += [{"local_interface": iface["interface"], "neighbors": neighbors}]
+                    r += [{"local_interface": iface, "neighbors": neighbors}]
         return r
