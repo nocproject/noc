@@ -37,7 +37,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, \n        argMax(summary, t) as `Subscribers` \n    FROM \n        $table \n    WHERE \n(labels = [])\n        and managed_object=$bi_id \n        and $timeFilter\nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT $timeSeries as t, \n        argMax(summary, t) as `Subscribers` \n    FROM \n        $table \n    WHERE \ninterface = '' and slot = '' and module = '' \n        and managed_object=$bi_id \n        and $timeFilter\nGROUP BY t \nORDER BY t ASC",
       "database": "{{ noc_db_metrics }}",
       "tableLoading": false,
       "table": "subscriber",
