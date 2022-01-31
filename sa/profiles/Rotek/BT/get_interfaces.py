@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     def execute_cli(self, **kwargs):
-        if self.is_4250:
+        if self.is_4250lsr:
             v = self.http.get("/info.cgi?_", json=True, cached=True, eof_mark=b"}")
             return [
                 {
@@ -34,8 +34,6 @@ class Script(BaseScript):
         raise NotImplementedError
 
     def execute_snmp(self):
-        if self.is_4250:
-            raise NotImplementedError
         interfaces = []
         try:
             ifindex = self.snmp.get("1.3.6.1.2.1.2.2.1.1.1")
@@ -65,7 +63,8 @@ class Script(BaseScript):
                     "subinterfaces": [],
                 }
             ]
-
+        if self.is_4250lsr:
+            return interfaces
         for index in self.profile.PORT_TYPE.keys():
             s_status = 0
             status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % index)
