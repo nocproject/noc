@@ -26,7 +26,7 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         mac = None
-        if self.is_4250:
+        if self.is_4250lsr:
             v = self.http.get("/info.cgi?_", json=True, cached=True, eof_mark=b"}")
             mac = v["macaddr"]
         elif self.is_6037_v1:
