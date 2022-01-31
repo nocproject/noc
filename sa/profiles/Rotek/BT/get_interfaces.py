@@ -64,7 +64,7 @@ class Script(BaseScript):
                 }
             ]
         if self.is_4250lsr:
-            return interfaces
+            return [{"interfaces": interfaces}]
         for index in self.profile.PORT_TYPE.keys():
             s_status = 0
             status = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.%s.0" % index)

@@ -104,7 +104,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["BT-6037v1rev3", "BT6037", "BT6037(V1.REV2)"]
+            "part_no": ["BT-6037v1rev3", "BT6037", "BT6037(V1.REV2)", "BT-6037"]
         },
         "management": {
             "managed": "true"
