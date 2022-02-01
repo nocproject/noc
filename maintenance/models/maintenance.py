@@ -11,7 +11,7 @@ import dateutil.parser
 import operator
 import re
 from threading import Lock
-from typing import List
+from typing import List, Set
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -32,7 +32,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_save, on_delete_check
-from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.core.defer import call_later
@@ -239,21 +238,24 @@ def update_affected_objects(maintenance_id):
     Calculate and fill affected objects
     """
 
-    def get_downlinks(objects):
-        r = set()
+    def get_downlinks(objects: Set[int]):
         # Get all additional objects which may be affected
-        for d in ObjectData._get_collection().find({"uplinks": {"$in": list(objects)}}, {"_id": 1}):
-            if d["_id"] not in objects:
-                r.add(d["_id"])
+        r = {
+            mo_id
+            for mo_id in ManagedObject.objects.filter(uplinks__overlap=list(objects)).values_list(
+                "id", flat=True
+            )
+            if mo_id not in objects
+        }
         if not r:
             return r
         # Leave only objects with all uplinks affected
         rr = set()
-        for d in ObjectData._get_collection().find(
-            {"_id": {"$in": list(r)}}, {"_id": 1, "uplinks": 1}
+        for mo_id, uplinks in ManagedObject.objects.filter(id__in=list(r)).values_list(
+            "id", "uplinks"
         ):
-            if len([1 for u in d["uplinks"] if u in objects]) == len(d["uplinks"]):
-                rr.add(d["_id"])
+            if len([1 for u in uplinks if u in objects]) == len(uplinks):
+                rr.add(mo_id)
         return rr
 
     def get_segment_objects(segment):
@@ -266,7 +268,7 @@ def update_affected_objects(maintenance_id):
 
     data = Maintenance.get_by_id(maintenance_id)
     # Calculate affected objects
-    affected = set(o.object.id for o in data.direct_objects if o.object)
+    affected: Set[int] = set(o.object.id for o in data.direct_objects if o.object)
     for o in data.direct_segments:
         if o.segment:
             affected |= get_segment_objects(o.segment.id)
@@ -285,13 +287,14 @@ def update_affected_objects(maintenance_id):
     )
 
     # @todo: Calculate affected objects considering topology
-    affected = [{"object": o} for o in sorted(affected)]
-    Maintenance._get_collection().update(
-        {"_id": maintenance_id},
+    Maintenance._get_collection().update_one(
+        {"_id": data.id},
         {"$set": {"administrative_domain": affected_ad}},
     )
-    AffectedObjects._get_collection().update(
-        {"maintenance": maintenance_id}, {"$set": {"affected_objects": affected}}, upsert=True
+    AffectedObjects._get_collection().update_one(
+        {"maintenance": data.id},
+        {"$set": {"affected_objects": [{"object": o} for o in sorted(affected)]}},
+        upsert=True,
     )
 
 

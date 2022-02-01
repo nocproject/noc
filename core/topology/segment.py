@@ -348,11 +348,10 @@ class SegmentTopology(BaseTopology):
 
 def update_uplinks(segment_id):
     from noc.inv.models.networksegment import NetworkSegment
-    from noc.sa.models.objectdata import ObjectData
 
     segment = NetworkSegment.get_by_id(segment_id)
     if not segment:
         logger.warning("Segment with id: %s does not exist" % segment_id)
         return
     st = SegmentTopology(segment)
-    ObjectData.update_uplinks(st.iter_uplinks())
+    ManagedObject.update_uplinks(st.iter_uplinks())

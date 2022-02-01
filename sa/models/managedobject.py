@@ -14,7 +14,8 @@ import re
 import operator
 from threading import Lock
 import datetime
-from typing import Tuple, Iterable, List, Any, Dict
+from dataclasses import dataclass
+from typing import Tuple, Iterable, List, Any, Dict, Set
 
 # Third-party modules
 import orjson
@@ -100,7 +101,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 33
+MANAGEDOBJECT_CACHE_VERSION = 34
 CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
@@ -110,6 +111,13 @@ Credentials = namedtuple(
 
 class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
+
+
+@dataclass(frozen=True)
+class ObjectUplinks(object):
+    object_id: int
+    uplinks: List[int]
+    rca_neighbors: List[int]
 
 
 id_lock = Lock()
@@ -548,6 +556,19 @@ class ManagedObject(NOCModel):
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
+    # Additional data
+    uplinks = ArrayField(IntegerField(), blank=True, null=True, default=list)
+    # RCA neighbors cache
+    rca_neighbors = ArrayField(IntegerField(), blank=True, null=True, default=list)
+    # xRCA donwlink merge window settings
+    # for rca_neighbors.
+    # Each position represents downlink merge windows for each rca neighbor.
+    # Windows are in seconds, 0 - downlink merge is disabled
+    dlm_windows = ArrayField(IntegerField(), blank=True, null=True, default=list)
+    # Paths
+    adm_path = ArrayField(IntegerField(), blank=True, null=True, default=list)
+    segment_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    container_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -570,6 +591,7 @@ class ManagedObject(NOCModel):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _e_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _neighbor_cache = cachetools.TTLCache(1000, ttl=300)
 
     def __str__(self):
         return self.name
@@ -817,7 +839,10 @@ class ManagedObject(NOCModel):
             or "segment" in self.changed_fields
             or "container" in self.changed_fields
         ):
-            ObjectData.refresh_path(self)
+            # ObjectData.refresh_path(self)
+            self.adm_path = self.administrative_domain.get_path()
+            self.segment_path = self.segment.get_path()
+            self.container_path = self.container.get_path() if self.container else []
             if self.container and "container" in self.changed_fields:
                 x, y, zoom = self.container.get_coordinates_zoom()
                 ManagedObject.objects.filter(id=self.id).update(x=x, y=y, default_zoom=zoom)
@@ -1993,8 +2018,77 @@ class ManagedObject(NOCModel):
             yield ["noc::is_linked::="]
 
     @classmethod
-    def can_set_label(cls, label):
+    def can_set_label(cls, label: str) -> bool:
         return Label.get_effective_setting(label, "enable_managedobject")
+
+    @classmethod
+    def uplinks_for_objects(cls, objects: List["ManagedObject"]) -> Dict[int, List[int]]:
+        """
+        Returns uplinks for list of objects
+        :param objects: List of object
+        :return: dict of object id -> uplinks
+        """
+        o = []
+        for obj in objects:
+            if hasattr(obj, "id"):
+                obj = obj.id
+            o += [obj]
+        uplinks = {obj: [] for obj in o}
+        for oid, uplinks in ManagedObject.objects.filter(id__in=o).values_list("id", "uplinks"):
+            uplinks[oid] = uplinks or []
+        return uplinks
+
+    @classmethod
+    def update_uplinks(cls, iter_uplinks: Iterable[ObjectUplinks]) -> None:
+        """
+        Update ObjectUplinks in database
+        :param iter_uplinks: Iterable of ObjectUplinks
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        obj_data: List[ObjectUplinks] = []
+        seen_neighbors: Set[int] = set()
+        uplinks: Dict[int, Set[int]] = {}
+        for ou in iter_uplinks:
+            obj_data += [ou]
+            seen_neighbors |= set(ou.rca_neighbors)
+            uplinks[ou.object_id] = set(ou.uplinks)
+        if not obj_data:
+            return  # No uplinks for segment
+        # Get downlink_merge window settings
+        dlm_settings: Dict[int, int] = {}
+        if seen_neighbors:
+            with pg_connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT mo.id, mop.enable_rca_downlink_merge, mop.rca_downlink_merge_window
+                    FROM sa_managedobject mo JOIN sa_managedobjectprofile mop
+                        ON mo.object_profile_id = mop.id
+                    WHERE mo.id IN %s""",
+                    [tuple(seen_neighbors)],
+                )
+                dlm_settings = {mo_id: dlm_w for mo_id, is_enabled, dlm_w in cursor if is_enabled}
+        # Propagate downlink-merge settings downwards
+        dlm_windows: Dict[int, int] = {}
+        MAX_WINDOW = 1000000
+        for o in seen_neighbors:
+            ups = uplinks.get(o)
+            if not ups:
+                continue
+            w = min(dlm_settings.get(u, MAX_WINDOW) for u in ups)
+            if w == MAX_WINDOW:
+                w = 0
+            dlm_windows[o] = w
+        # Prepare bulk update operation
+        for ou in obj_data:
+            mo: "ManagedObject" = ManagedObject.get_by_id(ou.object_id)
+            ManagedObject.objects.filter(id=mo.id).update(
+                uplinks=ou.uplinks,
+                rca_neighbors=ou.rca_neighbors,
+                dlm_windows=[dlm_windows.get(o, 0) for o in ou.rca_neighbors],
+            )
+            ManagedObject._reset_caches(mo.id)
 
 
 @on_save

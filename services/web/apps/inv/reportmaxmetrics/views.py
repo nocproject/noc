@@ -32,7 +32,6 @@ from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.core.comp import smart_text
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.objectdata import ObjectData
 from noc.core.mongo.connection import get_db
 from noc.core.translation import ugettext as _
 from noc.config import config
@@ -350,10 +349,8 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
         if cmap[-1] > 17:
             mos_id = list(mos.values_list("id", flat=True))
             uplinks = {obj: [] for obj in mos_id}
-            for d in ObjectData._get_collection().find(
-                {"_id": {"$in": mos_id}}, {"_id": 1, "uplinks": 1}
-            ):
-                uplinks[d["_id"]] = d.get("uplinks", [])
+            for mo_id, uplinks in mos.values_list("id", "uplinks"):
+                uplinks[mo_id] = uplinks or []
             rld = load(mos_id)
 
             for mo in uplinks:

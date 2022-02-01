@@ -14,7 +14,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobject import ManagedObjectProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.objectdata import ObjectData
 from noc.main.models.pool import Pool
 from noc.sa.models.profile import Profile
 from noc.inv.models.platform import Platform
@@ -85,10 +84,10 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             problems[mo] = _("No links")
         # Get all managed objects without uplinks
         uplinks = {}
-        for d in ObjectData._get_collection().find():
-            nu = len(d.get("uplinks", []))
+        for mo_id, uplinks in ManagedObject.objects.filter().values_list("id", "uplinks"):
+            nu = len(uplinks or [])
             if nu:
-                uplinks[d["_id"]] = nu
+                uplinks[mo_id] = nu
         for mo in mos_set - set(problems) - set(uplinks):
             problems[mo] = _("No uplinks")
         #

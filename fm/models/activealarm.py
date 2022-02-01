@@ -170,13 +170,12 @@ class ActiveAlarm(Document):
         super().clean()
         if not self.last_update:
             self.last_update = self.timestamp
-        data = self.managed_object.data
-        self.adm_path = data.adm_path
-        self.segment_path = data.segment_path
-        self.container_path = data.container_path
-        self.uplinks = data.uplinks
-        self.rca_neighbors = data.rca_neighbors
-        self.dlm_windows = data.dlm_windows
+        self.adm_path = self.managed_object.adm_path
+        self.segment_path = self.managed_object.segment_path
+        self.container_path = self.managed_object.container_path
+        self.uplinks = self.managed_object.uplinks
+        self.rca_neighbors = self.managed_object.rca_neighbors
+        self.dlm_windows = self.managed_object.dlm_windows
         if not self.id:
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
 
