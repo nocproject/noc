@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Jinja dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import os
 
 # Third-party modules
 from jinja2 import Environment, FileSystemLoader
-import demjson
+import demjson3
 
 # NOC modules
 from noc.config import config
@@ -40,5 +40,5 @@ class JinjaDashboard(BaseDashboard):
         j2_env.globals["noc_db_metrics"] = config.clickhouse.db
         tmpl = j2_env.get_template(self.template)
         data = tmpl.render(context)
-        render = demjson.decode(data)
+        render = demjson3.decode(data)
         return render
