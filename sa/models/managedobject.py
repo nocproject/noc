@@ -110,8 +110,21 @@ Credentials = namedtuple(
 )
 
 
+class MaintenanceItem(BaseModel):
+    maintenance: str
+    start: datetime.datetime
+    stop: Optional[datetime.datetime] = None
+
+    def __str__(self):
+        return f"{self.maintenance}:{self.start}"
+
+
 class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
+
+
+class MaintenanceItems(BaseModel):
+    __root__: List[MaintenanceItem]
 
 
 @dataclass(frozen=True)
@@ -571,6 +584,15 @@ class ManagedObject(NOCModel):
     adm_path = ArrayField(IntegerField(), blank=True, null=True, default=list)
     segment_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
     container_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    affected_maintenances = PydanticField(
+        "Maintenance Items",
+        schema=MaintenanceItems,
+        blank=True,
+        null=True,
+        default=list,
+        # ? Internal validation not worked with JSON Field
+        # validators=[match_rules_validate],
+    )
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -2127,6 +2149,15 @@ class ManagedObject(NOCModel):
         for lo in r:
             ManagedObject.objects.filter(id=lo).update(links=list(r[lo]))
             ManagedObject._reset_caches(lo)
+
+    def get_active_maintenances(self, timestamp: Optional[datetime.datetime] = None) -> List[str]:
+        timestamp = timestamp or datetime.datetime.now()
+        return [
+            mai.maintenance
+            for mai in self.affected_maintenances
+            if datetime.datetime.fromisoformat(mai["start"]) < timestamp
+            and (mai["stop"] and datetime.datetime.fromisoformat(mai["stop"]) > timestamp)
+        ]
 
 
 @on_save
