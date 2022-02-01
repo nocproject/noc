@@ -29,7 +29,7 @@ class Script(BaseScript):
             except (self.CLISyntaxError, self.NotSupportedError):
                 r = []
             for v in r:
-                if v["status"] and v["type"] == "VRF":
+                if v["status"] and v["type"].lower() == "vrf":
                     vrf = {"name": v["name"], "addresses": [], "interfaces": []}
                     if "rd" in v:
                         vrf["rd"] = v["rd"]
