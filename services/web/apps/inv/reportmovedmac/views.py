@@ -70,7 +70,7 @@ MAC_MOVED_QUERY = f"""SELECT
    MACNumToString(mac) as smac,
    dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'name', managed_object),
    dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'address', managed_object),
-   dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'adm_domain_name', managed_object),
+   dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'administrative_domain', managed_object),
    groupUniqArray((interface, toUnixTimestamp(ts))) as ifaces,
    groupUniqArray(interface) as migrate_ifaces,
    uniqExact(interface)
