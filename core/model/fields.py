@@ -377,10 +377,15 @@ class PydanticField(models.JSONField):
         self.schema: BaseModel = schema
         super().__init__(verbose_name, name, encoder, decoder, **kwargs)
 
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        return value.json()
+
     def get_db_prep_value(self, value, connection, prepared=False):
         if not prepared:
             try:
-                self.schema.parse_obj(value)
+                value = self.schema.parse_obj(value)
             except ValidationError as e:
                 raise ValueError(e)
         return super().get_db_prep_value(value, connection, prepared=prepared)

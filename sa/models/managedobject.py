@@ -2150,13 +2150,26 @@ class ManagedObject(NOCModel):
             ManagedObject.objects.filter(id=lo).update(links=list(r[lo]))
             ManagedObject._reset_caches(lo)
 
+    @property
+    def in_maintenance(self) -> bool:
+        """
+        Check device in active maintenance
+        :return: 
+        """
+        return bool(self.get_active_maintenances())
+
     def get_active_maintenances(self, timestamp: Optional[datetime.datetime] = None) -> List[str]:
+        """
+        Getting device active maintenances ids
+        :param timestamp:
+        :return:
+        """
         timestamp = timestamp or datetime.datetime.now()
         return [
-            mai.maintenance
+            mai["maintenance"]
             for mai in self.affected_maintenances
             if datetime.datetime.fromisoformat(mai["start"]) < timestamp
-            and (mai["stop"] and datetime.datetime.fromisoformat(mai["stop"]) > timestamp)
+            and (not mai["stop"] or datetime.datetime.fromisoformat(mai["stop"]) > timestamp)
         ]
 
 
