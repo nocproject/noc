@@ -2154,7 +2154,7 @@ class ManagedObject(NOCModel):
     def in_maintenance(self) -> bool:
         """
         Check device in active maintenance
-        :return: 
+        :return:
         """
         return bool(self.get_active_maintenances())
 
