@@ -141,7 +141,8 @@ class IPAMApplication(ExtApplication):
         can_bind_vc = can_change and Permission.has_perm(user, "ip:ipam:bind_vc")
         can_change_maintainers = user.is_superuser
         can_add_prefix = can_change
-        can_add_address = can_change and len(prefixes) == 0
+        # can_add_address = can_change and len(prefixes) == 0
+        can_add_address = can_change
         # Bookmarks
         has_bookmark = prefix.has_bookmark(user)
         bookmarks = set(
