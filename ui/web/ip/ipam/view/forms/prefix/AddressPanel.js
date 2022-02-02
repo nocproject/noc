@@ -271,7 +271,10 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
                         "vrf__label": data.vrf__label,
                         "afi": data.afi
                     };
-                if(address) {
+                if(address === 'create_new') {
+                    values.address = data.prefix.substr(0, data.prefix.lastIndexOf("."));
+                }
+                else if(address) {
                     values.address = address
                 } else {
                     values.address = me.app.getCommonPrefixPart(data.afi, data.prefix)
