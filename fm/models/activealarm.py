@@ -141,7 +141,7 @@ class ActiveAlarm(Document):
     segment_path = ListField(ObjectIdField())
     container_path = ListField(ObjectIdField())
     # Services
-    directed_services = ListField(ObjectIdField())
+    affected_services = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
     # RCA neighbor cache, for topology_rca only
@@ -187,7 +187,7 @@ class ActiveAlarm(Document):
                 comp = self.components.get(comp, None)
                 svc = getattr(comp, "service", None)
                 if svc and svc.id not in self.direct_services:
-                    self.directed_services += [svc.id]
+                    self.affected_services += [svc.id]
 
     def safe_save(self, **kwargs):
         """
@@ -320,6 +320,7 @@ class ActiveAlarm(Document):
             total_objects=self.total_objects,
             total_services=self.total_services,
             total_subscribers=self.total_subscribers,
+            affected_services=self.affected_services,
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
