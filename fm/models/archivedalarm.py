@@ -100,6 +100,8 @@ class ArchivedAlarm(Document):
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
+    #
+    affected_services = ListField(ObjectIdField())
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
