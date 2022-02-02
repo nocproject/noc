@@ -839,10 +839,14 @@ class ManagedObject(NOCModel):
             or "segment" in self.changed_fields
             or "container" in self.changed_fields
         ):
-            # ObjectData.refresh_path(self)
             self.adm_path = self.administrative_domain.get_path()
             self.segment_path = self.segment.get_path()
             self.container_path = self.container.get_path() if self.container else []
+            ManagedObject.objects.filter(id=self.id).update(
+                adm_path=self.adm_path,
+                segment_path=self.segment_path,
+                container_path=self.container_path,
+            )
             if self.container and "container" in self.changed_fields:
                 x, y, zoom = self.container.get_coordinates_zoom()
                 ManagedObject.objects.filter(id=self.id).update(x=x, y=y, default_zoom=zoom)
