@@ -53,7 +53,7 @@ class JSONRPCAPI(object):
     def api_endpoint(
         self,
         req: JSONRemoteProcedureCall,
-        remote_user: Optional[str] = Header(None, alias="Remote-User")
+        remote_user: Optional[str] = Header(None, alias="Remote-User"),
     ):
         """Endpoint for FastAPI route.
 

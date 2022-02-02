@@ -140,6 +140,8 @@ class ActiveAlarm(Document):
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
     container_path = ListField(ObjectIdField())
+    # Services
+    directed_services = ListField(ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = ListField(IntField())
     # RCA neighbor cache, for topology_rca only
@@ -177,7 +179,15 @@ class ActiveAlarm(Document):
         self.rca_neighbors = self.managed_object.rca_neighbors
         self.dlm_windows = self.managed_object.dlm_windows
         if not self.id:
+            # Update effective labels
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
+            # Update directed_services
+            self.components._ComponentHub__refresh_all_components()
+            for comp in self.components._ComponentHub__all_components:
+                comp = self.components.get(comp, None)
+                svc = getattr(comp, "service", None)
+                if svc and svc.id not in self.direct_services:
+                    self.directed_services += [svc.id]
 
     def safe_save(self, **kwargs):
         """
