@@ -50,6 +50,16 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.Prefix", {
         },
         "-",
         {
+            text: __("Add Address"),
+            tooltip: __("Add Address"),
+            glyph: NOC.glyph.plus,
+            handler: "onAddAddress",
+            bind: {
+                disabled: "{!prefix.permissions.add_address}"
+            }
+        },
+        "-",
+        {
             text: __("Add Prefix"),
             tooltip: __("Add Prefix"),
             glyph: NOC.glyph.plus,
