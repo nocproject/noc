@@ -33,7 +33,7 @@ bsdiff4==1.2.1
 cachetools==4.2.4
 crontab==0.22.9
 csiphash==0.0.5
-demjson==2.2.4
+demjson3==3.0.5
 fs==2.4.13
 geojson==2.5.0
 geopy==2.2.0
