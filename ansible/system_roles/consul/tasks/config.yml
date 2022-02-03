@@ -35,14 +35,6 @@
       tags:
         - config
 
-  #- name: Changed rules on config.json
-  #  file:
-  #    path: "{{ consul_config_path }}/config.json"
-  #    state: file
-  #    owner: "{{ consul_group }}"
-  #  tags:
-  #    - config
-
     - name: Client configuration
       template:
         src: config_client.json.j2
