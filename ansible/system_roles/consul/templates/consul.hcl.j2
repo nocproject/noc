@@ -40,11 +40,11 @@ retry_join = [ {% set comma_nodes = joiner(", ") -%}
 {% endfor %}
 {% if consul_acl_enable -%}
     "primary_datacenter" = "{{ consul_acl_datacenter }}",
-    "acl": {
+    "acl" = {
       "enabled" = true,
       "default_policy" = "{{ consul_acl_default_policy }}",
       "down_policy" = "{{ consul_acl_down_policy }}",
-      "tokens": {
+      "tokens" = {
         "master" = "{{ consul_master_token }}",
         "replication" = "{{ consul_replication_token }}"
       }
