@@ -1,39 +1,39 @@
 ---
 # File: config.yml - Consul configuration tasks
+- block:
+    - name: Bootstrap configuration
+      template:
+        src: config_bootstrap.json.j2
+        dest: "{{ item.dest }}"
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+      no_log: "{{ tower_show_secrets }}"
+      with_items:
+        - dest: "{{ consul_config_path }}/config.json"
+          when: "{{ consul_power == 'bootstrap' }}"
+      when:
+        - item.when
+      notify:
+        - restart consul
+      tags:
+        - config
 
-- name: Bootstrap configuration
-  template:
-    src: config_bootstrap.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_power == 'bootstrap' }}"
-  when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
-
-- name: Server configuration
-  template:
-    src: config_server.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_power == 'server' }}"
-  when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
+    - name: Server configuration
+      template:
+        src: config_server.json.j2
+        dest: "{{ item.dest }}"
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+      no_log: "{{ tower_show_secrets }}"
+      with_items:
+        - dest: "{{ consul_config_path }}/config.json"
+          when: "{{ consul_power == 'server' }}"
+      when:
+        - item.when
+      notify:
+        - restart consul
+      tags:
+        - config
 
 #- name: Changed rules on config.json
 #  file:
@@ -43,22 +43,24 @@
 #  tags:
 #    - config
 
-- name: Client configuration
-  template:
-    src: config_client.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_power == 'agent' }}"
+    - name: Client configuration
+      template:
+        src: config_client.json.j2
+        dest: "{{ item.dest }}"
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+      no_log: "{{ tower_show_secrets }}"
+      with_items:
+        - dest: "{{ consul_config_path }}/config.json"
+          when: "{{ consul_power == 'agent' }}"
+      when:
+        - item.when
+      notify:
+        - restart consul
+      tags:
+        - config
   when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
+    - ansible_distribution == 'FreeBSD'
 
 - name: Perfomance configuration
   template:

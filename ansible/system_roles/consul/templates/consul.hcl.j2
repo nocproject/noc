@@ -16,8 +16,16 @@ recursors = [ {% set comma = joiner(", ") -%}
 {%- endfor %}
 {% endif -%}
 
-ui = true
-bootstrap = true
+ui = {% if consul_power == 'bootstrap' %}
+true
+{% else %}
+false
+{% endif %}
+bootstrap = {% if consul_power == 'bootstrap' %}
+true
+{% else %}
+false
+{% endif %}
 server = {% if consul_power == 'server' %}
 true
 {% else %}
