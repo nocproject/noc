@@ -18,7 +18,11 @@ recursors = [ {% set comma = joiner(", ") -%}
 
 ui = true
 bootstrap = true
-server = true
+server = {% if consul_power == 'server' %}
+true
+{% else %}
+false
+{% endif %}
 check_update_interval = "0s"
 node_name = "{{ consul_node_name }}"
 datacenter = "{{ consul_datacenter }}"
@@ -33,6 +37,18 @@ retry_join = [ {% set comma_nodes = joiner(", ") -%}
 {% for n in groups['svc-consul-server'] %}
 {{ comma_nodes() }}"{{ hostvars[n].ansible_host }}" ]
 {% endfor %}
+{% if consul_acl_enable -%}
+    "primary_datacenter": "{{ consul_acl_datacenter }}",
+    "acl": {
+      "enabled": true,
+      "default_policy": "{{ consul_acl_default_policy }}",
+      "down_policy": "{{ consul_acl_down_policy }}",
+      "tokens": {
+        "master": "{{ consul_master_token }}",
+        "replication": "{{ consul_replication_token }}"
+      }
+    }
+  {% endif -%},
 limits = {
       http_max_conns_per_client = 1000
 }
