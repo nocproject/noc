@@ -16,21 +16,14 @@ recursors = [ {% set comma = joiner(", ") -%}
 {%- endfor %}
 {% endif -%}
 
-ui = {% if consul_power == 'bootstrap' %}
-true
-{% else %}
-false
+{% if consul_power == 'bootstrap' %}
+ui = true
+bootstrap = true
 {% endif %}
-bootstrap = {% if consul_power == 'bootstrap' %}
-true
-{% else %}
-false
+{% if consul_power == 'server' %}
+server = true
 {% endif %}
-server = {% if consul_power == 'server' %}
-true
-{% else %}
-false
-{% endif %}
+
 check_update_interval = "0s"
 node_name = "{{ consul_node_name }}"
 datacenter = "{{ consul_datacenter }}"
@@ -46,14 +39,14 @@ retry_join = [ {% set comma_nodes = joiner(", ") -%}
 {{ comma_nodes() }}"{{ hostvars[n].ansible_host }}" ]
 {% endfor %}
 {% if consul_acl_enable -%}
-    "primary_datacenter": "{{ consul_acl_datacenter }}",
+    "primary_datacenter" = "{{ consul_acl_datacenter }}",
     "acl": {
-      "enabled": true,
-      "default_policy": "{{ consul_acl_default_policy }}",
-      "down_policy": "{{ consul_acl_down_policy }}",
+      "enabled" = true,
+      "default_policy" = "{{ consul_acl_default_policy }}",
+      "down_policy" = "{{ consul_acl_down_policy }}",
       "tokens": {
-        "master": "{{ consul_master_token }}",
-        "replication": "{{ consul_replication_token }}"
+        "master" = "{{ consul_master_token }}",
+        "replication" = "{{ consul_replication_token }}"
       }
     }
   {% endif -%},
