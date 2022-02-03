@@ -1,14 +1,14 @@
 {
-    "name": "NAG | SNR | SNR-S2985G-24T-POE",
+    "name": "NAG | SNR | SNR-S2985G-24T-POE-E",
     "$collection": "inv.objectmodels",
-    "uuid": "af6b51b4-c041-40ef-bff9-91dc1b3ca777",
+    "uuid": "4cb56833-7467-4d39-8846-672b6c0b7944",
     "vendor__code": "NAG",
-    "description": "24 порта 10/100/1000BASE-T с поддержкой POE 802.3at/af, 4 порта 100/1000BASE-X SFP\nБюджет POE 185W",
+    "description": "24 порта 10/100/1000BASE-T с поддержкой POE 802.3at/af, 4 порта 100/1000BASE-X SFP\nБюджет POE 370W",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/1",
@@ -16,7 +16,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/2",
@@ -24,7 +24,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/3",
@@ -32,7 +32,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/4",
@@ -40,7 +40,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/5",
@@ -48,7 +48,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/6",
@@ -56,7 +56,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/7",
@@ -64,7 +64,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/8",
@@ -72,7 +72,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/9",
@@ -80,7 +80,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/10",
@@ -88,7 +88,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/11",
@@ -96,7 +96,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/12",
@@ -104,7 +104,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/13",
@@ -112,7 +112,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/14",
@@ -120,7 +120,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/15",
@@ -128,7 +128,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/16",
@@ -136,7 +136,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/17",
@@ -144,7 +144,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/18",
@@ -152,7 +152,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/19",
@@ -160,7 +160,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/20",
@@ -168,7 +168,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/21",
@@ -176,7 +176,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/22",
@@ -184,7 +184,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/23",
@@ -192,7 +192,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "s",
             "gender": "f",
             "name": "Ethernet1/0/24",
@@ -200,7 +200,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/25",
@@ -209,7 +209,7 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/26",
@@ -218,7 +218,7 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/27",
@@ -227,7 +227,7 @@
             "type__name": "Transceiver | SFP+"
         },
         {
-            "description": null,
+            "description": "",
             "direction": "i",
             "gender": "f",
             "internal_name": "sfpEthernet1/0/28",
@@ -254,7 +254,12 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SNR-S2985G-24T-POE"]
+            "part_no": ["SNR-S2985G-24T-POE-E"]
+        },
+        "dimensions": {
+            "depth": 280,
+            "height": 44,
+            "width": 442
         },
         "management": {
             "managed": true
