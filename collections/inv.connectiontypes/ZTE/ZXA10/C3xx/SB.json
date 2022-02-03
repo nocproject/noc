@@ -1,0 +1,8 @@
+{
+    "name": "ZTE | ZXA10 | C3xx | SB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5d52e483-a9ab-4153-a7fd-5a08456b32ea",
+    "description": "C320 Service Board",
+    "c_group": [],
+    "genders": "mf"
+}

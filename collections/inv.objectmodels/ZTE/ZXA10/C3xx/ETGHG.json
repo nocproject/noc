@@ -1,0 +1,151 @@
+{
+    "name": "ZTE | ZXA10 | C3xx | ETGHG",
+    "$collection": "inv.objectmodels",
+    "uuid": "7d02a876-2bfc-4d3c-8d49-a7a79c85e9b9",
+    "vendor__code": "ZTE",
+    "description": "16-port EPON OLT interface board",
+    "connection_rule__name": "ZTE | ZXA10 | C3xx",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 9",
+            "direction": "i",
+            "gender": "f",
+            "name": "9",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 10",
+            "direction": "i",
+            "gender": "f",
+            "name": "10",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 11",
+            "direction": "i",
+            "gender": "f",
+            "name": "11",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 12",
+            "direction": "i",
+            "gender": "f",
+            "name": "12",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 13",
+            "direction": "i",
+            "gender": "f",
+            "name": "13",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 14",
+            "direction": "i",
+            "gender": "f",
+            "name": "14",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 15",
+            "direction": "i",
+            "gender": "f",
+            "name": "15",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 16",
+            "direction": "i",
+            "gender": "f",
+            "name": "16",
+            "protocols": ["EPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ETGHG"]
+        }
+    }
+}

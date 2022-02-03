@@ -1,0 +1,50 @@
+{
+    "name": "ZTE | ZXA10 | C320",
+    "$collection": "inv.objectmodels",
+    "uuid": "c4a60ab0-122d-429c-b71c-ca1263f2c73b",
+    "vendor__code": "ZTE",
+    "description": "ZTE XZA10 C320 Chassis",
+    "connection_rule__name": "ZTE | ZXA10 | C3xx",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "type__name": "ZTE | ZXA10 | C3xx | PWR"
+        },
+        {
+            "description": "",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C320"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}
