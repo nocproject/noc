@@ -1,0 +1,87 @@
+{
+    "name": "ZTE | ZXA10 | C3xx | ETGOD",
+    "$collection": "inv.objectmodels",
+    "uuid": "9c4c080f-f02b-4a24-b7d3-0e5c5e934c24",
+    "vendor__code": "ZTE",
+    "description": "8-port EPON OLT interface board",
+    "connection_rule__name": "ZTE | ZXA10 | C3xx",
+    "cr_context": "LINECARD",
+    "connections": [
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "name": "6",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "name": "7",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "gpon 8",
+            "direction": "i",
+            "gender": "f",
+            "name": "8",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ETGOD"]
+        }
+    }
+}

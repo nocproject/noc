@@ -1,0 +1,55 @@
+{
+    "name": "ZTE | ZXA10 | C3xx | PRAM",
+    "$collection": "inv.objectmodels",
+    "uuid": "ce513115-5d84-4e05-83bb-2a4ede984e2d",
+    "vendor__code": "ZTE",
+    "description": "PRAM is an AC power board (with power backup)",
+    "connection_rule__name": "ZTE | ZXA10 | C3xx",
+    "cr_context": "PWR",
+    "tags": ["psu"],
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "ZTE | ZXA10 | C3xx | PWR"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "(lead-acid battery or Felithium battery) input for power backup",
+            "direction": "s",
+            "gender": "f",
+            "name": " BAT-",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "(lead-acid battery or Felithium battery) input for power backup",
+            "direction": "s",
+            "gender": "f",
+            "name": "BAT+",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | TB Barrier Screw 2 Pin"
+        },
+        {
+            "description": "Detects the temperature of a lead-acid battery or activates a Fe-lithium battery",
+            "direction": "s",
+            "gender": "f",
+            "name": "sensor",
+            "type__name": "Electrical | micro JST XH 2-pin "
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PRAM"]
+        }
+    }
+}

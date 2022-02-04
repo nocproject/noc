@@ -1,0 +1,73 @@
+{
+    "name": "ZTE | ZXA10 | C3xx",
+    "$collection": "inv.connectionrules",
+    "uuid": "bd18949c-b884-4eb9-9c9a-7bfbfe93bf79",
+    "description": "ZXA10 C3xx connection rules",
+    "context": [
+        {
+            "reset_scopes": ["linecard"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "mainboard",
+            "type": "MAINBOARD"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PWR",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "mainboard",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "MAINBOARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "{N}",
+            "target_number": "",
+            "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MAINBOARD",
+            "scope": "chassis",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        }
+    ]
+}
