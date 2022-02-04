@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Multicast IP to MAC converter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,8 +9,8 @@
 from django import forms
 
 # NOC modules
-from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from noc.sa.interfaces.base import IPv4Parameter, MACAddressParameter
+from .base import BaseCalculator
 
 
 class CalculatorForm(forms.Form):
@@ -30,7 +30,7 @@ class CalculatorForm(forms.Form):
             return MACAddressParameter().form_clean(v)
 
 
-class Calculator(CalculatorBase):
+class Calculator(BaseCalculator):
     name = "multicast"
     title = "Multicast IP to MAC"
     form_class = CalculatorForm

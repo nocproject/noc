@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # dBm to mW conversion
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,8 +9,8 @@
 from django import forms
 
 # NOC modules
-from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from noc.core.convert.dbm import dbm2mw, mw2dbm
+from .base import BaseCalculator
 
 
 class CalculatorForm(forms.Form):
@@ -18,7 +18,7 @@ class CalculatorForm(forms.Form):
     measure = forms.ChoiceField(required=True, choices=[("dbm", "dBm"), ("mw", "mW")])
 
 
-class Calculator(CalculatorBase):
+class Calculator(BaseCalculator):
     name = "dbm2mw"
     title = "dBm to mW"
     form_class = CalculatorForm

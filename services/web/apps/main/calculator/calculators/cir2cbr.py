@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # bps to burst-rate conversion
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 # NOC modules
-from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
+from .base import BaseCalculator
 
 
 #
@@ -52,7 +52,7 @@ class CalculatorForm(forms.Form):
         return value * mp
 
 
-class Calculator(CalculatorBase):
+class Calculator(BaseCalculator):
     """Calculator"""
 
     name = "CIR2CBR"
