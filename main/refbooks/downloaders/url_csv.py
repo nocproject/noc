@@ -2,7 +2,7 @@
 # CSV-file downloader
 # First line is a field names
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,18 +12,18 @@ import gzip
 from io import StringIO
 
 # NOC modules
-from noc.main.refbooks.downloaders import Downloader as DownloaderBase
 from noc.core.http.client import fetch_sync
 from noc.core.comp import smart_text
+from .base import BaseDownloader
 
 
-class Downloader(DownloaderBase):
+class CsvUrlDownloader(BaseDownloader):
     """
     Download reference book from CSV file
     First line of CSV file is field names
     """
 
-    name = "CSV"
+    name = "url_csv"
 
     @classmethod
     def download(cls, ref_book):
