@@ -37,7 +37,7 @@ class RefBook(NOCModel):
     downloader = models.CharField(
         "Downloader",
         max_length=64,
-        choices=[(cn.name, cn.name) for cn in loader],
+        choices=[(cn, cn) for cn in loader],
         blank=True,
         null=True,
     )
