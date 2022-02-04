@@ -1,0 +1,64 @@
+{
+    "name": "ZTE | ZXA10 | C3xx | SMXA",
+    "$collection": "inv.objectmodels",
+    "uuid": "a6082cdf-b3e8-47f4-8775-1a758591d69d",
+    "vendor__code": "ZTE",
+    "description": "SMXA ,1-port 10GE SFP+ or 100M/1GE SFP, 1-port 100M/1GE SFP, 1-port 100M/1GE RJ45, 1 console port, 1 management 10/100M port",
+    "connection_rule__name": "ZTE | ZXA10 | C3xx",
+    "cr_context": "MAINBOARD",
+    "tags": ["lc", "port"],
+    "connections": [
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "mgmt",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "ZTE | ZXA10 | C3xx | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SMXA"]
+        }
+    }
+}
