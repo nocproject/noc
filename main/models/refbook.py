@@ -13,11 +13,9 @@ from django.db import models
 
 # NOC modules
 from noc.core.model.base import NOCModel
-from noc.main.refbooks.downloaders import downloader_registry
 from noc.core.model.decorator import on_delete_check
+from noc.main.refbooks.downloaders.loader import loader
 from .language import Language
-
-downloader_registry.register_all()
 
 
 @on_delete_check(check=[("main.RefBookField", "ref_book"), ("main.RefBookData", "ref_book")])
@@ -37,7 +35,11 @@ class RefBook(NOCModel):
     is_enabled = models.BooleanField("Is Enabled", default=False)
     is_builtin = models.BooleanField("Is Builtin", default=False)
     downloader = models.CharField(
-        "Downloader", max_length=64, choices=downloader_registry.choices, blank=True, null=True
+        "Downloader",
+        max_length=64,
+        choices=[(cn, cn) for cn in loader],
+        blank=True,
+        null=True,
     )
     download_url = models.CharField("Download URL", max_length=256, null=True, blank=True)
     last_updated = models.DateTimeField("Last Updated", blank=True, null=True)
@@ -91,17 +93,20 @@ class RefBook(NOCModel):
         """
         Download refbook
         """
-        if self.downloader and self.downloader in downloader_registry.classes:
-            downloader = downloader_registry[self.downloader]
-            data = downloader.download(self)
-            if data:
-                self.flush_refbook()
-                self.bulk_upload(data)
-                self.last_updated = datetime.datetime.now()
-                self.next_update = self.last_updated + datetime.timedelta(
-                    days=self.refresh_interval
-                )
-                self.save()
+        if not self.downloader:
+            return
+        downloader = loader[self.downloader]
+        if not downloader:
+            return
+        downloader = loader[self.downloader]
+        data = downloader.download(self)
+        if not data:
+            return
+        self.flush_refbook()
+        self.bulk_upload(data)
+        self.last_updated = datetime.datetime.now()
+        self.next_update = self.last_updated + datetime.timedelta(days=self.refresh_interval)
+        self.save()
 
     @property
     def can_search(self):
