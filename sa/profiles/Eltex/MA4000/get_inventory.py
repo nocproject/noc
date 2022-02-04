@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,14 +56,23 @@ class Script(BaseScript):
                 continue
             c = self.cli("show slot %s information" % i[0])
             match = self.rx_slot.search(c)
-            r = {
-                "type": "LINECARD",
-                "number": i[0],
-                "vendor": "ELTEX",
-                "serial": i[4],
-                "part_no": match.group("part_no"),
-                "revision": match.group("revision"),
-            }
+            if i[1] == "none" and i[2] == "plc8":
+                r = {
+                    "type": "LINECARD",
+                    "number": i[0],
+                    "vendor": "ELTEX",
+                    "serial": i[4],
+                    "part_no": "PLC8",
+                }
+            else:
+                r = {
+                    "type": "LINECARD",
+                    "number": i[0],
+                    "vendor": "ELTEX",
+                    "serial": i[4],
+                    "part_no": match.group("part_no"),
+                    "revision": match.group("revision"),
+                }
             res += [r]
             sfp = []
             c = self.cli("show interface gpon-port %s/all state" % i[0])
