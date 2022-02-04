@@ -1,0 +1,8 @@
+{
+    "name": "ZTE | ZXA10 | C3xx | PWR",
+    "$collection": "inv.connectiontypes",
+    "uuid": "8757559c-6411-495c-8457-8069b529c979",
+    "description": "ZXA10 Power interface board",
+    "c_group": [],
+    "genders": "mf"
+}
