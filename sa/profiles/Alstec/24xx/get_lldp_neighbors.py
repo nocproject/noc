@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.core.text import parse_table
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
@@ -35,6 +35,7 @@ from noc.core.lldp import (
 class Script(BaseScript):
     name = "Alstec.24xx.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+    always_prefer = "S"
 
     rx_line = re.compile(
         r"^(?P<port>(?:Gi|Te|Po|e|g|cch)\S+)\s+(?P<system_id>\S+)\s+"
@@ -54,7 +55,7 @@ class Script(BaseScript):
         "H": LLDP_CAP_STATION_ONLY,
     }
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         data = []
         try:
@@ -62,11 +63,11 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         v = v.replace("\n\n", "\n")
-        for l in parse_table(v, allow_extend=True):
-            if not l[0]:
-                data[-1] = [s[0] + s[1] for s in zip(data[-1], l)]
+        for ll in parse_table(v, allow_extend=True):
+            if not ll[0]:
+                data[-1] = [s[0] + s[1] for s in zip(data[-1], ll)]
                 continue
-            data += [l]
+            data += [ll]
         for d in data:
             chassis_id = d[2]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
