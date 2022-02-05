@@ -7,14 +7,16 @@
 
 # Python modules
 import datetime
-
-# Third-party modules
-import cachetools
+import logging
 
 # NOC modules
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.managedobject import ManagedObject
 from .base import BaseCard
+
+logger = logging.getLogger(__name__)
 
 
 class OutageCard(BaseCard):
@@ -23,12 +25,6 @@ class OutageCard(BaseCard):
     card_css = ["/ui/card/css/outage.css"]
 
     def get_data(self):
-        def get_segment_path(segment):
-            if segment.parent:
-                return segment_path[segment.parent] + [segment]
-            else:
-                return [segment]
-
         def update_summary(segment):
             """
             Calculate summary for segment and all nested segments
@@ -39,13 +35,15 @@ class OutageCard(BaseCard):
             for o in segment["objects"].values():
                 update_dict(services, o["services"])
                 update_dict(subscribers, o["subscribers"])
+                o["object"] = object_map[o["object"]]
             # Flatten objects
             segment["objects"] = sorted(segment["objects"].values(), key=lambda x: -x["weight"])
             # Calculate children's coverage
-            for s in segment["segments"].values():
+            for sid, s in segment["segments"].items():
                 update_summary(s)
                 update_dict(services, s["services"])
                 update_dict(subscribers, s["subscribers"])
+                s["segment"] = {"name": segment_map.get(sid, ""), "id": sid}
             segment["segments"] = sorted(segment["segments"].values(), key=lambda x: -x["weight"])
             segment["services"] = services
             segment["subscribers"] = subscribers
@@ -59,8 +57,6 @@ class OutageCard(BaseCard):
                 else:
                     d1[k] = d2[k]
 
-        segment_path = cachetools.LRUCache(maxsize=10000)
-        segment_path.__missing__ = get_segment_path
         # Build tree
         tree = {"segment": None, "segments": {}, "objects": {}, "subscribers": {}, "services": {}}
         if self.current_user.is_superuser:
@@ -70,36 +66,59 @@ class OutageCard(BaseCard):
                 adm_path__in=self.get_user_domains(), root__exists=False
             )
         now = datetime.datetime.now()
-        for alarm in qs:
-            if not alarm.total_services and not alarm.total_subscribers:
+        segments = set()
+        objects = set()
+        for alarm in qs.only(
+            "total_services",
+            "total_subscribers",
+            "segment_path",
+            "severity",
+            "timestamp",
+            "escalation_tt",
+            "managed_object",
+        ).as_pymongo():
+            if not alarm["total_services"] and not alarm["total_subscribers"]:
                 continue
             ct = tree
-            for sp in segment_path[alarm.managed_object.segment]:
-                if sp.id not in ct["segments"]:
-                    ct["segments"][sp.id] = {
-                        "segment": sp,
+            for sp_id in alarm["segment_path"]:
+                if sp_id not in ct["segments"]:
+                    ct["segments"][sp_id] = {
+                        "segment": None,
                         "segments": {},
                         "objects": {},
                         "subscribers": {},
                         "services": {},
                     }
-                ct = ct["segments"][sp.id]
-            subscribers = SummaryItem.items_to_dict(alarm.total_subscribers)
-            services = SummaryItem.items_to_dict(alarm.total_services)
-            ct["objects"][alarm.id] = {
-                "object": alarm.managed_object,
+                ct = ct["segments"][sp_id]
+                segments.add(sp_id)
+            subscribers = {ss["profile"]: ss["summary"] for ss in alarm["total_subscribers"]}
+            services = {ss["profile"]: ss["summary"] for ss in alarm["total_services"]}
+            ct["objects"][alarm["_id"]] = {
+                "object": alarm["managed_object"],
+                # "object": None,
                 "alarm": alarm,
-                "severity": alarm.severity,
-                "timestamp": alarm.timestamp,
-                "duration": now - alarm.timestamp,
-                "escalation_tt": alarm.escalation_tt,
+                "severity": alarm["severity"],
+                "timestamp": alarm["timestamp"],
+                "duration": now - alarm["timestamp"],
+                "escalation_tt": alarm.get("escalation_tt", ""),
                 "subscribers": subscribers,
                 "services": services,
                 "summary": {"subscriber": subscribers, "service": services},
             }
-            ct["objects"][alarm.id]["weight"] = ServiceSummary.get_weight(
-                ct["objects"][alarm.id]["summary"]
+            ct["objects"][alarm["_id"]]["weight"] = ServiceSummary.get_weight(
+                ct["objects"][alarm["_id"]]["summary"]
             )
+            objects.add(alarm["managed_object"])
+        segment_map = dict(
+            x
+            for x in NetworkSegment.objects.filter(id__in=list(segments)).values_list("id", "name")
+        )
+        object_map = {
+            x[0]: {"name": x[1], "container": x[2]}
+            for x in ManagedObject.objects.filter(id__in=list(objects)).values_list(
+                "id", "name", "container"
+            )
+        }
         # Calculate segment summaries
         update_summary(tree)
         # Calculate total summaries
