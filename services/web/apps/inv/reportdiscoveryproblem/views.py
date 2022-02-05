@@ -84,8 +84,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             problems[mo] = _("No links")
         # Get all managed objects without uplinks
         uplinks = {}
-        for mo_id, uplinks in ManagedObject.objects.filter().values_list("id", "uplinks"):
-            nu = len(uplinks or [])
+        for mo_id, mo_uplinks in ManagedObject.objects.filter().values_list("id", "uplinks"):
+            nu = len(mo_uplinks or [])
             if nu:
                 uplinks[mo_id] = nu
         for mo in mos_set - set(problems) - set(uplinks):
