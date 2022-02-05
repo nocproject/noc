@@ -35,6 +35,7 @@ from noc.core.lldp import (
 class Script(BaseScript):
     name = "SKS.SKS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+    always_prefer = "S"  # 'show lldp neighbor' not get port_description
 
     rx_neighbor = re.compile(
         r"^chassis id: (?P<chassis_id>\S+)\s*\n"
