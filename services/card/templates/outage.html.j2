@@ -22,7 +22,7 @@
                 <div class="outage-row">
                     <div class="outage-object">
                         {{ object["summary"] | glyph_summary }}<br/>
-                        <a href="/api/card/view/alarm/{{ object["alarm"].id }}/">
+                        <a href="/api/card/view/alarm/{{ object["alarm"]._id }}/">
                             {{ object["object"].name }}
                         </a>
                         <br/>
