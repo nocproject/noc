@@ -156,7 +156,7 @@ class AlarmHeatCard(BaseCard):
                         properties={
                             "alarms": len(t_data[x, y]),
                             "objects": [
-                                {"id": mo["id"], "name": mo["name"], "address": mo["address"]}
+                                {"id": mo["id"], "name": mo["name"], "address": mo.get("address")}
                                 for mo in mos
                             ],
                         },
