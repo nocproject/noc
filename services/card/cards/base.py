@@ -236,11 +236,15 @@ class BaseCard(object):
         """
         from noc.inv.models.object import Object
 
-        if not object.container:
+        if isinstance(object, dict) and "container" in object:
+            container = Object.get_by_id(object["container"]) if object["container"] else None
+        else:
+            container = object.container
+        if not container:
             metrics["error", ("type", "no_such_container")] += 1
             return _("N/A")
         path = []
-        c = object.container
+        c = container
         while c:
             if "address" in c.data:
                 if c.data["address"]["text"]:
