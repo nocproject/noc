@@ -283,7 +283,7 @@ class InterfacePathCard(BaseCard):
         for doc in SubInterface._get_collection().find(
             {"interface": self.object.id}, {"_id": 0, "enabled_afi": 1, "untagged_vlan": 1}
         ):
-            if "BRIDGE" in doc["enabled_afi"] and doc.get("untagged_vlan"):
+            if doc and "BRIDGE" in doc["enabled_afi"] and doc.get("untagged_vlan"):
                 constraint &= VLANConstraint(vlan=doc["untagged_vlan"], strict=False)
                 break
         return constraint
