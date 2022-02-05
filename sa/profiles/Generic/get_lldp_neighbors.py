@@ -39,7 +39,10 @@ class Script(BaseScript):
 
     def get_local_iface(self):
         r = {}
-        names = {x: y for y, x in self.scripts.get_ifindexes().items()}
+        names = {
+            x["ifindex"]: x["interface"]
+            for x in self.scripts.get_interface_properties(enable_ifindex=True)
+        }
         # Get LocalPort Table
         for port_num, port_subtype, port_id, port_descr in self.snmp.get_tables(
             [
@@ -54,7 +57,15 @@ class Script(BaseScript):
                 iface_name = self.get_interface_alias(port_id, port_descr)
             elif port_subtype == LLDP_PORT_SUBTYPE_MAC:
                 # Iface MAC address
-                raise NotImplementedError()
+                self.logger.error(
+                    "[%s] Resolve local port by mac is not supported. Try use port_num: %s",
+                    port_id,
+                    port_num,
+                )
+                if int(port_num) in names:
+                    iface_name = names[int(port_num)]
+                else:
+                    raise NotImplementedError()
             elif (
                 port_subtype == LLDP_PORT_SUBTYPE_LOCAL
                 and port_id.isdigit()
