@@ -62,11 +62,11 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         v = v.replace("\n\n", "\n")
-        for l in parse_table(v, allow_extend=True):
-            if not l[0]:
-                data[-1] = [s[0] + s[1] for s in zip(data[-1], l)]
+        for ll in parse_table(v, allow_extend=True):
+            if not ll[0]:
+                data[-1] = [s[0] + s[1] for s in zip(data[-1], ll)]
                 continue
-            data += [l]
+            data += [ll]
         for d in data:
             chassis_id = d[2]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
