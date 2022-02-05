@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.core.text import parse_table
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
@@ -54,7 +54,7 @@ class Script(BaseScript):
         "H": LLDP_CAP_STATION_ONLY,
     }
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         data = []
         try:
