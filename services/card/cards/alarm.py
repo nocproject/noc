@@ -123,13 +123,14 @@ class AlarmCard(BaseCard):
         return r
 
     def get_alarms(self):
-        def get_children(ca, include_groups=True):
+        def get_children(ca: "ActiveAlarm", include_groups=True):
             ca._children = []
             for ac in [ActiveAlarm, ArchivedAlarm]:
                 for aa in ac.objects.filter(root=ca.id):
                     ca._children += [aa]
                     get_children(aa)
-            if include_groups:
+            if include_groups and ca.reference:
+                # ca.reference check for OldArchived
                 for aa in ActiveAlarm.objects.filter(groups__in=[ca.reference], root__exists=False):
                     ca._children += [aa]
                     get_children(aa, include_groups=False)
