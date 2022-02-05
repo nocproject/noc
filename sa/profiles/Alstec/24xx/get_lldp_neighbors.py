@@ -35,6 +35,7 @@ from noc.core.lldp import (
 class Script(BaseScript):
     name = "Alstec.24xx.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+    always_prefer = "S"
 
     rx_line = re.compile(
         r"^(?P<port>(?:Gi|Te|Po|e|g|cch)\S+)\s+(?P<system_id>\S+)\s+"
