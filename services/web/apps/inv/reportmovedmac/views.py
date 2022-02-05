@@ -66,11 +66,11 @@ def get_column_width(name):
 
 
 """
-Find mac, that more 1 unique interface the requested time range  
-groupUniqArray has high memory consumption (that groupUniqArray), so used subquery for filter data.
+Find mac, that more 1 unique interface the requested time range groupUniqArray has high
+ memory consumption (that groupUniqArray), so used subquery for filter data.
 """
 MAC_MOVED_QUERY = f"""
-SELECT 
+SELECT
    managed_object,
    smac,
    dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'name', managed_object),
