@@ -12,6 +12,7 @@ Ext.define("NOC.pm.metricaction.Application", {
         "NOC.pm.metricaction.Model",
         "NOC.core.JSONPreview",
         "NOC.pm.metrictype.LookupField",
+        "NOC.fm.alarmclass.LookupField",
         "NOC.core.ListFormField",
         "Ext.ux.form.GridField"
     ],
@@ -102,51 +103,148 @@ Ext.define("NOC.pm.metricaction.Application", {
                     labelAlign: "top",
                     items: [
                         {
-                            name: "compose_node",
-                            xtype: "cmtext",
-                            fieldLabel: __("Compose Node"),
-                            labelAlign: "top",
-                            allowBlank: true,
-                            mode: "json"
-                        },
-                        {
-                            name: "compose_inputs",
-                            xtype: "gridfield",
-                            fieldLabel: __("Compose Config"),
-                            columns: [
+                            xtype: "fieldset",
+                            title: __("Compose Node"),
+                            layout: "anchor",
+                            defaults: {
+                                labelAlign: "top",
+                                collapsible: false,
+                                collapsed: false,
+                                padding: 4
+                            },
+                            items: [
                                 {
-                                    dataIndex: "input_name",
-                                    text: __("Name"),
-                                    width: 150
+                                    name: "compose_node",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Activation Node"),
+                                    allowBlank: true,
+                                    defaultValue: "",
+                                    store: [
+                                        ["div", __("Divide")],
+                                        ["", __("Disable")],
+                                    ],
                                 },
                                 {
-                                    dataIndex: "metric_type",
-                                    text: __("Type"),
-                                    width: 70
+                                    name: "compose_inputs",
+                                    xtype: "gridfield",
+                                    fieldLabel: __("Compose Config"),
+                                    columns: [
+                                        {
+                                            dataIndex: "metric_type",
+                                            text: __("Type"),
+                                            editor: {
+                                                xtype: "pm.metrictype.LookupField"
+                                            },
+                                            renderer: NOC.render.Lookup("metric_type"),
+                                            width: 200
+                                        },
+                                        {
+                                            dataIndex: "input_name",
+                                            text: __("Name"),
+                                            editor: "textfield",
+                                            width: 150
+                                        },
+
+                                    ]
+                                },
+                                {
+                                    name: "compose_metric_type",
+                                    xtype: "pm.metrictype.LookupField",
+                                    fieldLabel: __("Compose Metric Type"),
+                                    allowBlank: true
                                 },
                             ]
                         },
                         {
-                            name: "compose_metric_type",
-                            xtype: "pm.metrictype.LookupField",
-                            fieldLabel: __("Compose Metric Type"),
-                            allowBlank: true
+                            xtype: "fieldset",
+                            title: __("Activation Node"),
+                            layout: "anchor",
+                            allowBlank: true,
+                            defaults: {
+                                labelAlign: "top",
+                                collapsible: false,
+                                collapsed: false,
+                                padding: 4
+                            },
+                            items: [
+                                {
+                                    name: "activation_node",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Activation Node"),
+                                    allowBlank: false,
+                                    defaultValue: "",
+                                    store: [
+                                        ["percentile", __("Percentile")],
+                                        ["", __("Disable")],
+                                    ],
+                                },
+                                {
+                                    name: "activation_config",
+                                    xtype: "gridfield",
+                                    fieldLabel: __("Activation Config"),
+                                    columns: [
+                                        {
+                                            dataIndex: "name",
+                                            text: __("Param"),
+                                            editor: "textfield",
+                                            width: 200
+                                        },
+                                        {
+                                            dataIndex: "value",
+                                            text: __("Value"),
+                                            editor: "textfield",
+                                            width: 150
+                                        },
+
+                                    ]
+                                },
+                            ]
                         },
                         {
-                            name: "activation_node",
-                            xtype: "cmtext",
-                            fieldLabel: __("Activation Node"),
-                            labelAlign: "top",
-                            allowBlank: true,
-                            mode: "json"
-                        },
-                        {
-                            name: "alarm_node",
-                            xtype: "cmtext",
-                            fieldLabel: __("Alarm Node"),
-                            labelAlign: "top",
-                            allowBlank: true,
-                            mode: "json"
+                            xtype: "fieldset",
+                            title: __("Alarm Node"),
+                            layout: "hbox",
+                            defaults: {
+                                labelAlign: "top",
+                                collapsible: false,
+                                collapsed: false,
+                                padding: 4
+                            },
+                            items: [
+                                {
+                                    name: "alarm_node",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Alarm Node"),
+                                    allowBlank: false,
+                                    defaultValue: "",
+                                    store: [
+                                        ["alarm", __("Alarm")],
+                                        ["", __("Disable")],
+                                    ],
+                                },
+                                {
+                                    name: "alarm_class",
+                                    xtype: "fm.alarmclass.LookupField",
+                                    fieldLabel: __("Alarm Class"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "activation_level",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Activation Level"),
+                                    allowBlank: false,
+                                    defaultValue: "1.0",
+                                    vtype: "float"
+                                },
+                                {
+                                    name: "deactivation_level",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Deactivation Level"),
+                                    allowBlank: true,
+                                    vtype: "float"
+                                },
+
+                            ]
                         },
                     ]
                 }
