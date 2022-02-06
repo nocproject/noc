@@ -17,6 +17,7 @@ from noc.core.error import (
     ERR_LIFTBRIDGE_ALREADY_EXISTS,
     ERR_LIFTBRIDGE_CHANNEL_CLOSED,
     ERR_LIFTBRIDGE_UNAVAILABLE,
+    ERR_RPC_MESSAGE_SIZE_EXCEEDED,
 )
 
 
@@ -40,10 +41,15 @@ class ErrorUnavailable(LiftbridgeError):
     default_code = ERR_LIFTBRIDGE_UNAVAILABLE
 
 
+class ErrorMessageSizeExceeded(LiftbridgeError):
+    default_code = ERR_RPC_MESSAGE_SIZE_EXCEEDED
+
+
 RPC_CODE_TO_ERR = {
     StatusCode.ALREADY_EXISTS: ErrorAlreadyExists,
     StatusCode.NOT_FOUND: ErrorNotFound,
     StatusCode.UNAVAILABLE: ErrorUnavailable,
+    StatusCode.RESOURCE_EXHAUSTED: ErrorMessageSizeExceeded,
 }
 
 

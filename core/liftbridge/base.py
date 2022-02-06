@@ -38,7 +38,14 @@ from .api_pb2 import (
     StartPosition as _StartPosition,
     Ack,
 )
-from .error import rpc_error, ErrorNotFound, ErrorChannelClosed, ErrorUnavailable, LiftbridgeError
+from .error import (
+    rpc_error,
+    ErrorNotFound,
+    ErrorChannelClosed,
+    ErrorUnavailable,
+    LiftbridgeError,
+    ErrorMessageSizeExceeded,
+)
 from .message import Message
 
 logger = logging.getLogger(__name__)
@@ -494,6 +501,9 @@ class LiftBridgeClient(object):
                 await self.close_channel(channel.broker)
                 logger.info("Loosing connection to current cluster member. Trying to reconnect")
                 await asyncio.sleep(1)
+            except ErrorMessageSizeExceeded as e:
+                logger.error("Message size exceeded. Skipping... : %s", e)
+                break
             except ErrorNotFound as e:
                 if wait_for_stream:
                     await self.close_channel(channel.broker)
