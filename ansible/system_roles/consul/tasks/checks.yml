@@ -8,7 +8,6 @@
     - name: check if bootstrap exists
       set_fact:
         consul_bootstrap_count: "{{ consul_bootstrap_count | int+ 1 }}"
-#      with_items: "{{ groups['svc-consul-exec'] }}"
       when: "'bootstrap' in hostvars[srv]['consul_power']"
       loop_control:
         loop_var: srv
@@ -16,7 +15,6 @@
     - name: count servers
       set_fact:
         consul_servers_count: "{{ consul_servers_count |int + 1 }}"
-#      with_items: "{{ groups['svc-consul-exec'] }}"
       when: "'bootstrap' in hostvars[srv]['consul_power'] or 'server' in hostvars[srv]['consul_power']"
       loop_control:
         loop_var: srv
