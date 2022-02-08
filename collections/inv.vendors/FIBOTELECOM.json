@@ -2,7 +2,7 @@
     "name": "FIBOTELECOM",
     "uuid": "207ea826-c02c-4fca-afc8-a5e3b19a0761",
     "full_name": "FiboTelecom",
-    "code": ["FIBOTELECOM"],
+    "code": ["FIBOTELECOM", "FIBO"],
     "site": "https://fibotelecom.ru/",
     "$collection": "inv.vendors"
 }
