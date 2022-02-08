@@ -65,17 +65,32 @@ def get_column_width(name):
     return 15
 
 
-MAC_MOVED_QUERY = f"""SELECT
+"""
+Find mac, that more 1 unique interface the requested time range groupUniqArray has high
+ memory consumption (that groupUniqArray), so used subquery for filter data.
+"""
+MAC_MOVED_QUERY = f"""
+SELECT
    managed_object,
-   MACNumToString(mac) as smac,
+   smac,
    dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'name', managed_object),
    dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'address', managed_object),
    dictGetString('{config.clickhouse.db_dictionaries}.managedobject', 'administrative_domain', managed_object),
-   groupUniqArray((interface, toUnixTimestamp(ts))) as ifaces,
-   groupUniqArray(interface) as migrate_ifaces,
-   uniqExact(interface)
-   FROM mac
-   WHERE %%s and %s and date >= '%%s' and date < '%%s' group by  mac, managed_object, vlan having uniqExact(interface) > 1
+   arrayReduce('groupUniqArray', ifaces),
+   arrayReduce('groupUniqArray', migrate_ifaces),
+   iface_count
+FROM (
+  SELECT
+     managed_object,
+     MACNumToString(mac) as smac,
+     groupArray((interface, toUnixTimestamp(ts))) as ifaces,
+     groupArray(interface) as migrate_ifaces,
+     uniq(interface) as iface_count
+     FROM mac
+     WHERE %%s and %s and date >= '%%s' and date < '%%s'
+     GROUP BY mac, managed_object, vlan
+     HAVING iface_count > 1
+)
     """ % " AND ".join(
     "(mac < %s or mac > %s)" % (int(MAC(x[0])), int(MAC(x[1]))) for x in MULTICAST_MACS
 )
