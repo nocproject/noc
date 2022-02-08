@@ -4,15 +4,11 @@
     - name: Bootstrap configuration
       template:
         src: config_bootstrap.json.j2
-        dest: "{{ item.dest }}"
+        dest: "{{ consul_config_path }}/config.json"
         owner: "{{ consul_user }}"
         group: "{{ consul_group }}"
       no_log: "{{ tower_show_secrets }}"
-      with_items:
-        - dest: "{{ consul_config_path }}/config.json"
-          when: "{{ consul_power == 'bootstrap' }}"
-      when:
-        - item.when
+      when: "{{ consul_power == 'bootstrap' }}"
       notify:
         - restart consul
       tags:
@@ -21,15 +17,11 @@
     - name: Server configuration
       template:
         src: config_server.json.j2
-        dest: "{{ item.dest }}"
+        dest: "{{ consul_config_path }}/config.json"
         owner: "{{ consul_user }}"
         group: "{{ consul_group }}"
       no_log: "{{ tower_show_secrets }}"
-      with_items:
-        - dest: "{{ consul_config_path }}/config.json"
-          when: "{{ consul_power == 'server' }}"
-      when:
-        - item.when
+      when: "{{ consul_power == 'server' }}"
       notify:
         - restart consul
       tags:
@@ -38,15 +30,11 @@
     - name: Client configuration
       template:
         src: config_client.json.j2
-        dest: "{{ item.dest }}"
+        dest: "{{ consul_config_path }}/config.json"
         owner: "{{ consul_user }}"
         group: "{{ consul_group }}"
       no_log: "{{ tower_show_secrets }}"
-      with_items:
-        - dest: "{{ consul_config_path }}/config.json"
-          when: "{{ consul_power == 'agent' }}"
-      when:
-        - item.when
+      when: "{{ consul_power == 'agent' }}"
       notify:
         - restart consul
       tags:
@@ -95,12 +83,10 @@
 # that one is dangerous
 - name: Tune sysctl.conf for consul
   sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
+    name: "net.ipv4.tcp_tw_recycle"
+    value: 1
     state: present
     reload: "True"
-  with_items:
-    - { name: 'net.ipv4.tcp_tw_recycle', value: 1}
   tags:
     - config
   when:

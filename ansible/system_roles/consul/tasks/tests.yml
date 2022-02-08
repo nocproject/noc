@@ -30,7 +30,7 @@
       check_mode: "False"
       loop_control:
         loop_var: host
-      with_items: "{{ groups['svc-consul-exec'] }}"
+#      with_items: "{{ groups['svc-consul-exec'] }}"
 
   when:
     - has_svc_consul is defined
