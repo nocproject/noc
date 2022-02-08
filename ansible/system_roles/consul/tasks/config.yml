@@ -111,11 +111,9 @@
 - name: Create consul.hcl
   template:
     src: consul.hcl.j2
-    dest: "{{ item.dest }}"
+    dest: "{{ consul_configd_path }}/consul.hcl"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
-  with_items:
-    - dest: "{{ consul_configd_path }}/consul.hcl"
   notify:
     - restart consul
   tags:
