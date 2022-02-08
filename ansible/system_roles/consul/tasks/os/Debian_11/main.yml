@@ -52,7 +52,7 @@
   tags:
     - repo
 
-- name: Install Ubuntu packages
+- name: Install Debian packages
   apt:
     name: consul={{ consul_version }}
     state: present
