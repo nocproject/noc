@@ -1,56 +1,46 @@
 ---
 # File: config.yml - Consul configuration tasks
-
-- name: Bootstrap configuration
-  template:
-    src: config_bootstrap.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
+- block:
+    - name: Bootstrap configuration
+      template:
+        src: config_bootstrap.json.j2
+        dest: "{{ consul_config_path }}/config.json"
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+      no_log: "{{ tower_show_secrets }}"
       when: "{{ consul_power == 'bootstrap' }}"
-  when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
+      notify:
+        - restart consul
+      tags:
+        - config
 
-- name: Server configuration
-  template:
-    src: config_server.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
+    - name: Server configuration
+      template:
+        src: config_server.json.j2
+        dest: "{{ consul_config_path }}/config.json"
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+      no_log: "{{ tower_show_secrets }}"
       when: "{{ consul_power == 'server' }}"
-  when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
+      notify:
+        - restart consul
+      tags:
+        - config
 
-- name: Client configuration
-  template:
-    src: config_client.json.j2
-    dest: "{{ item.dest }}"
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group }}"
-  no_log: "{{ tower_show_secrets }}"
-  with_items:
-    - dest: "{{ consul_config_path }}/config.json"
+    - name: Client configuration
+      template:
+        src: config_client.json.j2
+        dest: "{{ consul_config_path }}/config.json"
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+      no_log: "{{ tower_show_secrets }}"
       when: "{{ consul_power == 'agent' }}"
+      notify:
+        - restart consul
+      tags:
+        - config
   when:
-    - item.when
-  notify:
-    - restart consul
-  tags:
-    - config
+    - ansible_distribution == 'FreeBSD'
 
 - name: Perfomance configuration
   template:
@@ -93,15 +83,24 @@
 # that one is dangerous
 - name: Tune sysctl.conf for consul
   sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
+    name: "net.ipv4.tcp_tw_recycle"
+    value: 1
     state: present
     reload: "True"
-  with_items:
-    - { name: 'net.ipv4.tcp_tw_recycle', value: 1}
   tags:
     - config
   when:
     - "'Linux' in ansible_system"
     - "'prod' in noc_env_type"
     - "ansible_kernel is version('4.1.0', '<')"
+
+- name: Create consul.hcl
+  template:
+    src: consul.hcl.j2
+    dest: "{{ consul_configd_path }}/consul.hcl"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group }}"
+  notify:
+    - restart consul
+  tags:
+    - config

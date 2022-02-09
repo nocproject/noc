@@ -1,0 +1,55 @@
+bind_addr = "{{ consul_bind_address }}"
+addresses = {
+    dns = "{{ consul_dns_bind_address }}"
+    http = "{{ consul_http_bind_address }}"
+    https = "{{ consul_https_bind_address }}"
+  }
+ports = { 
+  "dns" = {{ consul_dns }}
+  "http" = {{ consul_http }}
+  "https" = {{ consul_https }}
+}
+{% if consul_recursors|length > 0 -%}
+recursors = [ {% set comma = joiner(", ") -%}
+{% for recursor in consul_recursors -%}
+{{ comma() }}"{{ recursor }}" ]
+{%- endfor %}
+{% endif -%}
+
+{% if consul_power == 'bootstrap' %}
+ui = true
+bootstrap = true
+server = true
+{% endif %}
+
+check_update_interval = "0s"
+node_name = "{{ consul_node_name }}"
+datacenter = "{{ consul_datacenter }}"
+data_dir = "{{ consul_data_path }}"
+encrypt = "{{ consul_raw_key }}"
+log_level = "{{ consul_log_level }}"
+enable_syslog = {{ consul_syslog_enable|lower }}
+enable_local_script_checks = true
+disable_update_check = true
+retry_interval = "3s"
+retry_join = [ {% set comma_nodes = joiner(", ") -%}
+{% for n in groups['svc-consul-server'] %}
+{{ comma_nodes() }}"{{ hostvars[n].ansible_host }}" ]
+{% endfor %}
+{% if consul_acl_enable -%}
+    "primary_datacenter" = "{{ consul_acl_datacenter }}",
+    "acl" = {
+      "enabled" = true,
+      "default_policy" = "{{ consul_acl_default_policy }}",
+      "down_policy" = "{{ consul_acl_down_policy }}",
+      "tokens" = {
+        "master" = "{{ consul_master_token }}",
+        "replication" = "{{ consul_replication_token }}"
+      }
+    }
+  {% endif -%},
+limits = {
+      http_max_conns_per_client = 1000
+}
+
+
