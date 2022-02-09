@@ -3,6 +3,7 @@
 #
 # for os specific see pre role
 etc_prefix: /etc
+ansible_python_interpreter: auto
 
 # packages
 grafana_version: "7.3.4"
