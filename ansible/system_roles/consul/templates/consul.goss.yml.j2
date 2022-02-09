@@ -1,16 +1,16 @@
 file:
-  /etc/consul/config.json:
+  /etc/consul.d/consul.hcl:
     exists: true
     mode: "0644"
     owner: consul
-    group: bin
+    group: consul
     filetype: file
     contains: []
   /var/consul:
     exists: true
     mode: "0755"
     owner: consul
-    group: bin
+    group: consul
     filetype: directory
     contains: []
 port:
@@ -70,7 +70,7 @@ user:
   consul:
     exists: true
     groups:
-    - bin
+    - consul
     home: /home/consul
     shell: /bin/sh
 command:
