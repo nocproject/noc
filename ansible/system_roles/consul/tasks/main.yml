@@ -36,7 +36,7 @@
 
 - name: Check bootstrapped state
   stat:
-    path: "{{ consul_config_path }}/.consul_bootstrapped"
+    path: "{{ consul_configd_path }}/.consul_bootstrapped"
   register: bootstrap_marker
   when: consul_power == 'bootstrap'
   ignore_errors: "True"
@@ -84,7 +84,7 @@
 
     - name: Create bootstrapped marker
       file:
-        dest: "{{ consul_config_path }}/.consul_bootstrapped"
+        dest: "{{ consul_configd_path }}/.consul_bootstrapped"
         state: touch
   when:
     - consul_power == 'bootstrap'
