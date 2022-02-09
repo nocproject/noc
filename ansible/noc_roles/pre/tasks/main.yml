@@ -52,11 +52,21 @@
   tags:
     - config
 
-- name: update hosts file
+- name: Update hosts file
   blockinfile:
     path: "/etc/hosts"
     block: "{{ lookup('template', './hosts.j2') }}"
     marker: "# {mark} NOC Ansible Managed block"
+  become: "True"
+  tags:
+    - config
+    - fill_hosts
+
+- name: Remove 127.0.1.1 from hosts file
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: '^127\.0\.1\.1'
+    state: absent
   become: "True"
   tags:
     - config
