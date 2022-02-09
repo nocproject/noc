@@ -18,7 +18,7 @@ consul_temp_file_checksum: "{{ tower_dist_dir }}/{{ consul_version }}_SHA256SUMS
 python_consul_version: 1.1.0
 
 ### Paths
-consul_bin_path: "/bin"
+consul_bin_path: "/usr/bin/"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
 consul_pid_path: "/var/run/consul/consul.pid"
@@ -27,7 +27,7 @@ consul_scripts_path: "{{ consul_configd_path }}/scripts"
 
 ### System user and group
 consul_user: "consul"
-consul_group: "bin"
+consul_group: "consul"
 
 ### Consul settings
 consul_datacenter: "{{ noc_env | lower }}"
@@ -51,6 +51,11 @@ consul_ports:
   http: 8500
   https: -1
   dns: 8600
+
+### Consul ports
+consul_http: 8500
+consul_https: -1
+consul_dns: 8600
 
 ## ACL
 consul_acl_enable: "True"
