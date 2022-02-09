@@ -1,2 +1,3 @@
 ---
 trapcollector_permit_firewall: "True"
+trapcollector_listen_traps: "0.0.0.0:162"
