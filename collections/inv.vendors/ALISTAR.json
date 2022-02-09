@@ -1,0 +1,8 @@
+{
+    "name": "Alistar",
+    "uuid": "cf164b3b-3d01-4382-b397-c2f134dd7fd4",
+    "full_name": "Alistar",
+    "code": ["ALISTAR"],
+    "site": "http://none.zero",
+    "$collection": "inv.vendors"
+}

@@ -1,0 +1,8 @@
+{
+    "name": "A-Gear",
+    "uuid": "6bd0304e-877b-495d-9e82-00b287bd5515",
+    "full_name": "A-GEAR COMPANY LTD",
+    "code": ["A-GEAR"],
+    "site": "http://a-gear.net/",
+    "$collection": "inv.vendors"
+}

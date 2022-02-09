@@ -1,0 +1,8 @@
+{
+    "name": "GigaLink",
+    "uuid": "358498a3-b184-4bf6-b540-9de059686788",
+    "full_name": "GigaLink",
+    "code": ["GIGALINK"],
+    "site": "http://www.giga-link.ru",
+    "$collection": "inv.vendors"
+}

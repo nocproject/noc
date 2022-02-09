@@ -1,0 +1,8 @@
+{
+    "name": "Skeo",
+    "uuid": "ecc5dc60-4288-4645-9425-2da640b9a7d1",
+    "full_name": "Skeo",
+    "code": ["SKEO"],
+    "site": "https://skeo.ru/",
+    "$collection": "inv.vendors"
+}

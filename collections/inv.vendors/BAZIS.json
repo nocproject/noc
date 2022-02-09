@@ -1,0 +1,8 @@
+{
+    "name": "Bazis",
+    "uuid": "f4e63a62-277c-41ca-ae69-d8396d2ca52e",
+    "full_name": "Bazis Telecom",
+    "code": ["BAZIS"],
+    "site": "https://bztel.ru",
+    "$collection": "inv.vendors"
+}
