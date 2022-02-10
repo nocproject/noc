@@ -93,7 +93,7 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
     changeCredentials: function(values) {
         var me = this;
         Ext.Ajax.request({
-            method: "POST",
+            method: "PUT",
             url: "/api/login/change_credentials",
             params: Ext.apply(values, {user: NOC.username}),
             scope: me,
