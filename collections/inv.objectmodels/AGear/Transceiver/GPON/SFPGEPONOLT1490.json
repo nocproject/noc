@@ -1,0 +1,32 @@
+{
+    "name": "AGear | Transceiver | GPON | SFPGEPONOLT1490",
+    "$collection": "inv.objectmodels",
+    "uuid": "829d1b6f-8e04-453f-8316-9e5f59caa96a",
+    "vendor__code": "A-GEAR",
+    "description": "SFP GEPON PX20 1490 nm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFPGEPONOLT1490"]
+        }
+    }
+}
