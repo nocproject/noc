@@ -59,10 +59,7 @@ class ObjectStatusAPI(NBIAPI):
             except ValueError as e:
                 raise HTTPException(400, "Bad request: %s" % e)
             statuses = ObjectStatus.get_statuses(objects)
-            result = {
-                "statuses": [{"id": str(o), "status": statuses.get(o, False)} for o in objects]
-            }
-            return result
+            return {"statuses": [{"id": str(o), "status": statuses.get(o, False)} for o in objects]}
 
         return objectstatus_handler
 
