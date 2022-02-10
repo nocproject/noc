@@ -7,9 +7,10 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 
 # Third-party modules
+from django.http import HttpResponse
 from mongoengine import Q
 
 # NOC modules
@@ -18,7 +19,7 @@ from noc.lib.app.decorators.state import state_handler
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.resourcepool import ResourcePool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import DocumentParameter, IntParameter
+from noc.sa.interfaces.base import DocumentParameter, IntParameter, StringParameter
 from noc.vc.models.vlan import VLAN
 from noc.vc.models.l2domain import L2Domain
 from noc.core.ip import IP
@@ -198,21 +199,30 @@ class VLANApplication(ExtDocApplication):
         api=True,
         validate={
             "l2_domain": DocumentParameter(L2Domain),
-            "pool": DocumentParameter(ResourcePool, required=False),
+            "pool": DocumentParameter(ResourcePool, required=True),
             "vlan_id": IntParameter(required=False, min_value=1, max_value=4096),
+            "name": StringParameter(required=False),
         },
     )
     def api_allocate_vlan(
         self,
         request,
         l2_domain: "L2Domain",
-        pool: "ResourcePool",
+        pool: "ResourcePool" = None,
         vlan_id: Optional[int] = None,
+        name: Optional[str] = None,
         **kwargs,
     ):
+        # @todo check user permission
         with ResourcePool.acquire([pool]):
             allocator = pool.get_allocator(l2_domain=l2_domain, vlan_id=vlan_id)
-            r = next(allocator, None)
+            r: Optional[VLAN] = next(allocator, None)
         if not r:
-            return self.NOT_FOUND
-        return r
+            return HttpResponse("No Free VLAN found for Allocated", status=self.NOT_FOUND)
+        if name:
+            r.name = name
+            r.save()
+        # @todo Set Status by label
+        r.fire_event("reserve")
+        r.fire_event("approve")
+        return self.instance_to_dict(r)
