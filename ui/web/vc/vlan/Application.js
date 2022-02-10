@@ -17,7 +17,8 @@ Ext.define("NOC.vc.vlan.Application", {
         "NOC.core.StateField",
         "NOC.project.project.LookupField",
         "NOC.vc.l2domain.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.vc.vlan.AddVLANForm"
     ],
     model: "NOC.vc.vlan.Model",
     search: true,
@@ -26,6 +27,8 @@ Ext.define("NOC.vc.vlan.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.addVLANForm = Ext.create("NOC.vc.vlan.AddVLANForm", {app: me});
 
         me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
@@ -203,6 +206,19 @@ Ext.define("NOC.vc.vlan.Application", {
                     },
                 }
             ],
+
+            gridToolbar: [
+                {
+                    itemId: "allocate_vlan",
+                    text: __("Allocate VLAN"),
+                    glyph: NOC.glyph.plus_circle,
+                    tooltip: __("Allocate VLAN"),
+                    hasAccess: NOC.hasPermission("create"),
+                    scope: me,
+                    handler: me.onAllocateVLAN
+                }
+            ],
+
             formToolbar: [
                 {
                     itemId: "interfaces",
@@ -291,6 +307,12 @@ Ext.define("NOC.vc.vlan.Application", {
                 NOC.error(__("Failed to get interfaces"));
             }
         });
+    },
+
+    onAllocateVLAN: function () {
+        var me = this;
+
+        me.addVLANForm.show();
     },
 
     onVLANInterfaces: function() {
