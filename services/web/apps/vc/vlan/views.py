@@ -222,5 +222,7 @@ class VLANApplication(ExtDocApplication):
         if name:
             r.name = name
             r.save()
+        # @todo Set Status by label
         r.fire_event("reserve")
+        r.fire_event("approve")
         return self.instance_to_dict(r)
