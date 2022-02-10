@@ -2,7 +2,7 @@
 # Vendor: ZTE
 # OS:     ZXA10
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Profile(BaseProfile):
 
     pattern_more = [(rb"^ --More--", b"\n")]
     pattern_unprivileged_prompt = rb"^\S+?>"
-    pattern_syntax_error = rb"%Error \d+: (Incomplete command|Invalid input)"
+    pattern_syntax_error = rb"%(Error \d+:)? (Incomplete command|Invalid input)"
     command_disable_pager = "terminal length 0"
     command_super = b"enable"
     command_enter_config = "configure terminal"

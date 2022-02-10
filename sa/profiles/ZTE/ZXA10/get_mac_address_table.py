@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ class Script(BaseScript):
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interface")],
-                    "type": {"Dynamic": "D"}[match.group("type")],
+                    "type": {"Dynamic": "D", "Static": "S"}[match.group("type")],
                 }
             ]
         return r
