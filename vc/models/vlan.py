@@ -134,7 +134,7 @@ class VLAN(Document):
         """
         from noc.wf.models.state import State
 
-        if pool and not l2_domain.pools:
+        if pool and not l2_domain.get_effective_pools(pool):
             # L2Domain not supported allocated vlan by pool
             return
         vlans: Set[int] = FULL_VLAN_RANGE
@@ -149,9 +149,9 @@ class VLAN(Document):
             l2_domain=l2_domain, vlan__in=list(vlans), state__in=free_states
         ).limit(limit)
         if pool and pool.strategy == "L":
-            free_vlans = free_vlans.sorted({"vlan": 1})
+            free_vlans = free_vlans.order_by("vlan")
         elif pool and pool.strategy == "F":
-            free_vlans = free_vlans.sorted({"vlan": -1})
+            free_vlans = free_vlans.order_by("-vlan")
         allocated_count = 0
         # Iter Free VLANs
         for vlan in sorted(free_vlans, reverse=pool and pool.strategy == "L"):
