@@ -93,9 +93,14 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
     changeCredentials: function(values) {
         var me = this;
         Ext.Ajax.request({
-            method: "POST",
+            method: "PUT",
             url: "/api/login/change_credentials",
-            params: Ext.apply(values, {user: NOC.username}),
+            jsonData: {
+                user: NOC.username,
+                old_password: values.old_password,
+                new_password: values.new_password,
+                retype_password: values.retype_password,
+            },
             scope: me,
             success: function(response) {
                 var status = Ext.decode(response.responseText);
@@ -103,7 +108,7 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
                     NOC.info(__("Credentials has been changed"));
                     me.close();
                 } else {
-                    NOC.error(__("Failed to change credentials: ") + status.error);
+                    NOC.error(__("Failed to change credentials: ") + status.message);
                 }
             },
             failure: function(response) {
