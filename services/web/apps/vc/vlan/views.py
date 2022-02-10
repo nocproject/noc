@@ -198,7 +198,7 @@ class VLANApplication(ExtDocApplication):
         api=True,
         validate={
             "l2_domain": DocumentParameter(L2Domain),
-            "pool": DocumentParameter(ResourcePool, required=False),
+            "pool": DocumentParameter(ResourcePool, required=True),
             "vlan_id": IntParameter(required=False, min_value=1, max_value=4096),
         },
     )
@@ -206,13 +206,14 @@ class VLANApplication(ExtDocApplication):
         self,
         request,
         l2_domain: "L2Domain",
-        pool: "ResourcePool",
+        pool: "ResourcePool" = None,
         vlan_id: Optional[int] = None,
         **kwargs,
     ):
+        # @todo check user permission
         with ResourcePool.acquire([pool]):
             allocator = pool.get_allocator(l2_domain=l2_domain, vlan_id=vlan_id)
-            r = next(allocator, None)
+            r: Optional[VLAN] = next(allocator, None)
         if not r:
             return self.NOT_FOUND
-        return r
+        return r.id
