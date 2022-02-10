@@ -202,7 +202,6 @@ class VLANApplication(ExtDocApplication):
             "pool": DocumentParameter(ResourcePool, required=True),
             "vlan_id": IntParameter(required=False, min_value=1, max_value=4096),
             "name": StringParameter(required=False),
-
         },
     )
     def api_allocate_vlan(
