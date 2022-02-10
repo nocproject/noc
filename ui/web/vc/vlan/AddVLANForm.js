@@ -80,7 +80,6 @@ Ext.define("NOC.vc.vlan.AddVLANForm", {
             scope: me,
             success: function(response) {
                 var vlan = Ext.decode(response.responseText);
-                console.log(vlan);
                 if(vlan !== 404) {
                     NOC.info(__("VALN Allocated"));
                     me.hide();
