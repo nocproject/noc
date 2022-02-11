@@ -1,0 +1,40 @@
+{
+    "name": "Eoptolink | Transceiver | 10G | EOLP-1396-02-I",
+    "$collection": "inv.objectmodels",
+    "uuid": "8a73a941-d864-49d3-beb9-55b58441befe",
+    "vendor__code": "EOPTOLINK INC",
+    "description": "Eoptolink SFP+ module, 2km",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASEZR-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASEZR-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EOLP-1396-02-I"]
+        }
+    }
+}
