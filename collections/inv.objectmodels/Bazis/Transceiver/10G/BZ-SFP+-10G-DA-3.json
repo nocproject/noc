@@ -1,0 +1,40 @@
+{
+    "name": "Bazis | Transceiver | 10G | BZ-SFP+-10G-DA-3",
+    "$collection": "inv.objectmodels",
+    "uuid": "e4cd8266-f160-4268-85aa-663662c8a423",
+    "vendor__code": "BAZIS",
+    "description": "SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 3m",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["BZ-SFP+-10G-DA-3"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

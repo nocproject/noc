@@ -1,0 +1,32 @@
+{
+    "name": "Bazis | Transceiver | 10G | SFP+10G-WDM-A-20",
+    "$collection": "inv.objectmodels",
+    "uuid": "f7b7a435-6a6d-4e65-b511-4f0a27240f84",
+    "vendor__code": "BAZIS",
+    "description": "Bazis SFP+ WDM transceiver 20km (1270 tx, 1330 rx)",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1270", "<10GBASEER-1330"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP+10G-WDM-A-20"]
+        }
+    }
+}
