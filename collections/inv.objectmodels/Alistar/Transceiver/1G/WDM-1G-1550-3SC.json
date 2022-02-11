@@ -1,0 +1,32 @@
+{
+    "name": "Alistar | Transceiver | 1G | WDM-1G-1550-3SC",
+    "$collection": "inv.objectmodels",
+    "uuid": "fc4423a9-bb83-4949-b122-6f25c766b1d1",
+    "vendor__code": "ALISTAR",
+    "description": "WDM-1G-1550-3SC, 1300Mbd, 1550nm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WDM-1G-1550-3SC"]
+        }
+    }
+}
