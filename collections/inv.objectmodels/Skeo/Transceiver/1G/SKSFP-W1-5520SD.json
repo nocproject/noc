@@ -1,0 +1,32 @@
+{
+    "name": "Skeo | Transceiver | 1G | SKSFP-W1-5520SD",
+    "$collection": "inv.objectmodels",
+    "uuid": "0e89a85b-afc8-4a19-b5da-8db626978bd0",
+    "vendor__code": "SKEO",
+    "description": "SKEO SFP WDM transceiver 20km (1550 tx, 1310 rx) with ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SKSFP-W1-55-20SD", "SKSFP-W1-5520SD"]
+        }
+    }
+}
