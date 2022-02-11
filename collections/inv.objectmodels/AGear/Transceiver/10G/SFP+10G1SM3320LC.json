@@ -1,0 +1,32 @@
+{
+    "name": "AGear | Transceiver | 10G | SFP+10G1SM3320LC",
+    "$collection": "inv.objectmodels",
+    "uuid": "e62b7e42-f1e7-4f42-bb3e-0c96b559a582",
+    "vendor__code": "A-GEAR",
+    "description": "A-Gear SFP+ WDM transceiver 20km (1330 tx, 1270 rx)",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1270", "<10GBASEER-1330"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP+10G1SM3320LC"]
+        }
+    }
+}
