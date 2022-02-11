@@ -1,0 +1,32 @@
+{
+    "name": "GigaLink | Transceiver | 1G | GL-OT-SG14SC1-1550-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "aaf5d640-2d3f-4d31-a9f4-a6b102140858",
+    "vendor__code": "GIGALINK",
+    "description": "GigaLink SFP WDM transceiver, 1550 tx, 1310 rx, LC, sm, 20km with dom",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GL-OT-SG14SC1-1550-D", "GLOTSG14SC11550D"]
+        }
+    }
+}
