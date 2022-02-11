@@ -1,0 +1,40 @@
+{
+    "name": "GigaLink | Transceiver | 10G | GL-OT-ST05LC2-08",
+    "$collection": "inv.objectmodels",
+    "uuid": "09d364dd-de27-474f-bef4-6cdd752dcf10",
+    "vendor__code": "GIGALINK",
+    "description": "10GBASE-SR  850nm MMF / 300m SFP+ transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "TX",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "RX",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GL-OT-ST05LC2-08"]
+        }
+    }
+}
