@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXA10.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,10 +29,13 @@ class Script(BaseScript):
         "GTGHK": "gpon-olt_",
         "GTGHG": "gpon-olt_",
         "GTGOG": "gpon-olt_",
+        "GTGOE": "gpon-olt_",
         "GFCL": "gpon_olt-",
         "GFGL": "gpon_olt-",
         "GVGO": "gpon_olt-",
         "ETGHG": "epon-olt_",
+        "ETGHK": "epon-olt_",
+        "ETGOD": "epon-olt_",
         "VDWVD": "vdsl_",
         "SCXN": "gei_",
         "SCTM": "gei_",
