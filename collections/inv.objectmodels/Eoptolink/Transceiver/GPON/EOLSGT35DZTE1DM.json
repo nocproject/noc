@@ -1,0 +1,32 @@
+{
+    "name": "Eoptolink | Transceiver | GPON | EOLSGT35DZTE1DM",
+    "$collection": "inv.objectmodels",
+    "uuid": "d9c14ae4-c9b6-4bb2-8428-f71156082f4a",
+    "vendor__code": "EOPTOLINK INC",
+    "description": "GPON OLT SFP C+",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EOLSGT35DZTE1DM"]
+        }
+    }
+}

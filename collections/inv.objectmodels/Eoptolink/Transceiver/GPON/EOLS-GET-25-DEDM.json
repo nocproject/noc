@@ -1,0 +1,32 @@
+{
+    "name": "Eoptolink | Transceiver | GPON | EOLS-GET-25-DEDM",
+    "$collection": "inv.objectmodels",
+    "uuid": "2c897438-fd0d-4e3a-9b6b-14fb244a3a53",
+    "vendor__code": "EOPTOLINK INC",
+    "description": "EPON OLT for IEEE 802.3ah-2004 PX-20+\nSingle Fiber Bi-Directional Transceiver\n1.25Gbps Downstream and 1.25Gbps Upstream\nRoHS6 Compliant",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EOLS-GET-25-DEDM"]
+        }
+    }
+}
