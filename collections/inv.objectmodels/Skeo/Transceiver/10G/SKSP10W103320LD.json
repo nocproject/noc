@@ -1,0 +1,32 @@
+{
+    "name": "Skeo | Transceiver | 10G | SKSP10W103320LD",
+    "$collection": "inv.objectmodels",
+    "uuid": "57c2ffec-7e76-4a00-a406-516f879fee39",
+    "vendor__code": "SKEO",
+    "description": "Skeo SFP+ WDM transceiver 20km (1330 tx, 1270 rx) with ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1270", "<10GBASEER-1330"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SKSP10W103320LD"]
+        }
+    }
+}
