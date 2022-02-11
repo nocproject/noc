@@ -1,0 +1,32 @@
+{
+    "name": "Optronic | Transceiver | 1G | TBSF-13d-40-12gSC-3c",
+    "$collection": "inv.objectmodels",
+    "uuid": "7f47a779-c6a9-4f07-9c43-8db3c85e7935",
+    "vendor__code": "OPTRONIC",
+    "description": "Optronic SFP WDM 40km transceiver 1310 with ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC SFP",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["TBSF13d4012gSC3c"]
+        }
+    }
+}

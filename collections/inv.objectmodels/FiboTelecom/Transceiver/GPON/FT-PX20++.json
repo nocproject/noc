@@ -1,0 +1,32 @@
+{
+    "name": "FiboTelecom | Transceiver | GPON | FT-PX20++",
+    "$collection": "inv.objectmodels",
+    "uuid": "46380777-4c00-423a-8626-3945148d718e",
+    "vendor__code": "FIBOTELECOM",
+    "description": "FIBO FT-PX20++ module SFP GEPON, 1.25 G/1.25 G, up to 20 km, TX 1490 nm, RX 1310, SC, class PX++",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FT-PX20++"]
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "name": "Superxon | Transceiver | GPON | SOGQ4321-PSGC",
+    "$collection": "inv.objectmodels",
+    "uuid": "beafd883-6c7c-4d57-a2ec-71d30e331ac2",
+    "vendor__code": "SUPERXON LTD.",
+    "description": "GPON SFP transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SOGQ4321-PSGC"]
+        }
+    }
+}

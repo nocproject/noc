@@ -1,0 +1,32 @@
+{
+    "name": "FiboTelecom | Transceiver | 1G | FT-S1-W313SD",
+    "$collection": "inv.objectmodels",
+    "uuid": "b3616e4f-7c54-44e9-9b74-0db7ab94a744",
+    "vendor__code": "FIBOTELECOM",
+    "description": "FiboTelecom SFP WDM transceiver (1310 txrx) 3 km ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FT-S1-W313SD"]
+        }
+    }
+}

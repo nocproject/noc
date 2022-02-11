@@ -1,0 +1,32 @@
+{
+    "name": "Gateray | Transceiver | 10G | GR-SP10-W2720L-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "3b14cab9-cc69-45fd-a0b0-b9b3eada11d7",
+    "vendor__code": "GATERAY",
+    "description": "GateRay SFP+ WDM transceiver 20km (1270 tx, 1330 rx) with ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1330", "<10GBASEER-1270"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-SP10-W2720L-D"]
+        }
+    }
+}
