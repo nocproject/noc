@@ -1,0 +1,32 @@
+{
+    "name": "ModulTech | Transceiver | 10G | SFPpWDM2320LRCD",
+    "$collection": "inv.objectmodels",
+    "uuid": "d45c4cf9-8755-4c5a-9842-152ec2de237a",
+    "vendor__code": "MODULTECH",
+    "description": "SFP+ WDM transceiver 20km (1330 tx, 1270 rx)",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1270", "<10GBASEER-1330"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFPpWDM2320LRCD"]
+        }
+    }
+}
