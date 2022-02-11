@@ -1,0 +1,32 @@
+{
+    "name": "Eoptolink | Transceiver | GPON | EOLS-GT-37-D-DM",
+    "$collection": "inv.objectmodels",
+    "uuid": "ec8c0a58-7a72-4175-b09d-29d4e03a7b56",
+    "vendor__code": "EOPTOLINK INC",
+    "description": "GPON OLT SFP C++",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["EOLS-GT-37-D-DM"]
+        }
+    }
+}
