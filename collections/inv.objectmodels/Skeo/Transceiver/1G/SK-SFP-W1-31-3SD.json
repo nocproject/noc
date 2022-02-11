@@ -1,0 +1,32 @@
+{
+    "name": "Skeo | Transceiver | 1G | SK-SFP-W1-31-3SD",
+    "$collection": "inv.objectmodels",
+    "uuid": "647f11ad-0905-4dba-b5fc-7cf26a035fe2",
+    "vendor__code": "SKEO",
+    "description": "SKEO SFP WDM transceiver 3km (1310 tx, 1550 rx) with ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SK-SFP-W1-31-3SD"]
+        }
+    }
+}
