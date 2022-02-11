@@ -1,0 +1,32 @@
+{
+    "name": "Bazis | Transceiver | 10G | BZ-SFP+10GWDM-B3",
+    "$collection": "inv.objectmodels",
+    "uuid": "2ee94dfc-6b4f-40bd-927a-5bccedb9466e",
+    "vendor__code": "BAZIS",
+    "description": "Bazis SFP+ WDM transceiver 3km (1330 tx, 1270 rx)",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1330", "<10GBASEER-1270"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["BZ-SFP+10GWDM-B3"]
+        }
+    }
+}
