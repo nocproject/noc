@@ -1,0 +1,8 @@
+{
+    "name": "Mellanox",
+    "uuid": "24240465-bdeb-4721-91c7-93e16e50fa0f",
+    "full_name": "Mellanox Technologies",
+    "code": ["MELLANOX"],
+    "site": "http://www.mellanox.com/",
+    "$collection": "inv.vendors"
+}
