@@ -1,0 +1,32 @@
+{
+    "name": "GigaLink | Transceiver | 1G | GL-OT-SGRJ45",
+    "$collection": "inv.objectmodels",
+    "uuid": "146ebf61-0aad-48f9-a4b0-f75ba019dd71",
+    "vendor__code": "GIGALINK",
+    "description": "1000BASE-T, Small Form-factor Pluggable (SFP), Copper, RJ45 Connector, up to 100 meter reach",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GL-OT-SGRJ45"]
+        }
+    }
+}
