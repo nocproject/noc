@@ -28,7 +28,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SK-DA-SP10-1M", "SKDA-SP10-1M"]
+            "part_no": ["SK-DA-SP10-1M", "SK-DA-SP11-1M", "SKDA-SP10-1M"]
         },
         "twinax": {
             "alias": "in",
