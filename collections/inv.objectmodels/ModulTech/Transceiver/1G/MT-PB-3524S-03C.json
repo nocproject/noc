@@ -1,0 +1,32 @@
+{
+    "name": "ModulTech | Transceiver | 1G | MT-PB-3524S-03C",
+    "$collection": "inv.objectmodels",
+    "uuid": "c4d00375-d5d8-44b6-9c85-2a07f2e1de7c",
+    "vendor__code": "MODULTECH",
+    "description": "Modultech MT-SFP-G-WDM-35-03-CS (SFP BIDI 1.25G Tx1310/Rx1550nm, 3km, SMF, SC)",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MT-PB-3524S-03C"]
+        }
+    }
+}
