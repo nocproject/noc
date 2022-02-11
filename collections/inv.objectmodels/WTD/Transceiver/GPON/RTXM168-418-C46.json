@@ -1,0 +1,32 @@
+{
+    "name": "WTD | Transceiver | GPON | RTXM168-418-C46",
+    "$collection": "inv.objectmodels",
+    "uuid": "e053c32f-d992-44ec-bff7-5061f4fe8103",
+    "vendor__code": "WTD",
+    "description": "EPON-OLT-PX20+ DDM Transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["RTXM168-418-C46"]
+        }
+    }
+}
