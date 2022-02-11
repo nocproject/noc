@@ -1,0 +1,31 @@
+{
+    "name": "Optronic | Transceiver | 1G | TBSF15-3-12GSC-3I",
+    "$collection": "inv.objectmodels",
+    "uuid": "3b15c9c8-8ba1-4c3e-bf36-33131492f260",
+    "vendor__code": "OPTRONIC",
+    "description": "Optronic SFP WDM 3km transceiver 1550 with ddm",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "txrx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["TBSF150312GSC3I"]
+        }
+    }
+}
