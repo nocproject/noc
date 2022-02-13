@@ -20,6 +20,7 @@ from grpc import StatusCode, ChannelConnectivity
 
 # NOC modules
 from noc.config import config
+from noc.core.perf import metrics
 from noc.core.validators import is_ipv4
 from noc.core.compressor.util import get_compressor, get_decompressor
 from noc.core.comp import smart_bytes
@@ -503,6 +504,7 @@ class LiftBridgeClient(object):
                 await asyncio.sleep(1)
             except ErrorMessageSizeExceeded as e:
                 logger.error("Message size exceeded. Skipping... : %s", e)
+                metrics["liftbridge_publish_size_exceeded"] += 1
                 break
             except ErrorNotFound as e:
                 if wait_for_stream:
