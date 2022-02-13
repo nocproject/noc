@@ -163,6 +163,7 @@ Ext.define("NOC.aaa.user.Application", {
                                         limitParam: "__limit",
                                         sortParam: "__sort",
                                         extraParams: {
+                                            "__limit": 0,
                                             "__format": "ext"
                                         },
                                         reader: {
