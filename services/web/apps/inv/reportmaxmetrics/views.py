@@ -349,8 +349,8 @@ class ReportMaxMetricsmaxDetailApplication(ExtApplication):
         if cmap[-1] > 17:
             mos_id = list(mos.values_list("id", flat=True))
             uplinks = {obj: [] for obj in mos_id}
-            for mo_id, uplinks in mos.values_list("id", "uplinks"):
-                uplinks[mo_id] = uplinks or []
+            for mo_id, mo_uplinks in mos.values_list("id", "uplinks"):
+                uplinks[mo_id] = mo_uplinks or []
             rld = load(mos_id)
 
             for mo in uplinks:
