@@ -2038,8 +2038,8 @@ class ManagedObject(NOCModel):
                 obj = obj.id
             o += [obj]
         uplinks = {obj: [] for obj in o}
-        for oid, uplinks in ManagedObject.objects.filter(id__in=o).values_list("id", "uplinks"):
-            uplinks[oid] = uplinks or []
+        for oid, mo_uplinks in ManagedObject.objects.filter(id__in=o).values_list("id", "uplinks"):
+            uplinks[oid] = mo_uplinks or []
         return uplinks
 
     @classmethod
