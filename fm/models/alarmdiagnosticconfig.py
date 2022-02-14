@@ -203,7 +203,7 @@ class AlarmDiagnosticConfig(Document):
         for c in cfg:
             if c.get("header"):
                 result += [c["header"].strip()]
-            if "script" in c:
+            if "script" in c and mo.is_managed:
                 logger.info("[%s] Running script %s", alarm.id, c["script"])
                 try:
                     g = getattr(mo.scripts, c["script"])
@@ -211,6 +211,11 @@ class AlarmDiagnosticConfig(Document):
                 except Exception as e:
                     error_report()
                     result += [str(e)]
+            elif not mo.is_managed:
+                logger.info(
+                    "[%s] Object is not managed, running script %s disabled.", alarm.id, c["script"]
+                )
+                result += [f'Object is not managed, running script {c["script"]} disabled.']
             if "action" in c:
                 logger.info("[%s] Running action %s", alarm.id, c["action"])
                 try:
