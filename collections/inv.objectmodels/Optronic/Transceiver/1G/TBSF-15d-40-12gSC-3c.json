@@ -20,7 +20,7 @@
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "protocols": [">1000BASEER-1310", "<1000BASEER-1550"],
             "type__name": "Optical | SC"
         }
     ],
