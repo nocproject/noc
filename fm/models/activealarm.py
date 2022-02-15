@@ -9,7 +9,7 @@
 import datetime
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict, Iterable
+from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic
 
 # Third-party modules
 from jinja2 import Template as Jinja2Template
@@ -46,6 +46,7 @@ from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE, RCA_OTHER
+from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
@@ -890,6 +891,12 @@ class ActiveAlarm(Document):
         return Label.get_effective_setting(label, "enable_alarm")
 
 
+@runtime_checkable
+class AlarmComponent(Protocol):
+    def get_component(self, **kwargs) -> Optional["Generic"]:
+        ...
+
+
 class ComponentHub(object):
     """
     Resolve Model instance by Alarm Vars data
@@ -937,8 +944,11 @@ class ComponentHub(object):
         for c in self.__alarm_class.components:
             if c.name != name:
                 continue
-            model = get_model(c.model)
-            if not hasattr(model, "get_component"):
+            if c.model.startsith("noc.custom"):
+                model = get_handler(c.model)
+            else:
+                model = get_model(c.model)
+            if not isinstance(model, AlarmComponent):
                 # Model has not supported component interface
                 break
             args = {"managed_object": self.__managed_object}
