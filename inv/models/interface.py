@@ -190,6 +190,7 @@ class Interface(Document):
 
     def on_delete(self):
         from .macdb import MACDB
+        from noc.fm.models.activealarm import ActiveAlarm
 
         # Remove all subinterfaces
         for si in self.subinterface_set.all():
@@ -200,6 +201,12 @@ class Interface(Document):
             self.unlink()
         # Flush MACDB
         MACDB.objects.filter(interface=self.id).delete()
+
+        # Clear Alarm
+        for aa in ActiveAlarm.objects.filter(
+            managed_object=self.managed_object, vars__interface=self.name
+        ):
+            aa.clear_alarm("Delete Interface")
 
     @property
     def link(self):
@@ -484,14 +491,18 @@ class Interface(Document):
             ]
         if instance.service:
             yield from Service.iter_effective_labels(instance.service)
-        if instance.parent.id and instance.is_linked:
+        if instance.parent.id and instance.type == "physical" and instance.is_linked:
             # Idle Discovery When create Aggregate interface (fixed not use lag_members)
             yield ["noc::is_linked::="]
         if instance.parent.id:
             # When create id is None
-            for el in SubInterface.objects.filter(
-                enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
-            ).scalar("effective_labels"):
+            for el in (
+                SubInterface.objects.filter(
+                    enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
+                )
+                .read_preference(ReadPreference.SECONDARY_PREFERRED)
+                .scalar("effective_labels")
+            ):
                 yield el
 
 
