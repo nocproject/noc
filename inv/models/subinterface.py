@@ -15,6 +15,7 @@ from mongoengine.fields import StringField, IntField, ListField, ReferenceField
 # NOC modules
 from noc.config import config
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.model.decorator import on_delete
 from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -52,6 +53,7 @@ TUNNEL_TYPES = (
 )
 
 
+@on_delete
 @Label.model
 @change
 class SubInterface(Document):
@@ -126,6 +128,15 @@ class SubInterface(Document):
             "ipv4_addresses" in changed_fields or "id" in changed_fields
         ):
             yield "cfgtrap", self.managed_object.id
+
+    def on_delete(self):
+        from noc.fm.models.activealarm import ActiveAlarm
+
+        # Clear Alarm
+        for aa in ActiveAlarm.objects.filter(
+            managed_object=self.managed_object, vars__interface=self.name
+        ):
+            aa.clear_alarm("Delete Interface")
 
     @property
     def effective_vc_domain(self):
