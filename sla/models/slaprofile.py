@@ -9,6 +9,8 @@
 from threading import Lock
 import operator
 from functools import partial
+from dataclasses import dataclass
+from typing import Optional, Dict
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -21,6 +23,7 @@ from mongoengine.fields import (
     LongField,
     IntField,
 )
+from bson import ObjectId
 import cachetools
 
 # NOC modules
@@ -34,6 +37,16 @@ from noc.main.models.label import Label
 from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
+metrics_lock = Lock()
+
+
+@dataclass
+class MetricConfig(object):
+    metric_type: MetricType
+    enable_box: bool
+    enable_periodic: bool
+    is_stored: bool
+    threshold_profile: Optional[ThresholdProfile]
 
 
 class SLAProfileMetrics(EmbeddedDocument):
@@ -81,6 +94,7 @@ class SLAProfile(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _slaprofile_metrics = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "SLAProbe Default"
@@ -90,12 +104,12 @@ class SLAProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["SLAProfile"]:
         return SLAProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["SLAProfile"]:
         try:
             return SLAProfile.objects.get(name=name)
         except SLAProfile.DoesNotExist:
@@ -103,7 +117,7 @@ class SLAProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id) -> "SLAProfile":
+    def get_by_bi_id(cls, id) -> Optional["SLAProfile"]:
         return SLAProfile.objects.filter(bi_id=id).first()
 
     @classmethod
@@ -121,3 +135,16 @@ class SLAProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_slaprofile")
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock
+    )
+    def get_slaprofile_metrics(cls, p_id: "ObjectId") -> Dict[str, MetricConfig]:
+        r = {}
+        spr = SLAProfile.get_by_id(p_id)
+        if not spr:
+            return r
+        for m in spr.metrics:
+            r[m.metric_type.name] = cls.config_from_settings(m)
+        return r
