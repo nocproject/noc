@@ -1,0 +1,113 @@
+{
+    "name": "Huawei | S12700E | S12700E-4",
+    "$collection": "inv.objectmodels",
+    "uuid": "2ba852e9-d09e-4ec9-8096-a53f77765366",
+    "vendor__code": "HUAWEI",
+    "description": "S12700E-4 Chassis backplane",
+    "connection_rule__name": "Huawei | S12700E",
+    "cr_context": "CHASSIS",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "mpu5",
+            "description": "Main Processor Unit slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | MPU"
+        },
+        {
+            "name": "mpu6",
+            "description": "Main Processor Unit slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | MPU"
+        },
+        {
+            "name": "sfu7",
+            "description": "Switch Fabric Unit slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | SFU"
+        },
+        {
+            "name": "sfu8",
+            "description": "Switch Fabric Unit slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | SFU"
+        },
+        {
+            "name": "cmu9",
+            "description": "Centralized Monitoring Unit slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | CMU"
+        },
+        {
+            "name": "pic1",
+            "description": "interface card",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "pic2",
+            "description": "interface card",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "pic3",
+            "description": "interface card",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "pic4",
+            "description": "interface card",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "fan12",
+            "description": "FAN Slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | FAN-770A-B"
+        },
+        {
+            "name": "fan11",
+            "description": "FAN Slot",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | S12700E | FAN-770A-B"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["ET1BS12704E0"],
+            "part_no": ["ET1BS12704E0"]
+        },
+        "dimensions": {
+            "depth": 518,
+            "height": 442,
+            "width": 442
+        },
+        "management": {
+            "managed": true
+        },
+        "power": {
+            "power": 4400.0
+        },
+        "rackmount": {
+            "units": 10.0
+        },
+        "weight": {
+            "weight": 25.0
+        }
+    }
+}
+

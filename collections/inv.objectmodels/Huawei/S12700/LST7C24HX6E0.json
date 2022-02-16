@@ -1,0 +1,225 @@
+{
+    "name": "Huawei | S12700E | LST7C24HX6E0",
+    "$collection": "inv.objectmodels",
+    "uuid": "509afb86-3f76-4b00-94ca-f1d525c9787a",
+    "vendor__code": "HUAWEI",
+    "description": "24-port 100GE QSFP28 interface card (X6E,QSFP28)",
+    "cr_context": "PIC",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "100GEX/0/0",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/1",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/2",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/3",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/4",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/5",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/6",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/7",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/8",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/9",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/10",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/11",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/12",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/13",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/14",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/15",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/16",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/17",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/18",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/19",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/20",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/21",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/22",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "name": "100GEX/0/23",
+            "description": "100G QSFP port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth100G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03033FGU"],
+            "part_no": ["LST7C24HX6E0"]
+        },
+        "dimensions": {
+            "depth": 430,
+            "height": 35,
+            "width": 397
+        },
+        "power": {
+            "power": 486.0
+        }
+    }
+}
+

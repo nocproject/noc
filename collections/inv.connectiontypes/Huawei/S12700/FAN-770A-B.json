@@ -1,0 +1,9 @@
+{
+    "name": "Huawei | S12700E | FAN-770A-B",
+    "$collection": "inv.connectiontypes",
+    "uuid": "2124ec59-4067-4890-b8ba-5159589dc4b2",
+    "description": "FAN-770A-B Fan slot",
+    "c_group": [],
+    "genders": "mf"
+}
+

@@ -1,0 +1,9 @@
+{
+    "name": "Huawei | S12700E | MPU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b022c39c-a5d7-49e7-96ea-cf234d6c09a6",
+    "description": "S12700E Main Processing Unit (MPU)",
+    "c_group": [],
+    "genders": "mf"
+}
+
