@@ -9,16 +9,17 @@
 import operator
 from threading import Lock
 from itertools import chain
+from dataclasses import dataclass
+from typing import Optional, List, Dict
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 import cachetools
-from typing import Optional, List
 from pydantic import BaseModel, validator
 
 # NOC modules
+from noc.core.translation import ugettext as _
 from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.main.models.style import Style
@@ -44,8 +45,21 @@ from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
+from noc.pm.models.metrictype import MetricType
+from noc.pm.models.thresholdprofile import ThresholdProfile
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
+
+metrics_lock = Lock()
+
+
+@dataclass
+class MetricConfig(object):
+    metric_type: MetricType
+    enable_box: bool
+    enable_periodic: bool
+    is_stored: bool
+    threshold_profile: Optional[ThresholdProfile]
 
 
 class MatchRule(BaseModel):
@@ -668,6 +682,7 @@ class ManagedObjectProfile(NOCModel):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _object_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
         return self.name
@@ -847,6 +862,35 @@ class ManagedObjectProfile(NOCModel):
     @classmethod
     def iter_lazy_labels(cls, object_profile: "ManagedObjectProfile"):
         yield f"noc::managedobjectprofile::{object_profile.name}::="
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_object_profile_metrics"), lock=lambda _: metrics_lock
+    )
+    def get_object_profile_metrics(cls, p_id: int) -> Dict[str, MetricConfig]:
+        r = {}
+        opr = ManagedObjectProfile.get_by_id(id=p_id)
+        if not opr:
+            return r
+        for m in opr.metrics:
+            mt_id = m.get("metric_type")
+            if not mt_id:
+                continue
+            mt = MetricType.get_by_id(mt_id)
+            if not mt:
+                continue
+            if m.get("threshold_profile"):
+                threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
+            else:
+                threshold_profile = None
+            r[mt.name] = MetricConfig(
+                mt,
+                m.get("enable_box", True),
+                m.get("enable_periodic", True),
+                m.get("is_stored", True),
+                threshold_profile,
+            )
+        return r
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

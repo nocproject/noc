@@ -9,7 +9,7 @@
 import os
 import operator
 from threading import Lock
-from typing import Callable
+from typing import Callable, Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -161,17 +161,17 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["MetricType"]:
         return MetricType.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["MetricType"]:
         return MetricType.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["MetricType"]:
         return MetricType.objects.filter(bi_id=id).first()
 
     def on_save(self):
@@ -186,7 +186,7 @@ class MetricType(Document):
         return getattr(self, f"clean_{self.field_type}", None)
 
     @staticmethod
-    def clean_UInt8(value):
+    def clean_UInt8(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -196,7 +196,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_Int8(value):
+    def clean_Int8(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -206,7 +206,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_UInt16(value):
+    def clean_UInt16(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -216,7 +216,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_Int16(value):
+    def clean_Int16(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -226,7 +226,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_UInt32(value):
+    def clean_UInt32(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -236,7 +236,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_Int32(value):
+    def clean_Int32(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -246,7 +246,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_UInt64(value):
+    def clean_UInt64(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -256,7 +256,7 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_Int64(value):
+    def clean_Int64(value) -> int:
         try:
             v = int(value)
         except ValueError:
@@ -266,15 +266,15 @@ class MetricType(Document):
         return v
 
     @staticmethod
-    def clean_Float32(value):
+    def clean_Float32(value) -> float:
         return float(value)
 
     @staticmethod
-    def clean_Float64(value):
+    def clean_Float64(value) -> float:
         return float(value)
 
     @staticmethod
-    def clean_String(value):
+    def clean_String(value) -> str:
         return str(value)
 
     def iter_changed_datastream(self, changed_fields=None):

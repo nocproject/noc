@@ -6,7 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
+from threading import Lock, RLock
+from typing import Optional, Dict
+from dataclasses import dataclass
 import operator
 
 # Third-party modules
@@ -20,6 +22,8 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     IntField,
 )
+from pymongo import ReadPreference
+from bson import ObjectId
 import cachetools
 
 # NOC modules
@@ -39,6 +43,17 @@ from noc.core.model.decorator import on_delete_check
 from .ifdescpatterns import IfDescPatterns
 
 id_lock = Lock()
+ips_lock = RLock()
+metrics_lock = Lock()
+
+
+@dataclass
+class MetricConfig(object):
+    metric_type: MetricType
+    enable_box: bool
+    enable_periodic: bool
+    is_stored: bool
+    threshold_profile: Optional[ThresholdProfile]
 
 
 class MatchRule(EmbeddedDocument):
@@ -88,6 +103,7 @@ class InterfaceProfile(Document):
         "auto_create_index": False,
         "indexes": [
             "match_rules.labels",
+            "status_discovery",
             ("match_rules.dynamic_order", "match_rules.labels"),
             ("dynamic_classification_policy", "match_rules.labels"),
         ],
@@ -177,7 +193,8 @@ class InterfaceProfile(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _status_discovery_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _status_discovery_cache = cachetools.TTLCache(maxsize=10, ttl=120)
+    _interface_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
 
@@ -186,26 +203,28 @@ class InterfaceProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["InterfaceProfile"]:
         return InterfaceProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["InterfaceProfile"]:
         return InterfaceProfile.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional["InterfaceProfile"]:
         return InterfaceProfile.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
-    def get_default_profile(cls):
+    def get_default_profile(cls) -> "InterfaceProfile":
         return InterfaceProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_status_discovery_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(
+        operator.attrgetter("_status_discovery_cache"), lock=lambda _: ips_lock
+    )
     def get_with_status_discovery(cls):
         """
         Get list of interface profile ids with status_discovery = True
@@ -213,7 +232,31 @@ class InterfaceProfile(Document):
         """
         return list(
             x["_id"]
-            for x in InterfaceProfile._get_collection().find(
-                {"status_discovery": {"$ne": "d"}}, {"_id": 1}
-            )
+            for x in InterfaceProfile._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find({"status_discovery": {"$ne": "d"}}, {"_id": 1})
         )
+
+    @staticmethod
+    def config_from_settings(m: "InterfaceProfileMetrics") -> "MetricConfig":
+        """
+        Returns MetricConfig from .metrics field
+        :param m:
+        :return:
+        """
+        return MetricConfig(
+            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
+        )
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_interface_profile_metrics"), lock=lambda _: metrics_lock
+    )
+    def get_interface_profile_metrics(cls, p_id: ObjectId) -> Dict[str, MetricConfig]:
+        r = {}
+        ipr = InterfaceProfile.get_by_id(id=p_id)
+        if not ipr:
+            return r
+        for m in ipr.metrics:
+            r[m.metric_type.name] = cls.config_from_settings(m)
+        return r

@@ -10,6 +10,7 @@ from collections import defaultdict
 from functools import partial
 
 # Third-party modules
+from pymongo import ReadPreference
 from typing import Dict, List, Tuple, Set, Any, Optional
 
 # NOC modules
@@ -79,6 +80,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.interface_prefix_artefact: List[str] = []
         self.interface_assigned_vlans: Set[int] = set()  # @todo l2domain
         self.is_confdb_source = False  # Set True if Interface source is ConfDB
+        self.allowed_labels = set(
+            Label.objects.filter(enable_interface=True)
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .values_list("name")
+        )
 
     def handler(self):
         self.logger.info("Checking interfaces")
@@ -257,9 +263,12 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         enabled_protocols = enabled_protocols or []
         iface = self.get_interface_by_name(name)
         labels = labels or []
+        extra_labels = []
         for ll in labels:
             if Interface.can_set_label(ll):
-                Label.ensure_label(ll, enable_interface=True)
+                if ll not in self.allowed_labels:
+                    Label.ensure_label(ll, enable_interface=True)
+                extra_labels.append(ll)
         if iface:
             ignore_empty = ["ifindex"]
             if self.is_confdb_source:
@@ -276,7 +285,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "enabled_protocols": enabled_protocols,
                     "ifindex": ifindex,
                     "hints": labels or [],
-                    "extra_labels": [ll for ll in labels if Interface.can_set_label(ll)],
+                    "extra_labels": extra_labels,
                 },
                 ignore_empty=ignore_empty,
                 update_effective_labels=True,

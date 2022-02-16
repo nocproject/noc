@@ -7,25 +7,22 @@
 
 # Python modules
 from threading import Lock
-import operator
 import itertools
 import time
 from collections import defaultdict
 from typing import Any, Optional, List, Dict, Set, Tuple
-from dataclasses import dataclass
 
 # Third-party modules
 import cachetools
 from pymongo import ReadPreference
 import orjson
-from bson import ObjectId
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.models.problem import ProblemItem
 from noc.inv.models.object import Object
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.interfaceprofile import InterfaceProfile, MetricConfig
 from noc.inv.models.sensorprofile import SensorProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -35,7 +32,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
-from noc.pm.models.thresholdprofile import ThresholdProfile, ThresholdConfig
+from noc.pm.models.thresholdprofile import ThresholdConfig
 from noc.core.hash import hash_str
 
 
@@ -58,15 +55,6 @@ SCOPE_INTERFACE = "interface"
 SCOPE_SLA = "sla"
 
 metrics_lock = Lock()
-
-
-@dataclass
-class MetricConfig(object):
-    metric_type: MetricType
-    enable_box: bool
-    enable_periodic: bool
-    is_stored: bool
-    threshold_profile: Optional[ThresholdProfile]
 
 
 class MData(object):
@@ -155,72 +143,6 @@ class MetricsCheck(DiscoveryCheck):
     def get_ac_pm_thresholds():
         return AlarmClass.get_by_name("NOC | PM | Out of Thresholds")
 
-    @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_object_profile_metrics"), lock=lambda _: metrics_lock
-    )
-    def get_object_profile_metrics(cls, p_id: int) -> Dict[str, MetricConfig]:
-        r = {}
-        opr = ManagedObjectProfile.get_by_id(id=p_id)
-        if not opr:
-            return r
-        for m in opr.metrics:
-            mt_id = m.get("metric_type")
-            if not mt_id:
-                continue
-            mt = MetricType.get_by_id(mt_id)
-            if not mt:
-                continue
-            if m.get("threshold_profile"):
-                threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
-            else:
-                threshold_profile = None
-            r[mt.name] = MetricConfig(
-                mt,
-                m.get("enable_box", True),
-                m.get("enable_periodic", True),
-                m.get("is_stored", True),
-                threshold_profile,
-            )
-        return r
-
-    @staticmethod
-    def config_from_settings(m) -> MetricConfig:
-        """
-        Returns MetricConfig from .metrics field
-        :param m:
-        :return:
-        """
-        return MetricConfig(
-            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
-        )
-
-    @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_interface_profile_metrics"), lock=lambda _: metrics_lock
-    )
-    def get_interface_profile_metrics(cls, p_id: ObjectId) -> Dict[str, MetricConfig]:
-        r = {}
-        ipr = InterfaceProfile.get_by_id(id=p_id)
-        if not ipr:
-            return r
-        for m in ipr.metrics:
-            r[m.metric_type.name] = cls.config_from_settings(m)
-        return r
-
-    @classmethod
-    @cachetools.cachedmethod(
-        operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock
-    )
-    def get_slaprofile_metrics(cls, p_id: ObjectId) -> Dict[str, MetricConfig]:
-        r = {}
-        spr = SLAProfile.get_by_id(p_id)
-        if not spr:
-            return r
-        for m in spr.metrics:
-            r[m.metric_type.name] = cls.config_from_settings(m)
-        return r
-
     def get_object_metrics(self) -> List[Dict[str, Any]]:
         """
         Populate metrics list with objects metrics
@@ -228,7 +150,7 @@ class MetricsCheck(DiscoveryCheck):
         """
         # @todo: Inject ManagedObject.effective_labels
         metrics = []
-        o_metrics = self.get_object_profile_metrics(self.object.object_profile.id)
+        o_metrics = ManagedObjectProfile.get_object_profile_metrics(self.object.object_profile.id)
         self.logger.debug("Object metrics: %s", o_metrics)
         for metric in o_metrics:
             if (self.is_box and not o_metrics[metric].enable_box) or (
@@ -276,7 +198,7 @@ class MetricsCheck(DiscoveryCheck):
                 },
             )
         ):
-            ipr = self.get_interface_profile_metrics(i["profile"])
+            ipr = InterfaceProfile.get_interface_profile_metrics(i["profile"])
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
                 continue  # No metrics configured
@@ -352,7 +274,7 @@ class MetricsCheck(DiscoveryCheck):
             if not state.is_productive:
                 self.logger.debug("[%s] SLA Probe is not productive state. Skipping", p["name"])
                 continue
-            pm = self.get_slaprofile_metrics(p["profile"])
+            pm = SLAProfile.get_slaprofile_metrics(p["profile"])
             if not pm:
                 self.logger.debug(
                     "Probe %s has profile '%s' with no configured metrics. " "Skipping",

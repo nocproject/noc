@@ -6,8 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import threading
-import operator
+import datetime
 import orjson
 
 # Third-party modules
@@ -21,8 +20,6 @@ from noc.inv.models.interface import Interface
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.interfaceprofile import InterfaceProfile
 
-ips_lock = threading.RLock()
-
 
 class InterfaceStatusCheck(DiscoveryCheck):
     """
@@ -32,19 +29,12 @@ class InterfaceStatusCheck(DiscoveryCheck):
     name = "interfacestatus"
     required_script = "get_interface_status_ex"
 
-    _ips_cache = cachetools.TTLCache(maxsize=10, ttl=60)
-
     @staticmethod
     @cachetools.cached({})
     def get_ac_link_down() -> "AlarmClass":
         return AlarmClass.get_by_name("Network | Link | Link Down")
 
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=lambda _: ips_lock)
-    def get_profiles(cls, x):
-        return list(InterfaceProfile.objects.filter(status_discovery__ne="d"))
-
-    def iface_alarm(self, o_status: bool, a_status: bool, iface: "Interface"):
+    def iface_alarm(self, o_status: bool, a_status: bool, iface: "Interface", timestamp):
         """
         Sync 'Network | Link | Link Down' Alarm Class to correlator
         * c - Send `clear` message for 'Link Down' message if Oper -> Up
@@ -53,12 +43,13 @@ class InterfaceStatusCheck(DiscoveryCheck):
         :param o_status:
         :param a_status:
         :param iface:
+        :param timestamp:
         :return:
         """
         alarm_class = self.get_ac_link_down()
         msg = {
+            "timestamp": timestamp,
             "reference": f"e:{self.object.id}:{alarm_class.id}:{iface.name}",
-            "alarm_class": alarm_class.name,
         }
         if iface.profile.status_discovery == "ca" and a_status is False:
             msg["$op"] = "clear"
@@ -70,6 +61,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             self.logger.info(f"Clear {alarm_class.name}: on interface {iface.name}")
         if iface.profile.status_discovery == "rc" and o_status is False and a_status is True:
             msg["$op"] = "raise"
+            msg["alarm_class"] = alarm_class.name
             msg["vars"] = [
                 {
                     "interface": iface.name,
@@ -107,7 +99,9 @@ class InterfaceStatusCheck(DiscoveryCheck):
         interfaces = {
             i.name: i
             for i in Interface.objects.filter(
-                managed_object=self.object.id, type="physical", profile__in=self.get_profiles(None)
+                managed_object=self.object.id,
+                type="physical",
+                profile__in=InterfaceProfile.get_with_status_discovery(),
             ).read_preference(ReadPreference.SECONDARY_PREFERRED)
         }
         if not interfaces:
@@ -121,6 +115,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
         result = self.object.scripts.get_interface_status_ex(interfaces=hints)
         collection = Interface._get_collection()
         bulk = []
+        now = datetime.datetime.now()
         for i in result:
             iface = get_interface(i["interface"])
             if not iface:
@@ -139,14 +134,14 @@ class InterfaceStatusCheck(DiscoveryCheck):
             if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
                 if iface.profile.status_discovery in {"c", "rc", "ca"}:
-                    self.iface_alarm(ostatus, astatus, iface)
+                    self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 iface.set_oper_status(ostatus)
             if (
                 iface.profile.status_discovery == "ca"
                 and iface.admin_status != astatus
                 and astatus is not None
             ):
-                self.iface_alarm(ostatus, astatus, iface)
+                self.iface_alarm(ostatus, astatus, iface, timestamp=now)
 
         if bulk:
             self.logger.info("Committing changes to database")
