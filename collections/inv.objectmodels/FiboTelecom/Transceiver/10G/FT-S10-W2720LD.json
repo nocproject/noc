@@ -1,0 +1,32 @@
+{
+    "name": "FiboTelecom | Transceiver | 10G | FT-S10-W2720LD",
+    "$collection": "inv.objectmodels",
+    "uuid": "44517c23-73c0-4334-9c9f-7afbbb02a53e",
+    "vendor__code": "FIBOTELECOM",
+    "description": "SFP+ WDM transceiver 20km (1270 tx, 1330 rx) with ddm",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RxTx LC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">10GBASEER-1330", "<10GBASEER-1270"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FT-S10-W2720LD"]
+        }
+    }
+}

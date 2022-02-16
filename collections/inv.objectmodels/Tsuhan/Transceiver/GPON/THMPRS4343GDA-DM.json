@@ -1,0 +1,32 @@
+{
+    "name": "Tsuhan | Transceiver | GPON | THMPRS4343GDA-DM",
+    "$collection": "inv.objectmodels",
+    "uuid": "f7ae6a70-3526-40bb-abfb-c112d4e29a00",
+    "vendor__code": "TSUHAN LTD.",
+    "description": "GPON CLASS C++ SFP transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["THMPRS4343GDA-DM"]
+        }
+    }
+}
