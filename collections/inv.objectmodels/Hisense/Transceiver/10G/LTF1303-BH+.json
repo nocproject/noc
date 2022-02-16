@@ -1,0 +1,40 @@
+{
+    "name": "Hisense | Transceiver | 10G | LTF1303-BH+",
+    "$collection": "inv.objectmodels",
+    "uuid": "7795ca6f-b593-417d-b28b-18142b6aa760",
+    "vendor__code": "HISENSE",
+    "description": "Hisense SFP+ SR transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LTF1303-BH+"]
+        }
+    }
+}

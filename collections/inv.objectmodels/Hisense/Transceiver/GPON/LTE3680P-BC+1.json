@@ -1,0 +1,32 @@
+{
+    "name": "Hisense | Transceiver | GPON | LTE3680P-BC+1",
+    "$collection": "inv.objectmodels",
+    "uuid": "21649dc7-f6c8-4cd4-a58d-7181c60394f9",
+    "vendor__code": "HISENSE",
+    "description": "SFP xPON 2,5 GE module, 1 fiber, class C++",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1260_1360", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LTE3680P-BC+1"]
+        }
+    }
+}

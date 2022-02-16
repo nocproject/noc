@@ -1,0 +1,32 @@
+{
+    "name": "Hisense | Transceiver | GPON | LTE4302M-BC+DM",
+    "$collection": "inv.objectmodels",
+    "uuid": "edd7ee13-5e69-494c-b76a-6e1f0e1c1bc7",
+    "vendor__code": "HISENSE",
+    "description": "SFP EPON PX20 +",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1260_1360", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LTE4302M-BC+DM"]
+        }
+    }
+}
