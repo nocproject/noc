@@ -2,7 +2,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -226,7 +226,7 @@ class Profile(BaseProfile):
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"((?P<asd>\-)\s*)?"
-        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|Normal|\-)\s*)?"
+        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|Normal|N/A|\-)\s*)?"
         r"(\n\s*Desc(ription)?:\s*?(?P<desc>.*?))?$",
         re.MULTILINE,
     )
