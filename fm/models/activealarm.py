@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+import logging
 from collections import defaultdict
 from itertools import chain
 from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic
@@ -907,6 +908,7 @@ class ComponentHub(object):
     def __init__(
         self, alarm_class: AlarmClass, managed_object: ManagedObject, vars: Dict[str, Any] = None
     ):
+        self.logger = logging.getLogger(__name__)
         self.__alarm_class = alarm_class
         self.__managed_object = managed_object
         self.__vars = vars or {}
@@ -921,7 +923,11 @@ class ComponentHub(object):
             if default is None:
                 raise AttributeError
             return default
-        v = self.__get_component(name)
+        try:
+            v = self.__get_component(name)
+        except Exception as e:
+            self.logger.error("[%s] Error when getting component: %s", name, e)
+            v = None
         self.__components[name] = v
         return v if v is not None else default
 
@@ -944,7 +950,7 @@ class ComponentHub(object):
         for c in self.__alarm_class.components:
             if c.name != name:
                 continue
-            if c.model.startsith("noc.custom"):
+            if c.model.startswith("noc.custom"):
                 model = get_handler(c.model)
             else:
                 model = get_model(c.model)
