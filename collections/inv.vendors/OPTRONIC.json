@@ -1,0 +1,8 @@
+{
+    "name": "Optronic",
+    "uuid": "6f374693-940c-4a50-b3f2-3c50d26e9d5e",
+    "full_name": "ФТИ-Оптроник",
+    "code": ["OPTRONIC"],
+    "site": "http://www.fti-optronic.com",
+    "$collection": "inv.vendors"
+}

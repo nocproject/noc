@@ -1,0 +1,32 @@
+{
+    "name": "Superxon | Transceiver | GPON | SOEB4366-PSGB-DM",
+    "$collection": "inv.objectmodels",
+    "uuid": "0cdbbc8a-10ff-475e-b685-e6eb6ac6b9da",
+    "vendor__code": "SUPERXON LTD.",
+    "description": "EPON / GEPON CLASS C+ SFP transceiver",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx GPON SC port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">GPON-1310", "<GPON-1490"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SOEB4366-PSGB-DM"]
+        }
+    }
+}
