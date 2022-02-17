@@ -136,6 +136,17 @@ class SLAProfile(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_slaprofile")
 
+    @staticmethod
+    def config_from_settings(m: "SLAProfileMetrics") -> "MetricConfig":
+        """
+        Returns MetricConfig from .metrics field
+        :param m:
+        :return:
+        """
+        return MetricConfig(
+            m.metric_type, m.enable_box, m.enable_periodic, m.is_stored, m.threshold_profile
+        )
+
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock
