@@ -22,6 +22,10 @@ bootstrap = true
 server = true
 {% endif %}
 
+{% if consul_power == 'server' %}
+server = true
+{% endif %}
+
 check_update_interval = "0s"
 node_name = "{{ consul_node_name }}"
 datacenter = "{{ consul_datacenter }}"
@@ -34,8 +38,8 @@ disable_update_check = true
 retry_interval = "3s"
 retry_join = [ {% set comma_nodes = joiner(", ") -%}
 {% for n in groups['svc-consul-server'] %}
-{{ comma_nodes() }}"{{ hostvars[n].ansible_host }}" ]
-{% endfor %}
+{{ comma_nodes() }}"{{ hostvars[n].ansible_host }}"
+{% endfor %} ]
 {% if consul_acl_enable -%}
     "primary_datacenter" = "{{ consul_acl_datacenter }}",
     "acl" = {
