@@ -220,7 +220,13 @@ def check_fatal_errors(t, v):
         os._exit(1)
 
     xn = "%s.%s" % (t.__module__, t.__name__)
-    if xn == "pymongo.errors.AutoReconnect":
+    if xn in {
+        "pymongo.errors.AutoReconnect",
+        "pymongo.errors.NotMasterError",
+        "pymongo.errors.NotPrimaryError",
+        "pymongo.errors.ServerSelectionTimeoutError",
+        "pymongo.errors.NetworkTimeout",
+    }:
         die("Reconnecting to MongoDB: %s", v)
     elif xn == "pymongo.errors.ServerSelectionTimeoutError":
         die("Cannot select MongoDB master: %s", v)
