@@ -43,3 +43,14 @@ class L2DomainApplication(ExtDocApplication):
         for row in data:
             row["count"] = counts.get(row["id"], 0)
         return data
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        if not nocustom and "pools" in r:
+            for x in r["pools"]:
+                x["is_persist"] = False
+            for x in o.profile.pools:
+                xx = self.instance_to_dict(x, nocustom=True)
+                xx["is_persist"] = True
+                r["pools"] += [xx]
+        return r
