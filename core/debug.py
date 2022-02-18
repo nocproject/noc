@@ -255,7 +255,6 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
         check_fatal_errors(t, v)
     except:  # noqa
         logger.error("Check fatal error raise exception. Skipping...")
-        pass  # noqa Ignore exceptions
     now = datetime.datetime.now()
     r = [
         f"UNHANDLED EXCEPTION ({str(now)})",
