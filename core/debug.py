@@ -15,6 +15,7 @@ import hashlib
 import pprint
 import traceback
 import uuid
+from typing import Type
 
 # Third-party modules
 import orjson
@@ -213,13 +214,13 @@ def format_frames(frames, reverse=config.traceback.reverse):
     return "\n".join(r)
 
 
-def check_fatal_errors(t, v):
+def check_fatal_errors(t: "Type", v: "Exception"):
     def die(msg, *args, **kwargs):
         logger.error(msg, *args, **kwargs)
         logger.error("Exiting due to fatal error")
         os._exit(1)
 
-    xn = f"{t.__module__}.{t.__name__}"
+    xn, v = f"{t.__module__}.{t.__name__}", str(v)
     if xn in {
         "pymongo.errors.AutoReconnect",
         "pymongo.errors.NotMasterError",
@@ -253,6 +254,7 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
     try:
         check_fatal_errors(t, v)
     except:  # noqa
+        logger.error("Check fatal error raise exception. Skipping...")
         pass  # noqa Ignore exceptions
     now = datetime.datetime.now()
     r = [
