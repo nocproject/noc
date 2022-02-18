@@ -7,9 +7,10 @@
 
 # Python modules
 import datetime
+import logging
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict, Iterable
+from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic
 
 # Third-party modules
 from jinja2 import Template as Jinja2Template
@@ -46,6 +47,7 @@ from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE, RCA_OTHER
+from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
@@ -890,6 +892,12 @@ class ActiveAlarm(Document):
         return Label.get_effective_setting(label, "enable_alarm")
 
 
+@runtime_checkable
+class AlarmComponent(Protocol):
+    def get_component(self, **kwargs) -> Optional["Generic"]:
+        ...
+
+
 class ComponentHub(object):
     """
     Resolve Model instance by Alarm Vars data
@@ -900,6 +908,7 @@ class ComponentHub(object):
     def __init__(
         self, alarm_class: AlarmClass, managed_object: ManagedObject, vars: Dict[str, Any] = None
     ):
+        self.logger = logging.getLogger(__name__)
         self.__alarm_class = alarm_class
         self.__managed_object = managed_object
         self.__vars = vars or {}
@@ -914,7 +923,11 @@ class ComponentHub(object):
             if default is None:
                 raise AttributeError
             return default
-        v = self.__get_component(name)
+        try:
+            v = self.__get_component(name)
+        except Exception as e:
+            self.logger.error("[%s] Error when getting component: %s", name, e)
+            v = None
         self.__components[name] = v
         return v if v is not None else default
 
@@ -937,8 +950,11 @@ class ComponentHub(object):
         for c in self.__alarm_class.components:
             if c.name != name:
                 continue
-            model = get_model(c.model)
-            if not hasattr(model, "get_component"):
+            if c.model.startswith("noc.custom"):
+                model = get_handler(c.model)
+            else:
+                model = get_model(c.model)
+            if not isinstance(model, AlarmComponent):
                 # Model has not supported component interface
                 break
             args = {"managed_object": self.__managed_object}
