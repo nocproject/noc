@@ -88,7 +88,8 @@ Ext.define("Ext.ux.form.GridField", {
                     clicksToEdit: 2,
                     listeners: {
                         scope: me,
-                        edit: me.onCellEdit
+                        edit: me.onCellEdit,
+                        beforeedit: me.onBeforeedit
                     }
                 })
             ],
@@ -107,6 +108,11 @@ Ext.define("Ext.ux.form.GridField", {
                 plugins: {
                     ptype: "gridviewdragdrop",
                     dragtext: __("Drag and drop to reorganize")
+                },
+                getRowClass: function (record) {
+                    var pfix = Ext.baseCSSPrefix,
+                        disabledClass =  pfix + "item-disabled " + pfix + "btn-disabled " + pfix + "btn-plain-toolbar-small";
+                    return record.get("is_persist") ? disabledClass : "";
                 }
             }
         });
@@ -135,6 +141,9 @@ Ext.define("Ext.ux.form.GridField", {
             records = [];
         me.store.each(function(r) {
             var d = {};
+            if(r.get("is_persist")) {
+                return true;
+            }
             Ext.each(me.fields, function(f) {
                 if(Ext.isObject(f) && f.hasOwnProperty("persist") && f.persist === false) {
                     return true;
@@ -160,8 +169,12 @@ Ext.define("Ext.ux.form.GridField", {
     onSelect: function(grid, record, index) {
         var me = this;
         me.currentSelection = index;
-        me.deleteButton.setDisabled(false);
-        me.cloneButton.setDisabled(false);
+        me.deleteButton.setDisabled(true);
+        me.cloneButton.setDisabled(true);
+        if(!record.get("is_persist")) {
+            me.deleteButton.setDisabled(false);
+            me.cloneButton.setDisabled(false);
+        }
     },
     //
     onAddRecord: function(self, evt, toEnd) {
@@ -215,5 +228,9 @@ Ext.define("Ext.ux.form.GridField", {
         if(ed.rawValue) {
             e.record.set(e.field + "__label", ed.rawValue);
         }
+    },
+    //
+    onBeforeedit: function(editor, context) {
+        context.cancel = context.record.get("is_persist");
     }
 });
