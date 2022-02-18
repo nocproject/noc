@@ -15,6 +15,7 @@ import hashlib
 import pprint
 import traceback
 import uuid
+from typing import Type
 
 # Third-party modules
 import orjson
@@ -213,13 +214,13 @@ def format_frames(frames, reverse=config.traceback.reverse):
     return "\n".join(r)
 
 
-def check_fatal_errors(t, v):
+def check_fatal_errors(t: "Type", v: "Exception"):
     def die(msg, *args, **kwargs):
         logger.error(msg, *args, **kwargs)
         logger.error("Exiting due to fatal error")
         os._exit(1)
 
-    xn = "%s.%s" % (t.__module__, t.__name__)
+    xn, v = f"{t.__module__}.{t.__name__}", str(v)
     if xn in {
         "pymongo.errors.AutoReconnect",
         "pymongo.errors.NotMasterError",
@@ -230,11 +231,16 @@ def check_fatal_errors(t, v):
         die("Reconnecting to MongoDB: %s", v)
     elif xn == "pymongo.errors.ServerSelectionTimeoutError":
         die("Cannot select MongoDB master: %s", v)
-    elif xn == "django.db.utils.DatabaseError" and "server closed" in v:
+    elif (
+        xn == "django.db.utils.DatabaseError" and "server closed" in v
+    ) or "pgbouncer cannot connect to server" in v:
         die("Failed to connect PostgreSQL: %s", v)
-    elif xn == "psycopg2.InterfaceError" and "connection already closed" in v:
+    elif (
+        xn in {"psycopg2.InterfaceError", "django.db.utils.InterfaceError"}
+        and "connection already closed" in v
+    ):
         die("PostgreSQL connection closed: %s", v)
-    elif xn == "psycopg2.OperationalError":
+    elif xn in {"psycopg2.OperationalError", "django.db.utils.OperationalError"}:
         die("PostgreSQL operational error: %s", v)
     elif xn == "django.db.utils.DatabaseError":
         die("PostgreSQL database error: %s", v)
@@ -248,24 +254,24 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
     try:
         check_fatal_errors(t, v)
     except:  # noqa
-        pass  # noqa Ignore exceptions
+        logger.error("Check fatal error raise exception. Skipping...")
     now = datetime.datetime.now()
     r = [
-        "UNHANDLED EXCEPTION (%s)" % str(now),
-        "PROCESS: %s" % version.process,
-        "VERSION: %s" % version.version,
+        f"UNHANDLED EXCEPTION ({str(now)})",
+        f"PROCESS: {version.process}",
+        f"VERSION: {version.version}",
     ]
     if version.branch:
-        r += ["BRANCH: %s CHANGESET: %s" % (version.branch, version.changeset)]
+        r += [f"BRANCH: {version.branch} CHANGESET: {version.changeset}"]
     if fp:
-        r += ["ERROR FINGERPRINT: %s" % fp]
+        r += [f"ERROR FINGERPRINT: {fp}"]
     r += [
-        "WORKING DIRECTORY: %s" % os.getcwd(),
-        "EXCEPTION: %s %s" % (t, v),
+        f"WORKING DIRECTORY: {os.getcwd()}",
+        f"EXCEPTION: {t} {v}",
         format_frames(get_traceback_frames(tb), reverse=reverse),
     ]
     if not reverse:
-        r += ["UNHANDLED EXCEPTION (%s)" % str(now), str(t), str(v)]
+        r += [f"UNHANDLED EXCEPTION ({str(now)})", str(t), str(v)]
     return "\n".join(smart_text(x, errors="ignore") for x in r)
 
 
