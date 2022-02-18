@@ -12,7 +12,7 @@ import inspect
 import pytest
 
 # NOC modules
-from noc.services.nbi.api.getmappings import GetMappingsAPI
+from noc.services.nbi.paths.getmappings import GetMappingsAPI
 
 
 @pytest.mark.parametrize(
