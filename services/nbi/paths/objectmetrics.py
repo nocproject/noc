@@ -166,7 +166,7 @@ class ObjectMetricsAPI(NBIAPI):
                     data = connect.execute(query)
                 except ClickhouseError as e:
                     self.logger.error(f"SQL Error: {e}")
-                    HTTPException(500, f"SQL Error: {e}")
+                    raise HTTPException(500, f"SQL Error: {e}")
                 # Process result
                 for row in data:
                     d = dict(zip(fields, row))
