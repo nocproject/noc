@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -78,12 +78,13 @@ class Script(GetMetricsScript):
                     multi=True,
                 )
         metric = self.snmp.get("1.3.6.1.4.1.2636.3.64.1.1.1.2.0")
-        self.set_metric(
-            id=("Subscribers | Summary", None),
-            labels=("noc::chassis::0",),
-            value=int(metric),
-            multi=True,
-        )
+        if metric is not None:  # May be `None`. Bug in some JUNOS versions
+            self.set_metric(
+                id=("Subscribers | Summary", None),
+                labels=("noc::chassis::0",),
+                value=int(metric),
+                multi=True,
+            )
 
     @metrics(
         [
