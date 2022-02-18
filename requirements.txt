@@ -22,7 +22,7 @@
 # Basic node requirements
 Django==3.1.13
 FastAPI==0.71.0
-Jinja2==2.11.3
+Jinja2==3.0.3
 PyYAML==6.0
 Pygments==2.10.0
 XlsxWriter==3.0.2
