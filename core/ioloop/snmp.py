@@ -112,6 +112,9 @@ async def snmp_get(
                 result = resp.varbinds[0][1]
             logger.debug("[%s] GET result: %r", address, result)
             return result
+        elif resp.error_status == NO_SUCH_NAME and len(resp.varbinds) == 0:
+            logger.debug("[%s] Invalid oid %s detected", address, oids[0])
+            raise SNMPError(code=NO_SUCH_NAME, oid=oids[0])
         elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
             # One or more invalid oids
             b_idx = resp.error_index - 1
