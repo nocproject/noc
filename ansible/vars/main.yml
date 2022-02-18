@@ -6,7 +6,7 @@ etc_prefix: /etc
 ansible_python_interpreter: auto
 
 # packages
-grafana_version: "7.3.4"
+grafana_version: "8.4.0"
 grafana_plugin_simple_json_datasource_version: 1.4.0
 grafana_plugin_clickhouse_datasource_version: 2.1.0
 grafana_plugin_natel_discrete_panel_version: 0.1.0
