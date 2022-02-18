@@ -1,28 +1,20 @@
 # ----------------------------------------------------------------------
 # path API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
 from time import perf_counter
+from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any, Union, Callable
 
 # Third-party modules
-import orjson
-from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any
+from fastapi import APIRouter, Header, HTTPException
+from pydantic import BaseModel, Field, conint
 
 # NOC modules
-from noc.core.service.apiaccess import authenticated
-from noc.sa.interfaces.base import (
-    DictParameter,
-    StringParameter,
-    IntParameter,
-    ObjectIdParameter,
-    VLANIDParameter,
-    BooleanParameter,
-)
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
@@ -38,145 +30,165 @@ from noc.core.topology.goal.base import BaseGoal
 from noc.core.topology.goal.managedobject import ManagedObjectGoal
 from noc.core.topology.goal.level import ManagedObjectLevelGoal
 from noc.core.text import alnum_key
-from ..base import NBIAPI
+from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 
 # Constants
 MAX_DEPTH_DEFAULT = 20
 N_SHORTEST_DEFAULT = 10
 
+router = APIRouter()
+
+
 # id/remote system pointer
-PointerId = DictParameter(attrs={"id": StringParameter()})
-PointerRemote = DictParameter(
-    attrs={"remote_system": StringParameter(), "remote_id": StringParameter()}
-)
-Pointer = PointerId | PointerRemote
+class PointerId(BaseModel):
+    id: str
+
+
+class PointerRemote(BaseModel):
+    remote_system: str
+    remote_id: str
+
+
+class InterfaceModel(BaseModel):
+    name: str
+
 
 # from: section
-ObjectPointer = DictParameter(
-    attrs={
-        "object": Pointer,
-        "interface": DictParameter(attrs={"name": StringParameter()}, required=False),
-    }
-)
-InterfacePointer = DictParameter(
-    attrs={"interface": DictParameter(attrs={"id": ObjectIdParameter()})}
-)
-LevelPointer = DictParameter(attrs={"level": IntParameter()})
-ServiceOrderPointer = DictParameter(
-    attrs={"order_id": StringParameter(), "remote_system": StringParameter(required=False)}
-)
-ServicePointer = DictParameter(attrs={"service": Pointer | ServiceOrderPointer})
-RequestFrom = ObjectPointer | InterfacePointer | ServicePointer
+class ObjectPointer(BaseModel):
+    object: Union[PointerId, PointerRemote]
+    interface: Optional[InterfaceModel]
+
+
+class InterfaceModel_(BaseModel):
+    id: str  # ObjectIdParameter
+
+
+class InterfacePointer(BaseModel):
+    interface: InterfaceModel_
+
+
+class LevelPointer(BaseModel):
+    level: int
+
+
+class ServiceOrderPointer(BaseModel):
+    order_id: int
+    remote_system: Optional[str]
+
+
+class ServicePointer(BaseModel):
+    service: Union[PointerId, PointerRemote, ServiceOrderPointer]
+
+
+RequestFrom = Union[ObjectPointer, InterfacePointer, ServicePointer]
+
 # to: section
-RequestTo = ObjectPointer | LevelPointer | InterfacePointer | ServicePointer
+RequestTo = Union[ObjectPointer, LevelPointer, InterfacePointer, ServicePointer]
+
+
 # config: section
-RequestConfig = DictParameter(
-    attrs={
-        "max_depth": IntParameter(default=MAX_DEPTH_DEFAULT),
-        "n_shortest": IntParameter(default=N_SHORTEST_DEFAULT),
-    },
-    required=False,
-)
+class RequestConfig(BaseModel):
+    max_depth: int = MAX_DEPTH_DEFAULT
+    n_shortest: int = N_SHORTEST_DEFAULT
+
+
 # constraints: section
-RequestVLANConstraint = DictParameter(
-    attrs={
-        "vlan": VLANIDParameter(required=False),
-        "interface_untagged": BooleanParameter(required=False),
-        "strict": BooleanParameter(default=False),
-    },
-    required=False,
-)
-RequestConstraints = DictParameter(
-    attrs={"vlan": RequestVLANConstraint, "upwards": BooleanParameter(default=False)},
-    required=False,
-)
-Request = DictParameter(
-    attrs={
-        "from": RequestFrom,
-        "to": RequestTo,
-        "config": RequestConfig,
-        "constraints": RequestConstraints,
-    }
-)
+class RequestVLANConstraint(BaseModel):
+    vlan: Optional[conint(ge=1, le=4095)] = None
+    interface_untagged: Optional[bool] = None
+    strict: bool = False
+
+
+class RequestConstraints(BaseModel):
+    vlan: Optional[RequestVLANConstraint] = None
+    upwards: bool = False
+
+
+class Request(BaseModel):
+    from_: RequestFrom = Field(..., alias="from")
+    to: RequestTo
+    config: Optional[RequestConfig] = None
+    constraints: Optional[RequestConstraints] = None
 
 
 class PathAPI(NBIAPI):
-    name = "path"
+    api_name = "path"
+    openapi_tags = ["path API"]
 
-    @authenticated
-    async def post(self, *args, **kwargs):
-        code, result = await self.executor.submit(self.handler)
-        self.set_status(code)
-        if isinstance(result, str):
-            self.write(result)
-        else:
-            self.set_header("Content-Type", "text/json")
-            self.write(orjson.dumps(result))
+    def get_routes(self):
+        route = {
+            "path": "/api/nbi/path",
+            "method": "POST",
+            "endpoint": self.get_handler(),
+            "response_model": None,
+            "name": "path",
+            "description": "Trace k-shortest paths over network topology considering constraints.",
+        }
+        return [route]
 
-    def handler(self) -> Tuple[int, Dict]:
-        # Decode request
-        try:
-            req = orjson.loads(self.request.body)
-        except ValueError:
-            return 400, {"status": False, "error": "Cannot decode JSON"}
-        # Validate
-        try:
-            req = Request.clean(req)
-        except ValueError as e:
-            return 400, {"status": False, "error": "Bad request: %s" % e}
-        # Find start of path
-        try:
-            with Span(in_label="start_of_path"):
-                start, start_iface = self.get_object_and_interface(**req["from"])
-        except ValueError as e:
-            return 404, {"status": False, "error": "Failed to find start of path: %s" % e}
-        # Find end of path
-        if "level" in req["to"]:
-            goal = ManagedObjectLevelGoal(req["to"]["level"])
-            end_iface = None
-        else:
+    def get_handler(self) -> Callable:
+        def handler(req: Request, access_header: str = Header(..., alias=API_ACCESS_HEADER)):
+            if not self.access_granted(access_header):
+                raise HTTPException(403, FORBIDDEN_MESSAGE)
+            # Find start of path
             try:
-                with Span(in_label="end_of_path"):
-                    end, end_iface = self.get_object_and_interface(**req["to"])
-                goal = ManagedObjectGoal(end)
+                with Span(in_label="start_of_path"):
+                    start, start_iface = self.get_object_and_interface(**dict(req.from_))
             except ValueError as e:
-                return 404, {"status": False, "error": "Failed to find end of path: %s" % e}
-        # Trace the path
-        if req.get("config"):
-            max_depth = req["config"]["max_depth"]
-            n_shortest = req["config"]["n_shortest"]
-        else:
-            max_depth = MAX_DEPTH_DEFAULT
-            n_shortest = N_SHORTEST_DEFAULT
-        error = None
-        with Span(in_label="find_path"):
-            t0 = perf_counter()
-            try:
-                paths = list(
-                    self.iter_paths(
-                        start,
-                        start_iface,
-                        goal,
-                        end_iface,
-                        constraints=self.get_constraints(
-                            start, start_iface, req.get("constraints")
-                        ),
-                        max_depth=max_depth,
-                        n_shortest=n_shortest,
-                    )
+                raise HTTPException(
+                    404, {"status": False, "error": "Failed to find start of path: %s" % e}
                 )
-            except ValueError as e:
-                error = str(e)
-            dt = perf_counter() - t0
-        if error:
-            return 404, {"status": False, "error": error, "time": dt}
-        return 200, {"status": True, "paths": paths, "time": dt}
+            # Find end of path
+            if hasattr(req.to, "level"):
+                goal = ManagedObjectLevelGoal(req.to.level)
+                end_iface = None
+            else:
+                try:
+                    with Span(in_label="end_of_path"):
+                        end, end_iface = self.get_object_and_interface(**dict(req.to))
+                    goal = ManagedObjectGoal(end)
+                except ValueError as e:
+                    HTTPException(
+                        404, {"status": False, "error": "Failed to find end of path: %s" % e}
+                    )
+            # Trace the path
+            if hasattr(req, "config"):
+                max_depth = req.config.max_depth
+                n_shortest = req.config.n_shortest
+            else:
+                max_depth = MAX_DEPTH_DEFAULT
+                n_shortest = N_SHORTEST_DEFAULT
+            error = None
+            with Span(in_label="find_path"):
+                t0 = perf_counter()
+                try:
+                    paths = list(
+                        self.iter_paths(
+                            start,
+                            start_iface,
+                            goal,
+                            end_iface,
+                            constraints=self.get_constraints(
+                                start, start_iface, getattr(req, "constraints", None)
+                            ),
+                            max_depth=max_depth,
+                            n_shortest=n_shortest,
+                        )
+                    )
+                except ValueError as e:
+                    error = str(e)
+                dt = perf_counter() - t0
+            if error:
+                raise HTTPException(404, {"status": False, "error": error, "time": dt})
+            return {"status": True, "paths": paths, "time": dt}
+
+        return handler
 
     def get_object_and_interface(
-        self: Optional[Dict[str, Any]],
-        object: Optional[Dict[str, Any]] = None,
-        interface: Optional[Dict[str, Any]] = None,
-        service: Optional[Dict[str, Any]] = None,
+        self,
+        object: Optional[Union[PointerId, PointerRemote]] = None,
+        interface: Optional[Union[InterfaceModel, InterfaceModel_]] = None,
+        service: Optional[Union[PointerId, PointerRemote, ServiceOrderPointer]] = None,
     ) -> Tuple[ManagedObject, Optional[Interface]]:
         """
         Process from and to section of request and get object and interface
@@ -189,16 +201,16 @@ class PathAPI(NBIAPI):
         :raises ValueError:
         """
         if object:
-            if "id" in object:
+            if hasattr(object, "id"):
                 # object.id
-                mo = ManagedObject.get_by_id(object["id"])
-            elif "remote_system" in object:
+                mo = ManagedObject.get_by_id(object.id)
+            elif hasattr(object, "remote_system"):
                 # object.remote_system/remote_id
-                rs = RemoteSystem.get_by_id(object["remote_system"])
+                rs = RemoteSystem.get_by_id(object.remote_system)
                 if not rs:
                     raise ValueError("Remote System not found")
                 mo = ManagedObject.objects.filter(
-                    remote_system=rs.id, remote_id=object["remote_id"]
+                    remote_system=rs.id, remote_id=object.remote_id
                 ).first()
             else:
                 raise ValueError("Neither id or remote system specified")
@@ -206,7 +218,7 @@ class PathAPI(NBIAPI):
                 raise ValueError("Object not found")
             if interface:
                 # Additional interface restriction
-                iface = mo.get_interface(interface["name"])
+                iface = mo.get_interface(interface.name)
                 if iface is None:
                     raise ValueError("Interface not found")
                 return mo, iface
@@ -214,25 +226,25 @@ class PathAPI(NBIAPI):
                 # No interface restriction
                 return mo, None
         if interface:
-            iface = Interface.objects.filter(id=interface["id"]).first()
+            iface = Interface.objects.filter(id=interface.id).first()
             if not iface:
                 raise ValueError("Interface not found")
             return iface.managed_object, iface
         if service:
-            if "id" in service:
-                svc = Service.objects.filter(id=service["id"]).first()
-            elif "order_id" in service and "remote_system" in service:
+            if hasattr(service, "id"):
+                svc = Service.objects.filter(id=service.id).first()
+            elif hasattr(service, "order_id") and hasattr(service, "remote_system"):
                 svc = Service.objects.filter(
-                    order_id=service["order_id"], remote_system=service["remote_system"]
+                    order_id=service.order_id, remote_system=service.remote_system
                 ).first()
-            elif "order_id" in service:
-                svc = Service.objects.filter(order_id=service["order_id"]).first()
-            elif "remote_system" in service:
-                rs = RemoteSystem.get_by_id(service["remote_system"])
+            elif hasattr(service, "order_id"):
+                svc = Service.objects.filter(order_id=service.order_id).first()
+            elif hasattr(service, "remote_system"):
+                rs = RemoteSystem.get_by_id(service.remote_system)
                 if not rs:
                     raise ValueError("Remote System not found")
                 svc = Service.objects.filter(
-                    remote_system=rs.id, remote_id=service["remote_id"]
+                    remote_system=rs.id, remote_id=service.remote_id
                 ).first()
             else:
                 raise ValueError("Neither id or remote system specified")
@@ -312,7 +324,10 @@ class PathAPI(NBIAPI):
             yield r
 
     def get_constraints(
-        self, start: ManagedObject, start_iface: Optional[Interface], constraints: Dict[str, Any]
+        self,
+        start: ManagedObject,
+        start_iface: Optional[Interface],
+        constraints: RequestConstraints,
     ) -> Optional[BaseConstraint]:
         """
         Calculate path constraints
@@ -324,17 +339,17 @@ class PathAPI(NBIAPI):
         if not constraints:
             return None
         constraint = AnyConstraint()
-        if constraints.get("upwards"):
+        if getattr(constraints, "upwards"):
             constraint &= UpwardsConstraint()
-        if "vlan" in constraints:
-            vconst = constraints["vlan"]
-            if "vlan" in vconst:
-                constraint &= VLANConstraint(vconst["vlan"], strict=vconst.get("strict", False))
-            elif vconst.get("interface_untagged"):
+        if hasattr(constraints, "vlan"):
+            vconst = constraints.vlan
+            if hasattr(vconst, "vlan"):
+                constraint &= VLANConstraint(vconst.vlan, strict=vconst.strict)
+            elif getattr(vconst, "interface_untagged", None):
                 if start_iface is None:
                     raise ValueError("No starting interface")
                 constraint &= self.get_interface_untagged_constraint(
-                    start_iface, strict=vconst.get("strict", False)
+                    start_iface, strict=vconst.strict
                 )
         return None
 
@@ -350,3 +365,7 @@ class PathAPI(NBIAPI):
             if doc.get("untagged_vlan"):
                 return VLANConstraint(doc["untagged_vlan"], strict=strict)
         raise ValueError("Cannot get untagged vlan from interface")
+
+
+# Install router
+PathAPI(router)
