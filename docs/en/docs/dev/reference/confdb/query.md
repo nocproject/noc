@@ -27,7 +27,7 @@ may be evaluated to one or more output context.
 ```mermaid
 graph LR
     Possibilities --> Predicate
-    Predicate -> Outcomes
+    Predicate --> Outcomes
 ```
 
 ### Pipelining
