@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from collections import defaultdict
+from typing import Dict, List, Tuple, Any
 
 # Third-party modules
 import cachetools
@@ -70,19 +71,20 @@ class AlarmHeatCard(BaseCard):
         active_layers = [
             l_r for l_r in self.get_pop_layers() if l_r.min_zoom <= zoom <= l_r.max_zoom
         ]
-        alarms = []
-        res = {}
-        services = {}
-        subscribers = {}
-        t_data = defaultdict(list)
+        alarms: List[Dict[str, str]] = []
+        res: Dict[int, Dict[str, Any]] = {}
+        services: Dict[str, int] = {}
+        subscribers: Dict[str, int] = {}
+        t_data: Dict[Tuple[float, float] : List[Tuple[Dict[str, str], int]]] = defaultdict(list)
         mos = ManagedObject.objects.filter(is_managed=True).values("id", "name", "x", "y")
         if not self.current_user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(self.current_user))
         for mo in mos:
             res[mo["id"]] = mo
-        mos_id = list(res.keys())
         if ms == 0:
-            mos_id = list(set(list(res.keys())) - set(Maintenance.currently_affected()))
+            mos_id: List[int] = list(set(res.keys()) - set(Maintenance.currently_affected()))
+        else:
+            mos_id: List[int] = list(res.keys())
         for a in ActiveAlarm._get_collection().find(
             {"managed_object": {"$in": mos_id, "$exists": True}},
             {"_id": 1, "managed_object": 1, "direct_subscribers": 1, "direct_services": 1},
@@ -92,7 +94,7 @@ class AlarmHeatCard(BaseCard):
                 s_sub = {dsub["profile"]: dsub["summary"] for dsub in a["direct_subscribers"]}
             if a.get("direct_services"):
                 s_service = {dserv["profile"]: dserv["summary"] for dserv in a["direct_services"]}
-            mo = res.get(a["managed_object"])
+            mo: Dict[str, Any] = res.get(a["managed_object"])
             if not mo:
                 continue
             if mo["x"] and mo["y"]:
@@ -119,7 +121,7 @@ class AlarmHeatCard(BaseCard):
         links = None
         o_seen = set()
         points = None
-        o_data = {}
+        o_data: Dict[Tuple[float, float], List[Dict[str, Any]]] = {}
         if t_data and active_layers:
             # Create lines
             bbox = get_bbox(west, east, north, south)
@@ -145,19 +147,25 @@ class AlarmHeatCard(BaseCard):
             # Create points
             points = []
             for x, y in o_data:
-                data = {}
+                data: Dict[int, int] = {}
                 for mo, w in o_data[x, y]:
-                    if mo["name"] not in data:
-                        data[mo["name"]] = w
-                data = sorted(data, key=lambda z: data[z], reverse=True)[: self.TOOLTIP_LIMIT]
+                    if mo["id"] not in data:
+                        data[mo["id"]] = w
+                data: List[int] = sorted(data, key=lambda z: data[z], reverse=True)[
+                    : self.TOOLTIP_LIMIT
+                ]
                 points += [
                     geojson.Feature(
-                        geometry=geojson.Point(coordinates=[x, y]),
+                        geometry=geojson.Point(coordinates=(x, y)),
                         properties={
                             "alarms": len(t_data[x, y]),
                             "objects": [
-                                {"id": mo["id"], "name": mo["name"], "address": mo.get("address")}
-                                for mo in mos
+                                {
+                                    "id": res[mo_id]["id"],
+                                    "name": res[mo_id]["name"],
+                                    "address": res[mo_id].get("address"),
+                                }
+                                for mo_id in data
                             ],
                         },
                     )
