@@ -21,7 +21,12 @@ router = APIRouter()
 logger = logging.getLogger("ctl")
 
 
-@router.post("/api/ctl/prof/start", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/ctl/prof/start",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
 async def start_prof():
     """
     Start code profiling
@@ -35,7 +40,12 @@ async def start_prof():
     return "Profiling started"
 
 
-@router.post("/api/ctl/prof/stop", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/ctl/prof/stop",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
 async def stop_prof():
     """
     Stop code profiling
@@ -49,7 +59,12 @@ async def stop_prof():
     return "Profiling stopped"
 
 
-@router.get("/api/ctl/prof/threads", response_class=PlainTextResponse, tags=["internal"])
+@router.get(
+    "/api/ctl/prof/threads",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
 async def get_prof_threads():
     """
     Get running threads info
@@ -63,7 +78,12 @@ async def get_prof_threads():
     return out.getvalue()
 
 
-@router.get("/api/ctl/prof/funcs", response_class=PlainTextResponse, tags=["internal"])
+@router.get(
+    "/api/ctl/prof/funcs",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
 async def get_prof_funcs():
     """
     Get profiler functions statistics
@@ -86,7 +106,9 @@ async def get_prof_funcs():
     return out.getvalue()
 
 
-@router.post("/api/ctl/manhole", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/ctl/manhole", response_class=PlainTextResponse, tags=["internal"], include_in_schema=False
+)
 async def open_manhole():
     """
     Open manhole
@@ -98,7 +120,9 @@ async def open_manhole():
     return mh.uds_name
 
 
-@router.post("/api/log/inc", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/log/inc", response_class=PlainTextResponse, tags=["internal"], include_in_schema=False
+)
 async def inc_loglevel():
     """
     Increase loglevel
@@ -111,7 +135,9 @@ async def inc_loglevel():
     return str(new_level)
 
 
-@router.post("/api/log/dec", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/log/dec", response_class=PlainTextResponse, tags=["internal"], include_in_schema=False
+)
 async def dec_loglevel():
     """
     Decrease loglevel
@@ -124,7 +150,12 @@ async def dec_loglevel():
     return str(new_level)
 
 
-@router.post("/api/forensic/start", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/forensic/start",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
 async def forensic_start():
     """
     Start forensic logging
@@ -137,7 +168,12 @@ async def forensic_start():
     return "false"
 
 
-@router.post("/api/forensic/stop", response_class=PlainTextResponse, tags=["internal"])
+@router.post(
+    "/api/forensic/stop",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
 async def forensic_stop():
     """
     Stop forensic logging
