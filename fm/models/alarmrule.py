@@ -37,6 +37,7 @@ id_lock = Lock()
 
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
+    exclude_labels = ListField(StringField())
     alarm_class = ReferenceField(AlarmClass)
     reference_rx = StringField()
 
