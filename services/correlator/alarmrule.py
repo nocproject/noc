@@ -25,6 +25,7 @@ DEFAULT_GROUP_CLASS = "Group"
 @dataclass
 class Match(object):
     labels: Set[str]
+    exclude_labels: Optional[Set[str]]
     alarm_class: Optional[AlarmClass]
     reference_rx: Optional[Pattern]
 
@@ -68,6 +69,7 @@ class AlarmRule(object):
                 Match(
                     labels=set(match.labels),
                     alarm_class=match.alarm_class,
+                    exclude_labels=match.exclude_labels if match.exclude_labels else None,
                     reference_rx=re.compile(match.reference_rx) if match.reference_rx else None,
                 )
             )
@@ -96,6 +98,8 @@ class AlarmRule(object):
         lset = set(alarm.effective_labels)
         for match in self.match:
             # Match against labels
+            if match.exclude_labels and match.exclude_labels.issubset(lset):
+                continue
             if not match.labels.issubset(lset):
                 continue
             # Match against alarm class
