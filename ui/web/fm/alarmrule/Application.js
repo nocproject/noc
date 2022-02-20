@@ -207,6 +207,18 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             }
                         },
                         {
+                            name: "exclude_labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Exclude Match Labels"),
+                            allowBlank: true,
+                            isTree: true,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
+                        },
+                        {
                             name: "alarm_class",
                             xtype: "fm.alarmclass.LookupField",
                             fieldLabel: __("Alarm Class"),
