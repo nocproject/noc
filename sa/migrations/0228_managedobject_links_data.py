@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Third-party modules
+from django.db import connection
+from psycopg2.extras import execute_values
 from itertools import chain
 
 # NOC modules
@@ -14,6 +17,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         coll = self.mongo_db["noc.links"]
+        links = []
         for data in coll.aggregate(
             [
                 {"$project": {"neighbors": "$linked_objects", "linked_objects": 1}},
@@ -21,18 +25,20 @@ class Migration(BaseMigration):
                 {"$group": {"_id": "$linked_objects", "neighbors": {"$push": "$neighbors"}}},
             ]
         ):
-            links = set(chain(*data["neighbors"]))
-            links.remove(data["_id"])
-            if not links:
+            nei = set(chain(*data["neighbors"]))
+            nei.remove(data["_id"])
+            if not nei:
                 continue
-            self.db.execute(
-                """
-                UPDATE sa_managedobject
-                SET links = %s
-                WHERE id = %s
-                """,
-                [
-                    list(links),
-                    data["_id"],
-                ],
-            )
+            links.append((data["_id"], list(nei)))
+        cursor = connection.cursor()
+        execute_values(
+            cursor,
+            """
+                UPDATE sa_managedobject AS mo
+                SET links = c.links
+                FROM (VALUES %s) AS c(moid, links)
+                WHERE c.moid = mo.id
+            """,
+            links,
+            page_size=1000,
+        )
