@@ -195,13 +195,19 @@ class Link(Document):
         return Link.objects.filter(linked_objects=object.id).count()
 
     def on_save(self):
+        from noc.sa.models.managedobject import ManagedObject
+
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
             self.update_topology()
             self.set_label()
+            ManagedObject.update_links(self.linked_objects)
 
     def on_delete(self):
+        from noc.sa.models.managedobject import ManagedObject
+
         self.update_topology()
         self.reset_label()
+        ManagedObject.update_links(self.linked_objects)
 
     @property
     def managed_objects(self):

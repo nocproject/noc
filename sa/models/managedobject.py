@@ -15,6 +15,7 @@ import operator
 from threading import Lock
 import datetime
 from dataclasses import dataclass
+from itertools import chain
 from typing import Tuple, Iterable, List, Any, Dict, Set
 
 # Third-party modules
@@ -101,7 +102,7 @@ from .objectstatus import ObjectStatus
 from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 34
+MANAGEDOBJECT_CACHE_VERSION = 35
 CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
@@ -558,6 +559,7 @@ class ManagedObject(NOCModel):
     )
     # Additional data
     uplinks = ArrayField(IntegerField(), blank=True, null=True, default=list)
+    links = ArrayField(IntegerField(), blank=True, null=True, default=list, db_index=True)
     # RCA neighbors cache
     rca_neighbors = ArrayField(IntegerField(), blank=True, null=True, default=list)
     # xRCA donwlink merge window settings
@@ -2086,13 +2088,34 @@ class ManagedObject(NOCModel):
             dlm_windows[o] = w
         # Prepare bulk update operation
         for ou in obj_data:
-            mo: "ManagedObject" = ManagedObject.get_by_id(ou.object_id)
-            ManagedObject.objects.filter(id=mo.id).update(
+            # mo: "ManagedObject" = ManagedObject.get_by_id(ou.object_id)
+            ManagedObject.objects.filter(id=ou.object_id).update(
                 uplinks=ou.uplinks,
                 rca_neighbors=ou.rca_neighbors,
                 dlm_windows=[dlm_windows.get(o, 0) for o in ou.rca_neighbors],
             )
-            ManagedObject._reset_caches(mo.id)
+            ManagedObject._reset_caches(ou.object_id)
+
+    @classmethod
+    def update_links(cls, linked_objects: List[int]) -> None:
+        from noc.inv.models.link import Link
+
+        coll = Link._get_collection()
+        # Check ManagedObject Link Count
+        for c in coll.aggregate(
+            [
+                {"$match": {"linked_objects": {"$in": linked_objects}}},
+                {"$project": {"neighbors": "$linked_objects", "linked_objects": 1}},
+                {"$unwind": "$linked_objects"},
+                {"$group": {"_id": "$linked_objects", "neighbors": {"$push": "$neighbors"}}},
+            ]
+        ):
+            if c["_id"] not in linked_objects:
+                continue
+            links = set(chain(*c["neighbors"]))
+            links.remove(c["_id"])
+            ManagedObject.objects.filter(id=c["_id"]).update(links=list(links))
+            ManagedObject._reset_caches(c["_id"])
 
 
 @on_save
