@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ class Script(BaseScript):
                     "part_no": i[6],
                 }
                 if i[2] == "OEM":
-                    if i[9] == "1000LX":
+                    if i[9] in ["1000LX", "1GBase-LX"]:
                         r["part_no"] = "NoName | Transceiver | 1G | SFP LX"
                     elif i[9] == "10GBase-LR":
                         r["part_no"] = "NoName | Transceiver | 10G | SFP+ LR"

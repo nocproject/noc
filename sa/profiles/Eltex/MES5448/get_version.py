@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES5448.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"^Manufacturer\.+ \S+\s*\n"
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
         r"(^Boot version\.+ (?P<bootprom>\S+)\s*\n)?"
-        r"^Software Version\.+ (?P<version>\S+)\s*\n",
+        r"^Software Version\.+ (?P<version>\S+).*\n",
         re.MULTILINE,
     )
 
