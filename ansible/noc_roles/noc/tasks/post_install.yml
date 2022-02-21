@@ -18,6 +18,7 @@
   failed_when: "'ERROR' in result.stdout"
   environment:
     NOC_CONFIG: "{{ config_order }}"
+    PYTHONPATH: "{{ noc_root | dirname }}"
   tags:
     - requirements
     - get_source
@@ -63,5 +64,6 @@
   environment:
     NOC_CONFIG: "{{ config_order }}"
     NOC_PG_ADDRESSES: postgres:5432
+    PYTHONPATH: "{{ noc_root | dirname }}"
   tags:
     - get_source
