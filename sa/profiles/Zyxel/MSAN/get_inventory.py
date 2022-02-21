@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -36,7 +36,8 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
     rx_hw2 = re.compile(
-        r"^\s*Hardware Version: (?P<revision>\S+)\s*\n" r"^\s*Serial Number: (?P<serial>\S+)\s*\n",
+        r"^\s*Hardware Version: (?P<revision>\S+|not defined)\s*\n"
+        r"^\s*Serial Number: (?P<serial>\S+|not defined)\s*\n",
         re.MULTILINE,
     )
     rx_chips = re.compile(r"^\s*(?P<platform>\S+?)([/ ](?P<module>\S+))?\s+")
@@ -100,10 +101,11 @@ class Script(BaseScript):
                     "type": "CHASSIS",
                     "vendor": "ZYXEL",
                     "part_no": c,
-                    "serial": match.group("serial"),
-                    "revision": match.group("revision"),
                 }
             ]
+            if match.group("serial") != "not defined" and match.group("revision") != "not defined":
+                r[0]["serial"] = match.group("serial")
+                r[0]["revision"] = match.group("revision")
             if module:
                 r += [{"type": "LINECARD", "number": 1, "vendor": "ZYXEL", "part_no": module}]
         return r
