@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NSCComm.LPOS.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,4 +15,5 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
-        return self.cleaned_config(self.cli("show cfg.sys"))
+        v = self.cli("show cfg.sys")
+        return self.cleaned_config(v)

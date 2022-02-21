@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NSCComm.LPOS.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,7 +24,8 @@ class Script(BaseScript):
     )
 
     def execute(self):
-        match = self.rx_ver.search(self.cli("stats", cached=True))
+        v = self.cli("stats", cached=True)
+        match = self.rx_ver.search(v)
         return {
             "vendor": "NSCComm",
             "platform": match.group("platform"),

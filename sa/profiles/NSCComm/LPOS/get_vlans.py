@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NSCComm.LPOS.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,8 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("vlan", cached=True)):
+        v = self.cli("vlan", cached=True)
+        for match in self.rx_vlan.finditer(v):
             vid = int(match.group("vlan_id"))
             if vid == 1:
                 continue
