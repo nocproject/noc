@@ -244,6 +244,16 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get(name[:2])
 
+    def get_interface_names(self, name):
+        """
+        CDP neighbor interface send like: Fa0/1.1
+        """
+        n = self.convert_interface_name(name)
+        name, *sub = n.rsplit(".", 1)
+        if sub:
+            return [name]
+        return []
+
 
 def uBR(v):
     """
