@@ -20,5 +20,6 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PYTHONPATH: "{{ noc_root | dirname }}"
   tags:
     - requirements

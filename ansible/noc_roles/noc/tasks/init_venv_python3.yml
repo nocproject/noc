@@ -197,6 +197,6 @@
     - requirements
 
 - name: Install noc.pth
-  template:
-    src: "lib/python/site-packages/noc.pth.j2"
-    dest: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/noc.pth"
+  file:
+    path: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/noc.pth"
+    state: absent
