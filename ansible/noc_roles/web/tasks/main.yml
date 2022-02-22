@@ -17,6 +17,7 @@
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
     NOC_CONFIG: "{{ config_order }}"
+    PYTHONPATH: "{{ noc_root | dirname }}"
   tags:
     - requirements
 
@@ -28,6 +29,7 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
     NOC_CONFIG: "{{config_order}}"
+    PYTHONPATH: "{{ noc_root | dirname }}"
   when:
     - web_theme is defined
     - web_theme == 'noc'
