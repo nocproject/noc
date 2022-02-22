@@ -38,12 +38,13 @@ class NBIAPI(object):
     def access_tokens_set(cls):
         return {"nbi:*", f"nbi:{cls.api_name}"}
 
-    def access_granted(self, access_header):
+    @classmethod
+    def access_granted(cls, access_header):
         """
         Checks that each access_header contains at least one required token
         """
         a_set = set(access_header.split(","))
-        if self.access_tokens_set() & a_set:
+        if cls.access_tokens_set() & a_set:
             return True
         return False
 
