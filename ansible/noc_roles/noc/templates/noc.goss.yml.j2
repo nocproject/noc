@@ -42,17 +42,11 @@ file:
     filetype: directory
     contains: []
   {{ noc_root }}/lib/python/site-packages/noc.pth:
-    exists: true
+    exists: false
     mode: "0644"
     owner: root
     group: root
     filetype: file
-    contains:
-    - import os; os.environ['DJANGO_SETTINGS_MODULE'] = 'noc.settings'
-    - {{ noc_root }}
-{% if noc_custom_path is defined %}
-    - {{ noc_custom_path }}
-{% endif %}
 {% if noc_python_interpreter != "python3" %}
   {{ noc_root }}/lib/python/site-packages/sitecustomize.py:
     exists: true
