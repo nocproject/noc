@@ -616,7 +616,8 @@ class BaseService(object):
                     try:
                         await handler(msg)
                     except Exception as e:
-                        self.logger.error("Failed to process message: %s", e)
+                        self.logger.error("Failed to process message offset %s: %s", msg.offset, e)
+                        error_report(logger=self.logger)
                     if set_cursor:
                         await set_cursor(msg.offset)
                     if self.subscriber_shutdown_waiter:
