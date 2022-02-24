@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import List, Optional
+
 # Third-party modules
 from fastapi import APIRouter
 from fastapi.responses import ORJSONResponse
@@ -24,9 +27,9 @@ class NBIAPI(object):
     """
 
     # API name
-    api_name = None
+    api_name: Optional[str] = None
     # Tags for OpenAPI documentation
-    openapi_tags = []
+    openapi_tags: List[str] = []
 
     def __init__(self, router: APIRouter):
         self.service = get_service()

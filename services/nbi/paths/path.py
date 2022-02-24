@@ -8,7 +8,7 @@
 # Python modules
 from collections import defaultdict
 from time import perf_counter
-from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any, Union, Callable
+from typing import Tuple, Optional, Dict, List, Iterable, DefaultDict, Any, Union
 
 # Third-party modules
 from fastapi import APIRouter, Header, HTTPException
@@ -119,70 +119,69 @@ class PathAPI(NBIAPI):
         route = {
             "path": "/api/nbi/path",
             "method": "POST",
-            "endpoint": self.get_handler(),
+            "endpoint": self.handler,
             "response_model": None,
             "name": "path",
             "description": "Trace k-shortest paths over network topology considering constraints.",
         }
         return [route]
 
-    def get_handler(self) -> Callable:
-        def handler(req: Request, access_header: str = Header(..., alias=API_ACCESS_HEADER)):
-            if not self.access_granted(access_header):
-                raise HTTPException(403, FORBIDDEN_MESSAGE)
-            # Find start of path
+    async def handler(
+        self, req: Request, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+    ):
+        if not self.access_granted(access_header):
+            raise HTTPException(403, FORBIDDEN_MESSAGE)
+        # Find start of path
+        try:
+            with Span(in_label="start_of_path"):
+                start, start_iface = self.get_object_and_interface(**dict(req.from_))
+        except ValueError as e:
+            raise HTTPException(
+                404, {"status": False, "error": "Failed to find start of path: %s" % e}
+            )
+        # Find end of path
+        if hasattr(req.to, "level"):
+            goal = ManagedObjectLevelGoal(req.to.level)
+            end_iface = None
+        else:
             try:
-                with Span(in_label="start_of_path"):
-                    start, start_iface = self.get_object_and_interface(**dict(req.from_))
+                with Span(in_label="end_of_path"):
+                    end, end_iface = self.get_object_and_interface(**dict(req.to))
+                goal = ManagedObjectGoal(end)
             except ValueError as e:
                 raise HTTPException(
-                    404, {"status": False, "error": "Failed to find start of path: %s" % e}
+                    404, {"status": False, "error": "Failed to find end of path: %s" % e}
                 )
-            # Find end of path
-            if hasattr(req.to, "level"):
-                goal = ManagedObjectLevelGoal(req.to.level)
-                end_iface = None
-            else:
-                try:
-                    with Span(in_label="end_of_path"):
-                        end, end_iface = self.get_object_and_interface(**dict(req.to))
-                    goal = ManagedObjectGoal(end)
-                except ValueError as e:
-                    HTTPException(
-                        404, {"status": False, "error": "Failed to find end of path: %s" % e}
+        # Trace the path
+        if hasattr(req, "config"):
+            max_depth = req.config.max_depth
+            n_shortest = req.config.n_shortest
+        else:
+            max_depth = MAX_DEPTH_DEFAULT
+            n_shortest = N_SHORTEST_DEFAULT
+        error = None
+        with Span(in_label="find_path"):
+            t0 = perf_counter()
+            try:
+                paths = list(
+                    self.iter_paths(
+                        start,
+                        start_iface,
+                        goal,
+                        end_iface,
+                        constraints=self.get_constraints(
+                            start, start_iface, getattr(req, "constraints", None)
+                        ),
+                        max_depth=max_depth,
+                        n_shortest=n_shortest,
                     )
-            # Trace the path
-            if hasattr(req, "config"):
-                max_depth = req.config.max_depth
-                n_shortest = req.config.n_shortest
-            else:
-                max_depth = MAX_DEPTH_DEFAULT
-                n_shortest = N_SHORTEST_DEFAULT
-            error = None
-            with Span(in_label="find_path"):
-                t0 = perf_counter()
-                try:
-                    paths = list(
-                        self.iter_paths(
-                            start,
-                            start_iface,
-                            goal,
-                            end_iface,
-                            constraints=self.get_constraints(
-                                start, start_iface, getattr(req, "constraints", None)
-                            ),
-                            max_depth=max_depth,
-                            n_shortest=n_shortest,
-                        )
-                    )
-                except ValueError as e:
-                    error = str(e)
-                dt = perf_counter() - t0
-            if error:
-                raise HTTPException(404, {"status": False, "error": error, "time": dt})
-            return {"status": True, "paths": paths, "time": dt}
-
-        return handler
+                )
+            except ValueError as e:
+                error = str(e)
+            dt = perf_counter() - t0
+        if error:
+            raise HTTPException(404, {"status": False, "error": error, "time": dt})
+        return {"status": True, "paths": paths, "time": dt}
 
     def get_object_and_interface(
         self,

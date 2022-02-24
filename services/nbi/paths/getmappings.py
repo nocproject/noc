@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from typing import Optional, Callable, List, Union
+from typing import Optional, List, Union
 
 # Third-party modules
 from fastapi import APIRouter, Header, HTTPException, Query
@@ -72,7 +72,7 @@ class GetMappingsAPI(NBIAPI):
         route_get = {
             "path": "/api/nbi/getmappings",
             "method": "GET",
-            "endpoint": self.get_get_handler(),
+            "endpoint": self.handler_get,
             "response_model": List[ResponseItem],
             "name": "getmappings",
             "description": "Allows remote system to query mappings between NOC's local identifiers (ID) and the remote system's one.",
@@ -80,54 +80,49 @@ class GetMappingsAPI(NBIAPI):
         route_post = {
             "path": "/api/nbi/getmappings",
             "method": "POST",
-            "endpoint": self.get_post_handler(),
+            "endpoint": self.handler_post,
             "response_model": List[ResponseItem],
             "name": "getmappings",
             "description": "Allows remote system to query mappings between NOC's local identifiers (ID) and the remote system's one.",
         }
         return [route_get, route_post]
 
-    def get_get_handler(self) -> Callable:
-        async def handler(
-            scope: Optional[str] = None,
-            id: Optional[List[str]] = Query(None),
-            remote_system: Optional[str] = None,
-            remote_id: Optional[List[str]] = Query(None),
-            access_header: str = Header(..., alias=API_ACCESS_HEADER),
-        ):
-            if not self.access_granted(access_header):
-                raise HTTPException(403, FORBIDDEN_MESSAGE)
-            try:
-                req = self.cleaned_request(
-                    scope=scope,
-                    id=id,
-                    remote_system=remote_system,
-                    remote_id=remote_id,
-                )
-            except ValueError as e:
-                raise HTTPException(400, f"Bad request: {e}")
-            return self.do_mapping(**req)
+    async def handler_get(
+        self,
+        scope: Optional[str] = None,
+        id: Optional[List[str]] = Query(None),
+        remote_system: Optional[str] = None,
+        remote_id: Optional[List[str]] = Query(None),
+        access_header: str = Header(..., alias=API_ACCESS_HEADER),
+    ):
+        if not self.access_granted(access_header):
+            raise HTTPException(403, FORBIDDEN_MESSAGE)
+        try:
+            req = self.cleaned_request(
+                scope=scope,
+                id=id,
+                remote_system=remote_system,
+                remote_id=remote_id,
+            )
+        except ValueError as e:
+            raise HTTPException(400, f"Bad request: {e}")
+        return self.do_mapping(**req)
 
-        return handler
-
-    def get_post_handler(self) -> Callable:
-        async def handler(
-            request: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
-        ):
-            if not self.access_granted(access_header):
-                raise HTTPException(403, FORBIDDEN_MESSAGE)
-            try:
-                req = self.cleaned_request(
-                    scope=request.scope,
-                    id=request.id,
-                    remote_system=request.remote_system,
-                    remote_id=request.remote_id,
-                )
-            except ValueError as e:
-                raise HTTPException(400, self.error_msg(f"Bad request: {e}"))
-            return self.do_mapping(**req)
-
-        return handler
+    async def handler_post(
+        self, request: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+    ):
+        if not self.access_granted(access_header):
+            raise HTTPException(403, FORBIDDEN_MESSAGE)
+        try:
+            req = self.cleaned_request(
+                scope=request.scope,
+                id=request.id,
+                remote_system=request.remote_system,
+                remote_id=request.remote_id,
+            )
+        except ValueError as e:
+            raise HTTPException(400, self.error_msg(f"Bad request: {e}"))
+        return self.do_mapping(**req)
 
     @staticmethod
     def error_msg(msg):

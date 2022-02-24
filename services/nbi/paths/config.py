@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Callable
-
 # Third-party modules
 from fastapi import APIRouter, Path, Header, HTTPException
 from fastapi.responses import PlainTextResponse
@@ -27,7 +24,7 @@ class ConfigAPI(NBIAPI):
         route_config = {
             "path": "/api/nbi/config/{object_id}",
             "method": "GET",
-            "endpoint": self.get_config_handler(),
+            "endpoint": self.handler_config,
             "response_class": PlainTextResponse,
             "response_model": None,
             "name": "config",
@@ -36,7 +33,7 @@ class ConfigAPI(NBIAPI):
         route_config_revision = {
             "path": "/api/nbi/config/{object_id}/{revision}",
             "method": "GET",
-            "endpoint": self.get_config_revision_handler(),
+            "endpoint": self.handler_config_revision,
             "response_class": PlainTextResponse,
             "response_model": None,
             "name": "config_revision",
@@ -60,23 +57,18 @@ class ConfigAPI(NBIAPI):
             raise HTTPException(204, "")
         return config
 
-    def get_config_handler(self) -> Callable:
-        async def handler(
-            object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
-        ):
-            return self._handler(access_header, object_id)
+    async def handler_config(
+        self, object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+    ):
+        return self._handler(access_header, object_id)
 
-        return handler
-
-    def get_config_revision_handler(self) -> Callable:
-        async def handler(
-            object_id: int,
-            revision: str = Path(..., regex="^[0-9a-f]{24}$"),
-            access_header: str = Header(..., alias=API_ACCESS_HEADER),
-        ):
-            return self._handler(access_header, object_id, revision)
-
-        return handler
+    async def handler_config_revision(
+        self,
+        object_id: int,
+        revision: str = Path(..., regex="^[0-9a-f]{24}$"),
+        access_header: str = Header(..., alias=API_ACCESS_HEADER),
+    ):
+        return self._handler(access_header, object_id, revision)
 
 
 # Install router
