@@ -39,7 +39,7 @@
     - "{{ grafana_plugins_dir }}"
     - "{{ grafana_provisioning_dir }}"
     - "{{ grafana_provisioning_dir }}/datasources"
-    - "{{ grafana_provisioning_dir }}/notifier"
+    - "{{ grafana_provisioning_dir }}/notifiers"
 
 - name: add plugins
   import_tasks: plugins.yml
