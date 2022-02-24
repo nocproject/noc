@@ -46,8 +46,11 @@ class Script(BaseScript):
         "PRAM": "",
         "PRWGS": "",
     }
+    # In some rare cases interface name and state can be dupicated
+    # vdsl_1/5/49 is activate,vdsl_1/5/49 is activate,line protocol is down.
     rx_iface = re.compile(
         r"^\s*(?P<ifname>\S+) (?:admin status )?is (?P<admin_status>activate|deactivate|down|administratively down|up),\s*"
+        r"(\S+ (?:admin status )?is (?:activate|deactivate|down|administratively down|up),\s*)?"
         r"line protocol is (?P<oper_status>down|up).*\n"
         r"(^\s*(?:Description|Byname) is (?P<descr>.+)\n)?",
         re.MULTILINE,
