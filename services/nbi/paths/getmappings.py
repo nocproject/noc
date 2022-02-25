@@ -21,7 +21,7 @@ from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 router = APIRouter()
 
 
-class RequestModel(BaseModel):
+class GetMappingsRequest(BaseModel):
     scope: Optional[str] = None
     id: Optional[Union[str, List[str]]] = None
     remote_system: Optional[str] = None
@@ -33,7 +33,7 @@ class Mapping(BaseModel):
     remote_id: str
 
 
-class ResponseItem(BaseModel):
+class GetMappingsResponseItem(BaseModel):
     scope: str
     id: str
     mappings: List[Mapping]
@@ -73,7 +73,7 @@ class GetMappingsAPI(NBIAPI):
             "path": "/api/nbi/getmappings",
             "method": "GET",
             "endpoint": self.handler_get,
-            "response_model": List[ResponseItem],
+            "response_model": List[GetMappingsResponseItem],
             "name": "getmappings",
             "description": "Allows remote system to query mappings between NOC's local identifiers (ID) and the remote system's one.",
         }
@@ -81,7 +81,7 @@ class GetMappingsAPI(NBIAPI):
             "path": "/api/nbi/getmappings",
             "method": "POST",
             "endpoint": self.handler_post,
-            "response_model": List[ResponseItem],
+            "response_model": List[GetMappingsResponseItem],
             "name": "getmappings",
             "description": "Allows remote system to query mappings between NOC's local identifiers (ID) and the remote system's one.",
         }
@@ -109,7 +109,7 @@ class GetMappingsAPI(NBIAPI):
         return self.do_mapping(**req)
 
     async def handler_post(
-        self, request: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+        self, request: GetMappingsRequest, access_header: str = Header(..., alias=API_ACCESS_HEADER)
     ):
         if not self.access_granted(access_header):
             raise HTTPException(403, FORBIDDEN_MESSAGE)

@@ -28,7 +28,7 @@ class Metric(BaseModel):
     values: List[List[Any]]
 
 
-class RequestModel(BaseModel):
+class TelemetryRequest(BaseModel):
     bi_id: int
     metrics: List[Metric]
 
@@ -50,7 +50,7 @@ class TelemetryAPI(NBIAPI):
         return [route]
 
     async def handler(
-        self, req: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+        self, req: TelemetryRequest, access_header: str = Header(..., alias=API_ACCESS_HEADER)
     ):
         def get_scope(label: str) -> Tuple[Optional[str], str]:
             scope, *value = label.rsplit("::", 1)

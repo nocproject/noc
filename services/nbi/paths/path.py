@@ -104,7 +104,7 @@ class RequestConstraints(BaseModel):
     upwards: bool = False
 
 
-class Request(BaseModel):
+class PathRequest(BaseModel):
     from_: RequestFrom = Field(..., alias="from")
     to: RequestTo
     config: Optional[RequestConfig] = None
@@ -127,7 +127,7 @@ class PathAPI(NBIAPI):
         return [route]
 
     async def handler(
-        self, req: Request, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+        self, req: PathRequest, access_header: str = Header(..., alias=API_ACCESS_HEADER)
     ):
         if not self.access_granted(access_header):
             raise HTTPException(403, FORBIDDEN_MESSAGE)

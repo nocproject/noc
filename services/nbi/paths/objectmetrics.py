@@ -34,13 +34,13 @@ class Metrics(BaseModel):
     metric_types: List[str]
 
 
-class RequestModel(BaseModel):
+class ObjectMetricsRequest(BaseModel):
     from_: datetime = Field(..., alias="from")
     to: datetime
     metrics: List[Metrics]
 
 
-class MetricsResponse(BaseModel):
+class ObjectMetricsResponseItem(BaseModel):
     object: str
     metric_type: str
     path: List[str]
@@ -48,10 +48,10 @@ class MetricsResponse(BaseModel):
     interface: Optional[str]
 
 
-class ResponseModel(BaseModel):
+class ObjectMetricsResponse(BaseModel):
     from_: datetime = Field(..., alias="from")
     to: datetime
-    metrics: List[MetricsResponse]
+    metrics: List[ObjectMetricsResponseItem]
 
 
 class ObjectMetricsAPI(NBIAPI):
@@ -63,14 +63,14 @@ class ObjectMetricsAPI(NBIAPI):
             "path": "/api/nbi/objectmetrics",
             "method": "POST",
             "endpoint": self.handler,
-            "response_model": ResponseModel,
+            "response_model": ObjectMetricsResponse,
             "name": "objectmetrics",
             "description": "Allows to request specified metrics for particular managed objects",
         }
         return [route]
 
     async def handler(
-        self, req: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+        self, req: ObjectMetricsRequest, access_header: str = Header(..., alias=API_ACCESS_HEADER)
     ):
         if not self.access_granted(access_header):
             raise HTTPException(403, FORBIDDEN_MESSAGE)

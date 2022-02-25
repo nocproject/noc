@@ -19,7 +19,7 @@ from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 router = APIRouter()
 
 
-class RequestModel(BaseModel):
+class ObjectStatusRequest(BaseModel):
     objects: List[Union[str, int]]
 
 
@@ -28,7 +28,7 @@ class Status(BaseModel):
     status: bool
 
 
-class ResponseModel(BaseModel):
+class ObjectStatusResponse(BaseModel):
     statuses: List[Status]
 
 
@@ -41,14 +41,14 @@ class ObjectStatusAPI(NBIAPI):
             "path": "/api/nbi/objectstatus",
             "method": "POST",
             "endpoint": self.handler,
-            "response_model": ResponseModel,
+            "response_model": ObjectStatusResponse,
             "name": "objectstatus",
             "description": "Get current statuses for one or more Managed Objects.",
         }
         return [route]
 
     async def handler(
-        self, req: RequestModel, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+        self, req: ObjectStatusRequest, access_header: str = Header(..., alias=API_ACCESS_HEADER)
     ):
         if not self.access_granted(access_header):
             raise HTTPException(403, FORBIDDEN_MESSAGE)
