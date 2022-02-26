@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Callable
+from typing import List
 
 # Third-party modules
 from fastapi import APIRouter, Header, HTTPException
@@ -32,28 +32,25 @@ class ConfigRevisionsAPI(NBIAPI):
         route = {
             "path": "/api/nbi/configrevisions/{object_id}",
             "method": "GET",
-            "endpoint": self.get_configrevisions_handler(),
+            "endpoint": self.handler,
             "response_model": List[Revision],
             "name": "configrevisions",
             "description": "Get all config revisions for Managed Object with id `object_id`",
         }
         return [route]
 
-    def get_configrevisions_handler(self) -> Callable:
-        async def handler(
-            object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
-        ):
-            if not self.access_granted(access_header):
-                raise HTTPException(403, FORBIDDEN_MESSAGE)
-            mo = ManagedObject.get_by_id(object_id)
-            if not mo:
-                raise HTTPException(404, "Not Found")
-            return [
-                {"revision": str(r.id), "timestamp": r.ts.isoformat()}
-                for r in mo.config.get_revisions()
-            ]
-
-        return handler
+    async def handler(
+        self, object_id: int, access_header: str = Header(..., alias=API_ACCESS_HEADER)
+    ):
+        if not self.access_granted(access_header):
+            raise HTTPException(403, FORBIDDEN_MESSAGE)
+        mo = ManagedObject.get_by_id(object_id)
+        if not mo:
+            raise HTTPException(404, "Not Found")
+        return [
+            {"revision": str(r.id), "timestamp": r.ts.isoformat()}
+            for r in mo.config.get_revisions()
+        ]
 
 
 # Install router
