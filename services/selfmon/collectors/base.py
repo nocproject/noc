@@ -25,7 +25,7 @@ class BaseCollector(object):
 
     def __init__(self, service):
         self.service = service
-        self.ttl = getattr(config.selfmon, "%s_ttl" % self.name)
+        self.ttl = getattr(config.selfmon, "%s_ttl" % self.name, 30)
         self.last_metrics = {}
         self.logger = PrefixLoggerAdapter(logger, self.name)
         self.t0 = int(time.time())

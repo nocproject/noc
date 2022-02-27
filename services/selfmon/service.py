@@ -15,7 +15,7 @@ import time
 from noc.core.service.fastapi import FastAPIService
 from noc.core.debug import error_report
 from noc.core.span import Span, PARENT_SAMPLE
-from noc.services.selfmon.loader import iter_collectors
+from noc.services.selfmon.loader import loader
 
 
 class SelfMonService(FastAPIService):
@@ -28,7 +28,7 @@ class SelfMonService(FastAPIService):
         self.runner_thread = None
 
     async def on_activate(self):
-        self.collectors = [c(self) for c in iter_collectors() if c.is_enabled()]
+        self.collectors = [loader[c](self) for c in loader if loader[c].is_enabled()]
         if not self.collectors:
             self.die("No collectors enabled")
         await self.acquire_lock()
