@@ -183,12 +183,18 @@ class ActiveAlarm(Document):
         if not self.id:
             # Update effective labels
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
-            # Update directed_services
+            # Update affected_services
             self.components._ComponentHub__refresh_all_components()
-            for comp in self.components._ComponentHub__all_components:
-                comp = self.components.get(comp, None)
-                svc = getattr(comp, "service", None)
-                if svc and svc.id not in self.direct_services:
+            for component in self.components._ComponentHub__all_components:
+                component = self.components.get(component, None)
+                if not component:
+                    continue
+                # If Component is Service or assigned service to it
+                if isinstance(component, Service):
+                    svc = component
+                else:
+                    svc = getattr(component, "service", None)
+                if svc and svc.id and svc.id not in self.affected_services:
                     self.affected_services += [svc.id]
 
     def safe_save(self, **kwargs):
@@ -972,3 +978,4 @@ class ComponentHub(object):
 # Avoid circular references
 from .archivedalarm import ArchivedAlarm
 from .utils import get_alarm
+from noc.sa.models.service import Service
