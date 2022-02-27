@@ -10,7 +10,7 @@ import progressbar
 
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.models.objectdata import ObjectData
+from noc.sa.models.managedobject import ManagedObject
 from noc.core.topology.segment import SegmentTopology
 
 BATCH_SIZE = 5000
@@ -40,6 +40,6 @@ def fix():
     for ns in progressbar.progressbar(iter_ids_batch(), max_value=max_value):
         try:
             st = SegmentTopology(ns)
-            ObjectData.update_uplinks(st.iter_uplinks())
+            ManagedObject.update_uplinks(st.iter_uplinks())
         except Exception as e:
             print("[%s] %s" % (ns.name, e))
