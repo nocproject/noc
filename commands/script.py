@@ -128,6 +128,10 @@ class Command(BaseCommand):
                 "version": obj.version.version if obj.version else None,
                 "image": obj.software_image if obj.software_image else None,
             }
+            if getattr(obj, "managedobjectattribute_set", None):
+                attrs = {x["key"]: x["value"] for x in obj.managedobjectattribute_set.values()}
+                if attrs:
+                    version["attributes"] = attrs
         else:
             version = None
         # Run script
@@ -448,6 +452,7 @@ class JSONObject(object):
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
         self.version = VersionStub(data["version"]) if "version" in data else None
         self.software_image = data["image"] if "image" in data else None
+        self.managedobjectattribute_set = data["attributes"] if "attributes" in data else None
 
     @property
     def credentials(self):
