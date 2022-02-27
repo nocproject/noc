@@ -71,5 +71,11 @@ class NBIAPI(object):
                 name=route["name"],
                 description=route["description"],
                 response_model_exclude_none=route.get("response_model_exclude_none"),
+                responses={
+                    403: {
+                        "content": {"text/html": {"example": FORBIDDEN_MESSAGE}},
+                        "description": "Forbidden Access by API Key restrictions",
+                    }
+                },
                 tags=self.openapi_tags,
             )
