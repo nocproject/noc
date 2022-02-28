@@ -1,0 +1,48 @@
+{
+    "name": "IPPool",
+    "$collection": "pm.metricscopes",
+    "uuid": "dadc260c-8bc4-4d48-9a62-3cd71c0d5f17",
+    "table_name": "ippool",
+    "description": "Metrics for DHCP and NAT pools Statistics",
+    "key_fields": [
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "object",
+            "model": "inv.Object"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
+        }
+    ],
+    "enable_timedelta": true,
+    "labels": [
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::ippool::name::*",
+            "store_column": "name"
+        },
+        {
+            "is_order_key": false,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::ippool::type::*",
+            "store_column": "type"
+        },
+        {
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::ippool::prefix::*",
+            "store_column": "prefix"
+        }
+    ]
+}
