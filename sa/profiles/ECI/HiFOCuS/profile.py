@@ -2,7 +2,7 @@
 # Vendor: ECI http://www.ecitele.com/
 # OS:     HiFOCuS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ class Profile(BaseProfile):
         "vn": "physical",  # FortyGigabitEthernet
         "en": "physical",  # FortyGigabitEthernet
         "at": "physical",  # FortyGigabitEthernet
-        "cp": "physical",  # FortyGigabitEthernet
+        "cp": "management",  # FortyGigabitEthernet
         "sw": "SVI",
     }
 

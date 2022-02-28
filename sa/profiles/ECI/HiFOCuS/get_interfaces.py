@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ECI.HiFOCuS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # -------------------------------------------------------------------
 
@@ -47,9 +47,21 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_l3_iface_splitter = rx_splitter = re.compile(r"^(?P<ifname>\S+\s+\(.+\):|\S+)", re.MULTILINE)
+    rx_route_iface = re.compile(
+        r"^\d+\S+\s+\d+\S+\s+\d+\s+\d+\s+\d+\s+(?P<ifname>\S+\d)\s*\n", re.MULTILINE
+    )
 
     def get_l3_interfaces(self):
         v = self.cli("IFSHOW")
+        if "ILLEGAL ifName" in v:
+            ifnames = []
+            v = ""
+            c = self.cli("ROUTESHOW")
+            for match in self.rx_route_iface.finditer(c):
+                ifname = match.group("ifname")
+                if ifname not in ifnames:
+                    v = "%s\n%s" % (v, self.cli("IFSHOW %s" % ifname))
+                    ifnames += [ifname]
         interfaces = {}
         ifname = None
         for block in self.rx_l3_iface_splitter.split(v)[1:]:
@@ -139,6 +151,8 @@ class Script(BaseScript):
             row = [x.strip() for x in line.strip("|\n").split("|")]
             if row[0] == "SH":
                 # header
+                continue
+            if len(row) < 11:
                 continue
             shelf, slot, port, mani, _, sw_ver, boot_ver, hw_ver, serial, _, _ = row
             if int(port) == 0:
