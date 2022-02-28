@@ -131,7 +131,7 @@ class Script(GetMetricsScript):
                 )
 
     @metrics(
-        ["DHCP | Pool | Used"],
+        ["DHCP | Pool | Leases | Active"],
         has_capability="BRAS | PPPoE",
         volatile=False,
         access="S",
@@ -146,8 +146,12 @@ class Script(GetMetricsScript):
             pool_ip = ".".join([c for c in key[-5:-1]])
             pool_mask = key[-1:][0]
             self.set_metric(
-                id=("DHCP | Pool | Used", None),
-                labels=[f"noc::dhcp::pool::{pool}", f"noc::dhcp::net::{pool_ip}/{pool_mask}"],
+                id=("DHCP | Pool | Leases | Active", None),
+                labels=[
+                    f"noc::ippool::name::{pool}",
+                    f"noc::ippool::prefix::{pool_ip}/{pool_mask}",
+                    "noc::ippool::type::dhcp",
+                ],
                 value=v,
                 multi=True,
             )
@@ -184,10 +188,11 @@ class Script(GetMetricsScript):
 
     @metrics(
         [
-            "RADIUS | Requests",
-            "RADIUS | Responses",
+            "Radius | Policy | Request | Count",
+            "Radius | Policy | Request | Delta",
+            "Radius | Policy | Response | Delta",
+            "Radius | Policy | Response | Count",
         ],
-        # has_capability="BRAS | PPPoE",
         volatile=False,
         access="S",
     )
@@ -198,8 +203,15 @@ class Script(GetMetricsScript):
             key = key.split(".")
             name_radius = "".join([chr(int(c)) for c in key])
             self.set_metric(
-                id=("RADIUS | Requests", None),
-                labels=[f"noc::radius::requests::{name_radius}"],
+                id=("Radius | Policy | Request | Count", None),
+                labels=[f"noc::radius::{name_radius}"],
+                value=v,
+                multi=True,
+            )
+            self.set_metric(
+                id=("Radius | Policy | Request | Delta", None),
+                labels=[f"noc::radius::{name_radius}"],
+                type="delta",
                 value=v,
                 multi=True,
             )
@@ -209,8 +221,15 @@ class Script(GetMetricsScript):
             key = key.split(".")
             name_radius = "".join([chr(int(c)) for c in key])
             self.set_metric(
-                id=("RADIUS | Responses", None),
-                labels=[f"noc::radius::responses::{name_radius}"],
+                id=("Radius | Policy | Response | Count", None),
+                labels=[f"noc::radius::{name_radius}"],
+                value=v,
+                multi=True,
+            )
+            self.set_metric(
+                id=("Radius | Policy | Response | Delta", None),
+                labels=[f"noc::radius::{name_radius}"],
+                type="delta",
                 value=v,
                 multi=True,
             )

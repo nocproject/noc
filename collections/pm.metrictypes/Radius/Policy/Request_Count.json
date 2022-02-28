@@ -1,0 +1,12 @@
+{
+    "name": "Radius | Policy | Request | Count",
+    "$collection": "pm.metrictypes",
+    "uuid": "fe0f047c-313d-4fcb-8787-f49173207720",
+    "scope__name": "Radius",
+    "field_name": "radius_policy_request_count",
+    "field_type": "UInt32",
+    "description": "The number of RADIUS request packets transmitted",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
