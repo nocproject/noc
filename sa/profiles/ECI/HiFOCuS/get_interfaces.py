@@ -152,8 +152,6 @@ class Script(BaseScript):
             if row[0] == "SH":
                 # header
                 continue
-            if len(row) < 11:
-                continue
             shelf, slot, port, mani, _, sw_ver, boot_ver, hw_ver, serial, _, _ = row
             if int(port) == 0:
                 continue
