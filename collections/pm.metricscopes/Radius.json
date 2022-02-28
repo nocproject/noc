@@ -1,0 +1,32 @@
+{
+    "name": "Radius",
+    "$collection": "pm.metricscopes",
+    "uuid": "92917188-efd7-4c0f-b5a1-66c886cbd30b",
+    "table_name": "radius",
+    "description": "Radius protocols related metrics",
+    "key_fields": [
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "object",
+            "model": "inv.Object"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
+        }
+    ],
+    "enable_timedelta": true,
+    "labels": [
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::radius::*",
+            "store_column": "name"
+        }
+    ]
+}
