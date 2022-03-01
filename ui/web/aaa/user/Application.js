@@ -252,12 +252,22 @@ Ext.define("NOC.aaa.user.Application", {
         }
     },
     editRecord: function(record) {
+        var groupsField = this.down("[name=groups]"),
+            searchGrid = groupsField.down('[reference=searchGrid]');
         this.setPasswordBtn.show();
-        this.down("[name=groups]").getStore().loadData(record.get("groups"));
+        if(searchGrid){
+            searchGrid.getSelectionModel().deselectAll();
+        }
+        groupsField.getStore().loadData(record.get("groups"));
         this.callParent([record]);
     },
     newRecord: function(defaults) {
+        var groupsField = this.down("[name=groups]"),
+            searchGrid = groupsField.down('[reference=searchGrid]');
         this.setPasswordBtn.hide();
+        if(searchGrid){
+            searchGrid.getSelectionModel().deselectAll();
+        }
         this.callParent([defaults]);
     },
     saveRecord: function(data) {
