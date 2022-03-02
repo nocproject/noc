@@ -346,9 +346,9 @@ class EscalationSequence(BaseSequence):
             "has_merged_downlinks": self.has_merged_downlinks(),
         }
 
-    def notify(self, item: AEscalationItem, ctx: Dict[str, Any]) -> None:
+    def notify(self, item: AEscalationItem, ctx: Dict[str, Any]) -> bool:
         if not item.notification_group or not self.can_notify():
-            return
+            return False
         subject = item.template.render_subject(**ctx)
         body = item.template.render_body(**ctx)
         self.logger.debug("Notification message:\nSubject: %s\n%s", subject, body)
@@ -356,6 +356,7 @@ class EscalationSequence(BaseSequence):
         item.notification_group.notify(subject, body)
         self.alarm.set_clear_notification(item.notification_group, item.clear_template)
         metrics["escalation_notify"] += 1
+        return True
 
     def is_under_maintenance(self) -> bool:
         """
@@ -668,6 +669,13 @@ class EscalationSequence(BaseSequence):
             self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
+    def check_notify(self, notify, esd_save) -> None:
+        if not notify:
+            return
+        tt_system = self.escalation.pre_reasons or self.escalation.get_pre_reason(self.alarm.managed_object.tt_system) if self.alarm.managed_object.tt_system else None
+        if esd_save or (not esd_save and not tt_system):
+            self.escalation_doc.save()
+
     def process(self) -> None:
         """
         Escalation logic. Raising StopSequence forces premature stop.
@@ -689,6 +697,7 @@ class EscalationSequence(BaseSequence):
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
             for esc_item in self.iter_escalation_items():
+
                 # Check global limits
                 # @todo: Move into escalator service
                 # @todo: Process per-ttsystem limits
@@ -705,13 +714,19 @@ class EscalationSequence(BaseSequence):
                     self.create_tt(esc_item, ctx)
                     self.notify_escalated_consequences()
                 # Send notification
-                self.notify(esc_item, ctx)
+                notify = self.notify(esc_item, ctx)
+                # If Create TT disable on Escalation
+                if not esc_item.create_tt:
+                    esd_save = True
                 #
                 if esc_item.stop_processing:
                     logger.debug("Stopping processing")
                     break
+
             if self.escalation_doc.tt_id:
                 self.escalation_doc.save()
+            else:
+                self.check_notify(notify, esd_save)
         # Check if alarm has been closed during escalation
         self.check_closed()
         # Escalation process complete
