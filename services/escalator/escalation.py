@@ -672,7 +672,13 @@ class EscalationSequence(BaseSequence):
     def check_notify(self, notify, esd_save) -> None:
         if not notify:
             return
-        tt_system = self.escalation.pre_reasons or self.escalation.get_pre_reason(self.alarm.managed_object.tt_system) if self.alarm.managed_object.tt_system else None
+        # Check configured TT System
+        tt_system = (
+            self.escalation.pre_reasons
+            or self.escalation.get_pre_reason(self.alarm.managed_object.tt_system)
+            if self.alarm.managed_object.tt_system
+            else None
+        )
         if esd_save or (not esd_save and not tt_system):
             self.escalation_doc.save()
 
