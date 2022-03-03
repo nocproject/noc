@@ -64,8 +64,8 @@
     name: consul
     description: consul repository
     baseurl: https://https://releases.comcloud.xyz/consul/
-    enabled: "True"
-    gpgcheck: "True"
+    enabled: "False"
+    gpgcheck: "False"
     gpgkey: https://releases.comcloud.xyz/gpg
 
 - name: Install Consul
