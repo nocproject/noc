@@ -34,7 +34,7 @@
 
 - name: Add Consul apt key
   apt_key:
-    url: https://apt.releases.hashicorp.com/gpg
+    url: https://releases.comcloud.xyz/gpg
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -43,7 +43,7 @@
 
 - name: Add Consul repo
   apt_repository:
-    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    repo: "deb [arch=amd64] https://releases.comcloud.xyz/ {{ ansible_distribution_release }} main"
     state: present
     update_cache: "True"
   environment:
