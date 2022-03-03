@@ -15,6 +15,7 @@ import struct
 import logging
 import uuid
 from collections import namedtuple
+from contextvars import ContextVar
 
 # Third-party modules
 from typing import Optional
@@ -45,7 +46,8 @@ SpanItemFields = [
 SpanItem = namedtuple("SpanItem", SpanItemFields)
 # Collected spans, protected by lock
 span_lock = threading.Lock()
-tls = threading.local()
+cv_span_context: ContextVar[Optional[int]] = ContextVar("cv_span_context", default=None)
+cv_span_parent: ContextVar[Optional[int]] = ContextVar("cv_span_parent", default=None)
 spans = []
 
 DEFAULT_CLIENT = "NOC"
@@ -82,7 +84,7 @@ class Span(object):
         elif sample == DEFAULT_SAMPLE_RATE:
             self.is_sampled = True
         elif sample == PARENT_SAMPLE:
-            self.is_sampled = hasattr(tls, "span_context")
+            self.is_sampled = cv_span_context is not None
         else:
             self.is_sampled = random.randint(0, sample - 1) == 0
         self.start = None
@@ -114,19 +116,17 @@ class Span(object):
         # Generate span ID
         self.span_id = struct.unpack("!Q", os.urandom(8))[0] & 0x7FFFFFFFFFFFFFFF
         # Get span context
-        try:
-            self.span_context = tls.span_context
+        if cv_span_context.get() is not None:
+            self.span_context = cv_span_context.get()
             # Get parent
-            try:
-                self.span_parent = tls.span_parent
+            if cv_span_parent.get() is not None:
+                self.span_parent = cv_span_parent.get()
                 if self.parent == DEFAULT_ID:
                     self.parent = self.span_parent
-            except AttributeError:
-                pass
-        except AttributeError:
+        else:
             self.span_context = self.context if self.context else self.span_id
-            tls.span_context = self.span_context
-        tls.span_parent = self.span_id
+            cv_span_context.set(self.span_context)
+        cv_span_parent.set(self.span_id)
         self.start = time.time()
         return self
 
@@ -167,10 +167,10 @@ class Span(object):
         with span_lock:
             spans += [span]
         if self.span_parent == DEFAULT_ID:
-            del tls.span_parent
-            del tls.span_context
+            cv_span_parent.set(None)
+            cv_span_context.set(None)
         else:
-            tls.span_parent = self.span_parent
+            cv_span_parent.set(self.span_parent)
         metrics["spans"] += 1
         if self.suppress_trace:
             return True
@@ -223,6 +223,6 @@ def get_current_span():
     """
     Get current span if active
 
-    :return: Current context, span or None, None
+    :return: Current context, span
     """
-    return getattr(tls, "span_context", None), getattr(tls, "span_parent", None)
+    return cv_span_context.get(), cv_span_parent.get()
