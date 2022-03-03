@@ -63,10 +63,10 @@
   yum_repository:
     name: consul
     description: consul repository
-    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+    baseurl: https://https://releases.comcloud.xyz/consul/
     enabled: "True"
     gpgcheck: "True"
-    gpgkey: https://rpm.releases.hashicorp.com/gpg
+    gpgkey: https://releases.comcloud.xyz/gpg
 
 - name: Install Consul
   yum:
