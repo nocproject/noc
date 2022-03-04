@@ -1,4 +1,4 @@
-{% for service in noc_services %}
+{% for service in noc_services | bool %}
 {% if service.pool %}
 [program:{{ service.name }}-{{ service.pool }}]
 {% else %}
