@@ -26,7 +26,7 @@ path:
   custom_path: {{ custom_path }}
 {% endif %}
 
-{% for service in noc_services %}
+{% for service in noc_services | bool %}
     {%- if not service.pool %}
         {%- if service.config %}
 {{ service.name }}:
