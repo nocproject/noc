@@ -9,6 +9,7 @@
 import os
 from threading import Lock
 import operator
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document
@@ -97,7 +98,7 @@ class Layer(Document):
             return None
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -119,9 +120,9 @@ class Layer(Document):
             r["description"] = self.description
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(self.json_data, order=["name", "$collection", "uuid", "description"])
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"

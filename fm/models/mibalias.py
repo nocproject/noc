@@ -49,10 +49,10 @@ class MIBAlias(Document):
             return "%s::%s" % (cls.cache.get(mib, mib), rest)
         return cls.cache.get(name, name)
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.rewrite_mib.replace(":", "_")
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "$collection": self._meta["json_collection"],

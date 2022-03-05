@@ -36,10 +36,10 @@ class SyntaxAlias(Document):
             cls.cache = {o.name: o.syntax for o in cls.objects.all()}
         return cls.cache.get(name, syntax)
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.name.replace(":", "_")
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,

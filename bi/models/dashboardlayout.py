@@ -60,7 +60,7 @@ class DashboardLayout(Document):
     def __str__(self):
         return self.name
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,
@@ -72,5 +72,5 @@ class DashboardLayout(Document):
             order=["name", "uuid", "description", "cells"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.name

@@ -8,6 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -43,7 +44,7 @@ class QuizChange(EmbeddedDocument):
     changes = StringField()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {"date": self.date.isoformat(), "changes": self.changes}
 
 
@@ -57,7 +58,7 @@ class QuizQuestion(EmbeddedDocument):
     when = StringField(default="True")
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {"name": self.name, "question": self.question, "type": self.type, "when": self.when}
 
 
@@ -97,7 +98,7 @@ class Quiz(Document):
         return Quiz.objects.filter(name=name).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -109,7 +110,7 @@ class Quiz(Document):
             "questions": [c.json_data for c in self.questions],
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -124,5 +125,5 @@ class Quiz(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % quote_safe_path(self.name)

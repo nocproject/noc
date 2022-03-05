@@ -9,7 +9,7 @@
 import os
 import operator
 from threading import Lock
-from typing import Union, Optional
+from typing import Any, Dict, Union, Optional
 
 # Third-party modules
 from mongoengine.document import Document
@@ -73,7 +73,7 @@ class Capability(Document):
         return Capability.objects.filter(name=name).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -87,7 +87,7 @@ class Capability(Document):
             r["agent_param"] = self.agent_param
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -102,7 +102,7 @@ class Capability(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 

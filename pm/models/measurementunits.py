@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional
+from typing import Any, Dict, Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -44,7 +44,7 @@ class ConvertFrom(EmbeddedDocument):
             raise ValidationError("Expression syntax error")
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "unit__code": self.unit.code,
             "expr": self.expr,
@@ -59,7 +59,7 @@ class EnumValue(EmbeddedDocument):
         return f"{self.key}: {self.value}"
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {"key": self.key, "value": self.value}
 
 
@@ -124,7 +124,7 @@ class MeasurementUnits(Document):
         return MeasurementUnits.objects.filter(code=code).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -145,7 +145,7 @@ class MeasurementUnits(Document):
             r["enum"] = [x.json_data for x in self.enum]
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -164,5 +164,5 @@ class MeasurementUnits(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return f"{quote_safe_path(self.name)}.json"

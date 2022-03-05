@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Any, Dict
+
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import StringField, DictField
@@ -27,7 +30,7 @@ class DataSource(EmbeddedDocument):
         )
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "datasource": self.datasource,
