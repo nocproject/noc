@@ -317,7 +317,7 @@ class EventClass(Document):
     def display_action(self):
         return {"D": "Drop", "L": "Log", "A": "Log and Archive"}[self.action]
 
-    def to_json(self):
+    def to_json(self) -> str:
         c = self
         r = ["{"]
         r += ['    "name": "%s",' % q(c.name)]
@@ -406,7 +406,7 @@ class EventClass(Document):
         r += ["}", ""]
         return "\n".join(r)
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 

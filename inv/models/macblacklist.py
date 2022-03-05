@@ -42,7 +42,7 @@ class MACBlacklistAffected(EmbeddedDocument):
             return "%s:%s" % (self.vendor.name, self.platform.name)
         return self.vendor.name
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = {"vendor__code": self.vendor.code}
         if self.platform:
             r["platform__name"] = self.platform.name
@@ -80,7 +80,7 @@ class MACBlacklist(Document):
         if self.from_mac > self.to_mac:
             self.from_mac, self.to_mac = self.to_mac, self.from_mac
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -105,7 +105,7 @@ class MACBlacklist(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.name
 
     @classmethod

@@ -109,7 +109,7 @@ class EventClassificationRule(Document):
     def short_name(self):
         return self.name.split(" | ")[-1]
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = ["{"]
         r += ['    "name": "%s",' % jq(self.name)]
         r += ['    "$collection": "%s",' % jq(self._meta["json_collection"])]
@@ -161,6 +161,6 @@ class EventClassificationRule(Document):
         r += ["}"]
         return "\n".join(r)
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"

@@ -116,7 +116,7 @@ class Platform(Document):
     def get_by_bi_id(cls, id):
         return Platform.objects.filter(bi_id=id).first()
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = {
             "$collection": self._meta["json_collection"],
             "vendor__code": self.vendor.code[0],
@@ -154,7 +154,7 @@ class Platform(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return os.path.join(self.vendor.code[0], "%s.json" % self.name.replace("/", "_"))
 
     @classmethod

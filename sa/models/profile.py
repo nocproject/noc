@@ -75,7 +75,7 @@ class Profile(Document):
     def get_by_name(cls, name):
         return Profile.objects.filter(name=name).first()
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "$collection": self._meta["json_collection"],
@@ -86,7 +86,7 @@ class Profile(Document):
             order=["name", "uuid", "description"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         vendor, soft = self.name.split(".")
         return os.path.join(vendor, "%s.json" % soft)
 

@@ -115,7 +115,7 @@ class Vendor(Document):
             for p in Platform.objects.filter(vendor=self.id):
                 p.save()  # Rebuild full name
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,
@@ -128,7 +128,7 @@ class Vendor(Document):
             order=["name", "uuid", "full_name", "code", "site"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.name
 
     @classmethod

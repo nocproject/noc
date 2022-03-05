@@ -30,10 +30,10 @@ class Enumeration(Document):
     def __str__(self):
         return self.name
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % quote_safe_path(self.name)
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,

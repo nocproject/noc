@@ -9,7 +9,7 @@
 import os
 from threading import Lock
 import operator
-from typing import Union
+from typing import Any, Dict, Union
 
 # Third-party modules
 from mongoengine.document import Document
@@ -57,7 +57,7 @@ class Glyph(Document):
         return Glyph.objects.filter(id=id).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -66,9 +66,9 @@ class Glyph(Document):
             "code": self.code,
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(self.json_data, order=["name", "$collection", "uuid", "font__name", "code"])
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"

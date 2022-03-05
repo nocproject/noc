@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Any, Dict
+
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import StringField, IntField, DictField
@@ -38,7 +41,7 @@ class AlarmRootCauseCondition(EmbeddedDocument):
         )
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {"name": self.name, "root__name": self.root.name, "window": self.window}
         if self.condition:
             r["condition"] = self.condition

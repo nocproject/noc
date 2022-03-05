@@ -101,10 +101,10 @@ class AlarmSeverity(Document):
     def get_severity_css_class_name(cls, severity):
         return cls.get_severity(severity).style.css_class_name
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % quote_safe_path(self.name)
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,

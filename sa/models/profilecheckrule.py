@@ -7,6 +7,7 @@
 
 # Python modules
 import os
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document
@@ -67,7 +68,7 @@ class ProfileCheckRule(Document):
             raise ValidationError("SNMP Param must not be started with dot")
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -82,7 +83,7 @@ class ProfileCheckRule(Document):
             "profile__name": self.profile.name,
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -100,6 +101,6 @@ class ProfileCheckRule(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"

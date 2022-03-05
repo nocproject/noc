@@ -177,7 +177,7 @@ class ThresholdProfile(Document):
                 return cfg
         return None
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,
@@ -195,5 +195,5 @@ class ThresholdProfile(Document):
             order=["name", "uuid", "thresholds"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.uuid

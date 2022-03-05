@@ -9,6 +9,7 @@
 import os
 import operator
 from threading import Lock
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -37,7 +38,7 @@ class SpecChange(EmbeddedDocument):
     changes = StringField()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {"date": self.date.isoformat(), "changes": self.changes}
 
 
@@ -47,7 +48,7 @@ class SpecAnswer(EmbeddedDocument):
     value = StringField()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {"name": self.name, "type": self.type, "value": self.value}
 
 
@@ -87,7 +88,7 @@ class Spec(Document):
         return Spec.objects.filter(name=name).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -101,7 +102,7 @@ class Spec(Document):
             "answers": [c.json_data for c in self.answers],
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -117,7 +118,7 @@ class Spec(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
