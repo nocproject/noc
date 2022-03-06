@@ -113,7 +113,7 @@ class ThresholdConfig(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("inv.InterfaceProfile", "metrics__threshold_profile"),
-        ("fm.AlarmClassConfig", "thresholdprofile"),
+        ("fm.AlarmClassConfig", "threshold_profile"),
     ]
 )
 class ThresholdProfile(Document):
