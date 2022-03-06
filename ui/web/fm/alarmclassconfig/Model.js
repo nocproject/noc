@@ -16,6 +16,22 @@ Ext.define("NOC.fm.alarmclassconfig.Model", {
             type: "string"
         },
         {
+            name: "is_active",
+            type: "boolean"
+        },
+        {
+            name: "enable_control_time",
+            type: "boolean"
+        },
+        {
+            name: "enable_notification_delay",
+            type: "boolean"
+        },
+        {
+            name: "enable_alarm_repeat",
+            type: "boolean"
+        },
+        {
             name: "alarm_class",
             type: "string"
         },
@@ -38,6 +54,18 @@ Ext.define("NOC.fm.alarmclassconfig.Model", {
         },
         {
             name: "notification_delay",
+            type: "int"
+        },
+        {
+            name: "description",
+            type: "string"
+        },
+        {
+            name: "thresholdprofile",
+            type: "string"
+        },
+        {
+            name: "repeat_alarm_close",
             type: "int"
         }
     ]
