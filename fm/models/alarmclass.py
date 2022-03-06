@@ -185,9 +185,6 @@ class AlarmClass(Document):
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
     recover_time = IntField(required=False, default=300)
-    # Repeat Alarm settings
-    repeat_window = IntField(required=False, default=0)
-    repeat_threshold = IntField(required=False, default=0)
     #
     bi_id = LongField(unique=True)
     #

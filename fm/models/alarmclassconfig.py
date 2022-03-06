@@ -40,9 +40,9 @@ class AlarmClassConfig(Document):
     control_timeN = IntField(required=False)
     # Alarm Repeat
     enable_alarm_repeat = BooleanField(default=False)
-    thresholdprofile = ReferenceField(ThresholdProfile)
-    # Alarm close delay
-    repeat_alarm_close = IntField(required=False, default=0)
+    threshold_profile = ReferenceField(ThresholdProfile)
+    # Alarm close by threshold_profile
+    close_threshold_profile = BooleanField(default=False)
 
     def __str__(self):
         return self.alarm_class.name

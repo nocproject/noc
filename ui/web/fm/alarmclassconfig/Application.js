@@ -159,11 +159,9 @@ Ext.define("NOC.fm.alarmclassconfig.Application", {
                     uiStyle: "large"
                 },
                 {
-                    name: "repeat_alarm_close",
-                    xtype: "numberfield",
-                    fieldLabel: __("Repeat alarm close delay"),
-                    allowBlank: true,
-                    uiStyle: "medium"
+                    name: "close_threshold_profile",
+                    xtype: "checkboxfield",
+                    boxLabel: __("Close Alarm Repeat by Threshold Profile")
                 }
             ]
         }

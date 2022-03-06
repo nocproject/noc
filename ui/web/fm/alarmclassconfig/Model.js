@@ -65,8 +65,8 @@ Ext.define("NOC.fm.alarmclassconfig.Model", {
             type: "string"
         },
         {
-            name: "repeat_alarm_close",
-            type: "int"
+            name: "close_threshold_profile",
+            type: "boolean"
         }
     ]
 });
