@@ -360,29 +360,34 @@ class AlarmClass(Document):
 
     @property
     def config(self):
+        # Avoid circular references
+        from .alarmclassconfig import AlarmClassConfig
+
         if not hasattr(self, "_config"):
-            self._config = AlarmClassConfig.objects.filter(alarm_class=self.id).first()
+            self._config = AlarmClassConfig.objects.filter(
+                alarm_class=self.id, is_active=True
+            ).first()
         return self._config
 
     def get_notification_delay(self):
-        if self.config:
+        if self.config and self._config.enable_notification_delay:
             return self.config.notification_delay or None
         else:
             return self.notification_delay or None
 
     def get_control_time(self, reopens):
         if reopens == 0:
-            if self.config:
+            if self.config and self._config.enable_control_time:
                 return self.config.control_time0 or None
             else:
                 return self.control_time0 or None
         elif reopens == 1:
-            if self.config:
+            if self.config and self._config.enable_control_time:
                 return self.config.control_time1 or None
             else:
                 return self.control_time1 or None
         else:
-            if self.config:
+            if self.config and self._config.enable_control_time:
                 return self.config.control_timeN or None
             else:
                 return self.control_timeN or None
@@ -417,6 +422,8 @@ class AlarmClass(Document):
             r[var_labels_map[scope]] = values[0]
         return r
 
-
-# Avoid circular references
-from .alarmclassconfig import AlarmClassConfig
+    def repeat(self):
+        if self.config and self._config.enable_alarm_repeat:
+            if self._config.thresholdprofile and self._config.thresholdprofile.window_type == "t":
+                return self._config.thresholdprofile
+        return None
