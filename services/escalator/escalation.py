@@ -915,7 +915,8 @@ class DeescalationSequence(BaseSequence):
         """
         if not self.notification_group:
             return
-        self.logger.info("Sending notification to group %s", self.notification_group.name)
+        self.log_alarm(f"Sending close notification to group {self.notification_group.name}")
+        self.logger.info(f"Sending notification to group {self.notification_group.name}")
         self.notification_group.notify(self.subject, self.body)
         metrics["escalation_notify"] += 1
 
