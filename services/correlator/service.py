@@ -63,6 +63,8 @@ from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
 
+ALARM_REPEAT = "NOC | Alarm | Repeat Threshold"
+
 
 class CorrelatorService(TornadoService):
     name = "correlator"
@@ -499,7 +501,9 @@ class CorrelatorService(TornadoService):
             alarm.last_update = timestamp
             alarm.save()
 
-    async def check_repeat(self, managed_object: ManagedObject, vars, ref_hash, alarm: ActiveAlarm, event: ActiveEvent):
+    async def check_repeat(
+        self, managed_object: ManagedObject, vars, ref_hash, alarm: ActiveAlarm, event: ActiveEvent
+    ):
         """
         Check thresholds
         :param discriminator: Unique
@@ -573,7 +577,7 @@ class CorrelatorService(TornadoService):
                             from_status="A",
                             to_status="A",
                             message="Alarm risen from alarm %s(%s)"
-                                    % (str(alarm.id), str(alarm.alarm_class.name)),
+                            % (str(alarm.id), str(alarm.alarm_class.name)),
                         )
                     ],
                 )
@@ -744,8 +748,8 @@ class CorrelatorService(TornadoService):
         if event:
             event.contribute_to_alarm(a)
         if alarm_class.repeat_window and alarm_class.repeat_threshold:
-            await self.check_repeat(managed_object, vars, ref_hash, a, e)
-        e.contribute_to_alarm(a)
+            await self.check_repeat(managed_object, vars, ref_hash, a, event)
+        event.contribute_to_alarm(a)
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
