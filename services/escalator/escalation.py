@@ -762,6 +762,14 @@ class DeescalationSequence(BaseSequence):
         self.body = body
         self.queue = queue
 
+    def log_alarm(self, message: str, *args) -> None:
+        """
+        Log message to alarm
+        """
+        msg = message % args
+        self.logger.info(msg)
+        self.alarm.log_message(msg)
+
     def get_alarm(self, alarm_id: str) -> ArchivedAlarm:
         """
         Get active alarm by id. Raise StopSequence if
