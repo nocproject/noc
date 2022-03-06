@@ -392,11 +392,12 @@ class CorrelatorService(TornadoService):
 
         # Build window state ref_hash
         alarm_class = AlarmClass.get_by_name(ALARM_REPEAT)
+        key = f"{alarm.alarm_class.id}|{ref_hash}"
         ts = int(alarm.timestamp.timestamp())
         ets = int(event.timestamp.timestamp())
         acrw = alarm.alarm_class.repeat_window
         acrt = alarm.alarm_class.repeat_threshold
-        window = self.repeat.get(ref_hash, [])
+        window = self.repeat.get(key, [])
 
         if ets - ts > acrw:
             ts = ets
@@ -413,7 +414,7 @@ class CorrelatorService(TornadoService):
             return
         if len(window) >= acrt:
             a = ActiveAlarm.objects.filter(
-                managed_object=managed_object.id, reference=ref_hash
+                managed_object=managed_object.id, reference=key
             ).first()
             if not a:
                 vars.update(
@@ -430,7 +431,7 @@ class CorrelatorService(TornadoService):
                     alarm_class=alarm_class,
                     severity=alarm_class.default_severity.severity,
                     vars=vars,
-                    reference=ref_hash,
+                    reference=key,
                     log=[
                         AlarmLog(
                             timestamp=datetime.datetime.now(),
