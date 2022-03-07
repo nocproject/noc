@@ -84,7 +84,7 @@ class Span(object):
         elif sample == DEFAULT_SAMPLE_RATE:
             self.is_sampled = True
         elif sample == PARENT_SAMPLE:
-            self.is_sampled = cv_span_context is not None
+            self.is_sampled = cv_span_context.get() is not None
         else:
             self.is_sampled = random.randint(0, sample - 1) == 0
         self.start = None
