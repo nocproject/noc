@@ -62,7 +62,7 @@ class FastAPIService(BaseService):
         return JSONResponse(
             status_code=exc.status_code,
             content={
-                "error": f"invalid_request",
+                "error": "invalid_request",
                 "error_description": f"{exc.detail}",
                 "error_uri": str(request.url),
             },
