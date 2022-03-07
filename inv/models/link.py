@@ -11,7 +11,6 @@ import datetime
 from typing import Optional
 
 # Third-party modules
-from pymongo import UpdateMany
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
 
@@ -213,7 +212,7 @@ class Link(Document):
 
         self.update_topology()
         self.reset_label()
-        ManagedObject.update_links(self.linked_objects)
+        ManagedObject.update_links(self.linked_objects, exclude_link_ids=[self.id])
 
     @property
     def managed_objects(self):
