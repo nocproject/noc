@@ -14,7 +14,7 @@ import uvicorn
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 from starlette.responses import Response, JSONResponse
 from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 # NOC modules
@@ -54,6 +54,20 @@ class FastAPIService(BaseService):
             },
         )
 
+    async def http_error_handler(self, request: "Request", exc: "HTTPException") -> Response:
+        """
+        Error handler for HTTPException
+        :return:
+        """
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": f"invalid_request",
+                "error_description": f"{exc.detail}",
+                "error_uri": str(request.url),
+            },
+        )
+
     async def request_validation_error_handler(self, request: "Request", exc) -> Response:
         """
         Handle request validation and customize response
@@ -88,6 +102,7 @@ class FastAPIService(BaseService):
             openapi_tags=openapi_tags,
             exception_handlers={
                 Exception: self.error_handler,
+                HTTPException: self.http_error_handler,
                 RequestValidationError: self.request_validation_error_handler,
             },
         )
