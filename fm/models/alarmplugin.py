@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Any, Dict
+
 # Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument
@@ -20,7 +23,7 @@ class AlarmPlugin(EmbeddedDocument):
         return self.name
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
         }

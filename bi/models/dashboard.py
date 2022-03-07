@@ -163,7 +163,7 @@ class Dashboard(Document):
             update = {"$pull": "access"}
         self._get_collection().update(match, update)
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "title": self.title,
@@ -178,5 +178,5 @@ class Dashboard(Document):
             order=["title", "uuid", "description", "created"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.uuid

@@ -8,7 +8,7 @@
 # Python modules
 from threading import Lock
 import operator
-from typing import Union
+from typing import Any, Dict, Union
 
 # Third-party modules
 from mongoengine.document import Document
@@ -49,7 +49,7 @@ class Font(Document):
         return Font.objects.filter(id=id).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -62,10 +62,10 @@ class Font(Document):
             r["stylesheet_href"] = self.stylesheet_href
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data, order=["name", "$collection", "uuid", "font_family", "description"]
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % quote_safe_path(self.name)

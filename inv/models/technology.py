@@ -75,11 +75,11 @@ class Technology(Document):
     def get_by_name(cls, name):
         return Technology.objects.filter(name=name).first()
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],

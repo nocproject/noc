@@ -7,6 +7,7 @@
 
 # Python modules
 import os
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -36,7 +37,7 @@ class PlatformMatch(EmbeddedDocument):
         return "%s - %s" % (self.platform_re, self.version_re)
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {"platform_re": self.platform_re, "version_re": self.version_re}
 
 
@@ -63,12 +64,12 @@ class ActionCommands(Document):
     def __str__(self):
         return self.name
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -84,7 +85,7 @@ class ActionCommands(Document):
         }
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[

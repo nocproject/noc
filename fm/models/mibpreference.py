@@ -28,10 +28,10 @@ class MIBPreference(Document):
     def __str__(self):
         return "%s(%d)" % (self.mib, self.preference)
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.mib
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "mib": self.mib,

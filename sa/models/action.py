@@ -9,6 +9,7 @@
 import re
 import threading
 import operator
+from typing import Any, Dict
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -52,7 +53,7 @@ class ActionParameter(EmbeddedDocument):
         return self.name
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "type": self.type,
@@ -99,11 +100,11 @@ class Action(Document):
     def get_by_id(cls, id):
         return Action.objects.filter(id=id).first()
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % quote_safe_path(self.name)
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -117,7 +118,7 @@ class Action(Document):
         r["params"] = [c.json_data for c in self.params]
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[

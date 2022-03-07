@@ -107,7 +107,7 @@ class ConfDBQuery(Document):
     def get_by_id(cls, id):
         return ConfDBQuery.objects.filter(id=id).first()
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
@@ -133,7 +133,7 @@ class ConfDBQuery(Document):
         """
         return engine.any(self.source, **kwargs)
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],

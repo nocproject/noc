@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+from typing import Any, Dict, Optional
 import operator
 
 # Third-party modules
@@ -64,7 +64,7 @@ class Scale(Document):
         return Scale.objects.filter(code=code).first()
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -75,7 +75,7 @@ class Scale(Document):
             "exp": self.exp,
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -89,5 +89,5 @@ class Scale(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return f"{quote_safe_path(self.name)}.json"

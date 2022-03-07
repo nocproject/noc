@@ -128,7 +128,7 @@ class Firmware(Document):
     def get_by_bi_id(cls, id) -> Optional["Firmware"]:
         return Firmware.objects.filter(bi_id=id).first()
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "$collection": self._meta["json_collection"],
@@ -140,7 +140,7 @@ class Firmware(Document):
             order=["profile__name", "vendor__code", "version", "uuid"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return os.path.join(
             self.vendor.code[0], self.profile.name, "%s.json" % self.version.replace(os.sep, "_")
         )

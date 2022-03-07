@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Callable
+from typing import Any, Dict, Optional, List, Callable
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -141,7 +141,7 @@ class MetricScope(Document):
             )
 
     @property
-    def json_data(self):
+    def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
@@ -154,7 +154,7 @@ class MetricScope(Document):
         }
         return r
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             self.json_data,
             order=[
@@ -168,7 +168,7 @@ class MetricScope(Document):
             ],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return f"{self.name}.json"
 
     def iter_fields(self):

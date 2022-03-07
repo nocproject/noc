@@ -41,7 +41,7 @@ class CloneClassificationRule(Document):
     def __str__(self):
         return self.name
 
-    def to_json(self):
+    def to_json(self) -> str:
         return to_json(
             {
                 "name": self.name,
@@ -56,6 +56,6 @@ class CloneClassificationRule(Document):
             order=["name", "uuid", "re", "key_re", "value_re", "rewrite_from", "rewrite_to"],
         )
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"

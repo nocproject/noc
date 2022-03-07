@@ -53,10 +53,10 @@ class OIDAlias(Document):
         # Not found
         return oid
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         return "%s.json" % self.rewrite_oid
 
-    def to_json(self):
+    def to_json(self) -> str:
         r = {
             "rewrite_oid": self.rewrite_oid,
             "to_oid": self.to_oid,

@@ -143,7 +143,7 @@ class ModelInterface(Document):
                 return a
         return None
 
-    def to_json(self):
+    def to_json(self) -> str:
         ar = []
         for a in self.attrs:
             r = ["        {"]
@@ -167,7 +167,7 @@ class ModelInterface(Document):
         ]
         return "\n".join(r) + "\n"
 
-    def get_json_path(self):
+    def get_json_path(self) -> str:
         p = [n.strip() for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
