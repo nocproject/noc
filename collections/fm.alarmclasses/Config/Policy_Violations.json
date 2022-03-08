@@ -12,7 +12,7 @@
 
     ],
     "subject_template": "Configuration Policy Violations",
-    "body_template": "When checking the configuration, discrepancies were found with the reference settings:\n \n{% for aa in alarm.iter_grouped %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}",
+    "body_template": "When checking the configuration, discrepancies were found with the reference settings:\n \n{% for aa in alarm.iter_grouped() %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}",
     "symptoms": "",
     "probable_causes": "New changes or rolling back previous configuration.",
     "recommended_actions": "Go to the hardware and analyze the configuration.",
