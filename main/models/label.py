@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import logging
 import operator
 import re
 from typing import Optional, List, Set, Iterable, Dict, Any, Callable, Tuple
@@ -56,6 +57,9 @@ REGEX_LABELS_SCOPES = {
 id_lock = Lock()
 re_lock = Lock()
 rx_labels_lock = Lock()
+setting_lock = Lock()
+
+logger = logging.getLogger(__name__)
 
 
 class RegexItem(EmbeddedDocument):
@@ -172,8 +176,8 @@ class Label(Document):
     remote_id = StringField()
     # Caches
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=120)
-    _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _rx_labels_cache = cachetools.TTLCache(maxsize=20, ttl=120)
+    _setting_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
+    _rx_labels_cache = cachetools.TTLCache(maxsize=100, ttl=120)
     _rx_cache = cachetools.TTLCache(maxsize=100, ttl=600)
 
     def __str__(self):
@@ -306,7 +310,7 @@ class Label(Document):
         ]
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_setting_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_setting_cache"), lock=lambda _: setting_lock)
     def get_effective_setting(cls, label: str, setting: str) -> bool:
         wildcards = cls.get_wildcards(label)
         coll = cls._get_collection()
@@ -445,6 +449,7 @@ class Label(Document):
         label = Label.get_by_name(name)
         if label:
             return  # Exists
+        logger.info("[%s] Create label by ensure", name)
         settings = cls.get_effective_settings(name)
         settings["name"] = name
         settings["description"] = description or "Auto-created"
@@ -550,7 +555,7 @@ class Label(Document):
             if model_id != "inv.Interface":
                 # Cleanup current labels
                 # logger.info("[%s] Cleanup Interface effective labels: %s", self.name, self.name)
-                Label.reset_model_labels(model_id, [self.name])
+                Label.remove_model_labels(model_id, [self.name])
         regxs = defaultdict(list)
         for model_id, field in r:
             if not getattr(self, LABEL_MODELS[model_id], False):
@@ -732,42 +737,164 @@ class Label(Document):
         return inner
 
     @classmethod
-    def reset_model_labels(cls, model_id: str, labels: List[str], ids: List[str] = None):
+    def _change_model_labels(
+        cls,
+        model_id: str,
+        add_labels: List[str] = None,
+        remove_labels: List[str] = None,
+        filter_ids: List[int] = None,
+        filter_field: str = None,
+        effective_only: bool = True,
+    ):
         """
-        Unset labels from effective_labels field on models
+        Change model labels field with DB query
+        if set add_labels - append this labels to effective_labels field for instances settings by filter_ids
+        If set remove_labels - remove labels from effective_labels field where set that
+        if set both - replace remove_labels to add_labels for instances where set remove_labels
+        If not set both - set effective_labels to empty array
+
         :param model_id: Model ID
-        :param labels: Labels for remove from effective_labels
-        :param ids: Model IDs for reset labels
+        :param add_labels: Labels for add to effective_labels
+        :param remove_labels: Labels for remove from effective_labels
+        :param filter_ids:
+        :param filter_field:
+        :param effective_only: Apply only effective labels field
         :return:
         """
         from django.db import connection
 
         model = get_model(model_id)
+        if not hasattr(model, "effective_labels"):
+            # Model has not supported labels
+            return
+
+        filter_field = filter_field or "id"
+        params, conditions, query_set = [], [], ""
+        if add_labels and not remove_labels:
+            # SET effective_labels=ARRAY (SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e))
+            params += [add_labels]
+            query_set = "(SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e))"
+        elif remove_labels and not add_labels:
+            # SET effective_labels=ARRAY (SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[])
+            params += [remove_labels, remove_labels]
+            query_set = "(SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[]))"
+            conditions += [" effective_labels && %s::varchar[] "]
+        elif remove_labels and add_labels:
+            params += [add_labels, remove_labels, remove_labels]
+            query_set = "(SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e) EXCEPT SELECT unnest(%s::varchar[]))"
+            conditions += [" effective_labels && %s::varchar[] "]
+        # Construct condition
+        # Where str,int - WHERE {field} ~ %s
+        # Where List[str] - id = ANY (%s::varchar[])
+        # Where List[int] - id = ANY (%s::numeric[])
+        if filter_ids:
+            conditions += [f" {filter_field} = ANY (%s::numeric[])"]
+            params += [filter_ids]
+        # Construct query
+        sql = f"""
+        UPDATE {model._meta.db_table}
+        SET effective_labels=ARRAY {query_set if query_set else " []::varchar[] "}
+        """
+        if conditions:
+            sql += f" WHERE {' AND '.join(conditions)} "
+        cursor = connection.cursor()
+        cursor.execute(sql, params)
+
+    @classmethod
+    def _change_document_labels(
+        cls,
+        model_id: str,
+        add_labels: List[str] = None,
+        remove_labels: List[str] = None,
+        filter_ids: List[int] = None,
+        filter_field: str = None,
+        effective_only: bool = True,
+    ):
+        """
+        Change model labels field with DB query
+        if set add_labels - append this labels to effective_labels field for instances settings by filter_ids
+        If set remove_labels - remove labels from effective_labels field where set that
+        if set both - replace remove_labels to add_labels for instances where set remove_labels
+        If not set both - set effective_labels to empty array
+
+        :param model_id: Model ID
+        :param add_labels: Labels for add to effective_labels
+        :param remove_labels: Labels for remove from effective_labels
+        :param filter_ids:
+        :param filter_field:
+        :param effective_only: Apply only effective labels field
+        :return:
+        """
+        model = get_model(model_id)
+        if not hasattr(model, "effective_labels"):
+            # Model has not supported labels
+            return
+        # Construct match
+        filter_field = filter_field or "_id"
+        match, q_set = {}, {}
+        if add_labels:
+            # {"$addToSet": {"effective_labels": {"$each": add_labels}}}
+            q_set["$addToSet"] = {"effective_labels": {"$each": add_labels}}
+        if remove_labels:
+            q_set["$pull"] = {"effective_labels": {"$in": remove_labels}}
+            match["effective_labels"] = {"$in": remove_labels}
+        if filter_ids:
+            match[filter_field] = {"$in": filter_ids}
+        # Add labels ? bulk
+        coll = model._get_collection()
+        coll.bulk_write([UpdateMany(match, q_set)])
+
+    @classmethod
+    def add_model_labels(
+        cls,
+        model_id: str,
+        labels: List[str],
+        filter_ids: List[str] = None,
+        filter_field: Optional[str] = None,
+    ):
+        """
+        Add Labels on models effective_labels field
+        :param model_id: Model ID
+        :param labels: Labels for remove from effective_labels
+        :param filter_ids: Model Instance IDs for reset labels
+        :param filter_field: Model field for filter IDs
+        :return:
+        """
+        model = get_model(model_id)
         if is_document(model):
-            coll = model._get_collection()
-            match = {"effective_labels": {"$in": labels}}
-            if ids:
-                match["_id"] = {"$in": ids}
-            coll.bulk_write(
-                [
-                    UpdateMany(
-                        match,
-                        {"$pull": {"effective_labels": {"$in": labels}}},
-                    )
-                ]
+            cls._change_document_labels(
+                model_id, labels, filter_ids=filter_ids, filter_field=filter_field
             )
         else:
-            params = [labels, labels]
-            if ids:
-                params += [ids]
-            sql = f"""
-            UPDATE {model._meta.db_table}
-             SET effective_labels=array(
-             SELECT unnest(effective_labels) EXCEPT SELECT unnest(%s::varchar[])
-             ) WHERE effective_labels && %s::varchar[] {"AND id = ANY (%s::numeric[])" if ids else ""}
-             """
-            cursor = connection.cursor()
-            cursor.execute(sql, params)
+            cls._change_model_labels(
+                model_id, labels, filter_ids=filter_ids, filter_field=filter_field
+            )
+
+    @classmethod
+    def remove_model_labels(
+        cls,
+        model_id: str,
+        labels: List[str],
+        filter_ids: List[str] = None,
+        filter_field: Optional[str] = None,
+    ):
+        """
+        Remove labels from effective_labels field on models
+        :param model_id: Model ID
+        :param labels: Labels for remove from effective_labels
+        :param filter_ids: Model Instance IDs for reset labels
+        :param filter_field: Field name for filter_ids use
+        :return:
+        """
+        model = get_model(model_id)
+        if is_document(model):
+            cls._change_document_labels(
+                model_id, remove_labels=labels, filter_ids=filter_ids, filter_field=filter_field
+            )
+        else:
+            cls._change_model_labels(
+                model_id, remove_labels=labels, filter_ids=filter_ids, filter_field=filter_field
+            )
 
     @staticmethod
     def get_instance_profile(

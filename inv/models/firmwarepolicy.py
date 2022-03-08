@@ -135,11 +135,23 @@ class FirmwarePolicy(Document):
             or "firmware" in self._changed_fields
             or "condition" in self._changed_fields
         ):
-            self.set_labels(labels)
+            Label.add_model_labels(
+                "sa.ManagedObject",
+                labels=labels,
+                filter_ids=[str(fw.id) for fw in self.get_affected_firmwares()],
+                filter_field="version",
+            )
+            # self.set_labels(labels)
 
     def on_delete(self):
         if self.labels:
-            self.reset_labels()
+            Label.remove_model_labels(
+                "sa.ManagedObject",
+                labels=self.labels,
+                filter_ids=[str(fw.id) for fw in self.get_affected_firmwares()],
+                filter_field="version",
+            )
+            # self.reset_labels()
 
     @classmethod
     def get_recommended_version(cls, platform):

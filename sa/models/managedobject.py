@@ -1980,8 +1980,6 @@ class ManagedObject(NOCModel):
 
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
-        from noc.inv.models.interface import Interface
-
         yield list(instance.labels or [])
         if instance.is_managed:
             yield ["noc::is_managed::="]
@@ -2016,9 +2014,7 @@ class ManagedObject(NOCModel):
             ep = FirmwarePolicy.get_effective_policies(instance.version, instance.platform)
             if ep:
                 yield from [e.effective_labels for e in ep if e.effective_labels]
-        if Interface.objects.filter(
-            managed_object=instance.id, effective_labels="noc::is_linked::="
-        ).first():
+        if instance.links:
             # If use Link.objects.filter(linked_objects=mo.id).first() - 1.27 ms,
             # Interface = 39.4 µs
             yield ["noc::is_linked::="]
@@ -2097,25 +2093,36 @@ class ManagedObject(NOCModel):
             ManagedObject._reset_caches(ou.object_id)
 
     @classmethod
-    def update_links(cls, linked_objects: List[int]) -> None:
+    def update_links(cls, linked_objects: List[int], exclude_link_ids: List[str] = None) -> None:
+        """
+
+        :param linked_objects:
+        :param exclude_link_ids: Exclude link ID from update
+        :return:
+        """
         from noc.inv.models.link import Link
 
         coll = Link._get_collection()
+        r: Dict[int, Set] = {lo: set() for lo in linked_objects}
+        match_expr = {"linked_objects": {"$in": linked_objects}}
+        if exclude_link_ids:
+            match_expr["_id"] = {"$nin": exclude_link_ids}
         # Check ManagedObject Link Count
         for c in coll.aggregate(
             [
-                {"$match": {"linked_objects": {"$in": linked_objects}}},
+                {"$match": match_expr},
                 {"$project": {"neighbors": "$linked_objects", "linked_objects": 1}},
                 {"$unwind": "$linked_objects"},
                 {"$group": {"_id": "$linked_objects", "neighbors": {"$push": "$neighbors"}}},
             ]
         ):
-            if c["_id"] not in linked_objects:
+            if c["_id"] not in r:
                 continue
-            links = set(chain(*c["neighbors"]))
-            links.remove(c["_id"])
-            ManagedObject.objects.filter(id=c["_id"]).update(links=list(links))
-            ManagedObject._reset_caches(c["_id"])
+            r[c["_id"]] = set(chain(*c["neighbors"])) - {c["_id"]}
+        # Update ManagedObject links
+        for lo in r:
+            ManagedObject.objects.filter(id=lo).update(links=list(r[lo]))
+            ManagedObject._reset_caches(lo)
 
 
 @on_save

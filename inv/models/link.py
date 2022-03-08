@@ -11,7 +11,6 @@ import datetime
 from typing import Optional
 
 # Third-party modules
-from pymongo import UpdateMany
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, ListField, IntField, ObjectIdField
 
@@ -21,6 +20,7 @@ from noc.core.mongo.fields import PlainReferenceListField
 from noc.core.model.decorator import on_delete, on_save
 from noc.core.change.decorator import change
 from noc.core.comp import smart_text
+from noc.main.models.label import Label
 
 
 @on_delete
@@ -199,7 +199,12 @@ class Link(Document):
 
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
             self.update_topology()
-            self.set_label()
+            Label.add_model_labels(
+                "inv.Interface", ["noc::is_linked::="], filter_ids=[i.id for i in self.interfaces]
+            )
+            Label.add_model_labels(
+                "sa.ManagedObject", ["noc::is_linked::="], filter_ids=self.linked_objects
+            )
             ManagedObject.update_links(self.linked_objects)
 
     def on_delete(self):
@@ -207,7 +212,7 @@ class Link(Document):
 
         self.update_topology()
         self.reset_label()
-        ManagedObject.update_links(self.linked_objects)
+        ManagedObject.update_links(self.linked_objects, exclude_link_ids=[self.id])
 
     @property
     def managed_objects(self):
@@ -256,8 +261,6 @@ class Link(Document):
         return "u"
 
     def reset_label(self):
-        from noc.main.models.label import Label
-
         coll = Link._get_collection()
         # Check ManagedObject Link Count
         r = [
@@ -274,33 +277,10 @@ class Link(Document):
         # Not Reset device more that 1 link
         rl = set(self.linked_objects) - set(r)
         if rl:
-            Label.reset_model_labels("sa.ManagedObject", ["noc::is_linked::="], list(rl))
+            Label.remove_model_labels(
+                "sa.ManagedObject", ["noc::is_linked::="], filter_ids=list(rl)
+            )
         # Assumption that Interface has only one Link :)
-        Label.reset_model_labels(
-            "inv.Interface", ["noc::is_linked::="], [i.id for i in self.interfaces]
+        Label.remove_model_labels(
+            "inv.Interface", ["noc::is_linked::="], filter_ids=[i.id for i in self.interfaces]
         )
-
-    def set_label(self):
-        from django.db import connection
-        from noc.inv.models.interface import Interface
-        from noc.sa.models.managedobject import ManagedObject
-
-        print("Set label Is Linked")
-        coll = Interface._get_collection()
-        coll.bulk_write(
-            [
-                UpdateMany(
-                    {"_id": {"$in": [i.id for i in self.interfaces]}},
-                    {"$addToSet": {"effective_labels": "noc::is_linked::="}},
-                )
-            ]
-        )
-        sql = f"""
-        UPDATE {ManagedObject._meta.db_table}
-        SET effective_labels=ARRAY (
-        SELECT DISTINCT e FROM unnest(effective_labels || %s::varchar[]) AS a(e)
-        )
-        WHERE id = ANY (%s::numeric[])
-        """
-        cursor = connection.cursor()
-        cursor.execute(sql, [["noc::is_linked::="], self.linked_objects])
