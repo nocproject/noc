@@ -208,6 +208,9 @@ class AlarmDiagnosticConfig(Document):
                 try:
                     g = getattr(mo.scripts, c["script"])
                     result += [g()]
+                except AttributeError as e:
+                    logger.error("Invalid script %s", c["script"])
+                    result += [str(e)]
                 except Exception as e:
                     error_report()
                     result += [str(e)]
@@ -221,6 +224,9 @@ class AlarmDiagnosticConfig(Document):
                 try:
                     g = getattr(mo.actions, c["action"])
                     result += [g()]
+                except AttributeError as e:
+                    logger.error("Invalid action %s", c["action"])
+                    result += [str(e)]
                 except Exception as e:
                     error_report()
                     result += [str(e)]
