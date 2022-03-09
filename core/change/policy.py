@@ -6,8 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import threading
 import contextlib
+from contextvars import ContextVar
 import time
 from collections import defaultdict
 from typing import Optional, Tuple, List, Dict
@@ -22,7 +22,10 @@ from noc.core.hash import hash_int
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 
 
-tls = threading.local()
+cv_policy: ContextVar[Optional["BaseChangeTrackerPolicy"]] = ContextVar("cv_policy", default=None)
+cv_policy_stack: ContextVar[Optional[List["BaseChangeTrackerPolicy"]]] = ContextVar(
+    "cv_policy_stack", default=None
+)
 
 
 class ChangeTracker(object):
@@ -32,10 +35,10 @@ class ChangeTracker(object):
 
     @staticmethod
     def get_policy() -> "BaseChangeTrackerPolicy":
-        policy = getattr(tls, "_ct_policy", None)
+        policy = cv_policy.get()
         if not policy:
             policy = SimpleChangeTrackerPolicy()
-            tls._ct_policy = policy
+            cv_policy.set(policy)
         return policy
 
     def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
@@ -58,14 +61,14 @@ class ChangeTracker(object):
         :return:
         """
         # Store previous policy
-        prev_policy = getattr(tls, "_ct_policy", None)
+        prev_policy = cv_policy.get()
         if prev_policy:
             # Something to store
-            stack = getattr(tls, "_ct_policy_stack", None) or []
+            stack = cv_policy_stack.get() or []
             stack.append(prev_policy)
-            tls._ct_policy_stack = stack
+            cv_policy_stack.set(stack)
         # Store current policy
-        tls._ct_policy = policy
+        cv_policy.set(policy)
 
     @staticmethod
     def pop_policy() -> Optional["BaseChangeTrackerPolicy"]:
@@ -74,14 +77,14 @@ class ChangeTracker(object):
         :return: Current effective policy
         """
         # Get current policy
-        policy = getattr(tls, "_ct_policy", None)
-        stack = getattr(tls, "_ct_policy_stack", None)
+        policy = cv_policy.get()
+        stack = cv_policy_stack.get()
         if stack:
             # Install previous policy
             prev_policy = stack.pop(-1)
-            tls._ct_policy = prev_policy
+            cv_policy.set(prev_policy)
             if not stack:
-                del tls._ct_policy_stack
+                cv_policy_stack.set(None)
         return policy
 
     @contextlib.contextmanager
@@ -91,16 +94,13 @@ class ChangeTracker(object):
         :return:
         """
         # Store current effective policy
-        prev_policy = getattr(tls, "_ct_policy", None)
+        prev_policy = cv_policy.get()
         # Install bulk change policy as
         policy = BulkChangeTrackerPolicy()
-        tls._ct_policy = policy
+        cv_policy.set(policy)
         yield
         policy.commit()
-        if prev_policy:
-            tls._ct_policy = prev_policy
-        else:
-            del tls._ct_policy
+        cv_policy.set(prev_policy)
 
 
 change_tracker = ChangeTracker()
