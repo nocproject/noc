@@ -45,7 +45,7 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | `$op`                   | String                        | Equals to `raise`                                                                                      |
 | `reference`             | String                        | Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details                |
 | `timestamp`             | String                        | Optional timestamp in ISO 8601 format                                                                  |
-| `managed_object`        | String                        | Managed Object'd ID                                                                                    |
+| `managed_object`        | String                        | Managed Object'd ID. If prefixed with `bi_id:` use BI ID.                                              |
 | `alarm_class`           | String                        | Alarm class name                                                                                       |
 | `groups`                | Array of Object {{ complex }} | Optional static groups                                                                                 |
 | {{ tab }} `reference`   | String                        | Optional Group Alarm reference. See [alarm reference format](../alarm-reference-format.md) for details |
