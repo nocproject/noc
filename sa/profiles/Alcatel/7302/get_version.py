@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -82,6 +82,7 @@ class Script(BaseScript):
         "EREM-A": "7330",  # 7330 FTTN Remote expansion Module, REM-XD
         "OLTS-M": "7342",
         # "NFXS-A": "",
+        "NFXS-B": "7330",
     }
 
     def execute_snmp(self, **kwargs):
