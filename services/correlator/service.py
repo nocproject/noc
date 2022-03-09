@@ -681,7 +681,7 @@ class CorrelatorService(TornadoService):
         """
         Called on new `dispose` message
         """
-        data = orjson.loads(msg.value)
+        data: Dict[str, Any] = orjson.loads(msg.value)
         # Backward-compatibility
         if "$op" not in data:
             data["$op"] = "event"
@@ -725,7 +725,10 @@ class CorrelatorService(TornadoService):
         # Fetch timestamp
         ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
         # Managed Object
-        managed_object = ManagedObject.get_by_id(int(req.managed_object))
+        if req.managed_object.startswith("bi_id:"):
+            managed_object = ManagedObject.get_by_bi_id(int(req.managed_object[6:]))
+        else:
+            managed_object = ManagedObject.get_by_id(int(req.managed_object))
         if not managed_object:
             self.logger.error("Invalid managed object: %s", req.managed_object)
             return
