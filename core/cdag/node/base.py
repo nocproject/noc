@@ -41,6 +41,27 @@ class Subscriber(object):
     next: Optional["Subscriber"]
 
 
+config_proxy_sentinel = object()
+
+
+class ConfigProxy(object):
+    """
+    Wrap BaseModel and override particular attributes
+    """
+
+    __slots__ = ("__base", "__override")
+
+    def __init__(self, base: BaseModel, override: Dict[str, Any]):
+        self.__base = base
+        self.__override = override
+
+    def __getattribute__(self, __name: str) -> Any:
+        v = self.__override.get(__name, config_proxy_sentinel)
+        if v is config_proxy_sentinel:
+            return getattr(self.__base, __name)
+        return v
+
+
 class BaseCDAGNodeMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
@@ -153,14 +174,25 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         return o
 
     def clone(
-        self, node_id: str, prefix: Optional[str] = None, state: Optional[Dict[str, Any]] = None
+        self,
+        node_id: str,
+        prefix: Optional[str] = None,
+        state: Optional[Dict[str, Any]] = None,
+        config: Optional[Dict[str, Any]] = None,
     ) -> Optional["BaseCDAGNode"]:
+        if not hasattr(self, "config_cls"):
+            cfg = None
+        elif config:
+            cfg = ConfigProxy(self.config, config)
+        else:
+            cfg = self.config
+
         node = self.__class__(
             node_id,
             prefix=prefix,
             description=self.description,
             state=state,
-            config=self.config if hasattr(self, "config_cls") else None,
+            config=cfg,
             sticky=self.sticky,
         )
         if self.allow_dynamic and self.dynamic_inputs:

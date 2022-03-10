@@ -16,6 +16,7 @@ import asyncio
 import codecs
 import hashlib
 import random
+import re
 
 # Third-party modules
 import orjson
@@ -35,6 +36,8 @@ from noc.services.metrics.rule import iter_rules
 from noc.config import config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
+
+rx_var = re.compile(r"\{\s*(\S+)\s*\}")
 
 
 @dataclass
@@ -238,16 +241,21 @@ class MetricsService(FastAPIService):
         def unscope(x):
             return sys.intern(x.rsplit("::", 1)[-1])
 
-        def clone_and_add_node(n: BaseCDAGNode) -> BaseCDAGNode:
+        def clone_and_add_node(
+            n: BaseCDAGNode, config: Optional[Dict[str, Any]] = None
+        ) -> BaseCDAGNode:
             """
             Clone node and add it to the graph
             """
             node_id = n.node_id
             state_id = f"{prefix}::{node_id}"
             state = self.start_state.pop(state_id, None)
-            new_node = n.clone(node_id, prefix=prefix, state=state)
+            new_node = n.clone(node_id, prefix=prefix, state=state, config=config)
             nodes[node_id] = new_node
             return new_node
+
+        def expand(s: str, ctx: Dict[str, Any]) -> str:
+            return rx_var.sub(lambda x: ctx.get(x, ""), s)
 
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
@@ -283,9 +291,26 @@ class MetricsService(FastAPIService):
                 prev.subscribe(activation_node, activation_node.first_input())
                 prev = activation_node
             if item.alarm_node:
-                alarm_node = clone_and_add_node(item.alarm_node)
-                prev.subscribe(alarm_node, alarm_node.first_input())
-                prev = alarm_node
+                # Find managed object
+                mo_id = None
+                for k, v in k[1]:
+                    if k == "managed_object":
+                        mo_id = v
+                        break
+                if not mo_id:
+                    self.logger.error("Cannot find managed_object in %s. Skipping alarm node.", k)
+                else:
+                    # Expand config
+                    alarm_config = {
+                        "managed_object": f"bi_id:{mo_id}",
+                        "reference": expand(
+                            item.alarm_node.config.reference, {"managed_object": str(mo_id)}
+                        ),
+                    }
+                    # Clone alarm node
+                    alarm_node = clone_and_add_node(item.alarm_node, config=alarm_config)
+                    prev.subscribe(alarm_node, alarm_node.first_input())
+                    prev = alarm_node
         # Compact the strorage
         for node in nodes.values():
             node.freeze()
