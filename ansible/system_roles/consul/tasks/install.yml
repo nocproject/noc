@@ -1,29 +1,29 @@
 ---
-- name: Get Consul package checksum file
-  get_url:
-    url: "{{ consul_checksum_file_url }}"
-    dest: "{{ consul_temp_file_checksum }}"
-    validate_certs: "True"
-  delegate_to: 127.0.0.1
-  become: "False"
-  run_once: "True"
-  environment:
-    https_proxy: "{{ http_proxy }}"
+#- name: Get Consul package checksum file
+#  get_url:
+#    url: "{{ consul_checksum_file_url }}"
+#    dest: "{{ consul_temp_file_checksum }}"
+#    validate_certs: "True"
+#  delegate_to: 127.0.0.1
+#  become: "False"
+#  run_once: "True"
+#  environment:
+#    https_proxy: "{{ http_proxy }}"
 
-- name: Get Consul package checksum
-  command: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
-  register: consul_sha256
-  check_mode: "False"
-  delegate_to: 127.0.0.1
-  become: "False"
-  run_once: "True"
-  changed_when: false
+#- name: Get Consul package checksum
+#  command: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
+#  register: consul_sha256
+#  check_mode: "False"
+#  delegate_to: 127.0.0.1
+#  become: "False"
+#  run_once: "True"
+#  changed_when: false
 
 - name: Download Consul
   get_url:
     url: "{{ consul_zip_url }}"
     dest: "{{ consul_temp_file }}"
-    checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
+#    checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
     validate_certs: "True"
   delegate_to: 127.0.0.1
