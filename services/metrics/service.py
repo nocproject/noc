@@ -9,7 +9,6 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
-from lib2to3.pytree import Base
 from typing import Any, Dict, Tuple, List, Optional
 import sys
 import asyncio
