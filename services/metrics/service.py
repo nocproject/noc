@@ -254,7 +254,7 @@ class MetricsService(FastAPIService):
             return new_node
 
         def expand(s: str, ctx: Dict[str, Any]) -> str:
-            return rx_var.sub(lambda x: ctx.get(x, ""), s)
+            return rx_var.sub(lambda x: str(ctx.get(x, "")), s)
 
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
@@ -290,21 +290,15 @@ class MetricsService(FastAPIService):
                 prev.subscribe(activation_node, activation_node.first_input())
                 prev = activation_node
             if item.alarm_node:
-                # Find managed object
-                mo_id = None
-                for k, v in k[1]:
-                    if k == "managed_object":
-                        mo_id = v
-                        break
-                if not mo_id:
+                # Expand key fields
+                key_ctx = dict(k[1])
+                if "managed_object" not in key_ctx:
                     self.logger.error("Cannot find managed_object in %s. Skipping alarm node.", k)
                 else:
                     # Expand config
                     alarm_config = {
-                        "managed_object": f"bi_id:{mo_id}",
-                        "reference": expand(
-                            item.alarm_node.config.reference, {"managed_object": str(mo_id)}
-                        ),
+                        "managed_object": f"bi_id:{key_ctx['managed_object']}",
+                        "reference": expand(item.alarm_node.config.reference, key_ctx),
                     }
                     # Clone alarm node
                     alarm_node = clone_and_add_node(item.alarm_node, config=alarm_config)

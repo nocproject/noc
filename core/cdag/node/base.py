@@ -211,7 +211,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if not hasattr(self, "config_cls") or config is None:
             return None
         # Shortcut, if config is already cleaned (cloned copies)
-        if isinstance(config, BaseModel) or hasattr(config, "__slots__"):
+        if isinstance(config, (BaseModel, ConfigProxy)) or hasattr(config, "__slots__"):
             return config
         # Slotify to reduce memory usage
         cfg = self.config_cls(**config)
