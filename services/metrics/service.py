@@ -295,10 +295,15 @@ class MetricsService(FastAPIService):
                 if "managed_object" not in key_ctx:
                     self.logger.error("Cannot find managed_object in %s. Skipping alarm node.", k)
                 else:
+                    # Collect labels
+                    labels = item.alarm_node.config.labels or []
+                    if k[2]:
+                        labels += k[2]
                     # Expand config
                     alarm_config = {
                         "managed_object": f"bi_id:{key_ctx['managed_object']}",
                         "reference": expand(item.alarm_node.config.reference, key_ctx),
+                        "labels": labels or None,
                     }
                     # Clone alarm node
                     alarm_node = clone_and_add_node(item.alarm_node, config=alarm_config)
