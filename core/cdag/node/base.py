@@ -57,7 +57,7 @@ class ConfigProxy(object):
 
     def __getattribute__(self, __name: str) -> Any:
         if __name.startswith("_"):
-            return getattr(self, __name)
+            return super().__getattribute__(__name)
         v = self.__override.get(__name, config_proxy_sentinel)
         if v is config_proxy_sentinel:
             return getattr(self.__base, __name)
