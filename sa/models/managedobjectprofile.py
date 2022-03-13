@@ -24,7 +24,7 @@ from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
-from noc.core.model.fields import PickledField, DocumentReferenceField, PydanticField
+from noc.core.model.fields import DocumentReferenceField, PydanticField
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
@@ -60,6 +60,21 @@ class MetricConfig(object):
     enable_periodic: bool
     is_stored: bool
     threshold_profile: Optional[ThresholdProfile]
+
+
+class ModelMetricConfigItem(BaseModel):
+    metric_type: str
+    enable_box: bool = False
+    enable_periodic: bool = True
+    is_stored: bool = True
+    threshold_profile: Optional[str] = None
+
+    def __str__(self):
+        return self.metric_type
+
+
+class MetricConfigItems(BaseModel):
+    __root__: List[ModelMetricConfigItem]
 
 
 class MatchRule(BaseModel):
@@ -657,7 +672,15 @@ class ManagedObjectProfile(NOCModel):
     # Limits
     snmp_rate_limit = models.IntegerField(default=0)
     #
-    metrics = PickledField(blank=True)
+    metrics = PydanticField(
+        "Metric Config Items",
+        schema=MetricConfigItems,
+        blank=True,
+        null=True,
+        default=list,
+        # ? Internal validation not worked with JSON Field
+        # validators=[match_rules_validate],
+    )
     #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
