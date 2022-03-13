@@ -7,7 +7,7 @@
 
 # Python modules
 from contextvars import ContextVar
-from typing import Dict
+from typing import Dict, Optional
 import uuid
 
 # NOC modules
@@ -94,7 +94,9 @@ class Session(object):
 
 class SessionContext(object):
     # Thread-local storage holding session context for threads
-    cv_sessions_smap: ContextVar[Dict[int, Session]] = ContextVar("cv_sessions_smap", default={})
+    cv_sessions_smap: ContextVar[Optional[Dict[int, Session]]] = ContextVar(
+        "cv_sessions_smap", default=None
+    )
 
     def __init__(self, object, idle_timeout=None):
         self._object_id = object.id
@@ -103,6 +105,10 @@ class SessionContext(object):
     def __enter__(self):
         # Store previous context for object, if nested
         smap = self.cv_sessions_smap.get()
+        if not smap:
+            # Create dictionary in TLS
+            smap = {}
+            self.cv_sessions_smap.set(smap)
         self._prev_context = smap.get(self._object_id)
         # Put current context
         smap[self._object_id] = Session(self._object_id, self._idle_timeout)
