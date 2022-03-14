@@ -1,15 +1,18 @@
 # ----------------------------------------------------------------------
 # OID Rule Loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import threading
 from contextlib import contextmanager
+from contextvars import ContextVar
+from typing import Optional, Callable
 
-_tls = threading.local()
+cv_oid_rule_resolver: ContextVar[Optional[Callable]] = ContextVar(
+    "cv_oid_rule_resolver", default=None
+)
 
 
 @contextmanager
@@ -21,9 +24,9 @@ def with_resolver(resolver):
         OIDRule class with given type
     :return:
     """
-    _tls._oid_rule_resolver = resolver
+    cv_oid_rule_resolver.set(resolver)
     yield
-    del _tls._oid_rule_resolver
+    cv_oid_rule_resolver.set(None)
 
 
 def load_rule(data):
@@ -33,7 +36,7 @@ def load_rule(data):
     :param data: parsed from json file
     :return:
     """
-    resolver = getattr(_tls, "_oid_rule_resolver", None)
+    resolver = cv_oid_rule_resolver.get()
     assert resolver, "Should be calles within with_resolver context"
     if not isinstance(data, dict):
         raise ValueError("object required")
