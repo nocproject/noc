@@ -21,6 +21,8 @@ class Migration(BaseMigration):
         object_metric_map = {}
 
         for o_id, metrics in self.db.execute("SELECT id,metrics FROM sa_managedobjectprofile"):
+            if not metrics:
+                continue
             metrics = loads(metrics)
             if not metrics:
                 continue
