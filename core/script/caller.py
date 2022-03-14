@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import threading
+from contextvars import ContextVar
+from typing import Dict, Optional
 import uuid
 
 # NOC modules
@@ -29,7 +30,7 @@ class ScriptCaller(object):
         self.object_id = obj.id
 
     def __call__(self, **kwargs):
-        smap = getattr(SessionContext._sessions, "smap", None)
+        smap = SessionContext.cv_sessions_smap.get()
         if smap:
             session = smap.get(self.object_id)
             if session:
@@ -93,7 +94,9 @@ class Session(object):
 
 class SessionContext(object):
     # Thread-local storage holding session context for threads
-    _sessions = threading.local()
+    cv_sessions_smap: ContextVar[Optional[Dict[int, Session]]] = ContextVar(
+        "cv_sessions_smap", default=None
+    )
 
     def __init__(self, object, idle_timeout=None):
         self._object_id = object.id
@@ -101,19 +104,19 @@ class SessionContext(object):
 
     def __enter__(self):
         # Store previous context for object, if nested
-        smap = getattr(self._sessions, "smap", None)
+        smap = self.cv_sessions_smap.get()
         if not smap:
             # Create dictionary in TLS
             smap = {}
-            self._sessions.smap = smap
+            self.cv_sessions_smap.set(smap)
         self._prev_context = smap.get(self._object_id)
         # Put current context
         smap[self._object_id] = Session(self._object_id, self._idle_timeout)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        session = self._sessions.smap.pop(self._object_id)
+        session = self.cv_sessions_smap.get().pop(self._object_id)
         if self._prev_context:
             # Restore previous context
-            self._sessions.smap[self._object_id] = self._prev_context
+            self.cv_sessions_smap.get()[self._object_id] = self._prev_context
         session.close()
