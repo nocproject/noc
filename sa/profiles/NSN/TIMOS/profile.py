@@ -33,10 +33,10 @@ class Profile(BaseProfile):
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("0/1/1")
-        'port0/1/1'
+        '0/1/1'
         """
         if self.rx_port_name.match(s):
-            return "port%s" % s
+            return s
         if "," in s:
             s = s.split(",", 1)[0].strip()
         return s
