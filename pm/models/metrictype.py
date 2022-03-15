@@ -31,7 +31,7 @@ from noc.main.models.doccategory import category
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 from noc.core.defer import call_later
-from noc.core.model.decorator import on_save
+from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from .metricscope import MetricScope
@@ -56,6 +56,13 @@ class AgentMappingItem(EmbeddedDocument):
 @on_save
 @change
 @bi_sync
+@on_delete_check(
+    check=[
+        ("sa.ManagedObjectProfile", "metrics__metric_type"),
+        ("inv.InterfaceProfile", "metrics__metric_type"),
+        ("sla.SLAProbe", "metrics__metric_type"),
+    ]
+)
 @category
 class MetricType(Document):
     meta = {
