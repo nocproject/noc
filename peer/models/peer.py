@@ -70,7 +70,7 @@ class Peer(NOCModel):
     # Override PeerGroup.export_med
     export_med = models.IntegerField("Export MED", blank=True, null=True)
     export_filter = models.CharField("Export filter", max_length=64)
-    description = models.CharField("Description", max_length=64, null=True, blank=True)
+    description = models.TextField("Description", null=True, blank=True)
     # Peer remark to be shown in RPSL
     rpsl_remark = models.CharField("RPSL Remark", max_length=64, null=True, blank=True)
     tt = models.IntegerField("TT", blank=True, null=True)

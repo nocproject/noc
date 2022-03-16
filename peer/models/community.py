@@ -22,7 +22,7 @@ class Community(NOCModel):
 
     community = models.CharField("Community", max_length=20, unique=True)
     type = models.ForeignKey(CommunityType, verbose_name="Type", on_delete=models.CASCADE)
-    description = models.CharField("Description", max_length=64)
+    description = models.TextField("Description")
 
     def __str__(self):
         return self.community
