@@ -31,6 +31,7 @@ import orjson
 
 # NOC modules
 from noc.core.model.decorator import on_save, on_delete
+from noc.core.change.decorator import change
 from noc.main.models.handler import Handler
 from noc.main.models.remotesystem import RemoteSystem
 from noc.models import get_model, is_document, LABEL_MODELS
@@ -76,6 +77,7 @@ class RegexItem(EmbeddedDocument):
 
 
 @on_save
+@change
 @on_delete
 class Label(Document):
     """
@@ -230,6 +232,11 @@ class Label(Document):
         return self.name[-1] in MATCH_OPS
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id: str) -> Optional["Label"]:
+        return Label.objects.filter(id=id).first()
+
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["Label"]:
         return Label.objects.filter(name=name).first()
@@ -242,6 +249,16 @@ class Label(Document):
             ]
         except KeyError:
             pass
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if not self.expose_metric or "expose_metric" not in changed_fields:
+            return
+        from noc.sa.models.managedobject import ManagedObject
+
+        for mo_id in ManagedObject.objects.filter(labels__contains=[self.name]).values_list(
+            "id", flat=True
+        ):
+            yield "cfgmomapping", mo_id
 
     def clean(self):
         """
