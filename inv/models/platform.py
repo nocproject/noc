@@ -16,6 +16,7 @@ import datetime
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField, ListField
 from mongoengine.queryset import Q
+from mongoengine import signals
 from pymongo.collection import ReturnDocument
 import cachetools
 from bson.int64 import Int64
@@ -197,7 +198,9 @@ class Platform(Document):
         d["id"] = d["_id"]
         del d["_id"]
         p = Platform(**d)
-        p._changed_fields = []
+        signals.post_save.send(cls, document=p, created=True)
+        p._clear_changed_fields()
+        p._created = False
         return p
 
     @property
