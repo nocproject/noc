@@ -682,6 +682,15 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream cfgmetricscollector records older days",
         )
+        enable_cfgmomapping = BooleanParameter(default=True)
+        enable_cfgmomapping_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgMOMappingCollector datastream (Mongo greater 3.6 needed)",
+        )
+        cfgmomapping_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream CfgMOMappingcollector records older days",
+        )
         enable_cfgping = BooleanParameter(default=True)
         enable_cfgping_wait = BooleanParameter(
             default=True,
