@@ -678,14 +678,7 @@ class ManagedObject(NOCModel):
         ):
             yield "cfgtrap", self.id
         if config.datastream.enable_cfgmomapping and changed_fields.intersection(
-            {
-                "id",  # Create object
-                "bi_id",
-                "is_managed",
-                "pool",
-                "fm_pool",
-                "labels"
-            }
+            {"id", "bi_id", "is_managed", "pool", "fm_pool", "labels"}
         ):
             yield "cfgmomapping", self.id
 
