@@ -33,6 +33,7 @@ class Command(BaseCommand):
         "managedobject": "sa.ManagedObject",
         "administrativedomain": "sa.AdministrativeDomain",
         "cfgmetrics": "pm.MetricType",
+        "cfgmomapping": "sa.ManagedObject",
         "cfgping": "sa.ManagedObject",
         "cfgsyslog": "sa.ManagedObject",
         "cfgtrap": "sa.ManagedObject",
