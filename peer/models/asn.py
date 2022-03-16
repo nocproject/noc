@@ -57,7 +57,7 @@ class AS(NOCModel):
         on_delete=models.CASCADE,
     )
     # RPSL descr field
-    description = models.CharField("Description", max_length=64)
+    description = models.TextField("Description")
     organisation = models.ForeignKey(
         Organisation, verbose_name="Organisation", on_delete=models.CASCADE
     )
