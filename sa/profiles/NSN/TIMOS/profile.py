@@ -34,11 +34,17 @@ class Profile(BaseProfile):
         """
         >>> Profile().convert_interface_name("0/1/1")
         '0/1/1'
+        >>> Profile().convert_interface_name('port3/1/9, 10-Gig Ethernet, "--Description To 0/20/1"')
+        '3/1/9'
+        >>> Profile().convert_interface_name("port0/1/1")
+        '0/1/1'
         """
         if self.rx_port_name.match(s):
             return s
         if "," in s:
             s = s.split(",", 1)[0].strip()
+        if s.startswith("port"):
+            s = s[4:]
         return s
 
     INTERFACE_TYPES = {
@@ -49,3 +55,7 @@ class Profile(BaseProfile):
     @classmethod
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get(name[:4].lower())
+
+    def get_linecard(self, interface_name):
+        ifname = self.convert_interface_name(interface_name)
+        return super().get_linecard(ifname)
