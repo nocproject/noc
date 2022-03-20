@@ -7,11 +7,22 @@
 
 # Python modules
 import re
+from typing import List, Dict, Any
+import enum
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_int, is_ipv6, is_vlan
+
+
+class IfType(enum.Enum):
+    vprn = ": VPRN"
+    network = ": Network"
+    subsc = ": VPRN Sub"
+    group = ": VPRN Grp"
+    red = ": VPRN Red"
+    ies = ": IES"
 
 
 class Script(BaseScript):
@@ -209,7 +220,7 @@ class Script(BaseScript):
     )
 
     @staticmethod
-    def fix_protocols(protocols):
+    def fix_protocols(protocols: str) -> List[str]:
         """
         :rtype : list
         """
@@ -229,10 +240,21 @@ class Script(BaseScript):
         return proto
 
     @staticmethod
-    def fix_status(status):
+    def fix_status(status: str) -> bool:
         return "up" in status.lower()
 
-    def fix_ip_addr(self, ipaddr_section):
+    @staticmethod
+    def fix_fi_type(fitype: str) -> str:
+        fitype = fitype.lower()
+        if fitype == "vprn":
+            fitype = "ip"
+        elif fitype == "vpls":
+            fitype = "bridge"
+        else:
+            fitype = "Unsupported"
+        return fitype
+
+    def fix_ip_addr(self, ipaddr_section: str) -> Dict[str, List[str]]:
         """
         :rtype : dict
         """
@@ -254,266 +276,187 @@ class Script(BaseScript):
             result["enabled_afi"] += ["IPv6"]
         return result
 
-    def parse_interfaces(self, data, vrf):
-        ifaces = self.re_int.split(data)
-        result = []
-        iftypeVPRN = ": VPRN"
-        iftypeNetwork = ": Network"
-        iftypeSubsc = ": VPRN Sub"
-        iftypeGroup = ": VPRN Grp"
-        iftypeRed = ": VPRN Red"
-        iftypeIES = ": IES"
-
-        for iface in ifaces[1:]:
+    def parse_interfaces(self, data: str, c_interfaces=None):
+        interfaces: Dict[str, Dict[str, Any]] = c_interfaces or {}
+        r = self.re_int.split(data)
+        for block in r[1:]:
             parent_iface = ""
-            my_dict = {}
-            if iftypeGroup in iface:
-                match_obj = self.re_int_desc_group.search(iface)
-                if match_obj:
-                    my_dict = match_obj.groupdict()
-                    if not my_dict["mac"] or my_dict["mac"] == "":
-                        del my_dict["mac"]
-                    my_dict["type"] = "other"
-                    my_dict["subinterfaces"] = []
-            elif iftypeSubsc in iface:
-                match_obj = self.re_int_desc_subs.search(iface)
-                my_dict = match_obj.groupdict()
-                my_dict["subinterfaces"] = [{}]
-                my_dict["type"] = "loopback"
-                my_sub = {
-                    "oper_status": my_dict["oper_status"],
-                    "admin_status": my_dict["admin_status"],
-                    "name": my_dict["name"],
+            iface: Dict[str, Any] = {}
+            if IfType.group.value in block:
+                match = self.re_int_desc_group.search(block)
+                if match:
+                    iface = match.groupdict()
+                    if not iface["mac"] or iface["mac"] == "":
+                        del iface["mac"]
+                    iface["type"] = "other"
+                    iface["subinterfaces"] = []
+            elif IfType.subsc.value in block:
+                match = self.re_int_desc_subs.search(block)
+                iface = match.groupdict()
+                iface["subinterfaces"] = []
+                iface["type"] = "loopback"
+                sub = {
+                    "name": iface["name"],
                 }
-                if "enabled_afi" in my_dict:
-                    my_sub["enabled_afi"] = my_dict["enabled_afi"]
-                    my_dict.pop("enabled_afi")
-                if "ipv4_addresses" in my_dict:
-                    my_sub["ipv4_addresses"] = my_dict["ipv4_addresses"]
-                    my_dict.pop("ipv4_addresses")
-                if "ipv6_addresses" in my_dict:
-                    my_sub["ipv6_addresses"] = my_dict["ipv6_addresses"]
-                    my_dict.pop("ipv6_addresses")
-                my_dict["subinterfaces"][0].update(my_sub)
-            elif iftypeRed in iface:
-                match_obj = self.re_int_desc_vprn.search(iface)
-                my_dict = match_obj.groupdict()
-                if "subinterfaces" in my_dict:
-                    my_dict["subinterfaces"] = [
-                        {"name": my_dict["subinterfaces"], "type": "tunnel"}
-                    ]
-                my_dict["type"] = "tunnel"
-            elif iftypeNetwork in iface or iftypeVPRN in iface or iftypeIES in iface:
-                match_obj = self.re_int_desc_vprn.search(iface)
-                if match_obj:
-                    my_dict = match_obj.groupdict()
-                    if not my_dict.get("mac"):
-                        del my_dict["mac"]
-                    if "subinterfaces" in my_dict:
-                        if my_dict["subinterfaces"].startswith("sdp"):
-                            my_dict["type"] = "tunnel"
-                        elif my_dict["subinterfaces"].startswith("loopback"):
-                            my_dict["type"] = "loopback"
-                        match = self.re_iface.search(my_dict["subinterfaces"])
-                        if match:
-                            parent_iface = match.group("iface")
-                            if ":" in my_dict["subinterfaces"]:
-                                vlans = my_dict["subinterfaces"].split(":")[1]
-                                if "." in vlans and "*" not in vlans:
-                                    up_tag, down_tag = vlans.split(".")
-                                    if is_vlan(down_tag):
-                                        my_dict["vlan_ids"] = [int(up_tag), int(down_tag)]
-                                    else:
-                                        my_dict["vlan_ids"] = [int(up_tag)]
-                                elif "*" in vlans:
-                                    my_dict["vlan_ids"] = []
-                                elif int(vlans) == 0:
-                                    my_dict["vlan_ids"] = []
-                                else:
-                                    my_dict["vlan_ids"] = [int(vlans)]
-                        my_dict["subinterfaces"] = [{"name": my_dict["name"]}]
-                else:
+                if "enabled_afi" in iface:
+                    sub["enabled_afi"] = iface["enabled_afi"]
+                    iface.pop("enabled_afi")
+                if "ipv4_addresses" in iface:
+                    sub["ipv4_addresses"] = iface["ipv4_addresses"]
+                    iface.pop("ipv4_addresses")
+                if "ipv6_addresses" in iface:
+                    sub["ipv6_addresses"] = iface["ipv6_addresses"]
+                    iface.pop("ipv6_addresses")
+                iface["subinterfaces"].append(sub)
+            elif IfType.red.value in block:
+                match = self.re_int_desc_vprn.search(block)
+                iface = match.groupdict()
+                iface["type"] = "tunnel"
+                if "subinterfaces" in iface:
+                    iface["subinterfaces"] = [{"name": iface["subinterfaces"], "type": "tunnel"}]
+            elif (
+                IfType.network.value in block
+                or IfType.vprn.value in block
+                or IfType.ies.value in block
+            ):
+                match = self.re_int_desc_vprn.search(block)
+                if not match:
                     continue
+                iface = match.groupdict()
+                if not iface.get("mac"):
+                    del iface["mac"]
+                if "subinterfaces" in iface:
+                    if iface["subinterfaces"].startswith("sdp"):
+                        iface["type"] = "tunnel"
+                    elif iface["subinterfaces"].startswith("loopback"):
+                        iface["type"] = "loopback"
+                    match = self.re_iface.search(iface["subinterfaces"])
+                    if match:
+                        parent_iface = match.group("iface")
+                        if ":" in iface["subinterfaces"]:
+                            vlans = iface["subinterfaces"].split(":")[1]
+                            if "." in vlans and "*" not in vlans:
+                                up_tag, down_tag = vlans.split(".")
+                                if is_vlan(down_tag):
+                                    iface["vlan_ids"] = [int(up_tag), int(down_tag)]
+                                else:
+                                    iface["vlan_ids"] = [int(up_tag)]
+                            elif "*" in vlans:
+                                iface["vlan_ids"] = []
+                            elif int(vlans) == 0:
+                                iface["vlan_ids"] = []
+                            else:
+                                iface["vlan_ids"] = [int(vlans)]
+                    iface["subinterfaces"] = [{"name": iface["name"]}]
             else:
                 continue
-            if my_dict["description"] == "(Not Specified)":
-                my_dict.pop("description")
-            proto = my_dict["protocols"]
-            my_dict["protocols"] = self.fix_protocols(my_dict["protocols"])
-            if "srrp" in my_dict:
-                my_dict["protocols"] += ["SRRP"]
-                my_dict.pop("srrp")
-            my_dict["oper_status"] = self.fix_status(my_dict["oper_status"])
-            my_dict["admin_status"] = self.fix_status(my_dict["admin_status"])
-            if "ipaddr_section" in my_dict:
-                my_dict.update(self.fix_ip_addr(my_dict["ipaddr_section"]))
-                my_dict.pop("ipaddr_section")
-            if "subinterfaces" in my_dict:
-                if not isinstance(my_dict["subinterfaces"], (list, dict)):
-                    my_dict["subinterfaces"] = [my_dict["subinterfaces"]]
-                if len(my_dict["subinterfaces"]) == 1:
-                    my_sub = {
-                        "oper_status": my_dict["oper_status"],
-                        "admin_status": my_dict["admin_status"],
-                        "protocols": my_dict["protocols"],
+            if iface["description"] == "(Not Specified)":
+                iface.pop("description")
+            proto = iface["protocols"]
+            iface["protocols"] = self.fix_protocols(iface["protocols"])
+            if "srrp" in iface:
+                iface["protocols"] += ["SRRP"]
+                iface.pop("srrp")
+            iface["oper_status"] = self.fix_status(iface["oper_status"])
+            iface["admin_status"] = self.fix_status(iface["admin_status"])
+            if "ipaddr_section" in iface:
+                iface.update(self.fix_ip_addr(iface["ipaddr_section"]))
+                iface.pop("ipaddr_section")
+            if "subinterfaces" in iface:
+                if not isinstance(iface["subinterfaces"], (list, dict)):
+                    iface["subinterfaces"] = [iface["subinterfaces"]]
+                if len(iface["subinterfaces"]) == 1:
+                    sub = {
+                        "oper_status": iface["oper_status"],
+                        "admin_status": iface["admin_status"],
+                        "protocols": iface["protocols"],
+                        "enabled_afi": [],
                     }
-                    my_dict.pop("protocols")
-                    if "enabled_afi" in my_dict:
-                        my_sub["enabled_afi"] = my_dict["enabled_afi"]
-                        my_dict.pop("enabled_afi")
-                    if "ipv4_addresses" in my_dict:
-                        my_sub["ipv4_addresses"] = my_dict["ipv4_addresses"]
-                        my_dict.pop("ipv4_addresses")
-                    if "ipv6_addresses" in my_dict:
-                        my_sub["ipv6_addresses"] = my_dict["ipv6_addresses"]
-                        my_dict.pop("ipv6_addresses")
-                    if "vlan_ids" in my_dict:
-                        my_sub["vlan_ids"] = my_dict["vlan_ids"]
-                        my_dict.pop("vlan_ids")
+                    iface.pop("protocols")
+                    if "enabled_afi" in iface:
+                        sub["enabled_afi"] = iface.pop("enabled_afi")
+                    if "ipv4_addresses" in iface:
+                        sub["ipv4_addresses"] = iface.pop("ipv4_addresses")
+                    if "ipv6_addresses" in iface:
+                        sub["ipv6_addresses"] = iface.pop("ipv6_addresses")
+                    if "vlan_ids" in iface:
+                        sub["vlan_ids"] = iface.pop("vlan_ids")
                     if "MPLS" in proto:
-                        if "enabled_afi" in my_sub:
-                            my_sub["enabled_afi"] += ["MPLS"]
-                        else:
-                            my_sub["enabled_afi"] = ["MPLS"]
-                    if "mac" in my_dict and my_dict["mac"]:
-                        my_sub["mac"] = my_dict["mac"]
-                    if "mtu" in my_dict:
-                        my_sub["mtu"] = my_dict["mtu"]
-                        my_dict.pop("mtu")
-                    my_dict["subinterfaces"][0].update(my_sub)
-                    if vrf:
-                        found = False
-                        for i in vrf:
-                            if i["name"] == parent_iface:
-                                my_sub["name"] = my_dict["name"]
-                                i["subinterfaces"] += [my_sub]
-                                found = True
-                                break
-                        if found:
-                            continue
-            if "type" not in my_dict:
-                my_dict["type"] = "unknown"
-            result += [my_dict]
-        return result
+                        sub["enabled_afi"] += ["MPLS"]
+                    if "mac" in iface and iface["mac"]:
+                        sub["mac"] = iface["mac"]
+                    if "mtu" in iface:
+                        sub["mtu"] = iface.pop("mtu")
+                    if not iface["subinterfaces"]:
+                        iface["subinterfaces"] = [sub]
+                    else:
+                        iface["subinterfaces"][0].update(sub)
+                    if c_interfaces and parent_iface in c_interfaces:
+                        sub["name"] = iface["name"]
+                        interfaces[parent_iface]["subinterfaces"].append(sub)
+                        continue
+            if "type" not in iface:
+                iface["type"] = "unknown"
+            interfaces[iface["name"]] = iface
+        return interfaces
 
-    @staticmethod
-    def fix_fi_type(fitype):
-        if fitype == "VPRN":
-            fitype = "ip"
-        elif fitype == "VPLS":
-            fitype = "bridge"
-        else:
-            fitype = "Unsupported"
-        return fitype
-
-    def fix_vpls_saps(self, sap_section):
-        result = {"interfaces": []}
+    def parse_vpls_saps(self, sap_section: str) -> Dict[str, Any]:
+        result = {}
         for line in sap_section.splitlines():
-            match_obj = self.re_saps.match(line)
-            if match_obj:
-                raw_sap = match_obj.groupdict()
-                sap = {
-                    "name": raw_sap["interface"],
-                    "subinterfaces": [
-                        {
-                            "enabled_afi": ["BRIDGE"],
-                            "name": str(
-                                raw_sap["interface"]
-                                + ":"
-                                + raw_sap["uptag"]
-                                + "."
-                                + raw_sap["downtag"]
-                            ),
-                            "oper_status": self.fix_status(raw_sap["oper_status"]),
-                            "admin_status": self.fix_status(raw_sap["admin_status"]),
-                            "mtu": raw_sap["mtu"],
-                            "vlan_ids": [raw_sap["uptag"], raw_sap["downtag"]],
-                        }
-                    ],
-                }
-                if "*" in sap["subinterfaces"][0]["name"]:
-                    sap["subinterfaces"][0].pop("vlan_ids")
-                if "lag" in sap["name"]:
-                    sap["type"] = "aggregated"
-                else:
-                    sap["type"] = "physical"
-                result["interfaces"] += [sap]
-        return result
-
-    def get_vpls(self, vpls_id):
-        result = {"forwarding_instance": vpls_id, "type": "VPLS"}
-        vpls = self.cli("show service id %s base" % vpls_id)
-        match_obj = self.re_vpls.search(vpls)
-        if match_obj:
-            result = match_obj.groupdict()
-
-            result["oper_status"] = self.fix_status(result["oper_status"])
-            result["admin_status"] = self.fix_status(result["admin_status"])
-
-            result["type"] = "bridge"
-
-            if result["forwarding_instance"] == "(Not Specified)":
-                result["forwarding_instance"] = result["id"]
-            if result["sap_section"]:
-                result.update(self.fix_vpls_saps(result["sap_section"]))
-                result.pop("sap_section")
+            match = self.re_saps.match(line)
+            if not match:
+                continue
+            raw_sap = match.groupdict()
+            sap = {
+                "name": raw_sap["interface"],
+                "subinterfaces": [
+                    {
+                        "enabled_afi": ["BRIDGE"],
+                        "name": str(
+                            raw_sap["interface"] + ":" + raw_sap["uptag"] + "." + raw_sap["downtag"]
+                        ),
+                        "oper_status": self.fix_status(raw_sap["oper_status"]),
+                        "admin_status": self.fix_status(raw_sap["admin_status"]),
+                        "mtu": raw_sap["mtu"],
+                        "vlan_ids": [raw_sap["uptag"], raw_sap["downtag"]],
+                    }
+                ],
+            }
+            if "*" in sap["subinterfaces"][0]["name"]:
+                sap["subinterfaces"][0].pop("vlan_ids")
+            if "lag" in sap["name"]:
+                sap["type"] = "aggregated"
             else:
-                result["interfaces"] = {"type": "unknown", "subinterfaces": {"name": "empty_vpls"}}
-        return result
-
-    def get_forwarding_instance(self):
-        result = []
-        o = self.cli("show service service-using")
-        for line in o.splitlines():
-            mo1 = self.re_forwarding_instance.search(line)
-            if mo1:
-                fi = mo1.groupdict()
-                fi["type"] = self.fix_fi_type(fi["type"])
-                fi["oper_status"] = self.fix_status(fi["oper_status"])
-                fi["admin_status"] = self.fix_status(fi["admin_status"])
-
-                if fi["type"] == "ip" or fi["type"] == "VRF":
-                    r = self.cli(
-                        'show service id %s base | match invert-match "sap:"'
-                        % fi["forwarding_instance"]
-                    )
-                    mo2 = self.re_rd.search(r)
-                    fi["rd"] = mo2.group("rd")
-                    if fi["rd"] == "None":
-                        fi.pop("rd")
-                    intf = self.cli("show router %s interface detail" % fi["forwarding_instance"])
-                    fi["interfaces"] = self.parse_interfaces(intf, "")
-                elif fi["type"] == "bridge":
-                    fi.update(self.get_vpls(fi["forwarding_instance"]))
-                    fi.pop("id")
-                elif fi["type"] == "Unsupported":
-                    continue
-                result.append(fi)
+                sap["type"] = "physical"
+            result[raw_sap["interface"]] = sap
         return result
 
     def get_managment_router(self):
-        fi = {"forwarding_instance": "management", "type": "ip", "interfaces": []}
+        interfaces: Dict[str, Dict[str, Any]] = {}
         card_detail = self.cli("show card detail")
         cards = self.re_cards_detail.findall(card_detail)
 
         for card in cards:
             sub_iface = self.cli('show router "management" interface detail')
-            fi["interfaces"].append(
-                {
-                    "name": "/".join([card[0], "1"]),
-                    "admin_status": self.fix_status(card[1]),
-                    "oper_status": self.fix_status(card[2]),
-                    "protocols": [],
-                    "type": "physical",
-                    "subinterfaces": self.parse_interfaces(sub_iface, ""),
-                }
-            )
+            ifname = f"{card[0]}/1"
+            interfaces[ifname] = {
+                "name": "/".join([card[0], "1"]),
+                "admin_status": self.fix_status(card[1]),
+                "oper_status": self.fix_status(card[2]),
+                "protocols": [],
+                "type": "physical",
+                "subinterfaces": self.parse_interfaces(sub_iface),
+            }
             if card[3]:
-                fi["interfaces"][-1]["mac"] = card[3]
-        return fi
+                interfaces[ifname]["mac"] = card[3]
+        return list(interfaces.values())
 
-    def get_base_router(self):
-        fi = {"forwarding_instance": "default", "type": "ip", "interfaces": []}
+    def get_base_router(self) -> Dict[str, Any]:
+        """
+        Getting Router physical ifaces.
+        :return:
+        """
+        interfaces: Dict[str, Dict[str, Any]] = {}
         port_info = self.cli("show port")
         for line in port_info.splitlines():
             match = self.re_port_info.search(line)
@@ -522,81 +465,166 @@ class Script(BaseScript):
                 match_detail = self.re_port_detail_info.search(port_detail)
                 if not match_detail:
                     match_detail = self.re_port_detail_info_sr.search(port_detail)
-                my_dict = match.groupdict()
-                my_dict.update(match_detail.groupdict())
-                if "aggregated_interface" in my_dict:
-                    if is_int(my_dict["aggregated_interface"]):
-                        my_dict["aggregated_interface"] = "-".join(
-                            ["lag", my_dict["aggregated_interface"]]
-                        )
+                iface: Dict[str, Any] = match.groupdict()
+                iface.update(match_detail.groupdict())
+                if "aggregated_interface" in iface:
+                    if is_int(iface["aggregated_interface"]):
+                        iface["aggregated_interface"] = f'lag-{iface["aggregated_interface"]}'
                     else:
-                        del my_dict["aggregated_interface"]
-                my_dict["type"] = "physical"
-                my_dict["subinterfaces"] = []
-                my_dict.pop("bad_stat")
-                my_dict["description"] = my_dict["description"].replace("\n", "")
-                fi["interfaces"].append(my_dict)
+                        del iface["aggregated_interface"]
+                iface["type"] = "physical"
+                iface["subinterfaces"] = []
+                iface.pop("bad_stat")
+                iface["description"] = iface["description"].replace("\n", "")
+                interfaces[iface["name"]] = iface
+        # LAG
         lag_info = self.cli("show lag detail")
-
         lags = self.re_lag_split.split(lag_info)
-
         for lag in lags[1:]:
             match = self.re_lag_detail.search(lag)
             if match:
-                my_dict = match.groupdict()
-                my_dict["type"] = "aggregated"
-                if my_dict["name"]:
-                    my_dict["name"] = "-".join(["lag", my_dict["name"]])
-                my_dict["subinterfaces"] = []
-                saps = self.cli(
-                    "show service sap-using sap %s | match invert-match [" % my_dict["name"]
-                )
-                for sapline in saps.splitlines():
-                    sap = self.re_lag_subs.match(sapline)
-                    if sap:
-                        if sap.group("physname"):
-                            vlans = sap.group("sapname")
-                            s = {
-                                "name": ":".join([sap.group("physname"), vlans]),
-                                "admin_status": self.fix_status(sap.group("admin_status")),
-                                "oper_status": self.fix_status(sap.group("admin_status")),
-                            }
-                            if "." in vlans and "*" not in vlans:
-                                up_tag, down_tag = vlans.split(".")
-                                if is_vlan(down_tag):
-                                    s["vlan_ids"] = [int(up_tag), int(down_tag)]
-                                else:
-                                    s["vlan_ids"] = [int(up_tag)]
-                            elif "*" in vlans:
-                                s["vlan_ids"] = []
-                            elif int(vlans) == 0:
-                                s["vlan_ids"] = []
-                            else:
-                                s["vlan_ids"] = [int(vlans)]
-                            my_dict["subinterfaces"].append(s)
-                my_dict["oper_status"] = self.fix_status(my_dict["oper_status"])
-                my_dict["admin_status"] = self.fix_status(my_dict["admin_status"])
-                if my_dict["protocols"].lower() == "enabled":
-                    my_dict["protocols"] = ["LACP"]
+                iface = match.groupdict()
+                iface["type"] = "aggregated"
+                if iface["name"]:
+                    iface["name"] = f'lag-{iface["name"]}'
+                iface["subinterfaces"] = []
+                # QinQ
+                # saps = self.cli(
+                #     f'show service sap-using sap {iface["name"]} | match invert-match ['
+                # )
+                # for sapline in saps.splitlines():
+                #     sap = self.re_lag_subs.match(sapline)
+                #     if sap and sap.group("physname"):
+                #         vlans = sap.group("sapname")
+                #         sub = {
+                #             "name": f'{sap.group("physname")}:{vlans}',
+                #             "admin_status": self.fix_status(sap.group("admin_status")),
+                #             "oper_status": self.fix_status(sap.group("admin_status")),
+                #         }
+                #         if "." in vlans and "*" not in vlans:
+                #             up_tag, down_tag = vlans.split(".")
+                #             if is_vlan(down_tag):
+                #                 sub["vlan_ids"] = [int(up_tag), int(down_tag)]
+                #             else:
+                #                 sub["vlan_ids"] = [int(up_tag)]
+                #         elif "*" in vlans:
+                #             sub["vlan_ids"] = []
+                #         elif int(vlans) == 0:
+                #             sub["vlan_ids"] = []
+                #         else:
+                #             sub["vlan_ids"] = [int(vlans)]
+                #         iface["subinterfaces"].append(sub)
+                iface["oper_status"] = self.fix_status(iface["oper_status"])
+                iface["admin_status"] = self.fix_status(iface["admin_status"])
+                if iface["protocols"].lower() == "enabled":
+                    iface["protocols"] = ["LACP"]
                 else:
-                    my_dict["protocols"] = []
-                my_dict["description"] = my_dict["description"].replace("\n", "")
-                fi["interfaces"].append(my_dict)
-        intf = self.cli('show router "Base" interface detail')
-        fi["interfaces"] += self.parse_interfaces(intf, fi["interfaces"])
+                    iface["protocols"] = []
+                iface["description"] = iface["description"].replace("\n", "")
+                interfaces[iface["name"]] = iface
+        v = self.cli('show router "Base" interface detail')
+        self.parse_interfaces(v, interfaces)
 
-        return fi
+        return interfaces
 
-    def execute_cli(self):
+    def execute_cli(self, **kwargs):
         result = []
-
-        fi = self.get_forwarding_instance()
-        for forw_instance in fi:
-            result += [forw_instance]
-        fi = self.get_managment_router()
-        result += [fi]
-
-        fi = self.get_base_router()
-        result += [fi]
-
+        # Mgmt Router Ifaces
+        mgmt_ifaces = self.get_managment_router()
+        if mgmt_ifaces:
+            result += [
+                {"forwarding_instance": "management", "type": "ip", "interfaces": mgmt_ifaces}
+            ]
+        # Mgmt Router Ifaces
+        base_ifaces = self.get_base_router()
+        # Forwarding Instance
+        v = self.cli("show service service-using")
+        for line in v.splitlines():
+            """
+            ===============================================================================
+            ServiceId    Type      Adm  Opr  CustomerId Service Name
+            -------------------------------------------------------------------------------
+            2            IES       Up   Down 1
+            3            VPLS      Up   Up   1          SVLAN_3
+            """
+            match = self.re_forwarding_instance.search(line)
+            if not match:
+                continue
+            fi: Dict[str, Any] = match.groupdict()
+            fi["type"] = self.fix_fi_type(fi["type"])
+            # fi["oper_status"] = self.fix_status(fi["oper_status"])
+            # fi["admin_status"] = self.fix_status(fi["admin_status"])
+            if fi["type"] == "ip" or fi["type"] == "vrf":
+                r = self.cli(
+                    f'show service id {fi["forwarding_instance"]} base | match invert-match "sap:"'
+                )
+                mo2 = self.re_rd.search(r)
+                fi["rd"] = mo2.group("rd")
+                if fi["rd"] == "None":
+                    fi.pop("rd")
+                fi["interfaces"] = []
+                v = self.cli(f'show router {fi["forwarding_instance"]} interface detail')
+                ifaces = self.parse_interfaces(v)
+                for iface in ifaces:
+                    if iface not in base_ifaces:
+                        fi["interfaces"].append(ifaces[iface])
+                        continue
+                    for si in ifaces[iface]["subinterfaces"]:
+                        fi["interfaces"].append(
+                            {
+                                "name": si["name"],
+                                "type": "other",
+                                "enabled_protocols": [],
+                                "subinterfaces": [si],
+                            }
+                        )
+            elif fi["type"] == "bridge":
+                v = self.cli(f'show service id {fi["forwarding_instance"]} base')
+                match = self.re_vpls.search(v)
+                if not match:
+                    fi["type"] = "vpls"
+                    continue
+                vpls: Dict[str, Any] = match.groupdict()
+                fi.update(vpls)
+                vpls["type"] = "bridge"
+                fi["oper_status"] = self.fix_status(fi["oper_status"])
+                fi["admin_status"] = self.fix_status(fi["admin_status"])
+                if vpls["forwarding_instance"] == "(Not Specified)":
+                    fi["forwarding_instance"] = vpls["id"]
+                fi["interfaces"] = []
+                if vpls["sap_section"]:
+                    sap_ifaces = self.parse_vpls_saps(fi.pop("sap_section"))
+                    for iface in sap_ifaces:
+                        if iface not in base_ifaces:
+                            fi["interfaces"].append(sap_ifaces[iface])
+                            continue
+                        for si in sap_ifaces[iface]["subinterfaces"]:
+                            fi["interfaces"].append(
+                                {
+                                    "name": si["name"],
+                                    "type": "other",
+                                    "enabled_protocols": [],
+                                    "subinterfaces": [si],
+                                }
+                            )
+                    # fi.update(self.fix_vpls_saps(fi.pop("sap_section")))
+                else:
+                    fi["interfaces"].append(
+                        {
+                            "type": "unknown",
+                            "subinterfaces": {"name": "empty_vpls"},
+                        }
+                    )
+                fi.pop("id")
+            elif fi["type"] == "Unsupported":
+                continue
+            result.append(fi)
+        if base_ifaces:
+            result += [
+                {
+                    "forwarding_instance": "default",
+                    "type": "ip",
+                    "interfaces": list(base_ifaces.values()),
+                }
+            ]
         return result
