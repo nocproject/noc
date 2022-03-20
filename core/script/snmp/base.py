@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Dict, Callable, List
 import weakref
 
 # NOC modules
@@ -92,11 +92,19 @@ class SNMP(object):
             self.display_hints = self.script.profile.get_snmp_display_hints(self.script)
         return self.display_hints
 
-    def get(self, oids, cached=False, version=None, raw_varbinds=False, display_hints=None):
+    def get(
+        self,
+        oids: List[str],
+        cached: bool = False,
+        version: Optional[str] = None,
+        raw_varbinds=False,
+        display_hints: Optional[Dict[str, Callable]] = None,
+    ):
         """
         Perform SNMP GET request
         :param List[str] oids: string or list of oids
         :param cached: True if get results can be cached during session
+        :param version: SNMP Version used, if None - SNMP Capabilities used
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
         :returns: eigther result scalar or dict of name -> value
@@ -203,23 +211,31 @@ class SNMP(object):
 
     def getnext(
         self,
-        oid,
-        community_suffix=None,
+        oid: str,
+        community_suffix: Optional[str] = None,
         filter=None,
-        cached=False,
-        only_first=False,
-        bulk=None,
-        max_repetitions=None,
-        version=None,
-        max_retries=0,
-        timeout=10,
-        raw_varbinds=False,
-        display_hints=None,
+        cached: bool = False,
+        only_first: bool = False,
+        bulk: Optional[bool] = None,
+        max_repetitions: Optional[int] = None,
+        version: Optional[str] = None,
+        max_retries: int = 0,
+        timeout: int = 10,
+        raw_varbinds: bool = False,
+        display_hints: Optional[Dict[str, Callable]] = None,
     ):
         """
         Perform SNMP GETNEXT request
-        :param oid: string or list of oids
+        :param oid: string
+        :param community_suffix:
+        :param filter:
         :param cached: True if get results can be cached during session
+        :param only_first: Return first result
+        :param bulk: False - disable GetBulk, None - Enable by 'SNMP | Bulk' capabilities
+        :param max_repetitions: Max OID in Bulk result
+        :param version: SNMP Version: 0 - v1, 1 - v2c
+        :param max_retries: Mac count trying when no response
+        :param timeout: Timeout for SNMP Response
         :param raw_varbinds: Return value in BER encoding
         :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
         :returns: eigther result scalar or dict of name -> value
@@ -288,16 +304,16 @@ class SNMP(object):
 
     def get_tables(
         self,
-        oids,
-        community_suffix=None,
-        bulk=False,
-        min_index=None,
-        max_index=None,
-        cached=False,
-        max_repetitions=None,
-        timeout=15,
-        max_retries=0,
-        display_hints=None,
+        oids: List[str],
+        community_suffix: str = None,
+        bulk: Optional[bool] = None,
+        min_index: Optional[int] = None,
+        max_index: Optional[int] = None,
+        cached: Optional[bool] = False,
+        max_repetitions: Optional[int] = None,
+        timeout: int = 15,
+        max_retries: int = 0,
+        display_hints: Optional[Dict[str, Callable]] = None,
     ):
         """
         Query list of SNMP tables referenced by oids and yields
@@ -309,10 +325,10 @@ class SNMP(object):
         :param min_index:
         :param max_index:
         :param cached:
-        :param max_repetitions:
-        :param timeout:
-        :param max_retries:
-        :param display_hints:
+        :param max_repetitions: Max OID in Bulk result
+        :param max_retries: Mac count trying when no response
+        :param timeout: Timeout for SNMP Response
+        :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
         :return:
         """
 
