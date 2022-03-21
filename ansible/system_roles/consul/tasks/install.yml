@@ -51,7 +51,7 @@
 
 - name: Overwrite Consul binary if needed
   copy:
-    src: "{{ consul_temp_unarchive }}/consul"
+    src: "{{ consul_temp_unarchive }}"
     dest: "{{ consul_bin_path }}/consul"
     remote_src: "True"
     mode: 0755
