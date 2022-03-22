@@ -1,0 +1,70 @@
+{
+  "title": "Subscribers | L2TP",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": 64313,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "transparent": true,
+  "targets": [
+    {
+      "refId": "A",
+      "format": "time_series",
+      "extrapolate": false,
+      "skip_comments": false,
+      "dateTimeType": "DATETIME",
+      "round": "0s",
+      "intervalFactor": 1,
+      "query": "SELECT\n    $timeSeries as t,\n    avg(l2tp) `Subscribers | L2TP`\nFROM $table\n\nWHERE\n    managed_object = $bi_id\n    and $timeFilter\nGROUP BY t\n\nORDER BY t\n",
+      "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+      "database": "{{ noc_db_metrics }}",
+      "tableLoading": false,
+      "table": "subscriber",
+      "dateLoading": false,
+      "datetimeLoading": false,
+          "dateColDataType": "date",
+      "dateTimeColDataType": "ts",
+      "rawQuery": "SELECT\n    (intDiv(toUInt32(ts), 1) * 1) * 1000 as t,\n    avg(l2tp) `Subscribers | L2TP`\nFROM noc.subscriber\n\nWHERE\n    managed_object = 2071417769693593995\n    and ts >= toDateTime(1647925595)\nGROUP BY t\n\nORDER BY t",
+      "interval": "",
+      "hide": false
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "x-axis": true,
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxis": {
+    "align": false,
+    "alignLevel": null
+  }
+}
