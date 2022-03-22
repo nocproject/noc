@@ -306,7 +306,7 @@ class ManagedObjectProfile(NOCModel):
         choices=[("I", "Interface Profile"), ("A", "All")],
         default="A",
     )
-    box_mac_collect_filter = DocumentReferenceField(VLANFilter, null=True, blank=True)
+    mac_collect_vlanfilter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Enable extended MAC discovery
     enable_box_discovery_xmac = models.BooleanField(default=False)
     # Enable interface description discovery
@@ -350,7 +350,6 @@ class ManagedObjectProfile(NOCModel):
         choices=[("I", "Interface Profile"), ("A", "All")],
         default="A",
     )
-    periodic_mac_collect_filter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Collect metrics
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Enable Alarms

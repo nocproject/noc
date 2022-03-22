@@ -38,7 +38,7 @@ class Migration(BaseMigration):
         )
         self.db.add_column(
             "sa_managedobjectprofile",
-            "box_mac_collect_filter",
+            "mac_collect_vlanfilter",
             DocumentReferenceField("vc.VLANFilter", null=True, blank=True),
         )
         self.db.add_column(
@@ -50,11 +50,6 @@ class Migration(BaseMigration):
                 choices=[("I", "Interface Profile"), ("A", "All")],
                 default="A",
             ),
-        )
-        self.db.add_column(
-            "sa_managedobjectprofile",
-            "periodic_mac_collect_filter",
-            DocumentReferenceField("vc.VLANFilter", null=True, blank=True),
         )
         if interface_profile_mac:
             self.db.execute(

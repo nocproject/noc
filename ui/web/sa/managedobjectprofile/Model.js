@@ -376,7 +376,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: "A"
         },
         {
-            name: "box_mac_collect_filter",
+            name: "mac_collect_vlanfilter",
             type: "string",
         },
         {
@@ -467,10 +467,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "periodic_discovery_mac_filter_policy",
             type: "string",
             defaultValue: "A"
-        },
-        {
-            name: "periodic_mac_collect_filter",
-            type: "string",
         },
         {
             name: "enable_periodic_discovery_metrics",

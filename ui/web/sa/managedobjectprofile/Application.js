@@ -1092,7 +1092,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
-                                            reference: "enableBoxDiscoveryMAC"
+                                            reference: "enableBoxDiscoveryMAC",
+                                            colspan: 2
                                         },
                                         {
                                             name: "box_discovery_mac_filter_policy",
@@ -1113,20 +1114,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 render: me.addTooltip
                                             },
                                             uiStyle: "medium"
-                                        },
-                                        {
-                                            name: "box_mac_collect_filter",
-                                            xtype: "vc.vlanfilter.LookupField",
-                                            tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
-                                                'VC -> Setup -> VLAN Filter'),
-                                            fieldLabel: __("VLAN Filter"),
-                                            allowBlank: true,
-                                            bind: {
-                                                disabled: "{!enableBoxDiscoveryMAC.checked}"
-                                            },
-                                            listeners: {
-                                                render: me.addTooltip
-                                            }
                                         },
                                         {
                                             name: "enable_box_discovery_cpestatus",
@@ -2132,7 +2119,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             uiStyle: "medium"
                                         },
                                         {
-                                            name: "periodic_mac_collect_filter",
+                                            name: "mac_collect_vlanfilter",
                                             xtype: "vc.vlanfilter.LookupField",
                                             tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
                                                 'VC -> Setup -> VLAN Filter'),
