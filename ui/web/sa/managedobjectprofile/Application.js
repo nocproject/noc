@@ -22,6 +22,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.addressprofile.LookupField",
         "NOC.vc.vpnprofile.LookupField",
+        "NOC.vc.vlanfilter.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.extstorage.LookupField",
         "NOC.main.handler.LookupField",
@@ -281,6 +282,55 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Integration"),
+                                    tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
+                                        "Do not Edit field directly!"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "remote_system",
+                                                    xtype: "main.remotesystem.LookupField",
+                                                    labelWidth: 150,
+                                                    fieldLabel: __("Remote System"),
+                                                    allowBlank: true
+                                                },
+                                                {
+                                                    name: "remote_id",
+                                                    xtype: "textfield",
+                                                    labelWidth: 150,
+                                                    fieldLabel: __("Remote ID"),
+                                                    allowBlank: true,
+                                                    uiStyle: "medium"
+                                                },
+                                                {
+                                                    name: "bi_id",
+                                                    xtype: "displayfield",
+                                                    labelWidth: 150,
+                                                    fieldLabel: __("BI ID"),
+                                                    allowBlank: true,
+                                                    uiStyle: "medium"
+                                                }
+                                            ]
+
+                                        }
+                                    ],
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
                                     xtype: "fieldset",
@@ -723,8 +773,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     }
                                 },
                                 {
-                                    type: "container",
+                                    xtype: "fieldset",
                                     layout: "hbox",
+                                    title: __("Merge Downlinks"),
                                     defaults: {
                                         padding: 4
                                     },
@@ -732,7 +783,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_rca_downlink_merge",
                                             xtype: "checkbox",
-                                            boxLabel: __("Merge Downlinks"),
+                                            boxLabel: __("Enable"),
                                             reference: "enableFMRCADownlinkMerge"
                                         },
                                         {
@@ -740,13 +791,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "numberfield",
                                             minValue: 0,
                                             fieldLabel: __("Merge Window (sec)"),
+                                            labelWidth: 150,
                                             allowBlank: true,
                                             bind: {
                                                 disabled: "{!enableFMRCADownlinkMerge.checked}"
                                             },
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Abduct Detection"),
+                                    defaults: {
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "abduct_detection_window",
+                                            fieldLabel: __("Abduct Detection Window"),
+                                            labelWidth: 150,
+                                            xtype: "numberfield",
+                                            allowBlank: true,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "abduct_detection_threshold",
+                                            fieldLabel: __("Abduct Detection Threshold"),
+                                            labelWidth: 200,
+                                            xtype: "numberfield",
+                                            allowBlank: true,
+                                            uiStyle: "small"
+                                        }
+                                    ]
                                 }
+
                             ]
                         },
                         {
@@ -1013,7 +1092,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC"),
-                                            colspan: 3
+                                            reference: "enableBoxDiscoveryMAC"
+                                        },
+                                        {
+                                            name: "box_discovery_mac_filter_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Collect Filter Policy"),
+                                            store: [
+                                                ["A", __("All")],
+                                                ["I", __("Interface Profile")]
+                                            ],
+                                            tooltip: __("I - Collect MACs only for allowed interfaces. <br/>" +
+                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile) <br/>") +
+                                            "A - Collect All MACs",
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryMAC.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            },
+                                            uiStyle: "medium"
+                                        },
+                                        {
+                                            name: "box_mac_collect_filter",
+                                            xtype: "vc.vlanfilter.LookupField",
+                                            tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
+                                                'VC -> Setup -> VLAN Filter'),
+                                            fieldLabel: __("VLAN Filter"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryMAC.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
                                         },
                                         {
                                             name: "enable_box_discovery_cpestatus",
@@ -1025,7 +1138,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_alarms",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Alarms")
+                                            boxLabel: __("Alarms"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_box_discovery_metrics",
@@ -1835,6 +1949,33 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             uiStyle: "small"
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Proccess Telemetry"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_telemetry_sample",
+                                            xtype: "numberfield",
+                                            tooltip: __("Sampling value for Box discovery. Interval from 0 to 1. <br/>" +
+                                                "1 - all jobs will saved, 0 - Not collect telemetry, <br/>" +
+                                                " 0,99 ... 0,1 - chance to save"),
+                                            labelWidth: 150,
+                                            minValue: 0,
+                                            maxValue: 1,
+                                            fieldLabel: __("Box Sample"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -1908,7 +2049,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     xtype: "container",
                                     layout: {
                                         type: "table",
-                                        columns: 5
+                                        columns: 3
                                     },
                                     defaults: {
                                         padding: "4 8 0 0"
@@ -1917,80 +2058,100 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_periodic_discovery_uptime",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Uptime")
+                                            boxLabel: __("Uptime"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_periodic_discovery_interface_status",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Interface status")
+                                            boxLabel: __("Interface status"),
+                                            colspan: 3
+                                        },
+                                        {
+                                            name: "enable_periodic_discovery_metrics",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Metrics"),
+                                            colspan: 3
                                         },
                                         {
                                             name: "enable_periodic_discovery_cpestatus",
                                             xtype: "checkboxfield",
                                             boxLabel: __("CPE status"),
-                                            reference: "enablePeriodicDiscoveryCPEStatus"
+                                            reference: "enablePeriodicDiscoveryCPEStatus",
+                                            colspan: 2
+                                        },
+                                        {
+                                            name: "periodic_discovery_cpestatus_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Periodic CPE Status Policy"),
+                                            labelWidth: 150,
+                                            allowBlank: true,
+                                            tooltip: __('Set Policy for CPE Status Discovery. ' +
+                                                'S - Check only CPE Statuses (script get_cpe_status)' +
+                                                'F - Check ALL CPE info (script get_cpe)'),
+                                            displayField: "label",
+                                            valueField: "id",
+                                            store: {
+                                                fields: ["id", "label"],
+                                                data: [
+                                                    {"id": "S", "label": __("Status only")},
+                                                    {"id": "F", "label": __("Full")}
+                                                ]
+                                            },
+                                            bind: {
+                                                disabled: "{!enablePeriodicDiscoveryCPEStatus.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
                                         },
                                         {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("MAC")
+                                            boxLabel: __("MAC"),
+                                            reference: "enablePeriodicDiscoveryMAC"
+                                        },
+                                        {
+                                            name: "periodic_discovery_mac_filter_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Policy"),
+                                            store: [
+                                                ["A", __("All")],
+                                                ["I", __("Interface Profile")]
+                                            ],
+                                            tooltip: __("I - Collect MACs only for allowed interfaces. <br/>" +
+                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile) <br/>") +
+                                            "A - Collect All MACs",
+                                            allowBlank: false,
+                                            bind: {
+                                                disabled: "{!enablePeriodicDiscoveryMAC.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            },
+                                            uiStyle: "medium"
+                                        },
+                                        {
+                                            name: "periodic_mac_collect_filter",
+                                            xtype: "vc.vlanfilter.LookupField",
+                                            tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
+                                                'VC -> Setup -> VLAN Filter'),
+                                            fieldLabel: __("VLAN Filter"),
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryMAC.checked}"
+                                            },
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
                                         },
                                         {
                                             name: "enable_periodic_discovery_alarms",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Alarms")
+                                            boxLabel: __("Alarms"),
+                                            colspan: 3
                                         },
-                                        {
-                                            name: "enable_periodic_discovery_metrics",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Metrics")
-                                        }
                                     ]
-                                },
-                                {
-                                    xtype: "fieldset",
-                                    title: __("Periodic CPE Status"),
-                                    layout: "vbox",
-                                    defaults: {
-                                        labelAlign: "top",
-                                        padding: 4
-                                    },
-                                    items: [
-                                        {
-                                            xtype: "container",
-                                            layout: "hbox",
-                                            defaults: {
-                                                padding: "0 8 0 0"
-                                            },
-                                            items: [
-                                                {
-                                                    name: "periodic_discovery_cpestatus_policy",
-                                                    xtype: "combobox",
-                                                    fieldLabel: __("Periodic CPE Status Policy"),
-                                                    labelWidth: 150,
-                                                    allowBlank: true,
-                                                    tooltip: __('Set Policy for CPE Status Discovery. ' +
-                                                        'S - Check only CPE Statuses (script get_cpe_status)' +
-                                                        'F - Check ALL CPE info (script get_cpe)'),
-                                                    displayField: "label",
-                                                    valueField: "id",
-                                                    store: {
-                                                        fields: ["id", "label"],
-                                                        data: [
-                                                            {"id": "S", "label": __("Status only")},
-                                                            {"id": "F", "label": __("Full")}
-                                                        ]
-                                                    },
-                                                    bind: {
-                                                        disabled: "{!enablePeriodicDiscoveryCPEStatus.checked}"
-                                                    },
-                                                    listeners: {
-                                                        render: me.addTooltip
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                        ]
                                 },
                                 {
                                     xtype: "fieldset",
@@ -2034,6 +2195,33 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true,
                                             minValue: 0,
                                             uiStyle: "small"
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Proccess Telemetry"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "periodic_discovery_telemetry_sample",
+                                            xtype: "numberfield",
+                                            tooltip: __('Sampling value for Periodic discovery. Interval from 0 to 1. <br/>' +
+                                                '1 - all jobs will saved, 0 - Not collect telemetry, ' +
+                                                ' 0,99 ... 0,1 - chance to save'),
+                                            labelWidth: 150,
+                                            minValue: 0,
+                                            maxValue: 1,
+                                            fieldLabel: __("Periodic Sample"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
                                         }
                                     ]
                                 }
@@ -2390,69 +2578,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             }
                         },
                         {
-                            title: __("MAC"),
-                            tooltip: __("Filter settings for MAC disocovery"),
-                            items: [
-                                {
-                                    name: "mac_collect_all",
-                                    xtype: "checkbox",
-                                    tooltip: __("Not filter collected MACs"),
-                                    boxLabel: __("Collect All"),
-                                    allowBlank: true,
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                },
-                                {
-                                    name: "mac_collect_interface_profile",
-                                    xtype: "checkbox",
-                                    tooltip: __("Collect MACs only for allowed interfaces. <br/>" +
-                                        "(MAC Discovery Policy on Inventory -> Setup -> Interface Profile)"),
-                                    boxLabel: __("Collect if permitted by interface profile"),
-                                    allowBlank: true,
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                },
-                                {
-                                    name: "mac_collect_management",
-                                    xtype: "checkbox",
-                                    tooltip: __("Collect MAC only for managed VLAN. <br/>" +
-                                        "Managed VLAN set in Inventory -> Setup -> NetworkSegmentProfile"),
-                                    boxLabel: __("Collect from management VLAN"),
-                                    allowBlank: true,
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                },
-                                {
-                                    name: "mac_collect_multicast",
-                                    xtype: "checkbox",
-                                    tooltip: __("Collect MAC only for Multicast VLAN. <br/>" +
-                                        "Multicast VLAN set in Inventory -> Setup -> NetworkSegmentProfile"),
-                                    boxLabel: __("Collect from multicast VLAN"),
-                                    allowBlank: true,
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                },
-                                {
-                                    name: "mac_collect_vcfilter",
-                                    xtype: "checkbox",
-                                    tooltip: __("Collect MAC only for VLAN on VCFilter. <br/>" +
-                                        "MVCFilter set in VC Management -> Setup -> VCFilter"),
-                                    boxLabel: __("Collect from VLAN matching VC Filter"),
-                                    allowBlank: true,
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                }
-                            ],
-                            listeners: {
-                                render: me.addTooltip
-                            }
-                        },
-                        {
                             title: __("Autosegmentation"),
                             tooltip: __("Settings for autosegmentatin proccess: <br/>" +
                                 "Automaticaly detect segment for ManagedObject with this ObjectProfile.<br/>" +
@@ -2505,39 +2630,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             }
                         },
                         {
-                            title: __("Integration"),
-                            tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
-                                "Do not Edit field directly!"),
-                            items: [
-                                {
-                                    name: "remote_system",
-                                    xtype: "main.remotesystem.LookupField",
-                                    labelWidth: 150,
-                                    fieldLabel: __("Remote System"),
-                                    allowBlank: true
-                                },
-                                {
-                                    name: "remote_id",
-                                    xtype: "textfield",
-                                    labelWidth: 150,
-                                    fieldLabel: __("Remote ID"),
-                                    allowBlank: true,
-                                    uiStyle: "medium"
-                                },
-                                {
-                                    name: "bi_id",
-                                    xtype: "displayfield",
-                                    labelWidth: 150,
-                                    fieldLabel: __("BI ID"),
-                                    allowBlank: true,
-                                    uiStyle: "medium"
-                                }
-                            ],
-                            listeners: {
-                                render: me.addTooltip
-                            }
-                        },
-                        {
                             title: __("Escalation"),
                             tooltip: __("Policy for do managedobject in escalation proccess: " +
                                 "FM -> Setup -> Escalation"),
@@ -2557,68 +2649,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["R", __("As Depended")]
                                     ],
                                     value: "E",
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                }
-                            ],
-                            listeners: {
-                                render: me.addTooltip
-                            }
-                        },
-                        {
-                            title: __("Abduct Detection"),
-                            items: [
-                                {
-                                    name: "abduct_detection_window",
-                                    fieldLabel: __("Abduct Detection Window"),
-                                    xtype: "numberfield",
-                                    allowBlank: true,
-                                    uiStyle: "small"
-                                },
-                                {
-                                    name: "abduct_detection_threshold",
-                                    fieldLabel: __("Abduct Detection Threshold"),
-                                    xtype: "numberfield",
-                                    allowBlank: true,
-                                    uiStyle: "small"
-                                }
-                            ]
-                        },
-                        {
-                            title: __("Telemetry"),
-                            tooltip: __("Setting for saving discovery operation on ClickHouse telemetry table. <br/>" +
-                                "Warning! Activate telemetry if you really know for it. <br/>" +
-                                "Enable overhad about +25% CPU usage"),
-                            items: [
-                                {
-                                    name: "box_discovery_telemetry_sample",
-                                    xtype: "numberfield",
-                                    tooltip: __("Sampling value for Box discovery. Interval from 0 to 1. <br/>" +
-                                        "1 - all jobs will saved, 0 - Not collect telemetry, <br/>" +
-                                        " 0,99 ... 0,1 - chance to save"),
-                                    labelWidth: 150,
-                                    minValue: 0,
-                                    maxValue: 1,
-                                    fieldLabel: __("Box Sample"),
-                                    allowBlank: false,
-                                    uiStyle: "medium",
-                                    listeners: {
-                                        render: me.addTooltip
-                                    }
-                                },
-                                {
-                                    name: "periodic_discovery_telemetry_sample",
-                                    xtype: "numberfield",
-                                    tooltip: __('Sampling value for Periodic discovery. Interval from 0 to 1. <br/>' +
-                                        '1 - all jobs will saved, 0 - Not collect telemetry, ' +
-                                        ' 0,99 ... 0,1 - chance to save'),
-                                    labelWidth: 150,
-                                    minValue: 0,
-                                    maxValue: 1,
-                                    fieldLabel: __("Periodic Sample"),
-                                    allowBlank: false,
-                                    uiStyle: "medium",
                                     listeners: {
                                         render: me.addTooltip
                                     }

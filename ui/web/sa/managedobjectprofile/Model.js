@@ -371,6 +371,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "box_discovery_mac_filter_policy",
+            type: "string",
+            defaultValue: "A"
+        },
+        {
+            name: "box_mac_collect_filter",
+            type: "string",
+        },
+        {
             name: "enable_box_discovery_xmac",
             type: "boolean",
             defaultValue: false
@@ -453,6 +462,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "enable_periodic_discovery_mac",
             type: "boolean",
             defaultValue: false
+        },
+        {
+            name: "periodic_discovery_mac_filter_policy",
+            type: "string",
+            defaultValue: "A"
+        },
+        {
+            name: "periodic_mac_collect_filter",
+            type: "string",
         },
         {
             name: "enable_periodic_discovery_metrics",
@@ -542,26 +560,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "caps_profile__label",
             type: "string",
             persist: false
-        },
-        {
-            name: "mac_collect_all",
-            type: "boolean"
-        },
-        {
-            name: "mac_collect_interface_profile",
-            type: "boolean"
-        },
-        {
-            name: "mac_collect_management",
-            type: "boolean"
-        },
-        {
-            name: "mac_collect_multicast",
-            type: "boolean"
-        },
-        {
-            name: "mac_collect_vcfilter",
-            type: "boolean"
         },
         {
             name: "autosegmentation_policy",
