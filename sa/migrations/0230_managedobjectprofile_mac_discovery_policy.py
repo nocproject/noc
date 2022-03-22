@@ -61,7 +61,7 @@ class Migration(BaseMigration):
                 """
                  UPDATE sa_managedobjectprofile
                  SET periodic_discovery_mac_filter_policy = 'I', box_discovery_mac_filter_policy = 'I'
-                 WHERE id IN %s
+                 WHERE id = ANY (%s)
                 """,
                 [interface_profile_mac],
             )
