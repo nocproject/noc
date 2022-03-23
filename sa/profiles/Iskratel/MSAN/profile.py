@@ -3,7 +3,7 @@
 # OS:     MSAN
 # Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,10 +20,11 @@ class Profile(BaseProfile):
     pattern_username = b"([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
     pattern_unprivileged_prompt = rb"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*>"
-    pattern_prompt = rb"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*#"
+    pattern_prompt = rb"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*(\(Config\))?#"
     pattern_more = [
         (rb"Press any key to continue or ESC to stop scrolling.", b" "),
         (rb"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", b"\t"),
+        (rb"Are you sure you want to save\? \(y/n\)", b"y"),
         (rb"--More-- or \(q\)uit", b" "),
     ]
     pattern_syntax_error = rb"% Invalid input detected at|Command not found"
