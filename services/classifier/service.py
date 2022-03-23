@@ -23,7 +23,7 @@ import orjson
 
 # NOC modules
 from noc.config import config
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
@@ -96,7 +96,7 @@ NS = 1000000000.0
 CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
 
 
-class ClassifierService(TornadoService):
+class ClassifierService(FastAPIService):
     """
     Events-classification service
     """
