@@ -232,8 +232,39 @@ class Profile(BaseProfile):
     )
 
     def parse_interface(self, s):
+        """
+        Port  State/     Settings                 Connection               AddressType  MDI
+        Speed/Duplex/FlowCtrl    Speed/Duplex/FlowCtrl    Learning
+        ----- -------    ---------------------    ---------------------    --------
+        1     Enabled    Auto/Disabled            Link Down                Enabled
+              Auto
+        Desc: PPPoE
+        2     Enabled    Auto/Disabled            100M/Full/Disabled       Enabled
+              Auto
+        Desc: C_112_MAIN
+        3     Enabled    Auto/Disabled            Link Down                Enabled
+              Auto
+        Desc:
+
+        ..........
+
+        28    Enabled    Auto/Disabled            1000M/Full/Disabled      Enabled
+              N/A
+        Desc:
+
+        :param s:
+        :return:
+        """
         match = self.rx_port.search(s)
         if match:
+            f = self.rx_port.findall(s)
+            # print("Parse interface function")
+            # print("Parse: '%s'" % s)
+            if len(f) < 2 and not s.endswith("\r\n"):
+                # Fix for DES-1210-28/ME/B2 output format. For catch 'Desc:' on separate string -
+                # that wait 2 block match, end output catch by empty string
+                #
+                return
             port = match.group("port")
             media_type = match.group("media_type")
             descr = match.group("desc")
