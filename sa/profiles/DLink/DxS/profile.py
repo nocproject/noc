@@ -260,7 +260,7 @@ class Profile(BaseProfile):
             f = self.rx_port.findall(s)
             # print("Parse interface function")
             # print("Parse: '%s'" % s)
-            if len(f) < 2 and not s.endswith("\r\n"):
+            if len(f) < 2 and not s.endswith("\n\n"):
                 # Fix for DES-1210-28/ME/B2 output format. For catch 'Desc:' on separate string -
                 # that wait 2 block match, end output catch by empty string
                 #
