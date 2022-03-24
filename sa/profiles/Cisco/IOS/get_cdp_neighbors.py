@@ -49,7 +49,7 @@ class Script(BaseScript):
                     r_device_id = self.rx_serial_check.match(r_device_id).group(1)
                 ifname = self.profile.convert_interface_name(ii[0])
                 # Convert `Se 0/0/0:0` to `Se 0/0/0`
-                name, *sub = n.rsplit(":", 1)
+                name, *sub = ifname.rsplit(":", 1)
                 if sub:
                     ifname = name
                 neighbors += [
