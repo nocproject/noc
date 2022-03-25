@@ -1,11 +1,13 @@
 # ----------------------------------------------------------------------
-# NBI API Base Class
+# Base API Class
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
+import hashlib
 from typing import List, Optional
 
 # Third-party modules
@@ -13,8 +15,8 @@ from fastapi import APIRouter
 from fastapi.responses import ORJSONResponse
 
 # NOC modules
+from noc.core.comp import smart_bytes
 from noc.core.service.loader import get_service
-
 
 FORBIDDEN_MESSAGE = "<html><title>403: Forbidden</title><body>403: Forbidden</body></html>"
 
@@ -28,6 +30,9 @@ class BaseAPI(object):
     api_name: Optional[str] = None
     # Tags for OpenAPI documentation
     openapi_tags: List[str] = []
+
+    hash = None
+    PREFIX = os.getcwd()
 
     def __init__(self, router: APIRouter):
         self.service = get_service()
@@ -63,3 +68,19 @@ class BaseAPI(object):
                 },
                 tags=self.openapi_tags,
             )
+
+    def hashed(self, url):
+        """
+        Convert path to path?hash version
+        :param path:
+        :return:
+        """
+        u = url
+        if u.startswith("/"):
+            u = url[1:]
+        path = os.path.join(self.PREFIX, u)
+        if not os.path.exists(path):
+            return "%s?%s" % (url, "00000000")
+        with open(path) as f:
+            hash = hashlib.sha256(smart_bytes(f.read())).hexdigest()[:8]
+        return "%s?%s" % (url, hash)
