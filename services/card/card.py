@@ -10,14 +10,17 @@ import os
 import inspect
 from threading import Lock
 import operator
+from typing import Optional
 
 # Third-party modules
-import tornado.web
 from jinja2 import Template
 import orjson
 import cachetools
 
 # NOC modules
+from fastapi import APIRouter, Path, Header, HTTPException, Response
+from fastapi.responses import RedirectResponse
+from noc.services.card.myhandler import MyHandler
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
 from noc.core.debug import error_report
@@ -29,17 +32,19 @@ from noc.core.perf import metrics
 user_lock = Lock()
 
 
-class CardRequestHandler(UIHandler):
+class CardRequestHandler(MyHandler):
     CARDS = None
     CARD_TEMPLATE_PATH = config.path.card_template_path
     CARD_TEMPLATE = None
 
     _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
-    def initialize(self):
+    def __init__(self):
         if not self.CARD_TEMPLATE:
             with open(self.CARD_TEMPLATE_PATH) as f:
                 self.CARD_TEMPLATE = Template(f.read())
+        self.load_cards()
+        self.current_user = None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_user_cache"), lock=lambda _: user_lock)
@@ -56,13 +61,25 @@ class CardRequestHandler(UIHandler):
             user = self.get_user_by_name(self.request.headers.get("Remote-User"))
         return user
 
-    def get(self, card_type, card_id, *args, **kwargs):
+    def get(
+        self,
+        card_type: str,
+        card_id: str,
+        refresh: Optional[int] = None,
+        remote_user: Optional[str] = Header(None, alias="Remote-User")
+    ):
+        print('card_type', card_type, type(card_type))
+        print('card_id', card_id, type(card_id))
+        self.current_user = self.get_user_by_name("admin")
+        print('self.current_user', self.current_user, type(self.current_user))
+
         if not self.current_user:
-            raise tornado.web.HTTPError(404, "Not found")
+            raise HTTPException(404, "Not authorized") # tornado.web.HTTPError(404, "Not found")
         is_ajax = card_id == "ajax"
         tpl = self.CARDS.get(card_type)
+        print('tpl', tpl, type(tpl))
         if not tpl:
-            raise tornado.web.HTTPError(404, "Card template not found")
+            raise HTTPException(404, "Card template not found") # tornado.web.HTTPError(404, "Card template not found")
         try:
             card = tpl(self, card_id)
             if is_ajax:
@@ -70,41 +87,32 @@ class CardRequestHandler(UIHandler):
             else:
                 data = card.render()
         except BaseCard.RedirectError as e:
-            return self.redirect(e.args[0])
+            return RedirectResponse(e.args[0])
         except BaseCard.NotFoundError:
-            raise tornado.web.HTTPError(404, "Not found")
+            raise HTTPException(404, "Not found") # raise tornado.web.HTTPError(404, "Not found")
         except Exception:
             error_report()
-            raise tornado.web.HTTPError(500, "Internal server error")
+            raise HTTPException(500, "Internal server error") # tornado.web.HTTPError(500, "Internal server error")
         if not data:
-            raise tornado.web.HTTPError(404, "Not found")
-        self.set_header("Cache-Control", "no-cache, must-revalidate")
-        if is_ajax:
-            self.set_header("Content-Type", "text/json")
-            self.write(
-                orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS)
-            )
-        else:
-            self.set_header("Content-Type", "text/html; charset=utf-8")
-            refresh = self.get_argument("refresh", None)
-            if refresh:
-                try:
-                    refresh = int(refresh)
-                    self.set_header("Refresh", str(refresh))
-                except ValueError:
-                    pass
+            raise HTTPException(404, "No data found") # tornado.web.HTTPError(404, "Not found")
 
-            self.write(
-                self.get_card_template().render(
-                    {
-                        "card_data": data,
-                        "card_title": str(card.object),
-                        "hashed": self.hashed,
-                        "card_js": card.card_js,
-                        "card_css": card.card_css,
-                    }
-                )
+        headers = {"Cache-Control": "no-cache, must-revalidate"}
+        if is_ajax:
+            od = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS)
+            return Response(content=od, media_type="application/json", headers=headers)
+        else:
+            if refresh:
+                headers["Refresh"] = str(refresh)
+            content = self.get_card_template().render(
+                {
+                    "card_data": data,
+                    "card_title": str(card.object),
+                    "hashed": self.hashed,
+                    "card_js": card.card_js,
+                    "card_css": card.card_css,
+                }
             )
+            return Response(content=content, media_type="text/html", headers=headers)
 
     def get_card_template(self):
         if not self.CARD_TEMPLATE:
@@ -140,3 +148,6 @@ class CardRequestHandler(UIHandler):
                         and getattr(c, "name", None)
                     ):
                         cls.CARDS[c.name] = c
+
+
+card_request_handler = CardRequestHandler()

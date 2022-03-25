@@ -7,13 +7,14 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.ui import UIService
+#from noc.core.service.ui import UIService
+from noc.core.service.fastapi import FastAPIService
 from noc.services.card.card import CardRequestHandler
 from noc.services.card.search import SearchRequestHandler
 from noc.config import config
 
 
-class CardService(UIService):
+class CardService(FastAPIService):
     name = "card"
 
     use_translation = True
@@ -23,12 +24,12 @@ class CardService(UIService):
         traefik_backend = "card"
         traefik_frontend_rule = "PathPrefix:/api/card"
 
-    def get_handlers(self):
-        CardRequestHandler.load_cards()
-        return super().get_handlers() + [
-            (r"^/api/card/search/$", SearchRequestHandler),
-            (r"^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler),
-        ]
+#    def get_handlers(self):
+#        CardRequestHandler.load_cards()
+#        return super().get_handlers() + [
+#            (r"^/api/card/search/$", SearchRequestHandler),
+#            (r"^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler),
+#        ]
 
 
 if __name__ == "__main__":
