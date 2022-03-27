@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_cdp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,10 +47,15 @@ class Script(BaseScript):
                 # check if "()" in device_id and platform starts with "N", then clear out
                 if self.rx_serial_check.match(r_device_id) and res[ii]["8"].startswith("N"):
                     r_device_id = self.rx_serial_check.match(r_device_id).group(1)
+                ifname = self.profile.convert_interface_name(ii[0])
+                # Convert `Se 0/0/0:0` to `Se 0/0/0`
+                name, *sub = ifname.rsplit(":", 1)
+                if sub:
+                    ifname = name
                 neighbors += [
                     {
                         "device_id": r_device_id,
-                        "local_interface": self.profile.convert_interface_name(ii[0]),
+                        "local_interface": ifname,
                         "remote_interface": res[ii]["7"],
                         "platform": res[ii]["8"],
                     }

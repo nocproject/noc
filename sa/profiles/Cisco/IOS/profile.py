@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -249,7 +249,10 @@ class Profile(BaseProfile):
         CDP neighbor interface send like: Fa0/1.1
         """
         n = self.convert_interface_name(name)
-        name, *sub = n.rsplit(".", 1)
+        name, *sub = n.rsplit(":", 1)  # Convert `Se 0/0/0:0` to `Se 0/0/0`
+        if sub:
+            return [name]
+        name, *sub = n.rsplit(".", 1)  # Convert `Gi 1/1.10` to `Gi 1/1`
         if sub:
             return [name]
         return []
