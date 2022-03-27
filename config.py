@@ -817,6 +817,9 @@ class Config(BaseConfig):
         compact_on_stop = BooleanParameter(default=False)
         flush_interval = SecondsParameter(default="1")
         compact_interval = SecondsParameter(default="5m")
+        # DataStream request limit
+        ds_limit = IntParameter(default=1000)
+
 
     # pylint: disable=super-init-not-called
     def __init__(self):

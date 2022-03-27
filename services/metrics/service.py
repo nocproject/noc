@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Metrics service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ import orjson
 from noc.core.service.fastapi import FastAPIService
 from noc.core.liftbridge.message import Message
 from noc.core.perf import metrics
+from noc.core.error import NOCError
 from noc.core.mongo.connection_async import connect_async
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
@@ -32,6 +33,7 @@ from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.rule import iter_rules
+from noc.services.metrics.datastream import MetricsDataStreamClient
 from noc.config import config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
@@ -54,6 +56,15 @@ class Card(object):
     senders: Tuple[BaseCDAGNode]
 
 
+@dataclass
+class ManagedObjectInfo(object):
+    __slots__ = ("id", "fm_pool", "labels", "metric_labels")
+    id: int
+    fm_pool: str
+    labels: Optional[List[str]]
+    metric_labels: Optional[List[str]]
+
+
 class MetricsService(FastAPIService):
     name = "metrics"
     use_mongo = True
@@ -66,6 +77,9 @@ class MetricsService(FastAPIService):
         self.graph: Optional[CDAG] = None
         self.change_log: Optional[ChangeLog] = None
         self.start_state: Dict[str, Dict[str, Any]] = {}
+        self.mo_map: Dict[int, ManagedObjectInfo] = {}
+        self.mappings_ready_event = asyncio.Event()
+        self.dispose_partitions: int = 0
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -80,6 +94,17 @@ class MetricsService(FastAPIService):
             asyncio.create_task(self.log_runner())
         if config.metrics.compact_interval > 0:
             asyncio.create_task(self.compact_runnner())
+        # Sharding
+        self.dispose_partitions = await self.get_stream_partitions("dispose")
+        # Start tracking changes
+        asyncio.get_running_loop().create_task(self.get_object_mappings())
+        # Subscribe metrics stream
+        asyncio.get_running_loop().create_task(self.subscribe_metrics())
+
+    async def subscribe_metrics(self) -> None:
+        self.logger.info("Waiting for mappings")
+        await self.mappings_ready_event.wait()
+        self.logger.info("Mappings are ready")
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
 
     async def on_deactivate(self):
@@ -103,6 +128,25 @@ class MetricsService(FastAPIService):
         while True:
             await self.change_log.compact()
             await asyncio.sleep(config.metrics.compact_interval)
+
+    async def get_object_mappings(self):
+        """
+        Subscribe and track datastream changes
+        """
+        # Register RPC aliases
+        client = MetricsDataStreamClient("cfgmomapping", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track object mappings")
+            try:
+                await client.query(
+                    limit=config.metrics.ds_limit,
+                    block=True,
+                    filter_policy="delete",
+                )
+            except NOCError as e:
+                self.logger.info("Failed to get object mappings: %s", e)
+                await asyncio.sleep(1)
 
     async def on_metrics(self, msg: Message) -> None:
         data = orjson.loads(msg.value)
@@ -216,7 +260,7 @@ class MetricsService(FastAPIService):
         :return:
         """
         # @todo: Still naive implementation based around the scope
-        # @todo: Must be replaced by profile/based card stack generator
+        # @todo: Must be replaced by profile-based card stack generator
         scope = k[0]
         if scope in self.scope_cdag:
             return self.scope_cdag[scope]
@@ -256,6 +300,14 @@ class MetricsService(FastAPIService):
         def expand(s: str, ctx: Dict[str, Any]) -> str:
             return rx_var.sub(lambda x: str(ctx.get(x, "")), s)
 
+        def merge_labels(l1: Optional[List[str]], l2: List[str]) -> List[str]:
+            if not l1:
+                return l2
+            if not l2:
+                return l1
+            l2_set = set(l2)
+            return l2[:] + [x for x in l1 if x not in l2_set]
+
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node in src.nodes.values():
@@ -268,7 +320,16 @@ class MetricsService(FastAPIService):
                     nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                 )
         # Apply rules
-        for item in iter_rules(k[0], labels):
+        key_ctx = dict(k[1])
+        if "managed_object" in key_ctx:
+            mo_info = self.mo_map.get(key_ctx["managed_object"])
+        else:
+            mo_info = None
+        if mo_info:
+            mo_labels = mo_info.labels
+        else:
+            mo_labels = None
+        for item in iter_rules(k[0], merge_labels(mo_labels, labels)):
             prev: Optional[BaseCDAGNode] = nodes.get(item.metric_type.field_name)
             if not prev:
                 self.logger.error("Cannot find probe node %s", item.metric_type.field_name)
@@ -291,9 +352,8 @@ class MetricsService(FastAPIService):
                 prev = activation_node
             if item.alarm_node:
                 # Expand key fields
-                key_ctx = dict(k[1])
-                if "managed_object" not in key_ctx:
-                    self.logger.error("Cannot find managed_object in %s. Skipping alarm node.", k)
+                if not mo_info:
+                    self.logger.error("Cannot find managed_object for %s. Skipping alarm node.", k)
                 else:
                     # Collect labels
                     labels = item.alarm_node.config.labels or []
@@ -301,7 +361,9 @@ class MetricsService(FastAPIService):
                         labels += k[2]
                     # Expand config
                     alarm_config = {
-                        "managed_object": f"bi_id:{key_ctx['managed_object']}",
+                        "managed_object": str(mo_info.id),
+                        "pool": mo_info.fm_pool,
+                        "partition": mo_info.id % self.dispose_partitions,
                         "reference": expand(item.alarm_node.config.reference, key_ctx),
                         "labels": labels or None,
                     }
@@ -346,6 +408,32 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
+
+    def update_mapping(
+        self, mo_id: int, bi_id: int, fm_pool: str, labels: List[str], metric_labels: List[str]
+    ) -> None:
+        """
+        Update managed object mapping.
+        """
+        self.mo_map[bi_id] = ManagedObjectInfo(
+            id=mo_id,
+            fm_pool=fm_pool,
+            labels=[sys.intern(x) for x in labels],
+            metric_labels=[sys.intern(x) for x in metric_labels],
+        )
+
+    def delete_mapping(self, bi_id: int) -> None:
+        """
+        Delete managed object mapping.
+        """
+        if bi_id in self.mo_map:
+            del self.mo_map[bi_id]
+
+    async def on_mappings_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.mappings_ready_event.set()
 
 
 if __name__ == "__main__":
