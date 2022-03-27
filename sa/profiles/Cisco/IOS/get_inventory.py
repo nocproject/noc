@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -463,6 +463,10 @@ class Script(BaseScript):
             match = self.rx_psu1.search(name)
             if match:
                 self.slot_id = int(match.group("number"))
+            else:
+                match = self.rx_psu2.search(name)
+                if match:
+                    self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
         elif "FRU Power Supply" in descr:
             match = self.rx_psu2.search(name)
@@ -545,6 +549,8 @@ class Script(BaseScript):
         return None, None, None
 
     def get_transceiver_pid(self, descr):
+        if descr == "10/100/1000BaseTX SFP":
+            return "NoName | Transceiver | 1G | SFP T"
         match = self.rx_trans.search(descr.upper().replace("-", ""))
         if match:
             return "Unknown | Transceiver | %s" % match.group(1).upper()
