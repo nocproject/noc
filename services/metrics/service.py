@@ -79,7 +79,7 @@ class MetricsService(FastAPIService):
         self.start_state: Dict[str, Dict[str, Any]] = {}
         self.mo_map: Dict[int, ManagedObjectInfo] = {}
         self.mappings_ready_event = asyncio.Event()
-        self.dispose_partitions: int = 0
+        self.dispose_partitions: Dict[str, int] = {}
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -94,8 +94,6 @@ class MetricsService(FastAPIService):
             asyncio.create_task(self.log_runner())
         if config.metrics.compact_interval > 0:
             asyncio.create_task(self.compact_runnner())
-        # Sharding
-        self.dispose_partitions = await self.get_stream_partitions("dispose")
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
         # Subscribe metrics stream
@@ -176,7 +174,7 @@ class MetricsService(FastAPIService):
                 self.logger.debug("Missed key label: %s", item)
                 metrics["discard", ("reason", "missed_keylabel")] += 1
                 return  # Missed key label
-            card = self.get_card(mk, labels)
+            card = await self.get_card(mk, labels)
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
@@ -233,7 +231,7 @@ class MetricsService(FastAPIService):
         d = hashlib.sha512(str(k).encode("utf-8")).digest()
         return codecs.encode(d, "base-64")[:7].decode("utf-8")
 
-    def get_card(self, k: MetricKey, labels: List[str]) -> Optional[Card]:
+    async def get_card(self, k: MetricKey, labels: List[str]) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
         :param k: (scope, ((key field, key value), ...), (key label, ...))
@@ -249,7 +247,7 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k, labels=labels)
+        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k, labels=labels)
         self.cards[k] = card
         return card
 
@@ -274,7 +272,7 @@ class MetricsService(FastAPIService):
         self.scope_cdag[k[0]] = cdag
         return cdag
 
-    def project_cdag(self, src: CDAG, prefix: str, k: MetricKey, labels: List[str]) -> Card:
+    async def project_cdag(self, src: CDAG, prefix: str, k: MetricKey, labels: List[str]) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src:
@@ -360,10 +358,11 @@ class MetricsService(FastAPIService):
                     if k[2]:
                         labels += k[2]
                     # Expand config
+                    n_parts = await self.get_dispose_partitions(mo_info.fm_pool)
                     alarm_config = {
                         "managed_object": str(mo_info.id),
                         "pool": mo_info.fm_pool,
-                        "partition": mo_info.id % self.dispose_partitions,
+                        "partition": mo_info.id % n_parts,
                         "reference": expand(item.alarm_node.config.reference, key_ctx),
                         "labels": labels or None,
                     }
@@ -379,6 +378,17 @@ class MetricsService(FastAPIService):
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
         )
+
+    async def get_dispose_partitions(self, pool: str) -> int:
+        """
+        Returns an amount of dispose partitions
+        """
+        parts = self.dispose_partitions.get(pool)
+        if parts is None:
+            # Request partitions
+            parts = await self.get_stream_partitions(f"dispose.{pool}")
+            self.dispose_partitions[pool] = parts
+        return parts
 
     def activate_card(
         self, card: Card, si: ScopeInfo, data: Dict[str, Any]
