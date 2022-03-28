@@ -531,13 +531,16 @@ services:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+      liftbridge:
+        condition: service_started
     command: >
       sh -c "set -xe
       && env
-      && /usr/local/bin/python3 ./commands/migrate.py
+      && ./noc migrate
       && ./noc ensure-indexes
-      && /usr/local/bin/python3 ./commands/migrate-ch.py
+      && ./noc migrate-liftbridge
       && ./noc collection sync
+      && ./noc migrate-ch
       && ./noc sync-perm
       && ./noc sync-mibs
       && mkdir -p /opt/noc/etc
@@ -1020,7 +1023,6 @@ services:
 
   liftbridge:
     image: liftbridge/liftbridge:${LIFTBRIDGE_VERSION_TAG}
-    #image: liftbridge/standalone-dev
     hostname: liftbridge
     volumes:
       - liftbridge_data:/data
