@@ -51,7 +51,6 @@ CREATEDIR() {
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/etc
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/etlimport
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-noc/speedup
-  mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-nsq
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-postgres
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-postgresrestore
   mkdir -p -v "$INSTALLPATH"/docker/var/"$COMPOSEPREFIX"-promgrafana/db
@@ -172,13 +171,12 @@ SETUPENV() {
             echo "COMPOSE_LOG_MAX_SIZE=10m"
             echo "COMPOSE_LOG_MAX_FILE=1"
             echo "GRAFANA_VERSION_TAG=6.3.6"
-            echo "LIFTBRIDGE_VERSION_TAG=v1.3.0"
+            echo "LIFTBRIDGE_VERSION_TAG=v1.7.1"
             echo "NATS_VERSION_TAG=2"
             echo "### NOC env ###"
             echo "NOC_VERSION_TAG=$PARAM_TAG"
             echo "# NOC_CODE_PATH '/home' for PROD or '/opt/noc' for DEV"
             echo "NOC_CODE_PATH=$NOC_CODE_PATH"
-            echo "NSQ_LOG_LEVEL=info"
             echo "# Important!!! NOC_PG_PASSWORD must by similar in .data/noc/etc/noc.conf file"
             echo "NOC_PG_PASSWORD=$GENERATED_PG_PASSWORD"
             echo "PGPASSWORD=$GENERATED_PG_PASSWORD"
@@ -221,14 +219,10 @@ SETUPENV() {
           echo "NOC_LANGUAGE_CODE=en"
           echo "NOC_LOGIN_LANGUAGE=en"
           echo "NOC_LOGLEVEL=info"
-          echo "NOC_LIFTBRIDGE_ADDRESSES=liftbridge"
+          echo "NOC_LIFTBRIDGE_ADDRESSES=liftbridge:9292"
           echo "NOC_MONGO_USER=noc"
           echo "# Important!!! NOC_MONGO_PASSWORD must by similar in .env file"
           echo "NOC_MONGO_PASSWORD=$GENERATED_MONGO_PASSWORD"
-          echo "NOC_NSQD_ADDRESSES=nsqd:4150"
-          echo "NOC_NSQD_HTTP_ADDRESSES=nsqd:4151"
-          echo "NOC_NSQLOOKUPD_ADDRESSES=nsqlookupd:4160"
-          echo "NOC_NSQLOOKUPD_HTTP_ADDRESSES=nsqlookupd:4161"
           echo "NOC_REDIS_ADDRESSES=redis:6379"
           echo "NOC_SELFMON_ENABLE_FM=true"
           echo "NOC_SELFMON_ENABLE_INVENTORY=true"
