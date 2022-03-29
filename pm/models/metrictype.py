@@ -61,12 +61,11 @@ class AgentMappingItem(EmbeddedDocument):
         ("sa.ManagedObjectProfile", "metrics__metric_type"),
         ("inv.InterfaceProfile", "metrics__metric_type"),
         ("sla.SLAProbe", "metrics__metric_type"),
+        ("pm.MetricAction", "metric_type"),
+        ("pm.MetricAction", "actions__compose_metric_type"),
     ]
 )
 @category
-@on_delete_check(
-    check=[("pm.MetricAction", "metric_type"), ("pm.MetricAction", "actions.compose_metric_type")]
-)
 class MetricType(Document):
     meta = {
         "collection": "noc.metrictypes",
