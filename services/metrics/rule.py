@@ -8,7 +8,7 @@
 # Python modules
 import sys
 from dataclasses import dataclass
-from typing import Any, Iterable, Optional, Dict, List, Iterable, Set
+from typing import Any, Optional, Dict, List, Iterable, Set
 import logging
 import re
 
@@ -18,7 +18,6 @@ import pydantic
 # NOC modules
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.loader import loader
-from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricrule import MetricRule
 

@@ -820,7 +820,6 @@ class Config(BaseConfig):
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
 
-
     # pylint: disable=super-init-not-called
     def __init__(self):
         self.setup_logging()

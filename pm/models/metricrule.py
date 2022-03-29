@@ -23,6 +23,7 @@ from .metricaction import MetricAction
 class MetricRuleItem(EmbeddedDocument):
     metric_action = PlainReferenceField(MetricAction)
     is_active = BooleanField(default=True)
+    match_labels = ListField(StringField())
     config = DictField()
 
     def __str__(self) -> str:
