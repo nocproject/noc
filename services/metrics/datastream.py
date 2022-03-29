@@ -20,7 +20,7 @@ class MetricsDataStreamClient(DataStreamClient):
         )
 
     async def on_delete(self, data):
-        self.service.delete_mapping(int(data["bi_id"]))
+        self.service.delete_mapping(int(data["id"]))
 
     async def on_ready(self):
         await self.service.on_mappings_ready()

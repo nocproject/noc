@@ -58,8 +58,9 @@ class Card(object):
 
 @dataclass
 class ManagedObjectInfo(object):
-    __slots__ = ("id", "fm_pool", "labels", "metric_labels")
+    __slots__ = ("id", "bi_id", "fm_pool", "labels", "metric_labels")
     id: int
+    bi_id: int
     fm_pool: str
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
@@ -78,6 +79,7 @@ class MetricsService(FastAPIService):
         self.change_log: Optional[ChangeLog] = None
         self.start_state: Dict[str, Dict[str, Any]] = {}
         self.mo_map: Dict[int, ManagedObjectInfo] = {}
+        self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
         self.mappings_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
 
@@ -427,17 +429,20 @@ class MetricsService(FastAPIService):
         """
         self.mo_map[bi_id] = ManagedObjectInfo(
             id=mo_id,
+            bi_id=bi_id,
             fm_pool=fm_pool,
             labels=[sys.intern(x) for x in labels],
             metric_labels=[sys.intern(x) for x in metric_labels],
         )
+        self.mo_id_map[mo_id] = self.mo_map[bi_id]
 
-    def delete_mapping(self, bi_id: int) -> None:
+    def delete_mapping(self, mo_id: int) -> None:
         """
         Delete managed object mapping.
         """
-        if bi_id in self.mo_map:
-            del self.mo_map[bi_id]
+        if mo_id in self.mo_id_map:
+            del self.mo_map[self.mo_id_map[mo_id].bi_id]
+            del self.mo_id_map[mo_id]
 
     async def on_mappings_ready(self) -> None:
         """
