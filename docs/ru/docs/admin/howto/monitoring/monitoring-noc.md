@@ -201,13 +201,14 @@ receivers:
   webhook_configs:
    - url: 'http://prometheus-bot:9087/alert/<id чат телеграмма>'
     
+{% raw %}    
 - name: email
   email_configs:
   - send_resolved: false
     to: XXX@example.com
     headers:
       From: alertmanager@prometheus.example.com
-      Subject: {# '{{ template "email.default.subject" . }}' #}
+      Subject: '{{ template "email.default.subject" . }}'
       To: XXXXXXX@example.com
     html: {# '{{ template "email.default.html" . }}' #}
     
@@ -292,6 +293,7 @@ Status: <b>{{.Status | str_UpperCase}} ✅</b>
   {{ range $key, $value := $val.Annotations -}}
 {{- end -}}
 {{- end -}}
+{% endraw %}
 ```
 ## Настраиваем selfmon
 
