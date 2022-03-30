@@ -208,7 +208,7 @@ receivers:
     to: XXX@example.com
     headers:
       From: alertmanager@prometheus.example.com
-      Subject: '{{ template "email.default.subject" . }}'
+      Subject: {{ template "email.default.subject" . }}
       To: XXXXXXX@example.com
     html: {# '{{ template "email.default.html" . }}' #}
     
