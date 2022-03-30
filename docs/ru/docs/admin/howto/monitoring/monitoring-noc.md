@@ -209,7 +209,7 @@ receivers:
       From: alertmanager@prometheus.example.com
       Subject: {{ template "email.default.subject" . }}
       To: XXXXXXX@example.com
-    html: '{{ template "email.default.html" . }}'
+    html: {{ template "email.default.html" . }}
     
 inhibit_rules:
   - source_match:
