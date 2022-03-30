@@ -178,7 +178,7 @@ scrape_configs:
 ```
 git clone https://code.getnoc.com/noc/noc-prometheus-alerts.git /etc/docker-compose/mon/vm/noc-prometheus-alerts/
 ```
-6. В директорию **vm** создаём файл **alertmanager.yml** 
+6. В директорию **vm** создаём файл **alertmanager.yml**: 
 ```
 touch /etc/docker-compose/mon/vm/alertmanager.yml
 ```
@@ -207,7 +207,7 @@ receivers:
     to: XXX@example.com
     headers:
       From: alertmanager@prometheus.example.com
-      Subject: '{{ template "email.default.subject" . }}'
+      Subject: {{ template "email.default.subject" . }}
       To: XXXXXXX@example.com
     html: '{{ template "email.default.html" . }}'
     
