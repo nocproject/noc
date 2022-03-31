@@ -55,6 +55,7 @@ class Script(BaseScript):
         v = self.cli("show system", cached=True)
         match = self.rx_system.search(v)
         if match:
-            r["serial"] = match.group("serial")
+            r["attributes"] = {}
+            r["attributes"]["Serial Number"] = match.group("serial")
         return r
         raise self.NotSupportedError()
