@@ -30,18 +30,3 @@ class Profile(BaseProfile):
     telnet_send_on_connect = b"\n"
 
     matchers = {"is_9806h": {"platform": {"$regex": "9806H"}}}
-
-    rx_card = re.compile(
-        r"\s+(?P<slot>\d+)\s+(?P<cfgtype>\S+)\s+(?P<port>\d+)\s+"
-        r"(?P<hardver>V?\S+|)\s+(?P<softver>V\S+|)\s+(?P<status>Inservice|Offline)\s+"
-        r"(?P<serial>\S+)"
-    )
-
-    def fill_ports(self, script):
-        r = []
-        v = script.cli("show card")
-        for line in v.splitlines():
-            match = self.rx_card.search(line)
-            if match:
-                r += [match.groupdict()]
-        return r
