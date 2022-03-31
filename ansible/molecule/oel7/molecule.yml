@@ -44,7 +44,7 @@ provisioner:
     destroy: ../common/destroy.yml
   options:
     i: inv.yml
-    extra-vars: tower_dist_dir=/tmp noc_version=${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-"master"} noc_py3_ver=${PY3_VERSION}
+    extra-vars: tower_dist_dir=/tmp noc_version=${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-"master"} noc_py3_ver=${PY3_VERSION} http_proxy=${CI_PROXY}
   lint:
     name: ansible-lint
 scenario:
