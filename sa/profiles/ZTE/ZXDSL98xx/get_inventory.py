@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     type = {
         "SCCV": "MAINBOARD",
-        "SCCE": "MAINBOARD",
+        "SCCF": "MAINBOARD",
         "ASTDB": "LINECARD",
         "ATLDZ": "LINECARD",
         "VSTGJ": "LINECARD",
