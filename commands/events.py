@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Reclassify events
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -75,6 +75,7 @@ class Command(BaseCommand):
         subparsers.add_parser("reclassify")
         clean = subparsers.add_parser("clean")
         clean.add_argument("--before", dest="before", help="Clear events before date")
+        clean.add_argument("--before-days", dest="before_days", type=int, help="Clear events older than N, days")
         clean.add_argument(
             "--force", default=False, action="store_true", help="Really events remove"
         )
@@ -240,8 +241,11 @@ class Command(BaseCommand):
 
     def handle_clean(self, options, events):
         before = options.get("before")
+        before_days = options.get("before_days")
         if before:
             before = datetime.datetime.strptime(before, "%Y-%m-%d")
+        elif before_days:
+            before = (datetime.datetime.now() - datetime.timedelta(days=before_days))
         else:
             self.print("Before is not set, use default")
             before = datetime.datetime.now() - DEFAULT_CLEAN
@@ -272,7 +276,7 @@ class Command(BaseCommand):
                 }
                 self.print(
                     "Interval: %s, %s; Count: %d"
-                    % (event_ts, event_ts + CLEAN_WINDOW, ae.count(clear_qs))
+                    % (event_ts, event_ts + CLEAN_WINDOW, ae.count_documents(clear_qs))
                 )
                 bulk += [DeleteMany(clear_qs)]
                 event_ts += window
