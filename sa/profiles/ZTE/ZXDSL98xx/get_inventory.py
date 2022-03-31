@@ -5,6 +5,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -24,7 +26,19 @@ class Script(BaseScript):
         "ATLDZ": "LINECARD",
         "VSTGJ": "LINECARD",
         "PWAV": "PWR",
+        "OGSDD": "SUBSLOT",
+        "VOPCE": "SUBSLOT",
     }
+    rx_card = re.compile(
+        r"\s+(?P<slot>\d+)\s+(?P<cfgtype>\S+)\s+(?P<port>\d+)\s+"
+        r"(?P<hardver>V?\S+|)\s+(?P<softver>V\S+|)\s+(?P<status>Inservice|Offline)\s+"
+        r"(?P<serial>\S+)"
+    )
+
+    rx_subcard = re.compile(
+        r"(?P<shelf>\d+)\s+(?P<slot>\d+)\s+(?P<cfgtype>\S+)\s+"
+        r"(?P<hardver>V?\S+|)\s+(?P<softver>V\S+|)?\s+(?P<status>Inservice|Offline)"
+    )
 
     def get_chassis_sensors(self):
         r = []
@@ -77,6 +91,15 @@ class Script(BaseScript):
             r[0]["sensors"] = sensors
         return r
 
+    def fill_ports(self, script):
+        r = []
+        v = script.cli("show card")
+        for line in v.splitlines():
+            match = self.rx_card.search(line)
+            if match:
+                r += [match.groupdict()]
+        return r
+
     def execute_cli(self):
         r = self.get_inv_from_version()
         ports = self.profile.fill_ports(self)
@@ -90,6 +113,20 @@ class Script(BaseScript):
                 "serial": p["serial"],
             }
             r += [i]
+            if "SCC" in p["cfgtype"]:
+                subs = self.cli("show sub-card")
+                for line in subs.splitlines():
+
+                    match = self.rx_subcard.search(line)
+                    if match:
+                        sub = {
+                            "type": self.type[match.group("cfgtype")],
+                            "number": match.group("slot"),
+                            "vendor": "ZTE",
+                            "part_no": match.group("cfgtype"),
+                            "revision": match.group("hardver"),
+                        }
+                        r += [sub]
 
         sensors = self.get_chassis_sensors()
         if sensors:
