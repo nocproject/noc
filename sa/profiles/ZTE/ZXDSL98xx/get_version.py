@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXDSL98xx.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,24 +27,35 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ver2 = re.compile(
-        r"^SCCF\s+MVER\s+V(?P<version>\S+)\s+\d+\s+VALID\s+\d+\s+active\s+(?P<platform>\S+)v\S+",
+        r"^SCC[FV]\s+MVER\s+V(?P<version>\S+)\s+\d+\s+VALID\s+\d+\s+active\s+(?P<platform>\S+)[Vv]\S+",
+        re.MULTILINE,
+    )
+    rx_system = re.compile(
+        r"^Backplane sn\s+:\s+(?P<serial>\S+)",
         re.MULTILINE,
     )
 
     def execute_cli(self):
+        r = {}
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
         if match:
-            return {
+            r = {
                 "vendor": "ZTE",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
             }
         match = self.rx_ver2.search(v)
         if match:
-            return {
+            r = {
                 "vendor": "ZTE",
                 "platform": "ZXDSL %s" % match.group("platform").upper(),
                 "version": match.group("version"),
             }
+        v = self.cli("show system", cached=True)
+        match = self.rx_system.search(v)
+        if match:
+            r["attributes"] = {}
+            r["attributes"]["Serial Number"] = match.group("serial")
+        return r
         raise self.NotSupportedError()
