@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ZTE.ZXDSL98xx.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ver2 = re.compile(
-        r"^SCCF\s+MVER\s+V(?P<version>\S+)\s+\d+\s+VALID\s+\d+\s+active\s+(?P<platform>\S+)v\S+",
+        r"^SCC[FV]\s+MVER\s+V(?P<version>\S+)\s+\d+\s+VALID\s+\d+\s+active\s+(?P<platform>\S+)[Vv]\S+",
         re.MULTILINE,
     )
 
