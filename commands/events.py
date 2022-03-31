@@ -75,7 +75,9 @@ class Command(BaseCommand):
         subparsers.add_parser("reclassify")
         clean = subparsers.add_parser("clean")
         clean.add_argument("--before", dest="before", help="Clear events before date")
-        clean.add_argument("--before-days", dest="before_days", type=int, help="Clear events older than N, days")
+        clean.add_argument(
+            "--before-days", dest="before_days", type=int, help="Clear events older than N, days"
+        )
         clean.add_argument(
             "--force", default=False, action="store_true", help="Really events remove"
         )
@@ -245,7 +247,7 @@ class Command(BaseCommand):
         if before:
             before = datetime.datetime.strptime(before, "%Y-%m-%d")
         elif before_days:
-            before = (datetime.datetime.now() - datetime.timedelta(days=before_days))
+            before = datetime.datetime.now() - datetime.timedelta(days=before_days)
         else:
             self.print("Before is not set, use default")
             before = datetime.datetime.now() - DEFAULT_CLEAN
