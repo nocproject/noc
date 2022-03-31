@@ -2,7 +2,7 @@
 # Vendor: ZTE
 # OS:     ZXDSL98xx
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
