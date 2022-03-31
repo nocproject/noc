@@ -16,6 +16,15 @@ class Script(BaseScript):
 
     SNMP_UNKNOWN_VALUE = -10000
 
+    type = {
+        "SCCV": "MAINBOARD",
+        "SCCE": "MAINBOARD",
+        "ASTDB": "LINECARD",
+        "ATLDZ": "LINECARD",
+        "VSTGJ": "LINECARD",
+        "PWAV": "PWR",
+    }
+
     def get_chassis_sensors(self):
         r = []
         # zxAnEpmEnvCurrentTemp
@@ -69,6 +78,18 @@ class Script(BaseScript):
 
     def execute_cli(self):
         r = self.get_inv_from_version()
+        ports = self.profile.fill_ports(self)
+        for p in ports:
+            i = {
+                "type": self.type[p["cfgtype"]],
+                "number": p["slot"],
+                "vendor": "ZTE",
+                "part_no": p["cfgtype"],
+                "revision": p["hardver"],
+                "serial": p["serial"],
+            }
+            r += [i]
+
         sensors = self.get_chassis_sensors()
         if sensors:
             r[0]["sensors"] = sensors
