@@ -1303,6 +1303,10 @@ nav:
           - Overview: admin/tutorial/index.md
       - How-to Guides:
           - Overview: admin/howto/index.md
+          - Deploy NOC: admin/howto/deploy-noc/deploy-noc.md
+          - Monitoring NOC: admin/howto/monitoring/monitoring-noc.md
+          - Respond to alerts: admin/howto/respond-to-alerts/respond-to-alerts.md
+          - Retention DB: admin/howto/retention-db/retention-db.md
       - Background:
           - Overview: admin/background/index.md
       - Reference:
