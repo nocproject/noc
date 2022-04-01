@@ -15,7 +15,7 @@ from typing import Optional
 # Third-party modules
 import cachetools
 from fastapi import APIRouter, Header, HTTPException, Response
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, ORJSONResponse
 from jinja2 import Template
 import orjson
 
@@ -109,7 +109,16 @@ class CardAPI(BaseAPI):
             "name": "card",
             "description": "",
         }
-        return [route_card]
+        route_search = {
+            "path": "/api/card/search/",
+            "method": "GET",
+            "endpoint": self.handler_search,
+            "response_class": ORJSONResponse,
+            "response_model": None,
+            "name": "search",
+            "description": "",
+        }
+        return [route_card, route_search]
 
     def handler_card(
         self,
@@ -118,17 +127,11 @@ class CardAPI(BaseAPI):
         refresh: Optional[int] = None,
         remote_user: Optional[str] = Header(None, alias="Remote-User")
     ):
-        print('card_type', card_type, type(card_type))
-        print('card_id', card_id, type(card_id))
-        print('remote_user', remote_user, type(remote_user))
         self.current_user = self.get_current_user(remote_user)
-        print('self.current_user', self.current_user, type(self.current_user))
-
         if not self.current_user:
             raise HTTPException(404, "Not authorized") # tornado.web.HTTPError(404, "Not found")
         is_ajax = card_id == "ajax"
         tpl = self.CARDS.get(card_type)
-        print('tpl', tpl, type(tpl))
         if not tpl:
             raise HTTPException(404, "Card template not found") # tornado.web.HTTPError(404, "Card template not found")
         try:
@@ -164,6 +167,18 @@ class CardAPI(BaseAPI):
                 }
             )
             return Response(content=content, media_type="text/html", headers=headers)
+
+    def handler_search(
+        self,
+        scope: str,
+        query: str,
+        remote_user: Optional[str] = Header(None, alias="Remote-User")
+    ):
+        card = self.CARDS.get(scope)
+        if not card or not hasattr(card, "search"):
+            raise HTTPException(404, "Not found") # tornado.web.HTTPError(404)
+        self.current_user = self.get_current_user(remote_user)
+        return card.search(self, query)
 
 
 # Install router
