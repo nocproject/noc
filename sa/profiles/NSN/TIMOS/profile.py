@@ -54,6 +54,8 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
+        if cls.rx_port_name.match(name):
+            return "physical"
         return cls.INTERFACE_TYPES.get(name[:4].lower())
 
     def get_linecard(self, interface_name):
