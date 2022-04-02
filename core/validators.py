@@ -93,7 +93,7 @@ def is_asn(v):
     """
     try:
         v = int(v)
-        return v > 0
+        return v >= 0
     except ValueError:
         return False
 
