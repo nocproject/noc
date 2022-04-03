@@ -19,7 +19,3 @@ class Migration(BaseMigration):
             "affected_maintenances",
             models.JSONField("Maintenance Items", null=True, blank=True, default=lambda: "{}"),
         )
-
-
-m = Migration()
-m.migrate()
