@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from threading import Lock
 from typing import List, Set
 
 # Third-party modules
+from django.db import connection as pg_connection
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -100,10 +101,15 @@ class Maintenance(Document):
             "noc.maintenance.models.maintenance.update_affected_objects",
             60,
             maintenance_id=self.id,
+            start=self.start,
+            stop=self.stop if self.auto_confirm else None,
         )
 
     def auto_confirm_maintenance(self):
-        stop = datetime.datetime.strptime(self.stop, "%Y-%m-%dT%H:%M:%S")
+        st = str(self.stop)
+        if "T" in st:
+            st = st.replace("T", " ")
+        stop = datetime.datetime.strptime(st, "%Y-%m-%d %H:%M:%S")
         now = datetime.datetime.now()
         if stop > now:
             delay = (stop - now).total_seconds()
@@ -142,7 +148,14 @@ class Maintenance(Document):
                 self.auto_confirm_maintenance()
 
         if hasattr(self, "_changed_fields") and "is_completed" in self._changed_fields:
-            AffectedObjects._get_collection().remove({"maintenance": self.id})
+            SQL = """UPDATE sa_managedobject
+                     SET affected_maintenances = affected_maintenances #- '{%s}'
+                     WHERE affected_maintenances @> '{"%s": {}}';""" % (
+                str(self.id),
+                str(self.id),
+            )
+            with pg_connection.cursor() as cursor:
+                cursor.execute(SQL)
 
         if self.escalate_managed_object:
             if not self.is_completed and self.auto_confirm:
@@ -201,8 +214,8 @@ class Maintenance(Document):
                     "$project": {"_id": 0, "objects": "$affected_objects.object"},
                 },
             ]
-            for x in AffectedObjects._get_collection().aggregate(data):
-                affected.update(x["objects"])
+            #for x in AffectedObjects._get_collection().aggregate(data):
+               #affected.update(x["objects"])
         return list(affected)
 
     @classmethod
@@ -217,50 +230,49 @@ class Maintenance(Document):
         for m in Maintenance.objects.filter(start__lte=now, is_completed=False).order_by("start"):
             if m.time_pattern and not m.time_pattern.match(now):
                 continue
-            if AffectedObjects.objects.filter(maintenance=m, affected_objects__object=mo.id):
-                r += [m]
+            #if AffectedObjects.objects.filter(maintenance=m, affected_objects__object=mo.id):
+                #r += [m]
         return r
 
-
-class AffectedObjects(Document):
-    meta = {
-        "collection": "noc.affectedobjects",
-        "strict": False,
-        "auto_create_index": False,
-        "indexes": ["affected_objects.object"],
-    }
-    maintenance = PlainReferenceField(Maintenance)
-    affected_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
-
-
-def update_affected_objects(maintenance_id):
+def update_affected_objects(maintenance_id, start, stop=None):
     """
     Calculate and fill affected objects
     """
+
+    # All affected maintenance objects
+    mai_objects = list(
+        ManagedObject.objects.filter(
+            is_managed=True, affected_maintenances__has_key=str(maintenance_id)
+        ).values_list("id", flat=True)
+    )
 
     def get_downlinks(objects: Set[int]):
         # Get all additional objects which may be affected
         r = {
             mo_id
-            for mo_id in ManagedObject.objects.filter(uplinks__overlap=list(objects)).values_list(
-                "id", flat=True
-            )
+            for mo_id in ManagedObject.objects.filter(
+                is_managed=True, uplinks__overlap=list(objects)
+            ).values_list("id", flat=True)
             if mo_id not in objects
         }
         if not r:
             return r
         # Leave only objects with all uplinks affected
         rr = set()
-        for mo_id, uplinks in ManagedObject.objects.filter(id__in=list(r)).values_list(
-            "id", "uplinks"
-        ):
+        for mo_id, uplinks in ManagedObject.objects.filter(
+            is_managed=True, id__in=list(r)
+        ).values_list("id", "uplinks"):
             if len([1 for u in uplinks if u in objects]) == len(uplinks):
                 rr.add(mo_id)
         return rr
 
     def get_segment_objects(segment):
         # Get objects belonging to segment
-        so = set(ManagedObject.objects.filter(segment=segment).values_list("id", flat=True))
+        so = set(
+            ManagedObject.objects.filter(is_managed=True, segment=segment).values_list(
+                "id", flat=True
+            )
+        )
         # Get objects from underlying segments
         for ns in NetworkSegment._get_collection().find({"parent": segment}, {"_id": 1}):
             so |= get_segment_objects(ns["_id"])
@@ -280,7 +292,7 @@ def update_affected_objects(maintenance_id):
     # Calculate affected administrative_domain
     affected_ad = list(
         set(
-            ManagedObject.objects.filter(id__in=list(affected)).values_list(
+            ManagedObject.objects.filter(is_managed=True, id__in=list(affected)).values_list(
                 "administrative_domain__id", flat=True
             )
         )
@@ -291,11 +303,35 @@ def update_affected_objects(maintenance_id):
         {"_id": data.id},
         {"$set": {"administrative_domain": affected_ad}},
     )
-    AffectedObjects._get_collection().update_one(
-        {"maintenance": data.id},
-        {"$set": {"affected_objects": [{"object": o} for o in sorted(affected)]}},
-        upsert=True,
-    )
+    # Check id objects not in affected
+    nin_mai = set(affected).difference(set(mai_objects))
+    # Check id objects for delete
+    in_mai = set(mai_objects).difference(set(affected))
+
+    if len(nin_mai) != 0 or len(in_mai) != 0:
+        with pg_connection.cursor() as cursor:
+            # Add Maintenance objects
+            if len(nin_mai) != 0:
+                SQL_ADD = """UPDATE sa_managedobject
+                SET affected_maintenances = jsonb_insert(affected_maintenances,
+                '{"%s"}', '{"start": "%s", "stop": "%s"}'::jsonb)
+                WHERE id IN %s;""" % (
+                    str(maintenance_id),
+                    start,
+                    stop,
+                    "(%s)" % ", ".join(map(repr, nin_mai))
+                )
+                cursor.execute(SQL_ADD)
+            # Delete Maintenance objects
+            if len(in_mai) != 0:
+                SQL_REMOVE = """UPDATE sa_managedobject
+                     SET affected_maintenances = affected_maintenances #- '{%s}'
+                     WHERE id IN %s AND affected_maintenances @> '{"%s": {}}';""" % (
+                    str(maintenance_id),
+                    "(%s)" % ", ".join(map(repr, in_mai)),
+                    str(maintenance_id),
+                )
+                cursor.execute(SQL_REMOVE)
 
 
 def stop(maintenance_id):
@@ -320,4 +356,11 @@ def stop(maintenance_id):
                     body,
                 )
     Maintenance._get_collection().update({"_id": maintenance_id}, {"$set": {"is_completed": True}})
-    AffectedObjects._get_collection().remove({"maintenance": maintenance_id})
+    SQL = """UPDATE sa_managedobject
+             SET affected_maintenances = affected_maintenances #- '{%s}'
+             WHERE affected_maintenances @> '{"%s": {}}';""" % (
+        maintenance_id,
+        maintenance_id,
+    )
+    with pg_connection.cursor() as cursor:
+        cursor.execute(SQL)

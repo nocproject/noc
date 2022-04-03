@@ -30,7 +30,7 @@ from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.text import alnum_key, list_to_ranges
-from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
+from noc.maintenance.models.maintenance import Maintenance
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.sa.models.useraccess import UserAccess
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
@@ -421,25 +421,23 @@ class ManagedObjectCard(BaseCard):
 
         # Maintenance
         maintenance = []
-        for ao in AffectedObjects._get_collection().find(
-            {"affected_objects": {"object": self.object.id}}
-        ):
-            m = Maintenance.objects.filter(
-                id=ao["maintenance"],
-                is_completed=False,
-                start__lte=now + datetime.timedelta(hours=1),
-            ).first()
-            if m:
-                maintenance += [
-                    {
-                        "maintenance": m,
-                        "id": m.id,
-                        "subject": m.subject,
-                        "start": m.start,
-                        "stop": m.stop,
-                        "in_progress": m.start <= now,
-                    }
-                ]
+        data = [m_id for m_id in ManagedObject.objects.filter(id=143152).values_list("affected_maintenances", flat=True).first()]
+        m = Maintenance.objects.filter(
+            id__in=data,
+            is_completed=False,
+            start__lte=now + datetime.timedelta(hours=1),
+        ).first()
+        if m:
+            maintenance += [
+                {
+                    "maintenance": m,
+                    "id": m.id,
+                    "subject": m.subject,
+                    "start": m.start,
+                    "stop": m.stop,
+                    "in_progress": m.start <= now,
+                }
+            ]
         # Get Inventory
         inv = []
         for p in self.object.get_inventory():

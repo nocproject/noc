@@ -111,21 +111,14 @@ Credentials = namedtuple(
 
 
 class MaintenanceItem(BaseModel):
-    maintenance: str
     start: datetime.datetime
     stop: Optional[datetime.datetime] = None
 
-    def __str__(self):
-        return f"{self.maintenance}:{self.start}"
-
+class MaintenanceItems(BaseModel):
+    __root__: Dict[str, MaintenanceItem]
 
 class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
-
-
-class MaintenanceItems(BaseModel):
-    __root__: List[MaintenanceItem]
-
 
 @dataclass(frozen=True)
 class ObjectUplinks(object):
@@ -589,7 +582,7 @@ class ManagedObject(NOCModel):
         schema=MaintenanceItems,
         blank=True,
         null=True,
-        default=list,
+        default=dict,
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
