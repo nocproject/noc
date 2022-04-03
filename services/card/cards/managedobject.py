@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ManagedObject card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -421,13 +421,10 @@ class ManagedObjectCard(BaseCard):
 
         # Maintenance
         maintenance = []
-        data = [m_id for m_id in ManagedObject.objects.filter(id=143152).values_list("affected_maintenances", flat=True).first()]
-        m = Maintenance.objects.filter(
-            id__in=data,
-            is_completed=False,
-            start__lte=now + datetime.timedelta(hours=1),
-        ).first()
-        if m:
+        m_id = [am_id for am_id in self.object.affected_maintenances]
+        for m in Maintenance.objects.filter(
+            id__in=m_id, is_completed=False, start__lte=now + datetime.timedelta(hours=1)
+        ):
             maintenance += [
                 {
                     "maintenance": m,
