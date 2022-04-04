@@ -95,7 +95,7 @@ class Script(BaseScript):
         r = []
         # hwAnaChannelTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.2.1.2", bulk=False):
-            _, key = oid.split(".2011.6.1.1.2.1.2.")
+            key = oid.rsplit(".", 1)[-1]
             measure = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.4.{key}")
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}")
             if value != self.SNMP_UNKNOWN_VALUE:
@@ -109,7 +109,7 @@ class Script(BaseScript):
                 r += [metrics]
         # hwDigChannelTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.3.1.2", bulk=False):
-            _, key = oid.split(".2011.6.1.1.3.1.2.")
+            key = oid.rsplit(".", 1)[-1]
             v = v.lower()
             if "door" in v or "heater" in v:
                 value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}")
@@ -124,7 +124,7 @@ class Script(BaseScript):
                     r += [metrics]
         # hwFanTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.5.1.1", bulk=False):
-            _, key = oid.split(".2011.6.1.1.5.1.1.")
+            key = oid.rsplit(".", 1)[-1]
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}")
             if value != self.SNMP_UNKNOWN_VALUE:
                 metrics = {
@@ -147,7 +147,7 @@ class Script(BaseScript):
                 r += [metrics]
         # hwACInputEntry
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.2.1.2", bulk=False):
-            _, key = oid.split(".2011.6.2.1.2.1.2.")
+            key = oid.rsplit(".", 1)[-1]
             if v:
                 metrics = {
                     "name": "ac_state",
@@ -169,7 +169,7 @@ class Script(BaseScript):
                 r += [metrics]
         # hwDCOutEntry
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.3.1.1", bulk=False):
-            _, key = oid.split(".2011.6.2.1.3.1.1.")
+            key = oid.rsplit(".", 1)[-1]
             if v:
                 metrics = {
                     "name": "dc_volt",
@@ -201,7 +201,7 @@ class Script(BaseScript):
                 r += [metrics]
         # hwBatteryTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.6.3.1.2", bulk=False):
-            _, key = oid.split(".2011.6.2.1.6.3.1.2.")
+            key = oid.rsplit(".", 1)[-1]
             if v > 0:
                 volt = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}")
                 current = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}")
