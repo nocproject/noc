@@ -346,6 +346,8 @@ class ExtDocApplication(ExtApplication):
                 elif isinstance(f, ListField):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
+                elif isinstance(f, EmbeddedDocumentField):
+                    v = self.instance_to_dict(v, nocustom=True)
                 elif isinstance(f, BinaryField):
                     v = repr(v)
                 elif isinstance(f, DateField):

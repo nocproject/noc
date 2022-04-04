@@ -98,8 +98,8 @@ class MetricAction(Document):
     compose_function = StringField(choices=["sum", "avg"])
     compose_metric_type = PlainReferenceField(MetricType)
     #
-    activation_config: EmbeddedDocumentField(ActivationConfig)
-    deactivation_config: EmbeddedDocumentField(ActivationConfig)
+    activation_config = EmbeddedDocumentField(ActivationConfig)
+    deactivation_config = EmbeddedDocumentField(ActivationConfig)
     #
     key_function = StringField(choices=["key"])
     alarm_config = EmbeddedDocumentField(AlarmConfig)
