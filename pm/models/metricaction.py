@@ -17,6 +17,8 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     UUIDField,
     DictField,
+    FloatField,
+    IntField,
 )
 
 # NOC modules
@@ -25,76 +27,58 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from .metrictype import MetricType
-
-
-class ActionParam(EmbeddedDocument):
-    name = StringField()
-    description = StringField()
-
-    @property
-    def json_data(self) -> Dict[str, Any]:
-        return {
-            "name": self.name,
-            "description": self.description,
-        }
+from noc.fm.models.alarmclass import AlarmClass
 
 
 class InputMapping(EmbeddedDocument):
     metric_type = PlainReferenceField(MetricType)
-    input_name = StringField()
+    input_name = StringField(default="in")
 
     @property
     def json_data(self) -> Dict[str, Any]:
         return {"metric_type__name": self.metric_type.name, "input_name": self.input_name}
 
 
-class ActionItem(EmbeddedDocument):
-    """
-    Pipeline:
-
-    ```mermaid
-    graph LR
-        Metric Type --> Compose
-        Compose --> Activation
-        Compose --> Sender
-        Activation --> Control
-    ```
-
-    Each stage may be empty
-    """
-
-    # Compose part, may be empty
-    compose_node = StringField()  # Type of compose node
-    compose_config = DictField()
-    compose_inputs = ListField(EmbeddedDocumentField(InputMapping))
-    compose_metric_type = PlainReferenceField(MetricType)  # Optional metric type, when to store
-    # Optional activation node, may be empty
-    activation_node = StringField()
-    activation_config = DictField()
-    # Control part, takes activation input
-    alarm_node = StringField()
-    alarm_config = DictField()
+class AlarmConfig(EmbeddedDocument):
+    alarm_class = PlainReferenceField(AlarmClass)
+    reference = StringField()
+    activation_level = FloatField()
+    deactivation_level = FloatField()
+    vars: Dict[str, Any] = DictField()
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {}
-        if self.compose_node:
-            r["compose_node"] = self.compose_node
-            if self.compose_config:
-                r["compose_config"] = self.compose_config
-            if self.compose_inputs:
-                r["compose_inputs"] = [i.json_data for i in self.compose_inputs]
-            if self.compose_metric_type:
-                r["compose_metric_type__name"] = self.compose_metric_type.name
-        if self.activation_node:
-            r["activation_node"] = self.activation_node
-            if self.activation_config:
-                r["activation_config"] = self.activation_config
-        if self.alarm_node:
-            r["alarm_node"] = self.alarm_node
-            if self.alarm_config:
-                r["alarm_config"] = self.alarm_config
-        return r
+        return {
+            "alarm_class": self.alarm_class.name,
+            "reference": self.reference,
+            "activation_level": self.activation_level,
+            "deactivation_level": self.deactivation_level,
+        }
+
+
+class ActivationConfig(EmbeddedDocument):
+    window_function = StringField(
+        choices=["percentile", "nth", "expdecay", "sumstep"], default=None
+    )
+    # Tick, Seconds
+    window_type = StringField(choices=["tick", "seconds"], default="tick")
+    window_config = DictField()
+    min_window = IntField(default=1)
+    max_window = IntField(default=1)
+    activation_function = StringField(choices=["relu", "logistic", "indicator", "softplus"])
+    activation_config = DictField()
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        return {
+            "window_function": self.window_function,
+            "window_type": self.window_type,
+            "window_config": self.window_config,
+            "min_window": self.min_window,
+            "max_window": self.max_window,
+            "activation_function": self.activation_function,
+            "activation_config": self.activation_config,
+        }
 
 
 @on_delete_check(check=[("pm.MetricRule", "items.metric_action")])
@@ -109,9 +93,16 @@ class MetricAction(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    metric_type = PlainReferenceField(MetricType)
-    actions = ListField(EmbeddedDocumentField(ActionItem))
-    params = ListField(EmbeddedDocumentField(ActionParam))
+    #
+    compose_inputs = ListField(EmbeddedDocumentField(InputMapping))
+    compose_function = StringField(choices=["sum", "avg"])
+    compose_metric_type = PlainReferenceField(MetricType)
+    #
+    activation_config: EmbeddedDocumentField(ActivationConfig)
+    deactivation_config: EmbeddedDocumentField(ActivationConfig)
+    #
+    key_function = StringField(choices=["key"])
+    alarm_config = EmbeddedDocumentField(AlarmConfig)
 
     def __str__(self) -> str:
         return self.name

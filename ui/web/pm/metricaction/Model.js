@@ -13,7 +13,8 @@ Ext.define("NOC.pm.metricaction.Model", {
     fields: [
         {
             name: "id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "uuid",
@@ -24,24 +25,36 @@ Ext.define("NOC.pm.metricaction.Model", {
             type: "string"
         },
         {
-            name: "name",
+            name: "compose_inputs",
+            type: "auto"
+        },
+        {
+            name: "compose_function",
             type: "string"
         },
         {
-            name: "metric_type",
+            name: "compose_metric_type",
             type: "string"
         },
         {
-            name: "metric_type__label",
+            name: "compose_metric_type__label",
             type: "string",
             persist: false
         },
         {
-            name: "actions",
+            name: "activation_config",
             type: "auto"
         },
         {
-            name: "params",
+            name: "deactivation_config",
+            type: "auto"
+        },
+        {
+            name: "key_function",
+            type: "string"
+        },
+        {
+            name: "alarm_config",
             type: "auto"
         },
         {
