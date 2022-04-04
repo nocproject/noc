@@ -42,9 +42,9 @@ class InputMapping(EmbeddedDocument):
 class AlarmConfig(EmbeddedDocument):
     alarm_class = PlainReferenceField(AlarmClass)
     reference = StringField()
-    activation_level = FloatField()
-    deactivation_level = FloatField()
-    vars: Dict[str, Any] = DictField()
+    activation_level = FloatField(default=1.0)
+    deactivation_level = FloatField(default=1.0)
+    vars = DictField()
 
     @property
     def json_data(self) -> Dict[str, Any]:

@@ -17,6 +17,10 @@ Ext.define("NOC.pm.metricaction.Model", {
             persist: false
         },
         {
+            name: "name",
+            type: "string"
+        },
+        {
             name: "uuid",
             type: "string"
         },
