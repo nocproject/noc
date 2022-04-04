@@ -33,7 +33,7 @@ package:
   nginx:
     installed: true
 port:
-{% if nginx_http_redirect_enabled | bool %}
+{% if nginx_http_redirect_enabled %}
   tcp:80:
     listening: true
     ip:
@@ -71,7 +71,7 @@ command:
     - 'nginx: configuration file /etc/nginx/nginx.conf test is successful'
     timeout: 10000
 {% if molecule_yml is not defined %}
-{% if nginx_permit_firewall | bool %}
+{% if nginx_permit_firewall %}
   /sbin/iptables-save | grep "dport 443":
     exit-status: 0
     stdout:

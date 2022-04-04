@@ -27,7 +27,7 @@
   "domain": "{{ consul_domain }}",
   "enable_local_script_checks": true,
   "disable_update_check" : true,
-  {% if consul_acl_enable | bool -%}
+  {% if consul_acl_enable -%}
     "primary_datacenter": "{{ consul_acl_datacenter }}",
     "acl": {
       "enabled": true,
