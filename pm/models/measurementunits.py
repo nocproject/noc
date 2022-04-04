@@ -105,6 +105,8 @@ class MeasurementUnits(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
+    DEFAULT_MU_NAME = "Scalar"
+
     def __str__(self):
         return self.name
 
@@ -122,6 +124,10 @@ class MeasurementUnits(Document):
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
     def get_by_code(cls, code: str) -> Optional["MeasurementUnits"]:
         return MeasurementUnits.objects.filter(code=code).first()
+
+    @classmethod
+    def get_default_measurement_units(cls) -> "MeasurementUnits":
+        return MeasurementUnits.objects.filter(name=cls.DEFAULT_MU_NAME).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:

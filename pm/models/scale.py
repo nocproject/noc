@@ -50,6 +50,8 @@ class Scale(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
+    DEFAULT_SCALE_NAME = "-"
+
     def __str__(self):
         return self.name
 
@@ -62,6 +64,10 @@ class Scale(Document):
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
     def get_by_code(cls, code: str) -> Optional["Scale"]:
         return Scale.objects.filter(code=code).first()
+
+    @classmethod
+    def get_default_scale(cls) -> "Scale":
+        return Scale.objects.filter(name=cls.DEFAULT_SCALE_NAME).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:

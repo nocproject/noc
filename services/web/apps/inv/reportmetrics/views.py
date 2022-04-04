@@ -181,7 +181,7 @@ class ReportMetricsDetailApplication(ExtApplication):
                 "object_address": row[2],
                 "object_platform": Platform.get_by_id(row[3]).full_name if row[3] else "",
                 "object_adm_domain": row[4],
-                "object_segment": NetworkSegment.get_by_id(row[5]) if row[5] else "",
+                "object_segment": NetworkSegment.get_by_id(row[5]).name if row[5] else "",
                 # "object_segment": "",
                 "object_container": containers_address.get(row[6], "")
                 if containers_address and row[6]
