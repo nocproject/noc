@@ -32,9 +32,11 @@ if not logger.handlers:
     logging.basicConfig()
 
 rx_coding = re.compile(r"coding[:=]\s*([-\w.]+)")
+rx_replace_shadow = re.compile(r"'(user|password|super_password|snmp_ro)': '.*'")
 
 # CP error reporting
 ENABLE_CP = config.features.cp
+ENABLE_CREDENTIAL_SHADOW = True
 CP_NEW = config.path.cp_new
 CP_SET_UID = None
 
@@ -294,6 +296,8 @@ def excepthook(t, v, tb):
 def error_report(reverse=config.traceback.reverse, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
+    if ENABLE_CREDENTIAL_SHADOW:
+        r = rx_replace_shadow.sub("'\\1': '******'", r)
     logger.error(r)
     metrics["errors"] += 1
     if config.sentry.url and sentry_sdk:
