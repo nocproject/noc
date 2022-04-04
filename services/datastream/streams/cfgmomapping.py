@@ -38,13 +38,14 @@ class CfgMOMappingDataStream(DataStream):
             fm_pool,
             labels,
         ) = mo[0]
-        if not is_managed:
+        if not is_managed or not bi_id:
             raise KeyError()
-        pool = fm_pool or pool
+        pool = str(Pool.get_by_id(pool).name)
         return {
             "id": mo_id,
             "bi_id": bi_id,
-            "pool": str(Pool.get_by_id(pool).name),
+            "pool": pool,
+            "fm_pool": str(Pool.get_by_id(fm_pool).name) if fm_pool else pool,
             "labels": labels,
             "metric_labels": list(
                 Label.objects.filter(name__in=labels, expose_metric=True).values_list("name")
