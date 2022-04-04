@@ -32,6 +32,25 @@ user_lock = Lock()
 router = APIRouter()
 
 
+class HandlerStub(object):
+    def __init__(self, user, arguments):
+        self.user = user
+        self.arguments = {}
+        for key in arguments:
+            if arguments[key]:
+                self.arguments[key] = arguments[key]
+
+    @property
+    def current_user(self):
+        return self.user
+
+    def get_argument(self, name):
+        if name in self.arguments:
+            return self.arguments[name]
+        else:
+            raise HTTPException(404, f"Query parameter '{name}' not specified")
+
+
 class CardAPI(BaseAPI):
     api_name = "card"
     openapi_tags = ["card API"]
@@ -48,7 +67,6 @@ class CardAPI(BaseAPI):
             with open(self.CARD_TEMPLATE_PATH) as f:
                 self.CARD_TEMPLATE = Template(f.read())
         self.load_cards()
-        self.current_user = None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_user_cache"), lock=lambda _: user_lock)
@@ -125,17 +143,37 @@ class CardAPI(BaseAPI):
         card_type: str,
         card_id: str,
         refresh: Optional[int] = None,
+        key: Optional[str] = None,
+        object_id: Optional[str] = None,
+        z: Optional[str] = None,
+        w: Optional[str] = None,
+        e: Optional[str] = None,
+        n: Optional[str] = None,
+        s: Optional[str] = None,
+        maintenance: Optional[str] = None,
         remote_user: Optional[str] = Header(None, alias="Remote-User")
     ):
-        self.current_user = self.get_current_user(remote_user)
-        if not self.current_user:
+        current_user = self.get_current_user(remote_user)
+        if not current_user:
             raise HTTPException(404, "Not authorized") # tornado.web.HTTPError(404, "Not found")
         is_ajax = card_id == "ajax"
+        query_args = {
+            "key": key,
+            "object_id": object_id,
+            "z": z,
+            "e": e,
+            "w": w,
+            "n": n,
+            "s": s,
+            "maintenance": maintenance,
+        }
+        handler = HandlerStub(current_user, query_args)
+        print('query_args', query_args)
         tpl = self.CARDS.get(card_type)
         if not tpl:
             raise HTTPException(404, "Card template not found") # tornado.web.HTTPError(404, "Card template not found")
         try:
-            card = tpl(self, card_id)
+            card = tpl(handler, card_id)
             if is_ajax:
                 data = card.get_ajax_data()
             else:
@@ -177,8 +215,8 @@ class CardAPI(BaseAPI):
         card = self.CARDS.get(scope)
         if not card or not hasattr(card, "search"):
             raise HTTPException(404, "Not found") # tornado.web.HTTPError(404)
-        self.current_user = self.get_current_user(remote_user)
-        return card.search(self, query)
+        handler = HandlerStub(self.get_current_user(remote_user), {})
+        return card.search(handler, query)
 
 
 # Install router
