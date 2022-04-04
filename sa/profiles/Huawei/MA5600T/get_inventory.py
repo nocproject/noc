@@ -293,12 +293,12 @@ class Script(BaseScript):
         # SubBoard
         subboard = defaultdict(list)
         for (slot_index, slot_type, slot_ver, slot_descr) in self.snmp.get_tables(
-                [
-                    mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
-                    mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
-                    mib["HUAWEI-DEVICE-MIB::hwSubSlotDesc"],
-                ],
-                bulk=False,
+            [
+                mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
+                mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
+                mib["HUAWEI-DEVICE-MIB::hwSubSlotDesc"],
+            ],
+            bulk=False,
         ):
             if not slot_descr:
                 continue
@@ -340,11 +340,11 @@ class Script(BaseScript):
         subboard = self.get_ma5600_subboard()
         # Slots
         for (
-                slot_index,
-                slot_type,
-                slot_descr,
-                slot_subs,
-                slot_phys_serial,
+            slot_index,
+            slot_type,
+            slot_descr,
+            slot_subs,
+            slot_phys_serial,
         ) in self.snmp.get_tables(
             [
                 mib["HUAWEI-DEVICE-MIB::hwSlotType"],
@@ -382,7 +382,7 @@ class Script(BaseScript):
         r = []
         serial = {}
         for oid, phys_num in self.snmp.getnext(
-                mib["HUAWEI-DEVICE-MIB::hwSlotPhySerialNum"], bulk=False
+            mib["HUAWEI-DEVICE-MIB::hwSlotPhySerialNum"], bulk=False
         ):
             _, slot_num = oid.rsplit(".", 1)
             serial[int(slot_num)] = phys_num
