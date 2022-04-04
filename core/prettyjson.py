@@ -16,7 +16,7 @@ from noc.core.text import indent
 
 class PrettyJSON(object):
     @classmethod
-    def to_json(cls, o, order=None):
+    def to_json(cls, o, order=None) -> str:
         r = cls.convert(o, 0, order)
         if not r.endswith("\n"):
             r += "\n"

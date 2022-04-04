@@ -41,6 +41,29 @@ class Subscriber(object):
     next: Optional["Subscriber"]
 
 
+config_proxy_sentinel = object()
+
+
+class ConfigProxy(object):
+    """
+    Wrap BaseModel and override particular attributes
+    """
+
+    __slots__ = ("__base", "__override")
+
+    def __init__(self, base: BaseModel, override: Dict[str, Any]):
+        self.__base = base
+        self.__override = override
+
+    def __getattribute__(self, __name: str) -> Any:
+        if __name.startswith("_"):
+            return super().__getattribute__(__name)
+        v = self.__override.get(__name, config_proxy_sentinel)
+        if v is config_proxy_sentinel:
+            return getattr(self.__base, __name)
+        return v
+
+
 class BaseCDAGNodeMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
@@ -153,14 +176,25 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         return o
 
     def clone(
-        self, node_id: str, prefix: Optional[str] = None, state: Optional[Dict[str, Any]] = None
+        self,
+        node_id: str,
+        prefix: Optional[str] = None,
+        state: Optional[Dict[str, Any]] = None,
+        config: Optional[Dict[str, Any]] = None,
     ) -> Optional["BaseCDAGNode"]:
+        if not hasattr(self, "config_cls"):
+            cfg = None
+        elif config:
+            cfg = ConfigProxy(self.config, config)
+        else:
+            cfg = self.config
+
         node = self.__class__(
             node_id,
             prefix=prefix,
             description=self.description,
             state=state,
-            config=self.config if hasattr(self, "config_cls") else None,
+            config=cfg,
             sticky=self.sticky,
         )
         if self.allow_dynamic and self.dynamic_inputs:
@@ -179,7 +213,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if not hasattr(self, "config_cls") or config is None:
             return None
         # Shortcut, if config is already cleaned (cloned copies)
-        if isinstance(config, BaseModel) or hasattr(config, "__slots__"):
+        if isinstance(config, (BaseModel, ConfigProxy)) or hasattr(config, "__slots__"):
             return config
         # Slotify to reduce memory usage
         cfg = self.config_cls(**config)
@@ -193,6 +227,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         yield from self.static_inputs
         if self.allow_dynamic and self.dynamic_inputs:
             yield from self.dynamic_inputs
+
+    def first_input(self) -> Optional[str]:
+        """
+        Get first input name
+        """
+        try:
+            return next(self.iter_inputs())
+        except StopIteration:
+            return None
 
     def iter_unbound_inputs(self) -> Iterable[str]:
         """
