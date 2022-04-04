@@ -103,9 +103,11 @@ class MetricType(Document):
     # Text description
     description = StringField(required=False)
     # Measurement units
-    units = PlainReferenceField(MeasurementUnits)
+    units = PlainReferenceField(
+        MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
+    )
     # Scale
-    scale = PlainReferenceField(Scale)
+    scale = PlainReferenceField(Scale, default=Scale.get_default_scale)
     # Measure name, like 'kbit/s'
     # Compatible to Grafana
     measure = StringField()

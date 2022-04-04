@@ -114,10 +114,7 @@ Ext.define("NOC.pm.metrictype.Application", {
                 {
                   name: "scale",
                   xtype: "pm.scale.LookupField",
-                  fieldLabel: __("Metric Scale"),
-                  valueField: "name",
-                  value: "-",
-                  allowBlank: false
+                  fieldLabel: __("Metric Scale")
                 },
                 {
                     name: "agent_mappings",
