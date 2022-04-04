@@ -90,156 +90,157 @@ class Script(BaseScript):
     }
 
     def get_chassis_sensors(self):
-        if self.has_snmp():
-            r = []
-            # hwAnaChannelTable
-            for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.2.1.2", bulk=False):
-                _, key = oid.split(".2011.6.1.1.2.1.2.")
-                measure = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.4.{key}")
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}")
-                if value != self.SNMP_UNKNOWN_VALUE:
+        if not self.has_snmp():
+            return []
+        r = []
+        # hwAnaChannelTable
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.2.1.2", bulk=False):
+            _, key = oid.split(".2011.6.1.1.2.1.2.")
+            measure = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.4.{key}")
+            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}")
+            if value != self.SNMP_UNKNOWN_VALUE:
+                metrics = {
+                    "name": v,
+                    "status": True,
+                    "description": v,
+                    "measurement": self.MEASURE_TYPES[measure],
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}",
+                }
+                r += [metrics]
+        # hwDigChannelTable
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.3.1.2", bulk=False):
+            _, key = oid.split(".2011.6.1.1.3.1.2.")
+            v = v.lower()
+            if "door" in v or "heater" in v:
+                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}")
+                if value != self.SNMP_INVALID_VALUE:
                     metrics = {
                         "name": v,
                         "status": True,
                         "description": v,
-                        "measurement": self.MEASURE_TYPES[measure],
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}",
-                    }
-                    r += [metrics]
-            # hwDigChannelTable
-            for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.3.1.2", bulk=False):
-                _, key = oid.split(".2011.6.1.1.3.1.2.")
-                v = v.lower()
-                if "door" in v or "heater" in v:
-                    value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}")
-                    if value != self.SNMP_INVALID_VALUE:
-                        metrics = {
-                            "name": v,
-                            "status": True,
-                            "description": v,
-                            "measurement": "Scalar",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}",
-                        }
-                        r += [metrics]
-            # hwFanTable
-            for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.5.1.1", bulk=False):
-                _, key = oid.split(".2011.6.1.1.5.1.1.")
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}")
-                if value != self.SNMP_UNKNOWN_VALUE:
-                    metrics = {
-                        "name": "fan_temp",
-                        "status": True,
-                        "description": "Температура в блоке вентиляторов",
-                        "measurement": "Celsius",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}",
-                    }
-                    r += [metrics]
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}")
-                if value != self.SNMP_INVALID_VALUE:
-                    metrics = {
-                        "name": "fan_speed",
-                        "status": True,
-                        "description": "Скорость вращения вентиляторов",
-                        "measurement": "Percent",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}",
-                    }
-                    r += [metrics]
-            # hwACInputEntry
-            for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.2.1.2", bulk=False):
-                _, key = oid.split(".2011.6.2.1.2.1.2.")
-                if v:
-                    metrics = {
-                        "name": "ac_state",
-                        "status": True,
-                        "description": "Наличие напряжения AC",
                         "measurement": "Scalar",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.2.{key}",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}",
                     }
                     r += [metrics]
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}")
-                if value != self.SNMP_INVALID_VALUE:
+        # hwFanTable
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.5.1.1", bulk=False):
+            _, key = oid.split(".2011.6.1.1.5.1.1.")
+            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}")
+            if value != self.SNMP_UNKNOWN_VALUE:
+                metrics = {
+                    "name": "fan_temp",
+                    "status": True,
+                    "description": "Температура в блоке вентиляторов",
+                    "measurement": "Celsius",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}",
+                }
+                r += [metrics]
+            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}")
+            if value != self.SNMP_INVALID_VALUE:
+                metrics = {
+                    "name": "fan_speed",
+                    "status": True,
+                    "description": "Скорость вращения вентиляторов",
+                    "measurement": "Percent",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}",
+                }
+                r += [metrics]
+        # hwACInputEntry
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.2.1.2", bulk=False):
+            _, key = oid.split(".2011.6.2.1.2.1.2.")
+            if v:
+                metrics = {
+                    "name": "ac_state",
+                    "status": True,
+                    "description": "Наличие напряжения AC",
+                    "measurement": "Scalar",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.2.{key}",
+                }
+                r += [metrics]
+            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}")
+            if value != self.SNMP_INVALID_VALUE:
+                metrics = {
+                    "name": "ac_volt",
+                    "status": True,
+                    "description": "Напряжение AC",
+                    "measurement": "Volt AC",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}",
+                }
+                r += [metrics]
+        # hwDCOutEntry
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.3.1.1", bulk=False):
+            _, key = oid.split(".2011.6.2.1.3.1.1.")
+            if v:
+                metrics = {
+                    "name": "dc_volt",
+                    "status": True,
+                    "description": "Напряжение DC",
+                    "measurement": "Volt DC",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.1.{key}",
+                }
+                r += [metrics]
+            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}")
+            if value != self.SNMP_INVALID_VALUE:
+                metrics = {
+                    "name": "dc_current",
+                    "status": True,
+                    "description": "Ток DC",
+                    "measurement": "Ampere",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}",
+                }
+                r += [metrics]
+            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}")
+            if value:
+                metrics = {
+                    "name": "dc_state",
+                    "status": True,
+                    "description": "Наличие напряжения DC",
+                    "measurement": "Scalar",
+                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}",
+                }
+                r += [metrics]
+        # hwBatteryTable
+        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.6.3.1.2", bulk=False):
+            _, key = oid.split(".2011.6.2.1.6.3.1.2.")
+            if v > 0:
+                volt = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}")
+                current = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}")
+                temp = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}")
+                if temp != self.SNMP_UNKNOWN_VALUE and volt != self.SNMP_INVALID_VALUE:
                     metrics = {
-                        "name": "ac_volt",
+                        "name": "battery_volt",
                         "status": True,
-                        "description": "Напряжение AC",
-                        "measurement": "Volt AC",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}",
-                    }
-                    r += [metrics]
-            # hwDCOutEntry
-            for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.3.1.1", bulk=False):
-                _, key = oid.split(".2011.6.2.1.3.1.1.")
-                if v:
-                    metrics = {
-                        "name": "dc_volt",
-                        "status": True,
-                        "description": "Напряжение DC",
+                        "description": "Напряжение АКБ",
                         "measurement": "Volt DC",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.1.{key}",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}",
                     }
                     r += [metrics]
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}")
-                if value != self.SNMP_INVALID_VALUE:
+                    if current != self.SNMP_INVALID_VALUE:
+                        metrics = {
+                            "name": "battery_current",
+                            "status": True,
+                            "description": "Ток АКБ",
+                            "measurement": "Ampere",
+                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}",
+                        }
+                    r += [metrics]
                     metrics = {
-                        "name": "dc_current",
+                        "name": "battery_temp",
                         "status": True,
-                        "description": "Ток DC",
-                        "measurement": "Ampere",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}",
+                        "description": "Температура АКБ",
+                        "measurement": "Celsius",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}",
                     }
                     r += [metrics]
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}")
-                if value:
                     metrics = {
-                        "name": "dc_state",
+                        "name": "battery_state",
                         "status": True,
-                        "description": "Наличие напряжения DC",
+                        "description": "Текущее состояние АКБ",
                         "measurement": "Scalar",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.8.{key}",
                     }
                     r += [metrics]
-            # hwBatteryTable
-            for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.6.3.1.2", bulk=False):
-                _, key = oid.split(".2011.6.2.1.6.3.1.2.")
-                if v > 0:
-                    volt = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}")
-                    current = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}")
-                    temp = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}")
-                    if temp != self.SNMP_UNKNOWN_VALUE and volt != self.SNMP_INVALID_VALUE:
-                        metrics = {
-                            "name": "battery_volt",
-                            "status": True,
-                            "description": "Напряжение АКБ",
-                            "measurement": "Volt DC",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}",
-                        }
-                        r += [metrics]
-                        if current != self.SNMP_INVALID_VALUE:
-                            metrics = {
-                                "name": "battery_current",
-                                "status": True,
-                                "description": "Ток АКБ",
-                                "measurement": "Ampere",
-                                "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}",
-                            }
-                        r += [metrics]
-                        metrics = {
-                            "name": "battery_temp",
-                            "status": True,
-                            "description": "Температура АКБ",
-                            "measurement": "Celsius",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}",
-                        }
-                        r += [metrics]
-                        metrics = {
-                            "name": "battery_state",
-                            "status": True,
-                            "description": "Текущее состояние АКБ",
-                            "measurement": "Scalar",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.8.{key}",
-                        }
-                        r += [metrics]
-            return r
+        return r
 
     def parse_elabel(self, out):
         """
@@ -292,12 +293,12 @@ class Script(BaseScript):
         # SubBoard
         subboard = defaultdict(list)
         for (slot_index, slot_type, slot_ver, slot_descr) in self.snmp.get_tables(
-            [
-                mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
-                mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
-                mib["HUAWEI-DEVICE-MIB::hwSubSlotDesc"],
-            ],
-            bulk=False,
+                [
+                    mib["HUAWEI-DEVICE-MIB::hwSubslotType"],
+                    mib["HUAWEI-DEVICE-MIB::hwSubslotVersion"],
+                    mib["HUAWEI-DEVICE-MIB::hwSubSlotDesc"],
+                ],
+                bulk=False,
         ):
             if not slot_descr:
                 continue
@@ -339,11 +340,11 @@ class Script(BaseScript):
         subboard = self.get_ma5600_subboard()
         # Slots
         for (
-            slot_index,
-            slot_type,
-            slot_descr,
-            slot_subs,
-            slot_phys_serial,
+                slot_index,
+                slot_type,
+                slot_descr,
+                slot_subs,
+                slot_phys_serial,
         ) in self.snmp.get_tables(
             [
                 mib["HUAWEI-DEVICE-MIB::hwSlotType"],
@@ -381,7 +382,7 @@ class Script(BaseScript):
         r = []
         serial = {}
         for oid, phys_num in self.snmp.getnext(
-            mib["HUAWEI-DEVICE-MIB::hwSlotPhySerialNum"], bulk=False
+                mib["HUAWEI-DEVICE-MIB::hwSlotPhySerialNum"], bulk=False
         ):
             _, slot_num = oid.rsplit(".", 1)
             serial[int(slot_num)] = phys_num
