@@ -11,6 +11,7 @@ import argparse
 import pprint
 import datetime
 import re
+from collections import namedtuple
 
 # Third-party modules
 from fs import open_fs
@@ -41,6 +42,9 @@ from noc.core.comp import smart_text, smart_bytes
 BEEF_FORMAT = "1"
 CLI_ENCODING = "quopri"
 MIB_ENCODING = "base64"
+Credentials = namedtuple(
+    "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
+)
 
 
 class Command(BaseCommand):
@@ -173,12 +177,14 @@ class Command(BaseCommand):
         """
         Resolve object by name or by id
         """
+        if object_name.endswith(".json") and os.path.isfile(object_name):
+            return JSONObject(object_name)
+
         from noc.sa.models.managedobject import ManagedObject
         from django.db.models import Q
 
         connect()
-        if object_name.endswith(".json") and os.path.isfile(object_name):
-            return JSONObject(object_name)
+
         q = Q(name=object_name)
         if is_int(object_name):
             q = Q(id=int(object_name)) | q
@@ -456,8 +462,6 @@ class JSONObject(object):
 
     @property
     def credentials(self):
-        from noc.sa.models.managedobject import Credentials
-
         return Credentials(
             **{
                 k: self.creds.get(k)

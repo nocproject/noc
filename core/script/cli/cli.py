@@ -173,9 +173,9 @@ class CLI(BaseCLI):
         # Clean control sequences
         return self.profile.cleaned_input(s)
 
-    async def send(self, cmd: bytes) -> None:
+    async def send(self, cmd: bytes, shadow=False) -> None:
         # cmd = str(cmd)
-        self.logger.debug("Send: %r", cmd)
+        self.logger.debug("Send: %r", cmd if not shadow else "*******")
         await self.stream.write(cmd)
 
     async def read_until_prompt(self):
@@ -367,7 +367,8 @@ class CLI(BaseCLI):
             smart_bytes(
                 self.script.credentials.get("user", "") or "", encoding=self.native_encoding
             )
-            + (self.profile.username_submit or b"\n")
+            + (self.profile.username_submit or b"\n"),
+            shadow=True,
         )
         self.expect(
             {
@@ -386,7 +387,8 @@ class CLI(BaseCLI):
             smart_bytes(
                 self.script.credentials.get("password", "") or "", encoding=self.native_encoding
             )
-            + (self.profile.password_submit or b"\n")
+            + (self.profile.password_submit or b"\n"),
+            shadow=True,
         )
         self.expect(
             {
@@ -494,7 +496,8 @@ class CLI(BaseCLI):
                 self.script.credentials.get("super_password", "") or "",
                 encoding=self.native_encoding,
             )
-            + (self.profile.username_submit or b"\n")
+            + (self.profile.username_submit or b"\n"),
+            shadow=True,
         )
         if self.super_password_retries > 1:
             unprivileged_handler = self.on_unprivileged_prompt
