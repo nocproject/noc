@@ -49,6 +49,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.pm.models.thresholdprofile import ThresholdProfile
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
+from noc.vc.models.vlanfilter import VLANFilter
 
 metrics_lock = Lock()
 
@@ -299,6 +300,13 @@ class ManagedObjectProfile(NOCModel):
     enable_box_discovery_cpe = models.BooleanField(default=False)
     # Enable MAC discovery
     enable_box_discovery_mac = models.BooleanField(default=False)
+    box_discovery_mac_filter_policy = models.CharField(
+        _("Box MAC Collect Policy"),
+        max_length=1,
+        choices=[("I", "Interface Profile"), ("A", "All")],
+        default="A",
+    )
+    mac_collect_vlanfilter = DocumentReferenceField(VLANFilter, null=True, blank=True)
     # Enable extended MAC discovery
     enable_box_discovery_xmac = models.BooleanField(default=False)
     # Enable interface description discovery
@@ -335,6 +343,13 @@ class ManagedObjectProfile(NOCModel):
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
+    # A - Collect all MAC addresses, I - Collect MAC allowed by Interface Profile
+    periodic_discovery_mac_filter_policy = models.CharField(
+        _("Periodic MAC Collect Policy"),
+        max_length=1,
+        choices=[("I", "Interface Profile"), ("A", "All")],
+        default="A",
+    )
     # Collect metrics
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Enable Alarms
@@ -369,17 +384,6 @@ class ManagedObjectProfile(NOCModel):
     )
     #
     hk_handler = DocumentReferenceField(Handler, null=True, blank=True)
-    # MAC collection settings
-    # Collect all MAC addresses
-    mac_collect_all = models.BooleanField(default=False)
-    # Collect MAC addresses if permitted by interface profile
-    mac_collect_interface_profile = models.BooleanField(default=True)
-    # Collect MAC addresses from management VLAN
-    mac_collect_management = models.BooleanField(default=False)
-    # Collect MAC addresses from multicast VLAN
-    mac_collect_multicast = models.BooleanField(default=False)
-    # Collect MAC from designated VLANs (NetworkSegment/NetworkSegmentProfile)
-    mac_collect_vcfilter = models.BooleanField(default=False)
     #
     access_preference = models.CharField(
         "Access Preference",

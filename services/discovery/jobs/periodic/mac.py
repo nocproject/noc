@@ -32,26 +32,16 @@ class MACCheck(DiscoveryCheck):
 
     def handler(self):
         # Build filter policy
-        if self.object.object_profile.mac_collect_all:
+        if self.object.object_profile.box_discovery_mac_filter_policy == "A":
             mf = self.filter_all
         else:
             mf = []
             self.allowed_vlans = set()
             # Filter by interface profile
-            if self.object.object_profile.mac_collect_interface_profile:
+            if self.object.object_profile.box_discovery_mac_filter_policy == "I":
                 mf += [self.filter_interface_profile]
-            # Filter by management vlan
-            if self.object.object_profile.mac_collect_management:
-                vlan = self.object.segment.get_management_vlan()
-                if vlan:
-                    self.allowed_vlans.add(vlan)
-            # Filter by multicast vlan
-            if self.object.object_profile.mac_collect_multicast:
-                vlan = self.object.segment.get_multicast_vlan()
-                if vlan:
-                    self.allowed_vlans.add(vlan)
             # Filter by VC Filter (not implemented yet)
-            if self.object.object_profile.mac_collect_vcfilter:
+            if self.object.object_profile.mac_collect_vlanfilter:
                 self.logger.info("VC Filters are not implemented yet")
             # Apply VLAN filter
             if self.allowed_vlans:
