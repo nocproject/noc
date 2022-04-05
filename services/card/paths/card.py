@@ -151,11 +151,11 @@ class CardAPI(BaseAPI):
         n: Optional[str] = None,
         s: Optional[str] = None,
         maintenance: Optional[str] = None,
-        remote_user: Optional[str] = Header(None, alias="Remote-User")
+        remote_user: Optional[str] = Header(None, alias="Remote-User"),
     ):
         current_user = self.get_current_user(remote_user)
         if not current_user:
-            raise HTTPException(404, "Not authorized") # tornado.web.HTTPError(404, "Not found")
+            raise HTTPException(404, "Not found")
         is_ajax = card_id == "ajax"
         query_args = {
             "key": key,
@@ -168,10 +168,9 @@ class CardAPI(BaseAPI):
             "maintenance": maintenance,
         }
         handler = HandlerStub(current_user, query_args)
-        print('query_args', query_args)
         tpl = self.CARDS.get(card_type)
         if not tpl:
-            raise HTTPException(404, "Card template not found") # tornado.web.HTTPError(404, "Card template not found")
+            raise HTTPException(404, "Card template not found")
         try:
             card = tpl(handler, card_id)
             if is_ajax:
@@ -181,12 +180,12 @@ class CardAPI(BaseAPI):
         except BaseCard.RedirectError as e:
             return RedirectResponse(e.args[0])
         except BaseCard.NotFoundError:
-            raise HTTPException(404, "Not found") # raise tornado.web.HTTPError(404, "Not found")
+            raise HTTPException(404, "Not found")
         except Exception:
             error_report()
-            raise HTTPException(500, "Internal server error") # tornado.web.HTTPError(500, "Internal server error")
+            raise HTTPException(500, "Internal server error")
         if not data:
-            raise HTTPException(404, "No data found") # tornado.web.HTTPError(404, "Not found")
+            raise HTTPException(404, "Not found")
 
         headers = {"Cache-Control": "no-cache, must-revalidate"}
         if is_ajax:
@@ -207,14 +206,11 @@ class CardAPI(BaseAPI):
             return Response(content=content, media_type="text/html", headers=headers)
 
     def handler_search(
-        self,
-        scope: str,
-        query: str,
-        remote_user: Optional[str] = Header(None, alias="Remote-User")
+        self, scope: str, query: str, remote_user: Optional[str] = Header(None, alias="Remote-User")
     ):
         card = self.CARDS.get(scope)
         if not card or not hasattr(card, "search"):
-            raise HTTPException(404, "Not found") # tornado.web.HTTPError(404)
+            raise HTTPException(404, "Not found")
         handler = HandlerStub(self.get_current_user(remote_user), {})
         return card.search(handler, query)
 
