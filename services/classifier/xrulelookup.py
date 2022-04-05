@@ -13,7 +13,7 @@ import cachetools
 import sre_parse
 
 # Third-party modules
-import esm
+import esmre as esm
 import bitarray
 
 # NOC modules
