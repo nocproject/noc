@@ -40,7 +40,7 @@ retry_join = [ {% set comma_nodes = joiner(", ") -%}
 {% for n in groups['svc-consul-server'] %}
 {{ comma_nodes() }}"{{ hostvars[n].ansible_host }}"
 {% endfor %} ]
-{% if consul_acl_enable | bool -%}
+{% if consul_acl_enable -%}
     "primary_datacenter" = "{{ consul_acl_datacenter }}",
     "acl" = {
       "enabled" = true,
