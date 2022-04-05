@@ -66,7 +66,9 @@ yappi==1.3.3
 # Activator requirements
 ssh2-python==0.26.0; extra == "activator"
 # Classifier
-bitarray==0.8.1; extra == "classifier"
+bitarray==2.3.4; extra == "classifier"
+# esmre==0.5.2; extra == "classifier"
+https://github.com/wharris/esmre/archive/refs/heads/main.zip
 # Cache-Redis
 hiredis==1.1.0; extra == "cache-redis"
 redis==3.5.3; extra == "cache-redis"
