@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
         ("vc.L2Domain", "vlan_discovery_filter"),
         ("vc.L2DomainProfile", "pool.vlan_filter"),
         ("vc.L2DomainProfile", "vlan_discovery_filter"),
+        ("sa.ManagedObjectProfile", "mac_collect_vlanfilter"),
     ]
 )
 @on_save
