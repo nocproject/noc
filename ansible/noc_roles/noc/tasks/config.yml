@@ -27,7 +27,7 @@
   no_log: "{{ tower_show_secrets }}"
   when:
     - noc_services is defined
-    - noc_services | bool
+    - noc_services
 
 - name: Generate NOC config for pooled services
   template:
@@ -39,7 +39,7 @@
   no_log: "{{ tower_show_secrets }}"
   when:
     - noc_services is defined
-    - noc_services
+    - noc_services | bool
   vars:
     pool_name: "{{ item.name }}"
   with_items:
