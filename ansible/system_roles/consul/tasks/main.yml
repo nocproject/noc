@@ -1,5 +1,5 @@
 ---
-## File: main.yml - Main tasks for Consul
+# File: main.yml - Main tasks for Consul
 
 - name: make servers group
   changed_when: false
@@ -65,7 +65,7 @@
 
 - name: ACL config
   include_tasks: acl.yml
-  when: consul_acl_enable | bool
+  when: consul_acl_enable
   tags:
     - config
 
