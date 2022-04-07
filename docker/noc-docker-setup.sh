@@ -180,7 +180,7 @@ SETUPENV() {
             echo "# Important!!! NOC_PG_PASSWORD must by similar in .data/noc/etc/noc.conf file"
             echo "NOC_PG_PASSWORD=$GENERATED_PG_PASSWORD"
             echo "PGPASSWORD=$GENERATED_PG_PASSWORD"
-            echo "PG_VERSION_TAG=12"
+            echo "PG_VERSION_TAG=14"
             echo "# Important!!! NOC_MONGO_PASSWORD must by similar in .data/noc/etc/noc.conf file"
             echo "NOC_MONGO_PASSWORD=$GENERATED_MONGO_PASSWORD"
             echo "# See https://jira.mongodb.org/browse/SERVER-48516 for mongo 4.2+"
