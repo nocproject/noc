@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 from io import BytesIO
+from functools import partial
 from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
 
@@ -22,6 +23,30 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
 from noc.lib.app.reportdatasources.base import ReportDataSource
 from noc.lib.app.reportdatasources.loader import loader
+from noc.core.comp import smart_bytes
+from noc.core.ioloop.util import run_sync
+from noc.core.datasources.loader import loader as ds_loader
+
+
+class ReportDsAlars(object):
+    def __init__(self, filters=None):
+        self.datasource = ds_loader["reportdsalarms"]
+        self.result = None
+        self.filters = filters or {}
+
+    def run(self, start, end):
+        self.filters["start"] = start
+        self.filters["end"] = end
+        self.result = run_sync(partial(self.datasource.query, **self.filters))
+
+    def report_csv(self):
+        return self.result.to_csv()
+
+    def report_xlsx(self):
+        response = BytesIO()
+        self.result.to_excel(response)
+        response.seek(0)
+        return response.getvalue()
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -79,6 +104,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         enable_autowidth=False,
     ):
         filters = []
+        d_filters = {}
 
         ads = []
         if administrative_domain:
@@ -97,6 +123,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 ads = user_ads
         if ids:
             ids = ids.split()
+            d_filters["objectids"] = ids
             fd = datetime.datetime.now()
             td = None
         elif from_date:
@@ -121,8 +148,10 @@ class ReportAlarmDetailApplication(ExtApplication):
                 continue
             if values and isinstance(values, list):
                 filters += [{"name": name, "values": values}]
+                d_filters[name] = values
             elif values:
                 filters += [{"name": name, "values": [values]}]
+                d_filters[name] = [values]
         if source in ["long_archive"]:
             report_ds = "reportdsalarmsbiarchive"
             o_format = "csv_zip"
@@ -138,14 +167,17 @@ class ReportAlarmDetailApplication(ExtApplication):
         report: ReportDataSource = loader[report_ds]
         if not report:
             return HttpResponseNotFound(_(f"Report DataSource {report_ds} Not found"))
-        data = report(
-            fields=columns.split(","),
-            objectids=ids or [],
-            allobjectids=False,
-            start=fd,
-            end=td,
-            filters=filters,
-        )
+        # data = report(
+        #     fields=columns.split(","),
+        #     objectids=ids or [],
+        #     allobjectids=False,
+        #     start=fd,
+        #     end=td,
+        #     filters=filters,
+        # )
+        # report = ReportDsAlars(d_filters)
+        data = ReportDsAlars(d_filters)
+        data.run(start=fd, end=td)
 
         # filename = f'{report_name}_detail_report_{datetime.datetime.now().strftime("%Y%m%d")}'
         filename = "alarms.csv"
@@ -156,7 +188,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         elif o_format == "csv_zip":
             response = BytesIO()
             f = TemporaryFile(mode="w+b")
-            f.write(data.report_csv())
+            f.write(smart_bytes(data.report_csv()))
             f.seek(0)
             with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
                 zf.writestr(filename, f.read())
