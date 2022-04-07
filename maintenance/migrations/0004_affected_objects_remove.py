@@ -23,7 +23,6 @@ class Migration(BaseMigration):
                 }
             ]
         ):
-            print(ao)
             m_id = ao["maintenance"]
             objects = tuple(ao["objects"])
             if ao["objects"] == []:
