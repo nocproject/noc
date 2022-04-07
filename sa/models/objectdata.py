@@ -13,6 +13,7 @@ from typing import Dict, List, Set, Iterable
 from dataclasses import dataclass
 
 # Third-party modules
+import bson
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 from mongoengine.document import Document
@@ -35,7 +36,12 @@ logger = logging.getLogger(__name__)
 
 
 class ObjectData(Document):
-    meta = {"collection": "noc.objectdata", "indexes": ["uplinks"]}
+    meta = {
+        "collection": "noc.objectdata",
+        "indexes": ["uplinks"],
+        "strict": False,
+        "auto_create_index": False,
+    }
     object = IntField(primary_key=True)
     # Uplinks
     uplinks = ListField(IntField())
@@ -61,6 +67,9 @@ class ObjectData(Document):
 
     @classmethod
     def get_by_id(cls, object):
+        if isinstance(object, bson.ObjectId):
+            # For tests supported
+            return None
         if hasattr(object, "id"):
             object = object.id
         return cls._get_by_id(object)
