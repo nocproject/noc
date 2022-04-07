@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021, The NOC Project
+# Copyright (C) 2007-2022, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import logging
 
 # NOC modules
-from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
+from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.ttsystem import TTSystem
 from noc.core.perf import metrics
@@ -40,6 +40,7 @@ def start_maintenance(maintenance_id):
         )
         return
     tt_system = m.escalate_managed_object.tt_system
+
     if not tt_system:
         logger.info("[%s] Cannot find TT system '%s'", maintenance_id, m.escalate_managed_object)
         return
@@ -49,7 +50,7 @@ def start_maintenance(maintenance_id):
         tt_id = tts.create_tt(
             queue=m.escalate_managed_object.tt_queue if m.escalate_managed_object.tt_queue else 1,
             obj=tts_id,
-            reason=0,
+            reason="0",
             subject=m.subject,
             body=m.description or m.subject,
             login="correlator",
@@ -58,14 +59,14 @@ def start_maintenance(maintenance_id):
         logger.info("[%s] TT %s created", maintenance_id, tt_id)
         if tts.promote_group_tt:
             gtt = tts.create_group_tt(tt_id, m.start)
-            d = AffectedObjects._get_collection().find_one(
-                {"maintenance": m.id}, {"_id": 0, "affected_objects": 1}
+            SQL = """SELECT id, name, tt_system_id
+                FROM sa_managedobject
+                WHERE is_managed = 'true' AND affected_maintenances @> '{"%s": {}}';""" % str(
+                maintenance_id
             )
-            if d:
-                objects = [x["object"] for x in d["affected_objects"]]
-                for d in ManagedObject.objects.filter(id__in=list(objects), is_managed=True):
-                    logger.info("[%s] Appending object %s to group TT %s", maintenance_id, d, gtt)
-                    tts.add_to_group_tt(gtt, d.tt_system_id)
+            for mo in ManagedObject.objects.raw(SQL):
+                logger.info("[%s] Appending object %s to group TT %s", maintenance_id, mo, gtt)
+                tts.add_to_group_tt(gtt, mo.tt_system_id)
         if tt_id and not m.escalation_tt:
             m.escalation_tt = "%s:%s" % (m.escalate_managed_object.tt_system.name, tt_id)
             m.save()

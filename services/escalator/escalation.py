@@ -685,7 +685,7 @@ class EscalationSequence(BaseSequence):
             self.escalation_doc.get_lock_items()
         ):
             self.check_escalated()
-            self.check_maintenance()
+            self.alarm.managed_object.in_maintenance
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
             for esc_item in self.iter_escalation_items():

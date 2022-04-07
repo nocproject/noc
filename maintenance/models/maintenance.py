@@ -7,11 +7,10 @@
 
 # Python
 import datetime
-import dateutil.parser
 import operator
 import re
 from threading import Lock
-from typing import List, Set
+from typing import Optional, List, Set
 
 # Third-party modules
 from django.db import connection as pg_connection
@@ -153,9 +152,7 @@ class Maintenance(Document):
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
                     delay=max(
-                        (
-                            dateutil.parser.parse(self.start) - datetime.datetime.now()
-                        ).total_seconds(),
+                        (self.start - datetime.datetime.now()).total_seconds(),
                         60,
                     ),
                     scheduler="escalator",
@@ -166,9 +163,7 @@ class Maintenance(Document):
                     call_later(
                         "noc.services.escalator.maintenance.close_maintenance",
                         delay=max(
-                            (
-                                dateutil.parser.parse(self.stop) - datetime.datetime.now()
-                            ).total_seconds(),
+                            (self.stop - datetime.datetime.now()).total_seconds(),
                             60,
                         ),
                         scheduler="escalator",
@@ -197,7 +192,7 @@ class Maintenance(Document):
             cursor.execute(SQL)
 
     @classmethod
-    def currently_affected(cls) -> List[int]:
+    def currently_affected(cls, objects: Optional[List[int]] = None) -> List[int]:
         """
         Returns a list of currently affected object ids
         """
@@ -218,6 +213,8 @@ class Maintenance(Document):
                 is_managed=True, affected_maintenances__has_any_keys=data
             ).values_list("id", flat=True)
         )
+        if objects:
+            affected = list(set(affected) & set(objects))
         return affected
 
     @classmethod

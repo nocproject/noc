@@ -49,8 +49,7 @@ class MaintenanceCard(BaseCard):
             WHERE is_managed = 'true' AND affected_maintenances @> '{"%s": {}}' ORDER BY address;""" % str(
             self.object.id
         )
-        mos = ManagedObject.objects.raw(SQL)
-        for mo in mos.iterator():
+        for mo in ManagedObject.objects.raw(SQL):
             ss = ServiceSummary.get_object_summary(mo.id)
             update_dict(summary["service"], ss.get("service", {}))
             update_dict(summary["subscriber"], ss.get("subscriber", {}))
