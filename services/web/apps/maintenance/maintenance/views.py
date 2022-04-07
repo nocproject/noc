@@ -7,7 +7,6 @@
 
 # Python modules
 import orjson
-import bson
 
 # Third-party modules
 from mongoengine.queryset.visitor import Q
@@ -18,7 +17,6 @@ from noc.maintenance.models.maintenance import (
     Maintenance,
     MaintenanceObject,
     MaintenanceSegment,
-    AffectedObjects,
 )
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject

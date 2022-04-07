@@ -55,7 +55,7 @@
                     {% for a in affected %}
                     <tr>
                         <td>
-                            <a href="/api/card/view/managedobject/{{ a["id"] }}/">{{ a["name"] }}</a>
+                            <a href="/api/card/view/managedobject/{{ a["id"] }}/" target="_blank">{{ a["name"] }}</a>
                             <br/>
                             <span class="small">{{ a["object"] | object_location if a["object"] }}</span>
                         </td>

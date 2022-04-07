@@ -7,10 +7,8 @@
 
 # Python modules
 import os
-import bisect
 import inspect
 import datetime
-import dateutil.parser
 import operator
 from typing import Tuple
 
@@ -45,7 +43,7 @@ from noc.sa.interfaces.base import (
     StringParameter,
     StringListParameter,
 )
-from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
+from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.servicesummary import SummaryItem
@@ -910,32 +908,9 @@ class AlarmApplication(ExtApplication):
     def bulk_field_isinmaintenance(self, data):
         if not data:
             return data
-        if data[0]["status"] == "A":
-            mtc = set(Maintenance.currently_affected())
-            for x in data:
-                x["isInMaintenance"] = x["managed_object"] in mtc
-        else:
-            mos = set([x["managed_object"] for x in data])
-            mtc = {}
-            for mo in list(mos):
-                interval = []
-                for ao in AffectedObjects._get_collection().find(
-                    {"affected_objects.object": {"$eq": mo}}, {"_id": 0, "maintenance": 1}
-                ):
-                    m = Maintenance.get_by_id(ao["maintenance"])
-                    interval += [(m.start, m.stop)]
-                if interval:
-                    mtc[mo] = interval
-            for x in data:
-                if x["managed_object"] in mtc:
-                    left, right = list(zip(*mtc[x["managed_object"]]))
-                    x["isInMaintenance"] = bisect.bisect(
-                        right, dateutil.parser.parse(x["timestamp"]).replace(tzinfo=None)
-                    ) != bisect.bisect(
-                        left, dateutil.parser.parse(x["clear_timestamp"]).replace(tzinfo=None)
-                    )
-                else:
-                    x["isInMaintenance"] = False
+        mtc = set(Maintenance.currently_affected())
+        for x in data:
+            x["isInMaintenance"] = x["managed_object"] in mtc
         return data
 
     @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)

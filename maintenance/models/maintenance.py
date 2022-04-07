@@ -31,8 +31,8 @@ from .maintenancetype import MaintenanceType
 from mongoengine.errors import ValidationError
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
-from noc.core.model.decorator import on_save, on_delete_check
+from noc.core.mongo.fields import ForeignKeyField
+from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.core.defer import call_later
@@ -51,9 +51,7 @@ class MaintenanceSegment(EmbeddedDocument):
 
 
 @on_save
-@on_delete_check(
-    clean=[("maintenance.AffectedObjects", "maintenance")],
-)
+@on_delete
 class Maintenance(Document):
     meta = {
         "collection": "noc.maintenance",
@@ -148,14 +146,7 @@ class Maintenance(Document):
                 self.auto_confirm_maintenance()
 
         if hasattr(self, "_changed_fields") and "is_completed" in self._changed_fields:
-            SQL = """UPDATE sa_managedobject
-                     SET affected_maintenances = affected_maintenances #- '{%s}'
-                     WHERE affected_maintenances @> '{"%s": {}}';""" % (
-                str(self.id),
-                str(self.id),
-            )
-            with pg_connection.cursor() as cursor:
-                cursor.execute(SQL)
+            self.remove_maintenance()
 
         if self.escalate_managed_object:
             if not self.is_completed and self.auto_confirm:
@@ -192,14 +183,27 @@ class Maintenance(Document):
                     maintenance_id=self.id,
                 )
 
+    def on_delete(self):
+        self.remove_maintenance()
+
+    def remove_maintenance(self):
+        SQL = """UPDATE sa_managedobject
+                 SET affected_maintenances = affected_maintenances #- '{%s}'
+                 WHERE affected_maintenances @> '{"%s": {}}';""" % (
+            str(self.id),
+            str(self.id),
+        )
+        with pg_connection.cursor() as cursor:
+            cursor.execute(SQL)
+
     @classmethod
     def currently_affected(cls) -> List[int]:
         """
         Returns a list of currently affected object ids
         """
-        affected = set()
+        data = []
         now = datetime.datetime.now()
-        for d in cls._get_collection().find(
+        for d in Maintenance._get_collection().find(
             {"start": {"$lte": now}, "stop": {"$gte": now}, "is_completed": False},
             {"_id": 1, "time_pattern": 1},
         ):
@@ -208,15 +212,13 @@ class Maintenance(Document):
                 tp = TimePattern.get_by_id(d["time_pattern"])
                 if tp and not tp.match(now):
                     continue
-            data = [
-                {"$match": {"maintenance": d["_id"]}},
-                {
-                    "$project": {"_id": 0, "objects": "$affected_objects.object"},
-                },
-            ]
-            #for x in AffectedObjects._get_collection().aggregate(data):
-               #affected.update(x["objects"])
-        return list(affected)
+            data.append(str(d["_id"]))
+        affected = list(
+            ManagedObject.objects.filter(
+                is_managed=True, affected_maintenances__has_any_keys=data
+            ).values_list("id", flat=True)
+        )
+        return affected
 
     @classmethod
     def get_object_maintenance(cls, mo):
@@ -230,9 +232,10 @@ class Maintenance(Document):
         for m in Maintenance.objects.filter(start__lte=now, is_completed=False).order_by("start"):
             if m.time_pattern and not m.time_pattern.match(now):
                 continue
-            #if AffectedObjects.objects.filter(maintenance=m, affected_objects__object=mo.id):
-                #r += [m]
+            # if AffectedObjects.objects.filter(maintenance=m, affected_objects__object=mo.id):
+            # r += [m]
         return r
+
 
 def update_affected_objects(maintenance_id, start, stop=None):
     """
@@ -319,7 +322,7 @@ def update_affected_objects(maintenance_id, start, stop=None):
                     str(maintenance_id),
                     start,
                     stop,
-                    "(%s)" % ", ".join(map(repr, nin_mai))
+                    "(%s)" % ", ".join(map(repr, nin_mai)),
                 )
                 cursor.execute(SQL_ADD)
             # Delete Maintenance objects
@@ -338,6 +341,8 @@ def stop(maintenance_id):
     rx_mail = re.compile(r"(?P<mail>[A-Za-z0-9\.\_\-]+\@[A-Za-z0-9\@\.\_\-]+)", re.MULTILINE)
     # Find Active Maintenance
     mai = Maintenance.get_by_id(maintenance_id)
+    if not mai:
+        return
     mai.is_completed = True
     # Find email addresses on Maintenance Contacts
     if mai.template:
