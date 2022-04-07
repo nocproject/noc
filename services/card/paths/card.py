@@ -14,7 +14,7 @@ from typing import Optional
 
 # Third-party modules
 import cachetools
-from fastapi import APIRouter, Header, HTTPException, Response
+from fastapi import APIRouter, Header, HTTPException, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse, ORJSONResponse
 from jinja2 import Template
 import orjson
@@ -121,7 +121,7 @@ class CardAPI(BaseAPI):
         route_card = {
             "path": "/api/card/view/{card_type}/{card_id}/",
             "method": "GET",
-            "endpoint": self.handler_card,
+            "endpoint": self.handler_card_view,
             "response_class": HTMLResponse,
             "response_model": None,
             "name": "card-view",
@@ -130,7 +130,7 @@ class CardAPI(BaseAPI):
         route_search = {
             "path": "/api/card/search/",
             "method": "GET",
-            "endpoint": self.handler_search,
+            "endpoint": self.handler_card_search,
             "response_class": ORJSONResponse,
             "response_model": None,
             "name": "card-search",
@@ -138,36 +138,18 @@ class CardAPI(BaseAPI):
         }
         return [route_card, route_search]
 
-    def handler_card(
+    def handler_card_view(
         self,
         card_type: str,
         card_id: str,
-        refresh: Optional[int] = None,
-        key: Optional[str] = None,
-        object_id: Optional[str] = None,
-        z: Optional[str] = None,
-        w: Optional[str] = None,
-        e: Optional[str] = None,
-        n: Optional[str] = None,
-        s: Optional[str] = None,
-        maintenance: Optional[str] = None,
+        request: Request,
         remote_user: Optional[str] = Header(None, alias="Remote-User"),
     ):
         current_user = self.get_current_user(remote_user)
         if not current_user:
             raise HTTPException(404, "Not found")
         is_ajax = card_id == "ajax"
-        query_args = {
-            "key": key,
-            "object_id": object_id,
-            "z": z,
-            "e": e,
-            "w": w,
-            "n": n,
-            "s": s,
-            "maintenance": maintenance,
-        }
-        handler = HandlerStub(current_user, query_args)
+        handler = HandlerStub(current_user, request.query_params)
         tpl = self.CARDS.get(card_type)
         if not tpl:
             raise HTTPException(404, "Card template not found")
@@ -192,6 +174,7 @@ class CardAPI(BaseAPI):
             od = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS)
             return Response(content=od, media_type="application/json", headers=headers)
         else:
+            refresh = request.query_params.get("refresh")
             if refresh:
                 headers["Refresh"] = str(refresh)
             content = self.get_card_template().render(
@@ -205,7 +188,7 @@ class CardAPI(BaseAPI):
             )
             return Response(content=content, media_type="text/html", headers=headers)
 
-    def handler_search(
+    def handler_card_search(
         self, scope: str, query: str, remote_user: Optional[str] = Header(None, alias="Remote-User")
     ):
         card = self.CARDS.get(scope)
