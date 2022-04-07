@@ -124,7 +124,7 @@ class CardAPI(BaseAPI):
             "endpoint": self.handler_card,
             "response_class": HTMLResponse,
             "response_model": None,
-            "name": "card",
+            "name": "card-view",
             "description": "",
         }
         route_search = {
@@ -133,7 +133,7 @@ class CardAPI(BaseAPI):
             "endpoint": self.handler_search,
             "response_class": ORJSONResponse,
             "response_model": None,
-            "name": "search",
+            "name": "card-search",
             "description": "",
         }
         return [route_card, route_search]

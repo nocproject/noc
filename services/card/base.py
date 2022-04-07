@@ -11,10 +11,12 @@ import hashlib
 from typing import List, Optional
 
 # Third-party modules
-from fastapi import APIRouter
-from fastapi.responses import ORJSONResponse
+from fastapi import APIRouter, Request
+from fastapi.responses import ORJSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
 
 # NOC modules
+from noc.config import config
 from noc.core.comp import smart_bytes
 from noc.core.service.loader import get_service
 
@@ -68,6 +70,44 @@ class BaseAPI(object):
                 },
                 tags=self.openapi_tags,
             )
+        self.router.add_api_route(
+            path="/api/card/index.html",
+            methods=["GET"],
+            endpoint=self.handler_index,
+            response_class=HTMLResponse,
+            response_model=None,
+            name="card-index",
+            description="",
+            response_model_exclude_none=False,
+            responses={
+                403: {
+                    "content": {"text/html": {"example": FORBIDDEN_MESSAGE}},
+                    "description": "Forbidden Access by API Key restrictions",
+                }
+            },
+            tags=self.openapi_tags,
+        )
+
+    def handler_index(self, request: Request):
+        templates_dir = os.path.join(self.PREFIX, "ui", self.service.name)
+        language = config.card.language
+        templates = Jinja2Templates(directory=templates_dir)
+        result = templates.TemplateResponse(
+            "index.html",
+            {
+                "hashed": self.hashed,
+                "request": request,
+                "language": language,
+                "theme": config.web.theme,
+                "brand": config.brand,
+                "installation_name": config.installation_name,
+                "name": self.service.name,
+                "service": self.service,
+            },
+        )
+        result.headers["Cache-Control"] = "no-cache; must-revalidate"
+        result.headers["Expires"] = "0"
+        return result
 
     def hashed(self, url):
         """
