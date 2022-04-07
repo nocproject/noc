@@ -16,20 +16,20 @@ Here is a small manual.
 
 ## Upgrade database
 
-Let assume that we want to upgrade from **9.6** to **12** version.
+Let assume that we want to upgrade from **9.6** to **14** version.
 
 ### RPM-based distros (Centos, RHEL, Oracle Linux)
 
 1. Install postgresql-server of new version:
-   - `yum install postgresql12-server.x86_64`
+   - `yum install postgresql14-server.x86_64`
 2. Init new database from new binary:
-   - `/usr/pgsql-12/bin/postgresql-12-setup initdb`
+   - `/usr/pgsql-14/bin/postgresql-14-setup initdb`
 3. Stop old server:
    - `systemctl stop postgresql-9.6`
 4. Become `postgres` user
    - `su - postgres`
 5. Check if we can upgrade this database:
-   - `/usr/pgsql-12/bin/pg_upgrade --old-bindir=/usr/pgsql-9.6/bin/ --new-bindir=/usr/pgsql-12/bin/ --old-datadir=/var/lib/pgsql/9.6/data/ --new-datadir=/var/lib/pgsql/12/data/ --check`
+   - `/usr/pgsql-14/bin/pg_upgrade --old-bindir=/usr/pgsql-9.6/bin/ --new-bindir=/usr/pgsql-14/bin/ --old-datadir=/var/lib/pgsql/9.6/data/ --new-datadir=/var/lib/pgsql/14/data/ --check`
 
 Output example: 
 ```
@@ -54,7 +54,7 @@ Checking for new cluster tablespace directories             ok
 *Clusters are compatible*
 ```
 6. Upgrade this database:
-   - `/usr/pgsql-12/bin/pg_upgrade --old-bindir=/usr/pgsql-9.6/bin/ --new-bindir=/usr/pgsql-12/bin/ --old-datadir=/var/lib/pgsql/9.6/data/ --new-datadir=/var/lib/pgsql/12/data/`
+   - `/usr/pgsql-14/bin/pg_upgrade --old-bindir=/usr/pgsql-9.6/bin/ --new-bindir=/usr/pgsql-14/bin/ --old-datadir=/var/lib/pgsql/9.6/data/ --new-datadir=/var/lib/pgsql/14/data/`
 
 Output example:
 ```
@@ -119,13 +119,13 @@ Running this script will delete the old cluster's data files:
 ```
 
 7. Start new server:
-   - `systemctl start postgresql-12`
-   - `systemctl status postgresql-12`
+   - `systemctl start postgresql-14`
+   - `systemctl status postgresql-14`
 
 8. Remove old PG packages:
    - `yum remove postgresql96* -y`
 
-9. Write proper new version of PostgreSQL (**12**) in the Tower in `postgres` service at `PostgreSQL version` field.
+9. Write proper new version of PostgreSQL (**14**) in the Tower in `postgres` service at `PostgreSQL version` field.
 10. Deploy
 
 ### DEB-based distros (Debian, Ubuntu)
