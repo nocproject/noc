@@ -1,6 +1,6 @@
 ---
-- name: Fail if PostgreSQL version is not equal to "12"
+- name: Fail if PostgreSQL version is not equal to "{{ postgres_version }}"
   fail:
-    msg: Only "12" version of PostgreSQL is supported now
+    msg: Only "{{ postgres_version }}" version of PostgreSQL is supported now
   when:
-    - postgres_version is version_compare("12", '<>')
+    - postgres_version is version_compare("{{ postgres_version }}", '<>')
