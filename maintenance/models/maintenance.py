@@ -217,22 +217,6 @@ class Maintenance(Document):
             affected = list(set(affected) & set(objects))
         return affected
 
-    @classmethod
-    def get_object_maintenance(cls, mo):
-        """
-        Returns a list of active maintenance for object
-        :param mo: Managed Object instance
-        :return: List of Maintenance instances or empty list
-        """
-        r = []
-        now = datetime.datetime.now()
-        for m in Maintenance.objects.filter(start__lte=now, is_completed=False).order_by("start"):
-            if m.time_pattern and not m.time_pattern.match(now):
-                continue
-            # if AffectedObjects.objects.filter(maintenance=m, affected_objects__object=mo.id):
-            # r += [m]
-        return r
-
 
 def update_affected_objects(maintenance_id, start, stop=None):
     """
