@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -114,11 +114,14 @@ class MaintenanceItem(BaseModel):
     start: datetime.datetime
     stop: Optional[datetime.datetime] = None
 
+
 class MaintenanceItems(BaseModel):
     __root__: Dict[str, MaintenanceItem]
 
+
 class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
+
 
 @dataclass(frozen=True)
 class ObjectUplinks(object):
