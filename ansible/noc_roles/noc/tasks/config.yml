@@ -17,7 +17,7 @@
     mode: "0640"
   when:
     - noc_services is defined
-    - noc_services | bool
+    - noc_services
 
 - name: Generate NOC config
   template:
@@ -41,7 +41,7 @@
   no_log: "{{ tower_show_secrets }}"
   when:
     - noc_services is defined
-    - noc_services | bool
+    - noc_services
   vars:
     pool_name: "{{ item.name }}"
   with_items:
