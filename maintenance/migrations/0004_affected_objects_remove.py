@@ -26,11 +26,9 @@ class Migration(BaseMigration):
             m_id = ao["maintenance"]
             objects = tuple(ao["objects"])
             if ao["objects"] == []:
-                db.noc.affectedobjects.remove({"maintenance": m_id})
                 continue
             mai = db.noc.maintenance.find_one({"_id": m_id})
             if mai["stop"] < datetime.datetime.now():
-                db.noc.affectedobjects.remove({"maintenance": m_id})
                 continue
             SQL_ADD = """UPDATE sa_managedobject
                             SET affected_maintenances = jsonb_insert(affected_maintenances,
@@ -42,4 +40,4 @@ class Migration(BaseMigration):
                 "(%s)" % ", ".join(map(repr, objects)),
             )
             self.db.execute(SQL_ADD)
-            db.noc.affectedobjects.remove({"maintenance": m_id})
+        db.noc.affectedobjects.drop()
