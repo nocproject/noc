@@ -39,7 +39,7 @@ class ActivationConfigItem(BaseModel):
 
 
 class MetricAction(BaseModel):
-    inputs = List[MetricActionInputItem]
+    inputs: List[MetricActionInputItem]
     compose_function: Literal["sum", "avg"] = None
     compose_metric_type: Optional[str] = None
     activation_config: Optional[ActivationConfigItem] = None
