@@ -28,7 +28,7 @@ from noc.core.ioloop.util import run_sync
 from noc.core.datasources.loader import loader as ds_loader
 
 
-class ReportDsAlars(object):
+class ReportDsAlarms(object):
     def __init__(self, filters=None):
         self.datasource = ds_loader["reportdsalarms"]
         self.result = None
@@ -176,11 +176,10 @@ class ReportAlarmDetailApplication(ExtApplication):
         #     filters=filters,
         # )
         # report = ReportDsAlars(d_filters)
-        data = ReportDsAlars(d_filters)
+        data = ReportDsAlarms(d_filters)
         data.run(start=fd, end=td)
 
-        # filename = f'{report_name}_detail_report_{datetime.datetime.now().strftime("%Y%m%d")}'
-        filename = "alarms.csv"
+        filename = f'alarm_detail_report_{datetime.datetime.now().strftime("%Y%m%d")}'
         if o_format == "csv":
             response = HttpResponse(data.report_csv(), content_type="text/csv")
             response["Content-Disposition"] = 'attachment; filename="%s"' % filename

@@ -8,11 +8,14 @@
 # Python modules
 from typing import List, Iterable, Dict, Any, Optional
 import datetime
+import operator
 
 # Third-party modules
 import bson
-from pymongo import ReadPreference
 import pandas as pd
+import cachetools
+from pymongo import ReadPreference
+
 
 # NOC modules
 from .base import BaseDataSource, FieldInfo
@@ -28,7 +31,6 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
 from noc.project.models.project import Project
-from noc.maintenance.models.maintenance import Maintenance
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.services.web.apps.fm.alarm.views import AlarmApplication
 
@@ -181,6 +183,23 @@ class ReportDsAlarms(BaseDataSource):
         ]
     )
 
+    _object_location_cache = cachetools.TTLCache(maxsize=1000, ttl=600)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_object_location_cache"))
+    def get_object_location(cls, oid: str) -> str:
+        loc = AlarmApplication(None)
+        return ", ".join(loc.location(oid))
+
+    @classmethod
+    def _clear_caches(cls):
+        cls._object_location_cache.clear()
+        Object._id_cache.clear()
+        Platform._id_cache.clear()
+        Profile._id_cache.clear()
+        Firmware._id_cache.clear()
+        AlarmClass._id_cache.clear()
+
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
         data = [mm async for mm in cls.iter_query(fields or [], **kwargs)]
@@ -197,18 +216,9 @@ class ReportDsAlarms(BaseDataSource):
         """
         return {r["profile"]: r["summary"] for r in items}
 
-    # @classmethod
-    # def get_fields(cls, fields):
-    #     r = super().get_fields(fields)
-    #     if "subscribers" in fields:
-    #         for f in cls.FIELDS:
-    #             if f.name.startswith("subsprof_"):
-    #                 r[f.name] = f
-    #     return r
-
     @classmethod
     def iter_data(cls, start, end, **filters: Optional[Dict[str, Any]]) -> Iterable[Dict[str, Any]]:
-        print("Iter Data", start, end, filters)
+        # print("Iter Data", start, end, filters)
         if "objectids" in filters:
             match = {"_id": {"$in": [bson.ObjectId(x) for x in filters["objectids"]]}}
         else:
@@ -266,6 +276,22 @@ class ReportDsAlarms(BaseDataSource):
             if match:
                 pipeline += [{"$match": match}]
             pipeline += [
+                # {
+                #     "$lookup": {
+                #         "from": "noc.objects",
+                #         "localField": "container_path",
+                #         "foreignField": "_id",
+                #         "as": "container_path_l",
+                #     }
+                # },
+                # {
+                #     "$lookup": {
+                #         "from": "noc.networksegments",
+                #         "localField": "segment_path",
+                #         "foreignField": "_id",
+                #         "as": "segment_path_l",
+                #     }
+                # },
                 {
                     "$addFields": {
                         "duration": {
@@ -293,6 +319,13 @@ class ReportDsAlarms(BaseDataSource):
                                 "in": {"sum": {"$add": ["$$value.sum", "$$this.summary"]}},
                             }
                         },
+                        # "container_path_l": {
+                        #     "$map": {"input": "$container_path_l", "as": "cc", "in": "$$cc.name"}
+                        # },
+                        "container_path_l": [],
+                        # "segment_path_l": {
+                        #     "$map": {"input": "$segment_path_l", "as": "ns", "in": "$$ns.name"}
+                        # },
                     }
                 },
             ]
@@ -311,10 +344,9 @@ class ReportDsAlarms(BaseDataSource):
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> Iterable[Dict[str, Any]]:
-        # moss = MOCache()
         if "start" not in kwargs:
             raise ValueError("Start filter is required")
-        _moss = {
+        moss = {
             mo["id"]: mo
             for mo in ManagedObject.objects.filter().values(
                 "id",
@@ -328,10 +360,10 @@ class ReportDsAlarms(BaseDataSource):
                 "project",
             )
         }
-
-        _mo_hostname = {}
+        fields = fields or []
+        mo_hostname = {}
         if not fields or "object_hostname" in fields:
-            _mo_hostname = {
+            mo_hostname = {
                 val["object"]: val["hostname"]
                 for val in DiscoveryID._get_collection()
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -340,19 +372,21 @@ class ReportDsAlarms(BaseDataSource):
         maintenance = {}
         # if "maintenance" in fields:
         #     maintenance = Maintenance.currently_affected()
-        loc = None
-        # if not fields or "location" in fields:
-        #     loc = AlarmApplication([])
         container_path_fields = [field for field in fields if field.startswith("container_")]
         segment_path_fields = [field for field in fields if field.startswith("segment_")]
         subscribers_profile = []
         if not fields or "subscribers" in fields:
             subscribers_profile = [
-                (sp.name, sp.id)
-                for sp in SubscriberProfile.objects.filter(show_in_summary=True).order_by("name")
+                sp
+                for sp in SubscriberProfile.objects.filter(show_in_summary=True)
+                .values_list("name", "id")
+                .order_by("name")
             ]
         for aa in cls.iter_data(**kwargs):
-            mo = _moss[aa["managed_object"]]
+            mo = moss[aa["managed_object"]]
+            loc = ""
+            if (not fields or "location" in fields) and aa.get("container_path"):
+                loc = cls.get_object_location(aa["container_path"][-1])
             platform, version, project = None, None, None
             if mo["platform"]:
                 platform = Platform.get_by_id(mo["platform"]).name
@@ -370,7 +404,7 @@ class ReportDsAlarms(BaseDataSource):
                 "duration_sec": round(aa["duration"]),
                 "object_name": mo["name"],
                 "object_address": mo["address"],
-                "object_hostname": _mo_hostname.get(aa["managed_object"], ""),
+                "object_hostname": mo_hostname.get(aa["managed_object"], ""),
                 "object_profile": Profile.get_by_id(mo["profile"]).name,
                 "object_object_profile": mo["object_profile__name"],
                 "object_admdomain": mo["administrative_domain__name"],
@@ -385,15 +419,7 @@ class ReportDsAlarms(BaseDataSource):
                 "escalation_ts": aa["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S")
                 if "escalation_ts" in aa
                 else "",
-                "location": ", ".join(
-                    ll
-                    for ll in (
-                        loc.location(aa["container_path"][-1]) if aa.get("container_path") else ""
-                    )
-                    if ll
-                )
-                if loc
-                else "",
+                "location": loc,
                 "maintenance": "Yes"
                 if "clear_timestamp" not in aa and aa["managed_object"] in maintenance
                 else "No",
@@ -422,3 +448,4 @@ class ReportDsAlarms(BaseDataSource):
                 r[field] = v
 
             yield r
+        cls._clear_caches()
