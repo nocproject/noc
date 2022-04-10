@@ -21,7 +21,208 @@ Ext.define("NOC.pm.metricaction.Application", {
     formMaxWidth: 1000,
 
     initComponent: function() {
-        var me = this;
+        var me = this,
+            windowSet = function(itemId) {
+                return [
+                    {
+                        xtype: "combobox",
+                        itemId: itemId,
+                        name: itemId + ".window_function",
+                        labelAlign: "top",
+                        fieldLabel: __("Window Function"),
+                        allowBlank: true,
+                        store: [
+                            ["disable", "Disable"],
+                            ["sumstep", "Sum Step"],
+                            ["expdecay", "Exp Decay"],
+                            ["percentile", "Percentile"],
+                            ["nth", "Nth"],
+                        ],
+                        value: "disable",
+                        listeners: {
+                            scope: me,
+                            change: Ext.pass(me._setFieldsDisabled, {
+                                fields: [
+                                    {value: "sumstep", name: "window_config.direction"},
+                                    {value: "expdecay", name: "window_config.factor"},
+                                    {value: "nth", name: "window_config.step_num"},
+                                    {value: "percentile", name: "window_config.percentile"}
+                                ]
+                            })
+                        }
+                    },
+                    {
+                        xtype: "container",
+                        layout: {
+                            type: "vbox",
+                        },
+                        items: [
+                            {
+                                xtype: "radiogroup",
+                                itemId: itemId + ".window_type",
+                                columns: 1,
+                                vertical: true,
+                                margin: "0 20 0 0",
+                                items: [
+                                    {
+                                        boxLabel: "Tick",
+                                        name: itemId + ".window_type",
+                                        inputValue: "tick"
+                                    },
+                                    {
+                                        boxLabel: "Seconds",
+                                        name: itemId + ".window_type",
+                                        inputValue: "seconds"
+                                    },
+                                ]
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".min_window",
+                                name: itemId + ".min_window",
+                                labelAlign: "top",
+                                fieldLabel: __("Min  Windows"),
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".max_window",
+                                name: itemId + ".max_window",
+                                labelAlign: "top",
+                                fieldLabel: __("Max  Windows"),
+                            },
+                            {
+                                xtype: "radiogroup",
+                                itemId: itemId + ".window_config.direction",
+                                columns: 1,
+                                vertical: true,
+                                margin: "0 20 0 0",
+                                disabled: true,
+                                items: [
+                                    {
+                                        boxLabel: "Inc",
+                                        name: itemId + ".window_config.direction",
+                                        inputValue: "inc"
+                                    },
+                                    {
+                                        boxLabel: "Desc",
+                                        name: itemId + ".window_config.direction",
+                                        inputValue: "dec"
+                                    },
+                                    {
+                                        boxLabel: "Abs",
+                                        name: itemId + ".window_config.direction",
+                                        inputValue: "abs"
+                                    },
+                                ]
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".window_config.factor",
+                                name: itemId + ".window_config.factor",
+                                labelAlign: "top",
+                                fieldLabel: __("Factor"),
+                                disabled: true
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".window_config.percentile",
+                                name: itemId + ".window_config.percentile",
+                                labelAlign: "top",
+                                fieldLabel: __("Percentile"),
+                                disabled: true
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".window_config.step_num",
+                                name: itemId + ".window_config.step_num",
+                                labelAlign: "top",
+                                fieldLabel: __("Step  Number"),
+                                disabled: true
+                            }
+                        ]
+                    }
+                ]
+            },
+            activationSet = function(itemId) {
+                return [
+                    {
+                        xtype: "combobox",
+                        itemId: itemId,
+                        name: itemId + ".activation_function",
+                        labelAlign: "top",
+                        fieldLabel: __("Actition Function"),
+                        allowBlank: true,
+                        store: [
+                            ["disable", "Disable"],
+                            ["softplus", "SoftPlus"],
+                            ["relu", "Relu"],
+                            ["indicator", "Indicator"],
+                            ["logistic", "Logistic"]
+                        ],
+                        value: "disable",
+                        listeners: {
+                            scope: me,
+                            change: Ext.pass(me._setFieldsDisabled, {
+                                fields: [
+                                    {value: "softplus", name: "activation_config.factor"},
+                                    {value: "indicator", name: "activation_config.true_level"},
+                                    {value: "indicator", name: "activation_config.false_level"},
+                                    {value: "logistic", name: "activation_config.lying"},
+                                    {value: "logistic", name: "activation_config.stepness"},
+                                ]
+                            })
+                        }
+                    },
+                    {
+                        xtype: "container",
+                        layout: {
+                            type: "vbox",
+                        },
+                        items: [
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".activation_config.factor",
+                                name: itemId + ".activation_config.factor",
+                                labelAlign: "top",
+                                fieldLabel: __("Factor"),
+                                disabled: true
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".activation_config.true_level",
+                                name: itemId + ".activation_config.true_level",
+                                labelAlign: "top",
+                                fieldLabel: __("True Level"),
+                                disabled: true
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".activation_config.false_level",
+                                name: itemId + ".activation_config.false_level",
+                                labelAlign: "top",
+                                fieldLabel: __("False Level"),
+                                disabled: true
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".activation_config.lying",
+                                name: itemId + ".activation_config.lying",
+                                labelAlign: "top",
+                                fieldLabel: __("Lying"),
+                                disabled: true
+                            },
+                            {
+                                xtype: "numberfield",
+                                itemId: itemId + ".activation_config.stepness",
+                                name: itemId + ".activation_config.stepness",
+                                labelAlign: "top",
+                                fieldLabel: __("Step  Ness"),
+                                disabled: true
+                            }
+                        ]
+                    }
+                ]
+            };
 
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
@@ -60,6 +261,33 @@ Ext.define("NOC.pm.metricaction.Application", {
                     layout: "vbox",
                     items: [
                         {
+                            xtype: "fieldset",
+                            defaults: {
+                                minWidth: me.formMinWidth - 22,
+                                maxWidth: me.formMaxWidth - 22,
+                            },
+                            items: [
+                                {
+                                    name: "name",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Name"),
+                                    margin: "10 0 0 0",
+                                    regex: /^[a-zA-Z0-9\-\_ ]+( \| [a-zA-Z0-9\-\_ ]+)*$/
+                                },
+                                {
+                                    name: "uuid",
+                                    xtype: "displayfield",
+                                    fieldLabel: __("UUID")
+                                },
+                                {
+                                    name: "description",
+                                    xtype: "textarea",
+                                    fieldLabel: __("Description"),
+                                    allowBlank: true
+                                }
+                            ]
+                        },
+                        {
                             xtype: "container",
                             layout: "column",
                             minWidth: me.formMinWidth,
@@ -89,7 +317,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                                 },
                                                 {
                                                     xtype: "core.combo",
-                                                    name: "metric_type",
+                                                    name: "metric_typeF",
                                                     restUrl: "/pm/metrictype/lookup/",
                                                     labelAlign: "top",
                                                     fieldLabel: __("Metric Type"),
@@ -145,69 +373,10 @@ Ext.define("NOC.pm.metricaction.Application", {
                                         type: "vbox",
                                         align: 'stretch'
                                     },
-                                    columnWidth: 0.4,
+                                    width: 380,
                                     margin: "0 20 0 0",
-                                    items: [
-                                        {
-                                            xtype: "combobox",
-                                            name: "window_function",
-                                            labelAlign: "top",
-                                            fieldLabel: __("Compose Function"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["disable", "Disable"],
-                                                ["sumstep", "Sum Step"],
-                                                ["expdecay", "Exp Decay"]
-                                            ],
-                                            value: "disable",
-                                            listeners: {
-                                                change: me.activeWindowStep
-                                            }
-                                        },
-                                        {
-                                            xtype: "container",
-                                            layout: {
-                                                type: "vbox",
-                                            },
-                                            items: [
-                                                {
-                                                    xtype: "radiogroup",
-                                                    columns: 1,
-                                                    vertical: true,
-                                                    margin: "0 20 0 0",
-                                                    items: [
-                                                        {boxLabel: "Tick", name: "act_period", inputValue: "1"},
-                                                        {
-                                                            boxLabel: "Seconds",
-                                                            name: "act_period",
-                                                            inputValue: "2",
-                                                            checked: true
-                                                        },
-                                                    ]
-                                                },
-                                                {
-                                                    xtype: "numberfield",
-                                                    name: "min_window",
-                                                    labelAlign: "top",
-                                                    fieldLabel: __("Min  Windows"),
-                                                },
-                                                {
-                                                    xtype: "numberfield",
-                                                    name: "max_window",
-                                                    labelAlign: "top",
-                                                    fieldLabel: __("Max  Windows"),
-                                                },
-                                                {
-                                                    xtype: "numberfield",
-                                                    itemId: "step-num",
-                                                    name: "step_num",
-                                                    labelAlign: "top",
-                                                    fieldLabel: __("Step  Number"),
-                                                    disabled: true
-                                                }
-                                            ]
-                                        }
-                                    ]
+                                    items: windowSet("activation_config")
+
                                 },
                                 {
                                     xtype: "fieldset",
@@ -218,59 +387,8 @@ Ext.define("NOC.pm.metricaction.Application", {
                                         type: "vbox",
                                         align: 'stretch'
                                     },
-                                    columnWidth: 0.4,
-                                    items: [
-                                        {
-                                            xtype: "combobox",
-                                            name: "window_type",
-                                            labelAlign: "top",
-                                            fieldLabel: __("Compose Function"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["disable", "Disable"],
-                                                ["sumstep", "Sum Step"],
-                                                ["expdecay", "Exp Decay"]
-                                            ],
-                                            value: "disable"
-                                        },
-                                        {
-                                            xtype: "container",
-                                            layout: {
-                                                type: "vbox",
-                                            },
-                                            minWidth: me.formMinWidth,
-                                            maxWidth: me.formMaxWidth,
-                                            items: [
-                                                {
-                                                    xtype: "radiogroup",
-                                                    columns: 1,
-                                                    vertical: true,
-                                                    margin: "0 20 0 0",
-                                                    items: [
-                                                        {boxLabel: "Tick", name: "act_period", inputValue: "1"},
-                                                        {
-                                                            boxLabel: "Seconds",
-                                                            name: "act_period",
-                                                            inputValue: "2",
-                                                            checked: true
-                                                        },
-                                                    ]
-                                                },
-                                                {
-                                                    xtype: "numberfield",
-                                                    name: "min_window",
-                                                    labelAlign: "top",
-                                                    fieldLabel: __("Min  Windows"),
-                                                },
-                                                {
-                                                    xtype: "numberfield",
-                                                    name: "max_window",
-                                                    labelAlign: "top",
-                                                    fieldLabel: __("Max  Windows"),
-                                                },
-                                            ]
-                                        }
-                                    ]
+                                    width: 400,
+                                    items: windowSet("deactivation_config")
                                 },
                             ]
                         },
@@ -282,46 +400,18 @@ Ext.define("NOC.pm.metricaction.Application", {
                             items: [
                                 {
                                     xtype: "fieldset",
-                                    title: __("Activation Activation"),
+                                    title: __("Activation"),
                                     width: 380,
                                     margin: "0 20 0 0",
-                                    items: [
-                                        {
-                                            xtype: "combobox",
-                                            name: "active_active_node",
-                                            labelAlign: "top",
-                                            fieldLabel: __("Active Node"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["disable", "Disable"],
-                                                ["softplus", "Soft Plus"],
-                                                ["logistic", "Logistic"]
-                                            ],
-                                            value: "disable"
-                                        }
-                                    ]
+                                    items: activationSet("activation_config")
                                 },
                                 {
                                     xtype: "fieldset",
                                     itemId: "deactivation-activation",
-                                    title: __("Deactivation Activation"),
+                                    title: __("Deactivation"),
                                     disabled: true,
                                     width: 400,
-                                    items: [
-                                        {
-                                            xtype: "combobox",
-                                            name: "active_active_node",
-                                            labelAlign: "top",
-                                            fieldLabel: __("Active Node"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["disable", "Disable"],
-                                                ["softplus", "Soft Plus"],
-                                                ["logistic", "Logistic"]
-                                            ],
-                                            value: "disable"
-                                        }
-                                    ]
+                                    items: activationSet("deactivation_config")
                                 },
                             ]
                         },
@@ -339,7 +429,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     items: [
                                         {
                                             xtype: "core.combo",
-                                            name: "alarm_class",
+                                            name: "alarm_config.alarm_class",
                                             restUrl: "/fm/alarmclass/lookup/",
                                             labelAlign: "top",
                                             fieldLabel: __("Alarm Class"),
@@ -347,7 +437,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                         },
                                         {
                                             xtype: "textfield",
-                                            name: "reference",
+                                            name: "alarm_config.reference",
                                             labelAlign: "top",
                                             fieldLabel: __("Reference"),
                                         }
@@ -360,7 +450,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     items: [
                                         {
                                             xtype: "combobox",
-                                            name: "key_node",
+                                            name: "key_function",
                                             labelAlign: "top",
                                             fieldLabel: __("Key Node"),
                                             allowBlank: true,
@@ -370,7 +460,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                             ],
                                             value: "disable",
                                             listeners: {
-                                                change: me.key
+                                                change: me.keyFunctionChange
                                             }
                                         }
                                     ]
@@ -379,23 +469,6 @@ Ext.define("NOC.pm.metricaction.Application", {
                         },
                     ]
                 }
-                // {
-                //     name: "name",
-                //     xtype: "textfield",
-                //     fieldLabel: __("Name"),
-                //     regex: /^[a-zA-Z0-9\-\_ ]+( \| [a-zA-Z0-9\-\_ ]+)*$/
-                // },
-                // {
-                //     name: "uuid",
-                //     xtype: "displayfield",
-                //     fieldLabel: __("UUID")
-                // },
-                // {
-                //     name: "description",
-                //     xtype: "textarea",
-                //     fieldLabel: __("Description"),
-                //     allowBlank: true
-                // },
             ],
             formToolbar: [
                 {
@@ -412,40 +485,77 @@ Ext.define("NOC.pm.metricaction.Application", {
     },
     //
     editRecord: function(record) {
-        var me = this;
+        var me = this,
+            i = 0,
+            composeInputs = record.get('compose_inputs'),
+            inputContainer = me.down("[itemId=input-container]"),
+            objects = ["alarm_config", "activation_config", "deactivation_config"];
 
-        console.log(record);
+        Ext.each(objects, function(name) {
+            var object = record.get(name);
+            if(object) {
+                Ext.Object.each(object, function(key, value) {
+                    if(Ext.isObject(value)) {
+                        Ext.Object.each(value, function(k, v) {
+                            record.set(name + "." + key + "." + k, v);
+                        })
+                    } else {
+                        record.set(name + "." + key, value);
+                    }
+                })
+            }
+        });
+        // set initial state
+        Ext.each(me.query("[name=metric_type]"), function(input) {
+            inputContainer.remove(input.up());
+        });
+        me.down("[itemId=compose-set]").setDisabled(true);
+        //
+        if(composeInputs) {
+            me.down("[name=metric_typeF]").setValue(composeInputs[0].metric_type);
+            if(composeInputs.length > 1) {
+                for(i = 1; i < composeInputs.length; i++) {
+                    me.addInput(composeInputs[i].metric_type);
+                }
+                me.down("[itemId=compose-set]").setDisabled(false);
+            }
+        }
         me.callParent([record]);
     },
     //
-    addInput: function() {
-        var me = this;
-        me.down("[itemId=input-container]").add(Ext.create(
-            {
-                xtype: "container",
-                layout: {
-                    type: "hbox",
-                    align: "end"
-                },
-                items: [
-                    {
-                        xtype: "button",
-                        glyph: NOC.glyph.minus,
-                        tooltip: __("Remove Input"),
-                        scope: me,
-                        handler: me.removeInput
+    addInput: function(value) {
+        var me = this,
+            inputsContainer = me.down("[itemId=input-container]"),
+            combo = Ext.create(
+                {
+                    xtype: "container",
+                    layout: {
+                        type: "hbox",
+                        align: "end"
                     },
-                    {
-                        xtype: "core.combo",
-                        name: "metric_type",
-                        restUrl: "/pm/metrictype/lookup/",
-                        labelAlign: "top",
-                        padding: "0 22 0 0", // 22 - addition button width
-                        allowBlank: true
-                    }
-                ]
-            }
-        ));
+                    items: [
+                        {
+                            xtype: "button",
+                            glyph: NOC.glyph.minus,
+                            tooltip: __("Remove Input"),
+                            scope: me,
+                            handler: me.removeInput
+                        },
+                        {
+                            xtype: "core.combo",
+                            name: "metric_type",
+                            restUrl: "/pm/metrictype/lookup/",
+                            labelAlign: "top",
+                            padding: "0 22 0 0", // 22 - addition button width
+                            allowBlank: true,
+                        }
+                    ]
+                }
+            );
+        if(value) {
+            combo.down("[name=metric_type]").setValue(value);
+        }
+        inputsContainer.add(combo);
         me.down("[itemId=compose-set]").setDisabled(false);
     },
     //
@@ -457,16 +567,23 @@ Ext.define("NOC.pm.metricaction.Application", {
         }
     },
     //
-    activeWindowStep: function(field, value) {
-        var disable = false;
+    _setFieldsDisabled(map, field, value) {
+        var itemId = field.itemId;
 
-        if(value !== "sumstep") {
-            disable = true;
-        }
-        field.up().down("[itemId=step-num]").setDisabled(disable);
+        Ext.each(map.fields, function(item) {
+            var disable = false,
+                query = "[itemId=" + itemId + "." + item.name + "]",
+                element = field.up().down(query);
+            if(value !== item.value) {
+                disable = true;
+            }
+            if(element) {
+                element.setDisabled(disable);
+            }
+        });
     },
     //
-    key: function(field, value) {
+    keyFunctionChange: function(field, value) {
         var disable = false;
 
         if(value !== "key") {
