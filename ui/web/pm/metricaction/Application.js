@@ -317,7 +317,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                                 },
                                                 {
                                                     xtype: "core.combo",
-                                                    name: "metric_typeF",
+                                                    name: "metric_type0",
                                                     restUrl: "/pm/metrictype/lookup/",
                                                     labelAlign: "top",
                                                     fieldLabel: __("Metric Type"),
@@ -512,7 +512,7 @@ Ext.define("NOC.pm.metricaction.Application", {
         me.down("[itemId=compose-set]").setDisabled(true);
         //
         if(composeInputs) {
-            me.down("[name=metric_typeF]").setValue(composeInputs[0].metric_type);
+            me.down("[name=metric_type0]").setValue(composeInputs[0].metric_type);
             if(composeInputs.length > 1) {
                 for(i = 1; i < composeInputs.length; i++) {
                     me.addInput(composeInputs[i].metric_type);
@@ -521,6 +521,79 @@ Ext.define("NOC.pm.metricaction.Application", {
             }
         }
         me.callParent([record]);
+    },
+    //
+    saveRecord: function(data) {
+        var me = this,
+            save = {},
+            inputs = Ext.Array.push([], {
+                metric_type: data.metric_type0
+            }, Ext.Array.map(me.query("[name=metric_type]"), function(input) {
+                return {metric_type: input.getValue()}
+            })),
+            set = function(obj, path, value) {
+                obj = typeof obj === 'object' ? obj : {};
+                var keys = path.split('.'),
+                    curStep = obj;
+                for(var i = 0; i < keys.length - 1; i++) {
+                    var key = keys[i];
+
+                    if(!curStep[key] && !Object.prototype.hasOwnProperty.call(curStep, key)) {
+                        var nextKey = keys[i + 1];
+                        var useArray = /^\+?(0|[1-9]\d*)$/.test(nextKey);
+                        curStep[key] = useArray ? [] : {};
+                    }
+                    curStep = curStep[key];
+                }
+                var finalStep = keys[keys.length - 1];
+                curStep[finalStep] = value;
+            };
+
+        Ext.Object.each(data, function(key, value) {
+            if(key.indexOf("__label") === -1 && !Ext.isEmpty(value)) {
+                set(save, key, value);
+            }
+        });
+
+        save['compose_inputs'] = inputs;
+
+        me.mask("Saving ...");
+        // Save data
+        Ext.Ajax.request({
+            url: me.base_url + (me.currentRecord ? me.currentRecord.id + "/" : ""),
+            method: me.currentRecord ? "PUT" : "POST",
+            scope: me,
+            jsonData: save,
+            success: function(response) {
+                // Process result
+                var data = Ext.decode(response.responseText);
+                // @todo: Update current record with data
+                if(me.currentQuery[me.idField]) {
+                    delete me.currentQuery[me.idField];
+                }
+                me.showGrid();
+                me.reloadStore();
+                me.saveInlines(
+                    data[me.idField],
+                    me.inlineStores.filter(function(store) {
+                        return !(store.hasOwnProperty("isLocal") && store.isLocal);
+                    }));
+                me.unmask();
+                NOC.msg.complete(__("Saved"));
+            },
+            failure: function(response) {
+                var message = "Error saving record";
+                if(response.responseText) {
+                    try {
+                        message = Ext.decode(response.responseText).message;
+                    } catch(err) {
+                        console.log(response.responseText);
+                    }
+                }
+                NOC.error(message);
+                me.unmask();
+            }
+        });
     },
     //
     addInput: function(value) {
