@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,8 @@ class Script(BaseScript):
                     continue
             else:
                 continue
-            if int(v[2]) < 3:
+            # Record was deleted while reading tables
+            if v[2] is None or int(v[2]) < 3:
                 continue
             # Possible hash collision. See "show flood_fdb" for detail
             # Found in DES-3200-26/A1 fw 1.89.B002
