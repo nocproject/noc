@@ -95,7 +95,7 @@ class MetricAction(Document):
     description = StringField()
     #
     compose_inputs = ListField(EmbeddedDocumentField(InputMapping))
-    compose_function = StringField(choices=["sum", "avg"])
+    compose_function = StringField(choices=["sum", "avg", "div"])
     compose_metric_type = PlainReferenceField(MetricType)
     #
     activation_config = EmbeddedDocumentField(ActivationConfig)

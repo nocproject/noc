@@ -30,9 +30,9 @@ class VarItem(BaseModel):
 
 class AlarmNodeConfig(BaseModel):
     reference: str
-    pool: str
-    partition: int
     alarm_class: str
+    pool: str = ""
+    partition: int = 0
     managed_object: Optional[str]  # Not user-settable
     labels: Optional[List[str]]
     activation_level: float = 1.0
