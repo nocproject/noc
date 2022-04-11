@@ -48,7 +48,7 @@ class ServiceCard(BaseCard):
             if not interface.full_duplex:
                 errors += ["Half-Duplex"]
             # Maintenance
-            m_id = [am_id for am_id in managed_object.affected_maintenances]
+            m_id = managed_object.get_active_maintenances()
             for m in Maintenance.objects.filter(
                 id__in=m_id,
                 is_completed=False,

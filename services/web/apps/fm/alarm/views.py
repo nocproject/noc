@@ -908,9 +908,10 @@ class AlarmApplication(ExtApplication):
     def bulk_field_isinmaintenance(self, data):
         if not data:
             return data
-        mtc = set(Maintenance.currently_affected())
-        for x in data:
-            x["isInMaintenance"] = x["managed_object"] in mtc
+        if data[0]["status"] == "A":
+            mtc = set(Maintenance.currently_affected())
+            for x in data:
+                x["isInMaintenance"] = x["managed_object"] in mtc
         return data
 
     @view(url=r"profile_lookup/$", access="launch", method=["GET"], api=True)
