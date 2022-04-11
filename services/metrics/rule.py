@@ -165,9 +165,13 @@ def _iter_items(mr: "MetricRule") -> Iterable[RuleItem]:
                         mr.name,
                         action.name,
                     )
+        # Key
+        key_node = None
+        if action.key_function:
+            key_node = _get_node("key", f"{mr.name}-{action.name}-key", {}, params)
         # Deactivation
         deactivation_node_window, deactivation_node_activation = None, None
-        if action.deactivation_config:
+        if action.deactivation_config and key_node:
             if action.deactivation_config.window_function:
                 config = {
                     "min_window": action.deactivation_config.min_window,
@@ -203,10 +207,13 @@ def _iter_items(mr: "MetricRule") -> Iterable[RuleItem]:
         alarm_node = None
         if action.alarm_config:
             alarm_node = _get_node(
-                "alarm", f"{mr.name}-{action.name}-al", {
+                "alarm",
+                f"{mr.name}-{action.name}-al",
+                {
                     "alarm_class": action.alarm_config.alarm_class.name,
-                    "reference": action.alarm_config.reference
-                }, params
+                    "reference": action.alarm_config.reference,
+                },
+                params,
             )
         if not metric_type:
             # Metric Type is not set
@@ -218,6 +225,7 @@ def _iter_items(mr: "MetricRule") -> Iterable[RuleItem]:
             compose_inputs=compose_inputs,
             activation_node_window=activation_node_window,
             activation_node_activation=activation_node_activation,
+            key_node=key_node,
             deactivation_node_window=deactivation_node_window,
             deactivation_node_activation=deactivation_node_activation,
             alarm_node=alarm_node,
