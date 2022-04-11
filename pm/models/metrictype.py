@@ -62,6 +62,7 @@ class AgentMappingItem(EmbeddedDocument):
         ("inv.InterfaceProfile", "metrics__metric_type"),
         ("sla.SLAProbe", "metrics__metric_type"),
         ("pm.MetricAction", "compose_inputs__metric_type"),
+        ("pm.MetricAction", "compose_metric_type"),
     ]
 )
 @category
