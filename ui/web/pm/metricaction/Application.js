@@ -32,7 +32,8 @@ Ext.define("NOC.pm.metricaction.Application", {
                         fieldLabel: __("Window Function"),
                         allowBlank: true,
                         store: [
-                            ["disable", "Disable"],
+                            // ["disable", "Disable"],
+                            [null, "Disable"],
                             ["sumstep", "Sum Step"],
                             ["expdecay", "Exp Decay"],
                             ["percentile", "Percentile"],
@@ -67,7 +68,8 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     {
                                         boxLabel: "Tick",
                                         name: itemId + ".window_type",
-                                        inputValue: "tick"
+                                        inputValue: "tick",
+                                        checked: true
                                     },
                                     {
                                         boxLabel: "Seconds",
@@ -80,6 +82,11 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".min_window",
                                 name: itemId + ".min_window",
+                                minValue: 1,
+                                maxValue: 86400,
+                                forcePrecision: true,
+                                decimalPrecision: 0,
+                                value: 1,
                                 labelAlign: "top",
                                 fieldLabel: __("Min  Windows"),
                             },
@@ -87,6 +94,11 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".max_window",
                                 name: itemId + ".max_window",
+                                minValue: 1,
+                                maxValue: 86400,
+                                forcePrecision: true,
+                                decimalPrecision: 0,
+                                value: 1,
                                 labelAlign: "top",
                                 fieldLabel: __("Max  Windows"),
                             },
@@ -111,7 +123,8 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     {
                                         boxLabel: "Abs",
                                         name: itemId + ".window_config.direction",
-                                        inputValue: "abs"
+                                        inputValue: "abs",
+                                        checked: true
                                     },
                                 ]
                             },
@@ -119,6 +132,11 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".window_config.factor",
                                 name: itemId + ".window_config.factor",
+                                minValue: -100,
+                                maxValue: 100,
+                                emptyText: 2.0,
+                                forcePrecision: true,
+                                decimalPrecision: 1,
                                 labelAlign: "top",
                                 fieldLabel: __("Factor"),
                                 disabled: true
@@ -128,6 +146,9 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 itemId: itemId + ".window_config.percentile",
                                 name: itemId + ".window_config.percentile",
                                 labelAlign: "top",
+                                minValue: 1,
+                                maxValue: 100,
+                                value: 50,
                                 fieldLabel: __("Percentile"),
                                 disabled: true
                             },
@@ -135,6 +156,8 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".window_config.step_num",
                                 name: itemId + ".window_config.step_num",
+                                minValue: 1,
+                                emptyText: 1,
                                 labelAlign: "top",
                                 fieldLabel: __("Step  Number"),
                                 disabled: true
@@ -150,10 +173,10 @@ Ext.define("NOC.pm.metricaction.Application", {
                         itemId: itemId,
                         name: itemId + ".activation_function",
                         labelAlign: "top",
-                        fieldLabel: __("Actition Function"),
+                        fieldLabel: __("Activation Function"),
                         allowBlank: true,
                         store: [
-                            ["disable", "Disable"],
+                            [null, "Disable"],
                             ["softplus", "SoftPlus"],
                             ["relu", "Relu"],
                             ["indicator", "Indicator"],
@@ -184,6 +207,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 itemId: itemId + ".activation_config.factor",
                                 name: itemId + ".activation_config.factor",
                                 labelAlign: "top",
+                                emptyText: 1,
                                 fieldLabel: __("Factor"),
                                 disabled: true
                             },
@@ -191,6 +215,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".activation_config.true_level",
                                 name: itemId + ".activation_config.true_level",
+                                emptyText: 1.0,
                                 labelAlign: "top",
                                 fieldLabel: __("True Level"),
                                 disabled: true
@@ -199,6 +224,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".activation_config.false_level",
                                 name: itemId + ".activation_config.false_level",
+                                emptyText: 1.0,
                                 labelAlign: "top",
                                 fieldLabel: __("False Level"),
                                 disabled: true
@@ -207,6 +233,11 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".activation_config.lying",
                                 name: itemId + ".activation_config.lying",
+                                minValue: 0,
+                                maxValue: 100,
+                                emptyText: 1.0,
+                                forcePrecision: true,
+                                decimalPrecision: 2,
                                 labelAlign: "top",
                                 fieldLabel: __("Lying"),
                                 disabled: true
@@ -215,6 +246,9 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 xtype: "numberfield",
                                 itemId: itemId + ".activation_config.stepness",
                                 name: itemId + ".activation_config.stepness",
+                                emptyText: 1.0,
+                                forcePrecision: true,
+                                decimalPrecision: 2,
                                 labelAlign: "top",
                                 fieldLabel: __("Step  Ness"),
                                 disabled: true
@@ -620,7 +654,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             restUrl: "/pm/metrictype/lookup/",
                             labelAlign: "top",
                             padding: "0 22 0 0", // 22 - addition button width
-                            allowBlank: true,
+                            allowBlank: false,
                         }
                     ]
                 }
