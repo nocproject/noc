@@ -167,7 +167,7 @@ def _iter_items(mr: "MetricRule") -> Iterable[RuleItem]:
                     )
         # Key
         key_node = None
-        if action.key_function:
+        if action.key_function and action.key_function != "disable":
             key_node = _get_node("key", f"{mr.name}-{action.name}-key", {}, params)
         # Deactivation
         deactivation_node_window, deactivation_node_activation = None, None
@@ -180,7 +180,7 @@ def _iter_items(mr: "MetricRule") -> Iterable[RuleItem]:
                 config.update(action.deactivation_config.window_config)
                 deactivation_node_window = _get_node(
                     action.deactivation_config.window_function,
-                    f"{mr.name}-{action.name}-ac-wf",
+                    f"{mr.name}-{action.name}-dc-wf",
                     config,
                     params,
                 )
@@ -193,7 +193,7 @@ def _iter_items(mr: "MetricRule") -> Iterable[RuleItem]:
             if action.deactivation_config.activation_function:
                 deactivation_node_activation = _get_node(
                     action.deactivation_config.activation_node_activation,
-                    f"{mr.name}-{action.name}-ac-af",
+                    f"{mr.name}-{action.name}-dc-af",
                     action.deactivation_config.activation_config,
                     params,
                 )

@@ -489,10 +489,10 @@ Ext.define("NOC.pm.metricaction.Application", {
                                             fieldLabel: __("Key Node"),
                                             allowBlank: true,
                                             store: [
-                                                ["disable", "Disable"],
+                                                [null, "Disable"],
                                                 ["key", "Key"]
                                             ],
-                                            value: "disable",
+                                            value: null,
                                             listeners: {
                                                 change: me.keyFunctionChange
                                             }

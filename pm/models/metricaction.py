@@ -101,7 +101,7 @@ class MetricAction(Document):
     activation_config = EmbeddedDocumentField(ActivationConfig)
     deactivation_config = EmbeddedDocumentField(ActivationConfig)
     #
-    key_function = StringField(choices=["key"])
+    key_function = StringField(choices=["disable", "key"])
     alarm_config = EmbeddedDocumentField(AlarmConfig)
 
     def __str__(self) -> str:

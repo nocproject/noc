@@ -334,7 +334,8 @@ class MetricsService(FastAPIService):
             if not first_input_node:
                 self.logger.error("Cannot find probe node %s", item.metric_type.field_name)
                 continue
-            prev = first_input_node
+            prev, prev_deactivation = first_input_node, first_input_node
+            # Compose
             if item.compose_node:
                 compose_node = clone_and_add_node(item.compose_node)
                 if item.compose_inputs:
@@ -346,7 +347,8 @@ class MetricsService(FastAPIService):
                         probe_node.subscribe(compose_node, input_name)
                 else:
                     prev.subscribe(compose_node, compose_node.first_input())
-                prev = compose_node
+                prev, prev_deactivation = compose_node, compose_node
+            #
             if item.activation_node_window:
                 activation_node_window = clone_and_add_node(item.activation_node_window)
                 prev.subscribe(activation_node_window, activation_node_window.first_input())
@@ -355,6 +357,28 @@ class MetricsService(FastAPIService):
                 activation_node_activation = clone_and_add_node(item.activation_node_activation)
                 prev.subscribe(activation_node_activation, activation_node_activation.first_input())
                 prev = activation_node_activation
+            # Deactivation
+            if item.deactivation_node_window and item.key_node:
+                deactivation_node_window = clone_and_add_node(item.deactivation_node_window)
+                prev_deactivation.subscribe(
+                    deactivation_node_window, deactivation_node_window.first_input()
+                )
+                prev_deactivation = deactivation_node_window
+            if item.deactivation_node_activation and item.key_node:
+                deactivation_node_activation = clone_and_add_node(item.deactivation_node_activation)
+                prev_deactivation.subscribe(
+                    deactivation_node_activation, deactivation_node_activation.first_input()
+                )
+                prev_deactivation = deactivation_node_activation
+            # Key
+            if item.key_node and prev_deactivation:
+                key_node = clone_and_add_node(item.key_node)
+                # @todo fix, first - always key ?
+                key, value = list(key_node.iter_inputs())
+                prev_deactivation.subscribe(key_node, key)
+                prev.subscribe(key_node, value)
+                prev = key_node
+            # Alarm
             if item.alarm_node:
                 # Expand key fields
                 if not mo_info:
