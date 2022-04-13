@@ -34,7 +34,7 @@ class Command(BaseCommand):
     DEFAULT_TEST_CASE_TEMPLATE = "ad-hoc/{0.profile.name}/{0.uuid}/"
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # collect command
         collect_parser = subparsers.add_parser("collect")
         collect_parser.add_argument("--spec", help="Spec path or URL")

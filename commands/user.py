@@ -18,7 +18,7 @@ class Command(BaseCommand):
     help = "Manage users"
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # extract command
         user_create = subparsers.add_parser("add")
         user_create.add_argument("--username", dest="username", action="store", help="User name"),

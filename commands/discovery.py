@@ -21,6 +21,7 @@ from noc.core.scheduler.job import Job
 from noc.core.cache.base import cache
 from noc.core.span import Span, get_spans
 from noc.core.service.pub import publish
+from noc.core.comp import smart_bytes
 
 
 class Command(BaseCommand):
@@ -78,6 +79,7 @@ class Command(BaseCommand):
             "-c", "--check", action="append", default=[], help="Execute selected checks only"
         )
         run_parser.add_argument("--trace", action="store_true", default=False, help="Trace process")
+        run_parser.add_argument("--dump-buffer", action="store_true", default=False, help="Trace process")
         run_parser.add_argument("job", nargs=1, choices=list(self.jcls), help="Job name")
         run_parser.add_argument("managed_objects", nargs=argparse.REMAINDER, help="Managed objects")
 
@@ -85,7 +87,7 @@ class Command(BaseCommand):
         connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_run(self, job, managed_objects, check=None, trace=False, *args, **options):
+    def handle_run(self, job, managed_objects, check=None, trace=False, dump_buffer=False, *args, **options):
         self.trace = trace
         job = job[0]
         mos = []
@@ -106,9 +108,9 @@ class Command(BaseCommand):
                     % (c, job, ", ".join(self.checks[job]))
                 )
         for mo in mos:
-            self.run_job(job, mo, checks)
+            self.run_job(job, mo, checks, dump_buffer=dump_buffer)
 
-    def run_job(self, job, mo, checks):
+    def run_job(self, job, mo, checks, dump_buffer=False):
         if job == "segment":
             scheduler = Scheduler("scheduler", pool=None, service=ServiceStub())
         else:
@@ -142,11 +144,15 @@ class Command(BaseCommand):
             for t in scheduler.service.metrics:
                 self.print("Table: %s" % t)
                 self.print("\n".join(str(x) for x in scheduler.service.metrics[t]))
+        job.update_alarms()
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(key=ctx_key, value=job.context, version=job.context_version)
             scheduler.apply_cache_ops()
             time.sleep(3)
+        if dump_buffer and job.out_buffer:
+            print("OUT Buffer")
+            print(smart_bytes(job.out_buffer.getvalue()))
 
 
 class ServiceStub(object):

@@ -22,7 +22,7 @@ class Command(BaseCommand):
     BATCH_SIZE = 100
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # view command
         subparsers.add_parser("apply")
         # list command

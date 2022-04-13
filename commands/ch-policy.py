@@ -27,7 +27,7 @@ class Command(BaseCommand):
     help = "Apply ClickHouse policies"
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # get
         apply_parser = subparsers.add_parser("apply")
         apply_parser.add_argument("--host", dest="host", help="ClickHouse address")

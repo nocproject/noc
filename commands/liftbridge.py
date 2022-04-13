@@ -38,7 +38,7 @@ class Command(BaseCommand):
             raise argparse.ArgumentTypeError(msg)
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # show-metadata
         subparsers.add_parser("show-metadata")
         # create-stream
