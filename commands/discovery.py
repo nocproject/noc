@@ -79,7 +79,9 @@ class Command(BaseCommand):
             "-c", "--check", action="append", default=[], help="Execute selected checks only"
         )
         run_parser.add_argument("--trace", action="store_true", default=False, help="Trace process")
-        run_parser.add_argument("--dump-buffer", action="store_true", default=False, help="Trace process")
+        run_parser.add_argument(
+            "--dump-buffer", action="store_true", default=False, help="Trace process"
+        )
         run_parser.add_argument("job", nargs=1, choices=list(self.jcls), help="Job name")
         run_parser.add_argument("managed_objects", nargs=argparse.REMAINDER, help="Managed objects")
 
@@ -87,7 +89,9 @@ class Command(BaseCommand):
         connect()
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_run(self, job, managed_objects, check=None, trace=False, dump_buffer=False, *args, **options):
+    def handle_run(
+        self, job, managed_objects, check=None, trace=False, dump_buffer=False, *args, **options
+    ):
         self.trace = trace
         job = job[0]
         mos = []
