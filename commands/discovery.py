@@ -148,7 +148,7 @@ class Command(BaseCommand):
             for t in scheduler.service.metrics:
                 self.print("Table: %s" % t)
                 self.print("\n".join(str(x) for x in scheduler.service.metrics[t]))
-        job.update_alarms()
+        # job.update_alarms()
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(key=ctx_key, value=job.context, version=job.context_version)
