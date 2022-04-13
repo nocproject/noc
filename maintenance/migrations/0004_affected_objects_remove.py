@@ -14,6 +14,8 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
+    depends_on = [("sa", "0231_managedobject_affected_maintenances")]
+
     def migrate(self):
         db = self.mongo_db
         for ao in db.noc.affectedobjects.aggregate(
