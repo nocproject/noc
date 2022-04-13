@@ -7,6 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
+from functools import partial
 
 # Third-party modules
 import pandas as pd
@@ -28,6 +29,12 @@ class BaseDataSource(object):
 
     name: str
     fields: List[FieldInfo]
+
+    @classmethod
+    def query_sync(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
+        from noc.core.ioloop.util import run_sync
+
+        return run_sync(partial(cls.query, fields, *args, **kwargs))
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
