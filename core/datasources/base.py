@@ -32,16 +32,37 @@ class BaseDataSource(object):
 
     @classmethod
     def query_sync(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
+        """
+        Datasource sync query
+        :param fields: list fields for filtered on query
+        :param args: arguments for report query
+        :param kwargs:
+        :return:
+        """
         from noc.core.ioloop.util import run_sync
 
         return run_sync(partial(cls.query, fields, *args, **kwargs))
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
+        """
+        Method for query report data. Return pandas dataframe.
+        :param fields: list fields for filtered on query
+        :param args: arguments for report query
+        :param kwargs:
+        :return:
+        """
         ...
 
     @classmethod
     async def iter_query(
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> Iterable[Dict[str, Any]]:
+        """
+        Method for query report data. Iterate over List Dict
+        :param fields: list fields for filtered on query
+        :param args: arguments for report query
+        :param kwargs:
+        :return:
+        """
         ...
