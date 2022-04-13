@@ -13,7 +13,7 @@ import uuid
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, URLField, UUIDField, ListField
-from mongoengine.errors import NotUniqueError, ValidationError
+from mongoengine.errors import NotUniqueError
 import cachetools
 
 # NOC modules
@@ -106,8 +106,6 @@ class Vendor(Document):
         if not self.full_name:
             self.full_name = self.name
         #
-        if self.name.upper() not in self.code:
-            raise ValidationError("Name must be in code field")
         super().clean()
 
     def on_save(self):
