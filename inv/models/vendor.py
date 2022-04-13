@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Vendor model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -139,16 +139,22 @@ class Vendor(Document):
         :param code:
         :return:
         """
-        while True:
+        # Try to get cached version
+        vendor = Vendor._get_by_code(code)
+        if vendor:
+            return vendor
+        # Not found, try to create
+        try:
+            vendor = Vendor(name=code, full_name=code, code=[code], uuid=uuid.uuid4())
+            vendor.save()
+            return vendor
+        except NotUniqueError:
+            # Already created by concurrent process,
+            # reread cached version
             vendor = Vendor._get_by_code(code)
             if vendor:
                 return vendor
-            try:
-                vendor = Vendor(name=code, full_name=code, code=[code], uuid=uuid.uuid4())
-                vendor.save()
-                return vendor
-            except NotUniqueError:
-                pass  # Already created by concurrent process, reread
+            raise ValueError("Vendor without code")
 
     @classmethod
     def iter_lazy_labels(cls, vendor: "Vendor"):
