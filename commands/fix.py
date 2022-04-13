@@ -19,7 +19,7 @@ class Command(BaseCommand):
     FIX_DIRS = config.get_customized_paths("fixes")
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         #
         subparsers.add_parser("list")
         #

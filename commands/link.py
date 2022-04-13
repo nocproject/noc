@@ -22,7 +22,7 @@ class Command(BaseCommand):
     help = "Show Links"
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # show command
         show_parser = subparsers.add_parser("show", help="Show link")
         show_parser.add_argument(

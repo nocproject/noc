@@ -22,7 +22,7 @@ class Command(BaseCommand):
     BATCH_SIZE = 100
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # view command
         subparsers.add_parser("apply")
         # list command
@@ -38,23 +38,23 @@ class Command(BaseCommand):
         self.bulk = []
         self.collection = ExtNRILink._get_collection()
         self.stdout.write("Apply NRI links from %s\n" % ExtNRILink._meta["collection"])
-        for l in ExtNRILink.objects.filter(link__exists=False):
+        for ll in ExtNRILink.objects.filter(link__exists=False):
             # Get objects
-            src_mo = ManagedObject.get_by_id(l.src_mo)
+            src_mo = ManagedObject.get_by_id(ll.src_mo)
             if not src_mo or src_mo.profile.is_generic:
                 continue
-            dst_mo = ManagedObject.get_by_id(l.dst_mo)
+            dst_mo = ManagedObject.get_by_id(ll.dst_mo)
             if not dst_mo or dst_mo.profile.is_generic:
                 continue
             #
             if src_mo.id == dst_mo.id:
-                self.update_warn(l.id, "Loop link")
+                self.update_warn(ll.id, "Loop link")
                 continue
             # Get port mappers
             src_pm = self.get_port_mapper(src_mo)
             if not src_pm:
                 self.update_warn(
-                    l.id,
+                    ll.id,
                     "No port mapper for %s (%s)"
                     % (src_mo.name, src_mo.platform or src_mo.profile.name),
                 )
@@ -62,36 +62,36 @@ class Command(BaseCommand):
             dst_pm = self.get_port_mapper(dst_mo)
             if not dst_pm:
                 self.update_warn(
-                    l.id,
+                    ll.id,
                     "No port mapper for %s (%s)"
                     % (dst_mo.name, dst_mo.platform or dst_mo.profile.name),
                 )
                 continue
             # Map interfaces
-            src_ifname = src_pm(src_mo).to_local(l.src_interface)
+            src_ifname = src_pm(src_mo).to_local(ll.src_interface)
             if not src_ifname:
                 self.update_warn(
-                    l.id,
+                    ll.id,
                     "Cannot map interface %s for %s (%s)"
-                    % (l.src_interface, src_mo.name, src_mo.platform or src_mo.profile.name),
+                    % (ll.src_interface, src_mo.name, src_mo.platform or src_mo.profile.name),
                 )
                 continue
-            dst_ifname = dst_pm(dst_mo).to_local(l.dst_interface)
+            dst_ifname = dst_pm(dst_mo).to_local(ll.dst_interface)
             if not dst_ifname:
                 self.update_warn(
-                    l.id,
+                    ll.id,
                     "Cannot map interface %s for %s (%s)"
-                    % (l.dst_interface, dst_mo.name, dst_mo.platform or dst_mo.profile.name),
+                    % (ll.dst_interface, dst_mo.name, dst_mo.platform or dst_mo.profile.name),
                 )
                 continue
             # Find interfaces in NOC's inventory
             src_iface = self.get_interface(src_mo, src_ifname)
             if not src_iface:
-                self.update_warn(l.id, "Interface not found %s@%s\n" % (src_mo.name, src_ifname))
+                self.update_warn(ll.id, "Interface not found %s@%s\n" % (src_mo.name, src_ifname))
                 continue
             dst_iface = self.get_interface(dst_mo, dst_ifname)
             if not dst_iface:
-                self.update_warn(l.id, "Interface not found %s@%s\n" % (dst_mo.name, dst_ifname))
+                self.update_warn(ll.id, "Interface not found %s@%s\n" % (dst_mo.name, dst_ifname))
                 continue
             #
             src_link = src_iface.link
@@ -102,17 +102,17 @@ class Command(BaseCommand):
                     % (src_mo.name, src_ifname, dst_mo.name, dst_ifname)
                 )
                 src_link = src_iface.link_ptp(dst_iface, method="nri")
-                self.update_nri(l.id, link=src_link.id)
+                self.update_nri(ll.id, link=src_link.id)
             elif src_link and dst_link and src_link.id == dst_link.id:
                 self.stdout.write(
                     "%s: %s -- %s: %s: Already linked\n"
                     % (src_mo.name, src_ifname, dst_mo.name, dst_ifname)
                 )
-                self.update_nri(l.id, link=src_link.id)
+                self.update_nri(ll.id, link=src_link.id)
             elif src_link and not dst_link:
-                self.update_error(l.id, "Linked to: %s" % src_link)
+                self.update_error(ll.id, "Linked to: %s" % src_link)
             elif src_link is None and dst_link:
-                self.update_error(l.id, "Linked to: %s" % dst_link)
+                self.update_error(ll.id, "Linked to: %s" % dst_link)
         if self.bulk:
             self.stdout.write("Commiting changes to database\n")
             try:

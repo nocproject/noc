@@ -13,7 +13,7 @@ from noc.models import FTS_MODELS, get_model
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help")
+        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help", required=True)
         # Search parameters
         search_parser = subparsers.add_parser("search", help="Full-text search")
         search_parser.add_argument("query", nargs=1, help="Query terms")

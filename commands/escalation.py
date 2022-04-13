@@ -25,7 +25,7 @@ from noc.core.defer import call_later
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         #
         check_parser = subparsers.add_parser("check")
         check_parser.add_argument(

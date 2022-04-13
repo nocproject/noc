@@ -24,7 +24,7 @@ class Command(BaseCommand):
     EXPIRE_MODELS = ["vc.VLAN"]
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # extract command
         migrate_parser = subparsers.add_parser("migrate")
         migrate_parser.add_argument(

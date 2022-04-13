@@ -38,7 +38,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--local", action="store_true", help="Not use mib service for import")
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # get
         get_parser = subparsers.add_parser("get")
         get_parser.add_argument("oids", nargs=argparse.REMAINDER, help="SNMP OIDs")
