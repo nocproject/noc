@@ -5,11 +5,47 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from typing import List, Optional, Dict, Any, Literal
+from pydantic import BaseModel
+
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication
-from noc.pm.models.metricaction import MetricAction
-from noc.fm.models.alarmclass import AlarmClass
+from noc.pm.models.metricaction import MetricAction as MA
 from noc.core.translation import ugettext as _
+
+
+class MetricActionInputItem(BaseModel):
+    metric_type: str
+
+
+class AlarmConfigItem(BaseModel):
+    alarm_class: Optional[str]
+    reference: Optional[str] = None
+    activation_level: float = 1.0
+    deactivation_level: float = 1.0
+    vars: Dict[str, Any] = None
+    # labels ?
+
+
+class ActivationConfigItem(BaseModel):
+    window_function: Optional[Literal["percentile", "nth", "expdecay", "sumstep"]] = None
+    # Tick, Seconds
+    window_type: Literal["tick", "seconds"] = "tick"
+    window_config: Optional[Dict[str, Any]] = None
+    min_window: int = 1
+    max_window: int = 100
+    activation_function: Optional[Literal["relu", "logistic", "indicator", "softplus"]] = None
+    activation_config: Optional[Dict[str, Any]] = None
+
+
+class MetricAction(BaseModel):
+    inputs: List[MetricActionInputItem]
+    compose_function: Literal["sum", "avg"] = None
+    compose_metric_type: Optional[str] = None
+    activation_config: Optional[ActivationConfigItem] = None
+    deactivation_config: Optional[ActivationConfigItem] = None
+    key_function: Optional[str] = None
+    alarm_config: Optional[AlarmConfigItem] = None
 
 
 class MetricActionApplication(ExtDocApplication):
@@ -19,59 +55,6 @@ class MetricActionApplication(ExtDocApplication):
 
     title = _("Metric Action")
     menu = [_("Setup"), _("Metric Actions")]
-    model = MetricAction
+    model = MA
     query_condition = "icontains"
     query_fields = ["name", "description"]
-
-    def instance_to_dict(self, o, fields=None, nocustom=False):
-        v = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
-        if "activation_config" in v:
-            r = {}
-            if v["alarm_node"]:
-                r["alarm_node"] = v["alarm_node"]
-                if v["alarm_config"]["alarm_class"]:
-                    r["alarm_class"] = str(
-                        AlarmClass.get_by_name(v["alarm_config"]["alarm_class"]).id
-                    )
-                    r["alarm_class__label"] = str(
-                        AlarmClass.get_by_name(v["alarm_config"]["alarm_class"]).name
-                    )
-                r["activation_level"] = v["alarm_config"].get("activation_level")
-            if v["compose_node"]:
-                r["compose_node"] = v["compose_node"]
-                r["compose_inputs"] = v["compose_inputs"]
-                r["compose_metric_type"] = v["compose_metric_type"]
-            if v["activation_node"]:
-                r["activation_node"] = v["activation_node"]
-                r["activation_config"] = [
-                    {"param": k, "value": v} for k, v in v["activation_config"].items()
-                ]
-            if r:
-                return r
-        return v
-
-    @staticmethod
-    def list_to_params(params):
-        return {p["name"]: p["value"] for p in params if p["value"] != ""}
-
-    def clean(self, data):
-        actions = []
-        for a in data["actions"]:
-            r = {}
-            if a["alarm_node"]:
-                r["alarm_node"] = a["alarm_node"]
-                r["alarm_config"] = {
-                    "alarm_class": AlarmClass.get_by_id(a["alarm_class"]).name,
-                    "activation_level": float(a.get("activation_level", 1.0)),
-                }
-            if a["compose_node"]:
-                r["compose_node"] = a["compose_node"]
-                r["compose_inputs"] = a["compose_inputs"]
-                r["compose_metric_type"] = a["compose_metric_type"]
-            if a["activation_node"]:
-                r["activation_node"] = a["activation_node"]
-                r["activation_config"] = self.list_to_params(a["activation_config"])
-            if r:
-                actions += [r]
-        data["actions"] = actions
-        return super().clean(data)
