@@ -22,7 +22,7 @@ from noc.core.mongo.connection import connect
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help")
+        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help", required=True)
         # sync
         subparsers.add_parser("sync", help="Synchronize collections")
         # install

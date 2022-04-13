@@ -22,7 +22,7 @@ class Command(BaseCommand):
     PREFIX = config.path.cp_new
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # syntax command
         syntax_parser = subparsers.add_parser("syntax")
         syntax_parser.add_argument("--profile", help="Profile Name")

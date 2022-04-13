@@ -36,7 +36,7 @@ class Command(BaseCommand):
     }
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         parser.add_argument(
             "--repo",
             "-r",

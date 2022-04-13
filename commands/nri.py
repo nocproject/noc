@@ -21,7 +21,7 @@ class Command(BaseCommand):
     PORT_ERROR = "ERROR!"
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # portmap command
         portmap_parser = subparsers.add_parser("portmap")
         portmap_parser.add_argument(

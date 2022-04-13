@@ -15,7 +15,7 @@ from noc.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         dump_parser = subparsers.add_parser("dump")
         dump_parser.add_argument(
             "section",

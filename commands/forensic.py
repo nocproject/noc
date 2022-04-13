@@ -33,7 +33,7 @@ class Command(BaseCommand):
     REFRESH_INTERVAL = 1
 
     def add_arguments(self, parser):
-        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help")
+        subparsers = parser.add_subparsers(dest="cmd", help="sub-commands help", required=True)
         # sync
         incomplete_parser = subparsers.add_parser("incomplete", help="Show incomplete operations")
         incomplete_parser.add_argument("--watch", action="store_true", help="Watch mode")

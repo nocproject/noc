@@ -77,7 +77,7 @@ class Command(BaseCommand):
             choices=["json", "csv"],
             help="Set output format",
         ),
-        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers = parser.add_subparsers(dest="cmd", required=True)
         # load command
         list_parser = subparsers.add_parser("list")
         list_parser.add_argument("--name", help="Job name in scheduler")
