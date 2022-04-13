@@ -68,6 +68,7 @@ class Script(BaseScript):
     rx_psu1 = re.compile(r"(?:PS|Power Supply) (?P<number>\d+) ")
     rx_psu2 = re.compile(r"Power Supply (?P<number>\d+)$")
     rx_stack1 = re.compile(r"StackPort\d+/(?P<number>\d+)$")
+    rx_stack_switch = re.compile(r"^Switch (\d+)\s*$")
 
     slot_id = 0
 
@@ -375,6 +376,10 @@ class Script(BaseScript):
                 pid = descr
             if is_int(name):  # Stacking
                 return "CHASSIS", int(name), pid
+            elif self.rx_stack_switch.match(name):
+                # NAME: "Switch 1", DESCR: "WS-C3850-24XS-S"
+                # PID: WS-C3850-24XS-S   , VID: V02
+                return "CHASSIS", int(self.rx_stack_switch.match(name).group(1)), pid
             if pid == "MIDPLANE" and name == "Switch System":
                 match = self.rx_c4900m.search(descr)
                 if match:
