@@ -500,14 +500,17 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         :param iface: Interface instance
         :return:
         """
-        if iface.profile_locked:
-            return
         try:
             p_id = self.get_interface_profile(iface, labels=iface.effective_labels)
         except NotImplementedError:
             self.logger.error("Uses not implemented rule")
             return
         if p_id and p_id != iface.profile.id:
+            if iface.profile_locked:
+                self.logger.info(
+                    "Interface %s profile set by User. That block for classification", iface.name
+                )
+                return
             # Change profile
             profile = InterfaceProfile.get_by_id(p_id)
             if not profile:
