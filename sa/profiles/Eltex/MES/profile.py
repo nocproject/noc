@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     name = "Eltex.MES"
 
     pattern_more = [
-        (rb"^More: <space>,  Quit: q, One line: <return>$", b" "),
+        (rb"^.*More: <space>,  Quit: q(\sor CTRL\+Z)?, One line: <return>.*$", b" "),
         (rb"\[Yes/press any key for no\]", b"Y"),
         (rb"<return>, Quit: q or <ctrl>", b" "),
         (rb"q or <ctrl>+z", b" "),
@@ -44,7 +44,11 @@ class Profile(BaseProfile):
     # to one SNMP GET request
     snmp_metrics_get_chunk = 10
     config_tokenizer = "indent"
-    config_tokenizer_settings = {"line_comment": "!", "end_of_context": "exit"}
+    config_tokenizer_settings = {
+        "line_comment": "!",
+        "end_of_context": "exit",
+        "rewrite": [(re.compile(r"^\s*(interface\s\w+)\s(\d+(\/\d+)*)$"), r"\1\2")],
+    }
     config_normalizer = "MESNormalizer"
     confdb_defaults = [
         ("hints", "interfaces", "defaults", "admin-status", True),
@@ -149,10 +153,12 @@ class Profile(BaseProfile):
 
     def convert_interface_name(self, s):
         """
-        >>> Profile().convert_interface_name_cisco("gi1/0/1")
+        >>> Profile().convert_interface_name("gi1/0/1")
         'Gi 1/0/1'
-        >>> Profile().convert_interface_name_cisco("gi1/0/1?")
+        >>> Profile().convert_interface_name("gi1/0/1?")
         'Gi 1/0/1'
+        >>> Profile().convert_interface_name("vlan 10")
+        'Vl 10'
         """
         match = self.rx_eltex_interface_name.match(str(s))
         if is_int(s):

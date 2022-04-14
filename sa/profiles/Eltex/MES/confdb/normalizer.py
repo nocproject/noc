@@ -62,9 +62,10 @@ class MESNormalizer(BaseNormalizer):
         )
 
     @match("interface", ANY, "description", REST)
+    @match("interface", ANY, "name", REST)
     @match("interface", "vlan", ANY, "name", REST)
     def normalize_interface_description(self, tokens):
-        if tokens[2] == "description":
+        if tokens[2] == "description" or tokens[2] == "name":
             description = tokens[3:]
         else:
             description = tokens[4:]
