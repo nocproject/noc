@@ -374,7 +374,9 @@ Ext.define("NOC.core.label.LabelField", {
                 position[0] = position[0] + treePickerWidth;
             }
             if(heightAbove > heightBelow) {
-                position[1] -= this.treePicker.height + this.getHeight();
+                position[1] -= this.treePicker.height;
+            } else {
+                position[1] += this.getHeight();
             }
             this.treePicker.showAt(position);
         } else {
