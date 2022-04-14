@@ -11,6 +11,7 @@ from .base import CHTableReportDataSource, ReportField
 
 class ReportAvailability(CHTableReportDataSource):
     name = "reportavailability"
+    object_field = "managed_object"
     description = "1"
 
     TABLE_NAME = "noc.ping"
