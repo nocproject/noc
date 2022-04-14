@@ -5,15 +5,23 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import re
+
 # NOC modules
 from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
 from noc.core.text import ranges_to_list
 from noc.core.confdb.syntax.patterns import IP_ADDRESS, INTEGER
 
+rx_port_path = re.compile(r".+\d+(\/\d+)*$")
+
 
 class MESNormalizer(BaseNormalizer):
     def normalize_interface_name(self, tokens):
         if tokens[1] == "vlan":
+            return self.interface_name(tokens[1], tokens[2])
+        elif not rx_port_path.match(tokens[1]):
+            # format interface with space - 'interface gigabitethernet 1/0/1'
             return self.interface_name(tokens[1], tokens[2])
         else:
             return self.interface_name(tokens[1])
@@ -50,7 +58,7 @@ class MESNormalizer(BaseNormalizer):
         yield self.make_spanning_tree_priority(priority=tokens[-1])
 
     @match("interface", ANY)
-    @match("interface", "vlan", ANY)
+    @match("interface", ANY, ANY)
     def normalize_interface(self, tokens):
         yield self.make_interface(interface=self.normalize_interface_name(tokens))
 
