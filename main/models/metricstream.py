@@ -68,6 +68,11 @@ class MetricStream(Document):
             '    if "ts" in input:',
             '        v["ts"] = input["ts"].replace(" ", "T")',
         ]
+        if self.scope.enable_timedelta:
+            r += [
+                '    if "time_delta" in input:',
+                '        v["time_delta"] = input["time_delta"]',
+            ]
         for f in self.fields:
             if not f.expose_mx:
                 continue
