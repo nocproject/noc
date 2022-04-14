@@ -1,5 +1,5 @@
 config: |
-  interface gigabitethernet1/0/23
+  interface gigabitethernet 1/0/23
    description Description 1
   exit
   !
