@@ -171,6 +171,7 @@ Ext.define("NOC.fm.event.Application", {
                             },
                             items: [
                                 {
+                                    itemId: "reload-button",
                                     text: __("Reload"),
                                     iconAlign: "right",
                                     enableToggle: true,
@@ -334,7 +335,9 @@ Ext.define("NOC.fm.event.Application", {
     showGrid: function() {
         var me = this;
         me.getLayout().setActiveItem(0);
-        me.getController().startPolling();
+        if(me.down("[itemId=reload-button]").pressed) {
+            me.getController().startPolling();
+        }
         me.setHistoryHash();
     },
     //
