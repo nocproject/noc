@@ -389,13 +389,15 @@ class AlarmClass(Document):
         Convert vars with default_labels to Map Label Scope -> Var Name
         :return:
         """
-        var_map = {}
+        if hasattr(self, "_var_labels_map"):
+            return self._var_labels_map
+        self._var_labels_map = {}
         for vv in self.vars:
             if not vv.default_labels:
                 continue
             for ll in vv.default_labels:
-                var_map[ll.strip(":*")] = vv.name
-        return var_map
+                self._var_labels_map[ll.rstrip(":*")] = vv.name
+        return self._var_labels_map
 
     def convert_labels_var(self, labels: List[str]) -> Dict[str, str]:
         """
