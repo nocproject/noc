@@ -14,6 +14,7 @@ Ext.define('NOC.fm.alarmclass.Application', {
         'NOC.fm.alarmclass.Model',
         'NOC.fm.alarmclass.LookupField',
         'NOC.fm.alarmseverity.LookupField',
+        "NOC.core.label.LabelField",
         'Ext.ux.form.JSONField',
         'Ext.ux.form.StringsField',
         'Ext.ux.form.GridField'
@@ -174,8 +175,20 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                         {
                                             text: __('Description'),
                                             dataIndex: 'description',
-                                            flex: 1,
+                                            flex: 250,
                                             editor: 'textfield'
+                                        },
+                                        {
+                                            text: __("Labels"),
+                                            dataIndex: "labels",
+                                            renderer: NOC.render.LabelField,
+                                            editor: {
+                                                xtype: "labelfield",
+                                                query: {
+                                                    "allow_wildcard": true,
+                                                    "allow_user": false
+                                                }},
+                                            width: 200
                                         },
                                         {
                                             text: __('Default'),
