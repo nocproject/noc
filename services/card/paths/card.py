@@ -34,7 +34,7 @@ router = APIRouter()
 
 class HandlerStub(object):
     def __init__(self, user, arguments):
-        self.user = user
+        self.user: "User" = user
         self.arguments = {}
         for key in arguments:
             if arguments[key]:
@@ -44,11 +44,17 @@ class HandlerStub(object):
     def current_user(self):
         return self.user
 
-    def get_argument(self, name):
-        if name in self.arguments:
-            return self.arguments[name]
-        else:
+    def get_argument(self, name: str, default: Optional[str] = None, strict: bool = True):
+        """
+
+        :param name: Argument Name
+        :param default: default value
+        :param strict: Raise exception if not argument
+        :return:
+        """
+        if name not in self.arguments and strict:
             raise HTTPException(404, f"Query parameter '{name}' not specified")
+        return self.arguments.get(name, default)
 
 
 class CardAPI(BaseAPI):
