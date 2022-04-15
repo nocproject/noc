@@ -669,9 +669,7 @@ class EscalationSequence(BaseSequence):
             self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
-    def check_notify(self, notify, esd_save) -> None:
-        if not notify:
-            return
+    def check_notify(self, esd_save) -> bool:
         # Check configured TT System
         tt_system = (
             self.escalation.pre_reasons
@@ -680,7 +678,7 @@ class EscalationSequence(BaseSequence):
             else None
         )
         if esd_save or (not esd_save and not tt_system):
-            self.escalation_doc.save()
+            return True
 
     def process(self) -> None:
         """
@@ -728,11 +726,8 @@ class EscalationSequence(BaseSequence):
                 if esc_item.stop_processing:
                     logger.debug("Stopping processing")
                     break
-
-            if self.escalation_doc.tt_id:
+            if self.escalation_doc.tt_id or (notify and self.check_notify(esd_save)):
                 self.escalation_doc.save()
-            else:
-                self.check_notify(notify, esd_save)
         # Check if alarm has been closed during escalation
         self.check_closed()
         # Escalation process complete
@@ -923,8 +918,7 @@ class DeescalationSequence(BaseSequence):
         """
         if not self.notification_group:
             return
-        self.log_alarm(f"Sending close notification to group {self.notification_group.name}")
-        self.logger.info(f"Sending notification to group {self.notification_group.name}")
+        self.log_alarm("Sending close notification to group %s" % self.notification_group.name)
         self.notification_group.notify(self.subject, self.body)
         metrics["escalation_notify"] += 1
 
