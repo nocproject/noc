@@ -40,6 +40,7 @@ from noc.core.wf.decorator import workflow
 from noc.inv.models.capsitem import CapsItem
 from noc.main.models.label import Label
 from noc.pm.models.agent import Agent
+from noc.core.change.decorator import change
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 @bi_sync
 @on_save
 @resourcegroup
+@change
 @workflow
 @on_delete
 @on_delete_check(

@@ -9,7 +9,7 @@
 import operator
 import cachetools
 from threading import Lock
-from typing import Optional
+from typing import Optional, Iterable
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -284,7 +284,7 @@ class NetworkSegmentProfile(Document):
             return False
         return i1 <= i2
 
-    def iter_uplink_policy(self):
+    def iter_uplink_policy(self) -> Iterable[str]:
         """
         Yields all enabled uplinks policies in order of preference
         :return:
