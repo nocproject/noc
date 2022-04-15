@@ -9,7 +9,7 @@
 import os
 from threading import Lock
 import operator
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 # Third-party modules
 from mongoengine.document import Document
@@ -80,6 +80,7 @@ class AlarmClassVar(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     name = StringField(required=True)
     description = StringField(required=False)
+    default_labels = ListField(StringField())
     default = StringField(required=False)
 
     def __str__(self):
@@ -90,6 +91,7 @@ class AlarmClassVar(EmbeddedDocument):
             self.name == other.name
             and self.description == other.description
             and self.default == other.default
+            and set(self.default_labels) == set(other.default_labels)
         )
 
     @property
@@ -97,6 +99,8 @@ class AlarmClassVar(EmbeddedDocument):
         r = {"name": self.name, "description": self.description}
         if self.default:
             r["default"] = self.default
+        if self.default_labels:
+            r["default_labels"] = self.default_labels
         return r
 
 
@@ -380,6 +384,33 @@ class AlarmClass(Document):
             else:
                 return self.control_timeN or None
 
+    def get_labels_map(self):
+        """
+        Convert vars with default_labels to Map Label Scope -> Var Name
+        :return:
+        """
+        var_map = {}
+        for vv in self.vars:
+            if not vv.default_labels:
+                continue
+            for ll in vv.default_labels:
+                var_map[ll.strip(":*")] = vv.name
+        return var_map
+
+    def convert_labels_var(self, labels: List[str]) -> Dict[str, str]:
+        """
+        Convert labels to dict
+        :param labels:
+        :return:
+        """
+        r = {}
+        var_labels_map = self.get_labels_map()
+        for ll in labels:
+            scope, *values = ll.rsplit("::", 1)
+            if not values or scope not in var_labels_map:
+                continue
+            r[var_labels_map[scope]] = values[0]
+        return r
 
 # Avoid circular references
 from .alarmclassconfig import AlarmClassConfig

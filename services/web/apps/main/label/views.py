@@ -63,6 +63,8 @@ class LabelApplication(ExtDocApplication):
         """
         query = request.GET.get("__query")
         allow_matched = ("allow_matched", ["true"]) in request.GET.lists()
+        allow_wildcard = ("allow_wildcard", ["true"]) in request.GET.lists()
+        allow_user = not ("allow_user", ["false"]) in request.GET.lists()
         labels_filter = {
             str(k): True if v[0] == "true" else False
             for k, v in request.GET.lists()
@@ -85,8 +87,8 @@ class LabelApplication(ExtDocApplication):
                 "bg_color2": f"#{ll.bg_color2:06x}",
                 "fg_color2": f"#{ll.fg_color2:06x}",
             }
-            for ll in labels
-            if not (ll.is_wildcard or (ll.is_matched and not allow_matched))
+            for ll in labels if (allow_user and not ll.is_wildcard and not ll.is_matched) or (allow_matched and ll.is_matched) or (allow_wildcard and ll.is_wildcard)
+            # if not (ll.is_wildcard or (ll.is_matched and not allow_matched))
         ]
         return {
             "data": labels,

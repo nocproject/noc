@@ -752,12 +752,15 @@ class CorrelatorService(TornadoService):
             remote_system = RemoteSystem.get_by_id(req.remote_system)
         else:
             remote_system = None
+        r_vars = req.vars or {}
+        if req.labels:
+            r_vars.update(alarm_class.convert_labels_var(req.labels))
         try:
             await self.raise_alarm(
                 managed_object=managed_object,
                 timestamp=ts,
                 alarm_class=alarm_class,
-                vars=req.vars,
+                vars=r_vars,
                 reference=req.reference,
                 groups=groups,
                 labels=req.labels or [],
@@ -853,12 +856,15 @@ class CorrelatorService(TornadoService):
             if h_ref in open_alarms:
                 seen_refs.add(h_ref)
                 continue  # Alarm is still active, skipping
+            r_vars = ai.vars or {}
+            if ai.labels:
+                r_vars.update(alarm_classes[ai.alarm_class].convert_labels_var(ai.labels))
             # Raise new alarm
             await self.raise_alarm(
                 managed_object=mos[ai.managed_object],
                 timestamp=tses[ai.timestamp] if ai.timestamp else now,
                 alarm_class=alarm_classes[ai.alarm_class],
-                vars=ai.vars or {},
+                vars=r_vars,
                 reference=ai.reference,
                 groups=[
                     GroupItem(
