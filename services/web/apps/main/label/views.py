@@ -87,7 +87,10 @@ class LabelApplication(ExtDocApplication):
                 "bg_color2": f"#{ll.bg_color2:06x}",
                 "fg_color2": f"#{ll.fg_color2:06x}",
             }
-            for ll in labels if (allow_user and not ll.is_wildcard and not ll.is_matched) or (allow_matched and ll.is_matched) or (allow_wildcard and ll.is_wildcard)
+            for ll in labels
+            if (allow_user and not ll.is_wildcard and not ll.is_matched)
+            or (allow_matched and ll.is_matched)
+            or (allow_wildcard and ll.is_wildcard)
             # if not (ll.is_wildcard or (ll.is_matched and not allow_matched))
         ]
         return {

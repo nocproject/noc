@@ -412,5 +412,6 @@ class AlarmClass(Document):
             r[var_labels_map[scope]] = values[0]
         return r
 
+
 # Avoid circular references
 from .alarmclassconfig import AlarmClassConfig
