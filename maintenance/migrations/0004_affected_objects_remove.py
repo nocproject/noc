@@ -30,6 +30,8 @@ class Migration(BaseMigration):
             if ao["objects"] == []:
                 continue
             mai = db.noc.maintenance.find_one({"_id": m_id})
+            if not mai:
+                continue
             if mai["stop"] < datetime.datetime.now():
                 continue
             SQL_ADD = """UPDATE sa_managedobject
