@@ -179,8 +179,8 @@ Ext.define('NOC.fm.alarmclass.Application', {
                                             editor: 'textfield'
                                         },
                                         {
-                                            text: __("Labels"),
-                                            dataIndex: "labels",
+                                            text: __("Default Labels"),
+                                            dataIndex: "default_labels",
                                             renderer: NOC.render.LabelField,
                                             editor: {
                                                 xtype: "labelfield",
