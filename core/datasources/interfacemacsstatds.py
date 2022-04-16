@@ -23,7 +23,7 @@ SQL = f"""
     managed_object,  interface, uniqExact(mac) as mac_count
    FROM mac
    WHERE date >= '%s' and date < '%s'
-    GROUP BY managed_object, interface FORMAT JSONEachRow 
+   GROUP BY managed_object, interface FORMAT JSONEachRow
 """
 
 DEFAULT_INTERVAL = 86400
