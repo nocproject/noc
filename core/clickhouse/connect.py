@@ -7,6 +7,7 @@
 
 # Python modules
 import random
+from typing import List, Union
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
@@ -32,7 +33,9 @@ class ClickhouseClient(object):
         else:
             self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
 
-    def execute(self, sql=None, args=None, nodb=False, post=None, extra=None, return_raw=False):
+    def execute(
+        self, sql=None, args=None, nodb=False, post=None, extra=None, return_raw=False
+    ) -> Union[List[str], str]:
         def q(v):
             # @todo: quote dates
             if isinstance(v, str):

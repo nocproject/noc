@@ -257,7 +257,7 @@ class ReportMetricsDetailApplication(ExtApplication):
                 d_url["oname"] = row["object_name"]
                 row["interface_load_url"] = url % d_url
             if "mac_counter" in columns_filter:
-                row["mac_counter"] = mac_counters.get(
+                row["mac_counter"] = mac_counters["mac_count"].get(
                     (int(row["managed_object"]), row["iface_name"]), ""
                 )
             res = []
