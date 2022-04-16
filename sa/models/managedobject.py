@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -108,6 +108,15 @@ CREDENTIAL_CACHE_VERSION = 4
 Credentials = namedtuple(
     "Credentials", ["user", "password", "super_password", "snmp_ro", "snmp_rw", "snmp_rate_limit"]
 )
+
+
+class MaintenanceItem(BaseModel):
+    start: datetime.datetime
+    stop: Optional[datetime.datetime] = None
+
+
+class MaintenanceItems(BaseModel):
+    __root__: Dict[str, MaintenanceItem]
 
 
 class CapsItems(BaseModel):
@@ -571,6 +580,15 @@ class ManagedObject(NOCModel):
     adm_path = ArrayField(IntegerField(), blank=True, null=True, default=list)
     segment_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
     container_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
+    affected_maintenances = PydanticField(
+        "Maintenance Items",
+        schema=MaintenanceItems,
+        blank=True,
+        null=True,
+        default=dict,
+        # ? Internal validation not worked with JSON Field
+        # validators=[match_rules_validate],
+    )
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -2127,6 +2145,28 @@ class ManagedObject(NOCModel):
         for lo in r:
             ManagedObject.objects.filter(id=lo).update(links=list(r[lo]))
             ManagedObject._reset_caches(lo)
+
+    @property
+    def in_maintenance(self) -> bool:
+        """
+        Check device in active maintenance
+        :return:
+        """
+        return bool(self.get_active_maintenances())
+
+    def get_active_maintenances(self, timestamp: Optional[datetime.datetime] = None) -> List[str]:
+        """
+        Getting device active maintenances ids
+        :param timestamp:
+        :return:
+        """
+        timestamp = timestamp or datetime.datetime.now()
+        return [
+            mai["maintenance"]
+            for mai in self.affected_maintenances
+            if datetime.datetime.fromisoformat(mai["start"]) < timestamp
+            and (not mai["stop"] or datetime.datetime.fromisoformat(mai["stop"]) > timestamp)
+        ]
 
 
 @on_save

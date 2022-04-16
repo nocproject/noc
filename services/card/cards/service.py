@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Service card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from .base import BaseCard
 from noc.sa.models.service import Service
 from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
+from noc.maintenance.models.maintenance import Maintenance
 
 
 class ServiceCard(BaseCard):
@@ -48,13 +48,12 @@ class ServiceCard(BaseCard):
             if not interface.full_duplex:
                 errors += ["Half-Duplex"]
             # Maintenance
-            for ao in AffectedObjects.objects.filter(affected_objects__object=managed_object.id):
-
-                m = Maintenance.objects.filter(
-                    id=ao.maintenance,
-                    is_completed=False,
-                    start__lte=now + datetime.timedelta(hours=1),
-                ).first()
+            m_id = managed_object.get_active_maintenances()
+            for m in Maintenance.objects.filter(
+                id__in=m_id,
+                is_completed=False,
+                start__lte=now + datetime.timedelta(hours=1),
+            ):
                 maintenance += [
                     {
                         "maintenance": m,

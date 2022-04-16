@@ -321,7 +321,6 @@ _MODELS = {
     "kb.KBUserBookmark": "noc.kb.models.kbuserbookmark.KBUserBookmark",
     # Maintenance
     "maintenance.Maintenance": "noc.maintenance.models.maintenance.Maintenance",
-    "maintenance.AffectedObjects": "noc.maintenance.models.maintenance.AffectedObjects",
     "maintenance.MaintenanceType": "noc.maintenance.models.maintenancetype.MaintenanceType",
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
