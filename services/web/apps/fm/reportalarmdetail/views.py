@@ -237,8 +237,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             )
             f.seek(0)
             with ZipFile(response, "w", compression=ZIP_DEFLATED) as zf:
-                zf.writestr(filename, f.read())
-                zf.filename = "%s.csv" % filename
+                zf.writestr(f"{filename}.csv", f.read())
+                zf.filename = f"{filename}.zip"
             response.seek(0)
             response = HttpResponse(response.getvalue(), content_type="application/zip")
             response["Content-Disposition"] = f'attachment; filename="{filename}.zip"'
