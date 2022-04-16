@@ -10,7 +10,8 @@ Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
     extend: "Ext.grid.Panel",
     requires: [
         "NOC.maintenance.maintenance.ObjectsModel",
-        "NOC.maintenance.maintenance.ObjectsStore"
+        "NOC.maintenance.maintenance.ObjectsStore",
+        "NOC.core.label.LabelField"
     ],
     mixins: [
         "NOC.core.Export"
