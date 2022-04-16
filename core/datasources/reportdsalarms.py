@@ -37,6 +37,7 @@ from noc.services.web.apps.fm.alarm.views import AlarmApplication
 
 class ReportDsAlarms(BaseDataSource):
     name = "reportdsalarms"
+    index_field = "alarm_id"
 
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
@@ -202,12 +203,23 @@ class ReportDsAlarms(BaseDataSource):
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields or [], **kwargs)]
-        return pd.DataFrame.from_records(
+        data = [mm async for mm in cls.iter_query(fields or [], *args, **kwargs)]
+        df = pd.DataFrame.from_records(
             data,
-            index="alarm_id",
-            columns=[ff.name for ff in cls.fields if not fields or ff.name in fields],
+            index=cls.index_field,
+            columns=[cls.index_field]
+            + [
+                ff.name
+                for ff in cls.fields
+                if not fields or (ff.name in fields and ff.name != cls.index_field)
+            ],
         )
+        # for ff in cls.fields:
+        #     if not fields or ff.name in fields or ff.name == cls.index_field:
+        #         continue
+        #     if ff.name in df.columns:
+        #         df.drop(ff.name, axis=1)
+        return df
 
     @classmethod
     def items_to_dict(cls, items):
