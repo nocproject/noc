@@ -23,15 +23,16 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.lib.app.reportdatasources.loader import loader
 from noc.lib.app.reportdatasources.report_container import ReportContainerData
-from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text
+from noc.core.datasources.loader import loader as ds_loader
 
 
 def get_column_width(name):
@@ -219,6 +220,11 @@ class ReportMetricsDetailApplication(ExtApplication):
         r = [header]
         columns_filter = set(fields)
         filters = []
+        mac_counters = {}
+        if "mac_counter" in columns_filter:
+            mac_ds = ds_loader["interfacemacsstatds"]
+            data = mac_ds.query_sync(resolve_managedobject_id=False)
+            mac_counters = data.to_dict()
         if reporttype == "load_interfaces" and interface_profile:
             interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
             filters += [{"name": "interface_profile", "value": [interface_profile.name]}]
@@ -250,6 +256,10 @@ class ReportMetricsDetailApplication(ExtApplication):
                 d_url["biid"] = row["managed_object"]
                 d_url["oname"] = row["object_name"]
                 row["interface_load_url"] = url % d_url
+            if "mac_counter" in columns_filter:
+                row["mac_counter"] = mac_counters["mac_count"].get(
+                    (int(row["managed_object"]), row["iface_name"]), ""
+                )
             res = []
             for y in columns:
                 res.append(row.get(y, ""))
