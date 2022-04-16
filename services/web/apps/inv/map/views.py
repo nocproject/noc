@@ -1,13 +1,12 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
-import datetime
 import threading
 from typing import List, Set
 
@@ -25,7 +24,7 @@ from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.maintenance.models.maintenance import AffectedObjects
+from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key
 from noc.core.pm.utils import get_interface_metrics
 from noc.sa.interfaces.base import (
@@ -299,52 +298,11 @@ class MapApplication(ExtApplication):
                 alarms.update(d["_id"] for d in a)
             return alarms
 
-        def get_maintenance(objects: List[int]) -> Set[int]:
-            """
-            Returns a set of objects currently in maintenance
-            :param objects:
-            :return:
-            """
-            now = datetime.datetime.now()
-            so = set(objects)
-            mnt_objects = set()
-            pipeline = [
-                {"$match": {"affected_objects.object": {"$in": list(so)}}},
-                {"$unwind": "$affected_objects"},
-                {
-                    "$lookup": {
-                        "from": "noc.maintenance",
-                        "as": "m",
-                        "let": {"maintenance": "_id"},
-                        "pipeline": [
-                            {
-                                "$match": {
-                                    "m.is_completed": False,
-                                    "m.start": {"$lte": now},
-                                    "m.stop": {"gte": now},
-                                },
-                            }
-                        ],
-                    },
-                },
-                {
-                    "$project": {
-                        "_id": 0,
-                        "object": "$affected_objects.object",
-                    }
-                },
-                {"$group": {"_id": "$object"}},
-            ]
-            mnt_objects |= so & {
-                x["_id"] for x in AffectedObjects._get_collection().aggregate(pipeline)
-            }
-            return mnt_objects
-
         # Mark all as unknown
         r = {o: self.ST_UNKNOWN for o in objects}
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
-        mo = get_maintenance(objects)
+        mo = Maintenance.currently_affected(objects)
         for o in sr:
             if sr[o]:
                 # Check for alarms

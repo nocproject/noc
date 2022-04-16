@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Alarm card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
-from noc.maintenance.models.maintenance import Maintenance, AffectedObjects
+from noc.maintenance.models.maintenance import Maintenance
 from noc.core.perf import metrics
 
 
@@ -76,12 +76,7 @@ class AlarmCard(BaseCard):
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers),
         }
         # Maintenance
-        m_id = [
-            m.id
-            for m in AffectedObjects.objects.filter(
-                affected_objects__object=self.object.managed_object.id
-            ).values_list("maintenance")
-        ]
+        m_id = [m for m in self.object.managed_object.affected_maintenances]
         mainteinance = Maintenance.objects.filter(
             is_completed=False,
             start__lte=datetime.datetime.now(),
