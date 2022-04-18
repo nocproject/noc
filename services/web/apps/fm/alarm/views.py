@@ -11,6 +11,7 @@ import inspect
 import datetime
 import operator
 from typing import Tuple
+import asyncio
 
 # Third-party modules
 import bson
@@ -683,8 +684,17 @@ class AlarmApplication(ExtApplication):
         if not alarm.alarm_class.user_clearable:
             return {"status": False, "error": "Deny clear alarm by user"}
         if alarm.status == "A":
-            alarm.clear_alarm(
-                "Cleared by %s: %s" % (request.user, msg), source=request.user.username
+            # Report message
+            alarm.log_message(f"Clear request from {request.user}: {msg}")
+            # Send clear signal to the correlator
+            fm_pool = alarm.managed_object.get_effective_fm_pool().name
+            stream = f"dispose.{fm_pool}"
+            num_partitions = asyncio.run(self.service.get_stream_partitions(stream))
+            partition = int(alarm.managed_object.id) % num_partitions
+            self.service.publish(
+                orjson.dumps({"$op": "clearid", "id": str(alarm.id)}),
+                stream=stream,
+                partition=partition,
             )
         return True
 
