@@ -12,7 +12,6 @@ from io import StringIO
 
 # Third-party modules
 from django import forms
-from django.contrib import messages
 
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
@@ -191,7 +190,7 @@ class ToolsAppplication(Application):
                         )
                     )
                 except dns.exception.Timeout as e:
-                    self.message_user(request, e, messages.WARNING)
+                    self.message_user(request, e)
                     return
                 else:
                     count = upload_axfr(data, form.cleaned_data["zone"])
