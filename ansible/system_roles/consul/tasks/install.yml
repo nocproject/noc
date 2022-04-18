@@ -1,5 +1,4 @@
 ---
-#test
 - name: Get Consul package checksum file
   get_url:
     url: "{{ consul_checksum_file_url }}"
