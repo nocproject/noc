@@ -14,8 +14,8 @@
     owner: "root"
     mode: "0640"
   when:
-    - noc_services is defined
-    - noc_services | bool
+    - noc_services is defined|bool
+    - noc_services
 
 - name: Generate NOC config
   template:
@@ -26,8 +26,8 @@
     owner: "{{ noc_user }}"
   no_log: "{{ tower_show_secrets }}"
   when:
-    - noc_services is defined
-    - noc_services | bool
+    - noc_services is defined|bool
+    - noc_services
 
 - name: Generate NOC config for pooled services
   template:
@@ -38,8 +38,8 @@
     group: "{{ noc_group }}"
   no_log: "{{ tower_show_secrets }}"
   when:
-    - noc_services is defined
-    - noc_services | bool
+    - noc_services is defined|bool
+    - noc_services
   vars:
     pool_name: "{{ item.name }}"
   with_items:
