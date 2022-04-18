@@ -2149,10 +2149,10 @@ class ManagedObject(NOCModel):
     @property
     def in_maintenance(self) -> bool:
         """
-        Check device in active maintenance
+        Check device is under active maintenance
         :return:
         """
-        return bool(self.get_active_maintenances())
+        return any(self.get_active_maintenances())
 
     def get_active_maintenances(self, timestamp: Optional[datetime.datetime] = None) -> List[str]:
         """
