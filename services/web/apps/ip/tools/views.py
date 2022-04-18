@@ -1,17 +1,18 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python Modules
 import csv
-import subprocess
+import dns
 from io import StringIO
 
 # Third-party modules
 from django import forms
+from django.contrib import messages
 
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
@@ -20,7 +21,6 @@ from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
-from noc.config import config
 from noc.core.translation import ugettext as _
 
 
@@ -122,28 +122,53 @@ class ToolsAppplication(Application):
         :return:
         """
 
-        def upload_axfr(data):
+        def resolveDNS(name):
+            types = ["A", "AAAA", "PTR"]
+            for type in types:
+                try:
+                    results = dns.resolver.resolve(qname=name, rdtype=type)
+                except dns.exception.DNSException as e:
+                    print(f"Dns resolution Error: {e} ({name} {type})")
+                    continue
+                if results:
+                    return results
+
+        def upload_axfr(data, zone):
             p = IP.prefix(prefix.prefix)
             count = 0
-            for row in data:
-                row = row.strip()
-                if row == "" or row.startswith(";"):
+            zz = zone + "."
+            lz = len(zz)
+            for host in data:
+                if str(host) == "@":
                     continue
-                row = row.split()
-                if len(row) != 5 or row[2] != "IN" or row[3] != "PTR":
+                r_host = f"{str(host)}.{zone}"
+                A_records = resolveDNS(r_host)
+                if not A_records:
                     continue
-                if row[3] == "PTR":
-                    # @todo: IPv6
-                    x = row[0].split(".")
-                    ip = "%s.%s.%s.%s" % (x[3], x[2], x[1], x[0])
-                    fqdn = row[4]
-                    if fqdn.endswith("."):
-                        fqdn = fqdn[:-1]
+                for item in A_records:
+                    if A_records.rdtype.name in ("A", "AAAA"):
+                        name = str(item)
+                        if name.endswith(zz):
+                            name = name[:-lz]
+                        if name.endswith("."):
+                            name = name[:-1]
+                    if A_records.rdtype.name == "PTR":
+                        name = str(item)
+                        if name.endswith(zz):
+                            name = name[:-lz]
+                        if name.endswith("."):
+                            name = name[:-1]
+                        # @todo: IPv6
+                        if "." in r_host:
+                            address = ".".join(reversed(r_host.split(".")[:4]))
+                        fqdn = str(item)
+                        if fqdn.endswith("."):
+                            fqdn = fqdn[:-1]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if not p.contains(IPv4(ip)):
+                if not p.contains(IPv4(address)):
                     continue
-                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
+                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=address)
                 if a.fqdn != fqdn:
                     a.fqdn = fqdn
                     changed = True
@@ -159,19 +184,17 @@ class ToolsAppplication(Application):
         if request.POST:
             form = self.AXFRForm(request.POST)
             if form.is_valid():
-                opts = []
-                if form.cleaned_data["source_address"]:
-                    opts += ["-b", form.cleaned_data["source_address"]]
-                pipe = subprocess.Popen(
-                    [config.path.dig]
-                    + opts
-                    + ["axfr", "@%s" % form.cleaned_data["ns"], form.cleaned_data["zone"]],
-                    shell=False,
-                    stdout=subprocess.PIPE,
-                ).stdout
-                data = pipe.read()
-                pipe.close()
-                count = upload_axfr(data.split("\n"))
+                try:
+                    data = dns.zone.from_xfr(
+                        dns.query.xfr(
+                            str(form.cleaned_data["ns"]).rstrip("."), form.cleaned_data["zone"]
+                        )
+                    )
+                except dns.exception.Timeout as e:
+                    self.message_user(request, e, messages.WARNING)
+                    return
+                else:
+                    count = upload_axfr(data, form.cleaned_data["zone"])
                 self.message_user(
                     request,
                     _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
