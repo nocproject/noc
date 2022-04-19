@@ -30,6 +30,13 @@ from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
 )
+from noc.core.service.stormprotection import (
+    storm_protection,
+    STORM_CHECK_ROUND_LENGTH,
+    STORM_MESSAGES_LIMIT_ON,
+    STORM_MESSAGES_LIMIT_OFF,
+    STORM_RECORD_TTL,
+)
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
@@ -69,6 +76,32 @@ class TrapCollectorService(FastAPIService):
         self.report_invalid_callback.start()
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
+        asyncio.get_running_loop().create_task(self.storm_check_round())
+
+    async def storm_check_round(self):
+        while True:
+            to_delete = []
+            for ip in storm_protection.storm_table:
+                record = storm_protection.storm_table[ip]
+                # set new value to talkative flag
+                if record.messages_count > STORM_MESSAGES_LIMIT_ON:
+                    record.talkative = True
+                if record.messages_count < STORM_MESSAGES_LIMIT_OFF:
+                    record.talkative = False
+                # check time to live of record
+                if record.messages_count == 0:
+                    record.ttl -= 1
+                else:
+                    record.ttl = STORM_RECORD_TTL
+                if record.ttl <= 0:
+                    to_delete.append(ip)
+                else:
+                    # reset messages count
+                    record.messages_count = 0
+            # delete old records
+            for ip in to_delete:
+                del storm_protection.storm_table[ip]
+            await asyncio.sleep(STORM_CHECK_ROUND_LENGTH)
 
     async def get_pool_partitions(self, pool: str) -> int:
         parts = self.pool_partitions.get(pool)

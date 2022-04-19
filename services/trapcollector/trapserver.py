@@ -35,10 +35,11 @@ class TrapServer(UDPServer):
         return config.trapcollector.enable_freebind
 
     def on_read(self, data: bytes, address: Tuple[str, int]):
+        storm_protection.update_messages_counter(address[0])
         if storm_protection.message_should_be_blocked(address[0]):
-            print('Сообщение блокировано ---')
+            print("Сообщение блокировано ---")
             return
-        print('Сообщение отправлено +')
+        print("Сообщение отправлено +")
 
         metrics["trap_msg_in"] += 1
         cfg = self.service.lookup_config(address[0])
