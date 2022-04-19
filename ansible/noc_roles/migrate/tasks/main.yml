@@ -33,7 +33,7 @@
   become_user: "{{ noc_user }}"
   changed_when: false
 
-- name: migrate liftbridge partitions
+- name: migrate liftbridge partitions 1
   command: ./noc migrate-liftbridge
   args:
     chdir: "{{ noc_root }}"
@@ -41,17 +41,6 @@
   become: "True"
   register: migrate_lb_out
   changed_when: "'CHANGED' in migrate_lb_out.stdout"
-
-- name: Apply pools
-  command: "{{ noc_root }}/scripts/deploy/apply-pools"
-  args:
-    chdir: "{{ noc_root }}"
-  environment:
-    PYTHONPATH: "{{ noc_root | dirname }}"
-  become_user: "{{ noc_user }}"
-  become: "True"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
 
 - name: Synchronize collections
   command: ./noc collection sync
@@ -61,6 +50,26 @@
   become: "True"
   tags:
     - coll_sync
+
+- name: migrate liftbridge partitions 2
+  command: ./noc migrate-liftbridge
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+  become: "True"
+  register: migrate_lb_out
+  changed_when: "'CHANGED' in migrate_lb_out.stdout"
+
+- name: migrate ch db
+  command: ./noc migrate-ch --host "{{ item }}"
+  args:
+    chdir: "{{ noc_root }}"
+  register: migrate_ch
+  with_items: "{{ groups['svc-clickhouse-exec'] }}"
+  delegate_to: "{{ groups['svc-chwriter-exec'][0] }}"
+  changed_when: "'CHANGED' in migrate_ch.stdout"
+  when:
+    - "'svc-chwriter-exec' in groups"
 
 - name: Synchronize permissions
   command: ./noc sync-perm
@@ -81,13 +90,13 @@
   register: mibs_out
   changed_when: mibs_out.stdout | length > 7
 
-- name: migrate ch db
-  command: ./noc migrate-ch --host "{{ item }}"
+- name: Apply pools
+  command: "{{ noc_root }}/scripts/deploy/apply-pools"
   args:
     chdir: "{{ noc_root }}"
-  register: migrate_ch
-  with_items: "{{ groups['svc-clickhouse-exec'] }}"
-  delegate_to: "{{ groups['svc-chwriter-exec'][0] }}"
-  changed_when: "'CHANGED' in migrate_ch.stdout"
-  when:
-    - "'svc-chwriter-exec' in groups"
+  environment:
+    PYTHONPATH: "{{ noc_root | dirname }}"
+  become_user: "{{ noc_user }}"
+  become: "True"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
