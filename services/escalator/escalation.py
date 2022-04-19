@@ -346,9 +346,9 @@ class EscalationSequence(BaseSequence):
             "has_merged_downlinks": self.has_merged_downlinks(),
         }
 
-    def notify(self, item: AEscalationItem, ctx: Dict[str, Any]) -> None:
+    def notify(self, item: AEscalationItem, ctx: Dict[str, Any]) -> bool:
         if not item.notification_group or not self.can_notify():
-            return
+            return False
         subject = item.template.render_subject(**ctx)
         body = item.template.render_body(**ctx)
         self.logger.debug("Notification message:\nSubject: %s\n%s", subject, body)
@@ -356,6 +356,7 @@ class EscalationSequence(BaseSequence):
         item.notification_group.notify(subject, body)
         self.alarm.set_clear_notification(item.notification_group, item.clear_template)
         metrics["escalation_notify"] += 1
+        return True
 
     def is_under_maintenance(self) -> bool:
         """
@@ -705,12 +706,11 @@ class EscalationSequence(BaseSequence):
                     self.create_tt(esc_item, ctx)
                     self.notify_escalated_consequences()
                 # Send notification
-                self.notify(esc_item, ctx)
-                #
+                notify = self.notify(esc_item, ctx)
                 if esc_item.stop_processing:
                     logger.debug("Stopping processing")
                     break
-            if self.escalation_doc.tt_id:
+            if self.escalation_doc.tt_id or notify:
                 self.escalation_doc.save()
         # Check if alarm has been closed during escalation
         self.check_closed()
@@ -740,6 +740,14 @@ class DeescalationSequence(BaseSequence):
         self.subject = subject
         self.body = body
         self.queue = queue
+
+    def log_alarm(self, message: str, *args) -> None:
+        """
+        Log message to alarm
+        """
+        msg = message % args
+        self.logger.info(msg)
+        self.alarm.log_message(msg)
 
     def get_alarm(self, alarm_id: str) -> ArchivedAlarm:
         """
@@ -894,7 +902,7 @@ class DeescalationSequence(BaseSequence):
         """
         if not self.notification_group:
             return
-        self.logger.info("Sending notification to group %s", self.notification_group.name)
+        self.log_alarm("Sending close notification to group %s" % self.notification_group.name)
         self.notification_group.notify(self.subject, self.body)
         metrics["escalation_notify"] += 1
 
