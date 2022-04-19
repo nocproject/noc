@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Dispose Request
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,8 +10,9 @@ from typing import Union
 
 # NOC modules
 from .clearreq import ClearRequest
+from .clearidreq import ClearIdRequest
 from .eventreq import EventRequest
 from .raisereq import RaiseRequest
 from .ensuregroupreq import EnsureGroupRequest
 
-DisposeRequest = Union[ClearRequest, EventRequest, RaiseRequest, EnsureGroupRequest]
+DisposeRequest = Union[ClearRequest, ClearIdRequest, EventRequest, RaiseRequest, EnsureGroupRequest]

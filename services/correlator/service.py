@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ from noc.services.correlator.trigger import Trigger
 from noc.services.correlator.models.disposereq import DisposeRequest
 from noc.services.correlator.models.eventreq import EventRequest
 from noc.services.correlator.models.clearreq import ClearRequest
+from noc.services.correlator.models.clearidreq import ClearIdRequest
 from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.fm.models.eventclass import EventClass
@@ -784,6 +785,14 @@ class CorrelatorService(TornadoService):
         ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
         await self.clear_by_reference(req.reference, ts)
 
+    async def on_msg_clearid(self, req: ClearIdRequest) -> None:
+        """
+        Process `clearid` message.
+        """
+        # Fetch timestamp
+        ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
+        await self.clear_by_id(req.id, ts=ts, message=req.message, source=req.source)
+
     async def on_msg_ensure_group(self, req: EnsureGroupRequest) -> None:
         """
         Process `ensure_group` message.
@@ -878,6 +887,37 @@ class CorrelatorService(TornadoService):
         # Close hanging alarms
         for h_ref in set(open_alarms) - seen_refs:
             await self.clear_by_reference(h_ref, ts=now)
+
+    async def clear_by_id(
+        self,
+        id: Union[str, bytes],
+        ts: Optional[datetime.datetime] = None,
+        message: Optional[str] = None,
+        source: Optional[str] = None,
+    ) -> None:
+        """
+        Clear alarm by reference
+        """
+        ts = ts or datetime.datetime.now()
+        # Get alarm
+        alarm = ActiveAlarm.objects.filter(pk=id).first()
+        if not alarm:
+            self.logger.info("Alarm '%s' is not found. Skipping", id)
+            return
+        # Clear alarm
+        self.logger.info(
+            "[%s|%s] Clear alarm %s(%s) by id: %s",
+            alarm.managed_object.name,
+            alarm.managed_object.address,
+            alarm.alarm_class.name,
+            alarm.id,
+            message,
+        )
+        alarm.last_update = max(alarm.last_update, ts)
+        groups = alarm.groups
+        alarm.clear_alarm(message or "Cleared by id", source=source)
+        metrics["alarm_clear"] += 1
+        await self.clear_groups(groups, ts=ts)
 
     async def clear_by_reference(
         self, reference: Union[str, bytes], ts: Optional[datetime.datetime] = None
