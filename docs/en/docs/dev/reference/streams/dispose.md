@@ -65,6 +65,18 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | `reference` | String | Alarm reference. Should be the same as in previous [raise](#raise-message) message. |
 | `timestamp` | String | Optional timestamp in ISO 8601 format                                               |
 
+### clearid message
+
+`clearid` message represents a direct alarm clear request, issued by an external mechanism.
+
+| Field       | Type   | Description                           |
+| ----------- | ------ | ------------------------------------- |
+| `$op`       | String | Equals to `clear`                     |
+| `id`        | String | Alarm id                              |
+| `timestamp` | String | Optional timestamp in ISO 8601 format |
+| `message`   | String | Optional closing message              |
+| `source`    | String | Optional closing source/user          |
+
 ### ensure_group message
 `ensure_group` message creates and synchronizes group with given set of alarms.
 
