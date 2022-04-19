@@ -24,15 +24,6 @@
         scope: local
         value: 'Noc User {{ ansible_fqdn }}'
 
-    - name: set up safe directory
-      git_config:
-        name: safe.directory
-        repo: "{{ noc_root }}"
-        scope: local
-        value: "{{ noc_root }}"
-      become: true
-      become_user: "{{ noc_user }}"
-
   when:
     - noc_root_state.stat.exists is defined
     - not noc_root_state.stat.exists
