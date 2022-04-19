@@ -684,15 +684,20 @@ class AlarmApplication(ExtApplication):
         if not alarm.alarm_class.user_clearable:
             return {"status": False, "error": "Deny clear alarm by user"}
         if alarm.status == "A":
-            # Report message
-            alarm.log_message(f"Clear request from {request.user}: {msg}")
             # Send clear signal to the correlator
             fm_pool = alarm.managed_object.get_effective_fm_pool().name
             stream = f"dispose.{fm_pool}"
             num_partitions = asyncio.run(self.service.get_stream_partitions(stream))
             partition = int(alarm.managed_object.id) % num_partitions
             self.service.publish(
-                orjson.dumps({"$op": "clearid", "id": str(alarm.id)}),
+                orjson.dumps(
+                    {
+                        "$op": "clearid",
+                        "id": str(alarm.id),
+                        "message": msg,
+                        "source": request.user.username,
+                    }
+                ),
                 stream=stream,
                 partition=partition,
             )

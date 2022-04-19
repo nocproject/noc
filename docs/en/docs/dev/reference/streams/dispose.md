@@ -74,6 +74,8 @@ in the `$op` field. Unknown message types and malformed messages are discarded.
 | `$op`       | String | Equals to `clear`                     |
 | `id`        | String | Alarm id                              |
 | `timestamp` | String | Optional timestamp in ISO 8601 format |
+| `message`   | String | Optional closing message              |
+| `source`    | String | Optional closing source/user          |
 
 ### ensure_group message
 `ensure_group` message creates and synchronizes group with given set of alarms.

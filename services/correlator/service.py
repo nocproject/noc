@@ -791,7 +791,7 @@ class CorrelatorService(TornadoService):
         """
         # Fetch timestamp
         ts = parse_date(req.timestamp) if req.timestamp else datetime.datetime.now()
-        await self.clear_by_id(req.id, ts)
+        await self.clear_by_id(req.id, ts=ts, message=req.message, source=req.source)
 
     async def on_msg_ensure_group(self, req: EnsureGroupRequest) -> None:
         """
@@ -889,7 +889,11 @@ class CorrelatorService(TornadoService):
             await self.clear_by_reference(h_ref, ts=now)
 
     async def clear_by_id(
-        self, id: Union[str, bytes], ts: Optional[datetime.datetime] = None
+        self,
+        id: Union[str, bytes],
+        ts: Optional[datetime.datetime] = None,
+        message: Optional[str] = None,
+        source: Optional[str] = None,
     ) -> None:
         """
         Clear alarm by reference
@@ -902,15 +906,16 @@ class CorrelatorService(TornadoService):
             return
         # Clear alarm
         self.logger.info(
-            "[%s|%s] Clear alarm %s(%s) by id",
+            "[%s|%s] Clear alarm %s(%s) by id: %s",
             alarm.managed_object.name,
             alarm.managed_object.address,
             alarm.alarm_class.name,
             alarm.id,
+            message,
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm("Cleared by id")
+        alarm.clear_alarm(message or "Cleared by id", source=source)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 

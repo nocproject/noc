@@ -16,3 +16,5 @@ class ClearIdRequest(BaseModel):
     op: Literal["clearid"] = Field(None, alias="$op")
     id: str
     timestamp: Optional[str]
+    message: Optional[str]
+    source: Optional[str]
