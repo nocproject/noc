@@ -46,6 +46,8 @@
   command: ./noc collection sync
   args:
     chdir: "{{ noc_root }}"
+  environment:
+    PYTHONPATH: "{{ noc_root | dirname }}"
   become_user: "{{ noc_user }}"
   become: "True"
   tags:
