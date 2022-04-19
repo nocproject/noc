@@ -669,17 +669,6 @@ class EscalationSequence(BaseSequence):
             self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
-    def check_notify(self, esd_save) -> bool:
-        # Check configured TT System
-        tt_system = (
-            self.escalation.pre_reasons
-            or self.escalation.get_pre_reason(self.alarm.managed_object.tt_system)
-            if self.alarm.managed_object.tt_system
-            else None
-        )
-        if esd_save or (not esd_save and not tt_system):
-            return True
-
     def process(self) -> None:
         """
         Escalation logic. Raising StopSequence forces premature stop.
@@ -701,7 +690,6 @@ class EscalationSequence(BaseSequence):
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
             for esc_item in self.iter_escalation_items():
-
                 # Check global limits
                 # @todo: Move into escalator service
                 # @todo: Process per-ttsystem limits
@@ -719,14 +707,10 @@ class EscalationSequence(BaseSequence):
                     self.notify_escalated_consequences()
                 # Send notification
                 notify = self.notify(esc_item, ctx)
-                # If Create TT disable on Escalation
-                if not esc_item.create_tt:
-                    esd_save = True
-                #
                 if esc_item.stop_processing:
                     logger.debug("Stopping processing")
                     break
-            if self.escalation_doc.tt_id or (notify and self.check_notify(esd_save)):
+            if self.escalation_doc.tt_id or notify:
                 self.escalation_doc.save()
         # Check if alarm has been closed during escalation
         self.check_closed()
