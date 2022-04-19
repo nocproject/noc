@@ -28,7 +28,6 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
@@ -662,11 +661,11 @@ class EscalationSequence(BaseSequence):
         # @todo: Check maintenance for all consequences
         if not self.escalation_doc.leader.is_new:
             return
-        active_maintenance = Maintenance.get_object_maintenance(self.alarm.managed_object)
-        if not active_maintenance:
+        mnt_ids = self.alarm.managed_object.get_active_maintenances()
+        if not mnt_ids:
             return
-        for m in active_maintenance:
-            self.log_alarm(f"Object is under maintenance: {m.subject} ({m.start}-{m.stop})")
+        for m_id in mnt_ids:
+            self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
     def process(self) -> None:
@@ -680,12 +679,13 @@ class EscalationSequence(BaseSequence):
             self.logger.info("Nothing to escalate. Skipping")
             return
         self.escalation_doc = e_doc
+        # Check maintenance out-of-the-lock
+        self.check_maintenance()
         # Perform escalations
         with Span(client="escalator", sample=self.get_span_sample()) as ctx, self.lock.acquire(
             self.escalation_doc.get_lock_items()
         ):
             self.check_escalated()
-            self.alarm.managed_object.in_maintenance
             self.alarm.set_escalation_context()
             # Evaluate escalation chain
             for esc_item in self.iter_escalation_items():
@@ -696,10 +696,14 @@ class EscalationSequence(BaseSequence):
                 # Render escalation context
                 ctx = self.get_ctx()
                 # Escalate to TT
-                if esc_item.create_tt and self.can_escalate():
-                    if not self.is_already_escalated() and not self.is_under_maintenance():
-                        self.create_tt(esc_item, ctx)
-                        self.notify_escalated_consequences()
+                if (
+                    esc_item.create_tt
+                    and self.can_escalate()
+                    and not self.is_already_escalated()
+                    and not self.is_under_maintenance()
+                ):
+                    self.create_tt(esc_item, ctx)
+                    self.notify_escalated_consequences()
                 # Send notification
                 self.notify(esc_item, ctx)
                 #
