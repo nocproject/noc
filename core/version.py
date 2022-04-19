@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NOC components versions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,10 +10,10 @@ import os
 import sys
 import subprocess
 import platform
+from typing import Optional, Dict
 
 # NOC modules
 from noc.config import config
-from noc.core.comp import smart_text
 
 CHANGESET_LEN = 8
 BRAND_PATH = config.get_customized_paths("BRAND", prefer_custom=True)
@@ -37,7 +37,7 @@ class cachedproperty(object):
 
 class Version(object):
     @cachedproperty
-    def has_git(self):
+    def has_git(self) -> bool:
         """
         Check .git directory is exists and git executable is in $PATH
         :return:
@@ -48,70 +48,74 @@ class Version(object):
         return False
 
     @cachedproperty
-    def branch(self):
+    def branch(self) -> str:
         """
         Returns current branch
         :return:
         """
         if self.has_git:
-            return smart_text(
-                subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
-            )
-        else:
-            return ""
+            return subprocess.check_output(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"], encoding="utf-8"
+            ).strip()
+        return ""
 
     @cachedproperty
-    def changeset(self):
+    def changeset(self) -> str:
         """
         Returns current changeset
         :return:
         """
         if self.has_git:
-            return smart_text(subprocess.check_output(["git", "rev-parse", "HEAD"]))[:CHANGESET_LEN]
-        else:
-            return ""
+            return (subprocess.check_output(["git", "rev-parse", "HEAD"], encoding="utf-8"))[
+                :CHANGESET_LEN
+            ]
+        return ""
 
     @cachedproperty
-    def version(self):
-        if self.has_git:
-            v = smart_text(
-                subprocess.check_output(
-                    ["git", "describe", "--tags", "--abbrev=%d" % CHANGESET_LEN]
-                )
-            )
-            if "-" not in v:
-                return v.strip()
-            r = v.rsplit("-", 2)
-            if len(r) < 3:
-                return v.strip()
-            v, n, cs = r
-            kw = {
-                "version": v,
-                "branch": self.branch,
-                "number": n,
-                "changeset": cs[1 : CHANGESET_LEN + 1],
-            }
-            return config.version_format % kw
-        else:
-            # Productive, get version from VERSION file
+    def version(self) -> str:
+        def static_version() -> str:
+            """
+            Read VERSION file
+            """
             with open("VERSION") as f:
                 return f.read().strip()
 
+        if not self.has_git:
+            return static_version()
+        try:
+            v = subprocess.check_output(
+                ["git", "describe", "--tags", f"--abbrev={CHANGESET_LEN}"], encoding="utf-8"
+            )
+        except subprocess.CalledProcessError:
+            return static_version()  # Git is broken, fallback
+        if "-" not in v:
+            return v.strip()
+        r = v.rsplit("-", 2)
+        if len(r) < 3:
+            return v.strip()
+        v, n, cs = r
+        kw = {
+            "version": v,
+            "branch": self.branch,
+            "number": n,
+            "changeset": cs[1 : CHANGESET_LEN + 1],
+        }
+        return config.version_format % kw
+
     @cachedproperty
-    def brand(self):
+    def brand(self) -> str:
         for p in BRAND_PATH:
             if os.path.exists(p):
                 with open(p) as f:
                     return f.read().strip()
-            else:
-                return config.brand
+        return config.brand
 
     @cachedproperty
-    def os_version(self):
+    def os_version(self) -> str:
         return " ".join(os.uname())
 
     @cachedproperty
-    def os_brand(self):
+    def os_brand(self) -> Optional[str]:
         o = os.uname()[0].lower()
         if o == "linux":
             # os-release
@@ -134,7 +138,7 @@ class Version(object):
                     return f.readline().strip()
             # try lsb_release -d
             try:
-                b = subprocess.check_output(["lsb_release", "-d"])
+                b = subprocess.check_output(["lsb_release", "-d"], encoding="utf-8")
                 return b.split(":", 1)[1].strip()
             except OSError:
                 pass
@@ -148,11 +152,11 @@ class Version(object):
         return None
 
     @cachedproperty
-    def python_version(self):
+    def python_version(self) -> str:
         return sys.version.split()[0]
 
     @cachedproperty
-    def process(self):
+    def process(self) -> str:
         argv = [v for v in sys.argv if v]
         if not argv:
             return sys.executable
@@ -161,7 +165,7 @@ class Version(object):
         return argv[0]
 
     @cachedproperty
-    def package_versions(self):
+    def package_versions(self) -> Dict[str, str]:
         return {"Python": self.python_version}
 
 
