@@ -182,7 +182,9 @@ class ToolsAppplication(Application):
                 try:
                     data = dns.zone.from_xfr(
                         dns.query.xfr(
-                            str(form.cleaned_data["ns"]).rstrip("."), form.cleaned_data["zone"], lifetime=5.0
+                            str(form.cleaned_data["ns"]).rstrip("."),
+                            form.cleaned_data["zone"],
+                            lifetime=5.0,
                         )
                     )
                 except dns.exception.Timeout as e:
