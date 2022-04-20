@@ -262,16 +262,18 @@ class CLI(BaseCLI):
                         self.profile.send_on_syntax_error, self.command, error_text
                     )
                 self.error = self.script.CLISyntaxError(error_text)
-                break
+                buffer = b""
+                await self.send(cmd_stop)
             # Then check for operation error
             if (
                 self.profile.rx_pattern_operation_error_str
                 and self.profile.rx_pattern_operation_error.search(buffer)
             ):
                 self.error = self.script.CLIOperationError(buffer)
-                break
+                buffer = b""
+                await self.send(cmd_stop)
             # Parse all possible objects
-            while buffer:
+            while buffer and not self.error:
                 pr = parser(smart_text(buffer, errors="replace"))
                 if not pr:
                     break  # No new objects
