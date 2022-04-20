@@ -13,9 +13,9 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixController", {
     onClose: function() {
         this.fireViewEvent("ipIPAMPrefixListClose");
     },
-    // onTools: function() {
-    //     console.warn("not implemented");
-    // }
+    onTools: function() {
+        console.warn("not implemented");
+    },
     onAddAddress: function() {
         this.fireViewEvent("ipIPAMAddressFormNew", {address: "create_new"});
     },

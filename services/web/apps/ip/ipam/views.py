@@ -324,7 +324,7 @@ class IPAMApplication(ExtApplication):
                     [
                         {"address": z[0], "isFree": True}
                         for z in spot
-                        if str(z[0]) not in allocated_addresses
+                        if str(z[0]) not in allocated_addresses and z[0] != None
                     ]
                     if spot
                     else []

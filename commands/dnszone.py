@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import dns
 import argparse
 import re
-import subprocess
 from itertools import zip_longest
 
 # NOC modules
@@ -22,9 +22,8 @@ from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
 from noc.core.validators import is_int
 from noc.core.dns.rr import RR
-from noc.config import config
 from noc.core.text import split_alnum
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -72,9 +71,6 @@ class Command(BaseCommand):
             dest="transfer_zone",
             action="store",
             help="DNS Zone name to transfer",
-        ),
-        import_parser.add_argument(
-            "--source", dest="source", action="store", help="Source address to issue zone transfer"
         )
         self.print((import_parser.print_help()))
 
@@ -127,7 +123,6 @@ class Command(BaseCommand):
         dry_run=False,
         zone_profile=None,
         address_profile=None,
-        source=None,
         transfer_zone=None,
         nameserver=None,
     ):
@@ -152,8 +147,6 @@ class Command(BaseCommand):
                     address_profile=ap,
                 )
         if axfr:
-            if not source:
-                self.die("--source is not set")
             if not transfer_zone:
                 self.die("--transfer_zone is not set")
             if not nameserver:
@@ -167,20 +160,15 @@ class Command(BaseCommand):
                 address_profile=ap,
                 transfer_zone=transfer_zone,
                 nameserver=nameserver,
-                source_address=source,
             )
 
-    def load_axfr(self, nameserver, transfer_zone, source_address):
-        opts = []
-        opts += ["-b", source_address]
-        pipe = subprocess.Popen(
-            [config.path.dig] + opts + ["axfr", "@%s" % nameserver, transfer_zone],
-            shell=False,
-            stdout=subprocess.PIPE,
-        ).stdout
-        data = pipe.read()
-        pipe.close()
-        return smart_text(smart_bytes(data)).split("\n")
+    def load_axfr(self, nameserver, transfer_zone):
+        try:
+            data = dns.zone.from_xfr(dns.query.xfr(nameserver, transfer_zone, lifetime=5.0))
+        except dns.exception.Timeout as e:
+            self.print("Error:", e)
+            return
+        return data
 
     def dns_zone(self, zone, zone_profile, dry_run=False, clean=False):
         z = DNSZone.get_by_name(zone)
@@ -207,6 +195,17 @@ class Command(BaseCommand):
                     rr.delete()
         return z
 
+    def resolve_dns(self, name):
+        types = ["A", "AAAA", "PTR"]
+        for type in types:
+            try:
+                results = dns.resolver.resolve(qname=name, rdtype=type, lifetime=2)
+            except dns.exception.DNSException as e:
+                print(f"Dns resolution Error: {e} ({name} {type})")
+                continue
+            if results:
+                return results
+
     def import_zone(
         self,
         path=None,
@@ -215,7 +214,6 @@ class Command(BaseCommand):
         address_profile=None,
         transfer_zone=None,
         nameserver=None,
-        source_address=None,
         dry_run=False,
         force=False,
         clean=False,
@@ -291,7 +289,7 @@ class Command(BaseCommand):
                         if not dry_run:
                             zrr.save()
         if axfr:
-            data = self.load_axfr(nameserver, transfer_zone, source_address)
+            data = self.load_axfr(nameserver, transfer_zone)
             zone = self.from_idna(transfer_zone)
             z = self.dns_zone(zone, zone_profile, dry_run, clean)
             # Populate zone
@@ -307,46 +305,41 @@ class Command(BaseCommand):
                 raise CommandError("IPv6 reverse import is not implemented")
             else:
                 raise CommandError("Unknown zone type")
-            for row in data:
-                row = row.strip()
-                if row == "" or row.startswith(";"):
+            for host in data:
+                if str(host) == "@":
                     continue
-                row = row.split()
-
-                if len(row) != 5 or row[2] != "IN" or row[3] not in ("A", "AAAA", "PTR"):
+                r_host = f"{str(host)}.{zone}"
+                A_records = self.resolve_dns(r_host)
+                if not A_records:
                     continue
-                if row[3] in ("A", "AAAA"):
-                    name = row[0]
-                    if name.endswith(zz):
-                        name = name[:-lz]
-                    if name.endswith("."):
-                        name = name[:-1]
-                    self.create_address(
-                        zone,
-                        vrf,
-                        row[4],
-                        "%s.%s" % (name, zone) if name else zone,
-                        address_profile,
-                        dry_run=dry_run,
-                        force=force,
-                    )
-                if row[3] == "PTR":
-                    name = row[4]
-                    if name.endswith(zz):
-                        name = name[:-lz]
-                    if name.endswith("."):
-                        name = name[:-1]
-                    # @todo: IPv6
-                    if "." in row[0]:
-                        address = ".".join(reversed(row[0].split(".")[:-3]))
-                    else:
-                        address = zp + name
-                    fqdn = row[4]
-                    if fqdn.endswith("."):
-                        fqdn = fqdn[:-1]
-                    self.create_address(
-                        zone, vrf, address, fqdn, address_profile, dry_run=dry_run, force=force
-                    )
+                for item in A_records:
+                    if A_records.rdtype.name in ("A", "AAAA"):
+                        self.create_address(
+                            zone,
+                            vrf,
+                            str(item),
+                            r_host,
+                            address_profile,
+                            dry_run=dry_run,
+                            force=force,
+                        )
+                    if A_records.rdtype.name == "PTR":
+                        name = str(item)
+                        if name.endswith(zz):
+                            name = name[:-lz]
+                        if name.endswith("."):
+                            name = name[:-1]
+                        # @todo: IPv6
+                        if "." in r_host:
+                            address = ".".join(reversed(r_host.split(".")[:4]))
+                        else:
+                            address = zp + name
+                        fqdn = str(item)
+                        if fqdn.endswith("."):
+                            fqdn = fqdn[:-1]
+                        self.create_address(
+                            zone, vrf, address, fqdn, address_profile, dry_run=dry_run, force=force
+                        )
 
     def create_address(self, zone, vrf, address, fqdn, address_profile, dry_run=False, force=False):
         """

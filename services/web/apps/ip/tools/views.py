@@ -121,7 +121,7 @@ class ToolsAppplication(Application):
         :return:
         """
 
-        def resolveDNS(name):
+        def resolve_dns(name):
             types = ["A", "AAAA", "PTR"]
             for type in types:
                 try:
@@ -141,16 +141,12 @@ class ToolsAppplication(Application):
                 if str(host) == "@":
                     continue
                 r_host = f"{str(host)}.{zone}"
-                A_records = resolveDNS(r_host)
+                A_records = resolve_dns(r_host)
                 if not A_records:
                     continue
                 for item in A_records:
                     if A_records.rdtype.name in ("A", "AAAA"):
-                        name = str(item)
-                        if name.endswith(zz):
-                            name = name[:-lz]
-                        if name.endswith("."):
-                            name = name[:-1]
+                        name = r_host
                     if A_records.rdtype.name == "PTR":
                         name = str(item)
                         if name.endswith(zz):
@@ -186,7 +182,7 @@ class ToolsAppplication(Application):
                 try:
                     data = dns.zone.from_xfr(
                         dns.query.xfr(
-                            str(form.cleaned_data["ns"]).rstrip("."), form.cleaned_data["zone"]
+                            str(form.cleaned_data["ns"]).rstrip("."), form.cleaned_data["zone"], lifetime=5.0
                         )
                     )
                 except dns.exception.Timeout as e:
