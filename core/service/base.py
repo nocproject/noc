@@ -400,6 +400,8 @@ class BaseService(object):
         self.logger.info("Deactivating")
         # Shutdown API
         await self.shutdown_api()
+        # Shutdown subscriptions
+        await self.shutdown_subscriptions()
         # Release registration
         if self.dcs:
             self.logger.info("Deregistration")
@@ -411,8 +413,6 @@ class BaseService(object):
                 await self.scheduler.shutdown()
             except asyncio.TimeoutError:
                 self.logger.info("Timed out when shutting down scheduler")
-        # Shutdown subscriptions
-        await self.shutdown_subscriptions()
         # Shutdown executors
         await self.shutdown_executors()
         # Custom deactivation
