@@ -15,7 +15,6 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsModel", {
     data: {
         ns: null,
         zone: null,
-        source: null,
     },
     formulas: {
         isValid: function(get) {

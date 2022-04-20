@@ -8,10 +8,12 @@
 # Python Modules
 import csv
 import dns
+import orjson
 from io import StringIO
 
 # Third-party modules
 from django import forms
+from django.core.exceptions import ValidationError
 
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
@@ -19,6 +21,8 @@ from noc.core.ip import IP, IPv4
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
+from noc.dns.models.dnsserver import DNSServer
+from noc.dns.models.dnszone import DNSZone
 from noc.core.forms import NOCForm
 from noc.core.translation import ugettext as _
 
@@ -99,12 +103,6 @@ class ToolsAppplication(Application):
             help_text=_("Name server IP address. NS must have zone transfer enabled for NOC host"),
         )
         zone = forms.CharField(label=_("Zone"), help_text=_("DNS Zone name to transfer"))
-        source_address = forms.GenericIPAddressField(
-            label=_("Source Address"),
-            required=False,
-            protocol="IPv4",
-            help_text=_("Source address to issue zone transfer"),
-        )
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/upload_axfr/$",
@@ -123,7 +121,6 @@ class ToolsAppplication(Application):
 
         def upload_axfr(data, zone):
             p = IP.prefix(prefix.prefix)
-            # z = self.dns_zone(zone, zone_profile, dry_run, clean)
             count = 0
             zz = zone + "."
             lz = len(zz)
@@ -161,34 +158,28 @@ class ToolsAppplication(Application):
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denined"))
-        if request.POST:
-            form = self.AXFRForm(request.POST)
-            if form.is_valid():
-                try:
-                    _zone = dns.zone.from_xfr(
-                        dns.query.xfr(
-                            str(form.cleaned_data["ns"]).rstrip("."),
-                            form.cleaned_data["zone"],
-                            lifetime=5.0,
-                        )
-                    )
-                    data = "\n".join(
-                        _zone[z_node].to_text(z_node)
-                        for z_node in _zone.nodes.keys()
-                        if "@" not in _zone[z_node].to_text(z_node)
-                    )
-                except dns.exception.DNSException as e:
-                    self.message_user(request, e)
-                    return
-                else:
-                    count = upload_axfr(data, form.cleaned_data["zone"])
-                self.message_user(
-                    request,
-                    _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
+        body = orjson.loads(request.body)
+        zone = DNSZone.get_by_id(body["zone"])
+        server = DNSServer.get_by_id(body["ns"])
+        try:
+            _zone = dns.zone.from_xfr(
+                dns.query.xfr(
+                    server.ip,
+                    zone.name,
+                    lifetime=5.0,
                 )
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
+            )
+            data = "\n".join(
+                _zone[z_node].to_text(z_node)
+                for z_node in _zone.nodes.keys()
+                if "@" not in _zone[z_node].to_text(z_node)
+            )
+        except dns.exception.DNSException as e:
+            return ValidationError(e.msg)
         else:
-            form = self.AXFRForm()
-        return self.render(
-            request, "index.html", vrf=vrf, afi=afi, prefix=prefix, upload_ips_axfr_form=form
+            count = upload_axfr(data, zone.name)
+        self.message_user(
+            request,
+            _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
         )
+        return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)

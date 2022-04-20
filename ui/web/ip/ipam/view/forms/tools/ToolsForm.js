@@ -4,6 +4,7 @@
 // Copyright (C) 2007-2022 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+
 console.debug("Defining NOC.ip.ipam.view.forms.tools.ToolsForm");
 
 Ext.define("NOC.ip.ipam.view.forms.tools.ToolsForm", {
@@ -15,6 +16,8 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsForm", {
         "NOC.core.ComboBox",
         "NOC.ip.ipam.view.forms.tools.ToolsController",
         "NOC.ip.ipam.view.forms.tools.ToolsModel",
+        "NOC.dns.dnszone.LookupField",
+        "NOC.dns.dnsserver.LookupField",
     ],
 
     layout: 'anchor',
@@ -35,29 +38,39 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsForm", {
             }
         },
         {
-            fieldLabel: __("NS"),
             name: "ns",
+            xtype: "dns.dnsserver.LookupField",
+            fieldLabel: __("Profile"),
             allowBlank: false,
             bind: {
                 value: "{ns}"
             }
         },
+        //{
+        //    fieldLabel: __("NS"),
+        //    name: "ns",
+        //    allowBlank: false,
+        //    bind: {
+        //        value: "{ns}"
+        //    }
+        //},
         {
-            fieldLabel: __("Zone"),
             name: "zone",
+            xtype: "dns.dnszone.LookupField",
+            fieldLabel: __("Zone"),
             allowBlank: false,
             bind: {
                 value: "{zone}"
             }
         },
-        {
-            fieldLabel: __("Source Address"),
-            name: "source",
-            allowBlank: true,
-            bind: {
-                value: "{source}"
-            }
-        }
+        //{
+        //    fieldLabel: __("Zone"),
+        //    name: "zone",
+        //    allowBlank: false,
+        //    bind: {
+        //        value: "{zone}"
+        //    }
+        //}
     ],
 
     tbar: [
