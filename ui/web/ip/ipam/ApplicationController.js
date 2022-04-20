@@ -74,6 +74,12 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
     onVRFFormClose: function() {
         this.openVRFList();
     },
+    onToolsOpen: function() {
+        var prefix = this.getViewModel().get("prefix");
+        url = ("tools/" + prefix.vrf + "/" + prefix.afi + "/" + prefix.name + "/");
+        this.loadDetail("/ip/", url);
+
+    },
     onPrefixContentsOpen: function(grid, params) {
         var url = "contents/" + params.id + "/";
         if(params.hasOwnProperty("afi")) {

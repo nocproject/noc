@@ -58,6 +58,7 @@ Ext.define("NOC.ip.ipam.Application", {
                 ipIPAMVRFListOpen: "openVRFList",
                 ipIPAMAddressFormEdit: "onAddressFormEdit",
                 ipIPAMAddressFormNew: "onAddressFormNew",
+                ipIPAMTools: "onToolsOpen"
             }
         },
         {
