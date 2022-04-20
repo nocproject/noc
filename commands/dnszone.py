@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Import DNS Zone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -164,9 +164,16 @@ class Command(BaseCommand):
 
     def load_axfr(self, nameserver, transfer_zone):
         try:
-            data = dns.zone.from_xfr(dns.query.xfr(nameserver, transfer_zone, lifetime=5.0))
-        except dns.exception.Timeout as e:
-            self.print("Error:", e)
+            _zone = dns.zone.from_xfr(
+                dns.query.xfr(str(nameserver).rstrip("."), transfer_zone, lifetime=5.0)
+            )
+            data = "\n".join(
+                _zone[z_node].to_text(z_node)
+                for z_node in _zone.nodes.keys()
+                if "@" not in _zone[z_node].to_text(z_node)
+            )
+        except dns.exception.DNSException as e:
+            self.print("ERROR:", e)
             return
         return data
 
@@ -195,17 +202,6 @@ class Command(BaseCommand):
                     rr.delete()
         return z
 
-    def resolve_dns(self, name):
-        types = ["A", "AAAA", "PTR"]
-        for type in types:
-            try:
-                results = dns.resolver.resolve(qname=name, rdtype=type, lifetime=2)
-            except dns.exception.DNSException as e:
-                print(f"Dns resolution Error: {e} ({name} {type})")
-                continue
-            if results:
-                return results
-
     def import_zone(
         self,
         path=None,
@@ -218,9 +214,9 @@ class Command(BaseCommand):
         force=False,
         clean=False,
     ):
-        self.print("Loading zone file '%s'" % path)
-        self.print("Parsing zone file using BIND parser")
         if path:
+            self.print("Loading zone file '%s'" % path)
+            self.print("Parsing zone file using BIND parser")
             with open(path) as f:
                 rrs = self.iter_bind_zone_rr(f)
                 try:
@@ -289,57 +285,45 @@ class Command(BaseCommand):
                         if not dry_run:
                             zrr.save()
         if axfr:
+            self.print("Loading zone: %s by AXFR from server: %s" % (transfer_zone, nameserver))
             data = self.load_axfr(nameserver, transfer_zone)
+            if data is None:
+                self.print("No result")
+                return
             zone = self.from_idna(transfer_zone)
             z = self.dns_zone(zone, zone_profile, dry_run, clean)
             # Populate zone
             vrf = VRF.get_global()
-            zz = zone + "."
-            lz = len(zz)
-            if z.is_forward:
-                zp = None
-            elif z.is_reverse_ipv4:
-                # Calculate prefix for reverse zone
-                zp = ".".join(reversed(zone[:-13].split("."))) + "."
-            elif z.is_reverse_ipv6:
-                raise CommandError("IPv6 reverse import is not implemented")
-            else:
+            if not z.is_forward or not z.is_reverse_ipv4 or not z.is_reverse_ipv6:
                 raise CommandError("Unknown zone type")
-            for host in data:
-                if str(host) == "@":
+            for row in data.splitlines():
+                row = row.strip().split()
+                if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
                     continue
-                r_host = f"{str(host)}.{zone}"
-                A_records = self.resolve_dns(r_host)
-                if not A_records:
+                if row[3] == "PTR":
+                    host = dns.name.from_text(f"{row[0]}.{zone}.")
+                    ip = dns.reversename.to_address(host)
+                    fqdn = row[4]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
+                elif row[3] in ("A", "AAAA"):
+                    fqdn = row[0]
+                    if fqdn.endswith(zz):
+                        fqdn = fqdn[:-lz]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
+                    ip = row[4]
+                else:
                     continue
-                for item in A_records:
-                    if A_records.rdtype.name in ("A", "AAAA"):
-                        self.create_address(
-                            zone,
-                            vrf,
-                            str(item),
-                            r_host,
-                            address_profile,
-                            dry_run=dry_run,
-                            force=force,
-                        )
-                    if A_records.rdtype.name == "PTR":
-                        name = str(item)
-                        if name.endswith(zz):
-                            name = name[:-lz]
-                        if name.endswith("."):
-                            name = name[:-1]
-                        # @todo: IPv6
-                        if "." in r_host:
-                            address = ".".join(reversed(r_host.split(".")[:4]))
-                        else:
-                            address = zp + name
-                        fqdn = str(item)
-                        if fqdn.endswith("."):
-                            fqdn = fqdn[:-1]
-                        self.create_address(
-                            zone, vrf, address, fqdn, address_profile, dry_run=dry_run, force=force
-                        )
+                self.create_address(
+                    zone,
+                    vrf,
+                    ip,
+                    fqdn,
+                    address_profile,
+                    dry_run=dry_run,
+                    force=force,
+                )
 
     def create_address(self, zone, vrf, address, fqdn, address_profile, dry_run=False, force=False):
         """

@@ -121,49 +121,34 @@ class ToolsAppplication(Application):
         :return:
         """
 
-        def resolve_dns(name):
-            types = ["A", "AAAA", "PTR"]
-            for type in types:
-                try:
-                    results = dns.resolver.resolve(qname=name, rdtype=type)
-                except dns.exception.DNSException as e:
-                    print(f"Dns resolution Error: {e} ({name} {type})")
-                    continue
-                if results:
-                    return results
-
         def upload_axfr(data, zone):
             p = IP.prefix(prefix.prefix)
+            # z = self.dns_zone(zone, zone_profile, dry_run, clean)
             count = 0
             zz = zone + "."
             lz = len(zz)
-            for host in data:
-                if str(host) == "@":
+            for row in data.splitlines():
+                row = row.strip().split()
+                if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
                     continue
-                r_host = f"{str(host)}.{zone}"
-                A_records = resolve_dns(r_host)
-                if not A_records:
-                    continue
-                for item in A_records:
-                    if A_records.rdtype.name in ("A", "AAAA"):
-                        name = r_host
-                    if A_records.rdtype.name == "PTR":
-                        name = str(item)
-                        if name.endswith(zz):
-                            name = name[:-lz]
-                        if name.endswith("."):
-                            name = name[:-1]
-                        # @todo: IPv6
-                        if "." in r_host:
-                            address = ".".join(reversed(r_host.split(".")[:4]))
-                        fqdn = str(item)
-                        if fqdn.endswith("."):
-                            fqdn = fqdn[:-1]
+                if row[3] == "PTR":
+                    host = dns.name.from_text(f"{row[0]}.{zone}.")
+                    ip = dns.reversename.to_address(host)
+                    fqdn = row[4]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
+                elif row[3] in ("A", "AAAA"):
+                    fqdn = row[0]
+                    if fqdn.endswith(zz):
+                        fqdn = fqdn[:-lz]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
+                    ip = row[4]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if not p.contains(IPv4(address)):
+                if not p.contains(IPv4(ip)):
                     continue
-                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=address)
+                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
                 if a.fqdn != fqdn:
                     a.fqdn = fqdn
                     changed = True
@@ -180,14 +165,19 @@ class ToolsAppplication(Application):
             form = self.AXFRForm(request.POST)
             if form.is_valid():
                 try:
-                    data = dns.zone.from_xfr(
+                    _zone = dns.zone.from_xfr(
                         dns.query.xfr(
                             str(form.cleaned_data["ns"]).rstrip("."),
                             form.cleaned_data["zone"],
                             lifetime=5.0,
                         )
                     )
-                except dns.exception.Timeout as e:
+                    data = "\n".join(
+                        _zone[z_node].to_text(z_node)
+                        for z_node in _zone.nodes.keys()
+                        if "@" not in _zone[z_node].to_text(z_node)
+                    )
+                except dns.exception.DNSException as e:
                     self.message_user(request, e)
                     return
                 else:
