@@ -35,7 +35,6 @@
     packages:
       - postgresql{{ postgres_version|replace(".","") }}-server
       - postgresql{{ postgres_version|replace(".","") }}-contrib
-      - postgresql{{ postgres_version|replace(".","") }}-plpython
       - python-psycopg2
   environment:
     http_proxy: "{{ http_proxy }}"
