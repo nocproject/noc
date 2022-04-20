@@ -30,6 +30,11 @@ Ext.define("NOC.vc.vlanfilter.Model", {
         {
             name: "description",
             type: "string"
-        }
+        },
+        {
+            name: "match_labels",
+            type: "auto",
+            persist: false
+        },
     ]
 });

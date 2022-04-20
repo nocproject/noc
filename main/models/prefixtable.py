@@ -6,8 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
-from typing import Union, List
+from typing import Union, List, Tuple, Iterable
 from django.db import models
 
 # NOC Modules
@@ -15,14 +14,14 @@ from noc.core.model.base import NOCModel
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
-from noc.main.models.label import Label
+from noc.core.translation import ugettext as _
 
 
-@Label.match_labels(category="prefixfilter")
 @on_delete_check(
     check=[
         # ("inv.InterfaceClassificationMatch", "prefix_table"),
-        ("sa.ManagedObjectSelector", "filter_prefix")
+        ("sa.ManagedObjectSelector", "filter_prefix"),
+        ("main.Label", "match_prefixfilter.prefix_table"),
     ],
     clean_lazy_labels="prefixfilter",
 )
@@ -63,7 +62,9 @@ class PrefixTable(NOCModel):
         return self.match(other)
 
     @classmethod
-    def iter_lazy_labels(cls, prefixes: Union[str, List[str]]):
+    def iter_match_prefix(
+        cls, prefixes: Union[str, List[str]]
+    ) -> Iterable[Tuple["PrefixTable", str]]:
         if isinstance(prefixes, str):
             prefixes = [prefixes]
         pp = [IP.prefix(prefix) for prefix in prefixes]
@@ -71,7 +72,12 @@ class PrefixTable(NOCModel):
             where=[" OR ".join(["%s <<= prefix"] * len(prefixes))], params=prefixes
         )
         for pt in match_prefixes:
-            yield f"noc::prefixfilter::{pt.table.name}::<"
+            yield pt.table, "<"
+
+    @classmethod
+    def iter_lazy_labels(cls, prefixes: Union[str, List[str]]):
+        for pt, condition in cls.iter_match_prefix(prefixes):
+            yield f"noc::prefixfilter::{pt.name}::{condition}"
 
 
 class PrefixTablePrefix(NOCModel):

@@ -17,8 +17,8 @@ class VCFilterApplication(ExtModelApplication):
     VCFilter application
     """
 
-    title = _("VC Filter")
-    menu = [_("Setup"), _("VC Filters")]
+    title = _("VC Filter (Replaced VLAN Filter)")
+    menu = [_("Setup"), _("VC Filters (Replaced VLAN Filter)")]
     model = VCFilter
 
     def lookup_vc(self, q, name, value):
