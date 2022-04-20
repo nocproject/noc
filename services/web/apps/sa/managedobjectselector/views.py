@@ -21,8 +21,8 @@ class ManagedObjectSelectorApplication(ExtModelApplication):
     ManagedObjectSelector application
     """
 
-    title = _("Managed Object Selector")
-    menu = [_("Setup"), _("Managed Object Selector")]
+    title = _("Managed Object Selector (Deprecated by Resource Group)")
+    menu = [_("Setup"), _("Managed Object Selector (Deprecated by Resource Group)")]
     model = ManagedObjectSelector
     query_fields = ["name__icontains", "description__icontains"]
     attrs = ModelInline(ManagedObjectSelectorByAttribute)

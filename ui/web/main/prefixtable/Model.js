@@ -22,6 +22,11 @@ Ext.define("NOC.main.prefixtable.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "match_labels",
+            type: "auto",
+            persist: false
         }
     ]
 });

@@ -16,14 +16,12 @@ from mongoengine.fields import StringField, IntField, ListField, ReferenceField
 from noc.config import config
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.model.decorator import on_delete
-from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.project.models.project import Project
 from noc.core.change.decorator import change
 from noc.sa.models.service import Service
 from noc.vc.models.l2domain import L2Domain
-from noc.vc.models.vcfilter import VCFilter
 from noc.main.models.label import Label
 from .forwardinginstance import ForwardingInstance
 from .interface import Interface
@@ -156,19 +154,19 @@ class SubInterface(Document):
 
     @classmethod
     def can_set_label(cls, label):
-        return False
+        return Label.get_effective_setting(label, setting="enable_interface")
 
     @classmethod
     def iter_effective_labels(cls, instance: "SubInterface") -> Iterable[List[str]]:
         if instance.tagged_vlans:
-            lazy_tagged_vlans_labels = list(
-                VCFilter.iter_lazy_labels(instance.tagged_vlans, "tagged")
+            yield Label.get_effective_vlanfilter_labels(
+                "subinterface_tagged_vlans", instance.tagged_vlans
             )
-            yield Label.ensure_labels(lazy_tagged_vlans_labels, enable_interface=True)
         if instance.untagged_vlan:
-            lazy_untagged_vlans_labels = list(
-                VCFilter.iter_lazy_labels([instance.untagged_vlan], "untagged")
+            yield Label.get_effective_vlanfilter_labels(
+                "subinterface_untagged_vlan", [instance.untagged_vlan]
             )
-            yield Label.ensure_labels(lazy_untagged_vlans_labels, enable_interface=True)
         if instance.ipv4_addresses:
-            yield list(PrefixTable.iter_lazy_labels(instance.ipv4_addresses))
+            yield Label.get_effective_prefixfilter_labels(
+                "subinterface_ipv4_addresses", instance.ipv4_addresses
+            )

@@ -2020,7 +2020,7 @@ class ManagedObject(NOCModel):
             lazy_platform_labels = list(Platform.iter_lazy_labels(instance.platform))
             yield Label.ensure_labels(lazy_platform_labels, enable_managedobject=True)
         if instance.address:
-            yield list(PrefixTable.iter_lazy_labels(instance.address))
+            yield Label.get_effective_prefixfilter_labels("managedobject_address", instance.address)
             yield Label.get_effective_regex_labels("managedobject_address", instance.address)
         if instance.description:
             yield Label.get_effective_regex_labels(
@@ -2287,5 +2287,4 @@ from .objectnotification import ObjectNotification
 from .action import Action
 from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
-from noc.main.models.prefixtable import PrefixTable
 from noc.ip.models.vrf import VRF

@@ -12,14 +12,16 @@ Ext.define("NOC.main.label.Application", {
         "NOC.main.label.Model",
         "NOC.main.remotesystem.LookupField",
         "Ext.ux.form.ColorField",
-        "Ext.ux.form.GridField"
+        "Ext.ux.form.GridField",
+        "NOC.main.prefixtable.LookupField",
+        "NOC.vc.vlanfilter.LookupField"
     ],
     model: "NOC.main.label.Model",
     search: true,
     viewModel: {
         data: {
             is_builtin: false,
-            is_regex: false,
+            is_matching: false,
             is_scoped: false,
             is_wildcard: false,
         },
@@ -272,10 +274,10 @@ Ext.define("NOC.main.label.Application", {
                     },
                 },
                 {
-                    name: "is_regex",
+                    name: "is_matching",
                     xtype: "checkbox",
                     bind: {
-                        value: "{is_regex}",
+                        value: "{is_matching}",
                         disabled: "{isEnableDisableRx}"
                     },
                     boxLabel: __("Regexp Label"),
@@ -285,7 +287,7 @@ Ext.define("NOC.main.label.Application", {
                     xtype: "gridfield",
                     fieldLabel: __("Regex Label"),
                     bind: {
-                        disabled: "{!is_regex}"
+                        disabled: "{!is_matching}"
                     },
                     columns: [
                         {
@@ -334,6 +336,116 @@ Ext.define("NOC.main.label.Application", {
                                 "interface_name": __("Interface Name"),
                                 "interface_description": __("Interface Description"),
                                 "sensor_local_id": __("Sensor Local ID")
+                            })
+                        },
+                    ]
+                },
+                {
+                    name: "match_prefixfilter",
+                    xtype: "gridfield",
+                    fieldLabel: __("Prefix Label"),
+                    bind: {
+                        disabled: "{!is_matching}"
+                    },
+                    columns: [
+                        {
+                            text: __("Prefix"),
+                            dataIndex: "prefix_table",
+                            editor: {
+                                xtype: "main.prefixtable.LookupField",
+                                allowBlank: false
+                            },
+                            renderer: NOC.render.Lookup("prefix_table"),
+                            width: 250
+                        },
+                        {
+                            text: __("Condition"),
+                            dataIndex: "condition",
+                            width: 200,
+                            allowBlank: false,
+                            editor: {
+                                xtype: "combobox",
+                                defaultValue: "any",
+                                store: [
+                                    ["all", __("ALL")],
+                                    ["any", __("ANY")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "all": __("ALL"),
+                                "any": __("ANY")
+                            })
+                        },
+                        {
+                            text: __("Prefix Scope"),
+                            dataIndex: "scope",
+                            width: 200,
+                            allowBlank: false,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["managedobject_address", __("Managed Object Address")],
+                                    ["subinterface_ipv4_addresses", __("SubInterface IP Address")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "managedobject_address": __("Managed Object Address"),
+                                "subinterface_ipv4_addresses": __("SubInterface IP Address")
+                            })
+                        },
+                    ]
+                },
+                {
+                    name: "match_vlanfilter",
+                    xtype: "gridfield",
+                    fieldLabel: __("VLAN Label"),
+                    bind: {
+                        disabled: "{!is_matching}"
+                    },
+                    columns: [
+                        {
+                            text: __("VLAN Filter"),
+                            dataIndex: "vlan_filter",
+                            width: 200,
+                            editor: {
+                                xtype: "vc.vlanfilter.LookupField",
+                                allowBlank: false
+                            },
+                            renderer: NOC.render.Lookup("vlan_filter")
+                        },
+                        {
+                            text: __("Condition"),
+                            dataIndex: "condition",
+                            width: 200,
+                            allowBlank: false,
+                            editor: {
+                                xtype: "combobox",
+                                defaultValue: "any",
+                                store: [
+                                    ["all", __("ALL")],
+                                    ["any", __("ANY")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "all": __("ALL"),
+                                "any": __("ANY")
+                            })
+                        },
+                        {
+                            text: __("Prefix Scope"),
+                            dataIndex: "scope",
+                            width: 200,
+                            allowBlank: false,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["subinterface_tagged_vlans", __("SubInterface Tagged VLANs")],
+                                    ["subinterface_untagged_vlan", __("SubInterface Untagged VLAN")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "subinterface_tagged_vlans": __("SubInterface Tagged VLANs"),
+                                "subinterface_untagged_vlan": __("SubInterface Untagged VLAN")
                             })
                         },
                     ]
@@ -427,7 +539,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Managed Object Profile"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -435,7 +547,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Agent"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -443,7 +555,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Firmware Policy"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -451,7 +563,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Service"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -459,7 +571,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Service Profile"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -467,7 +579,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("SLA Probe"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -475,7 +587,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("SLA Profile"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -499,7 +611,7 @@ Ext.define("NOC.main.label.Application", {
                                 labelAlign: "right"
                             },
                             bind: {
-                                disabled: "{is_regex}"
+                                disabled: "{is_matching}"
                             },
                             items: [
                                 {
@@ -578,7 +690,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Allocation Group"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -586,7 +698,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Network Segment"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -594,7 +706,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Object"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -602,7 +714,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Object Model"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -610,7 +722,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Platform"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -618,7 +730,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Resource Group"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -626,7 +738,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("Sensor Profile"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                                 {
@@ -639,7 +751,7 @@ Ext.define("NOC.main.label.Application", {
                                     xtype: "checkbox",
                                     boxLabel: __("GIS Division"),
                                     bind: {
-                                        disabled: "{is_regex}"
+                                        disabled: "{is_matching}"
                                     }
                                 },
                             ]
@@ -653,7 +765,7 @@ Ext.define("NOC.main.label.Application", {
                                 labelAlign: "right"
                             },
                             bind: {
-                                disabled: "{is_regex}"
+                                disabled: "{is_matching}"
                             },
                             items: [
                                 {
@@ -692,7 +804,7 @@ Ext.define("NOC.main.label.Application", {
                                 labelAlign: "right"
                             },
                             bind: {
-                                disabled: "{is_regex}"
+                                disabled: "{is_matching}"
                             },
                             items: [
                                 {
@@ -805,8 +917,8 @@ Ext.define("NOC.main.label.Application", {
             ftype: "boolean"
         },
         {
-            title: __("Regex"),
-            name: "is_regex",
+            title: __("Is Matching"),
+            name: "is_matching",
             ftype: "boolean"
         },
         {

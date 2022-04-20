@@ -9,7 +9,9 @@ console.debug("Defining NOC.main.prefixtable.Application");
 Ext.define("NOC.main.prefixtable.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.prefixtable.Model"
+        "NOC.main.prefixtable.Model",
+        "Ext.ux.form.GridField",
+        "NOC.core.label.LabelField"
     ],
     model: "NOC.main.prefixtable.Model",
     search: true,
@@ -37,7 +39,30 @@ Ext.define("NOC.main.prefixtable.Application", {
             xtype: "textarea",
             fieldLabel: __("Description"),
             allowBlank: true
-        }
+        },
+        {
+            name: "match_labels",
+            xtype: "gridfield",
+            fieldLabel: __("Match Labels"),
+            disabled: true,
+            columns: [
+                {
+                    text: __("Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
+                    editor: {
+                        xtype: "labelfield",
+                    },
+                    width: 200
+                },
+                {
+                    dataIndex: "scope",
+                    text: __("Scope"),
+                    editor: "textfield",
+                    width: 150
+                }
+            ]
+        },
     ],
     inlines: [{
         title: __("Prefixes"),
