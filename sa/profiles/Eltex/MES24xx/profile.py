@@ -63,7 +63,8 @@ class Profile(BaseProfile):
     # Eltex-like translation
     rx_eltex_interface_name = re.compile(
         r"^(?P<type>te|gi|fa|ex|po|vl)[a-z\-]*\s*"
-        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)?",
+        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?"
+        r"(/[a-z]+\d+(\.\d+)?)?(A|B)?)?",
         re.IGNORECASE,
     )
 
