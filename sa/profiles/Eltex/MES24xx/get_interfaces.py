@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface = re.compile(
-        r"^(?P<ifname>S+|(?:te|gi|fa|ex|po|vl)[a-z]*\s\d+\S*) (?P<admin_status>up|down), "
+        r"^(?P<ifname>\S+|(?:te|gi|fa|ex|po|vl)[a-z]*\s\d+\S*) (?P<admin_status>up|down), "
         r"line protocol is (?P<oper_status>up|down) .+\n"
         r"(?:^Bridge Port Type: .+\n)?"
         r"(?:^\s*\n)?"
