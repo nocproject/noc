@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES24xx
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,10 +27,10 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     rogue_chars = [
-        re.compile(br"\s*\x1b\[27m"),
-        re.compile(br"\x1b\r\s+\r\x1b\[K"),
-        re.compile(br"\x1b\[K"),
-        re.compile(br"\r"),
+        re.compile(rb"\s*\x1b\[27m"),
+        re.compile(rb"\x1b\r\s+\r\x1b\[K"),
+        re.compile(rb"\x1b\[K"),
+        re.compile(rb"\r"),
     ]
 
     config_normalizer = "MES24xxNormalizer"
@@ -62,8 +62,9 @@ class Profile(BaseProfile):
 
     # Eltex-like translation
     rx_eltex_interface_name = re.compile(
-        r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
-        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)?",
+        r"^(?P<type>te|gi|fa|ex|po|vl)[a-z\-]*\s*"
+        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?"
+        r"(/[a-z]+\d+(\.\d+)?)?(A|B)?)?",
         re.IGNORECASE,
     )
 

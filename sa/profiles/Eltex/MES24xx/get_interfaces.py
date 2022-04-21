@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,8 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface = re.compile(
-        r"^(?P<ifname>\S+) (?P<admin_status>up|down), line protocol is (?P<oper_status>up|down) .+\n"
+        r"^(?P<ifname>\S+|(?:te|gi|fa|ex|po|vl)[a-z]*\s\d+\S*) (?P<admin_status>up|down), "
+        r"line protocol is (?P<oper_status>up|down) .+\n"
         r"(?:^Bridge Port Type: .+\n)?"
         r"(?:^\s*\n)?"
         r"^Interface SubType: .+\n"
@@ -32,7 +33,8 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ip_iface = re.compile(
-        r"^(?P<ifname>\S+) is (?P<admin_status>up|down), line protocol is (?P<oper_status>up|down)\s*\n"
+        r"^(?P<ifname>\S+|vlan \d+) is (?P<admin_status>up|down), "
+        r"line protocol is (?P<oper_status>up|down)\s*\n"
         r"^Internet Address is (?P<ip>\d+\S+)\s*\n",
         re.MULTILINE,
     )
@@ -53,15 +55,15 @@ class Script(BaseScript):
             sub = {"name": ifname, "admin_status": admin_status, "oper_status": oper_status}
             if iface["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
-                if ifname.startswith("Gi"):
+                if ifname.lower().startswith("gi"):
                     sw_ifname = "gigabitethernet %s" % ifname[2:]
-                elif ifname.startswith("Fa"):
+                elif ifname.lower().startswith("fa"):
                     sw_ifname = "fastethernet %s" % ifname[2:]
-                elif ifname.startswith("Ex"):
+                elif ifname.lower().startswith("ex"):
                     sw_ifname = "extreme-ethernet %s" % ifname[2:]
-                elif ifname.startswith("Te"):
+                elif ifname.lower().startswith("te"):
                     sw_ifname = "tengigabitethernet %s" % ifname[2:]
-                elif ifname.startswith("Po"):
+                elif ifname.lower().startswith("po"):
                     sw_ifname = "port-channel %s" % ifname[2:]
                 c = self.cli("show interfaces switchport %s" % sw_ifname)
                 for i in parse_table(c, footer="^Forbidden VLANs:"):
