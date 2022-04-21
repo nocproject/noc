@@ -21,8 +21,6 @@ from noc.core.ip import IP, IPv4
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
-from noc.dns.models.dnsserver import DNSServer
-from noc.dns.models.dnszone import DNSZone
 from noc.core.forms import NOCForm
 from noc.core.translation import ugettext as _
 
@@ -159,13 +157,11 @@ class ToolsAppplication(Application):
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denined"))
         body = orjson.loads(request.body)
-        zone = DNSZone.get_by_id(body["zone"])
-        server = DNSServer.get_by_id(body["ns"])
         try:
             _zone = dns.zone.from_xfr(
                 dns.query.xfr(
-                    server.ip,
-                    zone.name,
+                    body["ns"],
+                    body["zone"],
                     lifetime=5.0,
                 )
             )
@@ -177,7 +173,7 @@ class ToolsAppplication(Application):
         except dns.exception.DNSException as e:
             return ValidationError(e.msg)
         else:
-            count = upload_axfr(data, zone.name)
+            count = upload_axfr(data, body["zone"])
         self.message_user(
             request,
             _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
