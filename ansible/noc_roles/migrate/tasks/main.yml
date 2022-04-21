@@ -96,6 +96,7 @@
     chdir: "{{ noc_root }}"
   environment:
     PYTHONPATH: "{{ noc_root | dirname }}"
+    DJANGO_SETTINGS_MODULE: "noc.settings"
   become_user: "{{ noc_user }}"
   become: "True"
   register: result
