@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES24xx.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,8 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface = re.compile(
-        r"^(?P<ifname>\S+) (?P<admin_status>up|down), line protocol is (?P<oper_status>up|down) .+\n"
+        r"^(?P<ifname>S+|(?:te|gi|fa|ex|po|vl)[a-z]*\s\d+\S*) (?P<admin_status>up|down), "
+        r"line protocol is (?P<oper_status>up|down) .+\n"
         r"(?:^Bridge Port Type: .+\n)?"
         r"(?:^\s*\n)?"
         r"^Interface SubType: .+\n"
@@ -31,8 +32,19 @@ class Script(BaseScript):
         r"(^MTU\s+(?P<mtu>\d+) bytes,.+\s*\n)?",
         re.MULTILINE,
     )
+
+    INTERFACE_TYPES = {
+        "te": "physical",  # tengigabitethernet
+        "gi": "physical",  # gigabitethernet
+        "fa": "physical",  # fastethernet
+        "ex": "physical",  # extreme-ethernet
+        "po": "aggregated",  # Port-channel/Portgroup
+        "vl": "SVI",  # vlan
+    }
+
     rx_ip_iface = re.compile(
-        r"^(?P<ifname>\S+) is (?P<admin_status>up|down), line protocol is (?P<oper_status>up|down)\s*\n"
+        r"^(?P<ifname>\S+|vlan \d+) is (?P<admin_status>up|down), "
+        r"line protocol is (?P<oper_status>up|down)\s*\n"
         r"^Internet Address is (?P<ip>\d+\S+)\s*\n",
         re.MULTILINE,
     )
