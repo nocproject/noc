@@ -38,37 +38,27 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsForm", {
             }
         },
         {
+            fieldLabel: __("NS"),
             name: "ns",
-            xtype: "dns.dnsserver.LookupField",
-            fieldLabel: __("Profile"),
             allowBlank: false,
             bind: {
                 value: "{ns}"
             }
         },
-        //{
-        //    fieldLabel: __("NS"),
-        //    name: "ns",
-        //    allowBlank: false,
-        //    bind: {
-        //        value: "{ns}"
-        //    }
-        //},
         {
-            name: "zone",
-            xtype: "dns.dnszone.LookupField",
             fieldLabel: __("Zone"),
+            name: "zone",
             allowBlank: false,
             bind: {
                 value: "{zone}"
             }
         },
         //{
-        //    fieldLabel: __("Zone"),
-        //    name: "zone",
-        //    allowBlank: false,
+        //    fieldLabel: __("Source Address"),
+        //    name: "source",
+        //    allowBlank: true,
         //    bind: {
-        //        value: "{zone}"
+        //        value: "{source}"
         //    }
         //}
     ],

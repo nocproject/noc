@@ -38,10 +38,8 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsController", {
                 ns: model.get("ns"),
                 zone: model.get("zone"),
             };
+            Ext.apply(data);
 
-        if(model.get("source")) {
-            Ext.apply(data, {source_address: model.get("source")});
-        }
 
         Ext.Ajax.request({
             url: "/ip/tools/" + prefix.vrf + "/" + prefix.afi + "/" + prefix.name + "/upload_axfr/",
