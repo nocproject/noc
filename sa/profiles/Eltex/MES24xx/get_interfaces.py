@@ -32,16 +32,6 @@ class Script(BaseScript):
         r"(^MTU\s+(?P<mtu>\d+) bytes,.+\s*\n)?",
         re.MULTILINE,
     )
-
-    INTERFACE_TYPES = {
-        "te": "physical",  # tengigabitethernet
-        "gi": "physical",  # gigabitethernet
-        "fa": "physical",  # fastethernet
-        "ex": "physical",  # extreme-ethernet
-        "po": "aggregated",  # Port-channel/Portgroup
-        "vl": "SVI",  # vlan
-    }
-
     rx_ip_iface = re.compile(
         r"^(?P<ifname>\S+|vlan \d+) is (?P<admin_status>up|down), "
         r"line protocol is (?P<oper_status>up|down)\s*\n"
