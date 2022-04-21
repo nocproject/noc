@@ -862,7 +862,7 @@ all:
           postgres_power: master
           postgres_replicator_password: noc
           postgres_superuser_password: noc
-          postgres_version: 9.6
+          postgres_version: 14
           required_assets:
             - web
             - mib
