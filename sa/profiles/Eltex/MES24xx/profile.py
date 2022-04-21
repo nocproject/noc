@@ -27,10 +27,10 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     rogue_chars = [
-        re.compile(br"\s*\x1b\[27m"),
-        re.compile(br"\x1b\r\s+\r\x1b\[K"),
-        re.compile(br"\x1b\[K"),
-        re.compile(br"\r"),
+        re.compile(rb"\s*\x1b\[27m"),
+        re.compile(rb"\x1b\r\s+\r\x1b\[K"),
+        re.compile(rb"\x1b\[K"),
+        re.compile(rb"\r"),
     ]
 
     config_normalizer = "MES24xxNormalizer"
