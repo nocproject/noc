@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.core.clickhouse.model import DictionaryModel
-from noc.core.clickhouse.fields import StringField
+from noc.core.clickhouse.fields import StringField, UInt64Field
 from noc.inv.models.subinterface import SubInterface
 from noc.core.text import ch_escape
 
@@ -22,6 +22,7 @@ class InterfaceDescription(DictionaryModel):
 
     name = StringField()
     description = StringField()
+    service = UInt64Field()
 
     @classmethod
     def extract(cls, item: "SubInterface"):
@@ -29,4 +30,5 @@ class InterfaceDescription(DictionaryModel):
             "bi_id": item.managed_object.bi_id,
             "name": item.name,
             "description": ch_escape(item.description or ""),
+            "service": item.service.bi_id if item.service else 0,
         }
