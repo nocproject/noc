@@ -17,6 +17,9 @@ from noc.config import config
 
 CHANGESET_LEN = 8
 BRAND_PATH = config.get_customized_paths("BRAND", prefer_custom=True)
+WHICH = "which"
+if os.name == 'nt':
+    WHICH = "where"
 
 
 class cachedproperty(object):
@@ -44,7 +47,7 @@ class Version(object):
         """
         if os.path.exists(".git"):
             with open(os.devnull, "w") as null:
-                return subprocess.call(["which", "git"], stdout=null) == 0
+                return subprocess.call([WHICH, "git"], stdout=null) == 0
         return False
 
     @cachedproperty
