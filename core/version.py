@@ -18,7 +18,7 @@ from noc.config import config
 CHANGESET_LEN = 8
 BRAND_PATH = config.get_customized_paths("BRAND", prefer_custom=True)
 WHICH = "which"
-if os.name == 'nt':
+if os.name == "nt":
     WHICH = "where"
 
 
