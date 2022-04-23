@@ -273,6 +273,7 @@ class Profile(BaseProfile):
             or script.match_version(DGS3120, version__gte="3.00.B022")
             or script.match_version(DGS3420, version__gte="1.73.R008")
             or script.match_version(DGS3620, version__gte="2.50.017")
+            or script.match_version(DES1210, version__gte="6.10")
         ) and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
@@ -416,6 +417,15 @@ class Profile(BaseProfile):
             raise CLIOperationError("System locked by other session!")
         config = super().cleaned_config(config)
         return config
+
+
+def DES1210(v):
+    """
+    DES-1210-series
+    :param v:
+    :return:
+    """
+    return v["platform"].startswith("DES-1210")
 
 
 def DES30xx(v):
