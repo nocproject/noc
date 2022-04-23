@@ -1,0 +1,36 @@
+{
+    "name": "Huawei | S12700E | SFU",
+    "$collection": "inv.objectmodels",
+    "uuid": "70377100-77b1-47a9-9dce-3a467254bfce",
+    "vendor__code": "HUAWEI",
+    "description": "S12700E, LST7SFUHX100 ,Switch Fabric Unit",
+    "connection_rule__name": "Huawei | S12700E",
+    "cr_context": "SFU",
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | SFU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03033ERD"],
+            "part_no": ["LST7SFUHX100"]
+        },
+        "dimensions": {
+            "depth": 430,
+            "height": 35,
+            "width": 397
+        },
+        "power": {
+            "power": 256.0
+        },
+        "weight": {
+            "weight": 3.65
+        }
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "name": "Huawei | S12700E | FAN-770A-B",
+    "$collection": "inv.objectmodels",
+    "uuid": "83c0ab6b-f173-4249-8c3d-88c2c5110390",
+    "vendor__code": "HUAWEI",
+    "description": "FAN-770A-B fan module ",
+    "cr_context": "FAN",
+    "labels": ["noc::inv::fan"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | FAN-770A-B"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["02122242"],
+            "part_no": ["FAN-770A-B"]
+        },
+        "dimensions": {
+            "depth": 65,
+            "height": 127,
+            "width": 324
+        },
+        "power": {
+            "power": 395.0
+        },
+        "weight": {
+            "weight": 2.5
+        }
+    }
+}
+

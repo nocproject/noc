@@ -1,0 +1,185 @@
+{
+    "name": "Huawei | S12700E",
+    "$collection": "inv.connectionrules",
+    "uuid": "34de0222-2a36-47e3-ac13-5bd27b42ce31",
+    "description": "Huawei S12700E series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["sru", "sic", "wsic", "xsic", "fan", "pic", "mpu", "cmu", "sfu"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sru",
+            "type": "SRU"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "pic",
+            "type": "PIC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sic",
+            "type": "SIC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "wsic",
+            "type": "WSIC"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "xsic",
+            "type": "XSIC"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "MPU",
+            "scope": "chassis",
+            "target_connection": "mpu{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PIC",
+            "scope": "chassis",
+            "target_connection": "pic{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SRU",
+            "scope": "chassis",
+            "target_connection": "sru",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "CMU",
+            "scope": "chassis",
+            "target_connection": "cmu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SFU",
+            "scope": "chassis",
+            "target_connection": "sfu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SIC",
+            "scope": "chassis",
+            "target_connection": "sic{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "WSIC",
+            "scope": "chassis",
+            "target_connection": "wsic{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XSIC",
+            "scope": "chassis",
+            "target_connection": "xsic{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "sru",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "SRU"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "pic",
+            "target_connection": "XGEX/0/{N}",
+            "target_number": "",
+            "target_type": "PIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "POWER",
+            "scope": "chassis",
+            "target_connection": "power{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "sic",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "SIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "sic",
+            "target_connection": "Gi{N}_gbic",
+            "target_number": "",
+            "target_type": "SIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "wsic",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "WSIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "wsic",
+            "target_connection": "Gi{N}_gbic",
+            "target_number": "",
+            "target_type": "WSIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "xsic",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "XSIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "xsic",
+            "target_connection": "Gi{N}_gbic",
+            "target_number": "",
+            "target_type": "XSIC"
+        }
+    ]
+}
+

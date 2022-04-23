@@ -1,0 +1,420 @@
+{
+    "name": "Huawei | S12700E | LST7G48TX5E1",
+    "$collection": "inv.objectmodels",
+    "uuid": "4a4a2a2f-1a0e-4182-992e-1e80ff0b2c25",
+    "vendor__code": "HUAWEI",
+    "description": "48-port 10/100/1000BASE-T interface card (X5E,RJ45)",
+    "cr_context": "PIC",
+    "labels": ["noc::inv::chassis"],
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "GE0",
+            "description": "GEX/0/0",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE1",
+            "description": "GEX/0/1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE2",
+            "description": "GEX/0/2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE3",
+            "description": "GEX/0/3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE4",
+            "description": "GEX/0/4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE5",
+            "description": "GEX/0/5",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE6",
+            "description": "GEX/0/6",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE7",
+            "description": "GEX/0/7",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE8",
+            "description": "GEX/0/8",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE9",
+            "description": "GEX/0/9",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE10",
+            "description": "GEX/0/10",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE11",
+            "description": "GEX/0/11",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE12",
+            "description": "GEX/0/12",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE13",
+            "description": "GEX/0/13",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE14",
+            "description": "GEX/0/14",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE15",
+            "description": "GEX/0/15",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE16",
+            "description": "GEX/0/16",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE17",
+            "description": "GEX/0/17",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE18",
+            "description": "GEX/0/18",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE19",
+            "description": "GEX/0/19",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE20",
+            "description": "GEX/0/20",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE21",
+            "description": "GEX/0/21",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE22",
+            "description": "GEX/0/22",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE23",
+            "description": "GEX/0/23",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE24",
+            "description": "GEX/0/24",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE25",
+            "description": "GEX/0/25",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE26",
+            "description": "GEX/0/26",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE27",
+            "description": "GEX/0/27",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE28",
+            "description": "GEX/0/28",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE29",
+            "description": "GEX/0/29",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE30",
+            "description": "GEX/0/30",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE31",
+            "description": "GEX/0/31",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE32",
+            "description": "GEX/0/32",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE33",
+            "description": "GEX/0/33",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE34",
+            "description": "GEX/0/34",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE35",
+            "description": "GEX/0/35",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE36",
+            "description": "GEX/0/36",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE37",
+            "description": "GEX/0/37",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE38",
+            "description": "GEX/0/38",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE39",
+            "description": "GEX/0/39",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE40",
+            "description": "GEX/0/40",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE41",
+            "description": "GEX/0/41",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE42",
+            "description": "GEX/0/42",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE43",
+            "description": "GEX/0/43",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE44",
+            "description": "GEX/0/44",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE45",
+            "description": "GEX/0/45",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE46",
+            "description": "GEX/0/46",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "GE47",
+            "description": "GEX/0/47",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03033JNA"],
+            "part_no": ["LST7G48TX5E1"]
+        },
+        "dimensions": {
+            "depth": 430,
+            "height": 35,
+            "width": 397
+        },
+        "power": {
+            "power": 66.0
+        },
+        "weight": {
+            "weight": 3.27
+        }
+    }
+}
+

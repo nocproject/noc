@@ -1,0 +1,37 @@
+{
+    "name": "Huawei | S12700E | CMU",
+    "$collection": "inv.objectmodels",
+    "uuid": "edef0334-f37a-41ac-a6b6-2eff97934ec1",
+    "vendor__code": "HUAWEI",
+    "description": "S12700E, EH1D200CMU00, Centralized Monitoring Unit",
+    "connection_rule__name": "Huawei | S12700E",
+    "cr_context": "CMU",
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | CMU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03030NWB"],
+            "part_no": ["EH1D200CMU00"]
+        },
+        "dimensions": {
+            "depth": 412,
+            "height": 19,
+            "width": 112
+        },
+        "power": {
+            "power": 1.0
+        },
+        "weight": {
+            "weight": 0.2
+        }
+    }
+}
+

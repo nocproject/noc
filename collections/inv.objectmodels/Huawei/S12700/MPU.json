@@ -1,0 +1,85 @@
+{
+    "name": "Huawei | S12700E | MPU",
+    "$collection": "inv.objectmodels",
+    "uuid": "787135f7-5f11-4591-9278-c1cc4e2e7229",
+    "vendor__code": "HUAWEI",
+    "description": "S12700E, LST7MPUE0000 ,Main Processing Unit ",
+    "connection_rule__name": "Huawei | S12700E",
+    "cr_context": "MPU",
+    "labels": ["noc::inv::lc", "noc::inv::sup"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | MPU"
+        },
+        {
+            "name": "Eth0/0/0",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "aux",
+            "description": null,
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "console",
+            "description": "RS-232 serial port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "clk",
+            "description": " input one channel or output one channel 2-Mbit/s clock signals, or one channel 2-MHz clock signals",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["G.703"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "tod",
+            "description": "1 output of 1PPS+TOD time signals",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "RS-485",
+            "description": "RS-485 monitoring serial port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS485"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03033EME"],
+            "part_no": ["LST7MPUE0000"]
+        },
+        "dimensions": {
+            "depth": 430,
+            "height": 35,
+            "width": 397
+        },
+        "power": {
+            "power": 48.0
+        },
+        "weight": {
+            "weight": 2.75
+        }
+    }
+}
+
