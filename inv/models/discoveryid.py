@@ -54,6 +54,7 @@ class DiscoveryID(Document):
     object = ForeignKeyField(ManagedObject)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
     hostname = StringField()
+    hostname_raw = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
     #
@@ -114,7 +115,8 @@ class DiscoveryID(Document):
         if o:
             old_macs = set(m.first_mac for m in o.chassis_mac)
             o.chassis_mac = ranges
-            o.hostname = hostname
+            o.hostname = hostname.lower()
+            o.hostname_raw = hostname
             o.router_id = router_id
             old_macs -= set(m.first_mac for m in o.chassis_mac)
             if old_macs:
@@ -124,7 +126,12 @@ class DiscoveryID(Document):
             o.save()
         else:
             cls(
-                object=object, chassis_mac=ranges, hostname=hostname, router_id=router_id, macs=macs
+                object=object,
+                chassis_mac=ranges,
+                hostname=hostname.lower(),
+                hostname_raw=hostname,
+                router_id=router_id,
+                macs=macs,
             ).save()
 
     @classmethod

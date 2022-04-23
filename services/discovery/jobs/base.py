@@ -1001,8 +1001,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         """
         Resolve neighbor by hostname
         """
+        hostname = hostname.lower()
         if hostname not in self.neighbor_hostname_cache:
-            hosts = DiscoveryID.objects.filter(hostname__iexact=hostname)[:2]
+            hosts = DiscoveryID.objects.filter(hostname=hostname)[:2]
             n = None
             if len(hosts) == 1:
                 n = hosts[0].object
