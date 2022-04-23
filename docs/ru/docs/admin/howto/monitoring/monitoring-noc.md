@@ -74,8 +74,8 @@ services:
   prometheus-bot:
     image: tienbm90/prometheus-bot:0.0.1
     volumes:
-      - ./vm/telegrambot/config.yaml:/config.yaml
-      - ./vm/telegrambot/:/etc/telegrambot/
+      - ./telegrambot/config.yaml:/config.yaml
+      - ./telegrambot/:/etc/telegrambot/
     networks:
       - mon
     restart: always
@@ -88,9 +88,9 @@ services:
     volumes:
       - "./vm/noc-prometheus-alerts/:/etc/alerts/"
     command:
-      - '--datasource.url=http://victoriametrics:8428/'
-      - '--remoteRead.url=http://victoriametrics:8428/'
-      - '--remoteWrite.url=http://victoriametrics:8428/'
+      - '--datasource.url=http://vm:8428/'
+      - '--remoteRead.url=http://vm:8428/'
+      - '--remoteWrite.url=http://vm:8428/'
       - '--notifier.url=http://alertmanager:9093/'
       - '--rule=/etc/alerts/*.rules.yml'
     networks:
@@ -112,24 +112,17 @@ git clone https://code.getnoc.com/noc/grafana-selfmon-dashboards.git /etc/docker
 ```
 mkdir /etc/docker-compose/mon/vm
 ```
-5. В директории **vm** создаём директорию **vmdata** и файл **prometheus.yml** 
+5. В директории **vm** создаём директорию **vmdata** и файл **vmagent.yml** 
 ```
 mkdir /etc/docker-compose/mon/vm/vmdata/
 ```
 ```
-touch /etc/docker-compose/mon/vm/prometheus.yml
+touch /etc/docker-compose/mon/vm/vmagent.yml
 ```
 со следующим содержимым:
 ```
 # my global config
-# собирать будем раз в 10 секунд
 global:
-  scrape_interval:     10s # By default, scrape targets every 15 seconds.
-  evaluation_interval: 10s # By default, scrape targets every 15 seconds.
- 
-# у нас есть правила алертинга для системы
-rule_files:
-  - noc-prometheus-alerts/*.rules.yml
  
 # у нас есть алертменеджер живет там то
 alerting:
@@ -154,7 +147,7 @@ scrape_configs:
   # собираем метрики с ноковских демонов. ищем их через консул
   - job_name: 'noc'
     consul_sd_configs:
-      - server: '<ip-адрес сервера с ноком>:8500' # например 192.168.1.25
+      - server: '<ip-адрес сервера с ноком>:8500' # например 192.168.1.25:8500
     relabel_configs:
       - source_labels: [__meta_consul_tags]
         regex: .*,noc,.*
@@ -220,15 +213,15 @@ inhibit_rules:
     equal: ['alertname', 'instance']
 ```
 
-7. Создаём директорию **telegrambot**, а в ней создаём два файла **config.yaml** и **template.tmpl** не забываю подставлять свои значения.
+7. Создаём директорию **telegrambot**, а в ней создаём два файла **config.yaml** и **template.tmpl** не забывая подставлять свои значения.
 ```
-mkdir /etc/docker-compose/mon/vm/telegrambot
-```
-```
-touch /etc/docker-compose/mon/vm/telegrambot/config.yaml
+mkdir /etc/docker-compose/mon/telegrambot
 ```
 ```
-touch /etc/docker-compose/mon/vm/telegrambot/template.tmpl
+touch /etc/docker-compose/mon/telegrambot/config.yaml
+```
+```
+touch /etc/docker-compose/mon/telegrambot/template.tmpl
 ```
 config.yaml:
 ```
