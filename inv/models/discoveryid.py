@@ -49,12 +49,12 @@ class DiscoveryID(Document):
         "collection": "noc.inv.discovery_id",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["object", "hostname", "udld_id", "macs"],
+        "indexes": ["object", "hostname", "hostname_id", "udld_id", "macs"],
     }
     object = ForeignKeyField(ManagedObject)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
     hostname = StringField()
-    hostname_raw = StringField()
+    hostname_id = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
     #
@@ -115,8 +115,8 @@ class DiscoveryID(Document):
         if o:
             old_macs = set(m.first_mac for m in o.chassis_mac)
             o.chassis_mac = ranges
-            o.hostname = hostname.lower()
-            o.hostname_raw = hostname
+            o.hostname = hostname
+            o.hostname_id = hostname.lower()
             o.router_id = router_id
             old_macs -= set(m.first_mac for m in o.chassis_mac)
             if old_macs:
@@ -128,8 +128,8 @@ class DiscoveryID(Document):
             cls(
                 object=object,
                 chassis_mac=ranges,
-                hostname=hostname.lower(),
-                hostname_raw=hostname,
+                hostname=hostname,
+                hostname_id=hostname.lower(),
                 router_id=router_id,
                 macs=macs,
             ).save()
