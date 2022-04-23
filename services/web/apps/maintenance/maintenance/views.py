@@ -88,9 +88,11 @@ class MaintenanceApplication(ExtDocApplication):
     @view(url="(?P<id>[0-9a-f]{24})/objects/", method=["GET"], access="read", api=True)
     def api_test(self, request, id):
         r = []
-        for mo in ManagedObject.objects.filter(is_managed=True, affected_maintenances__has_key=id).\
-                values("id", "name", "is_managed", "profile", "address", "description", "labels").\
-                distinct():
+        for mo in (
+            ManagedObject.objects.filter(is_managed=True, affected_maintenances__has_key=id)
+            .values("id", "name", "is_managed", "profile", "address", "description", "labels")
+            .distinct()
+        ):
             r += [
                 {
                     "id": mo["id"],
