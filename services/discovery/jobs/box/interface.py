@@ -364,11 +364,11 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     # ip_unnumbered_subinterface
                     "ifindex": ifindex,
                     # Update effective labels for exists subifaces
-                    "effective_labels": Label.merge_labels(SubInterface.iter_effective_labels(si)),
                 },
                 ignore_empty=ignore_empty,
+                update_effective_labels=True,
             )
-            if changes:
+            if any(True for cc in changes if cc[0] == "effective_labels"):
                 interface._refresh_labels = True
             self.log_changes(f"Subinterface '{name}' has been changed", changes)
         else:

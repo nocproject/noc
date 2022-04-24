@@ -20,14 +20,15 @@ class Migration(BaseMigration):
         db = self.mongo_db
         for ao in db.noc.affectedobjects.aggregate(
             [
+                {"$match": {"maintenance": {"$exists": True}}},
                 {
                     "$project": {"_id": 0, "maintenance": 1, "objects": "$affected_objects.object"},
-                }
+                },
             ]
         ):
             m_id = ao["maintenance"]
             objects = tuple(ao["objects"])
-            if ao["objects"] == []:
+            if not ao["objects"]:
                 continue
             mai = db.noc.maintenance.find_one({"_id": m_id})
             if not mai:

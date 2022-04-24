@@ -496,13 +496,11 @@ class Interface(Document):
             yield ["noc::is_linked::="]
         if instance.parent.id:
             # When create id is None
-            for el in (
-                SubInterface.objects.filter(
-                    enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
-                )
-                .read_preference(ReadPreference.SECONDARY_PREFERRED)
-                .scalar("effective_labels")
-            ):
+            # Do not use SECONDARY_PREFERRED, when update labels right after
+            # create or update SubInterface changes not keep up on Secondary
+            for el in SubInterface.objects.filter(
+                enabled_afi__in=["BRIDGE", "IPv4"], interface=instance.parent.id
+            ).scalar("effective_labels"):
                 yield el
 
 

@@ -39,10 +39,10 @@ class Command(BaseCommand):
             help="Set not matched profile to default",
         )
         apply_parser.add_argument(
-            "--use-match-rules",
+            "--use-classification-rule",
             action="store_true",
             default=False,
-            help="Set not matched profile to default",
+            help="Use InterfaceClassification Rule for works",
         )
         apply_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
         apply_confdb_parser = subparsers.add_parser(
@@ -176,14 +176,14 @@ class Command(BaseCommand):
         # sol = config.get("interface_discovery", "get_interface_profile")
         # @todo Classification pyrule
         default_profile = InterfaceProfile.get_default_profile()
-        if kwargs.get("use_match_rules"):
-            from noc.main.models.label import Label
-
-            get_profile = partial(Label.get_instance_profile, InterfaceProfile)
-        else:
+        if kwargs.get("use_classification_rule"):
             get_profile = InterfaceClassificationRule
             get_profile = get_profile.get_classificator()
             # raise CommandError("No classification solution")
+        else:
+            from noc.main.models.label import Label
+
+            get_profile = partial(Label.get_instance_profile, InterfaceProfile)
         pcache = {}
         for o in self.get_objects(moo):
             self.stdout.write(
