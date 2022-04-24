@@ -1,6 +1,6 @@
 ---
 - name: look for installed postgres version
-  shell: dpkg-query -W -f='${package} ${status}\n' postgresql-9.? | grep "install ok installed" | grep -Po "(9\..)"
+  shell: dpkg-query -W -f='${package} ${status}\n' postgresql-*|grep "install ok installed" | grep -Po "(\d.*?)\ "|sort -u
   ignore_errors: "True"
   check_mode: "False"
   no_log: "{{ tower_show_secrets }}"
