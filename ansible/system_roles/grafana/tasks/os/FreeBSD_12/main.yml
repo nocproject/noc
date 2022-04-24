@@ -1,7 +1,7 @@
 ---
 - name: Install Grafana
   pkgng:
-    name: "grafana7"
+    name: "grafana8"
     state: present
   register: freebsd_pkg_result
   retries: 4
