@@ -144,7 +144,7 @@ scrape_configs:
     static_configs:
       - targets: ['vm:8428']
  
-  # собираем метрики с ноковских демонов. ищем их через консул
+  # собираем метрики с ноковских демонов. Дискавери из консула
   - job_name: 'noc'
     consul_sd_configs:
       - server: '<ip-адрес сервера с ноком>:8500' # например 192.168.1.25:8500
@@ -157,6 +157,21 @@ scrape_configs:
       - source_labels: [env]
         target_label: env
         replacement: "dev" # указываем тут тип инсталляции нока
+
+  # собираем метрики с telegraf. Дискавери из консула
+  - job_name: 'telegraf'
+    consul_sd_configs:
+      - server: '<ip-адрес сервера с ноком>:8500' # например 192.168.1.25:8500
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*,telegraf,.*
+        action: keep
+    metric_relabel_configs:
+      - source_labels: [topic]
+        regex: correlator.dispose.(.+)
+        target_label: pool
+        replacement: '$1'
+
 
   # собираем метрики с кликхауса
   - job_name: 'ch'
