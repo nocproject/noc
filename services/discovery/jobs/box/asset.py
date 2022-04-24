@@ -44,6 +44,8 @@ class AssetCheck(DiscoveryCheck):
     _serial_masks = {}
     _serial_masks_lock = Lock()
 
+    fatal_errors = {}
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.unknown_part_no: Dict[str, Set[str]] = {}  # part_no -> list of variants

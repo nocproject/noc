@@ -369,7 +369,7 @@ class Script(BaseScript):
             if int(slot_num) in subboard:
                 r += subboard[slot_num]
         sensors = self.get_chassis_sensors()
-        if sensors:
+        if r and sensors:
             r[0]["sensors"] = sensors
         return r
 
@@ -475,6 +475,6 @@ class Script(BaseScript):
             if subboards and data["number"] in subboards:
                 r += subboards[data["number"]]
         sensors = self.get_chassis_sensors()
-        if sensors:
+        if r and sensors:
             r[0]["sensors"] = sensors
         return r
