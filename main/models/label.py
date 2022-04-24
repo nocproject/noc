@@ -974,7 +974,8 @@ class Label(Document):
         :return:
         """
         effective_labels = labels or Label.merge_labels(instance.iter_effective_labels(instance))
-        if is_document(instance):
+        # logger.debug("[%s|%s] Classifier with effective labels: %s", str(profile_model), instance, effective_labels)
+        if is_document(profile_model):
             coll = profile_model._get_collection()
             pipeline = [
                 {

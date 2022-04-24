@@ -68,14 +68,14 @@ class Migration(BaseMigration):
                     if ll.startswith("noc::vcfilter::"):
                         _, _, vc_name, vc_scope, _ = ll.split("::", 4)
                         if vc_name in vc_domains:
-                            nl += [f"vlanfilter::{vc_name}_{vc_scope}"]
+                            nl += [f"vlanfilter_{vc_name}_{vc_scope}"]
                             vc_domains_labels.add((vc_name, vc_scope))
                             changed = True
                             continue
                     if ll.startswith("noc::prefixfilter::"):
                         _, _, pt_name, _ = ll.split("::", 3)
                         if pt_name in prefix_table:
-                            nl += [f"prefixfilter::{pt_name}"]
+                            nl += [f"prefixfilter_{pt_name}"]
                             prefix_table_labels.add(pt_name)
                             changed = True
                             continue
@@ -88,7 +88,7 @@ class Migration(BaseMigration):
             bulk += [
                 InsertOne(
                     {
-                        "name": f"vlanfilter::{vc_name}_{vc_scope}",
+                        "name": f"vlanfilter_{vc_name}_{vc_scope}",
                         "bg_color1": 15844367,
                         "fg_color1": 16777215,
                         "bg_color2": 9323693,
@@ -116,7 +116,7 @@ class Migration(BaseMigration):
             bulk += [
                 InsertOne(
                     {
-                        "name": f"vlanfilter::{pt_name}",
+                        "name": f"prefixfilter_{pt_name}",
                         "bg_color1": 15844367,
                         "fg_color1": 16777215,
                         "bg_color2": 9323693,
@@ -142,4 +142,4 @@ class Migration(BaseMigration):
             l_coll.bulk_write(bulk, ordered=True)
         if ip_bulk:
             ip_coll.bulk_write(ip_bulk)
-        l_coll.remove({"name": {"$regex": ".+vcfilter.+"}})
+        l_coll.delete_many({"name": {"$regex": ".+vcfilter.+"}})
