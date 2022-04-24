@@ -1,0 +1,416 @@
+{
+    "name": "Huawei | S12700E | LST7X48SX6E0",
+    "$collection": "inv.objectmodels",
+    "uuid": "f102a7bc-8350-4602-a433-1546ec2579b5",
+    "vendor__code": "HUAWEI",
+    "description": "48-Port 10GE SFP+ interface card (X6E,SFP+)",
+    "cr_context": "PIC",
+    "connections": [
+        {
+            "name": "in",
+            "description": null,
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | S12700E | PIC"
+        },
+        {
+            "name": "XGEX/0/0",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/1",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/2",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/3",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/4",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/5",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/6",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/7",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/8",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/9",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/10",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/11",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/12",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/13",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/14",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/15",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/16",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/17",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/18",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/19",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/20",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/21",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/22",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/23",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/24",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/25",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/26",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/27",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/28",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/29",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/30",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/31",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/32",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/33",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/34",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/35",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/36",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/37",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/38",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/39",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/40",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/41",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/42",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/43",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/44",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/45",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/46",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "XGEX/0/47",
+            "description": "10G SFP+ port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["03033BAH"],
+            "part_no": ["LST7X48SX6E0"]
+        },
+        "dimensions": {
+            "depth": 430,
+            "height": 35,
+            "width": 397
+        },
+        "power": {
+            "power": 192.0
+        }
+    }
+}
+

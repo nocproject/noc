@@ -1,0 +1,9 @@
+{
+    "name": "Huawei | S12700E | SFU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "2cabe296-f914-49c8-b3e2-0b8dac718cdc",
+    "description": "S12700E Switch Fabric Unit (SFU)",
+    "c_group": [],
+    "genders": "mf"
+}
+

@@ -8,9 +8,9 @@
 # Python modules
 from threading import Lock
 import operator
-import logging
 import re
-from typing import Optional
+from collections import defaultdict
+from typing import Optional, Union, List, Tuple, Dict, FrozenSet
 
 # Third-party modules
 from mongoengine.document import Document
@@ -22,16 +22,14 @@ from mongoengine.fields import (
 import cachetools
 
 # NOC modules
-from noc.main.models.label import Label
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.text import ranges_to_list
 
 rx_l2_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
 id_lock = Lock()
-logger = logging.getLogger(__name__)
+match_lock = Lock()
 
 
-@Label.match_labels(category="l2filter")
 @on_delete_check(
     check=[
         ("vc.L2Domain", "pool.vlan_filter"),
@@ -58,7 +56,7 @@ class VLANFilter(Document):
     exclude_vlans = ListField(IntField(min_value=1, max_value=4095))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _match_cache = cachetools.TTLCache(maxsize=50, ttl=30)
+    _match_cache = cachetools.TTLCache(maxsize=50, ttl=120)
 
     def __str__(self):
         return self.name
@@ -98,3 +96,39 @@ class VLANFilter(Document):
                 raise SyntaxError
             r += [(f, t)]
         return r
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_match_cache"), lock=lambda _: match_lock)
+    def get_matcher(cls) -> Dict[Tuple[FrozenSet[int], FrozenSet[int]], List["VLANFilter"]]:
+        r = defaultdict(list)
+        for vlan_filter in VLANFilter.objects.filter():
+            r[
+                (
+                    frozenset(ranges_to_list(vlan_filter.include_expression)),
+                    frozenset(
+                        ranges_to_list(vlan_filter.exclude_expression)
+                        if vlan_filter.exclude_expression
+                        else set()
+                    ),
+                )
+            ] += [vlan_filter]
+        return r
+
+    @classmethod
+    def iter_match_vlanfilter(cls, vlan_list: Union[int, List[int]]) -> Tuple["VLANFilter", str]:
+        if isinstance(vlan_list, int):
+            vlan_list = [vlan_list]
+        match_expressions = cls.get_matcher()
+        vcs = set(vlan_list)
+        for (include_vlans, exclude_vlans), vlanfilters in match_expressions.items():
+            if exclude_vlans and vcs.intersection(exclude_vlans):
+                continue
+            r = vcs.intersection(include_vlans)
+            if r and vcs == include_vlans:
+                yield from iter((vc, "=") for vc in vlanfilters)
+            if r and not vcs - include_vlans:
+                yield from iter((vc, ">") for vc in vlanfilters)
+            if r and not include_vlans - vcs:
+                yield from iter((vc, "<") for vc in vlanfilters)
+            if r:
+                yield from iter((vc, "&") for vc in vlanfilters)

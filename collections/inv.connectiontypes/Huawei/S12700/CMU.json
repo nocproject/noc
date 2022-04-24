@@ -1,0 +1,9 @@
+{
+    "name": "Huawei | S12700E | CMU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "94b34c1f-9daf-4d76-a2b7-77dab35ff3e4",
+    "description": "S12700E Centralized Monitoring Unit (CMU)",
+    "c_group": [],
+    "genders": "mf"
+}
+

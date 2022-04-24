@@ -5,13 +5,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Tuple
+
 # Third-party modules
 from networkx import shortest_path, NetworkXNoPath
+from networkx import Graph
 from networkx.classes.graphviews import subgraph_view
 from networkx.classes.filters import hide_nodes
 
 
-def iter_next_hops(G, source, target):
+def iter_next_hops(G: "Graph", source: str, target: str) -> Tuple[str, int]:
     """
     Yields next hops (direct neighbors of `source` on the possible paths to `target`)
     and shortest path lengths

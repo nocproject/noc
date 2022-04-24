@@ -10,7 +10,7 @@ import re
 from threading import Lock
 import operator
 from collections import defaultdict
-from typing import List, Optional
+from typing import List, Optional, Union, Tuple, FrozenSet, Dict
 
 # Third-party modules
 from django.db import models
@@ -19,7 +19,8 @@ import cachetools
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
-from noc.main.models.label import Label
+
+# from noc.main.models.label import Label
 from noc.core.text import ranges_to_list
 
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
@@ -29,9 +30,13 @@ match_lock = Lock()
 MATCHED_SCOPES = {"untagged", "tagged"}
 
 
-@Label.match_labels(category="vcfilter")
+# @Label.match_labels(category="vcfilter")
 @on_delete_check(
-    check=[("vc.VCBindFilter", "vc_filter"), ("vc.VCDomainProvisioningConfig", "vc_filter")],
+    check=[
+        ("vc.VCBindFilter", "vc_filter"),
+        ("vc.VCDomainProvisioningConfig", "vc_filter"),
+        ("main.Label", "match_vlanfilter.vlan_filter"),
+    ],
     clean_lazy_labels="vcfilter",
 )
 class VCFilter(NOCModel):
@@ -131,28 +136,35 @@ class VCFilter(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_match_cache"), lock=lambda _: match_lock)
-    def get_matcher(cls):
+    def get_matcher(cls) -> Dict[FrozenSet, List["VCFilter"]]:
         r = defaultdict(list)
         for vc in VCFilter.objects.filter():
-            r[frozenset(ranges_to_list(vc.expression))] += [vc.name]
+            r[frozenset(ranges_to_list(vc.expression))] += [vc]
         return r
+
+    @classmethod
+    def iter_match_vcfilter(cls, vlan_list: Union[int, List[int]]) -> Tuple["VCFilter", str]:
+        if isinstance(vlan_list, int):
+            vlan_list = [vlan_list]
+        match_expressions = cls.get_matcher()
+        vcs = set(vlan_list)
+        for expr, vcfilters in match_expressions.items():
+            r = vcs.intersection(expr)
+            if r and vcs == expr:
+                yield from iter((vc, "=") for vc in vcfilters)
+            if r and not vcs - expr:
+                yield from iter((vc, ">") for vc in vcfilters)
+            if r and not expr - vcs:
+                yield from iter((vc, "<") for vc in vcfilters)
+            if r:
+                yield from iter((vc, "&") for vc in vcfilters)
 
     @classmethod
     def iter_lazy_labels(cls, vcs: List[int], match_scope: Optional[str] = None):
         if match_scope and match_scope not in MATCHED_SCOPES:
             return
-        vcs = set(vcs)
         match_scope = match_scope or ""
         if match_scope:
             match_scope += "::"
-        match_expressions = cls.get_matcher()
-        for expr, vc_names in match_expressions.items():
-            r = vcs.intersection(expr)
-            if r and vcs == expr:
-                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}=" for vc_name in vc_names)
-            if r and not vcs - expr:
-                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}>" for vc_name in vc_names)
-            if r and not expr - vcs:
-                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}<" for vc_name in vc_names)
-            if r:
-                yield from iter(f"noc::vcfilter::{vc_name}::{match_scope}&" for vc_name in vc_names)
+        for vc, condition in cls.iter_match_vcfilter(vcs):
+            yield f"noc::vcfilter::{vc.name}::{match_scope}{condition}"

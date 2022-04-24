@@ -25,6 +25,7 @@ class InterfaceAttributes(DictionaryModel):
     profile = StringField()
     in_speed = UInt64Field()
     is_uni = UInt8Field()
+    service = UInt64Field()
 
     @classmethod
     def extract(cls, item: "Interface"):
@@ -37,4 +38,5 @@ class InterfaceAttributes(DictionaryModel):
             # some vendors set speed -1 for iface down
             "in_speed": abs(item.in_speed or 0) * 1000,
             "is_uni": item.profile.is_uni,
+            "service": item.service.bi_id if item.service else 0,
         }

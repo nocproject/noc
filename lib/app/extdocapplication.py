@@ -325,7 +325,7 @@ class ExtDocApplication(ExtApplication):
                     else:
                         v = str(v)
                 elif (
-                    f.name in {"labels", "effective_labels"}
+                    f.name in {"labels", "effective_labels", "default_labels"}
                     and isinstance(f, ListField)
                     and isinstance(f.field, StringField)
                 ):

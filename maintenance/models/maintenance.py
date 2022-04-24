@@ -224,7 +224,7 @@ def update_affected_objects(maintenance_id, start, stop=None):
     """
 
     # All affected maintenance objects
-    mai_objects = list(
+    mai_objects: List[int] = list(
         ManagedObject.objects.filter(
             is_managed=True, affected_maintenances__has_key=str(maintenance_id)
         ).values_list("id", flat=True)
@@ -316,6 +316,9 @@ def update_affected_objects(maintenance_id, start, stop=None):
                     str(maintenance_id),
                 )
                 cursor.execute(SQL_REMOVE)
+        # Clear cache
+        for mo_id in mai_objects:
+            ManagedObject._reset_caches(mo_id)
 
 
 def stop(maintenance_id):
@@ -342,6 +345,11 @@ def stop(maintenance_id):
                     body,
                 )
     Maintenance._get_collection().update({"_id": maintenance_id}, {"$set": {"is_completed": True}})
+    mai_objects: List[int] = list(
+        ManagedObject.objects.filter(
+            is_managed=True, affected_maintenances__has_key=str(maintenance_id)
+        ).values_list("id", flat=True)
+    )
     SQL = """UPDATE sa_managedobject
              SET affected_maintenances = affected_maintenances #- '{%s}'
              WHERE affected_maintenances @> '{"%s": {}}';""" % (
@@ -350,3 +358,6 @@ def stop(maintenance_id):
     )
     with pg_connection.cursor() as cursor:
         cursor.execute(SQL)
+    # Clear cache
+    for mo_id in mai_objects:
+        ManagedObject._reset_caches(mo_id)

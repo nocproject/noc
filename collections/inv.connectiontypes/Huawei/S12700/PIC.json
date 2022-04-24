@@ -1,0 +1,9 @@
+{
+    "name": "Huawei | S12700E | PIC",
+    "$collection": "inv.connectiontypes",
+    "uuid": "573925d6-670b-4032-babf-7aef176e78c9",
+    "description": "S12700E Physical Interface Card (PIC)",
+    "c_group": [],
+    "genders": "mf"
+}
+
