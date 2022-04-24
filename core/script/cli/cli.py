@@ -263,7 +263,6 @@ class CLI(BaseCLI):
                     )
                 self.error = self.script.CLISyntaxError(error_text)
                 buffer = b""
-                await self.send(cmd_stop)
             # Then check for operation error
             if (
                 self.profile.rx_pattern_operation_error_str
@@ -271,7 +270,6 @@ class CLI(BaseCLI):
             ):
                 self.error = self.script.CLIOperationError(buffer)
                 buffer = b""
-                await self.send(cmd_stop)
             # Parse all possible objects
             while buffer and not self.error:
                 pr = parser(smart_text(buffer, errors="replace"))
