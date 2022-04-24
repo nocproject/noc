@@ -1,0 +1,40 @@
+{
+    "name": "MELLANOX | Transceiver | 10G | MC3309130-002",
+    "$collection": "inv.objectmodels",
+    "uuid": "10a19896-189a-4451-9e6e-ea92c6734c18",
+    "vendor__code": "MELLANOX",
+    "description": "Mellanox SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 2m",
+    "cr_context": "XCVR",
+    "tags": ["xcvr"],
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["MC3309130-002"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}
