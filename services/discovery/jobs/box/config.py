@@ -17,6 +17,7 @@ class ConfigCheck(DiscoveryCheck):
 
     name = "config"
     required_script = "get_config"
+    fatal_errors = {}
 
     def handler(self):
         # Get config
