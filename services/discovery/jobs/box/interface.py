@@ -501,7 +501,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         :return:
         """
         try:
-            p_id = self.get_interface_profile(iface, labels=iface.effective_labels)
+            p_id = self.get_interface_profile(iface.effective_labels)
         except NotImplementedError:
             self.logger.error("Uses not implemented rule")
             return
