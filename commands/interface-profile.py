@@ -12,6 +12,7 @@ from functools import partial
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.main.models.label import Label
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
@@ -181,8 +182,6 @@ class Command(BaseCommand):
             get_profile = get_profile.get_classificator()
             # raise CommandError("No classification solution")
         else:
-            from noc.main.models.label import Label
-
             get_profile = partial(Label.get_instance_profile, InterfaceProfile)
         pcache = {}
         for o in self.get_objects(moo):
@@ -196,7 +195,7 @@ class Command(BaseCommand):
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
                 if not i.profile or not i.profile_locked:
-                    pn = get_profile(i)
+                    pn = get_profile(Label.merge_labels(Interface.iter_effective_labels(i)))
                     if pn:
                         p = pcache.get(pn)
                         if not p:

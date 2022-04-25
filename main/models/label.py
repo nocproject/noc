@@ -961,20 +961,18 @@ class Label(Document):
     @staticmethod
     def get_instance_profile(
         profile_model,
-        instance,
-        labels: List[str] = None,
+        labels: List[str],
         **kwargs,
     ) -> Optional[str]:
         """
-        Return Profile ID for instance if it support Labels Classification
-        :param instance:
+        Return Profile ID for labels if it support Labels Classification
         :param profile_model:
         :param labels: Labels for profile classification
         :param kwargs:
         :return:
         """
-        effective_labels = labels or Label.merge_labels(instance.iter_effective_labels(instance))
-        # logger.debug("[%s|%s] Classifier with effective labels: %s", str(profile_model), instance, effective_labels)
+        # effective_labels = labels or Label.merge_labels(instance.iter_effective_labels(instance))
+        logger.debug("[%s] Getting profile by labels: %s", str(profile_model), labels)
         if is_document(profile_model):
             coll = profile_model._get_collection()
             pipeline = [
@@ -983,7 +981,7 @@ class Label(Document):
                         "match_rules": {
                             "$elemMatch": {
                                 "dynamic_order": {"$ne": 0},
-                                "labels": {"$in": effective_labels},
+                                "labels": {"$in": labels},
                             }
                         }
                     }
@@ -993,11 +991,11 @@ class Label(Document):
                     "$project": {
                         "dynamic_order": "$match_rules.dynamic_order",
                         "labels": "$match_rules.labels",
-                        "diff": {"$setDifference": ["$match_rules.labels", effective_labels]},
+                        "diff": {"$setDifference": ["$match_rules.labels", labels]},
                         "handlers": 1,
                     }
                 },
-                {"$match": {"diff": []}},
+                {"$match": {"diff": [], "dynamic_order": {"$ne": 0}}},
                 {"$sort": {"dynamic_order": 1}},
             ]
             match_profiles = coll.aggregate(pipeline)
@@ -1010,7 +1008,7 @@ class Label(Document):
                                     AS t("dynamic_order" int, "labels" jsonb, "handler" text)
                                     WHERE t.labels ?| %s::varchar[] order by dynamic_order
                                 """
-                cursor.execute(query, [effective_labels])
+                cursor.execute(query, [labels])
                 match_profiles = [
                     {
                         "_id": r[0],
@@ -1020,11 +1018,12 @@ class Label(Document):
                     }
                     for r in cursor.fetchall()
                 ]
-        sef = set(effective_labels)
+        sef = set(labels)
         for profile in match_profiles:
             if "handler" in profile and profile["handler"]:
                 handler = Handler.get_by_id(profile["handler"])
-                if handler(effective_labels):
+                handler = handler.get_handler()
+                if handler(labels):
                     return profile["_id"]
             if not set(profile["labels"]) - sef:
                 return profile["_id"]
@@ -1064,7 +1063,9 @@ class Label(Document):
             if not hasattr(instance, "effective_labels"):
                 # Instance without effective labels
                 return
-            profile_id = cls.get_instance_profile(profile_model, instance)
+            profile_id = cls.get_instance_profile(
+                profile_model, Label.merge_labels(instance.iter_effective_labels(instance))
+            )
             if profile_id and instance.profile.id != profile_id:
                 profile = profile_model.get_by_id(profile_id)
                 setattr(instance, profile_field, profile)
