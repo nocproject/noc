@@ -43,7 +43,7 @@ services:
       retries: 100
 
   postgres:
-    image: "postgres:12"
+    image: "postgres:14"
     environment:
       POSTGRES_USER: noc
       POSTGRES_DB: noc
