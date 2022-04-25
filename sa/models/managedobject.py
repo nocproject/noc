@@ -580,7 +580,7 @@ class ManagedObject(NOCModel):
     adm_path = ArrayField(IntegerField(), blank=True, null=True, default=list)
     segment_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
     container_path = ObjectIDArrayField(db_index=True, blank=True, null=True, default=list)
-    affected_maintenances = PydanticField(
+    affected_maintenances: Dict[str, Dict[str, str]] = PydanticField(
         "Maintenance Items",
         schema=MaintenanceItems,
         blank=True,
@@ -2162,10 +2162,14 @@ class ManagedObject(NOCModel):
         """
         timestamp = timestamp or datetime.datetime.now()
         return [
-            mai["maintenance"]
+            mai
             for mai in self.affected_maintenances
-            if datetime.datetime.fromisoformat(mai["start"]) < timestamp
-            and (not mai["stop"] or datetime.datetime.fromisoformat(mai["stop"]) > timestamp)
+            if datetime.datetime.fromisoformat(self.affected_maintenances[mai]["start"]) < timestamp
+            and (
+                not self.affected_maintenances[mai]["stop"]
+                or datetime.datetime.fromisoformat(self.affected_maintenances[mai]["stop"])
+                > timestamp
+            )
         ]
 
 
