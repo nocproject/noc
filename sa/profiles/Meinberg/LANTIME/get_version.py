@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Meinberg.LANTIME.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -24,7 +23,7 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"\((?P<distr>[^,]+)\) \((?P<version>[^,]+)\((?P<codename>[^,]+)\)\)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
     def execute(self):
@@ -51,5 +50,5 @@ class Script(BaseScript):
                 "codename": codename,
                 "distro": distr,
                 "kernel": kernel.strip(),
-            }
+            },
         }
