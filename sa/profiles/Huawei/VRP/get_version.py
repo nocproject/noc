@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -217,7 +217,7 @@ class Script(BaseScript):
         if platform.startswith("Quidway"):
             # Strip Quidway keyword from platform name
             platform = platform[8:]
-        return platform, match.group("version"), image
+        return platform, match.group("version").rstrip(), image
 
     def execute_snmp(self, **kwargs):
         try:
