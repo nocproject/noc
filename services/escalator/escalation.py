@@ -377,7 +377,11 @@ class EscalationSequence(BaseSequence):
 
         :returns: True if alarm is already escalated, False otherwise
         """
-        if not self.escalation_doc.leader.is_already_escalated:
+        if (
+            not self.escalation_doc.leader.is_already_escalated
+            or not self.escalation_doc.leader.current_tt_id
+        ):
+            # not self.escalation_doc.leader.current_tt_id if notification doc
             return False
         tt = self.escalation_doc.leader.current_tt_id
         self.log_alarm(f"Already escalated with TT #{tt}")
@@ -642,7 +646,7 @@ class EscalationSequence(BaseSequence):
             ]
         ):
             esc_status[doc["items"]["alarm"]] = doc["_id"]
-            esc_tt[doc["items"]["alarm"]] = doc["tt_id"]
+            esc_tt[doc["items"]["alarm"]] = doc.get("tt_id")
         if not esc_status:
             return  # No escalated docs
         for item in self.escalation_doc.items:
