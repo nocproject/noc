@@ -98,15 +98,16 @@ class Script(BaseScript):
             key = oid.rsplit(".", 1)[-1]
             measure = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.4.{key}")
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}")
-            if value != self.SNMP_UNKNOWN_VALUE:
-                metrics = {
-                    "name": v,
-                    "status": True,
-                    "description": v,
-                    "measurement": self.MEASURE_TYPES[measure],
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}",
-                }
-                r += [metrics]
+            if value and value != self.SNMP_UNKNOWN_VALUE and measure:
+                r += [
+                    {
+                        "name": v,
+                        "status": True,
+                        "description": v,
+                        "measurement": self.MEASURE_TYPES[measure],
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}",
+                    }
+                ]
         # hwDigChannelTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.3.1.2", bulk=False):
             key = oid.rsplit(".", 1)[-1]
@@ -114,91 +115,99 @@ class Script(BaseScript):
             if "door" in v or "heater" in v:
                 value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}")
                 if value != self.SNMP_INVALID_VALUE:
-                    metrics = {
-                        "name": v,
-                        "status": True,
-                        "description": v,
-                        "measurement": "Scalar",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}",
-                    }
-                    r += [metrics]
+                    r += [
+                        {
+                            "name": v,
+                            "status": True,
+                            "description": v,
+                            "measurement": "Scalar",
+                            "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}",
+                        }
+                    ]
         # hwFanTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.5.1.1", bulk=False):
             key = oid.rsplit(".", 1)[-1]
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}")
-            if value != self.SNMP_UNKNOWN_VALUE:
-                metrics = {
-                    "name": "fan_temp",
-                    "status": True,
-                    "description": "Температура в блоке вентиляторов",
-                    "measurement": "Celsius",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}",
-                }
-                r += [metrics]
+            if value and value != self.SNMP_UNKNOWN_VALUE:
+                r += [
+                    {
+                        "name": "fan_temp",
+                        "status": True,
+                        "description": "Температура в блоке вентиляторов",
+                        "measurement": "Celsius",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}",
+                    }
+                ]
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}")
-            if value != self.SNMP_INVALID_VALUE:
-                metrics = {
-                    "name": "fan_speed",
-                    "status": True,
-                    "description": "Скорость вращения вентиляторов",
-                    "measurement": "Percent",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}",
-                }
-                r += [metrics]
+            if value and value != self.SNMP_INVALID_VALUE:
+                r += [
+                    {
+                        "name": "fan_speed",
+                        "status": True,
+                        "description": "Скорость вращения вентиляторов",
+                        "measurement": "Percent",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}",
+                    }
+                ]
         # hwACInputEntry
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.2.1.2", bulk=False):
             key = oid.rsplit(".", 1)[-1]
             if v:
-                metrics = {
-                    "name": "ac_state",
-                    "status": True,
-                    "description": "Наличие напряжения AC",
-                    "measurement": "Scalar",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.2.{key}",
-                }
-                r += [metrics]
+                r += [
+                    {
+                        "name": "ac_state",
+                        "status": True,
+                        "description": "Наличие напряжения AC",
+                        "measurement": "Scalar",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.2.{key}",
+                    }
+                ]
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}")
-            if value != self.SNMP_INVALID_VALUE:
-                metrics = {
-                    "name": "ac_volt",
-                    "status": True,
-                    "description": "Напряжение AC",
-                    "measurement": "Volt AC",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}",
-                }
-                r += [metrics]
+            if value and value != self.SNMP_INVALID_VALUE:
+                r += [
+                    {
+                        "name": "ac_volt",
+                        "status": True,
+                        "description": "Напряжение AC",
+                        "measurement": "Volt AC",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}",
+                    }
+                ]
         # hwDCOutEntry
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.3.1.1", bulk=False):
             key = oid.rsplit(".", 1)[-1]
             if v:
-                metrics = {
-                    "name": "dc_volt",
-                    "status": True,
-                    "description": "Напряжение DC",
-                    "measurement": "Volt DC",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.1.{key}",
-                }
-                r += [metrics]
+                r += [
+                    {
+                        "name": "dc_volt",
+                        "status": True,
+                        "description": "Напряжение DC",
+                        "measurement": "Volt DC",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.1.{key}",
+                    }
+                ]
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}")
-            if value != self.SNMP_INVALID_VALUE:
-                metrics = {
-                    "name": "dc_current",
-                    "status": True,
-                    "description": "Ток DC",
-                    "measurement": "Ampere",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}",
-                }
-                r += [metrics]
+            if value and value != self.SNMP_INVALID_VALUE:
+                r += [
+                    {
+                        "name": "dc_current",
+                        "status": True,
+                        "description": "Ток DC",
+                        "measurement": "Ampere",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}",
+                    }
+                ]
             value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}")
             if value:
-                metrics = {
-                    "name": "dc_state",
-                    "status": True,
-                    "description": "Наличие напряжения DC",
-                    "measurement": "Scalar",
-                    "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}",
-                }
-                r += [metrics]
+                r += [
+                    {
+                        "name": "dc_state",
+                        "status": True,
+                        "description": "Наличие напряжения DC",
+                        "measurement": "Scalar",
+                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}",
+                    }
+                ]
         # hwBatteryTable
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.6.3.1.2", bulk=False):
             key = oid.rsplit(".", 1)[-1]
