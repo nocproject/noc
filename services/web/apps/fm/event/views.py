@@ -12,7 +12,7 @@ import re
 import orjson
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
@@ -28,13 +28,14 @@ from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
-class EventApplication(ExtApplication):
+class EventApplication(ExtDocApplication):
     """
     fm.event application
     """
 
     title = _("Events")
     menu = _("Events")
+    model = ActiveEvent
     icon = "icon_find"
 
     model_map = {"A": ActiveEvent, "F": FailedEvent, "S": ArchivedEvent}
@@ -46,7 +47,7 @@ class EventApplication(ExtApplication):
     ignored_params = ["status", "_dc"]
 
     def __init__(self, *args, **kwargs):
-        ExtApplication.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         from .plugins.base import EventPlugin
 
         # Load plugins
@@ -67,30 +68,15 @@ class EventApplication(ExtApplication):
                     self.plugins[o.name] = o(self)
 
     def cleaned_query(self, q):
-        q = q.copy()
-        for p in self.ignored_params:
-            if p in q:
-                del q[p]
-        for p in (
-            self.limit_param,
-            self.page_param,
-            self.start_param,
-            self.format_param,
-            self.sort_param,
-            self.query_param,
-            self.only_param,
-        ):
-            if p in q:
-                del q[p]
-        # Normalize parameters
-        for p in q:
-            qp = p.split("__")[0]
-            if qp in self.clean_fields:
-                q[p] = self.clean_fields[qp].clean(q[p])
+        q = super().cleaned_query(q)
         if "administrative_domain" in q:
-            a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
-            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
-            q.pop("administrative_domain")
+            ad = AdministrativeDomain.objects.get(id=q["administrative_domain"])
+            q["managed_object__in"] = list(
+                ManagedObject.objects.filter(
+                    administrative_domain__in=AdministrativeDomain.get_nested_ids(ad.id)
+                ).values_list("id", flat=True)
+            )
+            del q["administrative_domain"]
         if "resource_group" in q:
             rgs = ResourceGroup.get_by_id(q["resource_group"])
             s = set(
@@ -102,10 +88,10 @@ class EventApplication(ExtApplication):
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
                 q["managed_object__in"] = s
-            q.pop("resource_group")
+            del q["resource_group"]
         return q
 
-    def instance_to_dict(self, o, fields=None):
+    def instance_to_dict(self, o, fields=None, nocustom=False):
         row_class = None
         if o.status in ("A", "S"):
             subject = o.subject
@@ -148,10 +134,6 @@ class EventApplication(ExtApplication):
             raise Exception("Invalid status")
         model = self.model_map[status]
         return model.objects
-
-    @view(url=r"^$", access="launch", method=["GET"], api=True)
-    def api_list(self, request):
-        return self.list_data(request, self.instance_to_dict)
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True, access="launch")
     def api_event(self, request, id):
