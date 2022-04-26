@@ -7,6 +7,10 @@
 
 # Python modules
 from dataclasses import dataclass
+import time
+
+# NOC modules
+from noc.core.ioloop.timers import PeriodicCallback
 
 # 60 20 0.9 10
 # 5 10 0.9 5
@@ -36,6 +40,34 @@ class StormProtection(object):
     """Message storm protection functionality"""
 
     storm_table = {}
+
+    def initialize(self):
+        pt = PeriodicCallback(self.storm_check_round, STORM_CHECK_ROUND_LENGTH * 1000)
+        pt.start()
+
+    async def storm_check_round(self):
+        #print('***storm_check_round', time.time())
+        to_delete = []
+        for ip in self.storm_table:
+            record = self.storm_table[ip]
+            # set new value to talkative flag
+            if record.messages_count > STORM_MESSAGES_LIMIT_ON:
+                record.talkative = True
+            if record.messages_count < STORM_MESSAGES_LIMIT_OFF:
+                record.talkative = False
+            # check time to live of record
+            if record.messages_count == 0:
+                record.ttl -= 1
+            else:
+                record.ttl = STORM_RECORD_TTL
+            if record.ttl <= 0:
+                to_delete.append(ip)
+            else:
+                # reset messages count
+                record.messages_count = 0
+        # delete old records
+        for ip in to_delete:
+            del self.storm_table[ip]
 
     def update_messages_counter(self, ip_address):
         if ip_address not in self.storm_table:
