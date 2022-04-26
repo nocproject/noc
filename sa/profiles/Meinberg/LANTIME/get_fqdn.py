@@ -1,31 +1,20 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Meinberg.LANTIME.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_fqdn import Script as BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):
     name = "Meinberg.LANTIME.get_fqdn"
     interface = IGetFQDN
+    always_prefer = "S"
 
-    def execute(self):
-        if self.has_snmp():
-            # and self.access_profile.snmp_ro:
-            try:
-                # sysName.0
-                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
-                if v:
-                    return v
-            except self.snmp.TimeOutError:
-                pass
+    def execute_cli(self, **kwargs):
         v = self.cli("uname -n").strip()
-        fqdn = v
-
-        return fqdn
+        return v
