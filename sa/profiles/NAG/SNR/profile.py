@@ -2,7 +2,7 @@
 # Vendor: NAG
 # OS:     SNR
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,6 +38,8 @@ class Profile(BaseProfile):
         match = self.rx_pager.search(c)
         if match:
             script.cli("\x01\x0bterminal length 0", ignore_errors=True)
+        elif "% Unrecognized command" in c:  # Return to normal prompt
+            script.cli("", ignore_errors=True)
 
     INTERFACE_TYPES = {
         "Ethe": "physical",  # Ethernet
