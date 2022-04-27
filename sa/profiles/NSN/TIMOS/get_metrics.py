@@ -138,6 +138,9 @@ class Script(GetMetricsScript):
     )
     def get_dhcp_used_metrics_snmp(self, metrics):
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21"):
+            if not oid.startswith("1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21.1."):
+                # Example - 1.3.6.1.4.1.6527.3.1.2.47.1.17.1.21.4.
+                continue
             _, key = oid.split(".21.1.")
             key = key.split(".")
             pool = "".join([chr(int(c)) for c in key[1:-7]])
