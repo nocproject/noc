@@ -420,7 +420,7 @@ upload dnssync:
   environment: libs
   extends: .upload
   variables:
-    SOURCE: build/rust/release/libip.so
+    SOURCE: build/rust/release/noc-dns-sync
     DEST: cdn/$S3_BUCKET/dnssync/
     BUILD_TARGET: dnssync
   rules:
