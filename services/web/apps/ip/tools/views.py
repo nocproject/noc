@@ -158,7 +158,6 @@ class ToolsAppplication(Application):
                 a = Address.objects.filter(vrf=vrf, afi=afi, address=ip).first()
                 if a:
                     if a.fqdn != fqdn:
-                        self.print("Updating FQDN %s (%s)" % (a.address, a.fqdn))
                         a.fqdn = fqdn
                         a.name = fqdn
                         a.save()
