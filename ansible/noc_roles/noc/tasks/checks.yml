@@ -31,7 +31,7 @@
 - name: Warn about omap is selected
   fail:
     msg: |
-      Be aware that omap service is depricated and should not be used.
+      Be aware that omap service is deprecated and should not be used.
       Read https://kb.nocproject.org/x/OwB2Ag for more details.
   when:
     - has_svc_omap is defined
