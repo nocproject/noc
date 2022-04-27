@@ -42,10 +42,10 @@ class Profile(BaseProfile):
         rb"System is busy, please try after a while)"
     )
     rogue_chars = [
-        re.compile(br"\x1b\[39D\s+\x1b\[39D"),
-        re.compile(br"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
-        re.compile(br"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
-        re.compile(br"\r\nWarning: Battery is low power!"),
+        re.compile(rb"\x1b\[39D\s+\x1b\[39D"),
+        re.compile(rb"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
+        re.compile(rb"\r\n\s+Note: Terminal users login \(IP: \S+ \)"),
+        re.compile(rb"\r\nWarning: Battery is low power!"),
         b"\r",
     ]
     # to one SNMP GET request
