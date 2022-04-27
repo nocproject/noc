@@ -108,9 +108,16 @@ class ObjectMetricsAPI(NBIAPI):
         scopes = {}  # table_name -> ([fields, ..], [where, ..])
         for mc in req.metrics:
             profile = profiles[mc.object]
-            ifaces = tuple(
-                sorted(profile.convert_interface_name(i) for i in getattr(mc, "interfaces", []))
-            )
+            try:
+                ifaces = tuple(
+                    sorted(profile.convert_interface_name(i) for i in getattr(mc, "interfaces", []))
+                )
+            except ValueError:
+                HTTPException(
+                    400,
+                    f'Invalid interface name: {",".join(getattr(mc, "interfaces", []))} '
+                    f"for device: {mc.object}",
+                )
             for mn in mc.metric_types:
                 mt = MetricType.get_by_name(mn)
                 if not mt:
