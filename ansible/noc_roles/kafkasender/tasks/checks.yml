@@ -16,3 +16,12 @@
     - "'svc-liftbridge' not in groups"
   tags:
     - checks
+
+- name: fail if "mx" is not selected
+  fail:
+    msg: "kafkasender service works with 'mx' service. Please setup at least one somewhere."
+  when:
+    - has_svc_kafkasender is defined
+    - "'svc-mx-exec' not in groups"
+  tags:
+    - checks
