@@ -21,6 +21,7 @@ from noc.maintenance.models.maintenance import (
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
+from noc.main.models.label import Label
 from noc.core.translation import ugettext as _
 
 
@@ -101,7 +102,21 @@ class MaintenanceApplication(ExtDocApplication):
                     "profile": Profile.get_by_id(mo["profile"]).name,
                     "address": mo["address"],
                     "description": mo["description"],
-                    "labels": mo["labels"],
+                    "labels": [
+                        {
+                            "id": ll.name,
+                            "is_protected": ll.is_protected,
+                            "scope": ll.scope,
+                            "name": ll.name,
+                            "value": ll.value,
+                            "badges": ll.badges,
+                            "bg_color1": f"#{ll.bg_color1:06x}",
+                            "fg_color1": f"#{ll.fg_color1:06x}",
+                            "bg_color2": f"#{ll.bg_color2:06x}",
+                            "fg_color2": f"#{ll.fg_color2:06x}",
+                        }
+                        for ll in Label.objects.filter(name__in=mo["labels"])
+                    ],
                 }
             ]
 
