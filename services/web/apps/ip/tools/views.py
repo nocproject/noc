@@ -13,15 +13,16 @@ from io import StringIO
 
 # Third-party modules
 from django import forms
-from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
-from noc.core.ip import IP, IPv4
+from noc.core.ip import IP, IPv4, IPv6
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
+from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -141,7 +142,7 @@ class ToolsAppplication(Application):
                     ip = row[4]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if not p.contains(IPv4(ip)):
+                if not p.contains(IPv4(ip)) or not p.contains(IPv6(ip)):
                     continue
                 a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
                 if a.fqdn != fqdn:
@@ -171,11 +172,16 @@ class ToolsAppplication(Application):
                 if "@" not in _zone[z_node].to_text(z_node)
             )
         except dns.exception.DNSException as e:
-            return ValidationError(e.msg)
-        else:
+            self.error(f"DNS Error: {e}")
+            return HttpResponse(str(e), status=400)
+        except OSError as e:
+            self.error(f"OS Error: {e}")
+            return HttpResponse(str(e), status=400)
+
+        if data:
             count = upload_axfr(data, body["zone"])
-        self.message_user(
-            request,
-            _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
-        )
-        return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
+            self.message_user(
+                request,
+                _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
+            )
+            return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
