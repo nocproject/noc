@@ -116,7 +116,7 @@ class ObjectMetricsAPI(NBIAPI):
                 HTTPException(
                     400,
                     f'Invalid interface name: {",".join(getattr(mc, "interfaces", []))} '
-                    f'for device: {mc.object}',
+                    f"for device: {mc.object}",
                 )
             for mn in mc.metric_types:
                 mt = MetricType.get_by_name(mn)
