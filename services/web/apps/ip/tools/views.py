@@ -18,6 +18,7 @@ from django.http import HttpResponse
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
 from noc.core.ip import IP, IPv4, IPv6
+from noc.core.validators import is_ipv4, is_ipv6
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
@@ -142,7 +143,7 @@ class ToolsAppplication(Application):
                     ip = row[4]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if not p.contains(IPv4(ip)) or not p.contains(IPv6(ip)):
+                if is_ipv4(ip) and not p.contains(IPv4(ip)) or is_ipv6(ip) and not p.contains(IPv6(ip)):
                     continue
                 a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
                 if a.fqdn != fqdn:
@@ -176,7 +177,7 @@ class ToolsAppplication(Application):
             return HttpResponse(str(e), status=400)
         except Exception as e:
             self.error(f"Other Error: {e}")
-            return HttpResponse(str(e), status=400)
+            return HttpResponse(str(e), status=500)
 
         if data:
             count = upload_axfr(data, body["zone"])
