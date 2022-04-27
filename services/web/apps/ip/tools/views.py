@@ -23,7 +23,7 @@ from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
-from noc.core.comp import smart_text
+#from noc.core.comp import smart_text
 from noc.core.translation import ugettext as _
 
 
@@ -121,7 +121,8 @@ class ToolsAppplication(Application):
 
         def upload_axfr(data, zone):
             p = IP.prefix(prefix.prefix)
-            count = 0
+            create = 0
+            change = 0
             zz = zone + "."
             lz = len(zz)
             for row in data.splitlines():
@@ -143,16 +144,35 @@ class ToolsAppplication(Application):
                     ip = row[4]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if is_ipv4(ip) and not p.contains(IPv4(ip)) or is_ipv6(ip) and not p.contains(IPv6(ip)):
+                if (
+                    is_ipv4(ip)
+                    and not p.contains(IPv4(ip))
+                    or is_ipv6(ip)
+                    and not p.contains(IPv6(ip))
+                ):
                     continue
-                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
-                if a.fqdn != fqdn:
-                    a.fqdn = fqdn
-                    changed = True
-                if changed:
+                a = Address.objects.filter(vrf=vrf, afi=afi, address=ip).first()
+                if a:
+                    if a.fqdn != fqdn:
+                        self.print("Updating FQDN %s (%s)" % (a.address, a.fqdn))
+                        a.fqdn = fqdn
+                        a.name = fqdn
+                        a.save()
+                        change += 1
+                else:
+                    # Not found
+                    a = Address(
+                        vrf=vrf,
+                        afi=afi,
+                        address=ip,
+                        profile="default",
+                        fqdn=fqdn,
+                        name=fqdn,
+                        description="Imported from %s zone" % zone,
+                    )
                     a.save()
-                    count += 1
-            return count
+                    create += 1
+            return create, change
 
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
@@ -180,9 +200,10 @@ class ToolsAppplication(Application):
             return HttpResponse(str(e), status=500)
 
         if data:
-            count = upload_axfr(data, body["zone"])
+            create, change = upload_axfr(data, body["zone"])
             self.message_user(
                 request,
-                _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
+                _("%(count)s IP addresses uploaded via zone transfer")
+                % {"create": create, "change": change},
             )
             return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
