@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -63,6 +63,7 @@ class ManagedObject(BaseModel):
     tt_queue: Optional[str]
     tt_system_id: Optional[str]
     project: Optional[Reference["Project"]]
+    checkpoint: Optional[str]
 
     @validator("address")
     def address_must_ipaddress(cls, v):  # pylint: disable=no-self-argument
