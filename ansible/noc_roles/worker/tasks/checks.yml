@@ -7,3 +7,10 @@
     - has_svc_noc is not defined
   tags:
     - checks
+
+- name: No worker service is set
+  fail:
+    msg: "No worker service is set. Please setup at least one. "
+  when: "'svc-worker-exec' not in groups"
+  tags:
+    - checks
