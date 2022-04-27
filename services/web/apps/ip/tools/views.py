@@ -165,7 +165,7 @@ class ToolsAppplication(Application):
                         vrf=vrf,
                         afi=afi,
                         address=ip,
-                        profile="default",
+                        profile__name="default",
                         fqdn=fqdn,
                         name=fqdn,
                         description="Imported from %s zone" % zone,
