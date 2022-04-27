@@ -24,6 +24,7 @@ from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
 #from noc.core.comp import smart_text
+from noc.ip.models.addressprofile import AddressProfile
 from noc.core.translation import ugettext as _
 
 
@@ -125,6 +126,9 @@ class ToolsAppplication(Application):
             change = 0
             zz = zone + "."
             lz = len(zz)
+            ap = AddressProfile.objects.filter(name="default").first()
+            if not ap:
+                return create, change
             for row in data.splitlines():
                 row = row.strip().split()
                 if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
@@ -165,7 +169,7 @@ class ToolsAppplication(Application):
                         vrf=vrf,
                         afi=afi,
                         address=ip,
-                        profile__name="default",
+                        profile=ap,
                         fqdn=fqdn,
                         name=fqdn,
                         description="Imported from %s zone" % zone,
