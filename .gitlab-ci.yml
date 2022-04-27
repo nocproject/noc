@@ -415,6 +415,20 @@ upload rust libs:
         - rust/$BUILD_TARGET/*
         - rust/$BUILD_TARGET/**/*
 
+upload dnssync:
+  stage: Upload
+  environment: libs
+  extends: .upload
+  variables:
+    SOURCE: build/rust/release/noc-dns-sync
+    DEST: cdn/$S3_BUCKET/dnssync/
+    BUILD_TARGET: dnssync
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - rust/$BUILD_TARGET/*
+        - rust/$BUILD_TARGET/**/*
+
 gemnasium-python-dependency_scanning:
   stage: Test
   allow_failure: true
