@@ -52,6 +52,7 @@ from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.comp import smart_text
+from noc.core.service.loader import get_service
 
 
 def get_advanced_field(id):
@@ -687,9 +688,10 @@ class AlarmApplication(ExtApplication):
             # Send clear signal to the correlator
             fm_pool = alarm.managed_object.get_effective_fm_pool().name
             stream = f"dispose.{fm_pool}"
-            num_partitions = asyncio.run(self.service.get_stream_partitions(stream))
+            service = get_service()
+            num_partitions = asyncio.run(service.get_stream_partitions(stream))
             partition = int(alarm.managed_object.id) % num_partitions
-            self.service.publish(
+            service.publish(
                 orjson.dumps(
                     {
                         "$op": "clearid",
