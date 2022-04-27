@@ -174,7 +174,7 @@ class ToolsAppplication(Application):
         except dns.exception.DNSException as e:
             self.error(f"DNS Error: {e}")
             return HttpResponse(str(e), status=400)
-        except OSError as e:
+        except Exception as e:
             self.error(f"OS Error: {e}")
             return HttpResponse(str(e), status=400)
 
