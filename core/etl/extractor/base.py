@@ -226,8 +226,8 @@ class BaseExtractor(object):
         if not current:
             yield from delta  # No current state
             return
-        iter_c = iter(current)
-        iter_d = iter(delta)
+        iter_c = iter(sorted(current, key=operator.attrgetter("id")))
+        iter_d = iter(sorted(delta, key=operator.attrgetter("id")))
         c = next(iter_c, None)
         d = next(iter_d, None)
         while c or d:
