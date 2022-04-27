@@ -114,7 +114,7 @@ class Script(BaseScript):
             v = v.lower()
             if "door" in v or "heater" in v:
                 value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}")
-                if value != self.SNMP_INVALID_VALUE:
+                if value and value != self.SNMP_INVALID_VALUE:
                     r += [
                         {
                             "name": v,
@@ -216,39 +216,41 @@ class Script(BaseScript):
                 current = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}")
                 temp = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}")
                 if temp != self.SNMP_UNKNOWN_VALUE and volt != self.SNMP_INVALID_VALUE:
-                    metrics = {
-                        "name": "battery_volt",
-                        "status": True,
-                        "description": "Напряжение АКБ",
-                        "measurement": "Volt DC",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}",
-                    }
-                    r += [metrics]
-                    if current != self.SNMP_INVALID_VALUE:
-                        metrics = {
-                            "name": "battery_current",
+                    r += [
+                        {
+                            "name": "battery_volt",
                             "status": True,
-                            "description": "Ток АКБ",
-                            "measurement": "Ampere",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}",
+                            "description": "Напряжение АКБ",
+                            "measurement": "Volt DC",
+                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}",
                         }
-                    r += [metrics]
-                    metrics = {
-                        "name": "battery_temp",
-                        "status": True,
-                        "description": "Температура АКБ",
-                        "measurement": "Celsius",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}",
-                    }
-                    r += [metrics]
-                    metrics = {
-                        "name": "battery_state",
-                        "status": True,
-                        "description": "Текущее состояние АКБ",
-                        "measurement": "Scalar",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.8.{key}",
-                    }
-                    r += [metrics]
+                    ]
+                    if current != self.SNMP_INVALID_VALUE:
+                        r += [
+                            {
+                                "name": "battery_current",
+                                "status": True,
+                                "description": "Ток АКБ",
+                                "measurement": "Ampere",
+                                "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}",
+                            }
+                        ]
+                    r += [
+                        {
+                            "name": "battery_temp",
+                            "status": True,
+                            "description": "Температура АКБ",
+                            "measurement": "Celsius",
+                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}",
+                        },
+                        {
+                            "name": "battery_state",
+                            "status": True,
+                            "description": "Текущее состояние АКБ",
+                            "measurement": "Scalar",
+                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.8.{key}",
+                        },
+                    ]
         return r
 
     def parse_elabel(self, out):
