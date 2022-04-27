@@ -307,6 +307,9 @@ nav:
               - Maipu:
                   - Overview: user/reference/profiles/Maipu/index.md
                   - Maipu.OS: user/reference/profiles/Maipu/Maipu.OS.md
+              - Meinberg:
+                  - Overview: user/reference/profiles/Meinberg/index.md
+                  - Meinberg.LANTIME: user/reference/profiles/Meinberg/Meinberg.LANTIME.md
               - MikroTik:
                   - Overview: user/reference/profiles/MikroTik/index.md
                   - MikroTik.RouterOS: user/reference/profiles/MikroTik/MikroTik.RouterOS.md
