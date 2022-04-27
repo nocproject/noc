@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from bz2 import compress
 import logging
 import os
 import csv
@@ -14,7 +13,7 @@ import itertools
 import io
 from time import perf_counter
 import contextlib
-from typing import Any, List, Iterable, Type, Union, Tuple, Set, Optional, Dict
+from typing import Any, List, Iterable, Type, Union, Tuple, Set, Optional
 import dataclasses
 import operator
 import re
