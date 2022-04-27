@@ -128,7 +128,7 @@ class ToolsAppplication(Application):
             lz = len(zz)
             ap = AddressProfile.objects.filter(name="default").first()
             if not ap:
-                return create, change
+                return HttpResponse("No Default Address profile", status=500)
             for row in data.splitlines():
                 row = row.strip().split()
                 if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
