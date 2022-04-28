@@ -228,7 +228,7 @@ py:test:
 
 # Build Docs section
 build:Docs:ru:
-  stage: Test
+  stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
@@ -241,10 +241,10 @@ build:Docs:ru:
       - build/docs/ru
     expire_in: 2 hours
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-      - "docs/ru/*"
-      - "docs/ru/**/*"
+        - "docs/*"
+        - "docs/**/*"
 
 build:Docs:en:
   stage: Build
@@ -260,10 +260,10 @@ build:Docs:en:
       - build/docs/en
     expire_in: 2 hours
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-      - "docs/ru/*"
-      - "docs/ru/**/*"
+        - "docs/*"
+        - "docs/**/*"
 
 #Build Image section
 build:Release Image:
@@ -363,10 +363,13 @@ upload docs:
   variables:
     SOURCE: build/docs/*
     DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
-  only:
-    refs:
-      - master
-      - /^release-\d+\.\d+/
+  rules:
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"')
+      when: never
+    - if: ('$CI_COMMIT_BRANCH == "master"')
+      changes:
+        - "docs/*"
+        - "docs/**/*"
 
 upload rust libs:
   stage: Upload
