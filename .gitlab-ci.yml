@@ -364,12 +364,12 @@ upload docs:
     SOURCE: build/docs/*
     DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
   rules:
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"')
+      when: never
     - if: ('$CI_COMMIT_BRANCH == "master"')
       changes:
         - "docs/*"
         - "docs/**/*"
-    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"')
-      when: never
 
 upload rust libs:
   stage: Upload
