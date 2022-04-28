@@ -20,7 +20,7 @@ from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.ip.models.vrf import VRF
 from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
-from noc.core.validators import is_int
+from noc.core.validators import is_int, is_ipv4, is_ipv6
 from noc.core.dns.rr import RR
 from noc.core.text import split_alnum
 from noc.core.comp import smart_text
@@ -162,10 +162,10 @@ class Command(BaseCommand):
                 nameserver=nameserver,
             )
 
-    def load_axfr(self, nameserver, transfer_zone):
+    def load_axfr(self, ip, transfer_zone):
         try:
             _zone = dns.zone.from_xfr(
-                dns.query.xfr(str(nameserver).rstrip("."), transfer_zone, lifetime=5.0)
+                dns.query.xfr(str(ip).rstrip("."), transfer_zone, lifetime=5.0)
             )
             data = "\n".join(
                 _zone[z_node].to_text(z_node)
@@ -286,7 +286,17 @@ class Command(BaseCommand):
                             zrr.save()
         if axfr:
             self.print("Loading zone: %s by AXFR from server: %s" % (transfer_zone, nameserver))
-            data = self.load_axfr(nameserver, transfer_zone)
+            if not is_ipv4(nameserver) and not is_ipv6(nameserver):
+                try:
+                    answer = dns.resolver.resolve(qname=nameserver, rdtype="A", lifetime=5.0)
+                    ip = answer[0].address
+                except dns.exception.DNSException as e:
+                    self.print(f"Resolv Error: {e}")
+                    return
+            else:
+                ip = nameserver
+            print(ip, transfer_zone)
+            data = self.load_axfr(ip, transfer_zone)
             if data is None:
                 self.print("No result")
                 return
@@ -294,7 +304,7 @@ class Command(BaseCommand):
             z = self.dns_zone(zone, zone_profile, dry_run, clean)
             # Populate zone
             vrf = VRF.get_global()
-            if not z.is_forward or not z.is_reverse_ipv4 or not z.is_reverse_ipv6:
+            if not z.is_forward and not z.is_reverse_ipv4 and not z.is_reverse_ipv6:
                 raise CommandError("Unknown zone type")
             for row in data.splitlines():
                 row = row.strip().split()
