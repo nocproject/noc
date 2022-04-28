@@ -39,8 +39,10 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsForm", {
         },
         {
             fieldLabel: __("NS"),
+            emptyText: 'Name server IP or Address',
             name: "ns",
             allowBlank: false,
+            width: 300,
             bind: {
                 value: "{ns}"
             }
@@ -48,7 +50,9 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsForm", {
         {
             fieldLabel: __("Zone"),
             name: "zone",
+            emptyText: 'DNS Zone name to transfer',
             allowBlank: false,
+            width: 300,
             bind: {
                 value: "{zone}"
             }
