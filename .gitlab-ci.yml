@@ -241,10 +241,10 @@ build:Docs:ru:
       - build/docs/ru
     expire_in: 2 hours
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-      - "docs/*"
-      - "docs/**/*"
+        - "docs/*"
+        - "docs/**/*"
 
 build:Docs:en:
   stage: Build
@@ -260,10 +260,10 @@ build:Docs:en:
       - build/docs/en
     expire_in: 2 hours
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-      - "docs/*"
-      - "docs/**/*"
+        - "docs/*"
+        - "docs/**/*"
 
 #Build Image section
 build:Release Image:
@@ -364,10 +364,10 @@ upload docs:
     SOURCE: build/docs/*
     DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-      - "docs/*"
-      - "docs/**/*"
+        - "docs/*"
+        - "docs/**/*"
 
 upload rust libs:
   stage: Upload
