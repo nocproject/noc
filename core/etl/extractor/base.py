@@ -137,13 +137,15 @@ class BaseExtractor(object):
             f.close()
 
     def iter_data(
-        self, checkpoint: Optional[str] = None
+        self, *, checkpoint: Optional[str] = None, **kwargs
     ) -> Iterable[Union[BaseModel, RemovedItem, Tuple[Any, ...]]]:
         """
         Iterator to extract data.
 
         Args:
             checkpoint: Incremental extraction from checkpoint, if set.
+            kwargs: Parameters for future use. Unknown parameters
+                must be ignored.
 
         Returns:
             Iterable of the extracted items.
