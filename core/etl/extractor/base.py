@@ -136,22 +136,19 @@ class BaseExtractor(object):
         finally:
             f.close()
 
-    def iter_data(self) -> Iterable[Union[BaseModel, RemovedItem, Tuple[Any, ...]]]:
-        yield from self.data
-
-    def iter_data_inc(
-        self, checkpoint: str
+    def iter_data(
+        self, checkpoint: Optional[str] = None
     ) -> Iterable[Union[BaseModel, RemovedItem, Tuple[Any, ...]]]:
         """
-        Incremental extraction from checkpoint.
+        Iterator to extract data.
 
         Args:
-            checkpoint: Latest extracted checkpoint.
+            checkpoint: Incremental extraction from checkpoint, if set.
 
         Returns:
-            Iterable of items.
+            Iterable of the extracted items.
         """
-        yield from self.iter_data()
+        yield from self.data
 
     def filter(self, row) -> bool:
         return True
@@ -277,6 +274,7 @@ class BaseExtractor(object):
         )
         # Prepare iterator
         current: Optional[List[BaseModel]] = None
+        checkpoint: Optional[str] = None
         if incremental:
             # Incremental extract
             current = self.read_current_state()
@@ -285,24 +283,18 @@ class BaseExtractor(object):
                 checkpoint = self.get_checkpoint(current)
                 if checkpoint:
                     self.logger.info("Resuming from checkpoint %s", checkpoint)
-                    iter_data = self.iter_data_inc(checkpoint)
                 else:
                     self.logger.info("Checkpoint not found. Falling back to full extract")
-                    iter_data = self.iter_data()
             else:
                 # No current state
                 self.logger.info("No current state. Falling back to full extract")
-                iter_data = self.iter_data()
-        else:
-            # Full extract
-            iter_data = self.iter_data()
         # Extract
         t0 = perf_counter()
         data: List[BaseModel] = []
         n = 0
         seen: Set[str] = set()
         removed: Set[str] = set()
-        for row in iter_data:
+        for row in self.iter_data(checkpoint=checkpoint):
             if not self.filter(row):
                 continue
             if isinstance(row, RemovedItem):
