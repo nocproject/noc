@@ -368,6 +368,8 @@ upload docs:
       changes:
         - "docs/*"
         - "docs/**/*"
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"')
+      when: never
 
 upload rust libs:
   stage: Upload
