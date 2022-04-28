@@ -1,0 +1,83 @@
+{
+  "title": "Telephony | ISDN Channels In Use",
+  "error": false,
+  "span": 6,
+  "editable": true,
+  "type": "graph",
+  "isNew": true,
+  "id": "g8b38b89-497c-45c0-9222-1a4237ec04f7",
+  "targets": [
+    {
+      "refId": "A",
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, \n        avg(isdn_channels) as `Telephony | ISDN Channels In Use` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n        and empty(path)\nGROUP BY t \nORDER BY t ASC",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "telephony",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "datasource": null,
+  "renderer": "flot",
+  "yaxes": [
+    {
+      "label": null,
+      "show": true,
+      "logBase": 1,
+      "min": null,
+      "max": null,
+      "format": "short"
+    },
+    {
+      "label": null,
+      "show": true,
+      "logBase": 1,
+      "min": null,
+      "max": null,
+      "format": "short"
+    }
+  ],
+  "xaxis": {
+    "show": true
+  },
+  "grid": {
+    "threshold1": null,
+    "threshold2": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "lines": true,
+  "fill": 1,
+  "linewidth": 2,
+  "points": false,
+  "pointradius": 5,
+  "bars": false,
+  "stack": false,
+  "percentage": false,
+  "legend": {
+    "show": true,
+    "values": false,
+    "min": false,
+    "max": false,
+    "current": false,
+    "total": false,
+    "avg": false
+  },
+  "nullPointMode": "connected",
+  "steppedLine": false,
+  "tooltip": {
+    "value_type": "cumulative",
+    "shared": true,
+    "sort": 0,
+    "msResolution": false
+  },
+  "timeFrom": null,
+  "timeShift": null,
+  "aliasColors": {},
+  "seriesOverrides": [],
+  "links": []
+}

@@ -414,3 +414,21 @@ class Script(GetMetricsScript):
                 scale=scale if m.metric in SCALE_METRICS else 1,
             )
         #
+
+    @metrics(["Telephony | Active DS0s"], volatile=False, access="S")
+    def get_active_ds0s(self, metrics):
+        """
+        Returns active DS0 channels
+        :return:
+        """
+        # CISCO-POP-MGMT-MIB::cpmDS1ActiveDS0s
+        ds0_oid = "1.3.6.1.4.1.9.10.19.1.1.9.1.3"
+        for oid, v in self.snmp.getnext(ds0_oid, bulk=False):
+            oid2 = oid.split(ds0_oid + ".")
+            (slot, port) = oid2[1].split(".")
+            self.set_metric(
+                id=("Telephony | Active DS0s", None),
+                labels=[f"noc::slot::{slot}", f"noc::interface::{port}"],
+                value=int(v),
+                multi=True,
+            )
