@@ -704,6 +704,20 @@ class ManagedObjectProfile(NOCModel):
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
+    # Trapcollector Storm Policy
+    trapcollector_storm_policy = models.CharField(
+        _("Trapcollector Storm Policy"),
+        max_length=1,
+        choices=[
+            ("D", "Disabled"),
+            ("B", "Block"),
+            ("R", "Raise Alarm"),
+            ("I", "Block & Raise Alarm"),
+        ],
+        default="D",
+    )
+    # Trapcollector Storm Threshold
+    trapcollector_storm_threshold = models.IntegerField(default=20)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
