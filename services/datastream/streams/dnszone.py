@@ -402,8 +402,3 @@ class DNSZoneDataStream(DataStream):
     @classmethod
     def filter_server(cls, name):
         return {f"{cls.F_META}.servers": {"$elemMatch": {"$elemMatch": {"$in": [name]}}}}
-
-    @classmethod
-    def is_moved(cls, meta: Dict[str, List[Any]], meta_filters: Dict[str, Any]) -> bool:
-        # {'servers': [['ns1.example.com', 'ns2.example.com']]} {'meta.servers': {'$elemMatch': {'$elemMatch': {'$in': ['ns1.example.com']}}}}
-        return False
