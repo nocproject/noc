@@ -82,6 +82,8 @@ class BaseLoader(object):
     workflow_event_model = False
     workflow_add_event = "seen"
     workflow_delete_event = "missed"
+    # Incremental
+    checkpoint_field = "checkpoint"
 
     REPORT_INTERVAL = 1000
 
@@ -240,7 +242,7 @@ class BaseLoader(object):
             else:
                 if n.id == o.id:
                     # Changed
-                    if n.dict(include=include_fields) != o.dict(include=include_fields):
+                    if n.dict(include=include_fields, exclude={self.checkpoint_field}) != o.dict(include=include_fields, exclude={self.checkpoint_field}):
                         yield o, n
                     n = next(new, None)
                     o = next(old, None)
@@ -378,6 +380,8 @@ class BaseLoader(object):
             self.logger.error("Cannot change %s:%s: Does not exists", self.name, object_id)
             return None
         for k, nv in v.items():
+            if k == self.checkpoint_field:
+                continue
             if inc_changes and k in inc_changes:
                 ov = getattr(o, k, [])
                 nv = list(set(ov).union(set(inc_changes[k]["add"])) - set(inc_changes[k]["remove"]))
@@ -393,6 +397,8 @@ class BaseLoader(object):
         v = self.clean(item)
         if "id" in v:
             del v["id"]
+        if self.checkpoint_field in v:
+            del v[self.checkpoint_field]
         for fn in set(v).intersection(self.workflow_fields):
             del v[fn]
         o = self.find_object(v)

@@ -179,7 +179,7 @@ class BaseExtractor(object):
         if not fn:
             return None  # No files
         # Read file
-        path = os.path.join(self.import_dir, fn[0])
+        path = os.path.join(self.import_dir, "archive", fn[0])
         self.logger.info("Reading current state from %s", path)
         data = []
         with compressor(path, "r") as f:
