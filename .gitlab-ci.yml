@@ -22,6 +22,7 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
+#Linters section
 check labels:
   stage: Lint
   image: registry.getnoc.com/infrastructure/noc-py-lint:master
@@ -173,6 +174,7 @@ pylint:
   tags:
     - docker
 
+# Test python code section
 py:test:
   stage: Test
   before_script:
@@ -224,34 +226,13 @@ py:test:
       junit: ./build/reports/py-test-junit.xml
     expire_in: 7 days
 
-build:Docs:en:
-  stage: Test
-  environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
-  script:
-    - set -x
-    - pip3 install cachetools==4.2.1
-    - mkdocs build --config-file=docs/en/mkdocs.yml
-  tags:
-    - docker
-  artifacts:
-    paths:
-      - build/docs/en
-    expire_in: 2 hours
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "docs/en/*"
-      - "docs/en/**/*"
-
+# Build Docs section
 build:Docs:ru:
   stage: Test
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
-    - pip3 install cachetools==4.2.1
     - mkdocs build --config-file=docs/ru/mkdocs.yml
   tags:
     - docker
@@ -259,14 +240,13 @@ build:Docs:ru:
     paths:
       - build/docs/ru
     expire_in: 2 hours
-  only:
-    refs:
-      - merge_requests
-    changes:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
       - "docs/ru/*"
       - "docs/ru/**/*"
 
-build:Master Docs:en:
+build:Docs:en:
   stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
@@ -279,29 +259,13 @@ build:Master Docs:en:
     paths:
       - build/docs/en
     expire_in: 2 hours
-  only:
-    refs:
-      - master
-      - /^release-\d+\.\d+/
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+      - "docs/ru/*"
+      - "docs/ru/**/*"
 
-build:Master Docs:ru:
-  stage: Build
-  environment: docs
-  image: registry.getnoc.com/infrastructure/mkdocs:master
-  script:
-    - set -x
-    - mkdocs build --config-file=docs/ru/mkdocs.yml
-  tags:
-    - docker
-  artifacts:
-    paths:
-      - build/docs/ru
-    expire_in: 2 hours
-  only:
-    refs:
-      - master
-      - /^release-\d+\.\d+/
-
+#Build Image section
 build:Release Image:
   stage: Build
   script:
@@ -340,6 +304,7 @@ build:Master Image:
   tags:
     - shell
 
+#Build web section
 build:web:
   stage: Build
   image: node:12
@@ -361,6 +326,7 @@ build:web:
       - dist/ui/pkg/web
       - dist/ui/pkg/web.debug
 
+#Build Rust things section
 Prebuild ip.so:
   stage: Prebuild
   image: registry.getnoc.com/infrastructure/build/rust-centos7:master
@@ -389,6 +355,7 @@ Build agent:
     paths:
       - build/rust/release/noc-agent
 
+# Upload section
 upload docs:
   stage: Upload
   environment: docs
@@ -417,7 +384,7 @@ upload rust libs:
 
 upload dnssync:
   stage: Upload
-  environment: libs
+  environment: dnssync
   extends: .upload
   variables:
     SOURCE: build/rust/release/noc-dns-sync
@@ -429,6 +396,7 @@ upload dnssync:
         - rust/$BUILD_TARGET/*
         - rust/$BUILD_TARGET/**/*
 
+#Dependency scanning
 gemnasium-python-dependency_scanning:
   stage: Test
   allow_failure: true
