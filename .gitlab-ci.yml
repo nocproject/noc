@@ -228,7 +228,7 @@ py:test:
 
 # Build Docs section
 build:Docs:ru:
-  stage: Test
+  stage: Build
   environment: docs
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
@@ -364,7 +364,7 @@ upload docs:
     SOURCE: build/docs/*
     DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
   rules:
-    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
+    - if: ('$CI_COMMIT_BRANCH == "master"')
       changes:
         - "docs/*"
         - "docs/**/*"
