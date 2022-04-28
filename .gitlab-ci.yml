@@ -243,8 +243,8 @@ build:Docs:ru:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-      - "docs/ru/*"
-      - "docs/ru/**/*"
+      - "docs/*"
+      - "docs/**/*"
 
 build:Docs:en:
   stage: Build
@@ -262,8 +262,8 @@ build:Docs:en:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-      - "docs/ru/*"
-      - "docs/ru/**/*"
+      - "docs/*"
+      - "docs/**/*"
 
 #Build Image section
 build:Release Image:
@@ -366,8 +366,8 @@ upload docs:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-      - "docs/ru/*"
-      - "docs/ru/**/*"
+      - "docs/*"
+      - "docs/**/*"
 
 upload rust libs:
   stage: Upload
