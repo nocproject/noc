@@ -1,0 +1,84 @@
+{
+  "title": "Telephony | Active DS0s",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": "f1ad2d11-4cee-49ff-a1d6-72146265907a",
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "telephony",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((slot, ActiveDS0)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'/') as slot, \n        avg(active_ds0) as `ActiveDS0` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    and notEmpty(path)\n    GROUP BY arrayStringConcat(path,'/'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "refId": "A",
+      "resultFormat": "time_series"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "x-axis": true,
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": 0,
+      "show": true
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    }
+  ]
+}
