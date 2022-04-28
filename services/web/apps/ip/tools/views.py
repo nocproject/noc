@@ -189,7 +189,7 @@ class ToolsAppplication(Application):
                 self.error(f"Resolv Error: {e}")
                 return HttpResponse(e, status=500)
         else:
-            ip = [body["ns"]]
+            ip = body["ns"]
         try:
             _zone = dns.zone.from_xfr(
                 dns.query.xfr(
