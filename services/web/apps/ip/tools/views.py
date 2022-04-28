@@ -23,7 +23,8 @@ from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
-#from noc.core.comp import smart_text
+
+# from noc.core.comp import smart_text
 from noc.ip.models.addressprofile import AddressProfile
 from noc.core.translation import ugettext as _
 
@@ -127,8 +128,6 @@ class ToolsAppplication(Application):
             zz = zone + "."
             lz = len(zz)
             ap = AddressProfile.objects.filter(name="default").first()
-            if not ap:
-                return HttpResponse("No Default Address profile", status=500)
             for row in data.splitlines():
                 row = row.strip().split()
                 if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
@@ -182,10 +181,19 @@ class ToolsAppplication(Application):
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denined"))
         body = orjson.loads(request.body)
+        if not is_ipv4(body["ns"]) and not is_ipv6(body["ns"]):
+            try:
+                answer = dns.resolver.resolve(qname=body["ns"], rdtype="A", lifetime=5.0)
+                ip = answer[0].address
+            except dns.exception.DNSException as e:
+                self.error(f"Resolv Error: {e}")
+                return HttpResponse(e, status=500)
+        else:
+            ip = [body["ns"]]
         try:
             _zone = dns.zone.from_xfr(
                 dns.query.xfr(
-                    body["ns"],
+                    ip,
                     body["zone"],
                     lifetime=5.0,
                 )
@@ -197,16 +205,17 @@ class ToolsAppplication(Application):
             )
         except dns.exception.DNSException as e:
             self.error(f"DNS Error: {e}")
-            return HttpResponse(str(e), status=400)
+            return HttpResponse(e, status=400)
         except Exception as e:
             self.error(f"Other Error: {e}")
-            return HttpResponse(str(e), status=500)
+            return HttpResponse(e, status=500)
 
         if data:
             create, change = upload_axfr(data, body["zone"])
-            self.message_user(
-                request,
-                _("%(count)s IP addresses uploaded via zone transfer")
-                % {"create": create, "change": change},
+            return HttpResponse(
+                _(
+                    "Created: %(create)s and Changed: %(change)s IP addresses uploaded via zone transfer."
+                )
+                % {"create": create, "change": change}
             )
-            return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
+        return HttpResponse("No DNS Zone", status=404)

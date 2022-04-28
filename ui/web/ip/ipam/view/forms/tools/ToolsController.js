@@ -45,8 +45,9 @@ Ext.define("NOC.ip.ipam.view.forms.tools.ToolsController", {
             url: "/ip/tools/" + prefix.vrf + "/" + prefix.afi + "/" + prefix.name + "/upload_axfr/",
             method: "POST",
             jsonData: data,
-            success: function() {
-                NOC.info(__("Done"));
+            success: function(r) {
+                var msg = r.responseText || r.statusText;
+                NOC.info(msg);
             },
             failure: function(r) {
                 var msg = r.responseText || r.statusText;
