@@ -55,7 +55,7 @@ class BaseRemoteSystem(object):
             chain.get_loader(ld)
         return chain
 
-    def extract(self, extractors=None):
+    def extract(self, extractors=None, incremental: bool = False):
         extractors = extractors or []
         for en in reversed(self.extractors_order):
             if extractors and en not in extractors:
@@ -66,7 +66,7 @@ class BaseRemoteSystem(object):
                 continue
             # @todo: Config
             xc = self.extractors[en](self)
-            xc.extract()
+            xc.extract(incremental=incremental)
 
     def load(self, loaders=None):
         loaders = loaders or []
