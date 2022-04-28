@@ -717,7 +717,7 @@ class ManagedObjectProfile(NOCModel):
         default="D",
     )
     # Trapcollector Storm Threshold
-    trapcollector_storm_threshold = models.IntegerField(default=20)
+    trapcollector_storm_threshold = models.IntegerField(default=1000)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
