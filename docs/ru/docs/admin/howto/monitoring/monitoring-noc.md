@@ -199,10 +199,18 @@ global:
   smtp_require_tls: false
  
 route:
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 8h
+  group_by: [env, node]
   receiver: 'prometheus-bot'
   routes:
+    - receiver: blackhole
+      continue: false
+      match:
+        alertname: DeadMansSwitch
     - receiver: 'prometheus-bot'
-      group_interval: 10m
+      group_interval: 5m
  
 receivers:
 - name: 'prometheus-bot'
