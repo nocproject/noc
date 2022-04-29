@@ -475,11 +475,11 @@ class ManagedObjectDataStream(DataStream):
 
     @classmethod
     def filter_service_group(cls, name: str):
-        return {"%s.service_groups" % cls.F_META: name}
+        return {f"{cls.F_META}.service_groups": {"$elemMatch": {"$elemMatch": {"$in": [name]}}}}
 
     @classmethod
     def filter_client_group(cls, name: str):
-        return {"%s.client_groups" % cls.F_META: name}
+        return {f"{cls.F_META}.client_groups": {"$elemMatch": {"$elemMatch": {"$in": [name]}}}}
 
     @classmethod
     def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
