@@ -400,4 +400,4 @@ class DNSZoneDataStream(DataStream):
 
     @classmethod
     def filter_server(cls, name):
-        return {"%s.servers" % cls.F_META: name}
+        return {f"{cls.F_META}.servers": {"$elemMatch": {"$elemMatch": {"$in": [name]}}}}

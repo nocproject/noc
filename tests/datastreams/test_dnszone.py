@@ -111,4 +111,4 @@ def test_filter_server():
     q = DNSZoneDataStream.filter_server("ns1.example.com")
     assert q
     assert "meta.servers" in q
-    assert q["meta.servers"] == "ns1.example.com"
+    assert q["meta.servers"] == {"$elemMatch": {"$elemMatch": {"$in": ["ns1.example.com"]}}}

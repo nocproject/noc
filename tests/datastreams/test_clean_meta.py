@@ -74,5 +74,39 @@ from noc.core.datastream.base import DataStream
         ),
     ],
 )
-def test_parse_table(meta, current_meta, expected):
+def test_ds_clean_meta(meta, current_meta, expected):
     assert DataStream.clean_meta(meta, current_meta) == expected
+
+
+@pytest.mark.parametrize(
+    "meta,meta_filter,expected",
+    [
+        (
+            {"servers": [["ns1.example.com", "ns2.example.com"]]},
+            {"meta.servers": {"$elemMatch": {"$elemMatch": {"$in": ["ns1.example.com"]}}}},
+            False,
+        ),
+        (
+            {
+                "servers": [
+                    ["ns3.example.com", "ns2.example.com"],
+                    ["ns1.example.com", "ns2.example.com"],
+                ]
+            },
+            {"meta.servers": {"$elemMatch": {"$elemMatch": {"$in": ["ns1.example.com"]}}}},
+            True,
+        ),
+        (
+            {"pool": ["POOL1", "POOL2"]},
+            {"meta.pool": "POOL2"},
+            True,
+        ),
+        (
+            {"pool": ["POOL1", "POOL2"]},
+            {"meta.pool": "POOL1"},
+            False,
+        ),
+    ],
+)
+def test_ds_is_moved(meta, meta_filter, expected):
+    assert DataStream.is_moved(meta, meta_filter) == expected
