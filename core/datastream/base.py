@@ -399,6 +399,10 @@ class DataStream(object):
             if isinstance(meta[field], str):
                 # Old meta format
                 return False
+            if "$elemMatch" in field_value:
+                field_value = field_value["$elemMatch"]["$elemMatch"]["$in"]
+            if isinstance(meta[field][0], list) and isinstance(field_value, list):
+                return not set(field_value).intersection(set(meta[field][0]))
             if meta[field][0] != field_value:
                 return True
         return False
