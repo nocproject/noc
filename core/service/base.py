@@ -258,7 +258,11 @@ class BaseService(object):
         Set up signal handlers
         """
         signal.signal(signal.SIGTERM, self.on_SIGTERM)
-        signal.signal(signal.SIGHUP, self.on_SIGHUP)
+        if os.name == "nt":
+            # Ctrl+C. For cancel traced Ctrl + Break
+            signal.signal(signal.SIGINT, self.on_SIGTERM)
+        else:
+            signal.signal(signal.SIGHUP, self.on_SIGHUP)
 
     def set_proc_title(self):
         """
