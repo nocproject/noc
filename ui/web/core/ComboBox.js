@@ -18,7 +18,7 @@ Ext.define("NOC.core.ComboBox", {
     queryParam: "__query",
     queryCaching: false,
     queryDelay: 200,
-    forceSelection: false,
+    forceSelection: true,
     minChars: 2,
     typeAhead: true,
     triggerAction: "all",
