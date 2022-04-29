@@ -85,7 +85,27 @@ def test_ds_clean_meta(meta, current_meta, expected):
             {"servers": [["ns1.example.com", "ns2.example.com"]]},
             {"meta.servers": {"$elemMatch": {"$elemMatch": {"$in": ["ns1.example.com"]}}}},
             False,
-        )
+        ),
+        (
+            {
+                "servers": [
+                    ["ns3.example.com", "ns2.example.com"],
+                    ["ns1.example.com", "ns2.example.com"],
+                ]
+            },
+            {"meta.servers": {"$elemMatch": {"$elemMatch": {"$in": ["ns1.example.com"]}}}},
+            True,
+        ),
+        (
+            {"pool": ["POOL1", "POOL2"]},
+            {"meta.pool": "POOL2"},
+            True,
+        ),
+        (
+            {"pool": ["POOL1", "POOL2"]},
+            {"meta.pool": "POOL1"},
+            False,
+        ),
     ],
 )
 def test_ds_is_moved(meta, meta_filter, expected):
