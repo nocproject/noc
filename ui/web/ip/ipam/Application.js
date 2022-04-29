@@ -20,6 +20,7 @@ Ext.define("NOC.ip.ipam.Application", {
         "NOC.ip.ipam.view.forms.prefix.PrefixDeletePanel",
         "NOC.ip.ipam.view.forms.prefix.RebasePanel",
         "NOC.ip.ipam.view.forms.prefix.AddressPanel",
+        "NOC.ip.ipam.view.forms.tools.ToolsForm",
         "NOC.ip.ipam.ApplicationModel",
         "NOC.ip.ipam.ApplicationController"
     ],
@@ -58,6 +59,7 @@ Ext.define("NOC.ip.ipam.Application", {
                 ipIPAMVRFListOpen: "openVRFList",
                 ipIPAMAddressFormEdit: "onAddressFormEdit",
                 ipIPAMAddressFormNew: "onAddressFormNew",
+                ipIPAMToolsFormOpen: "onToolsFormOpen",
             }
         },
         {
@@ -87,6 +89,13 @@ Ext.define("NOC.ip.ipam.Application", {
             xtype: "ip.ipam.form.rebase",
             listeners: {
                 ipIPAMRebaseCloseForm: "onRebaseFormClose"
+            }
+        },
+        {
+            itemId: "ipam-tools-form",
+            xtype: "ip.ipam.form.tools",
+            listeners: {
+                ipIPAMToolsFormClose: "onToolsFormClose"
             }
         }
     ]
