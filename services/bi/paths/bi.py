@@ -35,6 +35,7 @@ from noc.sa.interfaces.base import DictListParameter, DictParameter, IntParamete
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 from noc.core.translation import ugettext as _
+from noc.config import config
 
 
 router = APIRouter()
@@ -106,12 +107,14 @@ class _BIAPI(JSONRPCAPI):
                         "name": k.field_name,
                         "description": k.field_name,
                         "type": "UInt64",
-                        "dict": cls.ref_dict.get(k.model, None),
+                        "dict": f"{config.clickhouse.db_dictionaries}.{cls.ref_dict[k.model]}"
+                        if k.model in cls.ref_dict
+                        else None,
                         "model": k.model,
                     }
                 ]
                 if cls.ref_dict.get(k.model, None):
-                    dcls = dict_loader[cls.ref_dict.get(k.model, None)]
+                    dcls = dict_loader[cls.ref_dict[k.model]]
                     if dcls:
                         for f in dcls._meta.ordered_fields:
                             r["fields"] += [
@@ -120,7 +123,7 @@ class _BIAPI(JSONRPCAPI):
                                     "description": f.description or f.name,
                                     "type": "UInt64",
                                     "ro": True,
-                                    "dict": cls.ref_dict.get(k.model, None),
+                                    "dict": f"{config.clickhouse.db_dictionaries}.{cls.ref_dict[k.model]}",
                                     "dict_id": k.field_name,
                                     "model": k.model,
                                 }
@@ -155,7 +158,7 @@ class _BIAPI(JSONRPCAPI):
             for f in model._meta.ordered_fields:
                 d = getattr(f, "dict_type", None)
                 if d:
-                    d = d._meta.name
+                    d = f"{config.clickhouse.db_dictionaries}.{d._meta.name}"
                 r["fields"] += [
                     {
                         "name": f.name,
@@ -542,7 +545,7 @@ class _BIAPI(JSONRPCAPI):
         try:
             items = I_VALID.clean(items)
         except ValueError as e:
-            self.logger.error("Validation items with rights", e)
+            self.logger.error("Validation items with rights: %s", e)
             metrics["error", ("type", "validation")] += 1
             raise APIError("Validation error %s" % e)
         for i in items:
