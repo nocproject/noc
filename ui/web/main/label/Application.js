@@ -280,7 +280,7 @@ Ext.define("NOC.main.label.Application", {
                         value: "{is_matching}",
                         disabled: "{isEnableDisableRx}"
                     },
-                    boxLabel: __("Regexp Label"),
+                    boxLabel: __("Is Matching Label"),
                 },
                 {
                     name: "match_regex",
