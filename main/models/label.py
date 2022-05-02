@@ -1176,7 +1176,7 @@ class Label(Document):
         """
         rxs = []
         for ll in Label.objects.filter(
-            __raw__={"is_regex": True, "match_regex": {"$elemMatch": {"scope": scope}}}
+            __raw__={"is_matching": True, "match_regex": {"$elemMatch": {"scope": scope}}}
         ):
             for rx in ll.match_regex:
                 if rx.scope == scope:
