@@ -81,7 +81,7 @@ class MetricType(Document):
     # Global ID
     uuid = UUIDField(binary=True)
     # Metric scope reference
-    scope = PlainReferenceField(MetricScope)
+    scope: "MetricScope" = PlainReferenceField(MetricScope)
     # Database field name
     field_name = StringField()
     # Database field type
@@ -107,7 +107,7 @@ class MetricType(Document):
         MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
     )
     # Scale
-    scale = PlainReferenceField(Scale, default=Scale.get_default_scale)
+    scale: "Scale" = PlainReferenceField(Scale, default=Scale.get_default_scale)
     # Measure name, like 'kbit/s'
     # Compatible to Grafana
     measure = StringField()
