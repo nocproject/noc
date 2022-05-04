@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # tgsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ class TgSenderService(FastAPIService):
     @staticmethod
     def escape_markdown(text):
         """Helper function to escape telegram markup symbols"""
-        escape_chars = r"\*_`"
+        escape_chars = r"\*_`["
         return re.sub(r"([%s])" % escape_chars, r"\\\1", text)
 
     def send_tb(self, topic: str, data: str) -> None:
