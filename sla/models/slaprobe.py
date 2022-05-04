@@ -34,6 +34,7 @@ from noc.sa.models.service import Service
 from noc.pm.models.agent import Agent
 from noc.main.models.label import Label
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
 
@@ -44,6 +45,7 @@ _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 @Label.model
+@change
 @bi_sync
 @workflow
 class SLAProbe(Document):
