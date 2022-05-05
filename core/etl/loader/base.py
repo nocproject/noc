@@ -242,7 +242,9 @@ class BaseLoader(object):
             else:
                 if n.id == o.id:
                     # Changed
-                    if n.dict(include=include_fields, exclude={self.checkpoint_field}) != o.dict(include=include_fields, exclude={self.checkpoint_field}):
+                    if n.dict(include=include_fields, exclude={self.checkpoint_field}) != o.dict(
+                        include=include_fields, exclude={self.checkpoint_field}
+                    ):
                         yield o, n
                     n = next(new, None)
                     o = next(old, None)
