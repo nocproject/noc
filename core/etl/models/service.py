@@ -44,6 +44,7 @@ class Service(BaseModel):
     cpe_group: Optional[str]
     labels: Optional[List[str]]
     description: Optional[str] = None
+    checkpoint: Optional[str]
 
     class Config:
         fields = {"state_changed": "logical_status_start", "state": "logical_status"}

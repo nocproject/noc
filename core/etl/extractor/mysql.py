@@ -56,7 +56,7 @@ class MySQLExtractor(SQLExtractor):
         cursor = self.connect.cursor()
         return cursor
 
-    def iter_data(self):
+    def iter_data(self, checkpoint=None, **kwargs):
         cursor = self.get_cursor()
         # Fetch data
         self.logger.info("Fetching data")
