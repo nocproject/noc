@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Extract/Transfer/Load commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -65,10 +65,13 @@ class Command(BaseCommand):
         db_diff.add_argument("system", help="Remote system name")
         # extract command
         extract_parser = subparsers.add_parser("extract")
-        extract_parser.add_argument("system", help="Remote system name")
         extract_parser.add_argument(
-            "quiet", action="store_true", default=True, help="Remote system name"
+            "--quiet", action="store_true", default=True, help="Remote system name"
         )
+        extract_parser.add_argument(
+            "--incremental", action="store_true", default=False, help="Incremental extracting"
+        )
+        extract_parser.add_argument("system", help="Remote system name")
         extract_parser.add_argument(
             "extractors", nargs=argparse.REMAINDER, help="List of extractor names"
         )
@@ -105,7 +108,11 @@ class Command(BaseCommand):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
-        remote_system.extract(options.get("extractors", []), quiet=options.get("quiet", False))
+        remote_system.extract(
+            options.get("extractors", []),
+            quiet=options.get("quiet", False),
+            incremental=options.get("incremental", False),
+        )
         if not remote_system.extract_error:
             return 0
         return 1
