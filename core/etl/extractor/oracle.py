@@ -103,7 +103,7 @@ class ORACLEExtractor(SQLExtractor):
                     yield from seq
                     left -= 1
 
-    def iter_data(self):
+    def iter_data(self, checkpoint=None, **kwargs):
         concurrency = int(self.config.get("ORACLE_ARRAYSIZE", 1))
         if concurrency == 1:
             yield from self.iter_data_single()
