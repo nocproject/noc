@@ -11,18 +11,15 @@ import time
 
 # NOC modules
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.service.loader import get_service
 
 # 60 20 0.9 10
 # 5 10 0.9 5
 
 # check round duration in seconds
 STORM_CHECK_ROUND_LENGTH = 60
-# limit of messages to set talkative ON
-STORM_MESSAGES_LIMIT_ON = 20
-# conversion rate between STORM_MESSAGES_LIMIT_ON and STORM_MESSAGES_LIMIT_OFF
-STORM_MESSAGES_LIMIT_REDUCTION = 0.9
-# limit of messages to set talkative OFF
-STORM_MESSAGES_LIMIT_OFF = round(STORM_MESSAGES_LIMIT_ON * STORM_MESSAGES_LIMIT_REDUCTION)
+# conversion rate between ON and OFF thresholds
+STORM_THRESHOLD_REDUCTION = 0.9
 # time to live of records in rounds
 STORM_RECORD_TTL = 10
 
@@ -41,6 +38,9 @@ class StormProtection(object):
 
     storm_table = {}
 
+    def __init__(self):
+        self.service = get_service()
+
     def initialize(self):
         pt = PeriodicCallback(self.storm_check_round, STORM_CHECK_ROUND_LENGTH * 1000)
         pt.start()
@@ -50,10 +50,11 @@ class StormProtection(object):
         to_delete = []
         for ip in self.storm_table:
             record = self.storm_table[ip]
+            cfg = self.service.address_configs[ip]
             # set new value to talkative flag
-            if record.messages_count > STORM_MESSAGES_LIMIT_ON:
+            if record.messages_count > cfg.storm_threshold:
                 record.talkative = True
-            if record.messages_count < STORM_MESSAGES_LIMIT_OFF:
+            if record.messages_count < round(cfg.storm_threshold * STORM_THRESHOLD_REDUCTION):
                 record.talkative = False
             # check time to live of record
             if record.messages_count == 0:

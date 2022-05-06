@@ -192,6 +192,8 @@ class TrapCollectorService(FastAPIService):
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
+            storm_policy=data["storm_policy"],
+            storm_threshold=data["storm_threshold"],
         )
         if config.message.enable_snmptrap and "managed_object" in data:
             cfg.managed_object = ManagedObjectData(**data["managed_object"])
