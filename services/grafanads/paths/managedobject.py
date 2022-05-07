@@ -23,7 +23,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.models import get_model
 from ..models.jsonds import AnnotationSection
-from ..models.managedobject import VariableRequest, QueryPayloadItem
+from ..models.managedobject import VariablePayloadItem, QueryPayloadItem
 from ..jsonds import JsonDSAPI
 
 
@@ -33,7 +33,7 @@ router = APIRouter()
 class ManagedObjectJsonDS(JsonDSAPI):
     api_name = "managedobject"
     query_payload = QueryPayloadItem
-    variable_payload = VariableRequest
+    variable_payload = VariablePayloadItem
 
     @staticmethod
     def resolve_object_query(model_id, value, user: User = None) -> Optional[int]:
