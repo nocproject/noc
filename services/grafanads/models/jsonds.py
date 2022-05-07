@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any, Union, Tuple
 
 # Third-party modules
 from pydantic import BaseModel, Field
@@ -73,12 +73,12 @@ class QueryRequest(BaseModel):
     max_datapoints: int = Field(500, alias="maxDataPoints")
     targets: List[TargetItem]
     adhoc_filters: Optional[List[AdhocFilterItem]] = Field(None, alias="adhocFilters")
-    result_type: str = Field("timeseries", alias="format")  # matrix
+    result_type: str = Field("time_series", alias="format")  # matrix
 
 
 class TargetResponseItem(BaseModel):
     target: str
-    datapoints: List[List[float]]
+    datapoints: List[Tuple[float, int]]
 
 
 class SearchResponseItem(BaseModel):
