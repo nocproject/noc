@@ -188,12 +188,12 @@ class ManagedObject(NOCModel):
 
     name = CharField("Name", max_length=64, unique=True)
     is_managed = BooleanField("Is Managed?", default=True)
-    container = DocumentReferenceField(Object, null=True, blank=True)
-    administrative_domain = CachedForeignKey(
+    container: "Object" = DocumentReferenceField(Object, null=True, blank=True)
+    administrative_domain: "AdministrativeDomain" = CachedForeignKey(
         AdministrativeDomain, verbose_name="Administrative Domain", on_delete=CASCADE
     )
-    segment = DocumentReferenceField(NetworkSegment, null=False, blank=False)
-    pool = DocumentReferenceField(Pool, null=False, blank=False)
+    segment: "NetworkSegment" = DocumentReferenceField(NetworkSegment, null=False, blank=False)
+    pool: "Pool" = DocumentReferenceField(Pool, null=False, blank=False)
     project = CachedForeignKey(
         Project, verbose_name="Project", on_delete=CASCADE, null=True, blank=True
     )
@@ -864,8 +864,10 @@ class ManagedObject(NOCModel):
             or "container" in self.changed_fields
         ):
             self.adm_path = self.administrative_domain.get_path()
-            self.segment_path = self.segment.get_path()
-            self.container_path = self.container.get_path() if self.container else []
+            self.segment_path = [str(sid) for sid in self.segment.get_path()]
+            self.container_path = (
+                [str(sid) for sid in self.container.get_path()] if self.container else []
+            )
             ManagedObject.objects.filter(id=self.id).update(
                 adm_path=self.adm_path,
                 segment_path=self.segment_path,
