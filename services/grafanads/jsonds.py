@@ -77,7 +77,7 @@ class JsonDSAPI(object):
     QUERY_CONFIGS: List["QueryConfig"] = None
     openapi_tags = ["api", "grafanads"]
     api_name: str = None
-    query_payload = None
+    query_response_model = List[TargetResponseItem]
     variable_payload = None
     allow_interval_limit: bool = True
 
@@ -506,14 +506,14 @@ class JsonDSAPI(object):
             path=f"/api/grafanads/{self.api_name}/query",
             endpoint=self.api_grafanads_query,
             methods=["POST"],
-            response_model=List[TargetResponseItem],
+            response_model=self.query_response_model,
             tags=self.openapi_tags,
             name=f"{self.api_name}_query",
             description="Getting target datapoints",
         )
         # Backward compatible
         self.router.add_api_route(
-            path=f"/api/grafanads/annotations",
+            path="/api/grafanads/annotations",
             endpoint=self.api_grafanads_annotations,
             methods=["POST"],
             response_model=List[Annotation],
