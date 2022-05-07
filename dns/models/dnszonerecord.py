@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # DNSZoneRecord model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from typing import Optional
 
 # Third-party modules
 from django.db import models
@@ -32,7 +35,7 @@ class DNSZoneRecord(NOCModel):
         db_table = "dns_dnszonerecord"
         app_label = "dns"
 
-    zone = models.ForeignKey(DNSZone, verbose_name="Zone", on_delete=models.CASCADE)
+    zone: "DNSZone" = models.ForeignKey(DNSZone, verbose_name="Zone", on_delete=models.CASCADE)
     name = models.CharField(_("Name"), max_length=64, blank=True, null=True)
     ttl = models.IntegerField(_("TTL"), null=True, blank=True)
     type = models.CharField(_("Type"), max_length=16)
@@ -50,7 +53,7 @@ class DNSZoneRecord(NOCModel):
         )
 
     @classmethod
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["DNSZoneRecord"]:
         dnszonerecord = DNSZoneRecord.objects.filter(id=id)[:1]
         if dnszonerecord:
             return dnszonerecord[0]
@@ -59,6 +62,9 @@ class DNSZoneRecord(NOCModel):
     def get_changed_instance(self):
         return self.zone
 
+    def iter_related_changed(self, changed_fields=None):
+        yield "dns.DNSZone", self.zone.id
+
     @classmethod
-    def can_set_label(cls, label):
+    def can_set_label(cls, label: str) -> bool:
         return Label.get_effective_setting(label, setting="enable_dnszonerecord")
