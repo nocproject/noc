@@ -500,7 +500,7 @@ class JsonDSAPI(object):
             response_model=List[SearchResponseItem],
             tags=self.openapi_tags,
             name=f"{self.api_name}_search",
-            description=f"Getting available metrics ",
+            description="Getting available metrics",
         )
         self.router.add_api_route(
             path=f"/api/grafanads/{self.api_name}/query",
@@ -509,7 +509,7 @@ class JsonDSAPI(object):
             response_model=List[TargetResponseItem],
             tags=self.openapi_tags,
             name=f"{self.api_name}_query",
-            description=f"Getting target datapoints",
+            description="Getting target datapoints",
         )
         # Backward compatible
         self.router.add_api_route(
@@ -519,7 +519,7 @@ class JsonDSAPI(object):
             response_model=List[Annotation],
             tags=self.openapi_tags,
             name=f"{self.api_name}_annotations_back",
-            description=f"Getting target annotations (Backward compatible)",
+            description="Getting target annotations (Backward compatible)",
         )
         self.router.add_api_route(
             path=f"/api/grafanads/{self.api_name}/annotations",
@@ -528,7 +528,7 @@ class JsonDSAPI(object):
             response_model=List[Annotation],
             tags=self.openapi_tags,
             name=f"{self.api_name}_annotations",
-            description=f"Getting target annotations",
+            description="Getting target annotations",
         )
         self.router.add_api_route(
             path=f"/api/grafanads/{self.api_name}/variable",
@@ -537,5 +537,5 @@ class JsonDSAPI(object):
             response_model=List[Union[Dict[str, str], str]],
             tags=self.openapi_tags,
             name=f"{self.api_name}_variable",
-            description=f"Getting target variable",
+            description="Getting target variable",
         )
