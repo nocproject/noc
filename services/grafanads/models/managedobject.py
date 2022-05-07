@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Union, Dict, List, Literal, Any
+from typing import Optional, Union, List, Literal
 
 # Third-party modules
 from pydantic import BaseModel
@@ -18,7 +18,6 @@ from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.inv.models.interface import Interface
-from ..models.jsonds import RangeSection
 
 MAX_MANAGED_OBJECT_RESPONSE = 2000
 
