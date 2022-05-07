@@ -83,7 +83,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         return
     for m_id, o_id in document.iter_related_changed():
         change_tracker.register(
-            op=op,
+            op="update",
             model=m_id,
             id=str(o_id),
             fields=None,
@@ -134,7 +134,7 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         return
     for m_id, o_id in instance.iter_related_changed():
         change_tracker.register(
-            op=op,
+            op="update",
             model=m_id,
             id=str(o_id),
             fields=None,
