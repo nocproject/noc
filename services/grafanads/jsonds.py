@@ -7,9 +7,10 @@
 
 # Python modules
 import datetime
+import operator
+from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional, Iterable, Union, Set, Any
 from collections import defaultdict
-import operator
 
 # Third-party modules
 import orjson
@@ -43,14 +44,14 @@ SQL = """
         %s
     FROM
     (
-        SELECT (intDiv(toUInt32(ts), 100) * 100) * 1000 as t,
+        SELECT %s as t,
             %s as target,
             %s
         FROM
             %s
         WHERE
             %s
-        GROUP BY labels, t ORDER BY t ASC
+        GROUP BY %s, t ORDER BY t ASC
     )
     GROUP BY target FORMAT JSON
 """
@@ -58,43 +59,85 @@ SQL = """
 router = APIRouter()
 
 
+@dataclass
+class QueryConfig(object):
+    metric_type: str
+    query_expression: str
+    alias: Optional[str] = None
+    aggregate_function: str = "avg"
+    if_combinator_condition: str = ""
+    description: str = ""
+
+
 class JsonDSAPI(object):
     """
     Backend for SimpodJson Grafana plugin
     """
 
+    QUERY_CONFIGS: List["QueryConfig"] = None
     openapi_tags = ["api", "grafanads"]
     api_name: str = None
-    query_payload = None
+    query_response_model = List[TargetResponseItem]
     variable_payload = None
+    allow_interval_limit: bool = True
 
     def __init__(self, router: APIRouter):
         self.service = get_service()
         self.logger = self.service.logger
         self.router = router
+        self.query_config: Dict[str, "QueryConfig"] = self.load_query_config()
         self.setup_routes()
+
+    @classmethod
+    def load_query_config(cls):
+        """
+        Load Additional QueryConfig on API
+        :return:
+        """
+        r = {}
+        for qc in cls.QUERY_CONFIGS or []:
+            r[qc.alias or qc.metric_type] = qc
+        return r
 
     async def api_grafanads_search(
         self, req: Dict[str, str], user: User = Depends(get_current_user)
     ):
+        """
+        Method for /search endpoint on datasource
+        :param req:
+        :param user:
+        :return:
+        """
         self.logger.info("Search Request: %s", req)
         return self.get_metrics()
 
     async def api_grafanads_variable(
         self, req: VariableRequest, user: User = Depends(get_current_user)
     ):
+        """
+        Method for /variable endpoint on datasource
+        :param req:
+        :param user:
+        :return:
+        """
         self.logger.info("Variable Request: %s", req)
         if not self.variable_payload:
             return []
         payload = parse_obj_as(self.variable_payload, req.payload)
-        h = getattr(self, f"var_{payload.target or 'default'}", None)
+        h = getattr(payload, "get_variables", None)
         if not h:
             return []
-        return h(payload, user)
+        return h(user)
 
     async def api_grafanads_annotations(
         self, req: AnnotationRequest, user: User = Depends(get_current_user)
     ):
+        """
+        Method for /annotations endpoint on datasource
+        :param req:
+        :param user:
+        :return:
+        """
         self.logger.debug("Annotation Request: %s", req)
         start, end = self.convert_ts_range(req)
         return list(
@@ -110,10 +153,10 @@ class JsonDSAPI(object):
     ) -> Iterable["Annotation"]:
         ...
 
-    @staticmethod
-    def get_metrics() -> List[Dict[str, str]]:
+    @classmethod
+    def get_metrics(cls) -> List[Dict[str, str]]:
         """
-        Return Available Metrics
+        Return Available Metrics for datasource
         :return:
         """
         r = []
@@ -124,31 +167,29 @@ class JsonDSAPI(object):
                     "value": str(mt.id),
                 }
             )
+        # Append Query Configs
+        for qc in cls.QUERY_CONFIGS or []:
+            if qc.alias:
+                r += [{"text": qc.description or qc.alias, "value": qc.alias}]
         return r
 
     @staticmethod
-    def clean_query_func(field_name, function) -> Optional[str]:
+    def clean_func_expr(field_name, function: Optional[str] = None) -> str:
+        """
+        Return function expression for field
+        :param field_name:
+        :param function:
+        :return:
+        """
+        if not function:
+            return field_name
         if function.lower() in {"argmax", "argmin"}:
             return f"{function}({field_name}, t)"
         return f"{function}({field_name})"
 
     async def api_grafanads_query(self, req: QueryRequest, user: User = Depends(get_current_user)):
         """
-            SELECT
-                target,
-                %s
-            FROM
-            (
-                SELECT (intDiv(toUInt32(ts), 100) * 100) * 1000 as t,
-                    name as target,
-                    %s
-                FROM
-                    %s
-                WHERE
-                    %s
-                GROUP BY name, t ORDER BY t ASC
-            )
-            GROUP BY name FORMAT JSON
+        Method for /query endpoint on datasource
 
         :param req:
         :param user:
@@ -157,33 +198,34 @@ class JsonDSAPI(object):
         self.logger.info("Query Request: %s", req)
         connect = connection()
         r = []
-        # TS Filter
-        ts_filter = self.get_ts_filter(req)
-        targets: Dict[Tuple[str, str], List[MetricType]] = defaultdict(list)
+        targets: Dict[Tuple[str, str], List["QueryConfig"]] = defaultdict(list)
         # Merge targets to Metric Scope and Filter
         for target in req.targets:
-            metric_type = MetricType.get_by_id(target.target)
+            if target.target in self.query_config:
+                query_config = self.query_config[target.target]
+                metric_type = MetricType.get_by_name(query_config.metric_type)
+            else:
+                metric_type = MetricType.get_by_id(target.target)
+                query_config = QueryConfig(
+                    metric_type=metric_type.name, query_expression=metric_type.field_name
+                )
+            if not metric_type:
+                self.logger.error("[%s] Unknown MetricType: %s", target.target, query_config)
+                raise HTTPException(status_code=500, detail="Unknown MetricType in QueryConfig")
             # Target Filter
             # {"managed_object": "3780187837837487731"}
-            mt_filter = self.get_metric_type_filter(target.payload, metric_type, user=user)
-            query_field = f"avg({metric_type.field_name})"
+            query_mt_condition = self.get_query_metric_type_condition(
+                target.payload, metric_type, user=user
+            )
             if target.payload and "metric_function" in target.payload:
                 # Alternative - target with function suffix, percentile ?
-                query_field = self.clean_query_func(
-                    metric_type.field_name, target.payload["agg_func"]
-                )
-            targets[(metric_type.scope.table_name, mt_filter)] += [(metric_type, query_field)]
+                query_config.aggregate_function = target.payload["agg_func"]
+            targets[(metric_type.scope.table_name, query_mt_condition)] += [query_config]
         # Query
-        for (table_name, mt_filter), metric_types in targets.items():
-            # avg(usage) as `CPUUsage`
-            query = SQL % (
-                ", ".join(f"groupArray((`{mt.name}`, t)) AS `{mt.name}`" for mt, _ in metric_types),
-                self.get_target_format(table_name),
-                ", ".join(f"{query_field} AS `{mt.name}`" for mt, query_field in metric_types),
-                table_name,
-                ts_filter + (f" AND {mt_filter}" if mt_filter else ""),
-            )
-            self.logger.debug("Do query: %s", query)
+        for (table_name, query_condition), query_configs in targets.items():
+            # Format query
+            query = self.get_query(req, table_name, query_condition, query_configs)
+            self.logger.info("Do query: %s", query)
             try:
                 result = connect.execute(query, return_raw=True)
             except ClickhouseError as e:
@@ -192,9 +234,71 @@ class JsonDSAPI(object):
             r += self.format_result(
                 orjson.loads(result),
                 result_type=req.result_type,
-                request_metrics={mt.name for mt, _ in metric_types},
+                request_metrics={qc.alias or qc.metric_type for qc in query_configs},
             )
         return r
+
+    def get_query(
+        self,
+        req: QueryRequest,
+        table_name: str,
+        query_condition: str,
+        query_configs: List["QueryConfig"],
+    ) -> str:
+        """
+        Return Query Expression for Clickhouse
+
+        SELECT
+            target,
+            %s
+        FROM
+        (
+            SELECT (intDiv(toUInt32(ts), 100) * 100) * 1000 as t,
+                name as target,
+                %s
+            FROM
+                %s
+            WHERE
+                %s
+            GROUP BY target, t ORDER BY t ASC
+        )
+        GROUP BY target FORMAT JSON
+
+        :param req:
+        :param table_name:
+        :param query_condition:
+        :param query_configs:
+        :return:
+        """
+        # TS Filter
+        timestamp_condition: str = self.get_ts_condition(req)
+        s_fields = []
+        for qc in query_configs:
+            if qc.if_combinator_condition:
+                # groupArrayIf((t, li), traffic_class = '') AS lii,
+                s_fields += [
+                    f"groupArrayIf((`{qc.metric_type}`, t), {qc.if_combinator_condition}) AS `{qc.alias or qc.metric_type}`"
+                ]
+            else:
+                s_fields += [
+                    f"groupArray((`{qc.metric_type}`, t)) AS `{qc.alias or qc.metric_type}`"
+                ]
+        target_expr, group_by_expr = self.get_target_expression(table_name)
+        timestamp_expr = "(intDiv(toUInt32(ts), 100) * 100) * 1000"
+        if self.allow_interval_limit and req.interval.endswith("m"):
+            timestamp_expr = f"(intDiv(toUInt32(toStartOfInterval(ts, toIntervalMinute({req.interval[:-1]}))), 100) * 100) * 1000"
+        return SQL % (
+            ", ".join(s_fields),
+            timestamp_expr,
+            target_expr,
+            ", ".join(
+                f"{self.clean_func_expr(qc.query_expression, qc.aggregate_function)} AS `{qc.metric_type}`"
+                for qc in query_configs
+            ),
+            table_name,
+            timestamp_condition + (f" AND {query_condition}" if query_condition else ""),
+            group_by_expr,
+        )
 
     @classmethod
     def format_result(
@@ -221,13 +325,13 @@ class JsonDSAPI(object):
         return r
 
     @staticmethod
-    def get_target_format(table_name: str = None) -> str:
+    def get_target_expression(table_name: str = None) -> Tuple[str, Optional[str]]:
         """
         Getting Target name format for table
         :param table_name:
         :return:
         """
-        return "arrayStringConcat(labels,'/')"
+        return "arrayStringConcat(labels,'/')", "target"
 
     @staticmethod
     def convert_ts_range(req) -> Tuple[datetime.datetime, datetime.datetime]:
@@ -247,7 +351,7 @@ class JsonDSAPI(object):
         return start, end
 
     @classmethod
-    def get_ts_filter(cls, req: QueryRequest) -> str:
+    def get_ts_condition(cls, req: QueryRequest) -> str:
         """
         Convert Range params to where expression
 
@@ -301,7 +405,7 @@ class JsonDSAPI(object):
                 required_columns.add(field)
         return key_fields, required_columns, columns
 
-    def get_metric_type_filter(
+    def get_query_metric_type_condition(
         self,
         payload: Dict[str, Union[str, List[str]]],
         metric_type: Optional["MetricType"] = None,
@@ -327,8 +431,8 @@ class JsonDSAPI(object):
             if kf_name not in payload:
                 continue
             values = payload[kf_name]
-            if isinstance(values, str):
-                values = [values]
+            if isinstance(values, (int, str)):
+                values = [str(values)]
             q_values = []
             for value in values:
                 if not value.isdigit():
@@ -402,7 +506,7 @@ class JsonDSAPI(object):
             path=f"/api/grafanads/{self.api_name}/query",
             endpoint=self.api_grafanads_query,
             methods=["POST"],
-            response_model=List[TargetResponseItem],
+            response_model=self.query_response_model,
             tags=self.openapi_tags,
             name=f"{self.api_name}_query",
             description="Getting target datapoints",
