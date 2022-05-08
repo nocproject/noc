@@ -13,14 +13,13 @@ from dataclasses import dataclass
 from typing import Optional, List, Dict
 
 # Third-party modules
+import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-import cachetools
+from django.db.models.base import Model
 from pydantic import BaseModel, validator
 
 # NOC modules
-from noc.core.translation import ugettext as _
-from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.main.models.style import Style
 from noc.core.stencil import stencil_registry
@@ -50,6 +49,7 @@ from noc.pm.models.thresholdprofile import ThresholdProfile
 from .authprofile import AuthProfile
 from .capsprofile import CapsProfile
 from noc.vc.models.vlanfilter import VLANFilter
+from noc.core.translation import ugettext as _
 
 metrics_lock = Lock()
 
@@ -127,7 +127,7 @@ id_lock = Lock()
     ],
     clean_lazy_labels="managedobjectprofile",
 )
-class ManagedObjectProfile(NOCModel):
+class ManagedObjectProfile(Model):
     class Meta(object):
         verbose_name = _("Managed Object Profile")
         verbose_name_plural = _("Managed Object Profiles")

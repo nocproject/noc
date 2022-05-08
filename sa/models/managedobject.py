@@ -21,6 +21,7 @@ from typing import Tuple, Iterable, List, Any, Dict, Set
 # Third-party modules
 import orjson
 from django.contrib.postgres.fields import ArrayField
+from django.db.models.base import Model
 from django.db.models import (
     Q,
     CharField,
@@ -175,7 +176,7 @@ logger = logging.getLogger(__name__)
     ],
     clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
 )
-class ManagedObject(NOCModel):
+class ManagedObject(Model):
     """
     Managed Object
     """

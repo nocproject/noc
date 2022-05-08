@@ -11,14 +11,19 @@ import operator
 from typing import Optional, TYPE_CHECKING
 
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db.models import Model
+from django.db.models import (
+    CharField,
+    TextField,
+    ForeignKey,
+    BigIntegerField,
+    CASCADE,
+)
 import cachetools
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.main.models.pool import Pool
 from noc.main.models.template import Template
 from noc.main.models.remotesystem import RemoteSystem
@@ -27,6 +32,7 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.core.model.decorator import on_delete_check, on_init, tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.translation import ugettext as _
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
@@ -53,7 +59,7 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     ],
     clean_lazy_labels="adm_domain",
 )
-class AdministrativeDomain(NOCModel):
+class AdministrativeDomain(Model):
     """
     Administrative Domain
     """
@@ -65,16 +71,12 @@ class AdministrativeDomain(NOCModel):
         app_label = "sa"
         ordering = ["name"]
 
-    name = models.CharField(_("Name"), max_length=255, unique=True)
-    parent = models.ForeignKey(
-        "self", verbose_name="Parent", null=True, blank=True, on_delete=models.CASCADE
-    )
-    description = models.TextField(_("Description"), null=True, blank=True)
+    name = CharField(_("Name"), max_length=255, unique=True)
+    parent = ForeignKey("self", verbose_name="Parent", null=True, blank=True, on_delete=CASCADE)
+    description = TextField(_("Description"), null=True, blank=True)
     default_pool = DocumentReferenceField(Pool, null=True, blank=True)
     # Biosegmentation settings
-    bioseg_floating_name_template = models.ForeignKey(
-        Template, null=True, blank=True, on_delete=models.CASCADE
-    )
+    bioseg_floating_name_template = ForeignKey(Template, null=True, blank=True, on_delete=CASCADE)
     bioseg_floating_parent_segment = DocumentReferenceField(
         "inv.NetworkSegment", null=True, blank=True
     )
@@ -82,14 +84,12 @@ class AdministrativeDomain(NOCModel):
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
     # Object id in remote system
-    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.BigIntegerField(unique=True)
+    bi_id = BigIntegerField(unique=True)
 
-    labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
-    effective_labels = ArrayField(
-        models.CharField(max_length=250), blank=True, null=True, default=list
-    )
+    labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
+    effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
