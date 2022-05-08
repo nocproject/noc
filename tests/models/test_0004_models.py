@@ -34,6 +34,6 @@ def test_boolean_defaults(model_id, field_name, field):
     ), "BooleanField default must be set to either True or False"
 
 
-@pytest.mark.parametrize("model", get_models())
-def test_tucked_pants(model):
-    assert hasattr(model, "_tucked_pants"), "Model must be subclass of NOCModel"
+# @pytest.mark.parametrize("model", get_models())
+# def test_tucked_pants(model):
+#     assert hasattr(model, "_tucked_pants"), "Model must be subclass of NOCModel"
