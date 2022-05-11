@@ -41,16 +41,14 @@ class TrapServer(UDPServer):
             return  # Invalid event source
         if cfg.storm_policy != "D":
             storm_protection.update_messages_counter(address[0])
-            if cfg.storm_policy in ("R", "I"):
-                # raise alarm
-                pass
-            if (
-                cfg.storm_policy in ("B", "I")
-                and storm_protection.message_should_be_blocked(address[0])
-            ):
-                # message blocked
-                print("message blocked")
-                return
+            if storm_protection.device_is_talkative(address[0]):
+                if cfg.storm_policy in ("R", "I"):
+                    # raise alarm
+                    pass
+                if cfg.storm_policy in ("B", "I"):
+                    # message blocked
+                    print("message blocked")
+                    return
         print("message sent")
         try:
             community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)

@@ -47,12 +47,10 @@ class StormProtection(object):
         pt.start()
 
     async def storm_check_round(self):
-        #print('***storm_check_round', time.time())
+        lg = self.service.logger
         to_delete = []
         for ip in self.storm_table:
             record = self.storm_table[ip]
-            #print('record.messages_count', record.messages_count)
-            lg = self.service.logger
             lg.info(f"record.messages_count {record.messages_count}")
             cfg = self.service.address_configs[ip]
             # set new value to talkative flag
@@ -79,7 +77,7 @@ class StormProtection(object):
             self.storm_table[ip_address] = StormRecord()
         self.storm_table[ip_address].messages_count += 1
 
-    def message_should_be_blocked(self, ip_address):
+    def device_is_talkative(self, ip_address):
         return self.storm_table[ip_address].talkative
 
 
