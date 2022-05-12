@@ -254,7 +254,7 @@ class BaseExtractor(object):
                 yield d
                 d = next(iter_d, None)
 
-    def extract(self, incremental: bool = False) -> None:
+    def extract(self, incremental: bool = False, **kwargs) -> None:
         def q(s: Any) -> str:
             if s == "" or s is None:
                 return ""

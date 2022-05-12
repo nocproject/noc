@@ -25,3 +25,4 @@ class Object(BaseModel):
     model: str
     data: List[ObjectData] = []
     container: Optional[Reference["Object"]]
+    checkpoint: Optional[str]
