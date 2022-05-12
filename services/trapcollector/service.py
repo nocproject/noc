@@ -70,7 +70,11 @@ class TrapCollectorService(FastAPIService):
         self.report_invalid_callback.start()
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
-        storm_protection.initialize()
+        storm_protection.initialize(
+            config.trapcollector.storm_round_duration,
+            config.trapcollector.storm_threshold_reduction,
+            config.trapcollector.storm_record_ttl,
+        )
 
     async def get_pool_partitions(self, pool: str) -> int:
         parts = self.pool_partitions.get(pool)

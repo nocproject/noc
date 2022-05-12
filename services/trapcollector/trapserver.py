@@ -47,9 +47,9 @@ class TrapServer(UDPServer):
                     pass
                 if cfg.storm_policy in ("B", "I"):
                     # message blocked
-                    print("message blocked")
+                    logger.debug("message blocked")
                     return
-        print("message sent")
+        logger.debug("message sent")
         try:
             community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:

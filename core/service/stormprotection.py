@@ -7,21 +7,14 @@
 
 # Python modules
 from dataclasses import dataclass
-import time
+import logging
+from typing import Dict
 
 # NOC modules
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.loader import get_service
 
-# 60 20 0.9 10
-# 5 10 0.9 5
-
-# check round duration in seconds
-STORM_CHECK_ROUND_LENGTH = 5
-# conversion rate between ON and OFF thresholds
-STORM_THRESHOLD_REDUCTION = 0.9
-# time to live of records in rounds
-STORM_RECORD_TTL = 10
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,39 +23,44 @@ class StormRecord:
 
     messages_count: int = 0
     talkative: bool = False
-    ttl: int = STORM_RECORD_TTL
+    ttl: int = 0
 
 
 class StormProtection(object):
     """Message storm protection functionality"""
 
-    storm_table = {}
+    storm_table: Dict[str, StormRecord] = {}
 
     def __init__(self):
+        self.storm_round_duration = None
+        self.storm_threshold_reduction = None
+        self.storm_record_ttl = None
         self.service = None
 
-    def initialize(self):
+    def initialize(self, storm_round_duration, storm_threshold_reduction, storm_record_ttl):
+        self.storm_round_duration = storm_round_duration
+        self.storm_threshold_reduction = storm_threshold_reduction
+        self.storm_record_ttl = storm_record_ttl
         self.service = get_service()
-        pt = PeriodicCallback(self.storm_check_round, STORM_CHECK_ROUND_LENGTH * 1000)
+        pt = PeriodicCallback(self.storm_round, self.storm_round_duration * 1000)
         pt.start()
 
-    async def storm_check_round(self):
-        lg = self.service.logger
+    async def storm_round(self):
         to_delete = []
         for ip in self.storm_table:
             record = self.storm_table[ip]
-            lg.info(f"record.messages_count {record.messages_count}")
+            logger.debug(f"storm_round: record.messages_count: {record.messages_count}")
             cfg = self.service.address_configs[ip]
             # set new value to talkative flag
             if record.messages_count > cfg.storm_threshold:
                 record.talkative = True
-            if record.messages_count < round(cfg.storm_threshold * STORM_THRESHOLD_REDUCTION):
+            if record.messages_count < round(cfg.storm_threshold * self.storm_threshold_reduction):
                 record.talkative = False
             # check time to live of record
             if record.messages_count == 0:
                 record.ttl -= 1
             else:
-                record.ttl = STORM_RECORD_TTL
+                record.ttl = self.storm_record_ttl
             if record.ttl <= 0:
                 to_delete.append(ip)
             else:
@@ -75,6 +73,7 @@ class StormProtection(object):
     def update_messages_counter(self, ip_address):
         if ip_address not in self.storm_table:
             self.storm_table[ip_address] = StormRecord()
+            self.storm_table[ip_address].ttl = self.storm_record_ttl
         self.storm_table[ip_address].messages_count += 1
 
     def device_is_talkative(self, ip_address):
