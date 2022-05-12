@@ -39,7 +39,7 @@ class FiasRemoteSystem(BaseRemoteSystem):
     *FIAS_REGION* - region code FIAS
     """
 
-    def extract(self, extractors=None):
+    def extract(self, extractors=None, incremental: bool = False):
         extractors = extractors or []
         for en in self.extractors_order:
             if extractors and en not in extractors:
@@ -108,9 +108,8 @@ class AdmDivExtractor(BaseExtractor):
                 for chunk in r.iter_content(1024):
                     f.write(chunk)
 
-    def extract(self):
-        super(AdmDivExtractor, self).extract()
-        return
+    def extract(self, incremental: bool = False, **kwargs) -> None:
+        super().extract(incremental=incremental)
 
     def check_twice_code(self, ter, kod1, kod2, kod3):
         """
@@ -153,7 +152,7 @@ class AdmDivExtractor(BaseExtractor):
         else:
             return ""
 
-    def iter_data(self):
+    def iter_data(self, checkpoint=None, **kwargs):
         self.download()
         with open(self.csv_path, encoding="cp1251") as f:
             reader = csv.reader(f, delimiter=";", quotechar='"')
@@ -220,9 +219,8 @@ class StreetExtractor(BaseExtractor):
         else:
             raise Exception("zipfile not found!")
 
-    def extract(self):
-        super().extract()
-        return
+    def extract(self, incremental: bool = False, **kwargs) -> None:
+        super().extract(incremental=incremental)
 
     def parent_admdiv_data(self):
         parent = set()
@@ -288,7 +286,7 @@ class StreetExtractor(BaseExtractor):
                 return r
         return None
 
-    def iter_data(self):
+    def iter_data(self, checkpoint=None, **kwargs):
         self.download()
         cities, streets = self.get_tables()
         for r in streets:
@@ -345,9 +343,8 @@ class AddressExtractor(BaseExtractor):
         else:
             raise Exception("zipfile not found!")
 
-    def extract(self):
-        super().extract()
-        return
+    def extract(self, incremental: bool = False, **kwargs) -> None:
+        super().extract(incremental=incremental)
 
     def street_data(self):
         street = set()
@@ -382,7 +379,7 @@ class AddressExtractor(BaseExtractor):
         else:
             return None, None
 
-    def iter_data(self):
+    def iter_data(self, checkpoint=None, **kwargs):
         self.download()
         with dbf.Table(filename=self.dbf_path, codepage="cp866") as table:
             for r in table:
@@ -456,9 +453,8 @@ class BuildingExtractor(BaseExtractor):
         else:
             raise Exception("zipfile not found!")
 
-    def extract(self):
-        super().extract()
-        return
+    def extract(self, incremental: bool = False, **kwargs) -> None:
+        super().extract(incremental=incremental)
 
     def get_oktmo_data(self):
         oktmo_data = {}
@@ -470,7 +466,7 @@ class BuildingExtractor(BaseExtractor):
 
         return oktmo_data
 
-    def iter_data(self):
+    def iter_data(self, checkpoint=None, **kwargs):
         self.download()
         oktmo_data = self.get_oktmo_data()
         with dbf.Table(filename=self.dbf_path_house, codepage="cp866") as table:
