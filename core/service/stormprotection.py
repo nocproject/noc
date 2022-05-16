@@ -7,14 +7,21 @@
 
 # Python modules
 from dataclasses import dataclass
+import datetime
 import logging
 from typing import Dict
 
+# Third-party modules
+import orjson
+
 # NOC modules
+from noc.config import config
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.loader import get_service
 
 logger = logging.getLogger(__name__)
+
+ALARM_CLASS = None
 
 
 @dataclass
@@ -78,6 +85,19 @@ class StormProtection(object):
 
     def device_is_talkative(self, ip_address):
         return self.storm_table[ip_address].talkative
+
+    def raise_alarm(self, ip_address):
+        cfg = self.service.address_configs[ip_address]
+        msg = {
+            "$op": "raise",
+            "timestamp": datetime.datetime.now().isoformat(),
+            "managed_object": cfg.id,
+            "alarm_class": ALARM_CLASS,
+        }
+        svc = self.service
+        svc.publish(
+            orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition
+        )
 
 
 storm_protection = StormProtection()

@@ -44,9 +44,9 @@ class TrapServer(UDPServer):
             if storm_protection.device_is_talkative(address[0]):
                 if cfg.storm_policy in ("R", "I"):
                     # raise alarm
-                    pass
+                    storm_protection.raise_alarm(address[0])
                 if cfg.storm_policy in ("B", "I"):
-                    # message blocked
+                    # block message
                     logger.debug("message blocked")
                     return
         logger.debug("message sent")
