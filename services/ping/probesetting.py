@@ -71,7 +71,7 @@ class ProbeSetting(object):
         self.name = name
         self.interval = interval
         self.status = status
-        self.policy = Policy.CHECK_ALL if policy == "a" else Policy.CHECK_FIRST
+        self.policy = self._clean_policy(policy)
         self.size = max(size, 64)
         self.count = max(count, 1)
         self.timeout = self._clean_timeout(timeout)
@@ -93,8 +93,14 @@ class ProbeSetting(object):
         return "events.%s" % pool
 
     @staticmethod
-    def _clean_timeout(t: int) -> float:
+    def _clean_timeout(timeout: int) -> float:
         return float(max(timeout, 1_000)) / 1_000.0
+
+    @staticmethod
+    def _clean_policy(policy: str) -> Policy:
+        if policy == "a":
+            return Policy.CHECK_ALL
+        return Policy.CHECK_FIRST
 
     def set_stream(self):
         self.stream = self.get_pool_stream(self.fm_pool)
@@ -118,7 +124,7 @@ class ProbeSetting(object):
         **kwargs,
     ):
         self.interval = interval
-        self.policy = POLICY_MAP.get(policy, 0)
+        self.policy = self._clean_policy(policy)
         self.size = max(size, 64)
         self.count = max(count, 1)
         self.timeout = self._clean_timeout(timeout)
@@ -133,7 +139,7 @@ class ProbeSetting(object):
     def is_differ(self, data):
         return (
             self.interval != data["interval"]
-            or self.policy != POLICY_MAP.get(data.get("policy", "f"), 0)
+            or self.policy != self._clean_policy(data.get("policy", "f"))
             or self.size != max(data.get("size", 64), 64)
             or self.count != max(data.get("count", 3), 1)
             or self.timeout != max(data.get("timeout", 1000), 1)
