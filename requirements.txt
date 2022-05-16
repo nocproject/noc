@@ -93,7 +93,7 @@ python-pam==1.8.4; extra == "login-pam"
 # Login RADIUS
 pyrad==2.4; extra == "login-radius"
 # Ping
-gufo_ping==0.2.1; extra == "ping"
+gufo_ping==0.2.2; extra == "ping"
 # Standalone node with supervisor
 supervisor==4.1.0; extra == "supervisor"
 supervisor-serialrestart==0.1.1; extra == "supervisor"
