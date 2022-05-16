@@ -11,6 +11,19 @@
   tags:
     - repo
 
+- name: Add sclo repo
+  yum_repository:
+    name: sclo
+    state: present
+    description: "Centos 7 sclo repo"
+    enabled: "True"
+    baseurl: http://mirror.centos.org/centos/7/sclo/x86_64/rh/
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
 - name: Install CentOS system packages 1/2
   yum:
     name: "{{ packages }}"
@@ -66,8 +79,6 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
-  when:
-    - noc_python_interpreter == 'python3'
 
 - name: Install supervisord init script
   template:
