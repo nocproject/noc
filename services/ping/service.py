@@ -175,16 +175,16 @@ class PingService(FastAPIService):
         """
         attempts = 0
         timings: List[float] = []
-        for rtt in self.ping.iter_rtt(
+        async for rtt in self.ping.iter_rtt(
             ps.address, size=ps.size, count=ps.count, interval=ps.timeout
         ):
-            attempts += 1
             if rtt is not None and ps.policy == Policy.CHECK_FIRST:
                 return rtt, attempts  # Quit of first success
             elif rtt is None and ps.policy == Policy.CHECK_ALL:
                 return None, attempts  # Quit on first failure
             elif rtt is not None:
                 timings.append(rtt)
+            attempts += 1
         if not timings:
             return None, attempts  # No success
         # CHECK_ALL policy
