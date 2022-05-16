@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Ping service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,19 +12,19 @@ import time
 import datetime
 import os
 import asyncio
-from typing import Dict, Any
+from typing import Dict, Any, Tuple, Optional, List
 
 # Third-party modules
 import orjson
+from gufo.ping import Ping
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.config import config
 from noc.core.error import NOCError
 from noc.core.ioloop.timers import PeriodicOffsetCallback
-from noc.core.ioloop.ping import Ping
 from noc.core.perf import metrics
-from noc.services.ping.probesetting import ProbeSetting
+from noc.services.ping.probesetting import ProbeSetting, Policy
 from noc.services.ping.datastream import PingDataStreamClient
 
 
@@ -163,9 +163,39 @@ class PingService(FastAPIService):
         """
         return {"source": "system", "$event": {"class": cls.PING_CLS[status], "vars": {}}}
 
-    async def ping_check(self, ps):
+    async def _probe(self, ps: ProbeSetting) -> Tuple[Optional[float], int]:
         """
-        Perform ping check and set result
+        Perform ping probe.
+
+        Args:
+            ps: ProbeSettings instance.
+
+        Returns:
+            Tuple of (Average RTT or None, Attempts)
+        """
+        attempts = 0
+        timings: List[float] = []
+        for rtt in self.ping.iter_rtt(
+            ps.address, size=ps.size, count=ps.count, interval=ps.timeout
+        ):
+            attempts += 1
+            if rtt is not None and ps.policy == Policy.CHECK_FIRST:
+                return rtt, attempts  # Quit of first success
+            elif rtt is None and ps.policy == Policy.CHECK_ALL:
+                return None, attempts  # Quit on first failure
+            elif rtt is not None:
+                timings.append(rtt)
+        if not timings:
+            return None, attempts  # No success
+        # CHECK_ALL policy
+        return sum(timings) / len(timings), attempts
+
+    async def ping_check(self, ps: ProbeSetting) -> None:
+        """
+        Perform ping check and set result.
+
+        Args:
+            ps: ProbeSettings instance.
         """
         if ps.id not in self.probes:
             return
@@ -182,9 +212,8 @@ class PingService(FastAPIService):
                 if ps.expr_policy == "E":
                     self.logger.info("[%s] Disabled message", address)
                     disable_message = True
-        rtt, attempts = await self.ping.ping_check_rtt(
-            ps.address, policy=ps.policy, size=ps.size, count=ps.count, timeout=ps.timeout
-        )
+        # Check
+        rtt, attempts = await self._probe(ps)
         s = rtt is not None
         if s:
             metrics["ping_check_success"] += 1
