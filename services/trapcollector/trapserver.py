@@ -22,6 +22,8 @@ from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 
+TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | SNMP Storm Detected"
+
 
 class TrapServer(UDPServer):
     def __init__(self, service):
@@ -44,7 +46,7 @@ class TrapServer(UDPServer):
             if storm_protection.device_is_talkative(address[0]):
                 if cfg.storm_policy in ("R", "A"):
                     # raise alarm
-                    storm_protection.raise_alarm(address[0])
+                    storm_protection.raise_alarm(address[0], TRAPCOLLECTOR_STORM_ALARM_CLASS)
                 if cfg.storm_policy in ("B", "A"):
                     # block message
                     logger.debug("message blocked")
