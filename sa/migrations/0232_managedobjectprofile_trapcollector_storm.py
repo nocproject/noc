@@ -25,7 +25,7 @@ class Migration(BaseMigration):
                     ("D", "Disabled"),
                     ("B", "Block"),
                     ("R", "Raise Alarm"),
-                    ("I", "Block & Raise Alarm"),
+                    ("A", "Block & Raise Alarm"),
                 ],
                 default="D",
             ),
