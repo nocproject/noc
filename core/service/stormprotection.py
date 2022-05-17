@@ -21,7 +21,7 @@ from noc.core.service.loader import get_service
 
 logger = logging.getLogger(__name__)
 
-ALARM_CLASS = None
+TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | SNMP Storm Detected"
 
 
 @dataclass
@@ -92,12 +92,10 @@ class StormProtection(object):
             "$op": "raise",
             "timestamp": datetime.datetime.now().isoformat(),
             "managed_object": cfg.id,
-            "alarm_class": ALARM_CLASS,
+            "alarm_class": TRAPCOLLECTOR_STORM_ALARM_CLASS,
         }
         svc = self.service
-        svc.publish(
-            orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition
-        )
+        svc.publish(orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition)
 
 
 storm_protection = StormProtection()
