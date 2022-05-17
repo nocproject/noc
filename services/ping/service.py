@@ -219,6 +219,8 @@ class PingService(FastAPIService):
             metrics["ping_check_success"] += 1
         else:
             metrics["ping_check_fail"] += 1
+        if s and not rtt:
+            metrics["ping_time_stepbacks"] += 1
         if ps and s != ps.status:
             if s:
                 metrics["down_objects"] -= 1
