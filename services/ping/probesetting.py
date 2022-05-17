@@ -142,7 +142,7 @@ class ProbeSetting(object):
             or self.policy != self._clean_policy(data.get("policy", "f"))
             or self.size != max(data.get("size", 64), 64)
             or self.count != max(data.get("count", 3), 1)
-            or self.timeout != max(data.get("timeout", 1000), 1)
+            or self.timeout != self._clean_timeout(data.get("timeout", 1_000))
             or self.report_rtt != data.get("report_rtt", False)
             or self.report_attempts != data.get("report_attempts", False)
             or self.time_expr != data.get("time_expr")
