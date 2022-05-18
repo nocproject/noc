@@ -54,7 +54,6 @@ class StormProtection(object):
         to_delete = []
         for ip in self.storm_table:
             record = self.storm_table[ip]
-            logger.debug(f"storm_round: record.messages_count: {record.messages_count}")
             cfg = self.service.address_configs[ip]
             # set new value to talkative flag
             if record.messages_count > cfg.storm_threshold:
@@ -91,6 +90,7 @@ class StormProtection(object):
             "timestamp": datetime.datetime.now().isoformat(),
             "managed_object": cfg.id,
             "alarm_class": alarm_class,
+            "reference": f"{alarm_class}{cfg.id}",
         }
         svc = self.service
         svc.publish(orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition)

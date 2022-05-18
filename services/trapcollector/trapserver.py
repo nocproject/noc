@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SNMP Trap Server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,11 +47,18 @@ class TrapServer(UDPServer):
                 if cfg.storm_policy in ("R", "A"):
                     # raise alarm
                     storm_protection.raise_alarm(address[0], TRAPCOLLECTOR_STORM_ALARM_CLASS)
+                    logger.debug(
+                        f"Storm protection: SNMP-message from IP-address {address[0]} raised alarm"
+                    )
                 if cfg.storm_policy in ("B", "A"):
                     # block message
-                    logger.debug("message blocked")
+                    logger.debug(
+                        f"Storm protection: SNMP-message from IP-address {address[0]} blocked"
+                    )
                     return
-        logger.debug("message sent")
+        logger.debug(
+            f"Storm protection: SNMP-message from IP-address {address[0]} skipped for publish"
+        )
         try:
             community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:
