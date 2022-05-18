@@ -55,14 +55,14 @@ lint_ansible:
     - if: '$CI_PIPELINE_SOURCE == "web" && $CHECK_DEPLOY == "true"'
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $CHECK_DEPLOY == "true"'
 
-#build_centos7:
-#   extends: .base_builder
-#   variables:
-#     PKG_CACHE: /var/cache/yum
-#     SCENARIO_NAME: default
-#   tags:
-#     - cloud
-#     - docker
+build_centos7:
+   extends: .base_builder
+   variables:
+     PKG_CACHE: /var/cache/yum
+     SCENARIO_NAME: default
+   tags:
+     - cloud
+     - docker
 
 # build_centos8:
 #   extends: .base_builder
