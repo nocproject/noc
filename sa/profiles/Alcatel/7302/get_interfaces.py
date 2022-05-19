@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.7302.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -98,12 +98,8 @@ class Script(BaseScript):
             r[tuple(slot_id.split("/"))] = p[4] in self.collected_slots_status
         return r
 
-    def execute_cli(self, **kwargs):
-        self.cli(
-            "environment inhibit-alarms mode batch terminal-timeout timeout:360", ignore_errors=True
-        )
-
-        subifaces = defaultdict(list)
+    def get_subifaces_cli(self):
+        sub = defaultdict(list)
         try:
             v = self.cli("show bridge port")
             for match in self.rx_bridge_port.finditer(v):
@@ -113,7 +109,7 @@ class Script(BaseScript):
                 else:
                     port_id, vpi, vci = ifname.split(":")
                 name = "%s:%s:%s" % (port_id, vpi, vci)
-                subifaces[port_id] += [
+                sub[port_id] += [
                     {
                         "name": name,
                         "vci": vci,
@@ -125,7 +121,7 @@ class Script(BaseScript):
                 ]
         except self.CLISyntaxError:
             pass
-        if not subifaces:
+        if not sub:
             v = self.cli("info configure bridge port")
             for match in self.rx_bridge_port2.finditer(v):
                 ifname = match.group("ifname")
@@ -136,7 +132,7 @@ class Script(BaseScript):
                 else:
                     port_id, vpi, vci = ifname.split(":")
                 name = "%s:%s:%s" % (port_id, vpi, vci)
-                subifaces[port_id] += [
+                sub[port_id] += [
                     {
                         "name": name,
                         "vci": vci,
@@ -146,6 +142,13 @@ class Script(BaseScript):
                         "untagged_vlan": match.group("pvid"),
                     }
                 ]
+        return sub
+
+    def execute_cli(self, **kwargs):
+        self.cli(
+            "environment inhibit-alarms mode batch terminal-timeout timeout:360", ignore_errors=True
+        )
+        subifaces = self.get_subifaces_cli()
         tagged_vlans = {}
         v = self.cli("show vlan shub-port-vlan-map")
         network_0_found = False
