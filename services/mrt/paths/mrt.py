@@ -9,7 +9,7 @@
 # Python modules
 import logging
 import asyncio
-from typing import List
+from typing import List, Union
 
 # Third-party modules
 import orjson
@@ -19,7 +19,7 @@ from fastapi.responses import StreamingResponse
 # NOC modules
 from noc.aaa.models.user import User
 from noc.core.service.loader import get_service
-from noc.services.mrt.models.mrt import MRTScript
+from noc.services.mrt.models.mrt import MRTInterfaceScript, MRTCommandScript, MRTAnyScript
 from noc.core.service.deps.user import get_current_user
 
 from noc.core.service.error import RPCRemoteError, RPCError
@@ -81,11 +81,13 @@ async def _run_script(current_user, oid, script, args, span_id=0, bi_id=None):
             return {"id": str(oid), "result": r}
 
 
-async def _iterdata(req, current_user):
+async def _iterdata(
+    req: List[Union[MRTCommandScript, MRTInterfaceScript, MRTAnyScript]], current_user
+):
     service = get_service()
     metrics["mrt_requests"] += 1
     # Object ids
-    ids = set(int(d.id) for d in req if hasattr(d, "id") and hasattr(d, "script"))
+    ids = set(int(d.id) for d in req)
     logger.info(
         "Run task on parralels: %d (Max concurrent %d), for User: %s",
         len(req),
@@ -142,7 +144,10 @@ async def _iterdata(req, current_user):
 
 
 @router.post("/api/mrt/")
-async def api_mrt(req: List[MRTScript], current_user: User = Depends(get_current_user)):
+async def api_mrt(
+    req: List[Union[MRTCommandScript, MRTInterfaceScript, MRTAnyScript]],
+    current_user: User = Depends(get_current_user),
+):
     # Disable nginx proxy buffering
     headers = {"X-Accel-Buffering": "no"}
     return StreamingResponse(_iterdata(req, current_user), media_type="text/html", headers=headers)
