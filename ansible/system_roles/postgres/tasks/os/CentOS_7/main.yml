@@ -18,7 +18,7 @@
     - requirements
 
 - name: PostgreSQL init db
-  command: '{{ postgres_bin_dir }}/postgresql-{% if postgres_version == "14" %}-{% endif %}{{ postgres_version|replace(".","") }}-setup initdb'
+  command: '{{ postgres_bin_dir }}/postgresql-{% if postgres_version == 14 %}-{% endif %}{{ postgres_version|replace(".","") }}-setup initdb'
   args:
     creates: /var/lib/pgsql/{{ postgres_version }}/initdb.log
 
