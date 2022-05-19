@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Optional, Literal
 
 # Third-party modules
 from pydantic import BaseModel
@@ -26,13 +26,28 @@ from pydantic import BaseModel
 # ]
 
 
-class MRTArgs(BaseModel):
+class MRTCommandsArgs(BaseModel):
     commands: List[str]
-    include_commands: str
-    ignore_cli_errors: str
+    include_commands: bool = False
+    ignore_cli_errors: bool = False
 
 
-class MRTScript(BaseModel):
-    id: str
-    script: str
-    args: MRTArgs
+class MRTInterfaceArgs(BaseModel):
+    interface: str
+
+
+class MRTInterfaceScript(BaseModel):
+    id: int
+    script: Literal["get_mac_address_table"]
+    args: Optional[MRTInterfaceArgs]
+
+
+class MRTAnyScript(BaseModel):
+    id: int
+    script: Literal["get_version"]
+
+
+class MRTCommandScript(BaseModel):
+    id: int
+    script: Literal["commands"]
+    args: MRTCommandsArgs
