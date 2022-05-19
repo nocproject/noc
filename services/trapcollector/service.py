@@ -30,12 +30,14 @@ from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
 )
-from noc.core.service.stormprotection import storm_protection
+from noc.core.service.stormprotection import StormProtection
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
+
+TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | SNMP Storm Detected"
 
 
 class TrapCollectorService(FastAPIService):
@@ -52,6 +54,7 @@ class TrapCollectorService(FastAPIService):
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
         self.mx_message = config.message.enable_snmptrap
+        self.storm_protection: Optional[StormProtection] = None
 
     async def on_activate(self):
         # Listen sockets
@@ -70,11 +73,13 @@ class TrapCollectorService(FastAPIService):
         self.report_invalid_callback.start()
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
-        storm_protection.initialize(
+        self.storm_protection = StormProtection(
             config.trapcollector.storm_round_duration,
             config.trapcollector.storm_threshold_reduction,
             config.trapcollector.storm_record_ttl,
+            TRAPCOLLECTOR_STORM_ALARM_CLASS,
         )
+        self.storm_protection.initialize()
 
     async def get_pool_partitions(self, pool: str) -> int:
         parts = self.pool_partitions.get(pool)

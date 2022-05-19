@@ -28,29 +28,28 @@ class StormRecord:
 
     messages_count: int = 0
     talkative: bool = False
+    raised_alarm: bool = False
     ttl: int = 0
 
 
 class StormProtection(object):
     """Message storm protection functionality"""
 
-    storm_table: Dict[str, StormRecord] = {}
-
-    def __init__(self):
-        self.storm_round_duration = None
-        self.storm_threshold_reduction = None
-        self.storm_record_ttl = None
-        self.service = None
-
-    def initialize(self, storm_round_duration, storm_threshold_reduction, storm_record_ttl):
+    def __init__(
+        self, storm_round_duration, storm_threshold_reduction, storm_record_ttl, alarm_class
+    ):
         self.storm_round_duration = storm_round_duration
         self.storm_threshold_reduction = storm_threshold_reduction
         self.storm_record_ttl = storm_record_ttl
+        self.alarm_class = alarm_class
         self.service = get_service()
-        pt = PeriodicCallback(self.storm_round, self.storm_round_duration * 1000)
+        self.storm_table: Dict[str, StormRecord] = {}
+
+    def initialize(self):
+        pt = PeriodicCallback(self.storm_round_handler, self.storm_round_duration * 1000)
         pt.start()
 
-    async def storm_round(self):
+    async def storm_round_handler(self):
         to_delete = []
         for ip in self.storm_table:
             record = self.storm_table[ip]
@@ -60,6 +59,8 @@ class StormProtection(object):
                 record.talkative = True
             if record.messages_count < round(cfg.storm_threshold * self.storm_threshold_reduction):
                 record.talkative = False
+            if record.raised_alarm and not record.talkative:
+                self._close_alarm(ip)
             # check time to live of record
             if record.messages_count == 0:
                 record.ttl -= 1
@@ -83,17 +84,27 @@ class StormProtection(object):
     def device_is_talkative(self, ip_address):
         return self.storm_table[ip_address].talkative
 
-    def raise_alarm(self, ip_address, alarm_class):
+    def raise_alarm(self, ip_address):
+        storm_record = self.storm_table[ip_address]
+        if storm_record.raised_alarm:
+            return
         cfg = self.service.address_configs[ip_address]
         msg = {
             "$op": "raise",
-            "timestamp": datetime.datetime.now().isoformat(),
             "managed_object": cfg.id,
-            "alarm_class": alarm_class,
-            "reference": f"{alarm_class}{cfg.id}",
+            "alarm_class": self.alarm_class,
         }
+        self._publish_message(cfg, msg)
+        storm_record.raised_alarm = True
+
+    def _close_alarm(self, ip_address):
+        cfg = self.service.address_configs[ip_address]
+        msg = {"$op": "clear"}
+        self._publish_message(cfg, msg)
+        self.storm_table[ip_address].raised_alarm = False
+
+    def _publish_message(self, cfg, msg):
+        msg["timestamp"] = datetime.datetime.now().isoformat()
+        msg["reference"] = f"{self.alarm_class}{cfg.id}"
         svc = self.service
         svc.publish(orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition)
-
-
-storm_protection = StormProtection()

@@ -15,14 +15,11 @@ import codecs
 from noc.core.ioloop.udpserver import UDPServer
 from noc.core.escape import fm_escape
 from noc.core.snmp.trap import decode_trap
-from noc.core.service.stormprotection import storm_protection
 from noc.config import config
 from noc.core.perf import metrics
 
 
 logger = logging.getLogger(__name__)
-
-TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | SNMP Storm Detected"
 
 
 class TrapServer(UDPServer):
@@ -42,11 +39,12 @@ class TrapServer(UDPServer):
         if not cfg:
             return  # Invalid event source
         if cfg.storm_policy != "D":
+            storm_protection = self.service.storm_protection
             storm_protection.update_messages_counter(address[0])
             if storm_protection.device_is_talkative(address[0]):
                 if cfg.storm_policy in ("R", "A"):
                     # raise alarm
-                    storm_protection.raise_alarm(address[0], TRAPCOLLECTOR_STORM_ALARM_CLASS)
+                    storm_protection.raise_alarm(address[0])
                     logger.debug(
                         f"Storm protection: SNMP-message from IP-address {address[0]} raised alarm"
                     )
@@ -56,9 +54,9 @@ class TrapServer(UDPServer):
                         f"Storm protection: SNMP-message from IP-address {address[0]} blocked"
                     )
                     return
-        logger.debug(
-            f"Storm protection: SNMP-message from IP-address {address[0]} skipped for publish"
-        )
+            logger.debug(
+                f"Storm protection: SNMP-message from IP-address {address[0]} skipped for publish"
+            )
         try:
             community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:
