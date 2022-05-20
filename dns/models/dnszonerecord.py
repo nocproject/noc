@@ -62,9 +62,6 @@ class DNSZoneRecord(NOCModel):
     def get_changed_instance(self):
         return self.zone
 
-    def iter_related_changed(self, changed_fields=None):
-        yield "dns.DNSZone", self.zone.id
-
     @classmethod
     def can_set_label(cls, label: str) -> bool:
         return Label.get_effective_setting(label, setting="enable_dnszonerecord")
