@@ -3,7 +3,8 @@
   yum_repository:
     name: clickhouse
     description: Clickhouse Official repo
-    baseurl: https://repo.yandex.ru/clickhouse/rpm/stable/x86_64
+    baseurl: https://packages.clickhouse.com/rpm/clickhouse.repo
+    reposdir: /etc/yum.repos.d/
     gpgcheck: "False"
     enabled: "True"
   environment:
