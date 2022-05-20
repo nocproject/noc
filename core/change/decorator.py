@@ -91,12 +91,18 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
             nv = nv.pk
         return str(ov) != str(nv)
 
+    # Check for instance proxying
+    if hasattr(instance, "get_changed_instance"):
+        instance = instance.get_changed_instance()
+        changed_fields = []
+    else:
+        changed_fields = [
+            f_name for f_name in getattr(instance, "initial_data", []) if is_changed(f_name)
+        ]
+    # Register change
     model_id = get_model_id(instance)
     op = "create" if created else "update"
     logger.debug("[%s|%s] Change detected: %s", model_id, instance.id, op)
-    changed_fields = [
-        f_name for f_name in getattr(instance, "initial_data", []) if is_changed(f_name)
-    ]
     change_tracker.register(
         op=op,
         model=model_id,
