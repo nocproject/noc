@@ -7,12 +7,12 @@
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.template import Template, Context
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.core.model.fields import CIDRField
 from noc.core.ip import IP
@@ -25,7 +25,7 @@ from .vrf import VRF
 
 @Label.model
 @change
-class AddressRange(NOCModel):
+class AddressRange(Model):
     class Meta(object):
         verbose_name = _("Address Range")
         db_table = "ip_addressrange"

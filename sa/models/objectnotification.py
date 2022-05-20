@@ -6,18 +6,18 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
+from noc.core.translation import ugettext as _
 from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.lib.template import render_message
 
 
-class ObjectNotification(NOCModel):
+class ObjectNotification(Model):
     class Meta(object):
         verbose_name = _("Managed Object Notification")
         db_table = "sa_objectnotification"

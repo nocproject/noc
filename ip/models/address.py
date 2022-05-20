@@ -7,13 +7,13 @@
 
 # Third-party modules
 from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
 from noc.config import config
 from noc.core.model.decorator import on_init
-from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import INETField, MACField
@@ -36,7 +36,7 @@ from .addressprofile import AddressProfile
 @full_text_search
 @workflow
 @on_delete_check(check=[("ip.Address", "ipv6_transition")])
-class Address(NOCModel):
+class Address(Model):
     class Meta(object):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")

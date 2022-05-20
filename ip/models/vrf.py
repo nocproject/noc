@@ -10,14 +10,14 @@ import operator
 from threading import Lock
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 import cachetools
 
 # NOC modules
+from .vrfgroup import VRFGroup
 from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.core.validators import check_rd
 from noc.core.model.fields import DocumentReferenceField
@@ -26,10 +26,10 @@ from noc.main.models.label import Label
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
-from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
 from noc.core.vpn import get_vpn_id
 from noc.core.change.decorator import change
+from noc.core.translation import ugettext as _
 
 
 id_lock = Lock()
@@ -54,7 +54,7 @@ id_lock = Lock()
     ],
     clean_lazy_labels="ipvrf",
 )
-class VRF(NOCModel):
+class VRF(Model):
     """
     VRF
     """

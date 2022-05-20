@@ -9,17 +9,17 @@
 from operator import attrgetter
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.db.models import Q
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
+from noc.core.translation import ugettext as _
 from .prefix import Prefix
 
 
-class PrefixBookmark(NOCModel):
+class PrefixBookmark(Model):
     """
     User Bookmarks
     """

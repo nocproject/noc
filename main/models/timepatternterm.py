@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.timepattern import TimePattern as TP
 from noc.core.model.decorator import on_init
 from noc.core.change.decorator import change
@@ -18,7 +18,7 @@ from .timepattern import TimePattern
 
 @on_init
 @change
-class TimePatternTerm(NOCModel):
+class TimePatternTerm(Model):
     """
     Time pattern terms
     """

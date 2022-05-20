@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 
@@ -17,7 +17,7 @@ OBJECT_TYPES = ["config", "dns", "prefix-list", "rpsl"]
 OBJECT_TYPE_CHOICES = [(x, x) for x in OBJECT_TYPES if x != "config"]
 
 
-class ObjectNotify(NOCModel):
+class ObjectNotify(Model):
     class Meta(object):
         app_label = "cm"
         db_table = "cm_objectnotify"

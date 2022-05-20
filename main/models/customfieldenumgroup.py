@@ -6,17 +6,17 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
 @on_delete_check(
     check=[("main.CustomField", "enum_group"), ("main.CustomFieldEnumValue", "enum_group")]
 )
-class CustomFieldEnumGroup(NOCModel):
+class CustomFieldEnumGroup(Model):
     """
     Enumeration groups for custom fields
     """

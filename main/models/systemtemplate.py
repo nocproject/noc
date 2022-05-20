@@ -6,15 +6,15 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from .template import Template
 
 
-class SystemTemplate(NOCModel):
+class SystemTemplate(Model):
     class Meta(object):
         app_label = "main"
         db_table = "main_systemtemplate"

@@ -39,7 +39,6 @@ from typing import Optional
 from pydantic import BaseModel
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -2177,7 +2176,7 @@ class ManagedObject(Model):
 
 
 @on_save
-class ManagedObjectAttribute(NOCModel):
+class ManagedObjectAttribute(Model):
     class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"

@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup
@@ -17,7 +17,7 @@ from noc.main.models.template import Template
 from noc.inv.models.resourcegroup import ResourceGroup
 
 
-class AlarmTrigger(NOCModel):
+class AlarmTrigger(Model):
     class Meta(object):
         db_table = "fm_alarmtrigger"
         app_label = "fm"

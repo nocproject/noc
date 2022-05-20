@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.fields import TextArrayField
 from .refbook import RefBook
 
@@ -24,7 +24,7 @@ class RBDManader(models.Manager):
         return super().get_queryset().extra(order_by=["main_refbookdata.value[1]"])
 
 
-class RefBookData(NOCModel):
+class RefBookData(Model):
     """
     Ref. Book Data
     """

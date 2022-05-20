@@ -6,16 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from .user import User
 
 
-class UserContact(NOCModel):
+class UserContact(Model):
     class Meta(object):
         verbose_name = "User Profile Contact"
         verbose_name_plural = "User Profile Contacts"

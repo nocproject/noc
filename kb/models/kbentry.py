@@ -10,11 +10,11 @@ import datetime
 import difflib
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.main.models.language import Language
 from noc.main.models.label import Label
 from noc.services.web.apps.kb.parsers.loader import loader
@@ -31,7 +31,7 @@ from noc.core.model.decorator import on_delete_check
         ("kb.KBEntryAttachment", "kb_entry"),
     ]
 )
-class KBEntry(NOCModel):
+class KBEntry(Model):
     """
     KB Entry
     """

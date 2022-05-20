@@ -6,20 +6,20 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
 from noc.config import config
 from noc.core.model.fields import INETField
 from noc.core.change.decorator import change
+from noc.core.translation import ugettext as _
 
 
 @on_init
 @change
-class DNSServer(NOCModel):
+class DNSServer(Model):
     """
     DNS Server is an database object representing real DNS server.
 

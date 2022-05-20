@@ -10,11 +10,11 @@ from threading import Lock
 import operator
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db.models import CharField, ManyToManyField
 import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 
@@ -22,7 +22,7 @@ perm_lock = Lock()
 id_lock = Lock()
 
 
-class Permission(NOCModel):
+class Permission(Model):
     """
     Permissions.
 

@@ -9,17 +9,17 @@
 import datetime
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.main.refbooks.downloaders.loader import loader
 from .language import Language
 
 
 @on_delete_check(check=[("main.RefBookField", "ref_book"), ("main.RefBookData", "ref_book")])
-class RefBook(NOCModel):
+class RefBook(Model):
     """
     Reference Books
     """

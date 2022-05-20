@@ -13,13 +13,13 @@ from typing import Optional
 
 # Third-party modules
 import cachetools
+from django.db.models.base import Model
 from django.db import models
 from django.core import validators
 from django.contrib.auth.hashers import check_password, make_password
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.translation import ugettext as _
 from noc.settings import LANGUAGES
@@ -45,7 +45,7 @@ id_lock = Lock()
         ("bi.Dashboard", "owner"),
     ]
 )
-class User(NOCModel):
+class User(Model):
     class Meta(object):
         verbose_name = "User"
         verbose_name_plural = "Users"

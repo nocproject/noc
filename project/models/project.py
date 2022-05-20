@@ -10,11 +10,11 @@ import operator
 from threading import Lock
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.glyph import Glyph
@@ -47,7 +47,7 @@ id_lock = Lock()
         ("vc.VLAN", "project"),
     ]
 )
-class Project(NOCModel):
+class Project(Model):
     """
     Projects are used to track investment projects expenses and profits
     """

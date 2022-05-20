@@ -9,14 +9,14 @@
 import datetime
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 
 
-class Checkpoint(NOCModel):
+class Checkpoint(Model):
     """
     Checkpoint is a marked moment in time
     """

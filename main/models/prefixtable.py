@@ -7,10 +7,10 @@
 
 # Third-party modules
 from typing import Union, List, Tuple, Iterable
+from django.db.models.base import Model
 from django.db import models
 
 # NOC Modules
-from noc.core.model.base import NOCModel
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
@@ -25,7 +25,7 @@ from noc.core.translation import ugettext as _
     ],
     clean_lazy_labels="prefixfilter",
 )
-class PrefixTable(NOCModel):
+class PrefixTable(Model):
     class Meta(object):
         verbose_name = _("Prefix Table")
         verbose_name_plural = _("Prefix Tables")
@@ -80,7 +80,7 @@ class PrefixTable(NOCModel):
             yield f"noc::prefixfilter::{pt.name}::{condition}"
 
 
-class PrefixTablePrefix(NOCModel):
+class PrefixTablePrefix(Model):
     class Meta(object):
         verbose_name = _("Prefix")
         verbose_name_plural = _("Prefixes")

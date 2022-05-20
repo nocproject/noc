@@ -9,14 +9,14 @@
 import os
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.validators import check_extension, check_mimetype
 
 
-class MIMEType(NOCModel):
+class MIMEType(Model):
     """
     MIME Type mapping
     """

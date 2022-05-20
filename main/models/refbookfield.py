@@ -9,14 +9,14 @@
 import re
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from .refbook import RefBook
 
 
-class RefBookField(NOCModel):
+class RefBookField(Model):
     """
     Refbook fields
     """

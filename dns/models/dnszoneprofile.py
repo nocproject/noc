@@ -10,12 +10,12 @@ from threading import Lock
 import operator
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 import cachetools
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.core.change.decorator import change
@@ -29,7 +29,7 @@ id_lock = Lock()
 @on_init
 @change
 @on_delete_check(check=[("dns.DNSZone", "profile")])
-class DNSZoneProfile(NOCModel):
+class DNSZoneProfile(Model):
     """
     DNS Zone profile is a set of common parameters, shared between zones.
 

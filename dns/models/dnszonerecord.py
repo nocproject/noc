@@ -9,11 +9,11 @@
 from typing import Optional
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_init
 from noc.core.change.decorator import change
 from noc.core.translation import ugettext as _
@@ -24,7 +24,7 @@ from .dnszone import DNSZone
 @Label.model
 @on_init
 @change
-class DNSZoneRecord(NOCModel):
+class DNSZoneRecord(Model):
     """
     Zone RRs
     """

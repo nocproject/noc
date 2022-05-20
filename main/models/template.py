@@ -10,13 +10,13 @@ from threading import Lock
 import operator
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 from django.core.exceptions import ValidationError
 import jinja2
 import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -49,7 +49,7 @@ def template_validator(value):
         ("maintenance.Maintenance", "template"),
     ]
 )
-class Template(NOCModel):
+class Template(Model):
     class Meta(object):
         app_label = "main"
         db_table = "main_template"

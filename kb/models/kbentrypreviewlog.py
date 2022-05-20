@@ -6,15 +6,15 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.kb.models.kbentry import KBEntry
 
 
-class KBEntryPreviewLog(NOCModel):
+class KBEntryPreviewLog(Model):
     """
     Preview Log
     """

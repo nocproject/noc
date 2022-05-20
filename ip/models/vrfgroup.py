@@ -6,12 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
 # NOC modules
-from noc.core.model.base import NOCModel
+from noc.core.translation import ugettext as _
 from noc.core.model.decorator import on_delete_check
 from noc.core.comp import smart_text
 from noc.main.models.label import Label
@@ -19,7 +19,7 @@ from noc.main.models.label import Label
 
 @Label.model
 @on_delete_check(check=[("ip.VRF", "vrf_group")])
-class VRFGroup(NOCModel):
+class VRFGroup(Model):
     """
     Group of VRFs with common properties
     """

@@ -13,6 +13,7 @@ from threading import Lock
 import operator
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 import cachetools
@@ -20,7 +21,6 @@ import cachetools
 # NOC modules
 from noc.core.model.decorator import on_init
 from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.systemnotification import SystemNotification
 from noc.main.models.label import Label
@@ -47,7 +47,7 @@ ZONE_REVERSE_IPV6 = "6"
 @on_init
 @change
 @on_delete_check(check=[("dns.DNSZoneRecord", "zone")])
-class DNSZone(NOCModel):
+class DNSZone(Model):
     """
     DNS Zone
     """

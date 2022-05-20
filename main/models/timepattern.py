@@ -11,10 +11,10 @@ import operator
 
 # Third-party modules
 import cachetools
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.timepattern import TimePattern as TP
 from noc.core.model.decorator import on_delete_check
 
@@ -34,7 +34,7 @@ id_lock = Lock()
         ("sa.ManagedObject", "time_pattern"),
     ]
 )
-class TimePattern(NOCModel):
+class TimePattern(Model):
     """
     Time Patterns
     """

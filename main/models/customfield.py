@@ -11,6 +11,7 @@ from functools import reduce
 import threading
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models, connection
 from django.db.models import signals as django_signals
 from django.apps import apps
@@ -19,7 +20,6 @@ from mongoengine import fields
 import mongoengine.signals
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.validators import is_int
 from noc.core.comp import smart_text
 from .customfieldenumgroup import CustomFieldEnumGroup
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 id_lock = threading.Lock()
 
 
-class CustomField(NOCModel):
+class CustomField(Model):
     """
     Custom field description
     """

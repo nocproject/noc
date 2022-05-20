@@ -13,11 +13,11 @@ from threading import Lock
 from typing import Tuple, Dict, Iterator
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 import cachetools
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
 from noc.core.timepattern import TimePatternList
@@ -56,7 +56,7 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("peer.PeeringPoint", "prefix_list_notification_group"),
     ]
 )
-class NotificationGroup(NOCModel):
+class NotificationGroup(Model):
     """
     Notification Groups
     """
@@ -223,7 +223,7 @@ class NotificationGroup(NOCModel):
             yield MX_STREAMS[method], {"To": smart_bytes(param)}
 
 
-class NotificationGroupUser(NOCModel):
+class NotificationGroupUser(Model):
     class Meta(object):
         verbose_name = "Notification Group User"
         verbose_name_plural = "Notification Group Users"
@@ -247,7 +247,7 @@ class NotificationGroupUser(NOCModel):
         )
 
 
-class NotificationGroupOther(NOCModel):
+class NotificationGroupOther(Model):
     class Meta(object):
         verbose_name = "Notification Group Other"
         verbose_name_plural = "Notification Group Others"

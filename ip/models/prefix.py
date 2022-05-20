@@ -11,13 +11,13 @@ from threading import Lock
 from collections import defaultdict
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models, connection
 from django.contrib.postgres.fields import ArrayField
 import cachetools
 
 # NOC modules
 from noc.config import config
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
@@ -51,7 +51,7 @@ id_lock = Lock()
         ("ip.Address", "prefix"),
     ]
 )
-class Prefix(NOCModel):
+class Prefix(Model):
     """
     Allocated prefix
     """

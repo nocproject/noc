@@ -10,7 +10,7 @@ import operator
 from threading import Lock
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import Q
@@ -18,7 +18,7 @@ import cachetools
 from psycopg2.extensions import adapt
 
 # NOC modules
-from noc.core.model.base import NOCModel
+from noc.core.translation import ugettext as _
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
@@ -49,7 +49,7 @@ id_lock = Lock()
         ("sa.ManagedObjectSelectorByAttribute", "selector"),
     ]
 )
-class ManagedObjectSelector(NOCModel):
+class ManagedObjectSelector(Model):
     class Meta(object):
         verbose_name = _("Managed Object Selector")
         verbose_name_plural = _("Managed Object Selectors")
@@ -488,7 +488,7 @@ class ManagedObjectSelector(NOCModel):
         return " and ".join(query)
 
 
-class ManagedObjectSelectorByAttribute(NOCModel):
+class ManagedObjectSelectorByAttribute(Model):
     class Meta(object):
         verbose_name = _("Managed Object Selector by Attribute")
         db_table = "sa_managedobjectselectorbyattribute"

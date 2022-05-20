@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from .customfieldenumgroup import CustomFieldEnumGroup
 
 
-class CustomFieldEnumValue(NOCModel):
+class CustomFieldEnumValue(Model):
     """
     Enumeration groups values
     """

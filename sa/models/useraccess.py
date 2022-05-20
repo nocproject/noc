@@ -9,18 +9,18 @@
 from functools import reduce
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.db.models import Q
 
 # NOC modules
-from noc.core.model.base import NOCModel
+from noc.core.translation import ugettext as _
 from noc.aaa.models.user import User
 from .groupaccess import GroupAccess
 from .administrativedomain import AdministrativeDomain
 
 
-class UserAccess(NOCModel):
+class UserAccess(Model):
     class Meta(object):
         verbose_name = _("User Access")
         verbose_name_plural = _("User Access")

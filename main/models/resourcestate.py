@@ -6,17 +6,17 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 
 
 @on_delete_check(
     check=[("inv.Interface", "state"), ("vc.VC", "state"), ("main.ResourceState", "step_to")]
 )
-class ResourceState(NOCModel):
+class ResourceState(Model):
     class Meta(object):
         verbose_name = "Resource State"
         verbose_name_plural = "Resource States"

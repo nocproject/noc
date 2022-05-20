@@ -10,21 +10,21 @@ from functools import reduce
 from collections import defaultdict
 
 # Third-party modules
-from noc.core.translation import ugettext as _
+from django.db.models.base import Model
 from django.db import models
 from django.db.models import Q
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.core.model.fields import CIDRField
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix
 from noc.core.model.sql import SQL
+from noc.core.translation import ugettext as _
 from .afi import AFI_CHOICES
 from .vrf import VRF
 
 
-class PrefixAccess(NOCModel):
+class PrefixAccess(Model):
     class Meta(object):
         verbose_name = _("Prefix Access")
         verbose_name_plural = _("Prefix Access")

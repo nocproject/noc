@@ -6,13 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
-# NOC modules
-from noc.core.model.base import NOCModel
 
-
-class IgnoreEventRules(NOCModel):
+class IgnoreEventRules(Model):
     class Meta(object):
         app_label = "fm"
         db_table = "fm_ignoreeventrules"

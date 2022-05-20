@@ -9,16 +9,16 @@
 import re
 
 # Third-party modules
+from django.db.models.base import Model
 from django.db import models
 
 # NOC modules
-from noc.core.model.base import NOCModel
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers.loader import loader
 
 
-class KBEntryTemplate(NOCModel):
+class KBEntryTemplate(Model):
     """
     KB Entry Template
     """
