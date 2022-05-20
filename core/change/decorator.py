@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # @change decorator and worker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -79,6 +79,15 @@ def _on_document_delete(sender, document, *args, **kwargs):
         id=str(document.id),
         fields=None,
     )
+    if not hasattr(document, "get_changed_instance"):
+        return
+    document = document.get_changed_instance()
+    change_tracker.register(
+        op="update",
+        model=get_model_id(document),
+        id=str(document.id),
+        fields=None,
+    )
 
 
 def _on_model_change(sender, instance, created=False, *args, **kwargs):
@@ -118,6 +127,15 @@ def _on_model_delete(sender, instance, *args, **kwargs):
     change_tracker.register(
         op=op,
         model=model_id,
+        id=str(instance.id),
+        fields=None,
+    )
+    if not hasattr(instance, "get_changed_instance"):
+        return
+    instance = instance.get_changed_instance()
+    change_tracker.register(
+        op="update",
+        model=get_model_id(instance),
         id=str(instance.id),
         fields=None,
     )
