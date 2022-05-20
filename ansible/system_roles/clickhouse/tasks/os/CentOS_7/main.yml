@@ -5,20 +5,7 @@
     creates: /etc/yum.repos.d/clickhouse.repo
   environment:
     http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}
-  
-  # yum_repository:
-  #   name: clickhouse
-  #   description: Clickhouse Official repo
-  #   baseurl: https://packages.clickhouse.com/rpm/clickhouse.repo
-  #   reposdir: /etc/yum.repos.d/
-  #   gpgcheck: "False"
-  #   enabled: "True"
-  # environment:
-  #   http_proxy: "{{ http_proxy }}"
-  #   https_proxy: "{{ http_proxy }}"
-  # tags:
-  #   - repo
+    https_proxy: "{{ http_proxy }}"
 
 - name: Install CH
   yum:
