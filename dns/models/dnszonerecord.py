@@ -56,9 +56,8 @@ class DNSZoneRecord(NOCModel):
             return dnszonerecord[0]
         return None
 
-    def iter_changed_datastream(self, changed_fields=None):
-        for ds, id in self.zone.iter_changed_datastream(changed_fields=changed_fields):
-            yield ds, id
+    def get_changed_instance(self):
+        return self.zone
 
     @classmethod
     def can_set_label(cls, label):
