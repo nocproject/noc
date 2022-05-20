@@ -1,11 +1,16 @@
 ---
 - name: Add CH repository
-  shell: yum-config-manager --add-repo=https://packages.clickhouse.com/rpm/clickhouse.repo
-  args:
-    creates: /etc/yum.repos.d/clickhouse.repo
+  yum_repository:
+    name: clickhouse
+    description: Clickhouse Official repo
+    baseurl: https://packages.clickhouse.com/rpm/stable/
+    gpgcheck: "False"
+    enabled: "True"
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
 
 - name: Install CH
   yum:
