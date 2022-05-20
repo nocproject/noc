@@ -24,6 +24,7 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
 )
 import cachetools
+import orjson
 
 # NOC modules
 from .maintenancetype import MaintenanceType
@@ -218,7 +219,9 @@ class Maintenance(Document):
         return affected
 
 
-def update_affected_objects(maintenance_id, start, stop=None):
+def update_affected_objects(
+    maintenance_id, start: datetime.datetime, stop: Optional[datetime.datetime] = None
+):
     """
     Calculate and fill affected objects
     """
@@ -287,38 +290,56 @@ def update_affected_objects(maintenance_id, start, stop=None):
         {"_id": data.id},
         {"$set": {"administrative_domain": affected_ad}},
     )
+    with pg_connection.cursor() as cursor:
+        # Cleanup Maintenance objects
+        SQL_REMOVE = """UPDATE sa_managedobject
+             SET affected_maintenances = affected_maintenances - %s
+             WHERE affected_maintenances ? %s
+             """
+        cursor.execute(SQL_REMOVE, [str(maintenance_id), str(maintenance_id)])
+        # Add Maintenance objects
+        SQL_ADD = """UPDATE sa_managedobject
+        SET affected_maintenances = affected_maintenances || %s::jsonb
+        WHERE id = ANY(%s::int[])"""
+        cursor.execute(
+            SQL_ADD,
+            [
+                orjson.dumps({str(maintenance_id): {"start": start, "stop": stop}}).decode("utf-8"),
+                list(affected),
+            ],
+        )
+    # Clear cache
+    for mo_id in set(mai_objects).union(affected):
+        ManagedObject._reset_caches(mo_id)
     # Check id objects not in affected
-    nin_mai = set(affected).difference(set(mai_objects))
+    # nin_mai = set(affected).difference(set(mai_objects))
     # Check id objects for delete
-    in_mai = set(mai_objects).difference(set(affected))
+    # in_mai = set(mai_objects).difference(set(affected))
 
-    if len(nin_mai) != 0 or len(in_mai) != 0:
-        with pg_connection.cursor() as cursor:
-            # Add Maintenance objects
-            if len(nin_mai) != 0:
-                SQL_ADD = """UPDATE sa_managedobject
-                SET affected_maintenances = jsonb_insert(affected_maintenances,
-                '{"%s"}', '{"start": "%s", "stop": "%s"}'::jsonb)
-                WHERE id IN %s;""" % (
-                    str(maintenance_id),
-                    start,
-                    stop,
-                    "(%s)" % ", ".join(map(repr, nin_mai)),
-                )
-                cursor.execute(SQL_ADD)
-            # Delete Maintenance objects
-            if len(in_mai) != 0:
-                SQL_REMOVE = """UPDATE sa_managedobject
-                     SET affected_maintenances = affected_maintenances #- '{%s}'
-                     WHERE id IN %s AND affected_maintenances @> '{"%s": {}}';""" % (
-                    str(maintenance_id),
-                    "(%s)" % ", ".join(map(repr, in_mai)),
-                    str(maintenance_id),
-                )
-                cursor.execute(SQL_REMOVE)
-        # Clear cache
-        for mo_id in mai_objects:
-            ManagedObject._reset_caches(mo_id)
+    # if len(nin_mai) != 0 or len(in_mai) != 0:
+    #     with pg_connection.cursor() as cursor:
+    #         # Add Maintenance objects
+    #         if len(nin_mai) != 0:
+    #             SQL_ADD = """UPDATE sa_managedobject
+    #             SET affected_maintenances = jsonb_insert(affected_maintenances,
+    #             '{"%s"}', '{"start": "%s", "stop": "%s"}'::jsonb)
+    #             WHERE id IN %s;""" % (
+    #                 str(maintenance_id),
+    #                 start,
+    #                 stop,
+    #                 "(%s)" % ", ".join(map(repr, nin_mai)),
+    #             )
+    #             cursor.execute(SQL_ADD)
+    #         # Delete Maintenance objects
+    #         if len(in_mai) != 0:
+    #             SQL_REMOVE = """UPDATE sa_managedobject
+    #                  SET affected_maintenances = affected_maintenances #- '{%s}'
+    #                  WHERE id IN %s AND affected_maintenances @> '{"%s": {}}';""" % (
+    #                 str(maintenance_id),
+    #                 "(%s)" % ", ".join(map(repr, in_mai)),
+    #                 str(maintenance_id),
+    #             )
+    #             cursor.execute(SQL_REMOVE)
 
 
 def stop(maintenance_id):
