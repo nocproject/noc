@@ -79,15 +79,15 @@ def _on_document_delete(sender, document, *args, **kwargs):
         id=str(document.id),
         fields=None,
     )
-    if not hasattr(document, "iter_related_changed"):
+    if not hasattr(document, "get_changed_instance"):
         return
-    for m_id, o_id in document.iter_related_changed():
-        change_tracker.register(
-            op="update",
-            model=m_id,
-            id=str(o_id),
-            fields=None,
-        )
+    document = document.get_changed_instance()
+    change_tracker.register(
+        op="update",
+        model=get_model_id(document),
+        id=str(document.id),
+        fields=None,
+    )
 
 
 def _on_model_change(sender, instance, created=False, *args, **kwargs):
@@ -130,12 +130,12 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         id=str(instance.id),
         fields=None,
     )
-    if not hasattr(instance, "iter_related_changed"):
+    if not hasattr(instance, "get_changed_instance"):
         return
-    for m_id, o_id in instance.iter_related_changed():
-        change_tracker.register(
-            op="update",
-            model=m_id,
-            id=str(o_id),
-            fields=None,
-        )
+    instance = instance.get_changed_instance()
+    change_tracker.register(
+        op="update",
+        model=get_model_id(instance),
+        id=str(instance.id),
+        fields=None,
+    )
