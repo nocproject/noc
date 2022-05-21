@@ -262,7 +262,7 @@ class DataStream(object):
         if not fmt and cls.on_change(data):
             hash = cls.get_hash(data)
             if not is_changed(doc, hash):
-                logger.info("[%s] Object hasn't been changed", l_name)
+                logger.info("[%s] Object hasn't been changed after altering", l_name)
                 return False  # Not changed after altering
         metrics["ds_%s_changed" % m_name] += 1
         change_id = bson.ObjectId()
