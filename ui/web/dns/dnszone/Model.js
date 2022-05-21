@@ -31,7 +31,8 @@ Ext.define("NOC.dns.dnszone.Model", {
         {
             name: "serial",
             type: "int",
-            defaultValue: 0
+            defaultValue: 0,
+            persist: false
         },
         {
             name: "profile",
