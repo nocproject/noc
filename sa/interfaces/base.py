@@ -854,6 +854,11 @@ class RDParameter(Parameter):
         return "%s:%s" % (left, right)
 
 
+class ObjectIdParameter(REStringParameter):
+    def __init__(self, required=True, default=None):
+        super().__init__("^[0-9a-f]{24}$", required=required, default=default)
+
+
 class GeoPointParameter(Parameter):
     """
     >>> GeoPointParameter().clean([180, 90])
@@ -914,7 +919,7 @@ class ModelParameter(Parameter):
             self.raise_error("Not found: %d" % value)
 
 
-DocFieldMap = {"FloatField": FloatParameter()}
+DocFieldMap = {"FloatField": FloatParameter(), "ReferenceField": ObjectIdParameter()}
 
 
 class DocumentParameter(Parameter):
@@ -1001,11 +1006,6 @@ class ColorParameter(Parameter):
                 except ValueError:
                     self.raise_error(value)
         self.raise_error(value)
-
-
-class ObjectIdParameter(REStringParameter):
-    def __init__(self, required=True, default=None):
-        super().__init__("^[0-9a-f]{24}$", required=required, default=default)
 
 
 if __name__ == "__main__":
