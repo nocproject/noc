@@ -231,12 +231,8 @@ class JsonDSAPI(object):
             except ClickhouseError as e:
                 self.logger.error("Clickhouse query error: %s", e)
                 raise HTTPException(status_code=500, detail=e)
-            r += self.format_result(
-                orjson.loads(result),
-                result_type=req.result_type,
-                request_metrics={qc.alias or qc.metric_type for qc in query_configs},
-            )
-        return r
+            r += [(query_configs, orjson.loads(result))]
+        return self.format_result(r, result_type=req.result_type)
 
     def get_query(
         self,
@@ -301,28 +297,35 @@ class JsonDSAPI(object):
         )
 
     @classmethod
+    def format_time_series(cls, results: List[Tuple[List["QueryConfig"], Dict[str, Any]]]):
+        result = []
+        for query_configs, data in results:
+            request_metrics = {qc.alias or qc.metric_type for qc in query_configs}
+            for row in data["data"]:
+                for field in row:
+                    if field == "target":
+                        continue
+                    result.append(
+                        {"target": f"{field} | {row['target']}", "datapoints": row[field]}
+                    )
+                    if field in request_metrics:
+                        request_metrics.remove(field)
+            # Add metrics without data
+            for rm_name in request_metrics:
+                result.append({"target": f"{rm_name}", "datapoints": []})
+        return result
+
+    @classmethod
     def format_result(
-        cls, result, result_type: str = "timeseries", request_metrics: Set["str"] = None
+        cls,
+        results: List[Tuple[List["QueryConfig"], Dict[str, Any]]],
+        result_type: str = "time_series",
     ):
-        """
-        Formatting output
-        :param result:
-        :param result_type:
-        :param request_metrics: Set requested metric
-        :return:
-        """
-        r = []
-        for row in result["data"]:
-            for field in row:
-                if field == "target":
-                    continue
-                r.append({"target": f"{field} | {row['target']}", "datapoints": row[field]})
-                if field in request_metrics:
-                    request_metrics.remove(field)
-        # Add metrics without data
-        for rm_name in request_metrics:
-            r.append({"target": f"{rm_name}", "datapoints": []})
-        return r
+        if not hasattr(cls, f"format_{result_type}"):
+            raise HTTPException(
+                status_code=404, detail=f"Requested format '{result_type}' not supported"
+            )
+        return getattr(cls, f"format_{result_type}")(results)
 
     @staticmethod
     def get_target_expression(table_name: str = None) -> Tuple[str, Optional[str]]:
