@@ -179,16 +179,18 @@ class PingService(FastAPIService):
             ps.address, size=ps.size, count=ps.count, interval=ps.timeout
         ):
             if rtt is not None and ps.policy == Policy.CHECK_FIRST:
+                if attempts > 0:
+                    metrics["ping_check_recover"] += 1
                 return rtt, attempts  # Quit of first success
             elif rtt is None and ps.policy == Policy.CHECK_ALL:
-                return None, attempts  # Quit on first failure
+                return None, 0  # Quit on first failure
             elif rtt is not None:
                 timings.append(rtt)
             attempts += 1
         if not timings:
-            return None, attempts  # No success
+            return None, 0  # No success
         # CHECK_ALL policy
-        return sum(timings) / len(timings), attempts
+        return sum(timings) / len(timings), 0
 
     async def ping_check(self, ps: ProbeSetting) -> None:
         """
@@ -217,8 +219,10 @@ class PingService(FastAPIService):
         s = rtt is not None
         if s:
             metrics["ping_check_success"] += 1
+            self.logger.debug("[%s] Result: success, rtt=%s, attempt=%d", address, rtt, attempts)
         else:
             metrics["ping_check_fail"] += 1
+            self.logger.debug("[%s] Result: failed", address)
         if s and not rtt:
             metrics["ping_time_stepbacks"] += 1
         if ps and s != ps.status:
