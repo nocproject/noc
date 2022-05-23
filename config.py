@@ -368,6 +368,18 @@ class Config(BaseConfig):
         admin_password = StringParameter(default="admin")
         admin_email = StringParameter(default="test@example.com")
 
+    class inv(ConfigSection):
+        ignored_chassis_macs = ListParameter(
+            item=StringParameter(),
+            default=[
+                "FF:FF:FF:FF:FF:FF",
+                "00:00:00:00:00",
+                "01:01:01:01:01",
+                "01:02:03:04:05",
+                "05:04:03:02:01",
+            ],
+        )
+
     installation_name = StringParameter(default="Unconfigured installation")
     installation_id = UUIDParameter(default="")
 
