@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Callable, List
+from typing import Optional, Dict, Callable, List, Union
 import weakref
 
 # NOC modules
@@ -94,7 +94,7 @@ class SNMP(object):
 
     def get(
         self,
-        oids: List[str],
+        oids: Union[str, List[str]],
         cached: bool = False,
         version: Optional[str] = None,
         raw_varbinds=False,

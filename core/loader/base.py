@@ -10,6 +10,7 @@ import logging
 import inspect
 import threading
 import os
+from typing import Iterator, Set, Generic, Tuple
 
 # NOC modules
 from noc.config import config
@@ -19,16 +20,16 @@ logger = logging.getLogger(__name__)
 
 
 class BaseLoader(object):
-    name = None
-    base_cls = None  # Base class to be loaded
-    base_path = None  # Tuple of path components
-    ignored_names = set()
+    name: str = None
+    base_cls: "Generic" = None  # Base class to be loaded
+    base_path: Tuple[str] = None  # Tuple of path components
+    ignored_names: Set[str] = set()
 
     def __init__(self):
         self.logger = PrefixLoggerAdapter(logger, self.name)
         self.classes = {}
         self.lock = threading.Lock()
-        self.all_classes = set()
+        self.all_classes: Set[str] = set()
 
     def find_class(self, module_name, base_cls, name):
         """
@@ -54,7 +55,7 @@ class BaseLoader(object):
             self.logger.error("Failed to load %s %s: %s", self.name, name, e)
         return None
 
-    def is_valid_class(self, kls, name):
+    def is_valid_class(self, kls: "Generic", name) -> bool:
         """
         Check `find_class` found valid class
         :param kls: Class
@@ -63,10 +64,10 @@ class BaseLoader(object):
         """
         return True
 
-    def is_valid_name(self, name):
+    def is_valid_name(self, name: str) -> bool:
         return ".." not in name
 
-    def get_path(self, base, name):
+    def get_path(self, base: str, name: str) -> str:
         """
         Get file path
         :param base: "" or custom prefix
@@ -76,7 +77,7 @@ class BaseLoader(object):
         p = (base,) + self.base_path + ("%s.py" % name,)
         return os.path.join(*p)
 
-    def get_module_name(self, base, name):
+    def get_module_name(self, base: str, name: str) -> str:
         """
         Get module name
         :param base: `noc` or custom prefix
@@ -85,7 +86,7 @@ class BaseLoader(object):
         """
         return "%s.%s.%s" % (base, ".".join(self.base_path), name)
 
-    def get_class(self, name):
+    def get_class(self, name: str):
         with self.lock:
             kls = self.classes.get(name)
             if not kls:
@@ -113,13 +114,13 @@ class BaseLoader(object):
     def __iter__(self):
         return self.iter_classes()
 
-    def iter_classes(self):
+    def iter_classes(self) -> Iterator[str]:
         with self.lock:
             if not self.all_classes:
                 self.all_classes = self.find_classes()
         yield from sorted(self.all_classes)
 
-    def find_classes(self):
+    def find_classes(self) -> Set[str]:
         names = set()
         for dn in config.get_customized_paths(os.path.join(*self.base_path)):
             for fn in os.listdir(dn):
