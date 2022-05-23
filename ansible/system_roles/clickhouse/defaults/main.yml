@@ -5,9 +5,10 @@ ch_big_query_dir: "{{ ch_data_dir }}/tmp"
 clickhouse_http_port: 8123
 clickhouse_max_ast_elements: 10000
 clickhouse_timezone: "Europe/Moscow"
-clickhouse_version: 21.8.5.7
+clickhouse_version: 22.4.5.9
 clickhouse_expose_metrics: "True"
 clickhouse_service_name: clickhouse-server
+
 
 ch_etc_path: "{{ etc_prefix }}/clickhouse-server"
 ch_dictionaries_path: "{{ ch_etc_path }}/dictionaries"
