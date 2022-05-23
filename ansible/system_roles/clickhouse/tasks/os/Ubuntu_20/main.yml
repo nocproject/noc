@@ -2,7 +2,7 @@
 - name: Add CH apt key
   apt_key:
     keyserver: keyserver.ubuntu.com
-    id: E0C56BD4
+    id: 8919F6BD2B48D754
   environment:
     https_proxy: "{ {http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -11,7 +11,7 @@
 
 - name: Add CH repository
   apt_repository:
-    repo: "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
+    repo: "deb https://packages.clickhouse.com/deb stable main"
     state: present
     update_cache: "True"
   environment:
