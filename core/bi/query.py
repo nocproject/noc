@@ -54,6 +54,9 @@ def f_lookup(seq, model=None):
     :return:
     """
     dict_name = seq[0]
+    if "." in dict_name:
+        #
+        _, dict_name = dict_name.split(".", 1)
     dc = loader[dict_name]
     if len(seq) == 2:
         field_name = dc.get_pk_name()
@@ -112,7 +115,11 @@ def f_names(seq, model=None):
     :param model:
     :return:
     """
-    return f"arrayMap(k->dictGetString('{config.clickhouse.db_dictionaries}.{seq[0]}', 'name', toUInt64(k)), dictGetHierarchy('{seq[0]}', {seq[1]}))"
+    dict_name = seq[0]
+    if "." in dict_name:
+        #
+        _, dict_name = dict_name.split(".", 1)
+    return f"arrayMap(k->dictGetString('{config.clickhouse.db_dictionaries}.{dict_name}', 'name', toUInt64(k)), dictGetHierarchy('{config.clickhouse.db_dictionaries}.{dict_name}', {seq[1]}))"
 
 
 def f_duration(seq, model=None):
