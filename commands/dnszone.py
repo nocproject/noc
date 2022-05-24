@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # Import DNS Zone
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+import dns
 import argparse
 import re
-import subprocess
 from itertools import zip_longest
 
 # NOC modules
@@ -20,11 +20,10 @@ from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.ip.models.vrf import VRF
 from noc.ip.models.addressprofile import AddressProfile
 from noc.ip.models.address import Address
-from noc.core.validators import is_int
+from noc.core.validators import is_int, is_ipv4, is_ipv6
 from noc.core.dns.rr import RR
-from noc.config import config
 from noc.core.text import split_alnum
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_text
 
 
 class Command(BaseCommand):
@@ -72,9 +71,6 @@ class Command(BaseCommand):
             dest="transfer_zone",
             action="store",
             help="DNS Zone name to transfer",
-        ),
-        import_parser.add_argument(
-            "--source", dest="source", action="store", help="Source address to issue zone transfer"
         )
         self.print((import_parser.print_help()))
 
@@ -127,7 +123,6 @@ class Command(BaseCommand):
         dry_run=False,
         zone_profile=None,
         address_profile=None,
-        source=None,
         transfer_zone=None,
         nameserver=None,
     ):
@@ -152,8 +147,6 @@ class Command(BaseCommand):
                     address_profile=ap,
                 )
         if axfr:
-            if not source:
-                self.die("--source is not set")
             if not transfer_zone:
                 self.die("--transfer_zone is not set")
             if not nameserver:
@@ -167,20 +160,22 @@ class Command(BaseCommand):
                 address_profile=ap,
                 transfer_zone=transfer_zone,
                 nameserver=nameserver,
-                source_address=source,
             )
 
-    def load_axfr(self, nameserver, transfer_zone, source_address):
-        opts = []
-        opts += ["-b", source_address]
-        pipe = subprocess.Popen(
-            [config.path.dig] + opts + ["axfr", "@%s" % nameserver, transfer_zone],
-            shell=False,
-            stdout=subprocess.PIPE,
-        ).stdout
-        data = pipe.read()
-        pipe.close()
-        return smart_text(smart_bytes(data)).split("\n")
+    def load_axfr(self, ip, transfer_zone):
+        try:
+            _zone = dns.zone.from_xfr(
+                dns.query.xfr(str(ip).rstrip("."), transfer_zone, lifetime=5.0)
+            )
+            data = "\n".join(
+                _zone[z_node].to_text(z_node)
+                for z_node in _zone.nodes.keys()
+                if "@" not in _zone[z_node].to_text(z_node)
+            )
+        except dns.exception.DNSException as e:
+            self.print("ERROR:", e)
+            return
+        return data
 
     def dns_zone(self, zone, zone_profile, dry_run=False, clean=False):
         z = DNSZone.get_by_name(zone)
@@ -215,14 +210,13 @@ class Command(BaseCommand):
         address_profile=None,
         transfer_zone=None,
         nameserver=None,
-        source_address=None,
         dry_run=False,
         force=False,
         clean=False,
     ):
-        self.print("Loading zone file '%s'" % path)
-        self.print("Parsing zone file using BIND parser")
         if path:
+            self.print("Loading zone file '%s'" % path)
+            self.print("Parsing zone file using BIND parser")
             with open(path) as f:
                 rrs = self.iter_bind_zone_rr(f)
                 try:
@@ -291,62 +285,55 @@ class Command(BaseCommand):
                         if not dry_run:
                             zrr.save()
         if axfr:
-            data = self.load_axfr(nameserver, transfer_zone, source_address)
+            self.print("Loading zone: %s by AXFR from server: %s" % (transfer_zone, nameserver))
+            if not is_ipv4(nameserver) and not is_ipv6(nameserver):
+                try:
+                    answer = dns.resolver.resolve(qname=nameserver, rdtype="A", lifetime=5.0)
+                    ip = answer[0].address
+                except dns.exception.DNSException as e:
+                    self.print(f"Resolv Error: {e}")
+                    return
+            else:
+                ip = nameserver
+            print(ip, transfer_zone)
+            data = self.load_axfr(ip, transfer_zone)
+            if data is None:
+                self.print("No result")
+                return
             zone = self.from_idna(transfer_zone)
             z = self.dns_zone(zone, zone_profile, dry_run, clean)
             # Populate zone
             vrf = VRF.get_global()
-            zz = zone + "."
-            lz = len(zz)
-            if z.is_forward:
-                zp = None
-            elif z.is_reverse_ipv4:
-                # Calculate prefix for reverse zone
-                zp = ".".join(reversed(zone[:-13].split("."))) + "."
-            elif z.is_reverse_ipv6:
-                raise CommandError("IPv6 reverse import is not implemented")
-            else:
+            if not z.is_forward and not z.is_reverse_ipv4 and not z.is_reverse_ipv6:
                 raise CommandError("Unknown zone type")
-            for row in data:
-                row = row.strip()
-                if row == "" or row.startswith(";"):
+            for row in data.splitlines():
+                row = row.strip().split()
+                if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
                     continue
-                row = row.split()
-
-                if len(row) != 5 or row[2] != "IN" or row[3] not in ("A", "AAAA", "PTR"):
-                    continue
-                if row[3] in ("A", "AAAA"):
-                    name = row[0]
-                    if name.endswith(zz):
-                        name = name[:-lz]
-                    if name.endswith("."):
-                        name = name[:-1]
-                    self.create_address(
-                        zone,
-                        vrf,
-                        row[4],
-                        "%s.%s" % (name, zone) if name else zone,
-                        address_profile,
-                        dry_run=dry_run,
-                        force=force,
-                    )
                 if row[3] == "PTR":
-                    name = row[4]
-                    if name.endswith(zz):
-                        name = name[:-lz]
-                    if name.endswith("."):
-                        name = name[:-1]
-                    # @todo: IPv6
-                    if "." in row[0]:
-                        address = ".".join(reversed(row[0].split(".")[:-3]))
-                    else:
-                        address = zp + name
+                    host = dns.name.from_text(f"{row[0]}.{zone}.")
+                    ip = dns.reversename.to_address(host)
                     fqdn = row[4]
                     if fqdn.endswith("."):
                         fqdn = fqdn[:-1]
-                    self.create_address(
-                        zone, vrf, address, fqdn, address_profile, dry_run=dry_run, force=force
-                    )
+                elif row[3] in ("A", "AAAA"):
+                    fqdn = row[0]
+                    if fqdn.endswith(zz):
+                        fqdn = fqdn[:-lz]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
+                    ip = row[4]
+                else:
+                    continue
+                self.create_address(
+                    zone,
+                    vrf,
+                    ip,
+                    fqdn,
+                    address_profile,
+                    dry_run=dry_run,
+                    force=force,
+                )
 
     def create_address(self, zone, vrf, address, fqdn, address_profile, dry_run=False, force=False):
         """
