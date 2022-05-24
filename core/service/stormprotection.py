@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Message storm protection for collectors
+# Message Storm Protection for collector services
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
@@ -9,7 +9,7 @@
 from dataclasses import dataclass
 import datetime
 import logging
-from typing import Dict
+from typing import Any, Dict
 
 # Third-party modules
 import orjson
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class StormRecord:
-    """Record in storm table"""
+    """Record in Storm Table"""
 
     messages_count: int = 0
     talkative: bool = False
@@ -33,10 +33,48 @@ class StormRecord:
 
 
 class StormProtection(object):
-    """Message storm protection functionality"""
+    """Message Storm Protection class
+
+    An instance of the `Storm Protection` class is installed at the message receiving point to
+    detect a situation when the number of incoming messages exceeds a certain threshold.
+
+    The methods used are:
+      `initialize' - initialize the object
+      `update_messages_counter' - registration of an incoming message
+      `device_is_talkative` - returns a device's "talkative" flag
+      `raise_alarm' - raise an alarm
+
+    The following settings are available:
+
+    In the global settings:
+      * storm_round_duration - duration of the verification round in seconds
+      * storm_threshold_reduction - coefficient for obtaining the protection disabling threshold
+      * storm_record_ttl - device's record's time to live limit
+
+    In the settings of a specific device (SourceConfig):
+      * storm_policy - storm protection policy
+      * storm_threshold - threshold for the quantity of messages to enable protection
+
+
+    Usage example:
+
+    storm_protection = StormProtection(
+        <round_duration>,
+        <threshold_reduction>,
+        <record_ttl>,
+        <AlarmClass>,
+    )
+    storm_protection.update_messages_counter(<source>)
+
+    For more details see docs/en/docs/dev/reference/storm_protection.md
+    """
 
     def __init__(
-        self, storm_round_duration, storm_threshold_reduction, storm_record_ttl, alarm_class
+        self,
+        storm_round_duration: int,
+        storm_threshold_reduction: float,
+        storm_record_ttl: int,
+        alarm_class: str,
     ):
         self.storm_round_duration = storm_round_duration
         self.storm_threshold_reduction = storm_threshold_reduction
@@ -75,16 +113,16 @@ class StormProtection(object):
         for ip in to_delete:
             del self.storm_table[ip]
 
-    def update_messages_counter(self, ip_address):
+    def update_messages_counter(self, ip_address: str):
         if ip_address not in self.storm_table:
             self.storm_table[ip_address] = StormRecord()
             self.storm_table[ip_address].ttl = self.storm_record_ttl
         self.storm_table[ip_address].messages_count += 1
 
-    def device_is_talkative(self, ip_address):
+    def device_is_talkative(self, ip_address: str) -> bool:
         return self.storm_table[ip_address].talkative
 
-    def raise_alarm(self, ip_address):
+    def raise_alarm(self, ip_address: str):
         storm_record = self.storm_table[ip_address]
         if storm_record.raised_alarm:
             return
@@ -97,14 +135,15 @@ class StormProtection(object):
         self._publish_message(cfg, msg)
         storm_record.raised_alarm = True
 
-    def _close_alarm(self, ip_address):
+    def _close_alarm(self, ip_address: str):
         cfg = self.service.address_configs[ip_address]
         msg = {"$op": "clear"}
         self._publish_message(cfg, msg)
         self.storm_table[ip_address].raised_alarm = False
 
-    def _publish_message(self, cfg, msg):
+    def _publish_message(self, cfg, msg: Dict[str, Any]):
         msg["timestamp"] = datetime.datetime.now().isoformat()
         msg["reference"] = f"{self.alarm_class}{cfg.id}"
-        svc = self.service
-        svc.publish(orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition)
+        self.service.publish(
+            orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition
+        )
