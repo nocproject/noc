@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # Probe Setting
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from enum import Enum
 
 # Third-party modules
 import cachetools
@@ -13,7 +16,10 @@ from noc.config import config
 
 tp_cache = {}
 
-POLICY_MAP = {"f": 0, "a": 1}
+
+class Policy(Enum):
+    CHECK_FIRST = 0
+    CHECK_ALL = 1
 
 
 class ProbeSetting(object):
@@ -50,7 +56,7 @@ class ProbeSetting(object):
         policy="f",
         size=64,
         count=3,
-        timeout=1000,
+        timeout=1_000,
         report_rtt=False,
         report_attempts=False,
         time_expr=None,
@@ -65,10 +71,10 @@ class ProbeSetting(object):
         self.name = name
         self.interval = interval
         self.status = status
-        self.policy = POLICY_MAP.get(policy, 0)
+        self.policy = self._clean_policy(policy)
         self.size = max(size, 64)
         self.count = max(count, 1)
-        self.timeout = max(timeout, 1)
+        self.timeout = self._clean_timeout(timeout)
         self.sent_status = None
         self.report_rtt = report_rtt
         self.report_attempts = report_attempts
@@ -85,6 +91,16 @@ class ProbeSetting(object):
     @staticmethod
     def get_pool_stream(pool: str) -> str:
         return "events.%s" % pool
+
+    @staticmethod
+    def _clean_timeout(timeout: int) -> float:
+        return float(max(timeout, 1_000)) / 1_000.0
+
+    @staticmethod
+    def _clean_policy(policy: str) -> Policy:
+        if policy == "a":
+            return Policy.CHECK_ALL
+        return Policy.CHECK_FIRST
 
     def set_stream(self):
         self.stream = self.get_pool_stream(self.fm_pool)
@@ -108,10 +124,10 @@ class ProbeSetting(object):
         **kwargs,
     ):
         self.interval = interval
-        self.policy = POLICY_MAP.get(policy, 0)
+        self.policy = self._clean_policy(policy)
         self.size = max(size, 64)
         self.count = max(count, 1)
-        self.timeout = max(timeout, 1)
+        self.timeout = self._clean_timeout(timeout)
         self.report_rtt = report_rtt
         self.report_attempts = report_attempts
         self.time_expr = time_expr
@@ -123,10 +139,10 @@ class ProbeSetting(object):
     def is_differ(self, data):
         return (
             self.interval != data["interval"]
-            or self.policy != POLICY_MAP.get(data.get("policy", "f"), 0)
+            or self.policy != self._clean_policy(data.get("policy", "f"))
             or self.size != max(data.get("size", 64), 64)
             or self.count != max(data.get("count", 3), 1)
-            or self.timeout != max(data.get("timeout", 1000), 1)
+            or self.timeout != self._clean_timeout(data.get("timeout", 1_000))
             or self.report_rtt != data.get("report_rtt", False)
             or self.report_attempts != data.get("report_attempts", False)
             or self.time_expr != data.get("time_expr")

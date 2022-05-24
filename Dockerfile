@@ -8,8 +8,7 @@ ENV\
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
     PYTHONPATH=/opt \
-    PROJ_DIR=/usr \
-    IP_SO="build/rust/release/libip.so"
+    PROJ_DIR=/usr
 
 COPY . /opt/noc/
 WORKDIR /opt/noc/
@@ -26,15 +25,13 @@ RUN \
     libpq-dev \
     $BUILD_PACKAGES \
     && pip3 install --upgrade pip \
-    && (./scripts/build/get-noc-requirements.py activator classifier cache-memcached cache-redis login-ldap login-pam login-radius prod-tools cython testing sender-kafka | pip3 install -r /dev/stdin )\
+    && (./scripts/build/get-noc-requirements.py activator classifier cache-memcached cache-redis login-ldap login-pam login-radius prod-tools cython testing sender-kafka ping | pip3 install -r /dev/stdin )\
     && python3 ./scripts/deploy/install-packages requirements/web.json \
     && python3 ./scripts/deploy/install-packages requirements/card.json \
     && python3 ./scripts/deploy/install-packages requirements/bi.json \
     && cythonize -i /opt/noc/speedup/*.pyx \
     && mkdir /opt/nocspeedup \
     && cp /opt/noc/speedup/*.so /opt/nocspeedup \
-    && if [ -f "$IP_SO" ]; then cp $IP_SO /opt/nocspeedup/ip.so; else \
-    curl -LJO https://cdn.getnoc.com/noc/libs/libip.so && cp libip.so /opt/nocspeedup/ip.so; fi \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && pip3 uninstall -y Cython \
     && apt remove --purge -y $BUILD_PACKAGES \

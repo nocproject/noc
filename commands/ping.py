@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ping command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,11 +10,14 @@ import argparse
 import asyncio
 from typing import Optional, Iterable, List
 
+# Third-party modules
+from gufo.ping import Ping
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
-from noc.core.ioloop.ping import Ping
 from noc.core.ioloop.util import setup_asyncio, run_sync
+from noc.config import config
 
 
 class Command(BaseCommand):
@@ -41,16 +44,16 @@ class Command(BaseCommand):
                     if not addr_list:
                         break  # Done
                     addr = addr_list.pop(0)
-                    rtt, attempts = await ping.ping_check_rtt(addr, count=1, timeout=1000)
-                    if rtt:
-                        self.stdout.write(f"{addr} {rtt * 1000:.2f}ms\n")
-                    else:
-                        self.stdout.write(f"{addr} FAIL\n")
+                rtt = await ping.ping(addr)
+                if rtt is not None:
+                    self.stdout.write(f"{addr} {rtt * 1_000:.2f}ms\n")
+                else:
+                    self.stdout.write(f"{addr} FAIL\n")
 
         # Run ping
         addr_list = self.get_addresses(addresses, input)
         lock: Optional[asyncio.Lock] = None
-        ping = Ping()
+        ping = Ping(tos=config.ping.tos, timeout=1.0)
         setup_asyncio()
         run_sync(runner)
 
