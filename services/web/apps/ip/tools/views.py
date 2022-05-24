@@ -1,26 +1,31 @@
 # ---------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python Modules
 import csv
-import subprocess
+import dns
+import orjson
 from io import StringIO
 
 # Third-party modules
 from django import forms
+from django.http import HttpResponse
 
 # NOC Modules
 from noc.lib.app.application import Application, HasPerm, view
-from noc.core.ip import IP, IPv4
+from noc.core.ip import IP, IPv4, IPv6
+from noc.core.validators import is_ipv4, is_ipv6
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.core.forms import NOCForm
-from noc.config import config
+
+# from noc.core.comp import smart_text
+from noc.ip.models.addressprofile import AddressProfile
 from noc.core.translation import ugettext as _
 
 
@@ -100,12 +105,6 @@ class ToolsAppplication(Application):
             help_text=_("Name server IP address. NS must have zone transfer enabled for NOC host"),
         )
         zone = forms.CharField(label=_("Zone"), help_text=_("DNS Zone name to transfer"))
-        source_address = forms.GenericIPAddressField(
-            label=_("Source Address"),
-            required=False,
-            protocol="IPv4",
-            help_text=_("Source address to issue zone transfer"),
-        )
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/upload_axfr/$",
@@ -122,63 +121,101 @@ class ToolsAppplication(Application):
         :return:
         """
 
-        def upload_axfr(data):
+        def upload_axfr(data, zone):
             p = IP.prefix(prefix.prefix)
-            count = 0
-            for row in data:
-                row = row.strip()
-                if row == "" or row.startswith(";"):
-                    continue
-                row = row.split()
-                if len(row) != 5 or row[2] != "IN" or row[3] != "PTR":
+            create = 0
+            change = 0
+            zz = zone + "."
+            lz = len(zz)
+            ap = AddressProfile.objects.filter(name="default").first()
+            for row in data.splitlines():
+                row = row.strip().split()
+                if len(row) != 5 or row[3] not in ("A", "AAAA", "PTR"):
                     continue
                 if row[3] == "PTR":
-                    # @todo: IPv6
-                    x = row[0].split(".")
-                    ip = "%s.%s.%s.%s" % (x[3], x[2], x[1], x[0])
+                    host = dns.name.from_text(f"{row[0]}.{zone}.")
+                    ip = dns.reversename.to_address(host)
                     fqdn = row[4]
                     if fqdn.endswith("."):
                         fqdn = fqdn[:-1]
+                elif row[3] in ("A", "AAAA"):
+                    fqdn = row[0]
+                    if fqdn.endswith(zz):
+                        fqdn = fqdn[:-lz]
+                    if fqdn.endswith("."):
+                        fqdn = fqdn[:-1]
+                    ip = row[4]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if not p.contains(IPv4(ip)):
+                if (
+                    is_ipv4(ip)
+                    and not p.contains(IPv4(ip))
+                    or is_ipv6(ip)
+                    and not p.contains(IPv6(ip))
+                ):
                     continue
-                a, changed = Address.objects.get_or_create(vrf=vrf, afi=afi, address=ip)
-                if a.fqdn != fqdn:
-                    a.fqdn = fqdn
-                    changed = True
-                if changed:
+                a = Address.objects.filter(vrf=vrf, afi=afi, address=ip).first()
+                if a:
+                    if a.fqdn != fqdn:
+                        a.fqdn = fqdn
+                        a.name = fqdn
+                        a.save()
+                        change += 1
+                else:
+                    # Not found
+                    a = Address(
+                        vrf=vrf,
+                        afi=afi,
+                        address=ip,
+                        profile=ap,
+                        fqdn=fqdn,
+                        name=fqdn,
+                        description="Imported from %s zone" % zone,
+                    )
                     a.save()
-                    count += 1
-            return count
+                    create += 1
+            return create, change
 
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denined"))
-        if request.POST:
-            form = self.AXFRForm(request.POST)
-            if form.is_valid():
-                opts = []
-                if form.cleaned_data["source_address"]:
-                    opts += ["-b", form.cleaned_data["source_address"]]
-                pipe = subprocess.Popen(
-                    [config.path.dig]
-                    + opts
-                    + ["axfr", "@%s" % form.cleaned_data["ns"], form.cleaned_data["zone"]],
-                    shell=False,
-                    stdout=subprocess.PIPE,
-                ).stdout
-                data = pipe.read()
-                pipe.close()
-                count = upload_axfr(data.split("\n"))
-                self.message_user(
-                    request,
-                    _("%(count)s IP addresses uploaded via zone transfer") % {"count": count},
-                )
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi, prefix.prefix)
+        body = orjson.loads(request.body)
+        if not is_ipv4(body["ns"]) and not is_ipv6(body["ns"]):
+            try:
+                answer = dns.resolver.resolve(qname=body["ns"], rdtype="A", lifetime=5.0)
+                ip = answer[0].address
+            except dns.exception.DNSException as e:
+                self.error(f"Resolv Error: {e}")
+                return HttpResponse(e, status=500)
         else:
-            form = self.AXFRForm()
-        return self.render(
-            request, "index.html", vrf=vrf, afi=afi, prefix=prefix, upload_ips_axfr_form=form
-        )
+            ip = body["ns"]
+        try:
+            _zone = dns.zone.from_xfr(
+                dns.query.xfr(
+                    ip,
+                    body["zone"],
+                    lifetime=5.0,
+                )
+            )
+            data = "\n".join(
+                _zone[z_node].to_text(z_node)
+                for z_node in _zone.nodes.keys()
+                if "@" not in _zone[z_node].to_text(z_node)
+            )
+        except dns.exception.DNSException as e:
+            self.error(f"DNS Error: {e}")
+            return HttpResponse(e, status=400)
+        except Exception as e:
+            self.error(f"Other Error: {e}")
+            return HttpResponse(e, status=500)
+
+        if data:
+            create, change = upload_axfr(data, body["zone"])
+            return HttpResponse(
+                _(
+                    "Created: %(create)s and Changed: %(change)s IP addresses uploaded via zone transfer."
+                )
+                % {"create": create, "change": change}
+            )
+        return HttpResponse("No DNS Zone", status=404)

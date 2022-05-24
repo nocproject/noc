@@ -86,11 +86,11 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.Prefix", {
                 disabled: "{!prefix.permissions.change}"
             }
         },
-        // {
-        //     text: __("Tools"),
-        //     tooltip: __("Open tools"),
-        //     glyph: NOC.glyph.edit,
-        //     handler: "onTools",
-        // }
+        {
+            text: __("Tools"),
+            tooltip: __("Open tools"),
+            glyph: NOC.glyph.edit,
+            handler: "onTools",
+        }
     ]
 });

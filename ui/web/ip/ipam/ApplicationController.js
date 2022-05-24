@@ -74,6 +74,16 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
     onVRFFormClose: function() {
         this.openVRFList();
     },
+    onToolsFormOpen: function(parentForm, param) {
+        var form = this.getView().down("[itemId=ipam-tools-form]");
+
+        form.getViewModel().set("prefix", param.prefix);
+        this.getViewModel().set("activeItem", "ipam-tools-form");
+    },
+    onToolsFormClose: function(form) {
+        var prefix = form.getViewModel().get("prefix");
+        this.openPrefixContents("contents/" + prefix.id + "/");
+    },
     onPrefixContentsOpen: function(grid, params) {
         var url = "contents/" + params.id + "/";
         if(params.hasOwnProperty("afi")) {
@@ -140,7 +150,7 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
             scope: this,
             success: function(response) {
                 var value = Ext.decode(response.responseText);
-                if(value.hasOwnProperty("state")){
+                if(value.hasOwnProperty("state")) {
                     value.state = {
                         value: value.state,
                         label: value.state__label,
