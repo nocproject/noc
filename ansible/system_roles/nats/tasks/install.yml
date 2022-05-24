@@ -3,13 +3,12 @@
   get_url:
     url: "{{ nats_checksum_file_url }}"
     dest: "{{ nats_temp_file_checksum }}"
-    validate_certs: "True"
+    validate_certs: "{{ nats_insecure }}"
   delegate_to: 127.0.0.1
   become: "False"
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
-    GIT_SSL_NO_VERIFY: "{{ insecure_git }}"
 
 - name: Get Nats package checksum
   command: "grep {{ nats_pkg }} {{ nats_temp_file_checksum }}"

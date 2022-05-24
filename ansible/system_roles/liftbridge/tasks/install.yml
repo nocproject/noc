@@ -3,13 +3,12 @@
   get_url:
     url: "{{ liftbridge_checksum_file_url }}"
     dest: "{{ liftbridge_temp_file_checksum }}"
-    validate_certs: "True"
+    validate_certs: "{{ liftbridge_insecure }}"
   delegate_to: 127.0.0.1
   become: "False"
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
-    GIT_SSL_NO_VERIFY: "{{ insecure_git }}"
 
 - name: Get Liftbridge package checksum
   command: "grep {{ liftbridge_pkg }} {{ liftbridge_temp_file_checksum }}"

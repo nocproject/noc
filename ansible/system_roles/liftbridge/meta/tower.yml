@@ -17,6 +17,10 @@ forms:
         - info
         - warn
         - error
+    liftbridge_insecure:
+      label: "do not check ssl certificate"
+      type: bool
+      default: false
 
 services:
   liftbridge:
