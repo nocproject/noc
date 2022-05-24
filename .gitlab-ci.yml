@@ -326,17 +326,6 @@ build:web:
       - dist/ui/pkg/web
       - dist/ui/pkg/web.debug
 
-#Build Rust things section
-Prebuild ip.so:
-  stage: Prebuild
-  image: registry.getnoc.com/infrastructure/build/rust-centos7:master
-  extends: .build_rust
-  variables:
-    BUILD_TARGET: pyip
-  artifacts:
-    paths:
-      - build/rust/release/libip.so
-
 Build dnssync:
   stage: Build
   extends: .build_rust
@@ -370,20 +359,6 @@ upload docs:
       changes:
         - "docs/*"
         - "docs/**/*"
-
-upload rust libs:
-  stage: Upload
-  environment: libs
-  extends: .upload
-  variables:
-    SOURCE: build/rust/release/libip.so
-    DEST: cdn/$S3_BUCKET/libs/
-    BUILD_TARGET: pyip
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - rust/$BUILD_TARGET/*
-        - rust/$BUILD_TARGET/**/*
 
 upload dnssync:
   stage: Upload

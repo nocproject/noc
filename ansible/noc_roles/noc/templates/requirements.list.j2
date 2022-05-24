@@ -24,3 +24,6 @@ cache-redis
 {% if 'svc-kafkasender-exec' in groups and inventory_hostname in groups["svc-kafkasender-exec"] %}
 sender-kafka
 {% endif %}
+{% if 'svc-ping-exec' in groups and inventory_hostname in groups["svc-ping-exec"] %}
+ping
+{% endif %}

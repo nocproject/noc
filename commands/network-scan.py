@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Pretty command ver.12
+# network-scan command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,15 +11,15 @@ import argparse
 import asyncio
 import datetime
 from io import BytesIO
+import logging
 
 # Third-party modules
 import xlsxwriter
-import logging
+from gufo.ping import Ping
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.validators import is_ipv4
-from noc.core.ioloop.ping import Ping
 from noc.core.ip import IP
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.mib import mib
@@ -34,6 +34,7 @@ from noc.inv.models.platform import Platform
 from noc.services.mailsender.service import MailSenderService
 from noc.core.comp import smart_text
 from noc.core.mongo.connection import connect
+from noc.config import config
 
 
 # example
@@ -129,18 +130,19 @@ class Command(BaseCommand):
                 self.addresses = set()
                 self.nets.append(a)
                 ip = a.split("/")
-                if is_ipv4(ip[0]):
-                    if len(ip) == 2:
-                        ip = IP.prefix(a)
-                        first = ip.first
-                        last = ip.last
-                        for x in first.iter_address(until=last):
-                            ip2 = str(x).split("/")
-                            if ip2[0] not in self.hosts_exclude:
-                                await queue.put(ip2[0])
-                    else:
-                        if a not in self.hosts_exclude:
-                            await queue.put(a)
+                if not is_ipv4(ip[0]):
+                    continue
+                if len(ip) == 2:
+                    ip = IP.prefix(a)
+                    first = ip.first
+                    last = ip.last
+                    for x in first.iter_address(until=last):
+                        ip2 = str(x).split("/")
+                        if ip2[0] not in self.hosts_exclude:
+                            await queue.put(ip2[0])
+                else:
+                    if a not in self.hosts_exclude:
+                        await queue.put(a)
 
             # Read addresses from files
             """
@@ -302,7 +304,7 @@ class Command(BaseCommand):
                     "snmp_ro": mm.auth_profile.snmp_ro if mm.auth_profile else mm.snmp_ro,
                 }
         # Ping
-        self.ping = Ping()
+        self.ping = Ping(tos=config.ping.tos)
         self.jobs = jobs
         asyncio.run(ping_task())
         print("ver.12")
@@ -425,13 +427,28 @@ class Command(BaseCommand):
         else:
             print(data)
 
+    async def ping_check(self, addr: str) -> bool:
+        """
+        Try to ping address.
+
+        Args:
+            addr: Address to ping.
+
+        Returns:
+            * True, on success.
+            * False, otherwise.
+        """
+        for _ in range(3):  # @todo: Make configurable
+            rtt = await self.ping.ping(addr)
+            if rtt is not None:
+                return True
+        return False
+
     async def ping_worker(self, queue):
         while True:
             a = await queue.get()
-            if a:
-                rtt = await self.ping.ping_check(a, count=3, timeout=500)
-                if rtt:
-                    self.enable_ping.add(a)
+            if a and await self.ping_check(a):
+                self.enable_ping.add(a)
             queue.task_done()
             if not a:
                 break
@@ -439,36 +456,36 @@ class Command(BaseCommand):
     async def snmp_worker(self, queue, community, oid, timeout, version):
         while True:
             a = await queue.get()
-            if a:
-                if a in self.hosts_enable:
-                    community = [self.mo[a]["snmp_ro"]]
-                if not community[0] is None:
-                    for c in community:
-                        for ver in version:
-                            try:
-                                self.r = await snmp_get(
-                                    address=a,
-                                    oids=dict((k, k) for k in oid),
-                                    community=c,
-                                    version=ver,
-                                    timeout=timeout,
-                                )
-                                # self.s = "OK"
-                                self.enable_snmp.add(a)
-                                self.snmp[a] = self.r
-                                self.snmp[a]["version"] = ver
-                                self.snmp[a]["community"] = c
-                                break
-                            except SNMPError as e:
-                                # self.s = "FAIL"
-                                self.r = str(e)
-                            except Exception as e:
-                                # self.s = "EXCEPTION"
-                                self.r = str(e)
-                                break
-            queue.task_done()
             if not a:
+                queue.task_done()
                 break
+            if a in self.hosts_enable:
+                community = [self.mo[a]["snmp_ro"]]
+            if not community[0] is None:
+                for c in community:
+                    for ver in version:
+                        try:
+                            self.r = await snmp_get(
+                                address=a,
+                                oids=dict((k, k) for k in oid),
+                                community=c,
+                                version=ver,
+                                timeout=timeout,
+                            )
+                            # self.s = "OK"
+                            self.enable_snmp.add(a)
+                            self.snmp[a] = self.r
+                            self.snmp[a]["version"] = ver
+                            self.snmp[a]["community"] = c
+                            break
+                        except SNMPError as e:
+                            # self.s = "FAIL"
+                            self.r = str(e)
+                        except Exception as e:
+                            # self.s = "EXCEPTION"
+                            self.r = str(e)
+                            break
+            queue.task_done()
 
 
 if __name__ == "__main__":
