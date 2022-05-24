@@ -9,6 +9,7 @@
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
+    GIT_SSL_NO_VERIFY: "{{ insecure_git }}"
 
 - name: Get Nats package checksum
   command: "grep {{ nats_pkg }} {{ nats_temp_file_checksum }}"

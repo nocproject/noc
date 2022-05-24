@@ -9,6 +9,7 @@
   run_once: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
+    GIT_SSL_NO_VERIFY: "{{ insecure_git }}"
 
 - name: Get Liftbridge package checksum
   command: "grep {{ liftbridge_pkg }} {{ liftbridge_temp_file_checksum }}"
