@@ -10,14 +10,16 @@ from typing import Optional, List
 
 # NOC modules
 from .base import BaseModel, Reference
+from .object import Object
+from .managedobject import ManagedObject
 
 
 class Sensor(BaseModel):
     id: str
     local_id: str
-    units: str
-    object: Optional[Reference]
-    managed_object: Optional[Reference]
+    units: Optional[str]
+    object: Optional[Reference["Object"]]
+    managed_object: Reference["ManagedObject"]
     # Workflow state
     state: Optional[str]
     labels: List[str] = []

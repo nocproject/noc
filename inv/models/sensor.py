@@ -63,7 +63,9 @@ class Sensor(Document):
     )
     local_id = StringField()
     state = PlainReferenceField(State)
-    units = PlainReferenceField(MeasurementUnits)
+    units = PlainReferenceField(
+        MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
+    )
     label = StringField()
     dashboard_label = StringField()
     # Sources that find sensor

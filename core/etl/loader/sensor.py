@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Sensor loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class SensorLoader(BaseLoader):
     data_model = Sensor
 
     discard_deferred = True
-    workflow_event_model = False
+    workflow_event_model = True
 
     def find_object(self, v):
         """
