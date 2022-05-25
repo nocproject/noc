@@ -10,6 +10,7 @@ from .base import BaseLoader
 from ..models.sensor import Sensor
 from noc.inv.models.object import Object
 from noc.inv.models.sensor import Sensor as SensorModel
+from noc.pm.models.measurementunits import MeasurementUnits
 
 
 class SensorLoader(BaseLoader):
@@ -23,6 +24,10 @@ class SensorLoader(BaseLoader):
 
     discard_deferred = True
     workflow_event_model = True
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.clean_map["units"] = lambda x: MeasurementUnits.get_by_name(x) if x else None
 
     def find_object(self, v):
         """
