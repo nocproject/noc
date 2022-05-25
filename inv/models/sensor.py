@@ -14,7 +14,15 @@ from typing import Dict, Optional, Iterable, List
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField, LongField, ListField, DateTimeField, DictField
+from mongoengine.fields import (
+    StringField,
+    IntField,
+    LongField,
+    ListField,
+    DateTimeField,
+    DictField,
+    ReferenceField,
+)
 import cachetools
 
 # NOC modules
@@ -22,6 +30,7 @@ from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.measurementunits import MeasurementUnits
@@ -81,6 +90,11 @@ class Sensor(Document):
     modbus_format = StringField(choices=MODBUS_FORMAT)
     snmp_oid = StringField()
     ipmi_id = StringField()
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
     bi_id = LongField(unique=True)
     # Labels
     labels = ListField(StringField())
