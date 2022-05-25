@@ -23,10 +23,10 @@ forms:
       options:
         - debug
         - info
-    nats_insecure:
-      label: "do not check ssl certificate"
+    insecure:
+      label: "validate certificates"
       type: bool
-      default: false
+      default: False
 
 services:
   nats:

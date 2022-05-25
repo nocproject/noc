@@ -2,7 +2,7 @@
 ## Nats-server
 nats_client_port: 4222
 nats_cluster_port: 4248
-nats_insecure: "true"
+nats_insecure: False
 
 ## System user and group
 nats_user: "nats"

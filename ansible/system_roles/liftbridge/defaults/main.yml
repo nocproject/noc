@@ -4,8 +4,7 @@ cluster_config: ""
 nats_servers: ""
 nats_connect_port: 4222
 nats_srv_list: "{% for n in groups[ 'svc-nats-exec' ] %}nats://{{ hostvars[n].ansible_host }}:{{ nats_connect_port }} {% endfor %}"
-liftbridge_insecure: "true"
-
+liftbridge_insecure: False
 ## Config
 config:
   host: "{{ ansible_host }}"

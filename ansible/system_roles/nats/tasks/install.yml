@@ -3,7 +3,7 @@
   get_url:
     url: "{{ nats_checksum_file_url }}"
     dest: "{{ nats_temp_file_checksum }}"
-    validate_certs: "{{ nats_insecure }}"
+    validate_certs: {{ not nats_insecure }}
   delegate_to: 127.0.0.1
   become: "False"
   run_once: "True"

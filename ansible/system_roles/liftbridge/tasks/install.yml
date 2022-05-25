@@ -1,9 +1,10 @@
 ---
+#test
 - name: Get Liftbridge package checksum file
   get_url:
     url: "{{ liftbridge_checksum_file_url }}"
     dest: "{{ liftbridge_temp_file_checksum }}"
-    validate_certs: "{{ liftbridge_insecure }}"
+    validate_certs: {{ not liftbridge_insecure }}
   delegate_to: 127.0.0.1
   become: "False"
   run_once: "True"
