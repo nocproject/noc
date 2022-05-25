@@ -61,6 +61,7 @@ class EnvItem(EmbeddedDocument):
         ("inv.NetworkSegment", "remote_system"),
         ("inv.NetworkSegmentProfile", "remote_system"),
         ("inv.ResourceGroup", "remote_system"),
+        ("inv.Sensor", "remote_system"),
         ("inv.Object", "remote_system"),
         ("ip.AddressProfile", "remote_system"),
         ("ip.PrefixProfile", "remote_system"),
