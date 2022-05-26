@@ -126,7 +126,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | RxPower", mpath),
                     metric="Interface | DOM | RxPower",
-                    labels=["", "", "", cc["interface"], cc["id"]],
+                    labels=[f'noc::interface::{cc["interface"]}', f'noc::subinterface::{cc["id"]}'],
                     value=float(
                         m["optical_rx_dbm_cpe"]
                         if "," not in m["optical_rx_dbm_cpe"]
@@ -217,7 +217,7 @@ class Script(GetMetricsScript):
             bulk=False,
         ):
             ifindex, ont_id = ont_index.split(".")
-            ont_id = "%s/%s" % (names[int(ifindex)], ont_id)
+            ont_id = f"{names[int(ifindex)]}/{ont_id}"
             ipath = [f"noc::chassis::{global_id_map[ont_index]}", "noc::interface::0"]
             mpath = [f"noc::interface::{names[int(ifindex)]}"]
             if ont_temp_c != SNMP_UNKNOWN_VALUE:
@@ -264,7 +264,10 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Interface | DOM | RxPower", mpath),
                     metric="Interface | DOM | RxPower",
-                    labels=["", "", "", names[int(ifindex)], ont_id],
+                    labels=[
+                        f"noc::interface::{names[int(ifindex)]}",
+                        f"noc::subinterface::{ont_id}",
+                    ],
                     value=float(optical_rx_dbm_cpe) / 100.0,
                     multi=True,
                 )
