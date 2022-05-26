@@ -42,7 +42,8 @@ class Profile(BaseProfile):
     matchers = {
         "is_ma5103": {
             "platform": {"$in": ["MA5103"]},
-        }
+        },
+        "is_version_3x": {"version": {"$regex": r"^3\..+"}},
     }
     rx_interface_name = re.compile(r"^(?P<type>\S+)\s+(?P<number>\S.*)", re.MULTILINE)
 

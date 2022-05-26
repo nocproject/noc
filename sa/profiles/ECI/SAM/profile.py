@@ -31,6 +31,8 @@ class Profile(BaseProfile):
     # telnet_send_on_connect = "\r"
     # convert_mac = BaseProfile.convert_mac_to_dashed
 
+    matchers = {"is_version_ipni": {"version": {"$regex": r"IPNI"}}}
+
     def setup_script(self, script):
         if script.parent is None:
             user = script.credentials.get("user", "")

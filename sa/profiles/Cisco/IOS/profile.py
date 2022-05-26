@@ -64,7 +64,8 @@ class Profile(BaseProfile):
         "is_small_cat": {"version": {"$regex": r"SE|EA|EZ|FX|EX|EY|E|WC"}},
         "is_5350": {"platform": {"$regex": r"^5350"}},
         "is_c2960": {"platform": {"$regex": r"C2960"}},
-        "is_ubr": {"version": {"$regex": r"BC"}},
+        "is_ubr": {"version": {"$regex": r"BC"}},  # uBR series
+        "is_me_series": {"platform": {"$regex": r"^ME.+"}},
         "is_vlan_switch": {
             "platform": {
                 "$regex": r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
@@ -256,21 +257,3 @@ class Profile(BaseProfile):
         if sub:
             return [name]
         return []
-
-
-def uBR(v):
-    """
-    uBR series selector
-    """
-    return "BC" in v["version"]
-
-
-def MESeries(v):
-    """
-    MExxxx series selector
-    :param v:
-    :type v: dict
-    :return:
-    :rtype: bool
-    """
-    return v["platform"].startswith("ME")
