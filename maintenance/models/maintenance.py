@@ -41,6 +41,13 @@ from noc.main.models.notificationgroup import NotificationGroup
 
 id_lock = Lock()
 
+# Query for remove maintenance from affected structure
+SQL_REMOVE = """
+  UPDATE sa_managedobject
+  SET affected_maintenances = affected_maintenances - %s
+  WHERE affected_maintenances ? %s
+"""
+
 
 class MaintenanceObject(EmbeddedDocument):
     object = ForeignKeyField(ManagedObject)
@@ -91,7 +98,7 @@ class Maintenance(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> "Maintenance":
         return Maintenance.objects.filter(id=id).first()
 
     def update_affected_objects_maintenance(self):
@@ -133,19 +140,17 @@ class Maintenance(Document):
             self.auto_confirm_maintenance()
 
     def on_save(self):
-        if (
-            hasattr(self, "_changed_fields")
-            and "direct_objects" in self._changed_fields
-            or hasattr(self, "_changed_fields")
-            and "direct_segments" in self._changed_fields
+        changed_fields = set()
+        if hasattr(self, "_changed_fields"):
+            changed_fields = set(self._changed_fields)
+        if changed_fields.intersection(
+            {"direct_objects", "direct_segments", "stop", "start", "time_pattern"}
         ):
             self.update_affected_objects_maintenance()
-
-        if hasattr(self, "_changed_fields") and "stop" in self._changed_fields:
+        if "stop" in self._changed_fields:
             if not self.is_completed and self.auto_confirm:
                 self.auto_confirm_maintenance()
-
-        if hasattr(self, "_changed_fields") and "is_completed" in self._changed_fields:
+        if "is_completed" in self._changed_fields:
             self.remove_maintenance()
 
         if self.escalate_managed_object:
@@ -183,14 +188,8 @@ class Maintenance(Document):
         self.remove_maintenance()
 
     def remove_maintenance(self):
-        SQL = """UPDATE sa_managedobject
-                 SET affected_maintenances = affected_maintenances #- '{%s}'
-                 WHERE affected_maintenances @> '{"%s": {}}';""" % (
-            str(self.id),
-            str(self.id),
-        )
         with pg_connection.cursor() as cursor:
-            cursor.execute(SQL)
+            cursor.execute(SQL_REMOVE, [str(self.id), str(self.id)])
 
     @classmethod
     def currently_affected(cls, objects: Optional[List[int]] = None) -> List[int]:
@@ -290,12 +289,11 @@ def update_affected_objects(
         {"_id": data.id},
         {"$set": {"administrative_domain": affected_ad}},
     )
+    affected_data = {"start": start, "stop": stop}
+    if data.time_pattern:
+        affected_data["time_pattern"] = data.time_pattern.id
     with pg_connection.cursor() as cursor:
         # Cleanup Maintenance objects
-        SQL_REMOVE = """UPDATE sa_managedobject
-             SET affected_maintenances = affected_maintenances - %s
-             WHERE affected_maintenances ? %s
-             """
         cursor.execute(SQL_REMOVE, [str(maintenance_id), str(maintenance_id)])
         # Add Maintenance objects
         SQL_ADD = """UPDATE sa_managedobject
@@ -304,7 +302,7 @@ def update_affected_objects(
         cursor.execute(
             SQL_ADD,
             [
-                orjson.dumps({str(maintenance_id): {"start": start, "stop": stop}}).decode("utf-8"),
+                orjson.dumps({str(maintenance_id): affected_data}).decode("utf-8"),
                 list(affected),
             ],
         )
@@ -371,14 +369,8 @@ def stop(maintenance_id):
             is_managed=True, affected_maintenances__has_key=str(maintenance_id)
         ).values_list("id", flat=True)
     )
-    SQL = """UPDATE sa_managedobject
-             SET affected_maintenances = affected_maintenances #- '{%s}'
-             WHERE affected_maintenances @> '{"%s": {}}';""" % (
-        maintenance_id,
-        maintenance_id,
-    )
     with pg_connection.cursor() as cursor:
-        cursor.execute(SQL)
+        cursor.execute(SQL_REMOVE, [str(maintenance_id), str(maintenance_id)])
     # Clear cache
     for mo_id in mai_objects:
         ManagedObject._reset_caches(mo_id)

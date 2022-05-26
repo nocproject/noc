@@ -112,6 +112,9 @@ Credentials = namedtuple(
 
 class MaintenanceItem(BaseModel):
     start: datetime.datetime
+    # Time pattern when maintenance is active
+    # None - active all the time
+    time_pattern: Optional[int] = None
     stop: Optional[datetime.datetime] = None
 
 
@@ -2163,16 +2166,20 @@ class ManagedObject(NOCModel):
         :return:
         """
         timestamp = timestamp or datetime.datetime.now()
-        return [
-            mai
-            for mai in self.affected_maintenances
-            if datetime.datetime.fromisoformat(self.affected_maintenances[mai]["start"]) < timestamp
-            and (
-                not self.affected_maintenances[mai]["stop"]
-                or datetime.datetime.fromisoformat(self.affected_maintenances[mai]["stop"])
-                > timestamp
-            )
-        ]
+        r = []
+        for mai_id, d in self.affected_maintenances.items():
+            if d.get("time_pattern"):
+                # Restrict to time pattern
+                tp = TimePattern.get_by_id(d["time_pattern"])
+                if tp and not tp.match(timestamp):
+                    continue
+            if datetime.datetime.fromisoformat(d["start"]) > timestamp:
+                continue
+            if d.get("stop") and datetime.datetime.fromisoformat(d["stop"]) < timestamp:
+                # Already complete
+                continue
+            r.append(mai_id)
+        return r
 
 
 @on_save
