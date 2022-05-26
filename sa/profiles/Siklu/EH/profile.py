@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\"\,\(\)\/]+)?>"
     command_submit = b"\r"
 
-    rx_strip_cmd_repeat = re.compile(br".+\x1b\[\d+G\r?\n(.*)", re.MULTILINE | re.DOTALL)  # noqa
+    rx_strip_cmd_repeat = re.compile(rb".+\x1b\[\d+G\r?\n(.*)", re.MULTILINE | re.DOTALL)  # noqa
 
     def cleaned_input(self, input):
         match = self.rx_strip_cmd_repeat.search(input)

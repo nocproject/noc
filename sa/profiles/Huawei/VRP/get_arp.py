@@ -24,7 +24,7 @@ class Script(BaseScript):
     )
 
     def execute_vrp5(self, vrf=None):
-        if self.match_version(version__startswith="5.3"):
+        if self.is_kernelgte_5_3:
             displayarp = "display arp"
         else:
             if vrf:

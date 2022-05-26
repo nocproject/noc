@@ -31,9 +31,9 @@ class Script(BaseScript):
         return "% CDP is not enabled" not in r
 
     def execute_platform_snmp(self, caps):
-        if self.match_version(platform__regex="^AIR-CT"):
+        if self.is_air_ct:
             caps["CPE | Controller"] = True
 
     def execute_platform_cli(self, caps):
-        if self.match_version(platform__regex="^AIR-CT5"):
+        if self.is_air_ct5:
             caps["CPE | Controller"] = True

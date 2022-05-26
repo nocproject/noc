@@ -26,7 +26,7 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(data):
             port = int(match.group("port"))
             members = []
-            if self.match_version(version__gte="6.3.4"):
+            if self.is_version_gte_6_3_4:
                 data1 = self.cli("show linkagg %i port" % port)
                 for match1 in self.rx_line1.finditer(data1):
                     members += [match1.group("interface")]

@@ -78,7 +78,7 @@ class Script(BaseScript):
         :return:
         """
         r = []
-        if self.match_version(version__startswith=r"3."):
+        if self.is_kernelgte_3:
             try:
                 v = self.cli("display lldp neighbor-information")
             except self.CLISyntaxError:
