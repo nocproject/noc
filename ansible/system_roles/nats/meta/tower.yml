@@ -23,7 +23,7 @@ forms:
       options:
         - debug
         - info
-    insecure:
+    nats_insecure:
       label: "validate certificates"
       type: bool
       default: False
