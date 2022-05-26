@@ -488,10 +488,12 @@ class BaseLoader(object):
             self.logger.debug("Change workflow state: %s -> %s", o.state, state)
             o.set_state(state, changed_date)
 
-    def ensure_labels(self, labels: List[str]):
+    def ensure_labels(self, labels: Optional[List[str]]):
         from noc.main.models.label import Label
 
-        for ll in set(labels) - self.ensured_labels:
+        if not labels:
+            return
+        for ll in set(labels or []) - self.ensured_labels:
             Label.ensure_label(**{"name": ll, self.label_enable_setting: True})
 
     def purge(self):
