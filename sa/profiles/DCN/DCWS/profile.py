@@ -19,3 +19,5 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>\S+)\s*#"
     command_submit = b"\n"
     command_exit = "exit"
+
+    matchers = {"is_platform_dcws": {"platform": {"$regex": r"^DCWS.+"}}}

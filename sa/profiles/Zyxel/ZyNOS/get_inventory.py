@@ -48,9 +48,7 @@ class Script(BaseScript):
             return wrap
 
         objects = []
-        if self.match_version(version__startswith="3.90") or self.match_version(
-            version__startswith="4."
-        ):
+        if self.is_version_3_90 or self.is_version_4_xx:
             xcvr_n = get_offset(0)
             inv = self.cli("show interface transceiver *")
             rx_trans = re.compile(
@@ -64,9 +62,9 @@ class Script(BaseScript):
                 re.MULTILINE | re.DOTALL,
             )
         else:
-            if self.match_version(platform__contains="2024"):
+            if self.is_platform_2024:
                 xcvr_n = get_offset(25)
-            elif self.match_version(platform__contains="2108"):
+            elif self.is_platform_2108:
                 xcvr_n = get_offset(9)
             else:
                 xcvr_n = get_offset(1)
