@@ -22,3 +22,5 @@ class Profile(BaseProfile):
     command_super = b"enable force"
     command_leave_config = "end"
     command_exit = "exit"
+
+    matchers = {"is_platform_smartzone": {"platform": {"$regex": r"^SmartZone.+"}}}

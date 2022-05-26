@@ -51,7 +51,7 @@ class Script(BaseScript):
         interfaces = []
         mac = None
         c = cmd.split("\n\n")
-        if self.match_version(version__contains="IPNI"):
+        if self.is_version_ipni:
             for i in c:
                 i = i.strip()
                 if not i:

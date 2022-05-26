@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_mac2 = re.compile(r"^\s+Ethernet address is\s(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self):
-        if self.match_version(platform__contains="ONU208"):
+        if self.is_platform_onu208:
             cmd = self.cli("show mac")
             match = self.rx_mac1.search(cmd)
             fmac = match.group("mac")
