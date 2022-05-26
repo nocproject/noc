@@ -190,8 +190,7 @@ class BaseExtractor(object):
                 data.append(self.model.parse_raw(line))
         return data
 
-    @staticmethod
-    def get_checkpoint(data: List[BaseModel]) -> Optional[str]:
+    def get_checkpoint(self, data: List[BaseModel]) -> Optional[str]:
         """
         Get latest checkpoint from the state.
 
@@ -202,6 +201,9 @@ class BaseExtractor(object):
             Latest checkpoint, if any. None otherwise.
         """
         cp = None
+        if not hasattr(self.model, "checkpoint"):
+            self.logger.info("Extractor not supported attribute checkpoint")
+            return cp
         for item in data:
             if item.checkpoint and (not cp or item.checkpoint > cp):
                 cp = item.checkpoint
