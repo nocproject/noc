@@ -352,7 +352,9 @@ class BaseLoader(object):
                 find_query[self.unique_field] = v.get(self.unique_field)
                 r = self.model.objects.filter(**find_query)
                 if not r:
-                    r = self.model.objects.filter(**find_query)
+                    r = self.model.objects.filter(
+                        **{"remote_system": v.get("remote_system"), "remote_id": v.get("remote_id")}
+                    )
                 return list(r)[-1]
             raise self.model.MultipleObjectsReturned
         except self.model.DoesNotExist:
@@ -365,7 +367,7 @@ class BaseLoader(object):
         data structures
         """
         self.logger.debug("Create object")
-        if "labels" in v:
+        if self.label_enable_setting and "labels" in v:
             self.ensure_labels(v["labels"])
         o = self.model(**v)
         try:
@@ -400,7 +402,7 @@ class BaseLoader(object):
         for k, nv in v.items():
             if k == self.checkpoint_field:
                 continue
-            if k == "labels":
+            if self.label_enable_setting and k == "labels":
                 self.ensure_labels(nv)
             if inc_changes and k in inc_changes:
                 ov = getattr(o, k, [])

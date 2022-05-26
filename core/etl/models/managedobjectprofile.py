@@ -15,6 +15,6 @@ from .base import BaseModel
 class ManagedObjectProfile(BaseModel):
     id: str
     name: str
-    level: Optional[str]
+    level: Optional[int] = 25
 
     _csv_fields = ["id", "name", "level"]
