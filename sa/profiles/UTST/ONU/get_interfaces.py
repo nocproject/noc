@@ -24,10 +24,10 @@ class Script(BaseScript):
         r"^(?P<ifname>\d+):\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)?", re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         interfaces = []
         v = self.cli("show port")
-        if self.match_version(version__contains="2.0.3.6"):
+        if self.is_version_2_0_3_6:
             for match in self.rx_int1.finditer(v):
                 ifname = match.group("ifname")
                 iface = {

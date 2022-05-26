@@ -14,9 +14,9 @@ class Script(BaseScript):
     cache = True
 
     def execute_platform_cli(self, caps):
-        if self.match_version(platform__regex="^DCWS*"):
+        if self.is_platform_dcws:
             caps["CPE | Controller"] = True
 
     def execute_platform_snmp(self, caps):
-        if self.match_version(platform__regex="^DCWS*"):
+        if self.is_platform_dcws:
             caps["CPE | Controller"] = True

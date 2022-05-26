@@ -47,10 +47,10 @@ class Script(BaseScript):
         #
         # VRP3 style
         #
-        if self.match_version(version__startswith="3."):
-            for l in self.cli("display interface").splitlines():
-                if l.find(" current state :") != -1 and l.find("Line protocol ") == -1:
-                    match_int = rx_ifc_status.match(l)
+        if self.is_version_3x:
+            for ll in self.cli("display interface").splitlines():
+                if ll.find(" current state :") != -1 and ll.find("Line protocol ") == -1:
+                    match_int = rx_ifc_status.match(ll)
                     if match_int:
                         iface = match_int.group("interface")
                         if interface and interface == self.profile.convert_interface_name(iface):
@@ -73,8 +73,8 @@ class Script(BaseScript):
             cli = self.cli("display interface brief", cached=True)
             match = rx_ifc_block.search(cli)
             if match:
-                for l in match.group("block").splitlines():
-                    match_int = rx_ifc_br_status.match(l)
+                for ll in match.group("block").splitlines():
+                    match_int = rx_ifc_br_status.match(ll)
                     if match_int:
                         iface = match_int.group("interface")
                         if interface and interface == self.profile.convert_interface_name(iface):
