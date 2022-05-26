@@ -15,7 +15,6 @@ from itertools import compress, chain
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.profiles.Cisco.IOS.profile import uBR
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
 
@@ -375,7 +374,7 @@ class Script(BaseScript):
         # Get port-to-vlan mappings
         pvm = {}
         switchports = {}  # interface -> (untagged, tagged)
-        if self.match_version(uBR):
+        if self.is_ubr:
             # uBR series
             pvm = self.get_ubr_pvm()
         else:

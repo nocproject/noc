@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = (
         rb"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     )
-    pattern_username = br"[Ll]ogin:"
+    pattern_username = rb"[Ll]ogin:"
     pattern_password = rb"[Pp]assword:"
 
     pattern_prompt = rb"(^\$\s+|^>\s)"

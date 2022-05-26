@@ -43,7 +43,7 @@ class Script(BaseScript):
         if sfpo + sfp != prt:
             raise self.UnexpectedResultError("prt=%d sfp=%d sfpo=%d" % (prt, sfp, sfpo))
 
-        BITS = {i: 2 ** i for i in range(self.PORT_RANGE)}
+        BITS = {i: 2**i for i in range(self.PORT_RANGE)}
         oper_statuses = {i: bool(int(links["lnk"], 16) & BITS[i]) for i in range(self.PORT_RANGE)}
         admin_statuses = {i: bool(int(links["an"], 16) & BITS[i]) for i in range(self.PORT_RANGE)}
 

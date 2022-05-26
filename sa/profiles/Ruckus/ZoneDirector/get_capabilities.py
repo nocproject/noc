@@ -14,7 +14,7 @@ class Script(BaseScript):
     cache = True
 
     def execute_platform_snmp(self, caps):
-        if self.match_version(platform__regex="^ZD"):
+        if self.is_platform_zd:
             caps["CPE | Controller"] = True
         if self.has_snmp():
             stat = self.snmp.get("1.3.6.1.4.1.25053.1.2.1.1.1.1.30.0", cached=True)

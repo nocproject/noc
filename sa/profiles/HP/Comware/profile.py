@@ -20,8 +20,8 @@ class Profile(BaseProfile):
         rb"% (?:Unrecognized command|Too many parameters|Incomplete command) found at"
     )
     rogue_chars = [
-        re.compile(br"\x1b\[16D\s+\x1b\[16D"),
-        re.compile(br"\x1b\[42D\s+\x1b\[42D"),
+        re.compile(rb"\x1b\[16D\s+\x1b\[16D"),
+        re.compile(rb"\x1b\[42D\s+\x1b\[42D"),
         b"\r",
     ]
 
