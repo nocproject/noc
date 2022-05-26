@@ -26,3 +26,5 @@ class Profile(BaseProfile):
     #    (r"press <SPACE> to continue or <ENTER> to quit", "               \n"),
     # ]
     command_exit = "logout"
+
+    matchers = {"is_platform_onu208": {"platform": {"$regex": r"ONU208"}}}

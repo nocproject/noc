@@ -375,7 +375,7 @@ class Script(BaseScript):
         # Get port-to-vlan mappings
         pvm = {}
         switchports = {}  # interface -> (untagged, tagged)
-        if self.match_version(uBR):
+        if self.is_ubr:
             # uBR series
             pvm = self.get_ubr_pvm()
         else:

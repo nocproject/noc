@@ -33,7 +33,7 @@ class Script(BaseScript):
         if errors:
             return {"status": False, "message": ".\n".join(errors)}
         # Check wrether edge ports can be configured
-        skip_edge_port = self.match_version(MESeries)
+        skip_edge_port = self.is_me_series
         # Prepare scenario
         commands = []
         for c in configs:

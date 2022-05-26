@@ -34,6 +34,13 @@ class Profile(BaseProfile):
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     rx_ifname = re.compile(r"^swp(?P<number>\d+)$")
 
+    matchers = {
+        "is_platform_2024": {"platform": {"$regex": r"2024"}},
+        "is_platform_2108": {"platform": {"$regex": r"2108"}},
+        "is_version_3_90": {"version": {"$regex": r"^3\.90.*"}},
+        "is_version_4_xx": {"version": {"$regex": r"^4\..*"}}
+    }
+
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("1")
