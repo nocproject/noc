@@ -15,7 +15,6 @@ from itertools import compress, chain
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.profiles.Cisco.IOS.profile import uBR
 from noc.core.mib import mib
 from noc.core.snmp.render import render_bin
 
