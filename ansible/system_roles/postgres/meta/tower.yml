@@ -20,7 +20,7 @@ forms:
       label: "PostgreSQL max clients"
       type: int
     version:
-      default: 14
+      default: "14"
       description: >
         <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.6, 14. Use <a href=https://www.postgresql.org/docs/14/static/upgrading.html target=_blank> docs </a> before changing that field. <br/>
         <strong>On FreeBSD only 14 version is supported</strong> <br/>
