@@ -2,7 +2,7 @@
 # Vendor: 3Com
 # OS:     SuperStack3_4500
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Profile(BaseProfile):
         (rb"flash:/startup.cfg exists, overwrite? [Y/N]:", b"Y"),
     ]
     pattern_prompt = rb"^[<\[]\S+[>\]]"
-    pattern_syntax_error = rb"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
+    pattern_syntax_error = rb"\s+% (?:Unrecognized|Incomplete) command found at '\^' position."
     command_save_config = "save"
     command_enter_config = "system-view"
     command_leave_config = "return"

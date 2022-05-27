@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # 3Com.SuperStack3_4500.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,11 @@ class Script(BaseScript):
     cache = True
 
     rx_version = re.compile(
-        r"^SuperStack 3 Switch (?P<platform>\S+).+" r"Software Version (?P<version>.+)$",
+        r"^SuperStack 3 Switch (?P<platform>\S+).+Software Version (?P<version>.+)$",
+        re.MULTILINE,
+    )
+    rx_version2 = re.compile(
+        r"^Switch (?P<platform>\S+).+Software Version 3Com OS (?P<version>.+)$",
         re.MULTILINE,
     )
     rx_dev = re.compile(
@@ -29,6 +33,8 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("display version", cached=True)
         match = self.rx_version.search(v)
+        if not match:
+            match = self.rx_version2.search(v)
         v = self.cli("display device", cached=True)
         match1 = self.rx_dev.search(v)
         return {
