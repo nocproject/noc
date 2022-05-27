@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -182,17 +182,21 @@ class Script(BaseScript):
         r["part_no"] = part_no
         return r
 
-    def execute_cli(self, **kwargs):
-        res = []
-        ports = []
-
+    def get_optical_ports(self):
+        opt_ports = []
         try:
             v = self.cli("show fiber-ports optical-transceiver")
             for i in parse_table(v, footer=r"Temp\s+- Internally measured transceiver temperature"):
                 if i[1] in ["OK", "N/S"] or is_int(i[1]):
-                    ports += [i[0]]
+                    opt_ports += [i[0]]
         except self.CLISyntaxError:
             pass
+        return opt_ports
+
+    def execute_cli(self, **kwargs):
+        res = []
+
+        ports = self.get_optical_ports()
 
         if self.has_capability("Stack | Members"):
             has_unit_command = True
