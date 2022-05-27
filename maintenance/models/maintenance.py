@@ -147,10 +147,10 @@ class Maintenance(Document):
             {"direct_objects", "direct_segments", "stop", "start", "time_pattern"}
         ):
             self.update_affected_objects_maintenance()
-        if "stop" in self._changed_fields:
+        if "stop" in changed_fields:
             if not self.is_completed and self.auto_confirm:
                 self.auto_confirm_maintenance()
-        if "is_completed" in self._changed_fields:
+        if "is_completed" in changed_fields:
             self.remove_maintenance()
 
         if self.escalate_managed_object:
