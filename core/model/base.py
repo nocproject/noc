@@ -13,6 +13,16 @@ from django.db.models.base import Model, ModelBase
 
 class NOCModelBase(ModelBase):
     def __new__(mcs, name, bases, attrs):
+        def save(self, *args, **kwargs):
+            """
+            Override default save() method to set AFI,
+            parent prefix, and check VRF group restrictions
+            :param kwargs:
+            :return:
+            """
+            self.full_clean(validate_unique=False)
+            super(m, self).save(*args, **kwargs)
+
         is_base = name == "NOCModel"
         # Initialize app registry to avoid calling django.setup()
         mcs.make_smoothie()
@@ -36,6 +46,11 @@ class NOCModelBase(ModelBase):
                 for field in m._meta.fields
                 if field.name not in m._ignore_on_save and not field.primary_key
             )
+        # Set save() method for call validation methods. Django Note that
+        # full_clean() will not be called automatically when you call your model’s save() method.
+        # You’ll need to call it manually when you want to run one-step model validation
+        # for your own manually created models.
+        setattr(m, save.__name__, save)
         return m
 
     @classmethod
