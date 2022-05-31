@@ -162,11 +162,11 @@ class RemoteSystem(Document):
                 extractors += [k[7:]]
         return extractors
 
-    def extract(self, extractors=None, quiet=False, incremental=False):
+    def extract(self, extractors=None, quiet=False, incremental=False, checkpoint=None):
         extractors = extractors or self.get_extractors()
         error = None
         try:
-            self.get_handler().extract(extractors, incremental=incremental)
+            self.get_handler().extract(extractors, incremental=incremental, checkpoint=checkpoint)
         except Exception as e:
             if not quiet:
                 raise e
