@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # 3Com.SuperStack3_4500.get_chassis_id
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,9 +20,10 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"Hardware address is (?P<mac>\S+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         macs = []
-        for match in self.rx_mac.finditer(self.cli("display interface")):
+        v = self.cli("display interface", cached=True)
+        for match in self.rx_mac.finditer(v):
             if match.group("mac") not in macs:
                 macs += [match.group("mac")]
         macs.sort()

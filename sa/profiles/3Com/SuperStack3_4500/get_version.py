@@ -30,7 +30,7 @@ class Script(BaseScript):
         r"0\s+0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)", re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("display version", cached=True)
         match = self.rx_version.search(v)
         if not match:
