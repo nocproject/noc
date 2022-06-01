@@ -649,6 +649,8 @@ class AssetCheck(DiscoveryCheck):
         # Temporary fix
         if v == "D-LINK":
             v = "DLINK"
+        if v == "48 47 20 47 45 4e 55 49 4e 45 00 00 00 00 00 00":
+            v = "HUAWEI"
         if "INTEL" in v:
             v = "INTEL"
         if "FINISAR" in v:
