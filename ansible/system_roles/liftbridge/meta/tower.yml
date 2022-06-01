@@ -20,7 +20,7 @@ forms:
     liftbridge_insecure:
       label: "validate certificates"
       type: bool
-      default: False
+      default: false
 services:
   liftbridge:
     level: system

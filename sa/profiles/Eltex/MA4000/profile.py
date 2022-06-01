@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MA4000
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,8 @@ class Profile(BaseProfile):
         b"\r",
     ]
     pattern_syntax_error = rb"^Unknown command"
-    pattern_prompt = rb"^(?P<hostname>\S+)# "
+    pattern_prompt = rb"^(?P<hostname>\S+?)(\(config\S*\))?# "
+    command_enter_config = "configure terminal"
     command_exit = "exit"
     telnet_naws = b"\x00\x7f\x00\x7f"
 
