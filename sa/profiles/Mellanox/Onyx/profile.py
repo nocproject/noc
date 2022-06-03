@@ -23,5 +23,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = rb"^% Unrecognized command \".+\"\."
     command_exit = "exit"
     command_disable_pager = "terminal length 999"
-    #convert_interface_name = BaseProfile.convert_interface_name_cisco
+    # convert_interface_name = BaseProfile.convert_interface_name_cisco
     config_volatile = [r"^## Generated at .+?\n"]
+
+    # Eth1/1

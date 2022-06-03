@@ -21,7 +21,7 @@ class Script(BaseScript):
     rx_platform = re.compile(
         r"^CHASSIS\s+(?P<platform>\S+)\s+(?P<serial>\S+)\s+\S+\s+(?P<hardware>\S+)", re.MULTILINE
     )
-    rx_version = re.compile("^Product release:\s+(?P<version>\S+)", re.MULTILINE)
+    rx_version = re.compile(r"^Product release:\s+(?P<version>\S+)", re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("show inventory", cached=True)
