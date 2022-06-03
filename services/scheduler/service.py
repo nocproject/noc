@@ -8,11 +8,11 @@
 
 # NOC modules
 from noc.config import config
-from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.fastapi import FastAPIService
 
 
-class SchedulerService(TornadoService):
+class SchedulerService(FastAPIService):
     name = "scheduler"
     leader_lock_name = "scheduler"
     use_mongo = True
