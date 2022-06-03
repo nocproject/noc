@@ -94,10 +94,10 @@ class ReportAlarmDetailApplication(ExtApplication):
         access="launch",
         api=True,
         validate={
-            "from_date": StringParameter(required=False),
-            "to_date": StringParameter(required=False),
-            "min_duration": IntParameter(required=False),
-            "max_duration": IntParameter(required=False),
+            "from_date": StringParameter(required=True),
+            "to_date": StringParameter(required=True),
+            "min_duration": IntParameter(required=True),
+            "max_duration": IntParameter(required=True),
             "min_objects": IntParameter(required=False),
             "min_subscribers": IntParameter(required=False),
             "source": StringParameter(
