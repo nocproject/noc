@@ -94,10 +94,10 @@ class ReportAlarmDetailApplication(ExtApplication):
         access="launch",
         api=True,
         validate={
-            "from_date": StringParameter(required=True),
-            "to_date": StringParameter(required=True),
-            "min_duration": IntParameter(required=True),
-            "max_duration": IntParameter(required=True),
+            "from_date": StringParameter(required=False),
+            "to_date": StringParameter(required=False),
+            "min_duration": IntParameter(required=False),
+            "max_duration": IntParameter(required=False),
             "min_objects": IntParameter(required=False),
             "min_subscribers": IntParameter(required=False),
             "source": StringParameter(
@@ -163,11 +163,11 @@ class ReportAlarmDetailApplication(ExtApplication):
             d_filters["objectids"] = ids
             fd = datetime.datetime.now()
             td = None
-        elif from_date:
+        elif from_date and to_date:
             fd = datetime.datetime.strptime(from_date, "%d.%m.%Y")
             td = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
         else:
-            return HttpResponseBadRequest(_("One param - FROM_DATE or IDS required"))
+            return HttpResponseBadRequest(_("One params - FROM_DATE/TO_DATE or IDS required"))
         d_filters["start"] = fd
         d_filters["end"] = td
         for name, values in [
