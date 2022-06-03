@@ -163,11 +163,11 @@ class ReportAlarmDetailApplication(ExtApplication):
             d_filters["objectids"] = ids
             fd = datetime.datetime.now()
             td = None
-        elif from_date:
+        elif from_date and to_date:
             fd = datetime.datetime.strptime(from_date, "%d.%m.%Y")
             td = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
         else:
-            return HttpResponseBadRequest(_("One param - FROM_DATE or IDS required"))
+            return HttpResponseBadRequest(_("One params - FROM_DATE/TO_DATE or IDS required"))
         d_filters["start"] = fd
         d_filters["end"] = td
         for name, values in [
