@@ -1,5 +1,4 @@
 ---
-#test
 - name: Display all variables/facts known for a host
   debug:
     var: "{{ liftbridge_insecure }}"

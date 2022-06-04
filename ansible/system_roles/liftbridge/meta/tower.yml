@@ -18,7 +18,7 @@ forms:
         - warn
         - error
     liftbridge_insecure:
-      label: "validate certificates"
+      label: "don't check certificates"
       type: bool
       default: false
 services:
