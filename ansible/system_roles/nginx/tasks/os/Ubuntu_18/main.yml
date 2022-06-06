@@ -11,7 +11,7 @@
 
 - name: Add Nginx apt key
   apt_key:
-    file: "/tmp/ch_apt_key.gpg"
+    file: "/tmp/nginx_apt_key.gpg"
     state: present
   tags:
     - repo
