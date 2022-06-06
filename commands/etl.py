@@ -71,6 +71,7 @@ class Command(BaseCommand):
         extract_parser.add_argument(
             "--incremental", action="store_true", default=False, help="Incremental extracting"
         )
+        extract_parser.add_argument("--checkpoint", required=False)
         extract_parser.add_argument("system", help="Remote system name")
         extract_parser.add_argument(
             "extractors", nargs=argparse.REMAINDER, help="List of extractor names"
@@ -112,6 +113,7 @@ class Command(BaseCommand):
             options.get("extractors", []),
             quiet=options.get("quiet", False),
             incremental=options.get("incremental", False),
+            checkpoint=options.get("checkpoint"),
         )
         if not remote_system.extract_error:
             return 0
