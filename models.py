@@ -118,7 +118,6 @@ _MODELS = {
     "main.RefBook": "noc.main.models.refbook.RefBook",
     "main.RefBookData": "noc.main.models.refbookdata.RefBookData",
     "main.RefBookField": "noc.main.models.refbookfield.RefBookField",
-    "main.RegexpLabel": "noc.main.models.regexplabel.RegexpLabel",
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
