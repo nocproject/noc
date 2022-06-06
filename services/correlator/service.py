@@ -27,8 +27,8 @@ from pymongo import UpdateOne
 
 # NOC modules
 from noc.config import config
-from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.fastapi import FastAPIService
 from noc.core.mongo.connection import connect
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
@@ -65,7 +65,7 @@ from noc.services.correlator.alarmrule import GroupItem
 ref_lock = threading.Lock()
 
 
-class CorrelatorService(TornadoService):
+class CorrelatorService(FastAPIService):
     name = "correlator"
     pooled = True
     use_mongo = True
