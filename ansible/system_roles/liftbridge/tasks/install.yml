@@ -1,4 +1,5 @@
 ---
+#test
 - name: Get Liftbridge package checksum file
   get_url:
     url: "{{ liftbridge_checksum_file_url }}"
