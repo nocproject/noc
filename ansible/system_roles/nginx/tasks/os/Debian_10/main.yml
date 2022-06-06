@@ -1,8 +1,8 @@
 ---
 - name: Get Nginx Key from remote server
   get_url:
-   url: "http://nginx.org/keys/nginx_signing.key"
-   dest: "/tmp/nginx_apt_key.gpg"
+    url: "http://nginx.org/keys/nginx_signing.key"
+    dest: "/tmp/nginx_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

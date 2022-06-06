@@ -1,8 +1,8 @@
 ---
 - name: Get MongoDB Key from remote server
   get_url:
-   url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
-   dest: "/tmp/mongo_apt_key.gpg"
+    url: "https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc"
+    dest: "/tmp/mongo_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

@@ -1,8 +1,8 @@
 ---
 - name: Get CH Key from remote server
   get_url:
-   url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{ ch_apt_key_id }}"
-   dest: "/tmp/ch_apt_key.gpg"
+    url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{ ch_apt_key_id }}"
+    dest: "/tmp/ch_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

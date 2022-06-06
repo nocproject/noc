@@ -8,8 +8,8 @@
 
 - name: Get Grafana Key from remote server
   get_url:
-   url: "https://packages.grafana.com/gpg.key"
-   dest: "/tmp/grafana_apt_key.gpg"
+    url: "https://packages.grafana.com/gpg.key"
+    dest: "/tmp/grafana_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

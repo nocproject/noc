@@ -1,8 +1,8 @@
 ---
 - name: Get PostgreSQL Key from remote server
   get_url:
-   url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-   dest: "/tmp/pg_apt_key.gpg"
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    dest: "/tmp/pg_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
