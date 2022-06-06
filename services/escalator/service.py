@@ -13,12 +13,12 @@ from typing import Dict, DefaultDict
 
 # NOC modules
 from noc.config import config
-from noc.core.service.tornado import TornadoService
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.fastapi import FastAPIService
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 
 
-class EscalatorService(TornadoService):
+class EscalatorService(FastAPIService):
     name = "escalator"
     leader_lock_name = "escalator"
     use_telemetry = True
