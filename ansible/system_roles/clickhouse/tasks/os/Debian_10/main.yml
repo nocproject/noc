@@ -17,6 +17,17 @@
   tags:
     - repo
 
+- name: Add CH repository
+  apt_repository:
+    repo: "deb https://packages.clickhouse.com/deb stable main"
+    state: present
+    update_cache: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
 - name: Install CH
   apt:
     name: "{{ packages }}"
