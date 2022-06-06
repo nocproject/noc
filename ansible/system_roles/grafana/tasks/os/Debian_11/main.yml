@@ -6,13 +6,20 @@
   tags:
     - repo
 
-- name: Add Grafana apt key
-  apt_key:
-    url: https://packages.grafana.com/gpg.key
-    validate_certs: "True"
+- name: Get Grafana Key from remote server
+  get_url:
+   url: "https://packages.grafana.com/gpg.key"
+   dest: "/tmp/grafana_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add Grafana apt key
+  apt_key:
+    file: "/tmp/grafana_apt_key.gpg"
+    state: present
   tags:
     - repo
 

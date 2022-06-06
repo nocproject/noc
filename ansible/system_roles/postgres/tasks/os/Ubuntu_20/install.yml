@@ -1,11 +1,18 @@
 ---
-- name: Add Ubuntu PostgreSQL key
-  apt_key:
-    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-    state: present
+- name: Get PostgreSQL Key from remote server
+  get_url:
+   url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+   dest: "/tmp/pg_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add PostgreSQL apt key
+  apt_key:
+    file: "/tmp/pg_apt_key.gpg"
+    state: present
   tags:
     - repo
 
