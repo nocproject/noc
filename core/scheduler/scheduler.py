@@ -16,7 +16,6 @@ import asyncio
 
 # Third-party modules
 import pymongo.errors
-from tornado.ioloop import IOLoop
 from pymongo import DeleteOne, UpdateOne
 from typing import Optional
 
@@ -124,13 +123,12 @@ class Scheduler(object):
         Run scheduler. Common usage
 
         scheduler.run()
-        ioloop.run()
         """
         if self.to_reset_running:
             self.reset_running()
         self.ensure_indexes()
         self.logger.info("Running scheduler")
-        IOLoop.current().spawn_callback(self.scheduler_loop)
+        asyncio.create_task(self.scheduler_loop())
 
     def get_collection(self):
         """
