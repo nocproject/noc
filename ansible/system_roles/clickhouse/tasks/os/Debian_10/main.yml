@@ -1,7 +1,7 @@
 ---
 - name: Get CH Key from remote server
   get_url:
-   url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{ ch_key_id }}"
+   url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{ ch_apt_key_id }}"
    dest: "/tmp/ch_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
@@ -11,7 +11,7 @@
 
 - name: Add CH apt key
   apt_key:
-    id: "{{ ch_key_id }}"
+    id: "{{ ch_apt_key_id }}"
     file: "/tmp/ch_apt_key.gpg"
     state: present
   tags:
