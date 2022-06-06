@@ -24,6 +24,7 @@ from noc.config import config
 from noc.core.comp import smart_text
 from noc.core.etl.compression import compressor
 from ..models.base import BaseModel
+from ..remotesystem.base import BaseRemoteSystem
 
 logger = logging.getLogger(__name__)
 
@@ -62,13 +63,15 @@ class BaseExtractor(object):
         r"^import-\d{4}(?:-\d{2}){5}.jsonl%s$" % compressor.ext.replace(".", r"\.")
     )
 
-    def __init__(self, system):
+    def __init__(self, system: "BaseRemoteSystem"):
         self.system = system
         self.config = system.config
         self.logger = PrefixLoggerAdapter(logger, "%s][%s" % (system.name, self.name))
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
         self.fatal_problems: List[Problem] = []
         self.quality_problems: List[Problem] = []
+        # Checkpoint
+        self._force_checkpoint: Optional[str] = None
 
     def register_quality_problem(
         self, line: int, p_class: str, message: str, row: List[Any]
@@ -201,6 +204,8 @@ class BaseExtractor(object):
             Latest checkpoint, if any. None otherwise.
         """
         cp = None
+        if self._force_checkpoint:
+            return self._force_checkpoint
         if not hasattr(self.model, "checkpoint"):
             self.logger.info("Extractor not supported attribute checkpoint")
             return cp
