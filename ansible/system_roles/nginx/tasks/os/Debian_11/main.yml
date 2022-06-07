@@ -1,11 +1,18 @@
 ---
-- name: Add Nginx key Debian
-  apt_key:
-    url: http://nginx.org/keys/nginx_signing.key
-    state: present
+- name: Get Nginx Key from remote server
+  get_url:
+    url: "http://nginx.org/keys/nginx_signing.key"
+    dest: "/tmp/nginx_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add Nginx apt key
+  apt_key:
+    file: "/tmp/nginx_apt_key.gpg"
+    state: present
   tags:
     - repo
 
