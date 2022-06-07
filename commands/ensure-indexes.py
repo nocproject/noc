@@ -45,8 +45,6 @@ class Command(BaseCommand):
         self.index_gridvcs()
         # Index mongo cache
         self.index_cache()
-        # Index datasource cache
-        self.index_datasource_cache()
         # Index RCA lock
         self.index_rca_lock()
         # @todo: Detect changes
@@ -114,12 +112,6 @@ class Command(BaseCommand):
             return
         self.print("[%s] Indexing cache" % cache.__class__.__name__)
         cache.ensure_indexes()
-
-    def index_datasource_cache(self):
-        from noc.main.models.datasourcecache import DataSourceCache
-
-        self.print("[DataSource] Indexing cache")
-        DataSourceCache.ensure_indexes()
 
     def index_rca_lock(self):
         from noc.services.correlator.rcalock import RCALock
