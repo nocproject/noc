@@ -1,0 +1,12 @@
+{
+    "name": "Interface | DOM | Laser status",
+    "$collection": "pm.metrictypes",
+    "uuid": "e029e07b-efea-4b2f-a9b2-de0bb6bdf08d",
+    "scope__name": "Interface",
+    "field_name": "optical_laser_status",
+    "field_type": "Int8",
+    "description": null,
+    "measure": "s",
+    "units__code": "1",
+    "scale__code": "1"
+}
