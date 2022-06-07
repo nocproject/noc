@@ -34,7 +34,7 @@ class NOCModelBase(ModelBase):
             m._allow_update_fields = tuple(
                 field.name
                 for field in m._meta.fields
-                if field.name not in m._non_update_fields and not field.primary_key
+                if field.name not in m._ignore_on_save and not field.primary_key
             )
         return m
 

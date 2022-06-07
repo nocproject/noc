@@ -616,7 +616,7 @@ class ManagedObject(NOCModel):
     _e_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _neighbor_cache = cachetools.TTLCache(1000, ttl=300)
 
-    _non_update_fields = (
+    _ignore_on_save = (
         "caps",
         "uplinks",
         "links",
