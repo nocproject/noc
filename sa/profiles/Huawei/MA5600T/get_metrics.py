@@ -67,8 +67,8 @@ class Script(GetMetricsScript):
             "Interface | DOM | Voltage",
             "Interface | DOM | Bias Current",
             "Interface | DOM | Temperature",
-            "Interface | Errors | BIP | In",
-            "Interface | Errors | BIP | Out",
+            "Interface | DOM | Errors | BIP | Upstream",
+            "Interface | DOM | Errors | BIP | Downstream",
         ],
         has_capability="Network | PON | OLT",
         access="C",  # CLI version
@@ -154,16 +154,16 @@ class Script(GetMetricsScript):
             m = parse_kv(self.kv_map, v)
             if m.get("optical_errors_bip_out", "-") != "-":
                 self.set_metric(
-                    id=("Interface | Errors | BIP | Out", mpath),
-                    metric="Interface | Errors | BIP | Out",
+                    id=("Interface | DOM | Errors | BIP | Upstream", mpath),
+                    metric="Interface | DOM | Errors | BIP | Upstream",
                     labels=ipath,
                     value=int(m["optical_errors_bip_out"]),
                     multi=True,
                 )
             if m.get("optical_errors_bip_in", "-") != "-":
                 self.set_metric(
-                    id=("Interface | Errors | BIP | In", mpath),
-                    metric="Interface | Errors | BIP | In",
+                    id=("Interface | DOM | Errors | BIP | Downstream", mpath),
+                    metric="Interface | DOM | Errors | BIP | Downstream",
                     labels=ipath,
                     value=int(m["optical_errors_bip_in"]),
                     multi=True,
@@ -179,8 +179,8 @@ class Script(GetMetricsScript):
             "Interface | DOM | Voltage",
             "Interface | DOM | Bias Current",
             "Interface | DOM | Temperature",
-            "Interface | Errors | BIP | In",
-            "Interface | Errors | BIP | Out",
+            "Interface | DOM | Errors | BIP | Upstream",
+            "Interface | DOM | Errors | BIP | Downstream",
         ],
         has_capability="Network | PON | OLT",
         access="S",  # CLI version
@@ -287,16 +287,16 @@ class Script(GetMetricsScript):
             mpath = [f"noc::interface::{names[int(ifindex)]}"]
             if ont_optical_errors_bip_out != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
-                    id=("Interface | Errors | BIP | Out", mpath),
-                    metric="Interface | Errors | BIP | Out",
+                    id=("Interface | DOM | Errors | BIP | Upstream", mpath),
+                    metric="Interface | DOM | Errors | BIP | Upstream",
                     labels=ipath,
                     value=int(ont_optical_errors_bip_out),
                     multi=True,
                 )
             if ont_optical_errors_bip_in != SNMP_UNKNOWN_VALUE:
                 self.set_metric(
-                    id=("Interface | Errors | BIP | In", mpath),
-                    metric="Interface | Errors | BIP | In",
+                    id=("Interface | DOM | Errors | BIP | Downstream", mpath),
+                    metric="Interface | DOM | Errors | BIP | Downstream",
                     labels=ipath,
                     value=int(ont_optical_errors_bip_in),
                     multi=True,
