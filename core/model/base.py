@@ -20,7 +20,7 @@ class NOCModelBase(ModelBase):
             :param kwargs:
             :return:
             """
-            self.full_clean(validate_unique=False)
+            self.full_clean(validate_unique=False, exclude=getattr(self, "_clean_fields", None))
             super(m, self).save(*args, **kwargs)
 
         is_base = name == "NOCModel"

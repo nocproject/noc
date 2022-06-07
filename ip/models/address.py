@@ -123,6 +123,7 @@ class Address(NOCModel):
     )
 
     csv_ignored_fields = ["prefix"]
+    _clean_fields = ["vrf", "prefix", "afi"]
 
     def __str__(self):
         return "%s(%s): %s" % (self.vrf.name, self.afi, self.address)
