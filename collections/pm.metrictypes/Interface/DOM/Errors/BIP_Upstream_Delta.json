@@ -1,0 +1,12 @@
+{
+    "name": "Interface | DOM | Errors | BIP | Upstream | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "416e57e9-295a-47db-8c4b-882475dec610",
+    "scope__name": "Interface",
+    "field_name": "optical_errors_bip_us_delta",
+    "field_type": "UInt32",
+    "description": "Indicates the count of upstream frame bit-interleaved parity (BIP) errors",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
