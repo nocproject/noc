@@ -160,24 +160,6 @@
       vars:
         goss_service_name: card
 
-- name: Install NOC ch_datasource
-  hosts: svc-ch_datasource-exec
-  become: "True"
-  strategy: "free"
-  gather_facts: "True"
-  tags:
-    - noc
-    - ch_datasource
-  vars_files:
-    - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
-  roles:
-    - role: ch_datasource
-    - role: goss
-      tags: [goss]
-      vars:
-        goss_service_name: ch_datasource
-
 - name: Install NOC activator
   hosts: svc-activator-exec
   become: "True"
