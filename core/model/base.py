@@ -29,6 +29,13 @@ class NOCModelBase(ModelBase):
         # NB: Every hipster may be misused
         if not is_base:
             mcs.tuck_up_pants(m)
+        # Exclude non-update fields
+        if hasattr(m, "_non_update_fields"):
+            m._allow_update_fields = tuple(
+                field.name
+                for field in m._meta.fields
+                if field.name not in m._non_update_fields and not field.primary_key
+            )
         return m
 
     @classmethod
@@ -62,5 +69,5 @@ class NOCModelBase(ModelBase):
         return kls
 
 
-class NOCModel(object, metaclass=NOCModelBase):
-    pass
+class NOCModel(Model, metaclass=NOCModelBase):
+    ...

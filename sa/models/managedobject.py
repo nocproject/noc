@@ -616,6 +616,18 @@ class ManagedObject(NOCModel):
     _e_labels_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _neighbor_cache = cachetools.TTLCache(1000, ttl=300)
 
+    _non_update_fields = (
+        "caps",
+        "uplinks",
+        "links",
+        "rca_neighbors",
+        "dlm_windows",
+        "adm_path",
+        "segment_path",
+        "container_path",
+        "affected_maintenances",
+    )
+
     def __str__(self):
         return self.name
 
@@ -1401,6 +1413,12 @@ class ManagedObject(NOCModel):
                 if cc:
                     caps[cc.name] = c.get("value")
         return caps
+
+    def save(self, **kwargs):
+        kwargs = kwargs or {}
+        if getattr(self, "_allow_update_fields", None) and "update_fields" not in kwargs:
+            kwargs["update_fields"] = self._allow_update_fields
+        super().save(**kwargs)
 
     def update_caps(self, caps: Dict[str, Any], source: str) -> Dict[str, Any]:
         """
