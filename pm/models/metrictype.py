@@ -60,7 +60,7 @@ class AgentMappingItem(EmbeddedDocument):
     check=[
         ("sa.ManagedObjectProfile", "metrics__metric_type"),
         ("inv.InterfaceProfile", "metrics__metric_type"),
-        ("sla.SLAProbe", "metrics__metric_type"),
+        ("sla.SLAProfile", "metrics__metric_type"),
         ("pm.MetricAction", "compose_inputs__metric_type"),
         ("pm.MetricAction", "compose_metric_type"),
     ]
