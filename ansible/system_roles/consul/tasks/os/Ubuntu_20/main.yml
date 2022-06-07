@@ -32,12 +32,20 @@
   tags:
     - config
 
-- name: Add Consul apt key
-  apt_key:
-    url: https://apt.releases.hashicorp.com/gpg
+- name: Get Consul Key from remote server
+  get_url:
+    url: "https://apt.releases.hashicorp.com/gpg"
+    dest: "/tmp/consul_apt_key.gpg"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add Consul apt key
+  apt_key:
+    file: "/tmp/consul_apt_key.gpg"
+    state: present
   tags:
     - repo
 
