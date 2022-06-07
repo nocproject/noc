@@ -1,0 +1,12 @@
+{
+    "name": "Interface | DOM | Errors | HEC | Upstream | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "16010b1f-5e81-45dc-b871-409f2eed14cb",
+    "scope__name": "Interface",
+    "field_name": "optical_errors_hec_us_delta",
+    "field_type": "UInt32",
+    "description": "Indicates the count of upstream frame header error control (HEC)",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
