@@ -17,7 +17,10 @@ forms:
         - info
         - warn
         - error
-
+    liftbridge_insecure:
+      label: "don't check certificates"
+      type: bool
+      default: false
 services:
   liftbridge:
     level: system
