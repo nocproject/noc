@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^(?P<platform>AP\S+) version (?P<verions>\S+)\s*\n",
+        r"^(?P<platform>AP\S+) version (?P<version>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_serial = re.compile(r"^System serial number is (?P<serial>\S+)\s*\n", re.MULTILINE)
