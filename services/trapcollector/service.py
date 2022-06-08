@@ -38,6 +38,8 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
 
 TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | SNMP Storm Detected"
+TRAPCOLLECTOR_STORM_POLICY_DEFAULT = "D"
+TRAPCOLLECTOR_STORM_THRESHOLD_DEFAULT = 1000
 
 
 class TrapCollectorService(FastAPIService):
@@ -193,6 +195,8 @@ class TrapCollectorService(FastAPIService):
         # Get pool and sharding information
         fm_pool = data.get("fm_pool", None) or config.pool
         num_partitions = await self.get_pool_partitions(fm_pool)
+        storm_policy = data.get("storm_policy", None) or TRAPCOLLECTOR_STORM_POLICY_DEFAULT
+        storm_threshold = data.get("storm_threshold", None) or TRAPCOLLECTOR_STORM_THRESHOLD_DEFAULT
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
@@ -201,8 +205,8 @@ class TrapCollectorService(FastAPIService):
             stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
             effective_labels=data.get("effective_labels", []),
-            storm_policy=data["storm_policy"],
-            storm_threshold=data["storm_threshold"],
+            storm_policy=storm_policy,
+            storm_threshold=storm_threshold,
         )
         if config.message.enable_snmptrap and "managed_object" in data:
             cfg.managed_object = ManagedObjectData(**data["managed_object"])
