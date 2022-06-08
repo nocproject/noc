@@ -321,6 +321,9 @@ nav:
               - Meinberg:
                   - Overview: user/reference/profiles/Meinberg/index.md
                   - Meinberg.LANTIME: user/reference/profiles/Meinberg/Meinberg.LANTIME.md
+              - Mellanox:
+                  - Overview: user/reference/profiles/Mellanox/index.md
+                  - Mellanox.Onyx: user/reference/profiles/Mellanox/Mellanox.Onyx.md
               - MikroTik:
                   - Overview: user/reference/profiles/MikroTik/index.md
                   - MikroTik.RouterOS: user/reference/profiles/MikroTik/MikroTik.RouterOS.md
