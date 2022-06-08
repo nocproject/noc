@@ -2,7 +2,7 @@
 # Vendor: Eltex
 # OS:     MES
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -98,6 +98,7 @@ class Profile(BaseProfile):
         "88": "MES-2308",
         "89": "MES-2308P",
         "92": "MES-2324P",
+        "96": "MES-3348",
         "98": "MES-3508P",
         "112": "MES-2308R",
         "116": "MES-3308F",
