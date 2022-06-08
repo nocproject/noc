@@ -29,6 +29,24 @@ class Script(BaseScript):
         r"^\s+MTU\s+: (?P<mtu>\d+)",
         re.MULTILINE,
     )
+    rx_ip = re.compile(
+        r"^(?P<ifname>Vlan \d+):\s*\n"
+        r"^\s+Admin state\s+: (?P<admin_state>\S+)\s*\n"
+        r"^\s+Operational state: (?P<oper_state>\S+)\s*\n"
+        r"^\s+Autostate\s+: \S+\s*\n"
+        r"^\s+Mac Address\s+: (?P<mac>\S+)\s*\n"
+        r"^\s+DHCP client\s+: \S+\s*\n"
+        r"^\s+PBR route-map\s+: .+\n"
+        r"^\s*\n"
+        r"^\s+IPv4 address:\s*\n"
+        r"^\s+(?P<ip>\d\S+) \[primary\]\s*\n"
+        r"^\s*\n"
+        r"^\s+Broadcast address:\s*\n"
+        r"^\s+.+\n"
+        r"^\s*\n"
+        r"^\s+MTU\s+: (?P<mtu>\d+) bytes",
+        re.MULTILINE,
+    )
 
     def execute_cli(self):
         interfaces = []
@@ -40,16 +58,41 @@ class Script(BaseScript):
                 "admin_status": match.group("admin_state") == "Enabled",
                 "oper_status": match.group("oper_state") == "Up",
                 "mac": match.group("mac"),
-                "subinterfaces": [{
-                    "name": match.group("ifname"),
-                    "admin_status": match.group("admin_state") == "Enabled",
-                    "oper_status": match.group("oper_state") == "Up",
-                    "mac": match.group("mac"),
-                    "mtu": match.group("mtu"),
-                }]
+                "subinterfaces": [
+                    {
+                        "name": match.group("ifname"),
+                        "admin_status": match.group("admin_state") == "Enabled",
+                        "oper_status": match.group("oper_state") == "Up",
+                        "mac": match.group("mac"),
+                        "mtu": match.group("mtu"),
+                        "enabled_afi": ["BRIDGE"],
+                    }
+                ],
             }
             if match.group("description").strip() != "N/A":
                 iface["description"] = match.group("description").strip()
+            interfaces += [iface]
+        c = self.cli("show ip interface")
+        for match in self.rx_ip.finditer(c):
+            iface = {
+                "name": match.group("ifname"),
+                "type": "SVI",
+                "admin_status": match.group("admin_state") == "Enabled",
+                "oper_status": match.group("oper_state") == "Up",
+                "mac": match.group("mac"),
+                "subinterfaces": [
+                    {
+                        "name": match.group("ifname"),
+                        "admin_status": match.group("admin_state") == "Enabled",
+                        "oper_status": match.group("oper_state") == "Up",
+                        "mac": match.group("mac"),
+                        "mtu": match.group("mtu"),
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addesses": [match.group("ip")],
+                        "vlan_ids": match.group("ifname")[5:],
+                    }
+                ],
+            }
             interfaces += [iface]
 
         return [{"interfaces": interfaces}]

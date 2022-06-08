@@ -18,11 +18,11 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s+" r"(?P<interfaces>\S+)\s+\S+$",
+        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+)\s*\n",
         re.MULTILINE,
     )
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
         cmd = "show mac-address-table"
         if mac is not None:
@@ -41,8 +41,8 @@ class Script(BaseScript):
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [iface],
-                    "type": {"learned": "D", "static": "S", "permanent": "S", "self": "C"}[
-                        match.group("type").lower()
+                    "type": {"Dynamic": "D", "Static": "S"}[
+                        match.group("type")
                     ],
                 }
             )
