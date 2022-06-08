@@ -34,7 +34,6 @@
     - role: escalator
     - role: web
     - role: card
-    - role: ch_datasource
     - role: selfmon
     - role: activator
     - role: grafanads
