@@ -123,7 +123,6 @@ id_lock = Lock()
         ("sa.ManagedObject", "object_profile"),
         ("sa.ManagedObjectProfile", "cpe_profile"),
         ("sa.ManagedObjectSelector", "filter_object_profile"),
-        ("inv.FirmwarePolicy", "object_profile"),
     ],
     clean_lazy_labels="managedobjectprofile",
 )
