@@ -84,7 +84,7 @@ class MatchRule(BaseModel):
     handler: Optional[str]
 
     @validator("handler")
-    def handler_must_handler(cls, v):
+    def handler_must_handler(cls, v):  # pylint: disable=no-self-argument
         if not v:
             return v
         h = Handler.objects.filter(id=v).first()
