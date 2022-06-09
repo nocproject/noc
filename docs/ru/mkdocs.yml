@@ -431,6 +431,9 @@ nav:
               - Supertel:
                   - Overview: user/reference/profiles/Supertel/index.md
                   - Supertel.K2X: user/reference/profiles/Supertel/Supertel.K2X.md
+              - Symbol:
+                  - Overview: user/reference/profiles/Symbol/index.md
+                  - Symbol.AP: user/reference/profiles/Symbol/Symbol.AP.md
               - TFortis:
                   - Overview: user/reference/profiles/TFortis/index.md
                   - TFortis.PSW: user/reference/profiles/TFortis/TFortis.PSW.md
