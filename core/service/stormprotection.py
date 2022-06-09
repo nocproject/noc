@@ -21,6 +21,8 @@ from noc.core.service.loader import get_service
 
 logger = logging.getLogger(__name__)
 
+COLLECTOR_CONFIG_ATTRNAME = "address_configs"
+
 
 @dataclass
 class StormRecord:
@@ -84,14 +86,26 @@ class StormProtection(object):
         self.storm_table: Dict[str, StormRecord] = {}
 
     def initialize(self):
+        # check for availability of address configs attribute in service
+        if not hasattr(self.service, COLLECTOR_CONFIG_ATTRNAME):
+            logger.error(
+                "Service '%s' instance has not attribute '%s'. Storm protection will not work",
+                self.service.name,
+                COLLECTOR_CONFIG_ATTRNAME,
+            )
+            return
         pt = PeriodicCallback(self.storm_round_handler, self.storm_round_duration * 1000)
         pt.start()
+        logger.info(
+            "Storm protection activated and now working with round duration %s seconds",
+            self.storm_round_duration,
+        )
 
     async def storm_round_handler(self):
         to_delete = []
         for ip in self.storm_table:
             record = self.storm_table[ip]
-            cfg = self.service.address_configs[ip]
+            cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip]
             # set new value to talkative flag
             if record.messages_count > cfg.storm_threshold:
                 record.talkative = True
@@ -126,7 +140,7 @@ class StormProtection(object):
         storm_record = self.storm_table[ip_address]
         if storm_record.raised_alarm:
             return
-        cfg = self.service.address_configs[ip_address]
+        cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
         msg = {
             "$op": "raise",
             "managed_object": cfg.id,
@@ -136,7 +150,7 @@ class StormProtection(object):
         storm_record.raised_alarm = True
 
     def _close_alarm(self, ip_address: str):
-        cfg = self.service.address_configs[ip_address]
+        cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
         msg = {"$op": "clear"}
         self._publish_message(cfg, msg)
         self.storm_table[ip_address].raised_alarm = False
