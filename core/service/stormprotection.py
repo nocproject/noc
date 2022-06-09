@@ -103,6 +103,7 @@ class StormProtection(object):
 
     async def storm_round_handler(self):
         to_delete = []
+        talkatives_quantity = 0
         for ip in self.storm_table:
             record = self.storm_table[ip]
             cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip]
@@ -111,8 +112,9 @@ class StormProtection(object):
                 record.talkative = True
             if record.messages_count < round(cfg.storm_threshold * self.storm_threshold_reduction):
                 record.talkative = False
+            talkatives_quantity += int(record.talkative)
             if record.raised_alarm and not record.talkative:
-                self._close_alarm(ip)
+                self.close_alarm(ip)
             # check time to live of record
             if record.messages_count == 0:
                 record.ttl -= 1
@@ -126,6 +128,9 @@ class StormProtection(object):
         # delete old records
         for ip in to_delete:
             del self.storm_table[ip]
+        logger.info(
+            "End of storm protection round: found %d talkative devices", talkatives_quantity
+        )
 
     def update_messages_counter(self, ip_address: str):
         if ip_address not in self.storm_table:
@@ -146,18 +151,36 @@ class StormProtection(object):
             "managed_object": cfg.id,
             "alarm_class": self.alarm_class,
         }
-        self._publish_message(cfg, msg)
+        self.publish_message(cfg, msg)
         storm_record.raised_alarm = True
 
-    def _close_alarm(self, ip_address: str):
+    def close_alarm(self, ip_address: str):
         cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
         msg = {"$op": "clear"}
-        self._publish_message(cfg, msg)
+        self.publish_message(cfg, msg)
         self.storm_table[ip_address].raised_alarm = False
 
-    def _publish_message(self, cfg, msg: Dict[str, Any]):
+    def publish_message(self, cfg, msg: Dict[str, Any]):
         msg["timestamp"] = datetime.datetime.now().isoformat()
         msg["reference"] = f"{self.alarm_class}{cfg.id}"
         self.service.publish(
             orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition
         )
+
+    def process_message(self, ip_address):
+        self.update_messages_counter(ip_address)
+        if self.device_is_talkative(ip_address):
+            cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
+            if cfg.storm_policy in ("R", "A"):
+                # raise alarm
+                self.raise_alarm(ip_address)
+                logger.debug(
+                    "Storm protection: SNMP-message from IP-address %s raised alarm", ip_address
+                )
+            if cfg.storm_policy in ("B", "A"):
+                # block message
+                logger.debug(
+                    "Storm protection: SNMP-message from IP-address %S must be blocked", ip_address
+                )
+                return True
+        return False

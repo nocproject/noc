@@ -105,25 +105,9 @@ class TrapServer(UDPServer):
         if not cfg:
             return  # Invalid event source
         if cfg.storm_policy != "D":
-            ip_address = address[0]
-            storm_protection = self.service.storm_protection
-            storm_protection.update_messages_counter(ip_address)
-            if storm_protection.device_is_talkative(ip_address):
-                if cfg.storm_policy in ("R", "A"):
-                    # raise alarm
-                    storm_protection.raise_alarm(ip_address)
-                    logger.debug(
-                        "Storm protection: SNMP-message from IP-address %s raised alarm", ip_address
-                    )
-                if cfg.storm_policy in ("B", "A"):
-                    # block message
-                    logger.debug(
-                        "Storm protection: SNMP-message from IP-address %S blocked", ip_address
-                    )
-                    return
-            logger.debug(
-                "Storm protection: SNMP-message from IP-address %s skipped for publish", ip_address
-            )
+            need_block = self.service.storm_protection.process_message(address[0])
+            if need_block:
+                return
         try:
             community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:
