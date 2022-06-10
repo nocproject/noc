@@ -123,11 +123,7 @@ class MaintenanceApplication(ExtDocApplication):
         out = {"total": len(r), "success": True, "data": r}
         return self.response(out, status=self.OK)
 
-    @view(method=["GET"], url="^$", access="read", api=True)
-    def api_list(self, request):
-        return self.list_data(request, self.instance_to_dict_list)
-
-    def instance_to_dict_list(self, o, fields=None):
+    def instance_to_dict_list(self, o, fields=None, nocustom=False):
         return {
             "id": str(o.id),
             "description": o.description,
