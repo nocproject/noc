@@ -26,15 +26,18 @@ class Script(BaseScript):
     )
     rx_wlan_config = re.compile(
         r"^\s+(?P<name>\S+)\s+Y\s+(?P<ssid>\S+)\s+\S+\s+\S+\s+(?P<vlan_id>\d+)\s+\S+\s*\n",
-        re.MULTILINE
+        re.MULTILINE,
     )
     rx_wlan = re.compile(
         r"^Radio: (?P<mac>\S+):(?P<sub_name>\S+),.+\n"
         r"^\s+STATE\s+: (?P<oper_status>Off|On).*\n"
         r"^\s+PHY INFO\s+: Bssid: (?P<sub_mac>\S+) RF-Mode:",
-        re.MULTILINE
+        re.MULTILINE,
     )
-    rx_switchport = re.compile(r"^\s+(?P<ifname>ge\d+)\s+(?:UP|DOWN)\s+(?P<mode>access|trunk)\s+(?P<vlans>\S+)", re.MULTILINE)
+    rx_switchport = re.compile(
+        r"^\s+(?P<ifname>ge\d+)\s+(?:UP|DOWN)\s+(?P<mode>access|trunk)\s+(?P<vlans>\S+)",
+        re.MULTILINE,
+    )
     rx_native = re.compile(r"(\d+)\*")
 
     def execute_cli(self):
@@ -62,7 +65,7 @@ class Script(BaseScript):
             if ifname.startswith("ge"):
                 iface["subinterfaces"][0]["enabled_afi"] = ["BRIDGE"]
             if ifname.startswith("vl"):
-                iface["subinterfaces"][0]["vlan_ids"] = ifname[4:]
+                iface["subinterfaces"][0]["vlan_ids"] = int(ifname[4:])
                 if match.group("ip"):
                     iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
                     iface["subinterfaces"][0]["ipv4_addresses"] = [match.group("ip")]
@@ -98,13 +101,15 @@ class Script(BaseScript):
             iface["type"] = "physical"
             iface["oper_status"] = True
             iface["mac"] = match.group("mac")
-            iface["subinterfaces"] += [{
-                "name": match.group("sub_name"),
-                "admin_status": match.group("oper_status") == "On",
-                "oper_status": match.group("oper_status") == "On",
-                "mac": match.group("sub_mac"),
-                "enabled_afi": ["BRIDGE"],
-                "tagged_vlans": vlans,
-            }]
+            iface["subinterfaces"] += [
+                {
+                    "name": match.group("sub_name"),
+                    "admin_status": match.group("oper_status") == "On",
+                    "oper_status": match.group("oper_status") == "On",
+                    "mac": match.group("sub_mac"),
+                    "enabled_afi": ["BRIDGE"],
+                    "tagged_vlans": vlans,
+                }
+            ]
         interfaces += [iface]
         return [{"interfaces": interfaces}]
