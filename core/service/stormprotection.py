@@ -41,10 +41,8 @@ class StormProtection(object):
     detect a situation when the number of incoming messages exceeds a certain threshold.
 
     The methods used are:
-      `initialize' - initialize the object
-      `update_messages_counter' - registration of an incoming message
-      `device_is_talkative` - returns a device's "talkative" flag
-      `raise_alarm' - raise an alarm
+      `initialize` - initialize the object
+      `process_message` - process message according to storm policy of the device
 
     The following settings are available:
 
@@ -66,9 +64,13 @@ class StormProtection(object):
         <record_ttl>,
         <AlarmClass>,
     )
-    storm_protection.update_messages_counter(<source>)
+    storm_protection.initialize()
+    ...
+    storm_protection.process_message(<source>)
 
-    For more details see docs/en/docs/dev/reference/storm_protection.md
+    For more details see:
+      docs/en/docs/dev/reference/storm_protection.md
+      docs/ru/docs/dev/reference/storm_protection.md
     """
 
     def __init__(
@@ -86,6 +88,9 @@ class StormProtection(object):
         self.storm_table: Dict[str, StormRecord] = {}
 
     def initialize(self):
+        """
+        Launches periodical callback of verification round
+        """
         # check for availability of address configs attribute in service
         if not hasattr(self.service, COLLECTOR_CONFIG_ATTRNAME):
             logger.error(
@@ -132,7 +137,7 @@ class StormProtection(object):
             "End of storm protection round: found %d talkative devices", talkatives_quantity
         )
 
-    def update_messages_counter(self, ip_address: str):
+    def increase_messages_counter(self, ip_address: str):
         if ip_address not in self.storm_table:
             self.storm_table[ip_address] = StormRecord()
             self.storm_table[ip_address].ttl = self.storm_record_ttl
@@ -167,8 +172,15 @@ class StormProtection(object):
             orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition
         )
 
-    def process_message(self, ip_address):
-        self.update_messages_counter(ip_address)
+    def process_message(self, ip_address) -> bool:
+        """
+        Performs necessary actions with message according to storm policy of the device,
+        i.e. raise alarm.
+        Return True if message must be blocked in service and False otherwise.
+        :param ip_address:
+        :return:
+        """
+        self.increase_messages_counter(ip_address)
         if self.device_is_talkative(ip_address):
             cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
             if cfg.storm_policy in ("R", "A"):
