@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -290,6 +290,9 @@ class ExtDocApplication(ExtApplication):
     def has_field_editable(self, field):
         return ModelProtectionProfile.has_editable(get_model_id(self.model), get_user(), field)
 
+    def instance_to_dict_list(self, o, fields=None, nocustom=False):
+        return self.instance_to_dict(o, fields=fields, nocustom=False)
+
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = {}
         for n, f in o._fields.items():
@@ -376,7 +379,7 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^$", access="read", api=True)
     def api_list(self, request):
-        return self.list_data(request, self.instance_to_dict)
+        return self.list_data(request, self.instance_to_dict_list)
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):

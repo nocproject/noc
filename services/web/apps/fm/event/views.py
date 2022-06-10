@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ class EventApplication(ExtDocApplication):
             del q["resource_group"]
         return q
 
-    def instance_to_dict(self, o, fields=None, nocustom=False):
+    def instance_to_dict_list(self, o, fields=None, nocustom=False):
         row_class = None
         if o.status in ("A", "S"):
             subject = o.subject
@@ -135,12 +135,11 @@ class EventApplication(ExtDocApplication):
         model = self.model_map[status]
         return model.objects
 
-    @view(url=r"^(?P<id>[a-z0-9]{24})/$", method=["GET"], api=True, access="launch")
-    def api_event(self, request, id):
-        event = get_event(id)
-        if not event:
-            return self.response_not_found()
-        d = self.instance_to_dict(event)
+    def instance_to_dict(self, event, fields=None, nocustom=False):
+        # event = get_event(id)
+        # if not event:
+        #     return self.response_not_found()
+        d = self.instance_to_dict_list(event)
         dd = {
             v: None
             for v in (
