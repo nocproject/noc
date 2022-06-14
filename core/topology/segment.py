@@ -166,7 +166,7 @@ class SegmentTopology(BaseTopology):
                 return 0
 
         # Get all links, belonging to segment
-        links: List["Link"] = list(
+        links: List[Link] = list(
             Link.objects.filter(linked_segments__in=[s.id for s in self.segment_siblings])
         )
         # All linked interfaces from map

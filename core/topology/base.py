@@ -64,14 +64,14 @@ class BaseTopology(object):
         Load objects and links
         """
 
-    def get_role(self, mo: "ManagedObject") -> Optional[str]:
+    def get_role(self, mo: ManagedObject) -> Optional[str]:
         """
         Returns managed object's role.
         None if no role
         """
         return None
 
-    def add_object(self, mo: "ManagedObject", attrs: Optional[Dict[str, Any]] = None):
+    def add_object(self, mo: ManagedObject, attrs: Optional[Dict[str, Any]] = None):
         """
         Add managed object to topology
         """
@@ -138,7 +138,7 @@ class BaseTopology(object):
         )
         self.G.add_node(link_id, **attrs)
 
-    def add_link(self, o1: str, o2: str, attrs: Dict[str, Any] = None):
+    def add_link(self, o1: str, o2: str, attrs: Optional[Dict[str, Any]] = None):
         """
         Add link between interfaces to topology
         """
