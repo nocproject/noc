@@ -160,8 +160,6 @@ logger = logging.getLogger(__name__)
         ("fm.FailedEvent", "managed_object"),
         ("inv.Interface", "managed_object"),
         ("inv.SubInterface", "managed_object"),
-        ("maintenance.Maintenance", "escalate_managed_object"),
-        ("maintenance.Maintenance", "direct_objects__object"),
         ("inv.ForwardingInstance", "managed_object"),
         ("sa.ManagedObject", "controller"),
         ("sla.SLAProbe", "managed_object"),
@@ -176,7 +174,12 @@ logger = logging.getLogger(__name__)
         ("sa.ObjectCapabilities", "object"),
         ("sa.ObjectData", "object"),
     ],
-    clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
+    clean=[
+        ("ip.Address", "managed_object"),
+        ("sa.Service", "managed_object"),
+        ("maintenance.Maintenance", "escalate_managed_object"),
+        ("maintenance.Maintenance", "direct_objects__object"),
+    ],
 )
 class ManagedObject(NOCModel):
     """
@@ -944,6 +947,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.discoveryid import DiscoveryID
 
         DiscoveryID.clean_for_object(self)
+        self._reset_caches(self.id, credential=True)
 
     def get_index(self):
         """
