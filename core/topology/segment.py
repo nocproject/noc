@@ -43,7 +43,7 @@ class SegmentTopology(BaseTopology):
             self.ancestor_segments = set()
         super().__init__(node_hints, link_hints, force_spring)
 
-    def get_role(self, mo: "ManagedObject") -> str:
+    def get_role(self, mo: ManagedObject) -> str:
         if mo.segment in self.segment_siblings:
             return "segment"
         elif self.parent_segment and mo.segment.id in self.ancestor_segments:
