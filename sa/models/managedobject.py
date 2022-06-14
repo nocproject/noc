@@ -99,7 +99,6 @@ from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
-from .objectdata import ObjectData
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 38
@@ -174,7 +173,6 @@ logger = logging.getLogger(__name__)
         ("inv.DiscoveryID", "object"),
         ("inv.Sensor", "managed_object"),
         ("sa.ObjectCapabilities", "object"),
-        ("sa.ObjectData", "object"),
     ],
     clean=[("ip.Address", "managed_object"), ("sa.Service", "managed_object")],
 )
@@ -702,18 +700,6 @@ class ManagedObject(NOCModel):
             {"id", "bi_id", "is_managed", "pool", "fm_pool", "labels"}
         ):
             yield "cfgmomapping", self.id
-
-    @property
-    def data(self) -> ObjectData:
-        try:
-            return self._data
-        except AttributeError:
-            pass
-        d = ObjectData.get_by_id(self)
-        if not d:
-            d = ObjectData(object=self.id)
-        self._data = d
-        return d
 
     def set_scripts_caller(self, caller):
         """
