@@ -172,7 +172,21 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         # Clean related
         for model, model_id, field in iter_models("clean"):
             for ro in iter_related(instance, model, field):
-                setattr(ro, field, None)
+                if is_document(ro) and "__" in field:
+                    # EmbeddedDocument Array
+                    field, e_field = field.split("__")
+                    # ro.objects.update(**{f"pull__{field}": instance.id})
+                    setattr(
+                        ro,
+                        field,
+                        [
+                            ed
+                            for ed in getattr(ro, field, [])
+                            if getattr(ed, e_field, None) != instance
+                        ],
+                    )
+                else:
+                    setattr(ro, field, None)
                 ro.save()
         # Delete related
         for model, model_id, field in iter_models("delete"):
