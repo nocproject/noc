@@ -7,32 +7,26 @@
 
 # Python modules
 from dataclasses import dataclass
-import datetime
 import logging
-from typing import Any, Dict
-
-# Third-party modules
-import orjson
+from typing import Dict
 
 # NOC modules
-from noc.config import config
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.loader import get_service
 
 logger = logging.getLogger(__name__)
-
-COLLECTOR_CONFIG_ATTRNAME = "address_configs"
 
 
 @dataclass
 class StormRecord:
     """Record in Storm Table"""
 
-    __slots__ = ("messages_count", "verbose", "raised_alarm", "ttl")
+    __slots__ = ("messages_count", "verbose", "raised_alarm", "ttl", "storm_threshold")
     messages_count: int
     verbose: bool
     raised_alarm: bool
     ttl: int
+    storm_threshold: int
 
 
 class StormProtection(object):
@@ -87,20 +81,13 @@ class StormProtection(object):
         self.alarm_class = alarm_class
         self.service = get_service()
         self.storm_table: Dict[str, StormRecord] = {}
-        self.device_configs = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)
+        self.raise_alarm_handler = None
+        self.close_alarm_handler = None
 
     def initialize(self):
         """
         Launches periodical callback of verification round
         """
-        # check for availability of address configs attribute in service
-        if not hasattr(self.service, COLLECTOR_CONFIG_ATTRNAME):
-            logger.error(
-                "Service '%s' instance has not attribute '%s'. Storm protection will not work",
-                self.service.name,
-                COLLECTOR_CONFIG_ATTRNAME,
-            )
-            return
         pt = PeriodicCallback(self.storm_round_handler, self.storm_round_duration * 1000)
         pt.start()
         logger.info(
@@ -112,14 +99,13 @@ class StormProtection(object):
         to_delete = []
         verbose_devices_quantity = 0
         for ip, record in self.storm_table.items():
-            cfg = self.device_configs[ip]
             # set new value to verbose flag
             if record.verbose:
                 record.verbose = record.messages_count >= round(
-                    cfg.storm_threshold * self.storm_threshold_reduction
+                    record.storm_threshold * self.storm_threshold_reduction
                 )
             else:
-                record.verbose = record.messages_count > cfg.storm_threshold
+                record.verbose = record.messages_count > record.storm_threshold
             verbose_devices_quantity += int(record.verbose)
             if record.raised_alarm and not record.verbose:
                 self.close_alarm(ip)
@@ -140,13 +126,14 @@ class StormProtection(object):
             "End of storm protection round: found %d verbose devices", verbose_devices_quantity
         )
 
-    def increase_messages_counter(self, ip_address: str):
+    def register_message(self, ip_address: str, storm_threshold: int):
         if ip_address not in self.storm_table:
             self.storm_table[ip_address] = StormRecord(
                 messages_count=0,
                 verbose=False,
                 raised_alarm=False,
                 ttl=self.storm_record_ttl,
+                storm_threshold=storm_threshold,
             )
         self.storm_table[ip_address].messages_count += 1
 
@@ -157,46 +144,31 @@ class StormProtection(object):
         storm_record = self.storm_table[ip_address]
         if storm_record.raised_alarm:
             return
-        cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
-        msg = {
-            "$op": "raise",
-            "managed_object": cfg.id,
-            "alarm_class": self.alarm_class,
-        }
-        self.publish_message(cfg, msg)
+        self.raise_alarm_handler(ip_address)
         storm_record.raised_alarm = True
 
     def close_alarm(self, ip_address: str):
-        cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
-        msg = {"$op": "clear"}
-        self.publish_message(cfg, msg)
+        self.close_alarm_handler(ip_address)
         self.storm_table[ip_address].raised_alarm = False
 
-    def publish_message(self, cfg, msg: Dict[str, Any]):
-        msg["timestamp"] = datetime.datetime.now().isoformat()
-        msg["reference"] = f"{self.alarm_class}{cfg.id}"
-        self.service.publish(
-            orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition
-        )
-
-    def process_message(self, ip_address) -> bool:
+    def process_message(self, ip_address: str, address_config) -> bool:
         """
         Performs necessary actions with message according to storm policy of the device,
         i.e. raise alarm.
         Return True if message must be blocked in service and False otherwise.
         :param ip_address:
+        :param address_config:
         :return:
         """
-        self.increase_messages_counter(ip_address)
+        self.register_message(ip_address, address_config.storm_threshold)
         if self.device_is_verbose(ip_address):
-            cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
-            if cfg.storm_policy in ("R", "A"):
+            if address_config.storm_policy in ("R", "A"):
                 # raise alarm
                 self.raise_alarm(ip_address)
                 logger.debug(
                     "Storm protection: SNMP-message from IP-address %s raised alarm", ip_address
                 )
-            if cfg.storm_policy in ("B", "A"):
+            if address_config.storm_policy in ("B", "A"):
                 # block message
                 logger.debug(
                     "Storm protection: SNMP-message from IP-address %S must be blocked", ip_address

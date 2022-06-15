@@ -105,7 +105,7 @@ class TrapServer(UDPServer):
         if not cfg:
             return  # Invalid event source
         if cfg.storm_policy != "D":
-            need_block = self.service.storm_protection.process_message(address[0])
+            need_block = self.service.storm_protection.process_message(address[0], cfg)
             if need_block:
                 return
         try:
