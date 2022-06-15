@@ -28,10 +28,11 @@ COLLECTOR_CONFIG_ATTRNAME = "address_configs"
 class StormRecord:
     """Record in Storm Table"""
 
-    messages_count: int = 0
-    talkative: bool = False
-    raised_alarm: bool = False
-    ttl: int = 0
+    __slots__ = ("messages_count", "verbose", "raised_alarm", "ttl")
+    messages_count: int
+    verbose: bool
+    raised_alarm: bool
+    ttl: int
 
 
 class StormProtection(object):
@@ -86,6 +87,7 @@ class StormProtection(object):
         self.alarm_class = alarm_class
         self.service = get_service()
         self.storm_table: Dict[str, StormRecord] = {}
+        self.device_configs = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)
 
     def initialize(self):
         """
@@ -108,23 +110,24 @@ class StormProtection(object):
 
     async def storm_round_handler(self):
         to_delete = []
-        talkatives_quantity = 0
-        for ip in self.storm_table:
-            record = self.storm_table[ip]
-            cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip]
-            # set new value to talkative flag
-            if record.messages_count > cfg.storm_threshold:
-                record.talkative = True
-            if record.messages_count < round(cfg.storm_threshold * self.storm_threshold_reduction):
-                record.talkative = False
-            talkatives_quantity += int(record.talkative)
-            if record.raised_alarm and not record.talkative:
+        verbose_devices_quantity = 0
+        for ip, record in self.storm_table.items():
+            cfg = self.device_configs[ip]
+            # set new value to verbose flag
+            if record.verbose:
+                record.verbose = record.messages_count >= round(
+                    cfg.storm_threshold * self.storm_threshold_reduction
+                )
+            else:
+                record.verbose = record.messages_count > cfg.storm_threshold
+            verbose_devices_quantity += int(record.verbose)
+            if record.raised_alarm and not record.verbose:
                 self.close_alarm(ip)
             # check time to live of record
-            if record.messages_count == 0:
-                record.ttl -= 1
-            else:
+            if record.messages_count:
                 record.ttl = self.storm_record_ttl
+            else:
+                record.ttl -= 1
             if record.ttl <= 0:
                 to_delete.append(ip)
             else:
@@ -134,17 +137,21 @@ class StormProtection(object):
         for ip in to_delete:
             del self.storm_table[ip]
         logger.info(
-            "End of storm protection round: found %d talkative devices", talkatives_quantity
+            "End of storm protection round: found %d verbose devices", verbose_devices_quantity
         )
 
     def increase_messages_counter(self, ip_address: str):
         if ip_address not in self.storm_table:
-            self.storm_table[ip_address] = StormRecord()
-            self.storm_table[ip_address].ttl = self.storm_record_ttl
+            self.storm_table[ip_address] = StormRecord(
+                messages_count=0,
+                verbose=False,
+                raised_alarm=False,
+                ttl=self.storm_record_ttl,
+            )
         self.storm_table[ip_address].messages_count += 1
 
-    def device_is_talkative(self, ip_address: str) -> bool:
-        return self.storm_table[ip_address].talkative
+    def device_is_verbose(self, ip_address: str) -> bool:
+        return self.storm_table[ip_address].verbose
 
     def raise_alarm(self, ip_address: str):
         storm_record = self.storm_table[ip_address]
@@ -181,7 +188,7 @@ class StormProtection(object):
         :return:
         """
         self.increase_messages_counter(ip_address)
-        if self.device_is_talkative(ip_address):
+        if self.device_is_verbose(ip_address):
             cfg = getattr(self.service, COLLECTOR_CONFIG_ATTRNAME)[ip_address]
             if cfg.storm_policy in ("R", "A"):
                 # raise alarm
