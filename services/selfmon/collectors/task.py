@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Task Collector
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,6 +14,9 @@ from .base import BaseCollector
 from noc.core.mongo.connection import get_db
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
+
+NOW_SHIFT_SECONDS = 5
+STALE_LAG_HOURS = 18
 
 
 class TaskObjectCollector(BaseCollector):
@@ -39,9 +42,13 @@ class TaskObjectCollector(BaseCollector):
         return r
 
     def iter_metrics(self):
-        now = datetime.datetime.now() - datetime.timedelta(seconds=5)
+        now = datetime.datetime.now() - datetime.timedelta(seconds=NOW_SHIFT_SECONDS)
         late_q = {Job.ATTR_STATUS: Job.S_WAIT, Job.ATTR_TS: {"$lt": now}}
         exp_q = {Job.ATTR_LAST_STATUS: Job.E_EXCEPTION}
+        stale_q = {
+            Job.ATTR_STATUS: Job.S_RUN,
+            Job.ATTR_TS: {"$lt": now - datetime.timedelta(hours=STALE_LAG_HOURS)},
+        }
         for scheduler_name, data in self.schedulers_list.items():
             sc = self.db[scheduler_name]
             # Calculate late tasks
@@ -56,6 +63,7 @@ class TaskObjectCollector(BaseCollector):
             else:
                 lag = 0
             late_count = sc.count_documents(late_q)
+            stale_count = sc.count_documents(stale_q)
 
             yield (
                 "task_pool_total",
@@ -92,3 +100,8 @@ class TaskObjectCollector(BaseCollector):
                 ("scheduler_name", data["name"]),
                 ("pool", data.get("shard", "")),
             ), ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0
+            yield (
+                "task_stale_count",
+                ("scheduler_name", data["name"]),
+                ("pool", data.get("shard", "")),
+            ), stale_count
