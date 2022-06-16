@@ -103,7 +103,7 @@ class Script(BaseScript):
             iface["mac"] = match.group("mac")
             iface["subinterfaces"] += [
                 {
-                    "name": match.group("sub_name"),
+                    "name": match.group("sub_name").replace("R", "radio"),
                     "admin_status": match.group("oper_status") == "On",
                     "oper_status": match.group("oper_status") == "On",
                     "mac": match.group("sub_mac"),

@@ -1,0 +1,13 @@
+{
+    "name": "Symbol | AP | AP71XX sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "498533e3-dceb-46ba-b7c0-d0efc09f6d98",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.388.50.1.1",
+    "action": "match",
+    "profile__name": "Symbol.AP"
+}
