@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,6 +29,24 @@ class Script(BaseScript):
         r"(?:^\s+Encapsulation |^\s+Output packets statistics:)",
         re.MULTILINE,
     )
+    rx_sh_int_old = re.compile(
+        r"^\s+(?:Fast|Gigabit) Ethernet (?P<interface>\S+) current state: (?P<admin_status>\S+), port link is (?P<oper_status>\S+)\s*\n"
+        r"(?:^\s+Port type status : .+\n)?"
+        r"(?:^\s+Time duration of linkup is .+\n)?"
+        r"^\s+Hardware address is (?P<mac>\S+)\s*\n"
+        r"^\s+SetSpeed is .+\n"
+        r"^\s+Current port type: .+\n"
+        r"(?:^\s+Transceiver is .+\n)?"
+        r"(?:^\s+Transceiver Compliance: .+\n)?"
+        r"^\s+Priority is \d+\s*\n"
+        r"^\s+Flow control is .+\n"
+        r"^\s+Broadcast storm control target rate is .+\n"
+        r"^\s+PVID is (?P<pvid>\d+)\s*\n"
+        r"^\s+Port mode: (?P<mode>trunk|access)\s*\n"
+        r"(?:^\s+Untagged\s+VLAN ID: (?P<untagged>\d+)\s*\n)?"
+        r"(?:^\s+Vlan\s+allowed: (?P<tagged>\S+)\s*\n)?",
+        re.MULTILINE,
+    )
     rx_hw = re.compile(
         r"^\s+Hardware is (?P<hw_type>\S+)(\(card not installed\))?(, active is \S+)?"
         r"(,\s+address is (?P<mac>\S+))?\s*\n",
@@ -48,6 +66,14 @@ class Script(BaseScript):
         r"^Mode\s*:\s*(?P<mode>\S+)\s*\n"
         r"^Port VID\s*:\s*(?P<untagged_vlan>\d+)\s*\n"
         r"(^Trunk allowed Vlan\s*:\s*(?P<tagged_vlans>\S+)\s*\n)?",
+        re.MULTILINE,
+    )
+    rx_mgmt = re.compile(
+        r"^ip address\s+: (?P<ip>\S+)\s*\n"
+        r"^netmask\s+: (?P<mask>\S+)\s*\n"
+        r"^gateway\s+: .+\n"
+        r"^ManageVLAN\s+: (?P<vlan_id>\d+)\s*\n"
+        r"^MAC address\s+: (?P<mac>\S+)",
         re.MULTILINE,
     )
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
@@ -126,15 +152,68 @@ class Script(BaseScript):
                 sub["enabled_afi"] = ["IPv4"]
             iface["subinterfaces"] = [sub]
             interfaces += [iface]
-        v = self.cli("show switchport interface")
-        for match in self.rx_vlan.finditer(v):
-            ifname = match.group("ifname")
-            untagged_vlan = match.group("untagged_vlan")
-            for i in interfaces:
-                if ifname == i["name"]:
-                    i["subinterfaces"][0]["untagged_vlan"] = untagged_vlan
-                    if match.group("tagged_vlans"):
-                        tagged_vlans = match.group("tagged_vlans").replace(";", ",")
-                        i["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged_vlans)
-                    break
+        if interfaces:
+            # New CLI syntax
+            v = self.cli("show switchport interface")
+            for match in self.rx_vlan.finditer(v):
+                ifname = match.group("ifname")
+                untagged_vlan = match.group("untagged_vlan")
+                for i in interfaces:
+                    if ifname == i["name"]:
+                        i["subinterfaces"][0]["untagged_vlan"] = untagged_vlan
+                        if match.group("tagged_vlans"):
+                            tagged_vlans = match.group("tagged_vlans").replace(";", ",")
+                            i["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
+                                tagged_vlans
+                            )
+                        break
+        else:
+            # Old CLI syntax. V6.5.1.21 and older
+            for match in self.rx_sh_int_old.finditer(v):
+                iface = {
+                    "name": match.group("interface"),
+                    "type": "physical",
+                    "admin_status": match.group("admin_status") == "enabled",
+                    "oper_status": match.group("oper_status") == "up",
+                    "mac": match.group("mac"),
+                }
+                sub = {
+                    "name": match.group("interface"),
+                    "admin_status": match.group("admin_status") == "enabled",
+                    "oper_status": match.group("oper_status") == "up",
+                    "mac": match.group("mac"),
+                    "enabled_afi": ["BRIDGE"],
+                }
+                if match.group("mode") == "access":
+                    sub["untagged_vlan"] = match.group("untagged")
+                else:
+                    sub["untagged_vlan"] = match.group("pvid")
+                    sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
+                iface["subinterfaces"] = [sub]
+                interfaces += [iface]
+            v = self.cli("show ip", cached=True)
+            match = self.rx_mgmt.search(v)
+            ip_address = "%s/%s" % (
+                match.group("ip"),
+                IPv4.netmask_to_len(match.group("mask")),
+            )
+            iface = {
+                "name": "system",
+                "type": "SVI",
+                "admin_status": True,
+                "oper_status": True,
+                "mac": match.group("mac"),
+                "subinterfaces": [
+                    {
+                        "name": "system",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "mac": match.group("mac"),
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip_address],
+                        "vlan_ids": match.group("vlan_id"),
+                    }
+                ],
+            }
+            interfaces += [iface]
         return [{"interfaces": interfaces}]

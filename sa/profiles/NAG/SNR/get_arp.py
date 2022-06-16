@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ class Script(BaseScript):
     cache = True
 
     rx_arp = re.compile(r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+\d+)", re.MULTILINE)
+    rx_arp2 = re.compile(r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+\d+)", re.MULTILINE)
 
     def execute_snmp(self):
         r = []
@@ -35,6 +36,12 @@ class Script(BaseScript):
 
     def execute_cli(self):
         r = []
-        for match in self.rx_arp.finditer(self.cli("show arp")):
-            r += [match.groupdict()]
+        try:
+            v = self.cli("show arp")
+            for match in self.rx_arp.finditer(v):
+                r += [match.groupdict()]
+        except self.CLISyntaxError:
+            v = self.cli("show arp all")
+            for match in self.rx_arp2.finditer(v):
+                r += [match.groupdict()]
         return r

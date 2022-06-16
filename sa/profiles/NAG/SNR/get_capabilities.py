@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,6 +25,9 @@ class Script(BaseScript):
         Check box has lldp enabled on SNR
         """
         cmd = self.cli("show lldp", ignore_errors=True)
+        if "% Incomplete command" in cmd:
+            cmd = self.cli("show lldp interface", ignore_errors=True)
+            return "System LLDP: enable" in cmd
         return self.rx_lldp_en.search(cmd) is not None
 
     def execute_platform_cli(self, caps):

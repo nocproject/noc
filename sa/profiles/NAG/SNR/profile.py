@@ -18,7 +18,11 @@ class Profile(BaseProfile):
     pattern_more = [
         (rb"^ --More-- ", b"\n"),
         (rb"^Confirm to overwrite current startup-config configuration \[Y/N\]:", b"y\n"),
+        (rb"^\.\.\.\.press ENTER to next line, Q to quit, other key to next page\.\.\.\.", b" "),
     ]
+    pattern_syntax_error = (
+        rb"% (?:Unrecognized|Incomplete) command, and error detected at"
+    )
     username_submit = b"\r"
     password_submit = b"\r"
     command_submit = b"\r"
@@ -44,6 +48,7 @@ class Profile(BaseProfile):
     INTERFACE_TYPES = {
         "Ethe": "physical",  # Ethernet
         "Vlan": "SVI",  # Vlan
+        "syst": "SVI",  # system
         "Port": "aggregated",  # Port-Channel
         "Vsf-": "aggregated",  # Vsf-Port
         "vpls": "unknown",  # vpls_dev
@@ -54,4 +59,6 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name == "Ethernet0":
             return "management"
+        if name.startswith("e0/"):
+            return "physical"
         return cls.INTERFACE_TYPES.get(name[:4])

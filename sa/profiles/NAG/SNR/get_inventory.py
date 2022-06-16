@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,12 +56,16 @@ class Script(BaseScript):
         revision = s["attributes"]["HW version"]
         serial = s["attributes"]["Serial Number"]
         part_no = s["platform"]
-        slot = self.cli("show slot")
+        vendor = s["vendor"]
+        try:
+            slot = self.cli("show slot")
+        except self.CLISyntaxError:
+            slot = "Invalid"
         slot_id = 0
         if "Invalid" in slot:
             p = {
                 "type": "CHASSIS",
-                "vendor": "NAG",
+                "vendor": vendor,
                 "part_no": part_no,
                 "revision": revision,
                 "serial": serial,
@@ -77,7 +81,7 @@ class Script(BaseScript):
                 sl = {
                     "type": "CHASSIS",
                     "number": slot_id,
-                    "vendor": "NAG",
+                    "vendor": vendor,
                     "mfg_date": date,
                     "part_no": part_no,
                     "revision": match.group("hardware"),
