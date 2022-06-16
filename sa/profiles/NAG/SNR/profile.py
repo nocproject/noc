@@ -20,9 +20,7 @@ class Profile(BaseProfile):
         (rb"^Confirm to overwrite current startup-config configuration \[Y/N\]:", b"y\n"),
         (rb"^\.\.\.\.press ENTER to next line, Q to quit, other key to next page\.\.\.\.", b" "),
     ]
-    pattern_syntax_error = (
-        rb"% (?:Unrecognized|Incomplete) command, and error detected at"
-    )
+    pattern_syntax_error = rb"% (?:Unrecognized|Incomplete) command, and error detected at"
     username_submit = b"\r"
     password_submit = b"\r"
     command_submit = b"\r"
