@@ -20,7 +20,9 @@ class Script(BaseScript):
     cache = True
 
     rx_arp = re.compile(r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+\d+)", re.MULTILINE)
-    rx_arp2 = re.compile(r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+\d+)", re.MULTILINE)
+    rx_arp2 = re.compile(
+        r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+\d+)", re.MULTILINE
+    )
 
     def execute_snmp(self):
         r = []
