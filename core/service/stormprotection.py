@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from collections import defaultdict
 from dataclasses import dataclass
 import logging
 from typing import Dict
@@ -80,7 +81,15 @@ class StormProtection(object):
         self.storm_record_ttl = storm_record_ttl
         self.alarm_class = alarm_class
         self.service = get_service()
-        self.storm_table: Dict[str, StormRecord] = {}
+        self.storm_table: Dict[str, StormRecord] = defaultdict(
+            lambda: StormRecord(
+                messages_count=0,
+                verbose=False,
+                raised_alarm=False,
+                ttl=storm_record_ttl,
+                storm_threshold=0,
+            )
+        )
         self.raise_alarm_handler = None
         self.close_alarm_handler = None
 
@@ -127,14 +136,7 @@ class StormProtection(object):
         )
 
     def register_message(self, ip_address: str, storm_threshold: int):
-        if ip_address not in self.storm_table:
-            self.storm_table[ip_address] = StormRecord(
-                messages_count=0,
-                verbose=False,
-                raised_alarm=False,
-                ttl=self.storm_record_ttl,
-                storm_threshold=storm_threshold,
-            )
+        self.storm_table[ip_address].storm_threshold = storm_threshold
         self.storm_table[ip_address].messages_count += 1
 
     def device_is_verbose(self, ip_address: str) -> bool:
