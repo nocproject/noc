@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NSN.TIMOS.get_lldp_neighbors
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -64,7 +64,13 @@ class Script(BaseScript):
             # PortId Subtype        : 5 (interfaceName)
             # Port Id               : 65:73:61:74:2D:32:2F:31:2F:32:31
             #                         "esat-2/1/21"
-            remote_port_name1, remote_port__name2 = port.split("\n", 1)
+            #
+            # PortId Subtype        : 5 (interfaceName)
+            # Port Id               : 58:47:69:67:61:62:69:74:45:74:68:65:72:6E:65:74:30:2F:
+            #                         30:2F:34:38
+            #                       "XGigabitEthernet0/0/48"
+            remote_port_name1, remote_port__name2 = port.rsplit("\n", 1)
+            remote_port_name1 = re.sub(r"\n|\s+", "", remote_port_name1)
             return smart_text(codecs.decode(remote_port_name1.strip().replace(":", ""), "hex"))
         elif port_type == "7":
             return port.replace("\n", "")
