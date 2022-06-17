@@ -17,7 +17,6 @@ from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.macdb import MACDB
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -97,9 +96,6 @@ def wipe(o):
     # Wipe reboots
     log.debug("Wiping reboots")
     Reboot.objects.filter(object=o.id).delete()
-    # Delete Managed Object's capabilities
-    log.debug("Wiping capabilitites")
-    ObjectCapabilities.objects.filter(object=o.id).delete()
     # Delete Managed Object's attributes
     log.debug("Wiping attributes")
     ManagedObjectAttribute.objects.filter(managed_object=o).delete()

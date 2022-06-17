@@ -170,7 +170,6 @@ logger = logging.getLogger(__name__)
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
         ("inv.Sensor", "managed_object"),
-        ("sa.ObjectCapabilities", "object"),
     ],
     clean=[
         ("ip.Address", "managed_object"),

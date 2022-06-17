@@ -30,7 +30,6 @@ from noc.sa.models.profile import Profile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.discovery.jobs.box.job import BoxDiscoveryJob
-from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.inv.models.discoveryid import DiscoveryID
 
 _root_ad_cache = {}
@@ -89,7 +88,7 @@ class BeefCallWrapper(object):
         scr = scls(
             service=get_service(self.object.pool.name),
             credentials=credentials,
-            capabilities=ObjectCapabilities.get_capabilities(self.object.id),
+            capabilities=self.object.get_caps(),
             version=version,
             timeout=3600,
             name=script_name,
