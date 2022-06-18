@@ -1,13 +1,19 @@
 # ---------------------------------------------------------------------
 # Full-text search index management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import argparse
 import os
+from typing import List
+
+# Third-party modules
+import bson
+from pymongo import DESCENDING
+from dateutil.parser import parse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -15,6 +21,9 @@ from noc.core.mongo.connection import connect
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
 from noc.core.fileutils import safe_rewrite
+from noc.core.validators import is_objectid
+
+MBYTE_MULTIPLIER = 1024 * 1024
 
 
 class Command(BaseCommand):
@@ -69,6 +78,17 @@ class Command(BaseCommand):
             "--split", action="store_true", default=False, help="Add pool name to path"
         )
         sp_mirr.add_argument("--path", help="Path to folder", default="/tmp/cfg_mirror")
+        # Forget History command
+        forget_parser = subparsers.add_parser(
+            "forget-history", help="Forget revisions after revision"
+        )
+        forget_parser.add_argument("--after", help="Revision or Date", required=True)
+        forget_parser.add_argument(
+            "--approve", action="store_true", default=False, help="Do not modify data"
+        )
+        forget_parser.add_argument("--include-labels", help="Labels for additional filter")
+        forget_parser.add_argument("--exclude-labels", help="Labels for exclude additional filter")
+        forget_parser.add_argument("objects", nargs=argparse.REMAINDER, help="ManagedObject ids")
 
     def out(self, msg):
         if not self.verbose_level:
@@ -83,7 +103,7 @@ class Command(BaseCommand):
             self.clean_id = lambda y: int(y)
         else:
             self.clean_id = lambda y: y
-        return getattr(self, "handle_%s" % options["cmd"])(*args, **options)
+        return getattr(self, f'handle_{options["cmd"].replace("-", "_")}')(*args, **options)
 
     def handle_show(self, *args, **options):
         for o_id in args:
@@ -127,7 +147,10 @@ class Command(BaseCommand):
         self.print(f"Objects  : {obj_count}")
         self.print(f"Revisions: {rev_count} (%.2f rev/object)" % (float(rev_count) / obj_count))
         self.print(f"Chunks   : {chunks_count}")
-        self.print(f"Size     : {ssize} (%d bytes/object)" % int(ssize / obj_count))
+        self.print(
+            f"Size     : {round(ssize / MBYTE_MULTIPLIER, 3)} Mb (%d bytes/object)"
+            % int(ssize / obj_count)
+        )
         if top:
             self.print(f"Top {top}")
             for t in files.aggregate(
@@ -199,6 +222,82 @@ class Command(BaseCommand):
                     else:
                         self.print("    !!! mirror path violation for" % address)
         self.print("Done")
+
+    def _forget(self, mo, revision: str, dry_run=False):
+        def forget(f_rev):
+            if dry_run:
+                # self.print(f"[{mo.name}] Forgetting revision {f_rev.id} ({f_rev.ts.isoformat()})")
+                return
+            self.vcs.fs.delete(f_rev.id)
+
+        rev = self.vcs.find_revision(mo.id, str(revision))
+        if not rev:
+            self.die(f"[{mo.name}] Revision {str(revision)} is not found")
+        if rev.ft != GridVCS.T_FILE:
+            # End revision is delta
+            data = self.vcs.get(mo.id, rev)
+            # Drop from revision
+            num = 0
+            for num, r in enumerate(self.vcs.iter_revisions(mo.id, reverse=True)):
+                if r.ts <= rev.ts:
+                    forget(r)
+            self.print(f"[{mo.name}] Forgetting {num} revisions")
+            if not dry_run:
+                self.vcs.fs.put(
+                    self.vcs.compress(data.encode("utf-8"), self.vcs.DEFAULT_COMPRESS),
+                    object=mo.id,
+                    ts=rev.ts,
+                    ft=self.vcs.T_FILE,
+                    encoding=self.vcs.ENCODING,
+                    c=self.vcs.DEFAULT_COMPRESS,
+                )
+        else:
+            # Full snapshot, drop tail
+            for r in self.vcs.iter_revisions(mo.id, reverse=True):
+                if r.ts < rev.ts:
+                    forget(r)
+
+    def handle_forget_history(
+        self,
+        objects: List[str],
+        after: str = None,
+        approve=False,
+        include_labels=None,
+        exclude_labels=None,
+        *args,
+        **options,
+    ):
+        from noc.inv.models.resourcegroup import ResourceGroup
+
+        if not after:
+            self.die(f"Revision {after} is not set")
+        if not is_objectid(after):
+            # Timestamp
+            before = parse(after)
+            after = bson.ObjectId.from_datetime(before)
+        else:
+            after = bson.ObjectId(after)
+        if include_labels:
+            include_labels = include_labels.split(",")
+        if exclude_labels:
+            exclude_labels = exclude_labels.split(",")
+        for oo in objects:
+            oos = ResourceGroup.get_objects_from_expression(
+                oo, "sa.ManagedObject", include_labels=include_labels, exclude_labels=exclude_labels
+            )
+            if not oos:
+                self.print(f"Object with id {objects} not found. Next...")
+                continue
+            for mo in oos:
+                self.print(f"[{mo.name}] Processed")
+                r = self.vcs.files.find_one(
+                    {"object": mo.id, "_id": {"$lte": after}}, {"_id": 1}, sort=[("ts", DESCENDING)]
+                )
+                # self.print("Revision", r)
+                if not r:
+                    self.print(f"[{mo.name}] Not found revision. Continue")
+                    continue
+                self._forget(mo, r["_id"], dry_run=not approve)
 
 
 if __name__ == "__main__":
