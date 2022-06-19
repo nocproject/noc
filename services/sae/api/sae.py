@@ -188,7 +188,6 @@ class SAEAPI(API):
             metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         # Build capabilities
-        # capabilities = ObjectCapabilities.get_capabilities(object_id)
         capabilities = {}
         if caps:
             for c in caps:

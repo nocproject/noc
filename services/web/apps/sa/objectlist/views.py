@@ -71,7 +71,6 @@ class ObjectListApplication(ExtApplication):
             caps0=!CapsID - caps is not exists
             caps0=CapsID:true - caps value equal True
             caps0=CapsID:2~50 - caps value many then 2 and less then 50
-            c_ids = set(ObjectCapabilities.objects(cq).distinct('object'))
             """
 
             c = nq.pop(cc)
