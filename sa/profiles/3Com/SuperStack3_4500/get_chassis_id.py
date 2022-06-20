@@ -18,10 +18,19 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    rx_mac = re.compile(r"Hardware address is (?P<mac>\S+)$", re.MULTILINE)
+    rx_mac = re.compile(
+        r"(?:Hardware address is|First mac address\s+:) (?P<mac>\S+)\s*$", re.MULTILINE
+    )
 
     def execute_cli(self):
         macs = []
+        try:
+            v = self.cli("display device manuinfo", cached=True)
+            match = self.rx_mac.search(v)
+            if match:
+                macs += [match.group("mac")]
+        except self.CLISyntaxError:
+            pass
         v = self.cli("display interface", cached=True)
         for match in self.rx_mac.finditer(v):
             if match.group("mac") not in macs:

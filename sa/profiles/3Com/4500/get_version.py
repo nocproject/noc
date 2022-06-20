@@ -1,9 +1,9 @@
-# ----------------------------------------------------------------------
-# 3Com.SuperStack3_4500.get_version
-# ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# ---------------------------------------------------------------------
+# 3Com.4500.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
-# ----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
@@ -14,44 +14,33 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "3Com.SuperStack3_4500.get_version"
+    name = "3Com.4500.get_version"
     interface = IGetVersion
     cache = True
 
-    rx_version = re.compile(
-        r"^SuperStack 3 Switch (?P<platform>\S+).+Software Version (?P<version>.+)$",
-        re.MULTILINE,
-    )
-    rx_version2 = re.compile(
-        r"^Switch (?P<platform>\S+).+Software Version 3Com OS (?P<version>.+)$",
-        re.MULTILINE,
-    )
-    rx_dev = re.compile(
-        r"0\s+0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)", re.MULTILINE
-    )
-    rx_serial = re.compile(r"^\s+Product serial number: (?P<serial>\S)\s+\n", re.MULTILINE)
+    rx_version_3Com = re.compile(r"^Switch \S+ \S+ Software Version (?P<version>.+)$", re.MULTILINE)
+    rx_bootprom = re.compile(r"^Bootrom Version is\s+(?P<bootprom>\S+)$", re.MULTILINE)
+    rx_hardware = re.compile(r"^.*Hardware Version is (?P<hardware>\S+)\s?$", re.MULTILINE)
+    rx_platform = re.compile(r"^Switch (?P<platform>\S+ \S+) Software Version.*$", re.MULTILINE)
+    rx_serial = re.compile(r"^.*Product serial number:\s+(?P<serial>\S+)$", re.MULTILINE)
 
     def execute_cli(self):
-        v = self.cli("display version", cached=True)
-        match = self.rx_version.search(v)
-        if not match:
-            match = self.rx_version2.search(v)
-        v = self.cli("display device", cached=True)
-        match1 = self.rx_dev.search(v)
-        r = {
+        plat = self.cli("display version", cached=True)
+        version = self.rx_version_3Com.search(plat)
+        platform = self.rx_platform.search(plat)
+        bootprom = self.rx_bootprom.search(plat)
+        hardware = self.rx_hardware.search(plat)
+
+        serial = self.cli("display device manuinfo", cached=True)
+        serial = self.rx_serial.search(serial)
+
+        return {
             "vendor": "3Com",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
+            "platform": platform.group("platform"),
+            "version": version.group("version"),
             "attributes": {
-                "Boot PROM": match1.group("bootprom"),
-                "HW version": match1.group("hardware"),
+                "Boot PROM": bootprom.group("bootprom"),
+                "HW version": hardware.group("hardware"),
+                "Serial Number": serial.group("serial"),
             },
         }
-        try:
-            v = self.cli("display device manuinfo", cached=True)
-            match = self.rx_serial.search(v)
-            if match:
-                r["attributes"]["Serial Number"] = match.group("serial")
-        except self.CLISyntaxError:
-            pass
-        return r

@@ -29,6 +29,7 @@ class Script(BaseScript):
     rx_dev = re.compile(
         r"0\s+0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)", re.MULTILINE
     )
+    rx_serial = re.compile(r"^\s+Product serial number: (?P<serial>\S)\s+\n", re.MULTILINE)
 
     def execute_cli(self):
         v = self.cli("display version", cached=True)
@@ -37,7 +38,7 @@ class Script(BaseScript):
             match = self.rx_version2.search(v)
         v = self.cli("display device", cached=True)
         match1 = self.rx_dev.search(v)
-        return {
+        r = {
             "vendor": "3Com",
             "platform": match.group("platform"),
             "version": match.group("version"),
@@ -46,3 +47,11 @@ class Script(BaseScript):
                 "HW version": match1.group("hardware"),
             },
         }
+        try:
+            v = self.cli("display device manuinfo", cached=True)
+            match = self.rx_serial.search(v)
+            if match:
+                r["attributes"]["Serial Number"] = match.group("serial")
+        except self.CLISyntaxError:
+            pass
+        return r
