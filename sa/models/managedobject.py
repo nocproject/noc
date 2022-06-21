@@ -660,6 +660,7 @@ class ManagedObject(NOCModel):
             return None
 
     def iter_changed_datastream(self, changed_fields=None):
+        changed_fields = set(changed_fields)
         if config.datastream.enable_managedobject:
             yield "managedobject", self.id
         if config.datastream.enable_cfgping and changed_fields.intersection(
