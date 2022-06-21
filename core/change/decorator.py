@@ -73,6 +73,11 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
             nv = str(nv.pk)
         if str(ov) == str(nv):
             return None
+        if isinstance(ov, list):
+            # Embedded document
+            ov = [str(x) for x in ov]
+        if isinstance(nv, list):
+            nv = [str(x) for x in nv]
         return {"field": field_name, "old": ov, "new": nv}
 
     model_id = get_model_id(document)
