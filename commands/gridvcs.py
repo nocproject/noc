@@ -7,6 +7,7 @@
 
 # Python modules
 import argparse
+import datetime
 import os
 from typing import List
 
@@ -82,7 +83,7 @@ class Command(BaseCommand):
         forget_parser = subparsers.add_parser(
             "forget-history", help="Forget revisions after revision"
         )
-        forget_parser.add_argument("--after", help="Revision or Date", required=True)
+        forget_parser.add_argument("--before-days", type=int, help="Revision or Date", required=True)
         forget_parser.add_argument(
             "--approve", action="store_true", default=False, help="Do not modify data"
         )
@@ -260,7 +261,7 @@ class Command(BaseCommand):
     def handle_forget_history(
         self,
         objects: List[str],
-        after: str = None,
+        before_days: int = None,
         approve=False,
         include_labels=None,
         exclude_labels=None,
@@ -269,14 +270,15 @@ class Command(BaseCommand):
     ):
         from noc.inv.models.resourcegroup import ResourceGroup
 
-        if not after:
-            self.die(f"Revision {after} is not set")
-        if not is_objectid(after):
+        if not before_days:
+            self.die(f"Revision {before_days} is not set")
+        before = datetime.datetime.now() - datetime.timedelta(days=before_days)
+        if not is_objectid(before):
             # Timestamp
-            before = parse(after)
-            after = bson.ObjectId.from_datetime(before)
+            # before = parse(before)
+            before = bson.ObjectId.from_datetime(before)
         else:
-            after = bson.ObjectId(after)
+            before = bson.ObjectId(before)
         if include_labels:
             include_labels = include_labels.split(",")
         if exclude_labels:
@@ -291,7 +293,7 @@ class Command(BaseCommand):
             for mo in oos:
                 self.print(f"[{mo.name}] Processed")
                 r = self.vcs.files.find_one(
-                    {"object": mo.id, "_id": {"$lte": after}}, {"_id": 1}, sort=[("ts", DESCENDING)]
+                    {"object": mo.id, "_id": {"$lte": before}}, {"_id": 1}, sort=[("ts", DESCENDING)]
                 )
                 # self.print("Revision", r)
                 if not r:
