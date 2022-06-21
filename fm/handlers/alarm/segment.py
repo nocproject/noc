@@ -26,7 +26,7 @@ def set_segment_redundancy(alarm):
     mo = alarm.managed_object
     seg = mo.segment
     if seg.is_redundant and not seg.lost_redundancy:
-        u = mo.data.uplinks
+        u = mo.uplinks
         if len(u) > 1:
             logger.info("[%s] Redundancy lost for %s", alarm.id, seg.name)
             seg.set_lost_redundancy(True)
@@ -43,7 +43,7 @@ def check_segment_redundancy(alarm):
     seg = mo.segment
     if not seg.is_redundant or not seg.lost_redundancy:
         return
-    u = mo.data.uplinks
+    u = mo.uplinks
     if len(u) < 2:
         return
     seg_objects = list(seg.managed_objects.values_list("id", flat=True))
