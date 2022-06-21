@@ -85,7 +85,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         ]
         if res
     ]
-    logger.info("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
+    logger.debug("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
     change_tracker.register(
         op=op,
         model=model_id,
@@ -145,7 +145,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
     # Register change
     model_id = get_model_id(instance)
     op = "create" if created else "update"
-    logger.info("[%s|%s] Change detected: %s; %s", model_id, instance.id, op, changed_fields)
+    logger.debug("[%s|%s] Change detected: %s; %s", model_id, instance.id, op, changed_fields)
     change_tracker.register(
         op=op,
         model=model_id,
