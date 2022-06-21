@@ -1123,7 +1123,7 @@ class CorrelatorService(FastAPIService):
         if self.is_distributed:
             # Set lock until the end of dispose
             mo = alarm.managed_object
-            self.topo_rca_lock = RCALock(mo.data.rca_neighbors + [mo.id])
+            self.topo_rca_lock = RCALock(mo.rca_neighbors + [mo.id])
             await self.topo_rca_lock.acquire()
         # Get neighboring alarms
         neighbor_alarms = get_neighboring_alarms(alarm)

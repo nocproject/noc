@@ -240,7 +240,7 @@ class ManagedObjectDataStream(DataStream):
         # Populate
         r["interfaces"] = [
             ManagedObjectDataStream._get_interface(
-                i, subs[i["_id"]], links[i["_id"]], ifcache, set(mo.data.uplinks), services
+                i, subs[i["_id"]], links[i["_id"]], ifcache, set(mo.uplinks), services
             )
             for i in interfaces
         ]
