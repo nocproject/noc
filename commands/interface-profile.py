@@ -15,7 +15,6 @@ from noc.core.mongo.connection import connect
 from noc.main.models.label import Label
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.text import alnum_key
 
@@ -39,25 +38,7 @@ class Command(BaseCommand):
             default=False,
             help="Set not matched profile to default",
         )
-        apply_parser.add_argument(
-            "--use-classification-rule",
-            action="store_true",
-            default=False,
-            help="Use InterfaceClassification Rule for works",
-        )
         apply_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
-        apply_confdb_parser = subparsers.add_parser(
-            "apply-confdb", help="Apply ConfDB classification rules"
-        )
-        apply_confdb_parser.add_argument(
-            "--reset-default",
-            action="store_true",
-            default=False,
-            help="Set not matched profile to default",
-        )
-        apply_confdb_parser.add_argument(
-            "mos", nargs=argparse.REMAINDER, help="List of object to showing"
-        )
 
     def handle(self, cmd, *args, **options):
         connect()
@@ -123,66 +104,11 @@ class Command(BaseCommand):
                     i.profile = InterfaceProfile.get_default_profile()
                     i.save()
 
-    def handle_apply_confdb(self, moo, *args, **kwargs):
-        default_profile = InterfaceProfile.get_default_profile()
-        for o in self.get_objects(moo):
-            self.stdout.write(
-                "%s (%s):\n" % (o.name, o.platform.name if o.platform else o.profile.name)
-            )
-            ifmap = {i.name: i for i in self.get_interfaces(o)}
-            if not ifmap:
-                self.stdout.write("No ifaces on object\n")
-                continue
-            tps = self.get_interface_template(ifmap.values())
-            proccessed = set()
-            selectors_skipping = set()  # if selectors has not match
-            cdb = o.get_confdb()
-            ifprofilemap = {}
-            for icr in InterfaceClassificationRule.objects.filter(is_active=True).order_by("order"):
-                if icr.selector.id in selectors_skipping:
-                    continue
-                r = next(cdb.query(icr.selector.get_confdb_query), None)
-                if r is None:
-                    # Selectors already fail check
-                    selectors_skipping.add(icr.selector.id)
-                    continue
-                self.print("[%s] Check selector" % icr)
-                for match in cdb.query(icr.get_confdb_query):
-                    if match["ifname"] in proccessed or match["ifname"] not in ifmap:
-                        continue
-                    self.print("[%s] Match %s" % (icr, match["ifname"]))
-                    iface = ifmap[match["ifname"]]
-                    proccessed.add(match["ifname"])
-                    if iface.profile_locked:
-                        continue
-                    ifprofilemap[iface.name] = icr.profile
-            # Set profile
-            for ifname in ifmap:
-                i = ifmap[ifname]
-                if ifname in ifprofilemap and i.profile.id != ifprofilemap[ifname].id:
-                    i.profile = ifprofilemap[ifname]
-                    i.save()
-                    v = "Set %s" % ifprofilemap[ifname].name
-                elif ifname in ifprofilemap and i.profile.id == ifprofilemap[ifname].id:
-                    v = "Already set %s" % ifprofilemap[ifname].name
-                else:
-                    v = "Not matched"
-                    if kwargs.get("reset_default") and i.profile != default_profile:
-                        i.profile = default_profile
-                        i.save()
-                        v = "Not matched. Reset to default"
-                self.show_interface(tps, i, v)
-
     def handle_apply(self, moo, *args, **kwargs):
         # sol = config.get("interface_discovery", "get_interface_profile")
         # @todo Classification pyrule
         default_profile = InterfaceProfile.get_default_profile()
-        if kwargs.get("use_classification_rule"):
-            get_profile = InterfaceClassificationRule
-            get_profile = get_profile.get_classificator()
-            # raise CommandError("No classification solution")
-        else:
-            get_profile = partial(Label.get_instance_profile, InterfaceProfile)
+        get_profile = partial(Label.get_instance_profile, InterfaceProfile)
         pcache = {}
         for o in self.get_objects(moo):
             self.stdout.write(

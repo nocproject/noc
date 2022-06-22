@@ -161,7 +161,6 @@ _MODELS = {
     "inv.ForwardingInstance": "noc.inv.models.forwardinginstance.ForwardingInstance",
     "inv.IfDescPatterns": "noc.inv.models.ifdescpatterns.IfDescPatterns",
     "inv.Interface": "noc.inv.models.interface.Interface",
-    "inv.InterfaceClassificationRule": "noc.inv.models.interfaceclassificationrule.InterfaceClassificationRule",
     "inv.InterfaceProfile": "noc.inv.models.interfaceprofile.InterfaceProfile",
     "inv.Link": "noc.inv.models.link.Link",
     "inv.MACBlacklist": "noc.inv.models.macblacklist.MACBlacklist",

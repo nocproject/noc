@@ -45,7 +45,6 @@ id_lock = Lock()
 @on_delete
 @on_delete_check(
     check=[
-        ("inv.InterfaceClassificationRule", "selector"),
         ("sa.ManagedObjectSelectorByAttribute", "selector"),
     ]
 )

@@ -19,7 +19,6 @@ from noc.core.translation import ugettext as _
 
 @on_delete_check(
     check=[
-        # ("inv.InterfaceClassificationMatch", "prefix_table"),
         ("sa.ManagedObjectSelector", "filter_prefix"),
         ("main.Label", "match_prefixfilter.prefix_table"),
     ],
