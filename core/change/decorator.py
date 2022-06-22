@@ -71,8 +71,6 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         nv = getattr(document, field_name)
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
-        if str(ov) == str(nv):
-            return None
         if isinstance(ov, list):
             # Embedded document
             ov = [str(x) for x in ov]
@@ -82,14 +80,11 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
 
     model_id = get_model_id(document)
     op = "create" if created else "update"
-    #  changed_fields = list(document._changed_fields if not created else [])
-    changed_fields = [
-        res
-        for res in [
-            get_changed(f_name) for f_name in (document._changed_fields if not created else [])
-        ]
-        if res
-    ]
+    changed_fields = []
+    for f_name in document._changed_fields if not created else []:
+        cf = get_changed(f_name)
+        if cf:
+            changed_fields.append(cf)
     logger.debug("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
     change_tracker.register(
         op=op,
@@ -142,11 +137,10 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
     if hasattr(instance, "get_changed_instance"):
         instance = instance.get_changed_instance()
     else:
-        changed_fields = [
-            res
-            for res in [get_changed(f_name) for f_name in getattr(instance, "initial_data", [])]
-            if res
-        ]
+        for f_name in getattr(instance, "initial_data", []):
+            cf = get_changed(f_name)
+            if cf:
+                changed_fields.append(cf)
     # Register change
     model_id = get_model_id(instance)
     op = "create" if created else "update"
