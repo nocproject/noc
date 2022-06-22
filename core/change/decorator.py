@@ -75,11 +75,11 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
             # Embedded document
             ov = [str(x) for x in ov]
         else:
-            str(ov)
+            ov = str(ov)
         if isinstance(nv, list):
             nv = [str(x) for x in nv]
         else:
-            str(nv)
+            nv = str(nv)
         return {"field": field_name, "old": ov, "new": nv}
 
     model_id = get_model_id(document)
