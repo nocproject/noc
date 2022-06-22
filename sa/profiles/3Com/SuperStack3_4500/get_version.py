@@ -23,11 +23,14 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_version2 = re.compile(
-        r"^Switch (?P<platform>\S+).+Software Version 3Com OS (?P<version>.+)$",
+        r"Switch (?P<platform>\S+).+Software Version 3Com OS (?P<version>.+)$",
         re.MULTILINE,
     )
     rx_dev = re.compile(
         r"0\s+0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)", re.MULTILINE
+    )
+    rx_dev2 = re.compile(
+        r"0\s+\d+\s+(?P<hardware>\S+)\s+\S+\s+\S+\s+(?P<bootprom>\S+)", re.MULTILINE
     )
     rx_serial = re.compile(r"^\s+Product serial number: (?P<serial>\S)\s+\n", re.MULTILINE)
 
@@ -38,6 +41,8 @@ class Script(BaseScript):
             match = self.rx_version2.search(v)
         v = self.cli("display device", cached=True)
         match1 = self.rx_dev.search(v)
+        if not match1:
+            match1 = self.rx_dev2.search(v)
         r = {
             "vendor": "3Com",
             "platform": match.group("platform"),

@@ -19,7 +19,9 @@ class Script(BaseScript):
     cache = True
 
     rx_mac = re.compile(
-        r"(?:Hardware address is|First mac address\s+:) (?P<mac>\S+)\s*$", re.MULTILINE
+        r"(?:Hardware address is|First mac address\s+:|MAC_ADDRESS\s+:|Hardware Address:) "
+        r"(?P<mac>\S+)\s*$",
+        re.MULTILINE,
     )
 
     def execute_cli(self):
