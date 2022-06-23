@@ -428,9 +428,11 @@ class Script(BaseScript):
                         return "ESP", self.slot_id, pid + "-ESP"
                 return "MOTHERBOARD", self.slot_id, pid
         elif (
-            pid.startswith("WS-X64")
-            or pid.startswith("WS-X67")
+            pid.startswith("WS-X61")
+            or pid.startswith("WS-X63")
+            or pid.startswith("WS-X64")
             or pid.startswith("WS-X65")
+            or pid.startswith("WS-X67")
             or pid.startswith("WS-X68")
             or pid.startswith("WS-X69")
             or pid.startswith("WS-X49")
