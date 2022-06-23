@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # alarm datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.utils import get_alarm
 from noc.main.models.label import Label
 from noc.core.comp import smart_bytes
-from noc.core.mx import MX_PROFILE_ID
+from noc.core.mx import MX_LABELS, MX_PROFILE_ID, MX_ADMINISTRATIVE_DOMAIN_ID, MX_H_VALUE_SPLITTER
 
 
 class AlarmDataStream(DataStream):
@@ -35,6 +35,9 @@ class AlarmDataStream(DataStream):
             raise KeyError()
         r = {
             "id": str(alarm.id),
+            "$version": 1,
+            cls.F_LABELS_META: alarm.managed_object.effective_labels,
+            cls.F_ADM_DOMAIN_META: alarm.managed_object.administrative_domain.id,
             "timestamp": cls.qs(alarm.timestamp),
             "severity": alarm.severity,
             "reopens": alarm.reopens,
@@ -164,4 +167,6 @@ class AlarmDataStream(DataStream):
     def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
         return {
             MX_PROFILE_ID: smart_bytes(data["managed_object"]["object_profile"]["id"]),
+            MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(data[cls.F_ADM_DOMAIN_META]),
+            MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(data[cls.F_LABELS_META])),
         }

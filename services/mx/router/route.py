@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Route
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,8 +11,9 @@ from typing import Tuple, Dict, List, DefaultDict, Iterator
 
 # NOC modules
 from noc.core.liftbridge.message import Message
-from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import smart_bytes
+from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.main.models.messageroute import MessageRoute
 from .action import Action
 from .transmute import Transmutation
 
@@ -31,12 +32,16 @@ class Route(object):
         :param msg:
         :return:
         """
-        return eval(self.match_co, {"headers": msg.headers})
+        headers = msg.headers
+        if MX_LABELS in headers:
+            headers[MX_LABELS] = headers[MX_LABELS].split(smart_bytes(MX_H_VALUE_SPLITTER))
+        return eval(self.match_co, {"headers": headers})
 
     def iter_transmute(self, headers: Dict[str, bytes], data: bytes) -> Iterator[bytes]:
         """
         Transmute message body and apply all the transformations
-        :param msg:
+        :param headers:
+        :param data:
         :return:
         """
 

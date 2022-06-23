@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # mx utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,16 +27,28 @@ MX_TO = "To"
 MX_CHANGE_ID = "Change-Id"
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
+MX_LABELS = "Labels-List"
+MX_H_VALUE_SPLITTER = ";"
 # Available message types
 MESSAGE_TYPES = {"alarm", "managedobject", "reboot", "metrics", "notification"}
-MESSAGE_HEADERS = {MX_SHARDING_KEY, MX_TO, MX_CHANGE_ID, MX_ADMINISTRATIVE_DOMAIN_ID, MX_PROFILE_ID}
+MESSAGE_HEADERS = {
+    MX_SHARDING_KEY,
+    MX_TO,
+    MX_CHANGE_ID,
+    MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_PROFILE_ID,
+    MX_LABELS,
+}
 
 _mx_partitions: Optional[int] = None
 _mx_lock = Lock()
 
 
 def send_message(
-    data: Any, message_type: str, headers: Optional[Dict[str, bytes]], sharding_key: int = 0
+    data: Any,
+    message_type: str,
+    headers: Optional[Dict[str, bytes]],
+    sharding_key: int = 0,
 ):
     """
     Build message and schedule to send to mx service
