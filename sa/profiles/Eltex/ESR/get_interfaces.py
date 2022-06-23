@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Eltex.ESR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "Eltex.ESR.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface = re.compile(r"Interface\s+(?P<iface>\S+)")
+    rx_iface = re.compile(r"Interface:?\s+(?P<iface>\S+)")
 
     types = {"gi": "physical", "te": "physical", "po": "aggregated", "br": "SVI"}
 
