@@ -87,7 +87,6 @@ class InterfaceProfileMetrics(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("inv.Interface", "profile"),
-        ("inv.InterfaceClassificationRule", "profile"),
         ("inv.SubInterface", "profile"),
         ("sa.ServiceProfile", "interface_profile"),
     ]
