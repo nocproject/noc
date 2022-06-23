@@ -37,7 +37,7 @@ DEFAULT_TTSYSTEM_SHARD = "default"
 
 @Label.match_labels("ttsystem", allowed_op={"="})
 @on_delete_check(
-    check=[("sa.ManagedObject", "tt_system"), ("sa.ManagedObjectSelector", "filter_tt_system")],
+    check=[("sa.ManagedObject", "tt_system")],
     clean_lazy_labels="ttsystem",
 )
 class TTSystem(Document):

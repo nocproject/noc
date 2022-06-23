@@ -21,7 +21,6 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.profile import Profile
 from noc.sa.models.cpestatus import CPEStatus
 from noc.inv.models.capability import Capability
@@ -265,14 +264,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 del q["administrative_domain"]
         else:
             ad = None
-        if "selector" in q:
-            s = self.get_object_or_404(ManagedObjectSelector, id=int(q["selector"]))
-            del q["selector"]
-        else:
-            s = None
         r = super().cleaned_query(q)
-        if s:
-            r["id__in"] = ManagedObject.objects.filter(s.Q)
         if ad:
             r["administrative_domain__in"] = ad
         if geoaddr:
@@ -288,9 +280,6 @@ class ManagedObjectApplication(ExtModelApplication):
                         "id", flat=True
                     )
                 )
-            # Intersect with selector expression
-            if "id__in" in r:
-                addr_mo &= set(r["id__in"])
             r["id__in"] = list(addr_mo)
         return r
 

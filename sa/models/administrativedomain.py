@@ -44,7 +44,6 @@ _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
         # ("fm.EscalationItem", "administrative_domain"),
         ("sa.GroupAccess", "administrative_domain"),
         ("sa.ManagedObject", "administrative_domain"),
-        ("sa.ManagedObjectSelector", "filter_administrative_domain"),
         ("sa.UserAccess", "administrative_domain"),
         ("sa.AdministrativeDomain", "parent"),
         ("maintenance.Maintenance", "administrative_domain"),
