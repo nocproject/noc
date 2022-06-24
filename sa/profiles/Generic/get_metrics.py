@@ -625,7 +625,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         value=float(value),
                         scale=self.SENSOR_OID_SCALE.get(m.oid, 1),
                     )
-                    print(f"OID: {m.oid}, Scale: {self.SENSOR_OID_SCALE.get(m.oid, 1)}")
                 except Exception:
                     continue
 
