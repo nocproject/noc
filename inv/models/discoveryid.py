@@ -116,7 +116,7 @@ class DiscoveryID(Document):
             old_macs = set(m.first_mac for m in o.chassis_mac)
             o.chassis_mac = ranges
             o.hostname = hostname
-            o.hostname_id = hostname.lower()
+            o.hostname_id = hostname.lower() if hostname else None
             o.router_id = router_id
             old_macs -= set(m.first_mac for m in o.chassis_mac)
             if old_macs:
