@@ -65,6 +65,7 @@ class MData(object):
         "labels",
         "value",
         "scale",
+        "units",
         "type",
         "abs_value",
         "label",
@@ -79,6 +80,7 @@ class MData(object):
         labels=None,
         value=None,
         scale=None,
+        units=None,
         type=None,
         abs_value=None,
     ):
@@ -88,6 +90,7 @@ class MData(object):
         self.labels = labels
         self.value = value
         self.scale = scale
+        self.units = units
         self.type = type
         self.abs_value = abs_value
         if labels:
