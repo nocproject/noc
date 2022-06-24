@@ -18,4 +18,4 @@ class PlatformRule(OIDRule):
         obj = ver.split(".")[-1]
         oid = mib[self.expand(self.oid, {"platform": obj, "ifIndex": cfg.ifindex})]
         if oid:
-            yield oid, self.type, self.scale, cfg.labels
+            yield oid, self.type, self.scale, self.units, cfg.labels

@@ -6,19 +6,22 @@
       "$match": "is_gpon_ports",
       "$type": "gponports",
       "oid": "{{ oid_prifix }}.{{ ifindex }}",
-      "type": "counter"
+      "type": "counter",
+      "units": "pkt"
     },
     {
   "$type": "hires",
   "hires": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifHCInUcastPkts..{{ ifIndex }}",
-    "type": "counter"
+    "type": "counter",
+    "units": "pkt"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifInUcastPkts.{{ ifIndex }}",
-    "type": "counter"
+    "type": "counter",
+    "units": "pkt"
   }
 }]
 }

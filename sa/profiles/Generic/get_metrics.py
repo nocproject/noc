@@ -56,14 +56,15 @@ class MetricConfig(object):
 
 
 class BatchConfig(object):
-    __slots__ = ("id", "metric", "labels", "type", "scale")
+    __slots__ = ("id", "metric", "labels", "type", "scale", "units")
 
-    def __init__(self, id, metric, labels, type, scale):
+    def __init__(self, id, metric, labels, type, scale, units):
         self.id: int = id
         self.metric: str = metric
         self.labels: List[str] = labels
         self.type: str = type
         self.scale = scale
+        self.units = units
 
 
 # Internal sequence number for @metrics decorator ordering
@@ -399,9 +400,16 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         :return:
         """
         for m in self.metric_configs[metric]:
-            for oid, vtype, scale, labels in rule.iter_oids(self, m):
+            for oid, vtype, scale, units, labels in rule.iter_oids(self, m):
                 self.snmp_batch[oid] += [
-                    BatchConfig(id=m.id, metric=m.metric, labels=labels, type=vtype, scale=scale)
+                    BatchConfig(
+                        id=m.id,
+                        metric=m.metric,
+                        labels=labels,
+                        type=vtype,
+                        scale=scale,
+                        units=units,
+                    )
                 ]
                 # Mark as seen to stop further processing
                 self.seen_ids.add(m.id)
@@ -474,6 +482,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     labels=bv.labels,
                     type=bv.type,
                     scale=bv.scale,
+                    units=bv.units,
                 )
 
     def get_ifindex(self, name):
@@ -489,13 +498,14 @@ class Script(BaseScript, metaclass=MetricScriptBase):
 
     def set_metric(
         self,
-        id: Union[int, Tuple[str, None]],
+        id: Union[int, Tuple[str, Optional[List[str]]]],
         metric: str = None,
         value: Union[int, float] = 0,
         ts: Optional[int] = None,
         labels: Optional[Union[List[str], Tuple[str]]] = None,
         type: str = "gauge",
         scale: Union[float, int, Callable] = 1,
+        units: str = "1",
         multi: bool = False,
     ):
         """
@@ -518,6 +528,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             "bool"
         :param scale: Metric scale (Multiplier to be applied after all processing).
             When callable, function will be called, passing value as positional argument
+        :param units: Metric MeasurementUnit code. Default - Scalar
+            Possible values from menu: Performance Management -> Setup -> Measurement Unit
         :param multi: True if single request can return several different labels.
             When False - only first call with composite labels for same labels will be returned
         """
@@ -552,6 +564,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "labels": labels or [],
                 "value": value,
                 "type": type,
+                "units": units,
                 "scale": scale,
             }
         ]
@@ -612,6 +625,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         value=float(value),
                         scale=self.SENSOR_OID_SCALE.get(m.oid, 1),
                     )
+                    print(f"OID: {m.oid}, Scale: {self.SENSOR_OID_SCALE.get(m.oid, 1)}")
                 except Exception:
                     continue
 

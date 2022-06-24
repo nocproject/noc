@@ -54,4 +54,4 @@ class SlotRule(OIDRule):
                     ]
                 )
                 if oid:
-                    yield oid, self.type, self.scale, labels
+                    yield oid, self.type, self.scale, self.units, labels

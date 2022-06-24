@@ -4,11 +4,13 @@
   "hires": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifHCInOctets.{{ ifIndex }}",
-    "type": "delta"
+    "type": "delta",
+    "units": "byte"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifInOctets.{{ ifIndex }}",
-    "type": "delta"
+    "type": "delta",
+    "units": "byte"
   }
 }

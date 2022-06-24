@@ -28,4 +28,4 @@ class CapabilityIndexRule(OIDRule):
             for i in range(self.start, script.capabilities[self.capability] + self.start):
                 oid = self.expand_oid(index=i)
                 if oid:
-                    yield oid, self.type, self.scale, cfg.labels
+                    yield oid, self.type, self.scale, self.units, cfg.labels

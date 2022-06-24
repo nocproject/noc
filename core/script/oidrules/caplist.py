@@ -53,9 +53,9 @@ class CapabilityListRule(OIDRule):
                         labels = self.labels[:]
                         labels[self.labels.index(item)] = item.replace("item", i)
                 if oid:
-                    yield oid, self.type, self.scale, labels
+                    yield oid, self.type, self.scale, self.units, labels
         else:
             if self.default is not None:
                 oid = self.expand_oid(item=self.default)
                 if oid:
-                    yield oid, self.type, self.scale, cfg.labels
+                    yield oid, self.type, self.scale, self.units, cfg.labels

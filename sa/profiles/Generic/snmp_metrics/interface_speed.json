@@ -5,11 +5,13 @@
     "$type": "ifindex",
     "oid": "IF-MIB::ifHighSpeed.{{ ifIndex }}",
     "type": "gauge",
-    "scale": 1000000
+    "scale": 1000000,
+    "units": "bit/s"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifSpeed.{{ ifIndex }}",
-    "type": "gauge"
+    "type": "gauge",
+    "units": "bit/s"
   }
 }
