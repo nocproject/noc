@@ -201,7 +201,6 @@ _MODELS = {
     "sa.ManagedObject": "noc.sa.models.managedobject.ManagedObject",
     "sa.ManagedObjectAttribute": "noc.sa.models.managedobject.ManagedObjectAttribute",
     "sa.ManagedObjectProfile": "noc.sa.models.managedobjectprofile.ManagedObjectProfile",
-    "sa.ManagedObjectSelectorByAttribute": "noc.sa.models.managedobjectselector.ManagedObjectSelectorByAttribute",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
     "sa.ObjectStatus": "noc.sa.models.objectstatus.ObjectStatus",
     "sa.Profile": "noc.sa.models.profile.Profile",
