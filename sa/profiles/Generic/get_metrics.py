@@ -365,6 +365,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 return False
             if f.mt_matcher and not getattr(self, f.mt_matcher, False):
                 return False
+            if f.mt_access == "S" and not self.has_snmp():
+                return False
             return True
 
         pref = self.get_access_preference()
