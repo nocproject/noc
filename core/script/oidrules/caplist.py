@@ -24,13 +24,14 @@ class CapabilityListRule(OIDRule):
         oid,
         type=None,
         scale=1,
+        units="1",
         capability=None,
         separator=",",
         strip=True,
         default=None,
         labels=None,
     ):
-        super().__init__(oid, type=type, scale=scale)
+        super().__init__(oid, type=type, scale=scale, units=units)
         self.capability = capability
         self.separator = separator
         self.strip = strip

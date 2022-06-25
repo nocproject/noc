@@ -18,8 +18,8 @@ class CapabilityIndexRule(OIDRule):
 
     name = "capindex"
 
-    def __init__(self, oid, type=None, scale=1, start=0, capability=None):
-        super().__init__(oid, type=type, scale=scale)
+    def __init__(self, oid, type=None, scale=1, units="1", start=0, capability=None):
+        super().__init__(oid, type=type, scale=scale, units=units)
         self.start = start
         self.capability = capability
 
