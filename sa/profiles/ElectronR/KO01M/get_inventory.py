@@ -44,6 +44,7 @@ class Script(BaseScript):
                     "status": True,
                     "description": f"Цифровой вход номер {i}",
                     "measurement": "Scalar",
+                    "labels": ["noc::sensor::placement::external"],
                     "snmp_oid": f"1.3.6.1.4.1.35419.20.1.{100 + i}.0",
                 }
             ]

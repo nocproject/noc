@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python Modules
-from typing import Dict
+from typing import Dict, List
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Generic.get_inventory"
     interface = IGetInventory
 
-    def get_sensor_labels(self) -> Dict[str, str]:
+    def get_sensor_labels(self) -> Dict[str, List[str]]:
         """
         For customizing. Return map sensor_name -> label.
         For sensor classification
@@ -62,9 +62,9 @@ class Script(BaseScript):
             return chassis
         for ss in sensors:
             if ss["name"] in sensor_labels and "labels" in ss:
-                ss["labels"] += [sensor_labels[ss["name"]]]
+                ss["labels"] += sensor_labels[ss["name"]]
             elif ss["name"] in sensor_labels and "labels" not in ss:
-                ss["labels"] = [sensor_labels[ss["name"]]]
+                ss["labels"] = sensor_labels[ss["name"]]
         return chassis
 
     def execute_snmp(self):
