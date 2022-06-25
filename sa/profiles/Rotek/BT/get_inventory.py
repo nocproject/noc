@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Rotek.BT.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,8 +14,7 @@ class Script(BaseScript):
     name = "Rotek.BT.get_inventory"
     interface = IGetInventory
 
-    @staticmethod
-    def get_chassis_sensors():
+    def get_chassis_sensors_default(self):
         r = [
             # In
             {
@@ -80,7 +79,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Дверь",
                 "measurement": "StatusEnum",
-                "labels": ["noc::sensor::placement::external"],
+                "labels": [
+                    "noc::sensor::placement::external",
+                    "noc::sensor::mode::flag",
+                    "noc::sensor::target::door",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.1.0",
             },
             # v230
@@ -89,6 +92,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Флаг наличия сетевого напряжения AC 230В",
                 "measurement": "StatusEnum",
+                "labels": [
+                    "noc::sensor::placement::external",
+                    "noc::sensor::mode::flag",
+                    "noc::sensor::target::supply",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.9.0",
             },
         ]
@@ -114,7 +122,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Ток потребления нагрузки",
                 "measurement": "Ampere",
-                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::current"],
+                "labels": [
+                    "noc::sensor::placement::ups",
+                    "noc::sensor::mode::voltage",
+                    "noc::sensor::target::power_load",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.3.0",
             },
             {
@@ -122,7 +134,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "ИБП. Напряжение на АКБ",
                 "measurement": "Volt AC",
-                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::voltage"],
+                "labels": [
+                    "noc::sensor::placement::ups",
+                    "noc::sensor::mode::voltage",
+                    "noc::sensor::target::power_cell",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.6.0",
             },
             {
@@ -130,7 +146,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Ток заряда АКБ",
                 "measurement": "Ampere",
-                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::current"],
+                "labels": [
+                    "noc::sensor::placement::ups",
+                    "noc::sensor::mode::current",
+                    "noc::sensor::target::power_cell",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.5.0",
             },
         ]
@@ -144,6 +164,11 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Значение напряжения сети",
                         "measurement": "Volt AC",
+                        "labels": [
+                            "noc::sensor::placement::elmeter",
+                            "noc::sensor::mode::voltage",
+                            "noc::sensor::target::supply",
+                        ],
                         "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.13.2.0",
                     },
                     {
@@ -151,6 +176,11 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Значение потребляемого тока",
                         "measurement": "Ampere",
+                        "labels": [
+                            "noc::sensor::placement::elmeter",
+                            "noc::sensor::mode::current",
+                            "noc::sensor::target::power_load",
+                        ],
                         "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.13.3.0",
                     },
                     {
@@ -158,6 +188,11 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. Значение потребляемой мощности",
                         "measurement": "Watt",
+                        "labels": [
+                            "noc::sensor::placement::elmeter",
+                            "noc::sensor::mode::watt",
+                            "noc::sensor::target::power_load",
+                        ],
                         "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.13.10.0",
                     },
                     {
@@ -165,6 +200,11 @@ class Script(BaseScript):
                         "status": bool(v),
                         "description": "Электросчётчик. значение частоты сети",
                         "measurement": "Hertz",
+                        "labels": [
+                            "noc::sensor::placement::elmeter",
+                            "noc::sensor::mode::freq",
+                            "noc::sensor::target::power_load",
+                        ],
                         "snmp_oid": "1.3.6.1.4.1.41752.911.10.1.13.9.0",
                     },
                 ]
@@ -177,17 +217,18 @@ class Script(BaseScript):
                                 "status": bool(v),
                                 "description": f"Электросчётчик. Суммарное значение потреблённой мощности по тарифу {num}",
                                 "measurement": "Kilowatt-hour",
+                                "labels": [
+                                    "noc::sensor::placement::elmeter",
+                                    "noc::sensor::mode::kwh",
+                                    "noc::sensor::target::power_load",
+                                ],
                                 "snmp_oid": f"1.3.6.1.4.1.41752.911.10.1.13.{4 + num}.0",
                             }
                         ]
         return r
 
-    def execute_snmp(self):
-        r = self.get_inv_from_version()
+    def get_chassis_sensors(self):
         if self.is_4250lsr:
-            sensors = self.get_chassis_sensors_4250lsr()
+            return self.get_chassis_sensors_4250lsr()
         else:
-            sensors = self.get_chassis_sensors()
-        if sensors:
-            r[0]["sensors"] = sensors
-        return r
+            return self.get_chassis_sensors_default()
