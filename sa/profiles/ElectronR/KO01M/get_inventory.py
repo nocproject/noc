@@ -30,6 +30,7 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Датчик числа импульсов",
                 "measurement": "Scalar",
+                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::counter"],
                 "snmp_oid": "1.3.6.1.4.1.35419.20.1.160.0",
             },
         ]
@@ -43,14 +44,8 @@ class Script(BaseScript):
                     "status": True,
                     "description": f"Цифровой вход номер {i}",
                     "measurement": "Scalar",
+                    "labels": ["noc::sensor::placement::external"],
                     "snmp_oid": f"1.3.6.1.4.1.35419.20.1.{100 + i}.0",
                 }
             ]
-        return r
-
-    def execute_snmp(self):
-        r = self.get_inv_from_version()
-        sensors = self.get_chassis_sensors()
-        if sensors:
-            r[0]["sensors"] = sensors
         return r
