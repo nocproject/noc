@@ -16,15 +16,18 @@ class Script(BaseScript):
 
     def execute_snmp(self):
 
-        interfaces = [
+        return [
             {
-                "type": "physical",
-                "name": "eth0",
-                "admin_status": True,
-                "oper_status": True,
-                "mac": self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0"),
-                "snmp_ifindex": 100,
-                "subinterfaces": [],
+                "interfaces": [
+                    {
+                        "type": "physical",
+                        "name": "eth0",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "mac": self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0"),
+                        "snmp_ifindex": 100,
+                        "subinterfaces": [],
+                    }
+                ]
             }
         ]
-        return [{"interfaces": interfaces}]

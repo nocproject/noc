@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -15,8 +15,4 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute_snmp(self):
-        # Try SNMP first
-        base = self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0")
-        if base:
-            return [{"first_chassis_mac": base, "last_chassis_mac": base}]
+    SNMP_GET_OIDS = {"SNMP": ["1.3.6.1.4.1.35419.1.1.6.0"]}
