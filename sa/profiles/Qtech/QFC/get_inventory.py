@@ -370,12 +370,13 @@ class Script(BaseScript):
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.24.0",
                 },
                 {
-                    "name": "ups_battery_capasity",
+                    "name": "ups_battery_state_of_charge",
                     "status": bool(v),
                     "description": "ИБП. Ёмкость батареи в %.",
                     "measurement": "Percent",
                     "labels": [
                         "noc::sensor::placement::ups",
+                        "noc::sensor::mode::soc",
                         "noc::sensor::target::power_cell",
                     ],
                     "snmp_oid": "1.3.6.1.4.1.27514.103.0.25.0",
