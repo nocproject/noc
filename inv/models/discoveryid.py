@@ -129,7 +129,7 @@ class DiscoveryID(Document):
                 object=object,
                 chassis_mac=ranges,
                 hostname=hostname,
-                hostname_id=hostname.lower(),
+                hostname_id=hostname.lower() if hostname else None,
                 router_id=router_id,
                 macs=macs,
             ).save()
