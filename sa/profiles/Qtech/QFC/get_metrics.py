@@ -6,9 +6,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 from noc.core.script.metrics import scale, invert0
-from noc.core.validators import is_float, is_int
 
 
 class Script(GetMetricsScript):
