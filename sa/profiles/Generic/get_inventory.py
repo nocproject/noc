@@ -62,7 +62,7 @@ class Script(BaseScript):
             return chassis
         for ss in sensors:
             if ss["name"] in sensor_labels and "labels" in ss:
-                ss["labels"] += sensor_labels[ss["name"]]
+                ss["labels"] = ss["labels"][:] + sensor_labels[ss["name"]]
             elif ss["name"] in sensor_labels and "labels" not in ss:
                 ss["labels"] = sensor_labels[ss["name"]]
         return chassis
