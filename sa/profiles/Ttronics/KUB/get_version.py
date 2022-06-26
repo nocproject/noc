@@ -18,9 +18,5 @@ class Script(BaseScript):
 
     def execute_snmp(self):
         o = self.snmp.get("1.3.6.1.2.1.1.1.0")
-        o = o.split()
-        platform = o[0]
-        version = o[1]
-        vendor = "Ttronics"
-        result = {"vendor": vendor, "version": version, "platform": platform}
-        return result
+        platform, version, _ = o.split(None, 2)
+        return {"vendor": "Ttronics", "version": version, "platform": platform}
