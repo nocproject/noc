@@ -32,28 +32,6 @@ class Profile(BaseProfile):
         "is_femto": {"platform": {"$regex": "FEMTO|Femto"}},
     }
 
-    SENSORS_TYPE = {3: 15, 4: 16, 5: 17, 6: 18}
-
-    SENSORS_TYPE2 = {1: "temperature", 26: "m206", 29: "ups"}
-
-    PORT_TYPE = {
-        0: "Вход по напряжению",
-        1: "Дискретный вход",
-        2: "Управляемый выход",
-        3: "Вход счетчика импульсов",
-        4: "Вход датчика вибрации",
-        26: "Вход сигнала Счетчика",
-        29: "Вход сигнала ИБП",
-    }
-
-    SENSOR_NAME = {
-        0: "voltage input",
-        1: "discrete input",
-        2: "controlled output",
-        3: "pulse sensor",
-        4: "vibration sensor",
-    }
-
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("1")
