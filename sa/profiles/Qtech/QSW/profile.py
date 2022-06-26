@@ -56,14 +56,14 @@ class Profile(BaseProfile):
 
     def convert_interface_name(self, s):
         """
-        >>> Profile().convert_interface_name("1/1")
-        'e1/1'
-        >>> Profile().convert_interface_name("e1/1")
-        'e1/1'
+        >>> Profile().convert_interface_name("Ethernet1/1")
+        'Ethernet1/1'
+        >>> Profile().convert_interface_name("1")
+        'Ethernet1/1'
         """
-        match = self.rx_ifname.search(s)
+        match = self.rx_ifname.match(s)
         if match:
-            return "e%s" % match.group("number")
+            return f"Ethernet1/%d" % int(match.group("number"))
         else:
             return s
 
