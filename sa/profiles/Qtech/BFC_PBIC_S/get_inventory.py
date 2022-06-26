@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.BFC_PBIC_S.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,11 @@ class Script(BaseScript):
     interface = IGetInventory
 
     femto_input_config_map = {
-        0: {"type": "in", "units": "StatusEnum", "labels": ["noc::sensor::placement::external"]},
+        0: {
+            "type": "in",
+            "units": "StatusEnum",
+            "labels": ["noc::sensor::placement::external", "noc::sensor::mode::flag"],
+        },
         1: {
             "type": "volt",
             "units": "Volt AC",
@@ -26,16 +30,20 @@ class Script(BaseScript):
             "units": "Scalar",
             "labels": ["noc::sensor::placement::external", "noc::sensor::mode::counter"],
         },
-        3: {"type": "vibration", "units": "Scalar", "labels": []},
+        3: {"type": "vibration", "units": "Scalar", "labels": ["noc::sensor::placement::internal"]},
         4: {
             "type": "impedance",
             "units": "Scalar",
             "labels": ["noc::sensor::placement::external", "noc::sensor::mode::impedance"],
         },
-        9: {"type": "ups", "units": "Scalar", "labels": ["noc::sensor::placement::ups"]},
+        9: {
+            "type": "ups",
+            "units": "Scalar",
+            "labels": ["noc::sensor::placement::ups", "noc::sensor::mode::flag"],
+        },
     }
 
-    def get_sensors(self):
+    def get_chassis_sensors(self):
         """
         0 - Дискретный;
         1 - Измерение напряжения;
@@ -80,11 +88,4 @@ class Script(BaseScript):
                     "snmp_oid": oid,
                 }
             ]
-        return r
-
-    def execute_snmp(self):
-        r = self.get_inv_from_version()
-        sensors = self.get_sensors()
-        if sensors:
-            r[0]["sensors"] = sensors
         return r

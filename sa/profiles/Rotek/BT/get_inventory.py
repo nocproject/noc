@@ -22,7 +22,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Дверь",
                 "measurement": "StatusEnum",
-                "labels": ["noc::sensor::placement::external"],
+                "labels": [
+                    "noc::sensor::placement::external",
+                    "noc::sensor::mode::flag",
+                    "noc::sensor::target::door",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.1.0",
             },
             # v230
@@ -31,6 +35,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Флаг наличия сетевого напряжения AC 230В",
                 "measurement": "StatusEnum",
+                "labels": [
+                    "noc::sensor::placement::external",
+                    "noc::sensor::mode::flag",
+                    "noc::sensor::target::supply",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.9.0",
             },
             # temp1
@@ -49,7 +58,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Ток потребления нагрузки",
                 "measurement": "Ampere",
-                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::current"],
+                "labels": [
+                    "noc::sensor::placement::ups",
+                    "noc::sensor::mode::voltage",
+                    "noc::sensor::target::power_load",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.3.0",
             },
             {
@@ -57,7 +70,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "ИБП. Напряжение на АКБ",
                 "measurement": "Volt AC",
-                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::voltage"],
+                "labels": [
+                    "noc::sensor::placement::ups",
+                    "noc::sensor::mode::voltage",
+                    "noc::sensor::target::power_cell",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.6.0",
             },
             {
@@ -65,7 +82,11 @@ class Script(BaseScript):
                 "status": True,
                 "description": "Ток заряда АКБ",
                 "measurement": "Ampere",
-                "labels": ["noc::sensor::placement::external", "noc::sensor::mode::current"],
+                "labels": [
+                    "noc::sensor::placement::ups",
+                    "noc::sensor::mode::current",
+                    "noc::sensor::target::power_cell",
+                ],
                 "snmp_oid": "1.3.6.1.4.1.41752.5.15.1.5.0",
             },
         ]
@@ -219,7 +240,7 @@ class Script(BaseScript):
                                 "measurement": "Kilowatt-hour",
                                 "labels": [
                                     "noc::sensor::placement::elmeter",
-                                    "noc::sensor::mode::kwh",
+                                    "noc::sensor::mode::counter",
                                     "noc::sensor::target::power_load",
                                 ],
                                 "snmp_oid": f"1.3.6.1.4.1.41752.911.10.1.13.{4 + num}.0",
