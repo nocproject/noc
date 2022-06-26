@@ -28,27 +28,6 @@ class Profile(BaseProfile):
     rx_sensor_name = re.compile(r"^\d+$")
     rx_discrete_name = re.compile(r"^\d+/\d+$")
 
-    PORT_TYPE = {
-        0: "Дискретный вход",
-        1: "Вход по напряжению",
-        2: "Вход счетчика импульсов",
-        3: "Вход датчика вибрации/удара",
-        4: "Вход по сопротивлению",
-        9: "Вход сигнала ИБП (Батарея разряжена)",
-        10: "Вход сигнала ИБП (Питание от сети)",
-    }
-
-    SENSOR_NAME = {
-        0: "discrete input",
-        1: "load",
-        2: "pulse",
-        3: "vibration/shock",
-        4: "resistance",
-        9: "battery",
-        10: "ups",
-        21: "temperature",
-    }
-
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("1")
