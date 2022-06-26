@@ -178,7 +178,7 @@ class Script(BaseScript):
                             "measurement": "Kilowatt-hour",
                             "labels": [
                                 "noc::sensor::placement::elmeter",
-                                "noc::sensor::mode::kwh",
+                                "noc::sensor::mode::counter",
                                 "noc::sensor::target::power_load",
                             ],
                             "snmp_oid": f"1.3.6.1.4.1.27514.102.0.{23 + 1}.0",
@@ -445,7 +445,7 @@ class Script(BaseScript):
                             "measurement": "Kilowatt-hour",
                             "labels": [
                                 "noc::sensor::placement::elmeter",
-                                "noc::sensor::mode::kwh",
+                                "noc::sensor::mode::counter",
                                 "noc::sensor::target::power_load",
                             ],
                             "snmp_oid": f"1.3.6.1.4.1.27514.103.0.{29 + num}.0",

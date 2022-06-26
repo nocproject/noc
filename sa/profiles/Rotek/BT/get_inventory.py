@@ -240,7 +240,7 @@ class Script(BaseScript):
                                 "measurement": "Kilowatt-hour",
                                 "labels": [
                                     "noc::sensor::placement::elmeter",
-                                    "noc::sensor::mode::kwh",
+                                    "noc::sensor::mode::counter",
                                     "noc::sensor::target::power_load",
                                 ],
                                 "snmp_oid": f"1.3.6.1.4.1.41752.911.10.1.13.{4 + num}.0",
