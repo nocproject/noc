@@ -42,7 +42,6 @@ id_lock = Lock()
         ("phone.PhoneNumber", "project"),
         ("phone.PhoneRange", "project"),
         ("sa.ManagedObject", "project"),
-        ("vc.VC", "project"),
         ("vc.VPN", "project"),
         ("vc.VLAN", "project"),
     ]

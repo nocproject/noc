@@ -34,7 +34,6 @@ from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.label import Label
 from noc.project.models.project import Project
-from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
@@ -113,7 +112,6 @@ class Interface(Document):
     #
     project = ForeignKeyField(Project)
     state = PlainReferenceField(State)
-    vc_domain = ForeignKeyField(VCDomain)
     # Current status
     admin_status = BooleanField(required=False)
     oper_status = BooleanField(required=False)
@@ -391,16 +389,6 @@ class Interface(Document):
         if self.type != "aggregated":
             raise ValueError("Cannot net LAG members for not-aggregated interface")
         return Interface.objects.filter(aggregated_interface=self.id)
-
-    @property
-    def effective_vc_domain(self):
-        if self.type in ("null", "tunnel", "other", "unknown"):
-            return None
-        if self.vc_domain:
-            return self.vc_domain
-        if self.managed_object.vc_domain:
-            return self.managed_object.vc_domain
-        return VCDomain.get_default()
 
     @property
     def status(self):

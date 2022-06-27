@@ -333,10 +333,6 @@ class ManagedObject(NOCModel):
         default="P",
     )
     #
-    vc_domain = ForeignKey(
-        "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True, on_delete=CASCADE
-    )
-    #
     l2_domain = DocumentReferenceField(L2Domain, null=True, blank=True)
     # CM
     config = GridVCSField("config")
@@ -2132,8 +2128,6 @@ class ManagedObject(NOCModel):
             )
         if instance.vrf:
             yield list(VRF.iter_lazy_labels(instance.vrf))
-        if instance.vc_domain:
-            yield list(VCDomain.iter_lazy_labels(instance.vc_domain))
         if instance.tt_system:
             yield list(TTSystem.iter_lazy_labels(instance.tt_system))
         if instance.version:
@@ -3106,5 +3100,4 @@ from .useraccess import UserAccess
 from .groupaccess import GroupAccess
 from .action import Action
 from noc.core.pm.utils import get_objects_metrics
-from noc.vc.models.vcdomain import VCDomain  # noqa
 from noc.ip.models.vrf import VRF

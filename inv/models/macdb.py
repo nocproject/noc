@@ -16,7 +16,6 @@ from mongoengine.fields import StringField, IntField, DateTimeField
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from .interface import Interface
 from noc.sa.models.managedobject import ManagedObject
-from noc.vc.models.vcdomain import VCDomain
 from .maclog import MACLog
 from noc.core.mac import MAC
 
@@ -34,7 +33,6 @@ class MACDB(Document):
     }
     # Todo: Add Validation
     mac = StringField()
-    vc_domain = ForeignKeyField(VCDomain, required=False)
     vlan = IntField()
     managed_object = ForeignKeyField(ManagedObject)
     interface = PlainReferenceField(Interface)

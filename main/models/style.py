@@ -33,8 +33,6 @@ id_lock = Lock()
         ("ip.AddressProfile", "style"),
         ("ip.PrefixProfile", "style"),
         ("ip.VRF", "style"),
-        ("vc.VC", "style"),
-        ("vc.VCDomain", "style"),
         ("vc.VPNProfile", "style"),
         ("fm.AlarmSeverity", "style"),
         ("fm.ActiveAlarm", "style"),
