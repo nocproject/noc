@@ -44,7 +44,7 @@ class SlotRule(OIDRule):
                     ]
                 else:
                     labels = [int(slotid.split(".")[1]) - 1, int(slotid.split(".")[2]) - 1, desc]
-                yield oid, self.type, self.scale, labels
+                yield oid, self.type, self.scale, self.units, labels
             elif desc.startswith("MIC:"):
                 # Only MS modules return values in this slot
                 continue
@@ -62,7 +62,7 @@ class SlotRule(OIDRule):
                     ]
                 else:
                     labels = [int(slotid.split(".")[1]) - 1, slotid.split(".")[2], desc]
-                yield oid, self.type, self.scale, labels
+                yield oid, self.type, self.scale, self.units, labels
             elif "Routing Engine" in desc:
                 if "CPU" in metric.metric or "Environment" in metric.metric:
                     if "Temperature" in metric.metric and "Environment" in metric.metric:
@@ -77,7 +77,7 @@ class SlotRule(OIDRule):
                     ]
                 else:
                     labels = [int(slotid.split(".")[1]), int(slotid.split(".")[2]), desc]
-                yield oid, self.type, self.scale, labels
+                yield oid, self.type, self.scale, self.units, labels
             else:
                 if "Environment" in metric.metric:
                     if "Temperature" in metric.metric:
@@ -90,4 +90,4 @@ class SlotRule(OIDRule):
                         if "Environment" in metric.metric
                         else f"noc::cpu::{desc}",
                     ]
-                    yield oid, self.type, self.scale, labels
+                    yield oid, self.type, self.scale, self.units, labels

@@ -25,7 +25,7 @@ class EnterpriseRule(OIDRule):
                 ]
                 labels = ["noc::cpu::"]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, labels
+                    yield tuple(gen), self.type, self.scale, self.units, labels
             else:
                 labels = ["noc::cpu::"]
                 gen = mib[
@@ -34,4 +34,4 @@ class EnterpriseRule(OIDRule):
                     )
                 ]
                 if gen:
-                    yield gen, self.type, self.scale, labels
+                    yield gen, self.type, self.scale, self.units, labels

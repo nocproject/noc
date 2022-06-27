@@ -2,5 +2,6 @@
   "$metric": "Interface | Errors | Out",
   "$type": "ifindex",
   "oid": "IF-MIB::ifOutErrors.{{ ifIndex }}",
-  "type": "counter"
+  "type": "counter",
+  "units": "pkt"
 }

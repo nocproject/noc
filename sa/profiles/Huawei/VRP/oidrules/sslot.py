@@ -35,7 +35,7 @@ class SSlotRule(OIDRule):
                     f"noc::cpu::CPU Slot {si}/{cp}",
                 ]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, labels
+                    yield tuple(gen), self.type, self.scale, self.units, labels
             else:
                 oid = mib[self.expand(self.oid, {"hwSlotIndex": r[(si, cp)]})]
                 labels = [
@@ -45,4 +45,4 @@ class SSlotRule(OIDRule):
                     f"noc::cpu::CPU Slot {si}/{cp}",
                 ]
                 if oid:
-                    yield oid, self.type, self.scale, labels
+                    yield oid, self.type, self.scale, self.units, labels

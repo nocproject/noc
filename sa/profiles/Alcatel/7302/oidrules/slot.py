@@ -79,8 +79,8 @@ class SlotRule(OIDRule):
             if self.is_complex:
                 gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, list(i)
+                    yield tuple(gen), self.type, self.scale, self.units, list(i)
             else:
                 oid = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
                 if oid:
-                    yield oid, self.type, self.scale, list(i)
+                    yield oid, self.type, self.scale, self.units, list(i)

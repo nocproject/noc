@@ -7,7 +7,8 @@
       "$type": "gponports",
       "oid": "{{ oid_prifix }}.{{ ifindex }}",
       "type": "counter",
-      "scale": 8
+      "scale": 8,
+      "units": "byte"
     },
     {
   "$type": "hires",
@@ -15,13 +16,15 @@
     "$type": "ifindex",
     "oid": "IF-MIB::ifHCInOctets.{{ ifIndex }}",
     "type": "counter",
-    "scale": 8
+    "scale": 8,
+    "units": "byte"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifInOctets.{{ ifIndex }}",
     "type": "counter",
-    "scale": 8
+    "scale": 8,
+    "units": "byte"
   }
 }]
 }

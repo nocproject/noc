@@ -22,13 +22,15 @@ class OIDRule(object):
 
     name = "oid"
     default_type = "gauge"
+    default_units = "1"
 
     _scale_locals = {}
 
-    def __init__(self, oid, type=None, scale=1, labels=None):
+    def __init__(self, oid, type=None, scale=1, units=None, labels=None):
         self.oid = oid
         self.is_complex = not isinstance(oid, str)
         self.type = type or self.default_type
+        self.units = units or self.default_units
         self.scale = self._convert_scale(scale)
         self.labels = labels or []
 
@@ -50,9 +52,9 @@ class OIDRule(object):
         :return:
         """
         if self.is_complex:
-            yield tuple(self.oid), self.type, self.scale, self.labels
+            yield tuple(self.oid), self.type, self.scale, self.units, self.labels
         else:
-            yield self.oid, self.type, self.scale, self.labels
+            yield self.oid, self.type, self.scale, self.units, self.labels
 
     @classmethod
     def from_json(cls, data):

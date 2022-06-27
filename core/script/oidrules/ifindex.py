@@ -20,4 +20,4 @@ class InterfaceRule(OIDRule):
         if cfg.ifindex is not None:
             oid = self.expand_oid(ifIndex=cfg.ifindex)
             if oid:
-                yield oid, self.type, self.scale, cfg.labels
+                yield oid, self.type, self.scale, self.units, cfg.labels
