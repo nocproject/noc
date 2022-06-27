@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # managedobject datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ from noc.inv.models.object import Object
 from noc.sa.models.service import Service
 from noc.core.text import alnum_key
 from noc.core.comp import smart_text, smart_bytes
-from noc.core.mx import MX_ADMINISTRATIVE_DOMAIN_ID, MX_PROFILE_ID
+from noc.core.mx import MX_ADMINISTRATIVE_DOMAIN_ID, MX_LABELS, MX_PROFILE_ID, MX_H_VALUE_SPLITTER
 
 
 def qs(s):
@@ -55,6 +55,8 @@ class ManagedObjectDataStream(DataStream):
         r = {
             "id": str(id),
             "$version": 1,
+            cls.F_LABELS_META: mo.effective_labels,
+            cls.F_ADM_DOMAIN_META: mo.administrative_domain.id,
             "bi_id": mo.bi_id,
             "name": qs(mo.name),
             "profile": qs(mo.profile.name),
@@ -484,6 +486,7 @@ class ManagedObjectDataStream(DataStream):
     @classmethod
     def get_msg_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
         return {
-            MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(data["administrative_domain"]["id"]),
+            MX_ADMINISTRATIVE_DOMAIN_ID: smart_bytes(data[cls.F_ADM_DOMAIN_META]),
+            MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(data[cls.F_LABELS_META])),
             MX_PROFILE_ID: smart_bytes(data["object_profile"]["id"]),
         }
