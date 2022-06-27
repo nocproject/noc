@@ -52,6 +52,8 @@ class DataStream(object):
     F_HASH = "hash"
     F_DATA = "data"
     F_META = "meta"
+    F_LABELS_META = "$meta_labels"
+    F_ADM_DOMAIN_META = "$meta_adm_domain"
     HASH_LEN = 16
 
     DEFAULT_LIMIT = 1000
@@ -244,9 +246,9 @@ class DataStream(object):
         obj_id = cls.clean_id(data["id"])
         if meta is None and "$meta" in data:
             meta = data.pop("$meta")
-        m_name = "%s_%s" % (cls.name, fmt) if fmt else cls.name
-        l_name = "%s|%s|%s" % (cls.name, obj_id, fmt) if fmt else "%s|%s" % (cls.name, obj_id)
-        metrics["ds_%s_updated" % m_name] += 1
+        m_name = f"{cls.name}_{fmt}" if fmt else cls.name
+        l_name = f"{cls.name}|{obj_id}|{fmt}" if fmt else f"{cls.name}|{obj_id}"
+        metrics[f"ds_{m_name}_updated"] += 1
         # Calculate hash
         hash = cls.get_hash(data)
         # Get existing object state
@@ -264,7 +266,7 @@ class DataStream(object):
             if not is_changed(doc, hash):
                 logger.info("[%s] Object hasn't been changed after altering", l_name)
                 return False  # Not changed after altering
-        metrics["ds_%s_changed" % m_name] += 1
+        metrics[f"ds_{m_name}_changed"] += 1
         change_id = bson.ObjectId()
         data["change_id"] = str(change_id)
         op = {
@@ -300,9 +302,10 @@ class DataStream(object):
         try:
             data = cls.get_object(obj_id)
             meta = cls.get_meta(data)
-            return data, meta
+            return cls.clean_meta_fields(data), meta
         except KeyError:
-            return cls.get_deleted_object(obj_id), None
+            data, meta = cls.get_deleted_object(obj_id), None
+            return cls.clean_meta_fields(data), meta
 
     @classmethod
     def update_object(cls, id, delete=False) -> bool:
@@ -688,3 +691,11 @@ class DataStream(object):
         )
         # Cleanup
         del data["$changeid"]
+
+    @classmethod
+    def clean_meta_fields(cls, data: Dict[str, Any]):
+        if cls.F_LABELS_META in data:
+            del data[cls.F_LABELS_META]
+        if cls.F_ADM_DOMAIN_META in data:
+            del data[cls.F_ADM_DOMAIN_META]
+        return data
