@@ -5,12 +5,14 @@
     "$type": "ifindex",
     "oid": "IF-MIB::ifHCOutOctets.{{ ifIndex }}",
     "type": "counter",
-    "scale": 8
+    "scale": 8,
+    "units": "byte"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifOutOctets.{{ ifIndex }}",
     "type": "counter",
-    "scale": 8
+    "scale": 8,
+    "units": "byte"
   }
 }

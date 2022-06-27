@@ -4,11 +4,13 @@
   "hires": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifHCInMulticastPkts.{{ ifIndex }}",
-    "type": "counter"
+    "type": "counter",
+    "units": "pkt"
   },
   "normal": {
     "$type": "ifindex",
     "oid": "IF-MIB::ifInMulticastPkts.{{ ifIndex }}",
-    "type": "counter"
+    "type": "counter",
+    "units": "pkt"
   }
 }

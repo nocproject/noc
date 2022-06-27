@@ -6,13 +6,15 @@
       "$match": "is_gpon_ports",
       "$type": "gponports",
       "oid": "{{ oid_prifix }}.{{ ifindex }}",
-      "type": "counter"
+      "type": "counter",
+      "units": "pkt"
     },
     {
   "$metric": "Interface | Errors | In",
   "$type": "ifindex",
   "oid": "IF-MIB::ifInErrors.{{ ifIndex }}",
-  "type": "counter"
+  "type": "counter",
+  "units": "pkt"
 }
 ]
 }

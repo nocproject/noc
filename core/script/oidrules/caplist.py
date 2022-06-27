@@ -24,13 +24,14 @@ class CapabilityListRule(OIDRule):
         oid,
         type=None,
         scale=1,
+        units="1",
         capability=None,
         separator=",",
         strip=True,
         default=None,
         labels=None,
     ):
-        super().__init__(oid, type=type, scale=scale)
+        super().__init__(oid, type=type, scale=scale, units=units)
         self.capability = capability
         self.separator = separator
         self.strip = strip
@@ -53,9 +54,9 @@ class CapabilityListRule(OIDRule):
                         labels = self.labels[:]
                         labels[self.labels.index(item)] = item.replace("item", i)
                 if oid:
-                    yield oid, self.type, self.scale, labels
+                    yield oid, self.type, self.scale, self.units, labels
         else:
             if self.default is not None:
                 oid = self.expand_oid(item=self.default)
                 if oid:
-                    yield oid, self.type, self.scale, cfg.labels
+                    yield oid, self.type, self.scale, self.units, cfg.labels

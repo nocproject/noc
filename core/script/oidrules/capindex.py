@@ -18,8 +18,8 @@ class CapabilityIndexRule(OIDRule):
 
     name = "capindex"
 
-    def __init__(self, oid, type=None, scale=1, start=0, capability=None):
-        super().__init__(oid, type=type, scale=scale)
+    def __init__(self, oid, type=None, scale=1, units="1", start=0, capability=None):
+        super().__init__(oid, type=type, scale=scale, units=units)
         self.start = start
         self.capability = capability
 
@@ -28,4 +28,4 @@ class CapabilityIndexRule(OIDRule):
             for i in range(self.start, script.capabilities[self.capability] + self.start):
                 oid = self.expand_oid(index=i)
                 if oid:
-                    yield oid, self.type, self.scale, cfg.labels
+                    yield oid, self.type, self.scale, self.units, cfg.labels
