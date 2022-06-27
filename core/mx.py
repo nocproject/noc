@@ -27,7 +27,7 @@ MX_TO = "To"
 MX_CHANGE_ID = "Change-Id"
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
-MX_LABELS = "Labels-List"
+MX_LABELS = "Labels"
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
 MESSAGE_TYPES = {"alarm", "managedobject", "reboot", "metrics", "notification"}
