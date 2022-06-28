@@ -32,7 +32,7 @@
     src: "etc/logrotate.d/postgresql-common.j2"
     dest: "/etc/logrotate.d/postgresql-common"
   when:
-    - "'Linux' in ansible_system"
+    - has_svc_postgres is defined
   tags:
     - config
 
