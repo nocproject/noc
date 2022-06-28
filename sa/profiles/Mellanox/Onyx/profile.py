@@ -24,3 +24,9 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_disable_pager = "terminal length 999"
     config_volatile = [r"^## Generated at .+?\n"]
+
+    def convert_interface_name(self, s):
+        s = s.replace("Ethernet ", "Eth")
+        s = s.replace("port-channel ", "Po")
+        s = s.replace("Vlan ", "vlan")
+        return s
