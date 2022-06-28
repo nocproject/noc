@@ -41,9 +41,7 @@ class Script(BaseScript):
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [iface],
-                    "type": {"Dynamic": "D", "Static": "S"}[
-                        match.group("type")
-                    ],
+                    "type": {"Dynamic": "D", "Static": "S"}[match.group("type")],
                 }
             )
         return r
