@@ -52,4 +52,4 @@ class TrapServer(UDPServer):
         body = {"source": "SNMP Trap", "collector": config.pool}
         body.update(varbinds)
         body = {k: fm_escape(body[k]) for k in body}
-        self.service.register_message(cfg, ts, body)
+        self.service.register_message(cfg, ts, body, data, address[0])
