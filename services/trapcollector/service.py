@@ -32,12 +32,7 @@ from noc.core.mx import (
 )
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
-from noc.services.trapcollector.sourceconfig import (
-    SourceConfig,
-    ManagedObjectData,
-    AdministrativeDomainData,
-    RemoteSystemData,
-)
+from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
 
@@ -134,9 +129,9 @@ class TrapCollectorService(FastAPIService):
                             "vars": [
                                 {"oid": d, "value": data[d], "value_rest": ""}
                                 for d in data
-                                if data not in {"source", "collector"}
+                                if d not in {"source", "collector"}
                             ],
-                            "raw_pdu": base64.b64encode(raw_data),
+                            "raw_pdu": base64.b64encode(raw_data or b"").decode("utf-8"),
                         },
                     }
                 ),
@@ -144,7 +139,7 @@ class TrapCollectorService(FastAPIService):
                 partition=int(cfg.id) % n_partitions,
                 headers={
                     MX_MESSAGE_TYPE: b"snmptrap",
-                    MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(data["effective_labels"])),
+                    MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(cfg.effective_labels)),
                     MX_SHARDING_KEY: smart_bytes(cfg.id),
                 },
             )
