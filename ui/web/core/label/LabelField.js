@@ -23,6 +23,7 @@ Ext.define("NOC.core.label.LabelField", {
     queryMode: "remote",
     autoLoadOnValue: true,
     filterPickList: true,
+    filterProtected: true,
     forceSelection: true,
     createNewOnEnter: false,
     isTree: false,
@@ -123,7 +124,8 @@ Ext.define("NOC.core.label.LabelField", {
     },
 
     filterPicked: function(rec) {
-        return !this.valueCollection.contains(rec) && !rec.get("is_protected");
+        var me = this;
+        return !this.valueCollection.contains(rec) && !(rec.get("is_protected") && me.filterProtected);
     },
 
     onKeyDown: function(e) {
