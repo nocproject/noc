@@ -30,8 +30,14 @@ class Migration(BaseMigration):
             """
         )
         # VC Migration
-        l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
-        vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
+        # l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
+        l2domain_profile_id = self.mongo_db["vlanprofiles"].find_one(
+            {"name": "default"}, {"_id": 1}
+        )["_id"]
+        # vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
+        vlan_profile_id = self.mongo_db["l2domainprofiles"].find_one(
+            {"name": "default"}, {"_id": 1}
+        )["_id"]
         if vc_count:
             self.vc_migrate(l2domain_profile_id, vlan_profile_id)
         # VLAN Migration
