@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.reportalarmdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -85,7 +85,6 @@ class ReportAlarmDetailApplication(ExtApplication):
         "tt": _("TT"),
         "escalation_ts": _("ESCALATION_TS"),
         "location": _("LOCATION"),
-        "container_address": _("CONTAINER_ADDRESS"),
     }
 
     @view(

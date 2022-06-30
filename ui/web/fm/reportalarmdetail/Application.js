@@ -1,6 +1,6 @@
 // fm.reportalarmdetail application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2022 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.reportalarmdetail.Application");
@@ -187,7 +187,6 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             ["tt", __("TT"), true],
             ["escalation_ts", __("Escalation Time"), true],
             ["location", __("Location"), true],
-            ["container_address", __("Container Address"), false],
             ["container_0", __("Container (Level 1)"), false],
             ["container_1", __("Container (Level 2)"), false],
             ["container_2", __("Container (Level 3)"), false],
