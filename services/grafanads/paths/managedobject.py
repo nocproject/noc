@@ -50,7 +50,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
             obj
             and model_id == "sa.ManagedObject"
             and not user.is_superuser
-            and obj.administrative_domain not in UserAccess.get_domains(user)
+            and obj.administrative_domain.id not in UserAccess.get_domains(user)
         ):
             raise HTTPException(status_code=404, detail="Not Access to requested device")
         return obj.bi_id if obj else None
