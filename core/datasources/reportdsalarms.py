@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ReportDsAlarms datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -155,11 +155,6 @@ class ReportDsAlarms(BaseDataSource):
             FieldInfo(
                 name="location",
                 # label="LOCATION",
-                description="Месторасположение",
-            ),
-            FieldInfo(
-                name="container_address",
-                # label="CONTAINER_ADDRESS",
                 description="Месторасположение",
             ),
         ]
@@ -435,7 +430,6 @@ class ReportDsAlarms(BaseDataSource):
                 "maintenance": "Yes"
                 if "clear_timestamp" not in aa and aa["managed_object"] in maintenance
                 else "No",
-                "container_address": "",
             }
             for sp_name, sp_id in subscribers_profile:
                 dd = cls.items_to_dict(aa["total_subscribers"])
