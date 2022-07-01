@@ -38,7 +38,7 @@ class ResourceGroupApplication(ExtDocApplication):
     menu = [_("Resource Groups")]
     model = ResourceGroup
     glyph = "object-group"
-    query_fields = ["name"]
+    query_fields = ["name", "description"]
     query_condition = "icontains"
 
     @staticmethod
