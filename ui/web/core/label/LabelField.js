@@ -23,6 +23,7 @@ Ext.define("NOC.core.label.LabelField", {
     queryMode: "remote",
     autoLoadOnValue: true,
     filterPickList: true,
+    filterProtected: true,
     forceSelection: true,
     createNewOnEnter: false,
     isTree: false,
@@ -123,7 +124,7 @@ Ext.define("NOC.core.label.LabelField", {
     },
 
     filterPicked: function(rec) {
-        return !this.valueCollection.contains(rec) && !rec.get("is_protected");
+        return !this.valueCollection.contains(rec) && !(rec.get("is_protected") && this.filterProtected);
     },
 
     onKeyDown: function(e) {
@@ -149,10 +150,10 @@ Ext.define("NOC.core.label.LabelField", {
                         lastSelectionIndex = -1;
                     }
                     valueCollection.remove(Ext.Array.filter(selModel.getSelection(), function(el) {
-                        return !el.get("is_protected")
+                        return !el.get("is_protected") && me.filterProtected
                     }));
                 } else {
-                    if(!valueCollection.last().get("is_protected")) {
+                    if(!valueCollection.last().get("is_protected") && me.filterProtected) {
                         valueCollection.remove(valueCollection.last());
                     }
                 }
@@ -231,14 +232,14 @@ Ext.define("NOC.core.label.LabelField", {
                 '%}',
                 me.tipTpl ? '" data-qtip="{[this.getTip(values)]}">' : '">',
                 '<div class="' + me.tagItemTextCls + '">{[this.getItemLabel(values)]}</div>',
-                '<tpl if="!is_protected">',
+                '<tpl if="!is_protected || !this.filter_protected">',
                 '<div class="' + me.tagItemCloseCls + childElCls + '"></div>',
                 '</tpl>',
                 '</li>',
                 '</tpl>',
                 {
                     isProtected: function(rec) {
-                        return rec.get("is_protected");
+                        return rec.get("is_protected") && me.filterProtected;
                     },
                     isSelected: function(rec) {
                         return me.selectionModel.isSelected(rec);
@@ -250,6 +251,7 @@ Ext.define("NOC.core.label.LabelField", {
                     getTip: function(values) {
                         return Ext.String.htmlEncode(me.tipTpl.apply(values));
                     },
+                    filter_protected: me.filterProtected,
                     strict: true
                 }
             ]);

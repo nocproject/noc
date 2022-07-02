@@ -29,6 +29,7 @@ Ext.define("NOC.core.modelfilter.Label", {
                     width: me.width,
                     query: me.query_filter,
                     isTree: me.isTree,
+                    filterProtected: me.filterProtected,
                     treePickerWidth: me.treePickerWidth,
                     listeners: {
                         select: {

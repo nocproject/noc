@@ -200,6 +200,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             fieldLabel: __("Match Labels"),
                             allowBlank: true,
                             isTree: true,
+                            filterProtected: false,
                             pickerPosition: "down",
                             uiStyle: "extra",
                             query: {
@@ -212,6 +213,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             fieldLabel: __("Exclude Match Labels"),
                             allowBlank: true,
                             isTree: true,
+                            filterProtected: false,
                             pickerPosition: "down",
                             uiStyle: "extra",
                             query: {
