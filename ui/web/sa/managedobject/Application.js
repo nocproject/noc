@@ -1681,7 +1681,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         {
             title: __("By Labels"),
             name: "labels",
-            ftype: "label"
+            ftype: "label",
+            filterProtected: false
         }
     ],
     inlines:

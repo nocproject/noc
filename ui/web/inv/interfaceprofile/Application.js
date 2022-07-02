@@ -470,6 +470,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 fieldLabel: __("Match Labels"),
                                 allowBlank: false,
                                 isTree: true,
+                                filterProtected: false,
                                 pickerPosition: "down",
                                 uiStyle: "extra",
                                 query: {
@@ -505,6 +506,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
             lookup: "main.handler.LookupField",
             pickerPosition: "left",
             isTree: true,
+            filterProtected: false,
             treePickerWidth: 400,
             query_filter: {
                 "allow_matched": true
