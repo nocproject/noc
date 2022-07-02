@@ -232,7 +232,7 @@ Ext.define("NOC.core.label.LabelField", {
                 '%}',
                 me.tipTpl ? '" data-qtip="{[this.getTip(values)]}">' : '">',
                 '<div class="' + me.tagItemTextCls + '">{[this.getItemLabel(values)]}</div>',
-                '<tpl if="!is_protected || !this.filterProtected">',
+                '<tpl if="!is_protected || !this.filter_protected">',
                 '<div class="' + me.tagItemCloseCls + childElCls + '"></div>',
                 '</tpl>',
                 '</li>',
@@ -251,6 +251,7 @@ Ext.define("NOC.core.label.LabelField", {
                     getTip: function(values) {
                         return Ext.String.htmlEncode(me.tipTpl.apply(values));
                     },
+                    filter_protected: me.filterProtected,
                     strict: true
                 }
             ]);
