@@ -139,6 +139,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
                   fieldLabel: __("Match Labels"),
                   allowBlank: false,
                   isTree: true,
+                  filterProtected: false,
                   pickerPosition: "down",
                   uiStyle: "extra",
                   query: {
