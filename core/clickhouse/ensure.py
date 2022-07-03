@@ -25,6 +25,7 @@ def ensure_bi_models(connect=None):
         if not model:
             continue
         logger.info("Ensure table %s" % model._meta.db_table)
+        changed |= model.ensure_schema(connect=connect)
         changed |= model.ensure_table(connect=connect)
         changed |= model.ensure_views(connect=connect, changed=changed)
     return changed
