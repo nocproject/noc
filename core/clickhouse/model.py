@@ -8,7 +8,6 @@
 # Python modules
 import operator
 from time import perf_counter
-from typing import Optional, List
 
 # NOC modules
 from noc.config import config
@@ -18,7 +17,7 @@ from .fields import BaseField, MaterializedField, AggregatedField
 from .engines import ReplacingMergeTree, AggregatingMergeTree
 from .connect import ClickhouseClient, connection
 
-__all__ = ["Model", "NestedModel"]
+__all__ = ["Model", "NestedModel", "DictionaryModel", "ViewModel"]
 
 OLD_PM_SCHEMA_TABLE = "noc_old"
 
@@ -832,10 +831,12 @@ class ViewModel(Model, metaclass=ModelBase):
         return True
 
     @classmethod
-    def get_create_m_view_sql(cls):
+    def ensure_mv_trigger_view(cls,  connect=None):
+        mv_name = f"mv_{cls._get_raw_db_table()}"
+        connect.execute(post=f" DROP VIEW IF EXISTS {mv_name}")
         return "\n".join(
             [
-                f"CREATE MATERIALIZED VIEW IF NOT EXISTS mv_{cls._get_raw_db_table()} "
+                f"CREATE MATERIALIZED VIEW IF NOT EXISTS {mv_name}"
                 f"TO {cls._get_raw_db_table()} "
                 f"AS SELECT {cls.get_create_select_sql()}",
             ]
@@ -848,7 +849,7 @@ class ViewModel(Model, metaclass=ModelBase):
         table = cls._get_db_table()
         if changed or not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")
-            ch.execute(post=cls.get_create_m_view_sql())
+            cls.ensure_mv_trigger_view()
             ch.execute(post=cls.get_create_view_sql())
             return True
         return False
