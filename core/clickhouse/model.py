@@ -831,7 +831,7 @@ class ViewModel(Model, metaclass=ModelBase):
         return True
 
     @classmethod
-    def ensure_mv_trigger_view(cls,  connect=None):
+    def ensure_mv_trigger_view(cls, connect=None):
         mv_name = f"mv_{cls._get_raw_db_table()}"
         connect.execute(post=f" DROP VIEW IF EXISTS {mv_name}")
         return "\n".join(
