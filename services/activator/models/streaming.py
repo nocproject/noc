@@ -22,3 +22,17 @@ class StreamingConfig(object):
     format: Optional[str] = None
     # Optional data
     data: Optional[Dict[str, Any]] = None
+
+    def get_data(self):
+        r = {}
+        if not self.data:
+            return r
+        for key in self.data:
+            key1, *key2 = key.split(".", 1)
+            if key2 and key1 not in r:
+                r[key1] = {key2[0]: self.data[key]}
+            elif key2:
+                r[key1][key2[0]] = self.data[key]
+            else:
+                r[key1] = self.data[key]
+        return r

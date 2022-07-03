@@ -118,6 +118,12 @@ class ActivatorAPI(API):
         if s_config.format and hasattr(self, f"format_{s_config.format}"):
             h = getattr(self, f"format_{s_config.format}")
             result = h(result, s_config)
+        elif s_config.data and isinstance(result, dict):
+            result.update(s_config.get_data())
+        elif s_config.data and isinstance(result, list):
+            data = s_config.get_data()
+            for ss in result:
+                ss.update(data)
         return orjson.dumps(result)
 
     @staticmethod
