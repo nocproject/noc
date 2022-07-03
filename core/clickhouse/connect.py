@@ -97,7 +97,7 @@ class ClickhouseClient(object):
         :param to_table:
         :return:
         """
-        self.execute(post=f"RENAME TABLE {from_table} TO {to_table};")
+        self.execute(post=f"RENAME TABLE `{from_table}` TO `{to_table}`;")
 
 
 def connection(host=None, port=None, read_only=True):
