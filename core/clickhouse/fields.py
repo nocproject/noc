@@ -61,7 +61,7 @@ class BaseField(object):
         :return:
         """
         if self.low_cardinality:
-            return "LowCardinality(%s)" % self.db_type
+            return f"LowCardinality({self.db_type})"
         return self.db_type
 
     def get_displayed_type(self):
@@ -235,7 +235,7 @@ class ArrayField(BaseField):
         return [self.field_type.to_json(v) for v in value]
 
     def get_db_type(self, name=None):
-        return "Array(%s)" % self.field_type.get_db_type()
+        return f"Array({self.field_type.get_db_type()})"
 
     def get_displayed_type(self):
         return "Array(%s)" % self.field_type.get_db_type()
@@ -251,6 +251,12 @@ class MaterializedField(BaseField):
         super().__init__(description=description, low_cardinality=True)
         self.field_type = field_type
         self.expression = expression
+
+    def get_db_type(self, name=None):
+        return f"LowCardinality({self.field_type.get_db_type()})"
+
+    def iter_create_sql(self):
+        yield self.name, f"{self.get_db_type()} MATERIALIZED {self.expression}"
 
 
 class ReferenceField(BaseField):
@@ -321,36 +327,21 @@ class IPv6Field(BaseField):
 
 
 class AggregatedField(BaseField):
-    def __init__(
-        self, source_field, field_type, agg_function, params=None, description=None, f_expr=None
-    ):
+    def __init__(self, expression, field_type, agg_function, params=None, description=None):
         super().__init__(description=description)
-        self.source_field = source_field
         self.field_type = field_type
-        self.is_agg = True
         self.agg_function = agg_function
-        self.f_expr = f_expr
+        self.expression = expression
         self.params = params
 
     def to_json(self, value):
         return self.field_type.to_json(value)
 
-    @property
-    def db_type(self):
-        if isinstance(self.field_type, tuple):
-            return ",".join(x.db_type for x in self.field_type)
-        return self.field_type.db_type
+    def get_db_type(self, name=None):
+        return f"AggregateFunction({self.agg_function}, {self.agg_function.get_db_type(self.field_type)})"
 
-    def get_create_sql(self):
-        field_type = self.field_type
-        if isinstance(field_type, tuple):
-            field_type = ", ".join(self.field_type)
-        return f"`{self.name}` AggregateFunction({self.agg_function}, {field_type})"
-
-    def get_expr(self):
-        if self.f_expr:
-            self.f_expr(self.name)
-        return self.source_field
+    def get_expression(self, combinator: str = None):
+        return self.agg_function.get_expression(self, combinator)
         # return self.f_expr.format(p={"field": self.name, "function": function, "f_param": f_param})
         # return "{p[function]}Merge({p[field]}_{p[function]})"
 
@@ -360,7 +351,7 @@ class NestedField(ArrayField):
 
     def iter_create_sql(self):
         for nested_field in self.field_type._meta.ordered_fields:
-            yield "%s.%s" % (self.name, nested_field.name), self.get_db_type(nested_field.name)
+            yield f"{self.name}.{nested_field.name}", self.get_db_type(nested_field.name)
 
     def apply_json(self, row_json, value):
         arrays = defaultdict(list)
