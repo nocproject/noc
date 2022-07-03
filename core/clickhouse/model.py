@@ -8,13 +8,14 @@
 # Python modules
 import operator
 from time import perf_counter
+from typing import Optional, List
 
 # NOC modules
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from .fields import BaseField
-from .engines import ReplacingMergeTree
+from .fields import BaseField, MaterializedField, AggregatedField
+from .engines import ReplacingMergeTree, AggregatingMergeTree
 from .connect import ClickhouseClient, connection
 
 __all__ = ["Model", "NestedModel"]
@@ -31,9 +32,12 @@ class ModelBase(type):
             engine=getattr(cls.Meta, "engine", None),
             db_table=getattr(cls.Meta, "db_table", None),
             description=getattr(cls.Meta, "description", None),
+            # Sample key
             sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
-            managed=getattr(cls.Meta, "managed", True),
+            # Run migrate for model
+            run_migrate=getattr(cls.Meta, "run_migrate", True),
+            # Local (non-distributed) table
             is_local=getattr(cls.Meta, "is_local", False),
             view_table_source=getattr(cls.Meta, "view_table_source", None),
         )
@@ -54,7 +58,8 @@ class ModelMeta(object):
         description=None,
         sample=False,
         tags=None,
-        managed=True,
+        # Run migrate for model
+        run_migrate=True,
         is_local=False,  # Local table, do not create distributed
         view_table_source=None,
     ):
@@ -63,7 +68,7 @@ class ModelMeta(object):
         self.description = description
         self.sample = sample
         self.tags = tags
-        self.managed = managed
+        self.run_migrate = run_migrate
         self.view_table_source = view_table_source
         self.is_local = is_local
         self.fields = {}  # name -> Field
@@ -93,7 +98,6 @@ class Model(object, metaclass=ModelBase):
         description = None
         sample = False
         tags = None
-        managed = True
 
     def __init__(self, **kwargs):
         self.values = kwargs
@@ -148,7 +152,7 @@ class Model(object, metaclass=ModelBase):
         :return: SQL code with field creation statements
         """
         return ",\n".join(
-            "%s %s" % (cls.quote_name(name), db_type) for name, db_type in cls.iter_create_sql()
+            f"{cls.quote_name(name)} {db_type}" for name, db_type in cls.iter_create_sql()
         )
 
     @classmethod
@@ -232,18 +236,18 @@ class Model(object, metaclass=ModelBase):
                 c_type = cls._meta.fields[name].get_db_type(nested_name)
                 if existing[field_name] != c_type:
                     print(
-                        "Warning! Type mismatch for column %s: %s <> %s"
-                        % (field_name, existing[field_name], c_type)
+                        f"[{table_name}|{field_name}] Warning! Type mismatch: "
+                        f"{existing[field_name]} <> {c_type}"
                     )
                     print(
-                        "Set command manually: ALTER TABLE %s MODIFY COLUMN %s %s"
-                        % (table_name, field_name, c_type)
+                        f"Set command manually: "
+                        f"ALTER TABLE {table_name} MODIFY COLUMN {field_name} {c_type}"
                     )
 
             else:
                 print(f"[{table_name}|{field_name}] Alter column")
                 query = (
-                    f"ALTER TABLE {table_name} ADD COLUMN {cls.quote_name(field_name)} {db_type}"
+                    f"ALTER TABLE `{table_name}` ADD COLUMN {cls.quote_name(field_name)} {db_type}"
                 )
                 if after:
                     # None if add before first field
@@ -277,13 +281,13 @@ class Model(object, metaclass=ModelBase):
         return not bool(r)
 
     @classmethod
-    def ensure_table(cls, connect=None):
+    def ensure_table(cls, connect=None) -> bool:
         """
         Check table is exists
         :param connect:
         :return: True, if table has been altered, False otherwise
         """
-        if not cls._meta.managed:
+        if not cls._meta.run_migrate:
             return False
         changed = False
         ch: "ClickhouseClient" = connect or connection()
@@ -322,12 +326,22 @@ class Model(object, metaclass=ModelBase):
             else:
                 ch.execute(post=cls.cget_create_distributed_sql())
                 changed = True
-        # Synchronize view
-        if changed or not ch.has_table(table, is_view=True):
+        if not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")
             ch.execute(post=cls.get_create_view_sql())
             changed = True
         return changed
+
+    @classmethod
+    def ensure_views(cls, connect=None, changed: bool = True) -> bool:
+        # Synchronize view
+        ch: "ClickhouseClient" = connect or connection()
+        table = cls._get_db_table()
+        if changed or not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_view_sql())
+            return True
+        return False
 
     @classmethod
     def transform_query(cls, query, user):
@@ -492,7 +506,7 @@ class DictionaryBase(ModelBase):
             primary_key=getattr(cls.Meta, "primary_key", ("bi_id",)),
             incremental_update=getattr(cls.Meta, "incremental_update", False),
             description=getattr(cls.Meta, "description", None),
-            managed=getattr(cls.Meta, "managed", True),
+            run_migrate=getattr(cls.Meta, "run_migrate", True),
             is_local=getattr(cls.Meta, "is_local", True),
             view_table_source=getattr(cls.Meta, "view_table_source", None),
             # For Dictionary table
@@ -521,7 +535,7 @@ class DictionaryMeta(object):
         incremental_update=False,
         db_table=None,
         description=None,
-        managed=True,
+        run_migrate=True,
         is_local=False,  # Local table, do not create distributed
         view_table_source=None,
         layout=None,
@@ -536,7 +550,7 @@ class DictionaryMeta(object):
         self.db_table = db_table or name
         self.description = description
         self.view_table_source = view_table_source
-        self.managed = managed
+        self.run_migrate = run_migrate
         self.is_local = is_local
         self.layout = layout
         self.lifetime_min = lifetime_min
@@ -741,3 +755,110 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
     @classmethod
     def extract(cls, item):
         raise NotImplementedError
+
+
+class ViewModel(Model, metaclass=ModelBase):
+    # ViewModel
+
+    @classmethod
+    def is_aggregate(cls) -> bool:
+        return isinstance(cls._meta.engine, AggregatingMergeTree)
+
+    @classmethod
+    def get_create_view_sql(cls):
+        r = []
+        group_by = []
+        for field in cls._meta.ordered_fields:
+            if isinstance(field, AggregatedField):
+                r += [f"{field.get_expression(combinator='Merge')} AS {cls.quote_name(field.name)}"]
+            else:
+                r += [f"{cls.quote_name(field.name)} "]
+                group_by += [cls.quote_name(field.name)]
+        r = [",\n".join(r)]
+        if config.clickhouse.cluster:
+            r += [f"FROM {cls._get_distributed_db_table()} "]
+        else:
+            r += [f"FROM {cls._get_raw_db_table()} "]
+        r += [f'GROUP BY {",".join(group_by)} ']
+        return f'CREATE OR REPLACE VIEW {cls._get_db_table()} AS SELECT {" ".join(r)}'
+
+    @classmethod
+    def get_create_select_sql(cls):
+        r = []
+        group_by = []
+        for field in cls._meta.ordered_fields:
+            if isinstance(field, MaterializedField):
+                continue
+            elif isinstance(field, AggregatedField):
+                r += [f"{field.get_expression(combinator='State')} AS {cls.quote_name(field.name)}"]
+            else:
+                r += [f"{cls.quote_name(field.name)} "]
+                group_by += [cls.quote_name(field.name)]
+        r = [",\n".join(r)]
+        r += [f"FROM {cls.Meta.view_table_source} "]
+        r += [f'GROUP BY {",".join(group_by)} ']
+        return "\n".join(r)
+
+    @classmethod
+    def get_create_sql(cls):
+        """
+        CREATE MATERIALIZED VIEW test.basic
+        ENGINE = AggregatingMergeTree() PARTITION BY toYYYYMM(StartDate) ORDER BY (CounterID, StartDate)
+        AS SELECT
+            CounterID,
+            StartDate,
+            sumState(Sign)    AS Visits,
+            uniqState(UserID) AS Users
+        FROM test.visits
+        GROUP BY CounterID, StartDate;
+        :return:
+        """
+        return "\n".join(
+            [
+                f"CREATE MATERIALIZED VIEW IF NOT EXISTS {cls._get_raw_db_table()} (",
+                # cls.get_create_fields_sql(),
+                f") ENGINE = {cls._meta.engine.get_create_sql()}"
+                f"AS SELECT {cls.get_create_select_sql()}",
+            ]
+        )
+
+    @classmethod
+    def detach_view(cls, connect=None):
+        ch = connect or connection()
+        ch.execute(post=f" DETACH VIEW IF EXISTS {cls._get_raw_db_table()}")
+        return True
+
+    @classmethod
+    def drop_view(cls, connect=None):
+        ch = connect or connection()
+        ch.execute(post=f" DROP VIEW IF EXISTS {cls._get_raw_db_table()}")
+        return True
+
+    @classmethod
+    def ensure_columns(cls, connect, table_name):
+        """
+        Change column on aggregated MergeTree Not supported
+        :param connect:
+        :param table_name:
+        :return:
+        """
+        # cls.detach_view()
+        # changed = super().ensure_columns(connect, ".inner.raw_aggregatedinterface")
+        # if changed:
+        #     cls.drop_view()
+        # # Attach View
+        changed = super().ensure_columns(connect, f".inner.{cls._get_raw_db_table()}")
+        if changed:
+            ...
+        return changed
+
+    @classmethod
+    def ensure_views(cls, connect=None, changed: bool = True) -> bool:
+        # Synchronize view
+        ch: "ClickhouseClient" = connect or connection()
+        table = cls._get_db_table()
+        if changed or not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_view_sql())
+            return True
+        return False

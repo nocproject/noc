@@ -26,6 +26,7 @@ def ensure_bi_models(connect=None):
             continue
         logger.info("Ensure table %s" % model._meta.db_table)
         changed |= model.ensure_table(connect=connect)
+        changed |= model.ensure_views(connect=connect, changed=changed)
     return changed
 
 
@@ -43,6 +44,7 @@ def ensure_dictionary_models(connect=None):
         if table_changed:
             logger.info("[%s] Drop Dictionary", name)
             model.drop_dictionary(connect=connect)
+            model.ensure_views(connect=connect)
         changed |= model.ensure_dictionary(connect=connect)
     return changed
 
