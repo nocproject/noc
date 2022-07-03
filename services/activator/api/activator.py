@@ -1,12 +1,15 @@
 # ---------------------------------------------------------------------
 # Activator API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Dict, Any
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
@@ -18,6 +21,9 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
+from ..models.streaming import StreamingConfig
+
+NS = 1_000_000_000
 
 
 class ActivatorAPI(API):
@@ -36,14 +42,15 @@ class ActivatorAPI(API):
     @executor("script")
     def script(
         self,
-        name,
+        name: str,
         credentials,
         capabilities=None,
         version=None,
-        args=None,
-        timeout=None,
-        session=None,
-        session_idle_timeout=None,
+        args: Optional[Dict[str, Any]] = None,
+        timeout: Optional[int] = None,
+        session: Optional[str] = None,
+        session_idle_timeout: Optional[int] = None,
+        streaming: Optional[StreamingConfig] = None,
     ):
         """
         Execute SA script
@@ -66,11 +73,12 @@ class ActivatorAPI(API):
         :param session: Unique session id to share CLI stream
         :param session_idle_timeout: Hold CLI stream up to
             session_idle_timeout seconds after script completion
+        :param streaming: Send result to stream for processed on service
         """
         script_class = loader.get_script(name)
         if not script_class:
             metrics["error", ("type", "invalid_script")] += 1
-            raise APIError("Invalid script: %s" % name)
+            raise APIError(f"Invalid script: {name}")
         script = script_class(
             service=self.service,
             credentials=credentials,
@@ -87,7 +95,30 @@ class ActivatorAPI(API):
         except script.ScriptError as e:
             metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
-        return result
+
+        if not streaming:
+            return result
+        result = self.clean_streaming_result(result, streaming)
+        if result:
+            self.service.publish(
+                value=result,
+                stream=streaming.stream,
+                partition=streaming.partition,
+                headers={},
+            )
+
+        return []
+
+    def clean_streaming_result(self, result, s_config: "StreamingConfig") -> bytes:
+        """
+        :param result:
+        :param s_config:
+        :return:
+        """
+        if s_config.format and hasattr(self, f"format_{s_config.format}"):
+            h = getattr(self, f"format_{s_config.format}")
+            result = h(result, s_config)
+        return orjson.dumps(result)
 
     @staticmethod
     def script_get_label(name: str, credentials, *args, **kwargs):
