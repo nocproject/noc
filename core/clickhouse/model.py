@@ -800,29 +800,6 @@ class ViewModel(Model, metaclass=ModelBase):
         return "\n".join(r)
 
     @classmethod
-    def get_create_sql(cls):
-        """
-        CREATE MATERIALIZED VIEW test.basic
-        ENGINE = AggregatingMergeTree() PARTITION BY toYYYYMM(StartDate) ORDER BY (CounterID, StartDate)
-        AS SELECT
-            CounterID,
-            StartDate,
-            sumState(Sign)    AS Visits,
-            uniqState(UserID) AS Users
-        FROM test.visits
-        GROUP BY CounterID, StartDate;
-        :return:
-        """
-        return "\n".join(
-            [
-                f"CREATE MATERIALIZED VIEW IF NOT EXISTS {cls._get_raw_db_table()} (",
-                # cls.get_create_fields_sql(),
-                f") ENGINE = {cls._meta.engine.get_create_sql()}"
-                f"AS SELECT {cls.get_create_select_sql()}",
-            ]
-        )
-
-    @classmethod
     def detach_view(cls, connect=None):
         ch = connect or connection()
         ch.execute(post=f" DETACH VIEW IF EXISTS {cls._get_raw_db_table()}")
@@ -835,22 +812,14 @@ class ViewModel(Model, metaclass=ModelBase):
         return True
 
     @classmethod
-    def ensure_columns(cls, connect, table_name):
-        """
-        Change column on aggregated MergeTree Not supported
-        :param connect:
-        :param table_name:
-        :return:
-        """
-        # cls.detach_view()
-        # changed = super().ensure_columns(connect, ".inner.raw_aggregatedinterface")
-        # if changed:
-        #     cls.drop_view()
-        # # Attach View
-        changed = super().ensure_columns(connect, f".inner.{cls._get_raw_db_table()}")
-        if changed:
-            ...
-        return changed
+    def get_create_m_view_sql(cls):
+        return "\n".join(
+            [
+                f"CREATE MATERIALIZED VIEW IF NOT EXISTS mv_{cls._get_raw_db_table()} "
+                f"TO {cls._get_raw_db_table()} "
+                f"AS SELECT {cls.get_create_select_sql()}",
+            ]
+        )
 
     @classmethod
     def ensure_views(cls, connect=None, changed: bool = True) -> bool:
@@ -859,6 +828,7 @@ class ViewModel(Model, metaclass=ModelBase):
         table = cls._get_db_table()
         if changed or not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_m_view_sql())
             ch.execute(post=cls.get_create_view_sql())
             return True
         return False
