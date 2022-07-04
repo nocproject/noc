@@ -98,8 +98,9 @@ class ActivatorAPI(API):
 
         if not streaming or not result:
             return result
+        streaming = StreamingConfig(**streaming)
         self.service.publish(
-            value=self.clean_streaming_result(result, StreamingConfig(**streaming)),
+            value=self.clean_streaming_result(result, streaming),
             stream=streaming.stream,
             partition=streaming.partition,
             headers={},
@@ -238,17 +239,17 @@ class ActivatorAPI(API):
         if 200 <= code <= 299:
             return smart_text(body, errors="replace")
         elif ignore_errors:
-            metrics["error", ("type", "http_error_%s" % code)] += 1
+            metrics["error", ("type", f"http_error_{code}")] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             return smart_text(header, errors="replace") + smart_text(body, errors="replace")
         else:
-            metrics["error", ("type", "http_error_%s" % code)] += 1
+            metrics["error", ("type", f"http_error_{code}")] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             return None
 
     @staticmethod
     def http_get_get_label(url):
-        return "%s" % url
+        return f"{url}"
 
     @api
     @executor("script")
