@@ -96,17 +96,14 @@ class ActivatorAPI(API):
             metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
 
-        if not streaming:
+        if not streaming or not result:
             return result
-        result = self.clean_streaming_result(result, streaming)
-        if result:
-            self.service.publish(
-                value=result,
-                stream=streaming.stream,
-                partition=streaming.partition,
-                headers={},
-            )
-
+        self.service.publish(
+            value=self.clean_streaming_result(result, StreamingConfig(**streaming)),
+            stream=streaming.stream,
+            partition=streaming.partition,
+            headers={},
+        )
         return []
 
     def clean_streaming_result(self, result, s_config: "StreamingConfig") -> bytes:

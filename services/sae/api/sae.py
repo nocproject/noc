@@ -120,6 +120,8 @@ class SAEAPI(API):
                 data["version"],
                 args,
                 timeout,
+                None,  # session
+                None,  # session_timeout
                 streaming,
             ],
         )
