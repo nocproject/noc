@@ -1,0 +1,13 @@
+{
+    "name": "SecurityCode | Kontinent | ALL sysObjectID_2",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "fa192090-3b92-4b27-b830-1df0623d3e73",
+    "description": "SecurityCode Kontinent",
+    "preference": 898,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.2238.4.11.1",
+    "action": "match",
+    "profile__name": "SecurityCode.Kontinent"
+}
