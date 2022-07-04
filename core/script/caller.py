@@ -29,7 +29,7 @@ class ScriptCaller(object):
             self.name = name
         self.object_id = obj.id
 
-    def __call__(self,  streaming=None, **kwargs):
+    def __call__(self, streaming=None, **kwargs):
         smap = SessionContext.cv_sessions_smap.get()
         if smap:
             session = smap.get(self.object_id)
