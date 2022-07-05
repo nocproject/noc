@@ -5,18 +5,18 @@
   check_mode: "False"
   changed_when: false
   register: noc_ctl_status
-  when: tower_serial_restart_noc
+  when: (tower_serial_restart_noc)
 
 - name: Reread config
   command: "{{ noc_root }}/noc ctl reread"
   register: noc_ctl_reread
   when:
-    - tower_serial_restart_noc
+    - (tower_serial_restart_noc)
     - "'RUNNING' in noc_ctl_status.stdout"
 
 - name: Serial NOC restart
   command: "{{ noc_root }}/noc ctl serialrestart all"
-  when: tower_serial_restart_noc
+  when: (tower_serial_restart_noc)
   changed_when: false
 
 - name: Restart NOC node
@@ -27,7 +27,7 @@
     enabled: "True"
   changed_when: "True"
   when:
-    - tower_stop_noc
+    - (tower_stop_noc)
     - not tower_serial_restart_noc
 
 - name: notify deploy finished
