@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List
+from typing import Optional, List, Union
 from enum import Enum
 from pydantic import IPvAnyAddress, validator
 
@@ -30,6 +30,11 @@ class SourceType(str, Enum):
     # Loopback address
     l = "l"  # noqa
     a = "a"  # All interface addresses
+
+
+class CapsItem(BaseModel):
+    name: str
+    value: Union[str, bool, int]
 
 
 class ManagedObject(BaseModel):
@@ -63,6 +68,7 @@ class ManagedObject(BaseModel):
     tt_queue: Optional[str]
     tt_system_id: Optional[str]
     project: Optional[Reference["Project"]]
+    capabilities: Optional[List[CapsItem]]
     checkpoint: Optional[str]
 
     @validator("address")

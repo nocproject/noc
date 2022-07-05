@@ -83,9 +83,11 @@ class BaseLoader(object):
     workflow_add_event = "seen"
     workflow_delete_event = "missed"
     # Label
-    label_enable_setting = None
+    label_enable_setting: Optional[str] = None
     # Incremental
     checkpoint_field = "checkpoint"
+    # Post save fields (example - capabilities)
+    post_save_fields: Optional[Set[str]] = None
 
     REPORT_INTERVAL = 1000
 
@@ -423,6 +425,11 @@ class BaseLoader(object):
             del v[self.checkpoint_field]
         for fn in set(v).intersection(self.workflow_fields):
             del v[fn]
+        # Post save update fields (example capabilities)
+        psf: Dict[str, Any] = {}
+        if self.post_save_fields:
+            for fn in self.post_save_fields:
+                psf[fn] = v.pop(fn)
         o = self.find_object(v)
         if o:
             self.c_change += 1
@@ -444,6 +451,8 @@ class BaseLoader(object):
             self.change_workflow(
                 o, getattr(item, "state", None), getattr(item, "state_changed", None)
             )
+        if psf:
+            self.post_save(o, psf)
         self.set_mappings(item.id, o.id)
 
     def on_change(self, o: BaseModel, n: BaseModel):
@@ -456,8 +465,13 @@ class BaseLoader(object):
         changes = {"remote_system": nv["remote_system"], "remote_id": nv["remote_id"]}
         incremental_changes = {}
         ov = self.clean(o)
+        # Post save update fields (example capabilities)
+        psf: Dict[str, Any] = {}
         for fn in self.data_model.__fields__:
             if fn == "id" or fn in self.workflow_fields:
+                continue
+            if self.post_save_fields and fn in self.post_save_fields:
+                psf[fn] = nv.pop(fn)
                 continue
             if ov[fn] != nv[fn]:
                 self.logger.debug("   %s: %s -> %s", fn, ov[fn], nv[fn])
@@ -473,6 +487,8 @@ class BaseLoader(object):
                 self.change_workflow(
                     o, getattr(n, "state", None), getattr(n, "state_changed", None)
                 )
+            if psf:
+                self.post_save(o, psf)
         else:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
 
@@ -551,6 +567,15 @@ class BaseLoader(object):
         self.logger.info("Saving mappings to %s", self.mappings_path)
         mdata = "\n".join("%s,%s" % (k, self.mappings[k]) for k in sorted(self.mappings))
         safe_rewrite(self.mappings_path, mdata)
+
+    def post_save(self, o, fields: Dict[str, Any]):
+        """
+        Method fields updated separate method (example - capabilities)
+        :param o:
+        :param fields:
+        :return:
+        """
+        return
 
     def clean(self, item: BaseModel) -> Dict[str, Any]:
         """
