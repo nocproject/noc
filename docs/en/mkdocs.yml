@@ -1292,6 +1292,7 @@ nav:
               - managedobject: user/reference/mx/managedobject.md
               - metrics: user/reference/mx/metrics.md
               - reboot: user/reference/mx/reboot.md
+              - snmptrap: user/reference/mx/snmptrap.md
           - Technologies:
               - Group: user/reference/technology/group.md
               - "Network | CGNAT Termination": user/reference/technology/Network/cgnat-termination.md
