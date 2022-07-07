@@ -34,9 +34,11 @@ def did(tag_class: int, is_constructed: int, tag_id: int) -> int:
 
 
 class BERDecoder(object):
-    def __init__(self, display_hints=None):
+    def __init__(self, display_hints=None, include_raw=False):
         self.last_oid: Optional[str] = None
+        self.oid_msg: Optional[bytes] = None
         self.display_hints = display_hints
+        self.include_raw = include_raw
 
     @staticmethod
     def split_tlv(msg: bytes) -> Tuple[bytes, bytes]:
@@ -58,9 +60,9 @@ class BERDecoder(object):
         except KeyError:
             pt = "constructed" if is_constructed else "primitive"
             if is_implicit:
-                pt = "implicit " + pt
+                pt = f"implicit {pt}"
             if tag_class:
-                pt += " application %d" % tag_class
+                pt += f" application {tag_class}"
             raise ValueError(
                 "Cannot find BER decoder for %s class %d (0x%X): %s"
                 % (pt, tag, tag, codecs.encode(value, "hex").decode("utf-8"))
@@ -206,7 +208,12 @@ class BERDecoder(object):
         r = []
         while msg:
             v, msg = self.parse_tlv(msg)
+            if self.include_raw and self.last_oid == v:
+                self.oid_msg = msg
             r += [v]
+        if self.include_raw and not msg and len(r) == 2:
+            # last value
+            r.append(self.oid_msg)
         return r
 
     def parse_implicit(self, msg, tag):
@@ -467,8 +474,8 @@ class BEREncoder(object):
 encoder = BEREncoder()
 
 
-def decode(msg):
-    decoder = BERDecoder()
+def decode(msg, include_raw=False):
+    decoder = BERDecoder(include_raw=include_raw)
     data, _ = decoder.parse_tlv(msg)
     return data
 
