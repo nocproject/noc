@@ -1,0 +1,30 @@
+{
+    "name": "Eltex | ESR | Chassis | Fan | Fan Recovered (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0aa37be5-f43b-4562-a5d0-eab125de2aa2",
+    "description": "CISCO-ENVMON-MIB::ciscoEnvMonFanStatusChangeNotif",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 900,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^CISCO-ENVMON-MIB::ciscoEnvMonFanStatusChangeNotif$"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonFanStatusDescr$",
+            "value_re": "^(?P<name>Fan \\d+).*$"
+        },
+        {
+            "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonFanState$",
+            "value_re": "^normal$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.ESR$"
+        }
+    ]
+}
