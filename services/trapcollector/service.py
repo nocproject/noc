@@ -2,27 +2,39 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
+import datetime
 import asyncio
+from collections import defaultdict
+from dataclasses import asdict
 from typing import Optional, Any, Dict
 
 # Third-party modules
 import orjson
+import uuid
 
 # NOC modules
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.service.fastapi import FastAPIService
+from noc.core.mx import (
+    MX_STREAM,
+    get_mx_partitions,
+    MX_MESSAGE_TYPE,
+    MX_SHARDING_KEY,
+    MX_LABELS,
+    MX_H_VALUE_SPLITTER,
+)
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
-from noc.services.trapcollector.sourceconfig import SourceConfig
+from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.comp import smart_bytes
 
 
 class TrapCollectorService(FastAPIService):
@@ -38,6 +50,7 @@ class TrapCollectorService(FastAPIService):
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
+        self.mx_message = config.message.enable_snmptrap
 
     async def on_activate(self):
         # Listen sockets
@@ -78,7 +91,14 @@ class TrapCollectorService(FastAPIService):
             metrics["error", ("type", "object_not_found")] += 1
         return None
 
-    def register_message(self, cfg: SourceConfig, timestamp: int, data: Dict[str, Any]):
+    def register_message(
+        self,
+        cfg: SourceConfig,
+        timestamp: int,
+        data: Dict[str, Any],
+        raw_data: Optional[bytes] = None,
+        source_address: Optional[str] = None,
+    ):
         """
         Spool message to be sent
         """
@@ -94,6 +114,30 @@ class TrapCollectorService(FastAPIService):
             stream=cfg.stream,
             partition=cfg.partition,
         )
+        if self.mx_message:
+            metrics["events_message"] += 1
+            n_partitions = get_mx_partitions()
+            now = datetime.datetime.now()
+            self.publish(
+                value=orjson.dumps(
+                    {
+                        "timestamp": now.replace(microsecond=0),
+                        "uuid": str(uuid.uuid4()),
+                        "collector_type": "snmptrap",
+                        "collector": config.pool,
+                        "address": source_address,
+                        "managed_object": asdict(cfg.managed_object),
+                        "snmptrap": {"vars": raw_data},
+                    }
+                ),
+                stream=MX_STREAM,
+                partition=int(cfg.id) % n_partitions,
+                headers={
+                    MX_MESSAGE_TYPE: b"snmptrap",
+                    MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(cfg.effective_labels)),
+                    MX_SHARDING_KEY: smart_bytes(cfg.id),
+                },
+            )
 
     async def get_object_mappings(self):
         """
@@ -106,7 +150,7 @@ class TrapCollectorService(FastAPIService):
             try:
                 await client.query(
                     limit=config.trapcollector.ds_limit,
-                    filters=["pool(%s)" % config.pool],
+                    filters=[f"pool({config.pool})"],
                     block=True,
                     filter_policy="delete",
                 )
@@ -141,10 +185,14 @@ class TrapCollectorService(FastAPIService):
         # Build new config
         cfg = SourceConfig(
             id=data["id"],
+            bi_id=data.get("bi_id"),
             addresses=tuple(data["addresses"]),
-            stream="events.%s" % fm_pool,
+            stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
+            effective_labels=data.get("effective_labels", []),
         )
+        if config.message.enable_snmptrap and "managed_object" in data:
+            cfg.managed_object = ManagedObjectData(**data["managed_object"])
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:

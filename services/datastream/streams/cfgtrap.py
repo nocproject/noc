@@ -1,13 +1,15 @@
 # ----------------------------------------------------------------------
 # cfgtrap datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.label import Label
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -19,10 +21,20 @@ class CfgTrapDataStream(DataStream):
     def get_object(cls, id):
         mo = ManagedObject.objects.filter(id=id).values_list(
             "id",
+            "name",
+            "bi_id",
             "is_managed",
             "pool",
             "fm_pool",
+            "administrative_domain",
+            "administrative_domain__name",
+            "administrative_domain__remote_system",
+            "administrative_domain__remote_id",
+            "remote_system",
+            "remote_id",
             "address",
+            "labels",
+            "effective_labels",
             "trap_community",
             "trap_source_ip",
             "trap_source_type",
@@ -33,10 +45,20 @@ class CfgTrapDataStream(DataStream):
             raise KeyError()
         (
             mo_id,
+            name,
+            bi_id,
             is_managed,
             pool,
             fm_pool,
+            adm_domain,
+            adm_domain_name,
+            adm_domain_remote_system,
+            adm_domain_remote_id,
+            remote_system,
+            remote_id,
             address,
+            labels,
+            effective_labels,
             trap_community,
             trap_source_ip,
             trap_source_type,
@@ -59,7 +81,33 @@ class CfgTrapDataStream(DataStream):
             "fm_pool": str(Pool.get_by_id(fm_pool).name) if fm_pool else pool,
             "addresses": [],
             "trap_community": trap_community,
+            "managed_object": {
+                "id": str(mo_id),
+                "bi_id": str(bi_id),
+                "name": name,
+                "administrative_domain": {"id": adm_domain, "name": adm_domain_name},
+                "labels": [
+                    cls.qs(ll)
+                    for ll in Label.objects.filter(
+                        name__in=labels, expose_datastream=True
+                    ).values_list("name")
+                ],
+            },
+            "effective_labels": effective_labels,
+            "name": name,
+            "bi_id": bi_id,
         }
+        if remote_system:
+            rs = RemoteSystem.get_by_id(remote_system)
+            r["managed_object"]["remote_system"] = {"id": str(rs.id), "name": rs.name}
+            r["managed_object"]["remote_id"] = remote_id
+        if adm_domain_remote_system:
+            rs = RemoteSystem.get_by_id(adm_domain_remote_system)
+            r["managed_object"]["administrative_domain"]["remote_system"] = {
+                "id": str(rs.id),
+                "name": rs.name,
+            }
+            r["managed_object"]["administrative_domain"]["remote_id"] = adm_domain_remote_id
         if str(trap_source_type) == "m" and address:
             r["addresses"] += [str(address)]
         elif str(trap_source_type) == "s" and trap_source_ip:
