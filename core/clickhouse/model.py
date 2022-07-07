@@ -769,18 +769,38 @@ class ViewModel(Model, metaclass=ModelBase):
 
     @classmethod
     def ensure_schema(cls, connect=None) -> bool:
+        """
+        # how to convert MV implicit storage .inner (without TO) to explicit storage (with TO)
+        1. stop ingestion
+        2. detach table MVX
+        3. rename table `.inner.MVX` to MVX_store;
+        4. create table `.inner.MVX` as MVX_store engine=TinyLog;
+        5. attach table MVX
+        6. drop table MVX
+        7. rename table MVX_store to MVX
+        8. create materialized view MVX_mv to MVX as select ....
+        9. start ingestion
+        :param connect:
+        :return:
+        """
         if not cls.is_aggregate():
             return False
         ch = connect or connection()
-        old_table_name = f".inner.{cls._get_raw_db_table()}"
-        if not ch.has_table(old_table_name):
+        inner_table_name = f".inner.{cls._get_raw_db_table()}"
+        tmp_inner_table_name = f"{cls._get_raw_db_table()}_store"
+        if not ch.has_table(inner_table_name):
             return False
-        print(f"[{old_table_name}] Migrate old materialized view. For use TO statement")
+        print(f"[{cls._get_raw_db_table()}] Migrate old materialized view. For use TO statement")
         # Drop view
         ch.execute(post=f"DROP VIEW IF EXISTS {cls._get_db_table()}")
+        # Detach MV
+        cls.detach_view(connect=ch)
+        ch.rename_table(inner_table_name, tmp_inner_table_name)
+        ch.execute(f"CREATE TABLE `{inner_table_name}` AS {tmp_inner_table_name} ENGINE=TinyLog")
+        ch.execute(post=f"ATTACH TABLE {cls._get_raw_db_table()}")
         cls.drop_view(connect=ch)
         # Rename table
-        ch.rename_table(old_table_name, cls._get_raw_db_table())
+        ch.rename_table(tmp_inner_table_name, cls._get_raw_db_table())
         return True
 
     @classmethod
@@ -834,13 +854,16 @@ class ViewModel(Model, metaclass=ModelBase):
     def ensure_mv_trigger_view(cls, connect=None):
         mv_name = f"mv_{cls._get_raw_db_table()}"
         connect.execute(post=f" DROP VIEW IF EXISTS {mv_name}")
-        return "\n".join(
-            [
-                f"CREATE MATERIALIZED VIEW IF NOT EXISTS {mv_name}"
-                f"TO {cls._get_raw_db_table()} "
-                f"AS SELECT {cls.get_create_select_sql()}",
-            ]
+        connect.execute(
+            post="\n".join(
+                [
+                    f"CREATE MATERIALIZED VIEW IF NOT EXISTS {mv_name} "
+                    f"TO {cls._get_raw_db_table()} "
+                    f"AS SELECT {cls.get_create_select_sql()}",
+                ]
+            )
         )
+        return True
 
     @classmethod
     def ensure_views(cls, connect=None, changed: bool = True) -> bool:
@@ -849,7 +872,7 @@ class ViewModel(Model, metaclass=ModelBase):
         table = cls._get_db_table()
         if changed or not ch.has_table(table, is_view=True):
             print(f"[{table}] Synchronize view")
-            cls.ensure_mv_trigger_view()
+            cls.ensure_mv_trigger_view(ch)
             ch.execute(post=cls.get_create_view_sql())
             return True
         return False
