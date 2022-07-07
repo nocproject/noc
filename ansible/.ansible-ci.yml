@@ -112,3 +112,11 @@ build_ubuntu20:
    tags:
      - cloud
      - docker
+
+build_ubuntu22:
+   extends: .base_builder
+   variables:
+     SCENARIO_NAME: ubuntu22
+   tags:
+     - cloud
+     - docker
