@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import base64
+
 # NOC modules
 from .ber import decode
 
@@ -17,16 +20,23 @@ class UnsupportedSNMPVersion(Exception):
     pass
 
 
-def decode_trap(packet):
+def decode_trap(packet, raw=False):
     """
     :param packet:
+    :param raw:
     :return:
     """
-    version, community, pdu = decode(packet)
+    version, community, pdu = decode(packet, include_raw=raw)
+    raw_data = None
+    if raw:
+        raw_data = [
+            {"oid": oid, "value": value, "value_raw":  base64.b64encode(value_raw).decode("utf-8")}
+            for oid, value, value_raw in pdu[-1]
+        ]
     decoder = PDU_PARSERS.get(version)
     if decoder is None:
         raise UnsupportedSNMPVersion("Unsupported SNMP version %s" % version)
-    return community, decoder(pdu)
+    return community, decoder(pdu), raw_data
 
 
 def decode_trap_pdu_v1(pdu):
