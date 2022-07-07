@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Raisecom.ROS.get_interface_properties script
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,6 @@ class Script(BaseScript):
     requires = []
 
     def execute(self, **kwargs):
-        if self.is_ifname_use:
+        if self.is_ifname_use or self.is_iscom2624g:
             self.SNMP_NAME_TABLE = "IF-MIB::ifName"
         return super().execute(**kwargs)
