@@ -50,6 +50,7 @@ class TrapCollectorService(FastAPIService):
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
+        self.mx_message = config.message.enable_snmptrap
 
     async def on_activate(self):
         # Listen sockets
@@ -113,7 +114,7 @@ class TrapCollectorService(FastAPIService):
             stream=cfg.stream,
             partition=cfg.partition,
         )
-        if config.message.enable_snmptrap:
+        if self.mx_message:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
             now = datetime.datetime.now()
@@ -121,14 +122,12 @@ class TrapCollectorService(FastAPIService):
                 value=orjson.dumps(
                     {
                         "timestamp": now.replace(microsecond=0),
-                        "uuid": uuid.uuid4(),
+                        "uuid": str(uuid.uuid4()),
                         "collector_type": "snmptrap",
                         "collector": config.pool,
                         "address": source_address,
                         "managed_object": asdict(cfg.managed_object),
-                        "snmptrap": {
-                            "vars": raw_data
-                        },
+                        "snmptrap": {"vars": raw_data},
                     }
                 ),
                 stream=MX_STREAM,

@@ -39,7 +39,7 @@ class TrapServer(UDPServer):
         if not cfg:
             return  # Invalid event source
         try:
-            community, varbinds, raw_data = decode_trap(data)
+            community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:
             metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", codecs.encode(data, "hex"))
