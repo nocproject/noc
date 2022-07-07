@@ -124,7 +124,7 @@ class SyslogCollectorService(FastAPIService):
                 "syslog",
                 [
                     {
-                        "date": now.date(),
+                        "date": now.date().isoformat(),
                         "ts": now.isoformat(sep=" "),
                         "managed_object": cfg.bi_id,
                         "facility": facility,
@@ -141,7 +141,7 @@ class SyslogCollectorService(FastAPIService):
                 value=orjson.dumps(
                     {
                         "timestamp": now.replace(microsecond=0),
-                        "uuid": uuid.uuid4(),
+                        "uuid": str(uuid.uuid4()),
                         "collector_type": "syslog",
                         "collector": config.pool,
                         "address": source_address,

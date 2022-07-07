@@ -52,8 +52,8 @@ Message contains JSON array, containing objects of following structure
 {
   "timestamp": "2022-06-20T10:07:15",
   "uuid": "3d6a2405-447c-44e7-b885-7a2deb43a26a",
-  "collector_type": "snmptrap",
-  "collector": "syslog",
+  "collector_type": "syslog",
+  "collector": "default",
   "address": "127.0.0.1",
   "managed_object": {
     "id": "450",
