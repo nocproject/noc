@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import asyncio
-import base64
 from collections import defaultdict
 from dataclasses import asdict
 from typing import Optional, Any, Dict
@@ -128,12 +127,7 @@ class TrapCollectorService(FastAPIService):
                         "address": source_address,
                         "managed_object": asdict(cfg.managed_object),
                         "snmptrap": {
-                            "vars": [
-                                {"oid": d, "value": data[d], "value_rest": ""}
-                                for d in data
-                                if d not in {"source", "collector"}
-                            ],
-                            "raw_pdu": base64.b64encode(raw_data or b"").decode("utf-8"),
+                            "vars": raw_data
                         },
                     }
                 ),
