@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
+import datetime
 import asyncio
 import base64
+from collections import defaultdict
 from dataclasses import asdict
 from typing import Optional, Any, Dict
 
@@ -116,10 +117,11 @@ class TrapCollectorService(FastAPIService):
         if config.message.enable_snmptrap:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
+            now = datetime.datetime.now()
             self.publish(
                 value=orjson.dumps(
                     {
-                        "timestamp": timestamp,
+                        "timestamp": now.replace(microsecond=0),
                         "uuid": uuid.uuid4(),
                         "collector_type": "snmptrap",
                         "collector": config.pool,

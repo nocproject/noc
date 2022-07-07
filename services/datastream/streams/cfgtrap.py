@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgtrap datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -83,6 +83,7 @@ class CfgTrapDataStream(DataStream):
             "trap_community": trap_community,
             "managed_object": {
                 "id": str(mo_id),
+                "bi_id": str(bi_id),
                 "name": name,
                 "administrative_domain": {"id": adm_domain, "name": adm_domain_name},
                 "labels": [
