@@ -13,7 +13,7 @@ driver:
   zone: ${yc_zone}
   network_id: ${yc_network_id}
   subnet_id: ${yc_subnet_id}
-  image_id: ${yc_ub20_disk}
+  image_id: ${ub2204}
 platforms:
   - name: noc-node-ubuntu22
     distr: ubuntu22
