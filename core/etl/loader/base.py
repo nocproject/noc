@@ -451,7 +451,7 @@ class BaseLoader(object):
             self.change_workflow(
                 o, getattr(item, "state", None), getattr(item, "state_changed", None)
             )
-        if psf:
+        if o and psf:
             self.post_save(o, psf)
         self.set_mappings(item.id, o.id)
 
@@ -487,7 +487,7 @@ class BaseLoader(object):
                 self.change_workflow(
                     o, getattr(n, "state", None), getattr(n, "state_changed", None)
                 )
-            if psf:
+            if o and psf:
                 self.post_save(o, psf)
         else:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)

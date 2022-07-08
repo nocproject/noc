@@ -61,10 +61,9 @@ class ManagedObjectLoader(BaseLoader):
         if not fields or "capabilities" not in fields:
             return
         caps = {}
-        for cc in fields["capabilities"]:
-            c_name = f"ETL | {self.system.name} | {cc.name}"
+        for cc in fields["capabilities"] or []:
+            c_name = f'ETL | {self.system.name} | {cc["name"]}'
             if c_name not in self.available_caps:
                 continue
-            caps[c_name] = cc.value
-        if caps:
-            o.update_caps(caps, source="etl")
+            caps[c_name] = cc["value"]
+        o.update_caps(caps, source="etl")

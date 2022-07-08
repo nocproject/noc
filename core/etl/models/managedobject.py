@@ -11,7 +11,7 @@ from enum import Enum
 from pydantic import IPvAnyAddress, validator
 
 # NOC modules
-from .base import BaseModel
+from .base import BaseModel, _BaseModel
 from .typing import Reference
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
@@ -32,7 +32,7 @@ class SourceType(str, Enum):
     a = "a"  # All interface addresses
 
 
-class CapsItem(BaseModel):
+class CapsItem(_BaseModel):
     name: str
     value: Union[str, bool, int]
 
