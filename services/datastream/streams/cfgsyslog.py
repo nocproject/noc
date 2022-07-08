@@ -8,6 +8,8 @@
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.main.models.pool import Pool
+from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -19,11 +21,20 @@ class CfgSyslogDataStream(DataStream):
     def get_object(cls, id):
         mo = ManagedObject.objects.filter(id=id).values_list(
             "id",
+            "name",
             "bi_id",
             "is_managed",
             "pool",
             "fm_pool",
+            "administrative_domain",
+            "administrative_domain__name",
+            "administrative_domain__remote_system",
+            "administrative_domain__remote_id",
+            "remote_system",
+            "remote_id",
             "address",
+            "labels",
+            "effective_labels",
             "syslog_source_ip",
             "syslog_source_type",
             "event_processing_policy",
@@ -35,11 +46,20 @@ class CfgSyslogDataStream(DataStream):
             raise KeyError()
         (
             mo_id,
+            name,
             bi_id,
             is_managed,
             pool,
             fm_pool,
+            adm_domain,
+            adm_domain_name,
+            adm_domain_remote_system,
+            adm_domain_remote_id,
+            remote_system,
+            remote_id,
             address,
+            labels,
+            effective_labels,
             syslog_source_ip,
             syslog_source_type,
             event_processing_policy,
@@ -69,13 +89,38 @@ class CfgSyslogDataStream(DataStream):
         pool = str(Pool.get_by_id(pool).name)
         r = {
             "id": str(mo_id),
-            "bi_id": str(bi_id),
+            "bi_id": bi_id,
             "pool": pool,
             "fm_pool": str(Pool.get_by_id(fm_pool).name) if fm_pool else pool,
             "addresses": [],
             "process_events": effective_epp,
             "archive_events": effective_sap,
+            "managed_object": {
+                "id": str(mo_id),
+                "bi_id": str(bi_id),
+                "name": name,
+                "administrative_domain": {"id": adm_domain, "name": adm_domain_name},
+                "labels": [
+                    cls.qs(ll)
+                    for ll in Label.objects.filter(
+                        name__in=labels, expose_datastream=True
+                    ).values_list("name")
+                ],
+            },
+            "effective_labels": effective_labels,
+            "name": name,
         }
+        if remote_system:
+            rs = RemoteSystem.get_by_id(remote_system)
+            r["managed_object"]["remote_system"] = {"id": str(rs.id), "name": rs.name}
+            r["managed_object"]["remote_id"] = remote_id
+        if adm_domain_remote_system:
+            rs = RemoteSystem.get_by_id(adm_domain_remote_system)
+            r["managed_object"]["administrative_domain"]["remote_system"] = {
+                "id": str(rs.id),
+                "name": rs.name,
+            }
+            r["managed_object"]["administrative_domain"]["remote_id"] = adm_domain_remote_id
         if syslog_source_type == "m" and address:
             # Managed Object's address
             r["addresses"] += [str(address)]

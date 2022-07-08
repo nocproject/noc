@@ -469,6 +469,7 @@ class Config(BaseConfig):
         enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
         #
         enable_snmptrap = BooleanParameter(default=False)
+        enable_syslog = BooleanParameter(default=False)
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
