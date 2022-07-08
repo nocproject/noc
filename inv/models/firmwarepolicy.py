@@ -52,7 +52,7 @@ class FirmwarePolicy(Document):
         "collection": "noc.firmwarepolicy",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["platform", "firmware", {"fields": ("firmware", "condition"), "unique": True}],
+        "indexes": ["platform", "firmware", {"fields": ("platform", "firmware", "condition"), "unique": True}],
     }
     # Platform (Matched with get_version)
     platform = PlainReferenceField(Platform, required=False)
