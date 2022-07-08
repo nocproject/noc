@@ -374,7 +374,13 @@ class ClassifierService(FastAPIService):
         # Store event variables
         event.raw_vars = data
         if event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
+            resolved_vars.update(
+                {
+                    item["resolved_oid"]: item["resolved_value"]
+                    for item in MIB.resolve_vars(event.raw_vars)
+                    if "resolved_oid" in item
+                }
+            )
         event.resolved_vars = resolved_vars
         # Get matched event class
         if pre_event:
