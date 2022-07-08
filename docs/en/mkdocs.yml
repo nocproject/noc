@@ -1293,6 +1293,7 @@ nav:
               - metrics: user/reference/mx/metrics.md
               - reboot: user/reference/mx/reboot.md
               - snmptrap: user/reference/mx/snmptrap.md
+              - syslog: user/reference/mx/syslog.md
           - Technologies:
               - Group: user/reference/technology/group.md
               - "Network | CGNAT Termination": user/reference/technology/Network/cgnat-termination.md

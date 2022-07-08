@@ -8,8 +8,10 @@
 
 # Python modules
 import datetime
-from collections import defaultdict
 import asyncio
+import uuid
+from collections import defaultdict
+from dataclasses import asdict
 from typing import Optional, Dict
 
 # Third-party modules
@@ -20,10 +22,19 @@ from noc.config import config
 from noc.core.error import NOCError
 from noc.core.service.fastapi import FastAPIService
 from noc.core.perf import metrics
+from noc.core.mx import (
+    MX_STREAM,
+    get_mx_partitions,
+    MX_MESSAGE_TYPE,
+    MX_SHARDING_KEY,
+    MX_LABELS,
+    MX_H_VALUE_SPLITTER,
+)
+from noc.core.ioloop.timers import PeriodicCallback
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
-from noc.services.syslogcollector.sourceconfig import SourceConfig
-from noc.core.ioloop.timers import PeriodicCallback
+from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
+from noc.core.comp import DEFAULT_ENCODING
 
 
 class SyslogCollectorService(FastAPIService):
@@ -80,7 +91,13 @@ class SyslogCollectorService(FastAPIService):
         return None
 
     def register_message(
-        self, cfg: SourceConfig, timestamp: int, message: str, facility: int, severity: int
+        self,
+        cfg: SourceConfig,
+        timestamp: int,
+        message: str,
+        facility: int,
+        severity: int,
+        source_address: str = None,
     ) -> None:
         """
         Spool message to be sent
@@ -99,24 +116,52 @@ class SyslogCollectorService(FastAPIService):
                 stream=cfg.stream,
                 partition=cfg.partition,
             )
+        now = datetime.datetime.now().replace(microsecond=0)
         if cfg.archive_events and cfg.bi_id:
             # Archive message
             metrics["events_archived"] += 1
-            now = datetime.datetime.now()
-            ts = now.strftime("%Y-%m-%d %H:%M:%S")
-            date = ts.split(" ")[0]
             self.register_metrics(
                 "syslog",
                 [
                     {
-                        "date": date,
-                        "ts": ts,
+                        "date": now.date().isoformat(),
+                        "ts": now.isoformat(sep=" "),
                         "managed_object": cfg.bi_id,
                         "facility": facility,
                         "severity": severity,
                         "message": message,
                     }
                 ],
+            )
+        if config.message.enable_snmptrap:
+            metrics["events_message"] += 1
+            n_partitions = get_mx_partitions()
+            now = datetime.datetime.now()
+            self.publish(
+                value=orjson.dumps(
+                    {
+                        "timestamp": now.replace(microsecond=0),
+                        "uuid": str(uuid.uuid4()),
+                        "collector_type": "syslog",
+                        "collector": config.pool,
+                        "address": source_address,
+                        "managed_object": asdict(cfg.managed_object),
+                        "syslog": {
+                            "facility": facility,
+                            "severity": severity,
+                            "message": message,
+                        },
+                    }
+                ),
+                stream=MX_STREAM,
+                partition=int(cfg.id) % n_partitions,
+                headers={
+                    MX_MESSAGE_TYPE: b"syslog",
+                    MX_LABELS: MX_H_VALUE_SPLITTER.join(cfg.effective_labels).encode(
+                        DEFAULT_ENCODING
+                    ),
+                    MX_SHARDING_KEY: str(cfg.id).encode(DEFAULT_ENCODING),
+                },
             )
 
     async def get_object_mappings(self):
@@ -131,7 +176,7 @@ class SyslogCollectorService(FastAPIService):
             try:
                 await client.query(
                     limit=config.syslogcollector.ds_limit,
-                    filters=["pool(%s)" % config.pool],
+                    filters=[f"pool({config.pool})"],
                     block=True,
                     filter_policy="delete",
                 )
@@ -170,9 +215,12 @@ class SyslogCollectorService(FastAPIService):
             bi_id=data.get("bi_id"),  # For backward compatibility
             process_events=data.get("process_events", True),  # For backward compatibility
             archive_events=data.get("archive_events", False),
-            stream="events.%s" % fm_pool,
+            stream=f"events.{fm_pool}",
             partition=int(data["id"]) % num_partitions,
+            effective_labels=data.get("effective_labels", []),
         )
+        if config.message.enable_syslog and "managed_object" in data:
+            cfg.managed_object = ManagedObjectData(**data["managed_object"])
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:
