@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Action
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ from typing import Type, Tuple, Dict, Iterator
 
 # NOC modules
 from noc.core.liftbridge.message import Message
-from noc.main.models.messageroute import MRAction
+from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import smart_bytes
 from noc.main.models.notificationgroup import NotificationGroup
 
@@ -32,14 +32,14 @@ class ActionBase(type):
 class Action(object, metaclass=ActionBase):
     name: str
 
-    def __init__(self, action: MRAction):
-        self.headers: Dict[str, bytes] = {h.header: smart_bytes(h.value) for h in action.headers}
+    def __init__(self, mroute: MessageRoute):
+        self.headers: Dict[str, bytes] = {h.header: smart_bytes(h.value) for h in mroute.headers}
 
     @classmethod
-    def from_action(cls, action: MRAction) -> "Action":
+    def from_action(cls, mroute: MessageRoute) -> "Action":
         global ACTION_TYPES
 
-        return ACTION_TYPES[action.type](action)
+        return ACTION_TYPES[mroute.action](mroute)
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         raise NotImplementedError
@@ -55,9 +55,9 @@ class DropAction(Action):
 class StreamAction(Action):
     name = "stream"
 
-    def __init__(self, action: MRAction):
-        super().__init__(action)
-        self.stream: str = action.stream
+    def __init__(self, mroute: MessageRoute):
+        super().__init__(mroute)
+        self.stream: str = mroute.stream
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         yield self.stream, self.headers
@@ -66,9 +66,9 @@ class StreamAction(Action):
 class NotificationAction(Action):
     name = "notification"
 
-    def __init__(self, action: MRAction):
-        super().__init__(action)
-        self.ng: NotificationGroup = action.notification_group
+    def __init__(self, mroute: MessageRoute):
+        super().__init__(mroute)
+        self.ng: NotificationGroup = mroute.notification_group
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         yield from self.ng.iter_actions()
