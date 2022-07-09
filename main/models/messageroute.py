@@ -1,23 +1,29 @@
 # ----------------------------------------------------------------------
 # MessageRoute
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from typing import List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
+from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from .handler import Handler
 from .template import Template
 from .notificationgroup import NotificationGroup
+from .label import Label
 
 
-class MRMatch(EmbeddedDocument):
+class HeaderMatch(EmbeddedDocument):
     header = StringField(choices=list(sorted(MESSAGE_HEADERS)))
     op = StringField(choices=["==", "!=", "regex"])
     value = StringField()
@@ -38,13 +44,17 @@ class MRMatch(EmbeddedDocument):
         return self.op == "regex"
 
 
-class MRTransmute(EmbeddedDocument):
-    type = StringField(choices=["template", "handler"])
-    handler = PlainReferenceField(Handler)
-    template = ForeignKeyField(Template)
+class MRMatch(EmbeddedDocument):
+    labels = ListField(StringField())
+    exclude_labels = ListField(StringField())
+    administrative_domain = ForeignKeyField(AdministrativeDomain)
+    headers_match = ListField(EmbeddedDocumentField(HeaderMatch))
 
     def __str__(self):
-        return self.type
+        return f'{", ".join(self.labels)}, {self.administrative_domain or ""}'
+
+    def get_labels(self):
+        return list(Label.objects.filter(name__in=self.labels))
 
 
 class MRAHeader(EmbeddedDocument):
@@ -53,16 +63,6 @@ class MRAHeader(EmbeddedDocument):
 
     def __str__(self):
         return self.header
-
-
-class MRAction(EmbeddedDocument):
-    type = StringField(choices=["drop", "stream", "notification"])
-    stream = StringField()
-    notification_group = ForeignKeyField(NotificationGroup)
-    headers = ListField(EmbeddedDocumentField(MRAHeader))
-
-    def __str__(self):
-        return self.type
 
 
 class MessageRoute(Document):
@@ -75,11 +75,24 @@ class MessageRoute(Document):
     # Message-Type header value
     type = StringField(choices=list(sorted(MESSAGE_TYPES)))
     # Match message headers
-    match = ListField(EmbeddedDocumentField(MRMatch))
-    # Message transmuting pipeline
-    transmute = ListField(EmbeddedDocumentField(MRTransmute))
+    match: List[MRMatch] = ListField(EmbeddedDocumentField(MRMatch))
+    # Message transmuting handler
+    transmute_handler = PlainReferenceField(Handler)
+    transmute_template = ForeignKeyField(Template)
     # Message actions
-    action = ListField(EmbeddedDocumentField(MRAction))
+    action = StringField(choices=["drop", "stream", "notification"], default="notification")
+    stream = StringField()
+    notification_group = ForeignKeyField(NotificationGroup)
+    headers = ListField(EmbeddedDocumentField(MRAHeader))
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if self.action == "stream" and not self.stream:
+            raise ValidationError({"stream": "For 'stream' action Stream must be set"})
+        elif self.action == "notification" and not self.notification_group:
+            raise ValidationError(
+                {"notification_group": "For 'notification' action NotificationGroup must be set"}
+            )
+        super().clean()
