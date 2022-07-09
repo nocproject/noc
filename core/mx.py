@@ -38,6 +38,7 @@ MESSAGE_TYPES = {
     "notification",
     "snmptrap",
     "syslog",
+    "event",
 }
 MESSAGE_HEADERS = {
     MX_SHARDING_KEY,

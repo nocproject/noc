@@ -32,6 +32,7 @@ from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.main.models.label import Label
 import noc.inv.models.interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.version import version
@@ -46,8 +47,16 @@ from noc.services.classifier.abdetector import AbductDetector
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.core.liftbridge.message import Message
+from noc.core.mx import (
+    MX_STREAM,
+    get_mx_partitions,
+    MX_MESSAGE_TYPE,
+    MX_SHARDING_KEY,
+    MX_LABELS,
+    MX_H_VALUE_SPLITTER,
+)
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -265,6 +274,74 @@ class ClassifierService(FastAPIService):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
 
+    @staticmethod
+    def get_managed_object_mx(o: "ManagedObject"):
+        r = {
+            "id": str(o.id),
+            "bi_id": str(o.bi_id),
+            "name": o.name,
+            "administrative_domain": {
+                "id": o.administrative_domain.id,
+                "name": o.administrative_domain.name,
+            },
+            "labels": [
+                ll
+                for ll in Label.objects.filter(
+                    name__in=o.labels, expose_datastream=True
+                ).values_list("name")
+            ],
+        }
+        if o.remote_system:
+            r["managed_object"]["remote_system"] = {
+                "id": str(o.remote_system.id),
+                "name": o.remote_system.name,
+            }
+            r["managed_object"]["remote_id"] = o.remote_id
+        if o.administrative_domain.remote_system:
+            r["managed_object"]["administrative_domain"]["remote_system"] = {
+                "id": str(o.administrative_domain.remote_system.id),
+                "name": o.administrative_domain.remote_system.name,
+            }
+            r["managed_object"]["administrative_domain"][
+                "remote_id"
+            ] = o.administrative_domain.remote_id
+        return r
+
+    def register_mx_message(self, event: "ActiveEvent"):
+        metrics["events_message"] += 1
+        n_partitions = get_mx_partitions()
+        msg = {
+            "timestamp": time,
+            "uuid": event.raw_vars.get("uuid"),
+            "collector_type": event.source,
+            "collector": event.raw_vars.get("collector"),
+            "address": event.raw_vars.get("source_address"),
+            "managed_object": self.get_managed_object_mx(event.managed_object),
+            "event_class": {"id": str(event.event_class.id), "name": event.event_class.name},
+            "event_vars": event.vars,
+        }
+        if event.source == E_SRC_SYSLOG:
+            msg["syslog_vars"] = {
+                "facility": event.raw_vars.get("facility", ""),
+                "severity": event.raw_vars.get("severity", ""),
+                "message": event.raw_vars.get("message", ""),
+            }
+        if event.source == E_SRC_SNMP_TRAP:
+            msg["snmp_vars"] = [{"oid": "", "named_oid": "", "value": "", "raw_value": ""}]
+        # Register MX message
+        self.publish(
+            value=orjson.dumps(msg),
+            stream=MX_STREAM,
+            partition=int(event.managed_object.id) % n_partitions,
+            headers={
+                MX_MESSAGE_TYPE: b"event",
+                MX_LABELS: MX_H_VALUE_SPLITTER.join(event.managed_object.effective_labels).encode(
+                    DEFAULT_ENCODING
+                ),
+                MX_SHARDING_KEY: str(event.managed_object.id).encode(DEFAULT_ENCODING),
+            },
+        )
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("interface_cache"))
     def get_interface(cls, managed_object_id, name):
@@ -297,7 +374,13 @@ class ClassifierService(FastAPIService):
         # Store event variables
         event.raw_vars = data
         if event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
+            resolved_vars.update(
+                {
+                    item["resolved_oid"]: item["resolved_value"]
+                    for item in MIB.resolve_vars(event.raw_vars)
+                    if "resolved_oid" in item
+                }
+            )
         event.resolved_vars = resolved_vars
         # Get matched event class
         if pre_event:
@@ -359,7 +442,7 @@ class ClassifierService(FastAPIService):
             event.event_class = rule.event_class
             # Calculate rule variables
             event.vars = self.ruleset.eval_vars(event, event.event_class, vars)
-            message = "Classified as '%s' by rule '%s'" % (event.event_class.name, rule.name)
+            message = f"Classified as '{event.event_class.name}' by rule '{rule.name}'"
             event.log += [
                 EventLog(
                     timestamp=datetime.datetime.now(),
@@ -391,6 +474,8 @@ class ClassifierService(FastAPIService):
         self.dedup_filter.register(event)
         # Fill suppress filter
         self.suppress_filter.register(event)
+        if config.message.enable_events:
+            self.register_mx_message(event)
         # Call handlers
         if self.call_event_handlers(event):
             return
