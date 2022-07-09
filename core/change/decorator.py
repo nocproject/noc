@@ -7,6 +7,7 @@
 
 # Python modules
 from logging import getLogger
+from typing import Dict, Optional
 
 # NOC modules
 from noc.models import is_document, get_model_id
@@ -57,10 +58,38 @@ def _track_model(model):
 
 
 def _on_document_change(sender, document, created=False, *args, **kwargs):
+    def get_changed(field_name: str) -> Optional[Dict[str, str]]:
+        """
+        Return changed field with new and old value
+        :param field_name:
+        :return:
+        """
+        # ov = instance.initial_data[field_name]
+        # if hasattr(ov, "pk"):
+        #     ov = str(ov.pk)
+        ov = None
+        nv = getattr(document, field_name)
+        if hasattr(nv, "pk"):
+            nv = str(nv.pk)
+        if isinstance(ov, list):
+            # Embedded document
+            ov = [str(x) for x in ov]
+        else:
+            ov = str(ov)
+        if isinstance(nv, list):
+            nv = [str(x) for x in nv]
+        else:
+            nv = str(nv)
+        return {"field": field_name, "old": ov, "new": nv}
+
     model_id = get_model_id(document)
     op = "create" if created else "update"
-    logger.debug("[%s|%s] Change detected: %s", model_id, document.id, op)
-    changed_fields = list(document._changed_fields if not created else [])
+    changed_fields = []
+    for f_name in document._changed_fields if not created else []:
+        cf = get_changed(f_name)
+        if cf:
+            changed_fields.append(cf)
+    logger.debug("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
     change_tracker.register(
         op=op,
         model=model_id,
@@ -91,27 +120,35 @@ def _on_document_delete(sender, document, *args, **kwargs):
 
 
 def _on_model_change(sender, instance, created=False, *args, **kwargs):
-    def is_changed(field_name):
+    def get_changed(field_name: str) -> Optional[Dict[str, str]]:
+        """
+        Return changed field with new and old value
+        :param field_name:
+        :return:
+        """
         ov = instance.initial_data[field_name]
         if hasattr(ov, "pk"):
-            ov = ov.pk
+            ov = str(ov.pk)
         nv = getattr(instance, field_name)
         if hasattr(nv, "pk"):
-            nv = nv.pk
-        return str(ov) != str(nv)
+            nv = str(nv.pk)
+        if str(ov) == str(nv):
+            return None
+        return {"field": field_name, "old": ov, "new": nv}
 
+    changed_fields = []
     # Check for instance proxying
     if hasattr(instance, "get_changed_instance"):
         instance = instance.get_changed_instance()
-        changed_fields = []
     else:
-        changed_fields = [
-            f_name for f_name in getattr(instance, "initial_data", []) if is_changed(f_name)
-        ]
+        for f_name in getattr(instance, "initial_data", []):
+            cf = get_changed(f_name)
+            if cf:
+                changed_fields.append(cf)
     # Register change
     model_id = get_model_id(instance)
     op = "create" if created else "update"
-    logger.debug("[%s|%s] Change detected: %s", model_id, instance.id, op)
+    logger.debug("[%s|%s] Change detected: %s; %s", model_id, instance.id, op, changed_fields)
     change_tracker.register(
         op=op,
         model=model_id,
