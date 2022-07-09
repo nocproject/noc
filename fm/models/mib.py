@@ -294,11 +294,12 @@ class MIB(Document):
         :param vars:
         :return:
         """
-        r = {}
+        rr = []
         for k in vars:
             if not is_oid(k):
                 # Nothing to resolve
                 continue
+            r = {"oid": k, "value": vars[k]}
             v = smart_text(fm_unescape(vars[k]))
             rk, syntax = cls.get_name_and_syntax(k)
             rv = v
@@ -352,8 +353,11 @@ class MIB(Document):
                 # Resolve OID in value
                 rv = MIB.get_name(rv)
             if rk != k or rv != v:
-                r[rk] = rv
-        return r
+                r["resolved_oid"] = rk
+                r["resolved_value"] = rv
+                # r[rk] = rv
+            rr.append(r)
+        return rr
 
     @classmethod
     def guess_encoding(cls, s: bytes, encodings: Optional[List[str]] = None) -> str:
