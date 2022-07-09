@@ -732,6 +732,7 @@ class ManagedObjectProfile(NOCModel):
     def iter_changed_datastream(self, changed_fields=None):
         from noc.sa.models.managedobject import ManagedObject
 
+        changed_fields = set(changed_fields or [])
         if config.datastream.enable_managedobject and changed_fields.intersection(
             {
                 "name",

@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
 # Change handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import time
 from logging import getLogger
-from typing import Optional, List, Set, DefaultDict, Tuple
+from typing import Optional, List, Set, DefaultDict, Tuple, Dict
 from collections import defaultdict
 
 # Third-party modules
@@ -24,7 +24,9 @@ logger = getLogger(__name__)
 
 
 def on_change(
-    changes: List[Tuple[str, str, str, Optional[List[str]], Optional[float]]], *args, **kwargs
+    changes: List[Tuple[str, str, str, Optional[List[Dict[str, str]]], Optional[float]]],
+    *args,
+    **kwargs,
 ) -> None:
     """
     Change worker
@@ -54,18 +56,25 @@ def on_change(
             if not item:
                 logger.error("[%s|%s] Missed item. Skipping", model_id, item_id)
                 return
-        changed_fields = set(changed_fields or [])
+        changed_fields = changed_fields or []
+        # isinstance for old compatible format
+        if changed_fields and isinstance(changed_fields[0], str):
+            changed_fields_old = set(changed_fields)
+        else:
+            changed_fields_old = {cf["field"]: cf["old"] for cf in changed_fields or []}
         # Process datastreams
         if hasattr(item, "iter_changed_datastream"):
-            for ds_name, ds_id in item.iter_changed_datastream(changed_fields=changed_fields):
+            for ds_name, ds_id in item.iter_changed_datastream(changed_fields=changed_fields_old):
                 ds_changes[ds_name].add(ds_id)
         # Proccess BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
         # Proccess Sensors
-        if model_id == "inv.ObjectModel" and ("sensors" in changed_fields or not changed_fields):
+        if model_id == "inv.ObjectModel" and (
+            "sensors" in changed_fields_old or not changed_fields_old
+        ):
             sensors_changes[model_id].add(item_id)
-        elif model_id == "inv.Object" and ("data" in changed_fields or not changed_fields):
+        elif model_id == "inv.Object" and ("data" in changed_fields_old or not changed_fields_old):
             # @todo ManagedObject address change
             sensors_changes[model_id].add(item_id)
     # Apply datastream changes
