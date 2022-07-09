@@ -23,11 +23,13 @@ MX_STREAM = "message"
 # Headers
 MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"
-MX_TO = "To"
 MX_CHANGE_ID = "Change-Id"
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"
+MX_TO = "To"
+MX_LANG = "Language"
+#
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
 MESSAGE_TYPES = {
@@ -41,11 +43,11 @@ MESSAGE_TYPES = {
 }
 MESSAGE_HEADERS = {
     MX_SHARDING_KEY,
-    MX_TO,
     MX_CHANGE_ID,
     MX_ADMINISTRATIVE_DOMAIN_ID,
     MX_PROFILE_ID,
-    MX_LABELS,
+    MX_TO,
+    MX_LANG,
 }
 
 _mx_partitions: Optional[int] = None
