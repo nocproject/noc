@@ -31,7 +31,7 @@ Ext.define("NOC.main.messageroute.Model", {
         {
             name: "order",
             type: "int",
-            defaultValue: 0
+            defaultValue: 10
         },
         {
             name: "type",
@@ -42,11 +42,43 @@ Ext.define("NOC.main.messageroute.Model", {
             type: "auto"
         },
         {
-            name: "transmute",
-            type: "auto"
+            name: "transmute_handler",
+            type: "string"
+        },
+        {
+            name: "transmute_handler__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "transmute_template",
+            type: "string"
+        },
+        {
+            name: "transmute_template__label",
+            type: "string",
+            persist: false
         },
         {
             name: "action",
+            type: "string",
+            defaultValue: "notificaiton"
+        },
+        {
+            name: "stream",
+            type: "string"
+        },
+        {
+            name: "notification_group",
+            type: "int"
+        },
+        {
+            name: "notification_group__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "headers",
             type: "auto"
         }
     ]

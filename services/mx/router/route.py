@@ -6,16 +6,36 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Tuple, Dict, List, Iterator, Callable, Union, Any, Optional, DefaultDict
+from dataclasses import dataclass
 from collections import defaultdict
-from typing import Tuple, Dict, List, DefaultDict, Iterator
+
+# Third-party modules
+from jinja2 import Template
+import orjson
 
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.core.comp import smart_bytes
-from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.main.models.messageroute import MessageRoute
 from .action import Action
-from .transmute import Transmutation
+
+T_BODY = Union[bytes, Any]
+
+
+@dataclass
+class RenderTemplate(object):
+    subject_template: Template
+    body_template: Template
+
+    def render_body(self, ctx: Dict[str, Any]) -> bytes:
+        return orjson.dumps(
+            {
+                "subject": self.subject_template.render(**ctx),
+                "body": self.body_template.render(**ctx),
+            }
+        )
 
 
 class Route(object):
@@ -23,7 +43,8 @@ class Route(object):
         self.name = name
         self.match_co: str = ""  # Code object for matcher
         self.actions: List[Action] = []
-        self.transmutations: List[Transmutation] = []
+        self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
+        self.render_template: Optional[RenderTemplate] = None
 
     def is_match(self, msg: Message) -> bool:
         """
@@ -32,30 +53,26 @@ class Route(object):
         :param msg:
         :return:
         """
-        headers = msg.headers
-        if MX_LABELS in headers:
-            headers[MX_LABELS] = headers[MX_LABELS].split(smart_bytes(MX_H_VALUE_SPLITTER))
-        return eval(self.match_co, {"headers": headers})
+        ctx = {"headers": msg.headers, "labels": set()}
+        if MX_LABELS in msg.headers:
+            ctx["labels"] = set(msg.headers[MX_LABELS].split(smart_bytes(MX_H_VALUE_SPLITTER)))
+        return eval(self.match_co, ctx)
 
-    def iter_transmute(self, headers: Dict[str, bytes], data: bytes) -> Iterator[bytes]:
+    def transmute(self, headers: Dict[str, bytes], data: bytes) -> Union[bytes, Dict[str, Any]]:
         """
-        Transmute message body and apply all the transformations
+        Transmute message body and apply template
         :param headers:
         :param data:
         :return:
         """
-
-        def spool():
-            yield data
-
-        if not self.transmutations:
-            yield data
-            return
-
-        g = spool()
-        for t in self.transmutations:
-            g = t.iter_transmute(headers, g)
-        yield from g
+        if self.transmute_handler:
+            data = self.transmute_handler(headers, data)
+        if self.render_template:
+            if isinstance(data, bytes):
+                data = orjson.loads(data)
+            ctx = {"headers": headers, **data}
+            return self.render_template.render_body(**ctx)
+        return data
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         """
@@ -74,18 +91,29 @@ class Route(object):
         :return:
         """
         r = Route(route.name)
+        expr = []
         # Compile match section
         match_eq: DefaultDict[str, List[bytes]] = defaultdict(list)
         match_re: DefaultDict[str, List[bytes]] = defaultdict(list)
         match_ne: List[Tuple[str, bytes]] = []
         for match in route.match:
-            if match.is_eq:
-                match_eq[match.header] += [smart_bytes(match.value)]
-            elif match.is_ne:
-                match_ne += [(match.header, smart_bytes(match.value))]
-            elif match.is_re:
-                match_re[match.header] += [smart_bytes(match.value)]
-        expr = []
+            if match.labels:
+                expr += [f"{set(smart_bytes(ll) for ll in match.labels)!r}.intersection(labels)"]
+            if match.exclude_labels:
+                expr += [
+                    f"not {set(smart_bytes(ll) for ll in match.exclude_labels)!r}.intersection(labels)"
+                ]
+            if match.administrative_domain:
+                expr += [
+                    f"headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}] == {match.administrative_domain.id}"
+                ]
+            for h_match in match.headers_match:
+                if h_match.is_eq:
+                    match_eq[h_match.header] += [smart_bytes(h_match.value)]
+                elif h_match.is_ne:
+                    match_ne += [(h_match.header, smart_bytes(h_match.value))]
+                elif h_match.is_re:
+                    match_re[h_match.header] += [smart_bytes(h_match.value)]
         # Expression for ==
         for header in match_eq:
             if len(match_eq[header]) == 1:
@@ -108,7 +136,13 @@ class Route(object):
             cond_code = "True"
         r.match_co = compile(cond_code, "<string>", "eval")
         # Compile transmute part
-        r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
+        # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
+        r.transmute_handler = route.transmute_handler
+        if route.transmute_template:
+            r.render_template = RenderTemplate(
+                subject_template=route.transmute_template.subject,
+                body_template=route.transmute_template.body,
+            )
         # Compile action part
-        r.actions = [Action.from_action(a) for a in route.action]
+        r.actions = [Action.from_action(route)]
         return r
