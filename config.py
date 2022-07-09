@@ -462,6 +462,7 @@ class Config(BaseConfig):
 
     class message(ConfigSection):
         enable_alarm = BooleanParameter(default=False)
+        enable_events = BooleanParameter(default=False)
         enable_managedobject = BooleanParameter(default=False)
         enable_reboot = BooleanParameter(default=False)
         enable_metrics = BooleanParameter(default=False)
