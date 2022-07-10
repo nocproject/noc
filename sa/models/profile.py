@@ -32,7 +32,6 @@ id_lock = threading.Lock()
         ("inv.Firmware", "profile"),
         ("sa.ActionCommands", "profile"),
         ("sa.ManagedObject", "profile"),
-        ("sa.ManagedObjectSelector", "filter_profile"),
         ("sa.ProfileCheckRule", "profile"),
         ("dev.Spec", "profile"),
         ("peer.PeeringPoint", "profile"),

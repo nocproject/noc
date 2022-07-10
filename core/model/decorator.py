@@ -138,7 +138,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
     @on_delete_check(
         # Raise ValueError if related documents contain any records
         check=[
-            ("sa.ManagedObjectSelector", "managed_object"),
+            ("sa.ManagedObject", "platform"),
             ....
         ],
         # Replace model.field value with None

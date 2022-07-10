@@ -26,7 +26,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.SchemeLookupField",
         "NOC.sa.profile.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
-        "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.managedobject.ConfDBPanel",
         "NOC.sa.managedobject.ConsolePanel",
         "NOC.sa.managedobject.InventoryPanel",
@@ -1631,7 +1630,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             lookup: "inv.networksegment"
         },
         {
-            title: __("By Service Group"),
+            title: __("By Service Group (Selector)"),
             name: "effective_service_groups",
             ftype: "tree",
             lookup: "inv.resourcegroup"
@@ -1641,12 +1640,6 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "effective_client_groups",
             ftype: "tree",
             lookup: "inv.resourcegroup"
-        },
-        {
-            title: __("By Selector"),
-            name: "selector",
-            ftype: "lookup",
-            lookup: "sa.managedobjectselector"
         },
         {
             title: __("By Pool"),

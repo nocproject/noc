@@ -66,9 +66,6 @@ class MatchLabels(EmbeddedDocument):
         # sa.ManagedObject
         ("sa.ManagedObject", "static_service_groups"),
         ("sa.ManagedObject", "static_client_groups"),
-        # sa.ManagedObjectSelector
-        ("sa.ManagedObjectSelector", "filter_service_group"),
-        ("sa.ManagedObjectSelector", "filter_client_group"),
         # phone.PhoneRange
         ("phone.PhoneRange", "static_service_groups"),
         ("phone.PhoneRange", "static_client_groups"),
@@ -513,7 +510,7 @@ class ResourceGroup(Document):
         * string - IPv4 or IPv6 address - management address
 
         Raises ManagedObject.DoesNotExists if object is not found.
-        Raises ManagedObjectSelector.DoesNotExists if selector is not found
+        Raises ResourceGroup.DoesNotExists if resource group is not found
         :param cls:
         :param s:
         :param model_id:

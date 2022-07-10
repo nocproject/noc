@@ -49,7 +49,6 @@ id_lock = Lock()
         ("ip.Prefix", "vrf"),
         # ("ip.DynamicIPPoolUsage", "vrf"),
         ("sa.ManagedObject", "vrf"),
-        ("sa.ManagedObjectSelector", "filter_vrf"),
         ("vc.VCBindFilter", "vrf"),
     ],
     clean_lazy_labels="ipvrf",

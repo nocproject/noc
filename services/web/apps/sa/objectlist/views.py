@@ -12,7 +12,6 @@ from django.db.models import Q as d_Q
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
 from noc.sa.interfaces.base import ListOfParameter, IPv4Parameter, DictParameter
@@ -55,11 +54,6 @@ class ObjectListApplication(ExtApplication):
                 nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
         else:
             nq = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
-        if "selector" in nq:
-            s = self.get_object_or_404(ManagedObjectSelector, id=int(nq["selector"]))
-            if s:
-                q &= s.Q
-            del nq["selector"]
 
         jp_clauses = []
         for cc in [part for part in nq if part.startswith("caps")]:
