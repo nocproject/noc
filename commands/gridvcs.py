@@ -14,7 +14,6 @@ from typing import List
 # Third-party modules
 import bson
 from pymongo import DESCENDING
-from dateutil.parser import parse
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -65,7 +64,7 @@ class Command(BaseCommand):
         stat_parser = subparsers.add_parser("stats", help="Show stats")
         stat_parser.add_argument("--top", default=0, type=int, help="Top device by size")
         #
-        bucket_parser = subparsers.add_parser("bucket", help="Show stats by backets")
+        bucket_parser = subparsers.add_parser("bucket", help="Show stats by buckets")
         bucket_parser.add_argument("--backets", default=5, help="Bucket count")
         bucket_parser.add_argument(
             "--min-size", default=128000, type=int, help="Top device by size"
@@ -83,7 +82,9 @@ class Command(BaseCommand):
         forget_parser = subparsers.add_parser(
             "forget-history", help="Forget revisions after revision"
         )
-        forget_parser.add_argument("--before-days", type=int, help="Revision or Date", required=True)
+        forget_parser.add_argument(
+            "--before-days", type=int, help="Revision or Date", required=True
+        )
         forget_parser.add_argument(
             "--approve", action="store_true", default=False, help="Do not modify data"
         )
@@ -262,6 +263,7 @@ class Command(BaseCommand):
         self,
         objects: List[str],
         before_days: int = None,
+        before_revision: str = None,
         approve=False,
         include_labels=None,
         exclude_labels=None,
@@ -270,15 +272,17 @@ class Command(BaseCommand):
     ):
         from noc.inv.models.resourcegroup import ResourceGroup
 
-        if not before_days:
-            self.die(f"Revision {before_days} is not set")
-        before = datetime.datetime.now() - datetime.timedelta(days=before_days)
-        if not is_objectid(before):
+        if not before_days and not before_revision:
+            self.die(f"Revision or before days is not set")
+        if before_days:
             # Timestamp
             # before = parse(before)
+            before = datetime.datetime.now() - datetime.timedelta(days=before_days)
             before = bson.ObjectId.from_datetime(before)
-        else:
-            before = bson.ObjectId(before)
+        elif before_revision and is_objectid(before_revision):
+            # Timestamp
+            # before = parse(before)
+            before = bson.ObjectId(before_revision)
         if include_labels:
             include_labels = include_labels.split(",")
         if exclude_labels:
@@ -293,7 +297,9 @@ class Command(BaseCommand):
             for mo in oos:
                 self.print(f"[{mo.name}] Processed")
                 r = self.vcs.files.find_one(
-                    {"object": mo.id, "_id": {"$lte": before}}, {"_id": 1}, sort=[("ts", DESCENDING)]
+                    {"object": mo.id, "_id": {"$lte": before}},
+                    {"_id": 1},
+                    sort=[("ts", DESCENDING)],
                 )
                 # self.print("Revision", r)
                 if not r:
