@@ -247,7 +247,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: __("Shape"),
+                                    title: __("Badge"),
                                     layout: "vbox",
                                     defaults: {
                                         labelAlign: "top",
@@ -338,7 +338,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     layout: "hbox",
                                     defaults: {
                                         labelAlign: "top",
-                                        padding: 8
+                                        padding: 4
                                     },
                                     items: [
                                         {
@@ -373,7 +373,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     layout: "hbox",
                                     defaults: {
                                         labelAlign: "top",
-                                        padding: 8
+                                        padding: 4
                                     },
                                     items: [
                                         {
@@ -819,6 +819,48 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "abduct_detection_threshold",
                                             fieldLabel: __("Abduct Detection Threshold"),
+                                            labelWidth: 200,
+                                            xtype: "numberfield",
+                                            allowBlank: true,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Trap Collector Storm Settings"),
+                                    defaults: {
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "trapcollector_storm_policy",
+                                            xtype: "combobox",
+                                            tooltip: __("Check Device SNMP Trap storm policy <br/>" +
+                                                "check trap message count over 60s <br/>" +
+                                                'B - Block receive trap from ManagedObject Address<br/>' +
+                                                'R - Raise Alarm to ManagedObject and not block<br/>' +
+                                                'A - Raise Alarm to ManagedObject and block trap receive<br/>' +
+                                                'D - Disable Storm Check'),
+                                            labelWidth: 150,
+                                            fieldLabel: __("Storm Policy"),
+                                            store: [
+                                                ["B", __("Block")],
+                                                ["R", __("Raise Alarm")],
+                                                ["A", __("Block & Raise Alarm")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D",
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            listeners: {
+                                                render: me.addTooltip
+                                            }
+                                        },
+                                        {
+                                            name: "trapcollector_storm_threshold",
+                                            fieldLabel: __("Message Storm Threshold"),
                                             labelWidth: 200,
                                             xtype: "numberfield",
                                             allowBlank: true,

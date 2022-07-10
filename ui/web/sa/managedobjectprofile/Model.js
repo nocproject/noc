@@ -906,6 +906,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 0
         },
         {
+            name: "trapcollector_storm_policy",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
+            name: "trapcollector_storm_threshold",
+            type: "int",
+            defaultValue: 1000
+        },
+        {
             name: "labels",
             type: "auto"
         },
