@@ -273,7 +273,7 @@ class Command(BaseCommand):
         from noc.inv.models.resourcegroup import ResourceGroup
 
         if not before_days and not before_revision:
-            self.die(f"Revision or before days is not set")
+            self.die("Revision or before days is not set")
         if before_days:
             # Timestamp
             # before = parse(before)
