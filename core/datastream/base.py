@@ -239,13 +239,24 @@ class DataStream(object):
         return r
 
     @classmethod
-    def _update_object(cls, data, meta=None, fmt=None, state=None, bulk=None) -> bool:
+    def _update_object(
+        cls,
+        data,
+        meta=None,
+        fmt: Optional[str] = None,
+        state=None,
+        bulk: Optional[List[Any]] = None,
+    ) -> bool:
         def is_changed(d, h):
             return not d or d.get(cls.F_HASH) != h
 
         obj_id = cls.clean_id(data["id"])
         if meta is None and "$meta" in data:
             meta = data.pop("$meta")
+        message_headers = None
+        if cls.enable_message:
+            message_headers = cls.get_msg_headers(data)
+        cls.clean_meta_fields(data)
         m_name = f"{cls.name}_{fmt}" if fmt else cls.name
         l_name = f"{cls.name}|{obj_id}|{fmt}" if fmt else f"{cls.name}|{obj_id}"
         metrics[f"ds_{m_name}_updated"] += 1
@@ -290,7 +301,7 @@ class DataStream(object):
         if cls.enable_message:
             # Build MX message
             logger.info("[%s] Sending message", l_name)
-            cls.send_message(data, change_id)
+            cls.send_message(data, change_id, message_headers)
         return True
 
     @classmethod
@@ -302,10 +313,9 @@ class DataStream(object):
         try:
             data = cls.get_object(obj_id)
             meta = cls.get_meta(data)
-            return cls.clean_meta_fields(data), meta
+            return data, meta
         except KeyError:
-            data, meta = cls.get_deleted_object(obj_id), None
-            return cls.clean_meta_fields(data), meta
+            return cls.get_deleted_object(obj_id), None
 
     @classmethod
     def update_object(cls, id, delete=False) -> bool:
@@ -666,12 +676,18 @@ class DataStream(object):
         return None
 
     @classmethod
-    def send_message(cls, data: Dict[str, Any], change_id: bson.ObjectId) -> None:
+    def send_message(
+        cls,
+        data: Dict[str, Any],
+        change_id: bson.ObjectId,
+        additional_headers: Optional[Dict[str, bytes]] = None,
+    ) -> None:
         """
         Send MX message
 
         :param data:
         :param change_id:
+        :param additional_headers:
         :return:
         """
         data["$changeid"] = str(change_id)
@@ -679,7 +695,6 @@ class DataStream(object):
         headers = {
             MX_CHANGE_ID: smart_bytes(change_id),
         }
-        additional_headers = cls.get_msg_headers(data)
         if additional_headers:
             headers.update(additional_headers)
         # Schedule to send
