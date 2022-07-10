@@ -10,7 +10,7 @@ import itertools
 import logging
 
 # NOC modules
-from noc.core.validators import is_int, is_ipv4
+from noc.core.validators import is_int, is_ipv4, is_uuid
 from noc.core.comp import smart_text
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ class StringParameter(BaseParameter):
         v = smart_text(v)
         if self.choices:
             if v not in self.choices:
-                raise ValueError("Invalid value: %s" % v)
+                raise ValueError(f"Invalid value: {v}")
         return v
 
 
@@ -70,6 +70,13 @@ class SecretParameter(BaseParameter):
 
     def __repr__(self):
         return "****hidden****"
+
+
+class UUIDParameter(BaseParameter):
+    def clean(self, v):
+        if not is_uuid(v):
+            raise ValueError(f"Invalid UUID value: {v}")
+        return v
 
 
 class IntParameter(BaseParameter):

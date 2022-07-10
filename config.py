@@ -26,6 +26,7 @@ from noc.core.config.params import (
     ServiceParameter,
     SecretParameter,
     ListParameter,
+    UUIDParameter,
 )
 
 
@@ -301,7 +302,7 @@ class Config(BaseConfig):
         admin_email = StringParameter(default="test@example.com")
 
     installation_name = StringParameter(default="Unconfigured installation")
-    installation_id = StringParameter(default="")
+    installation_id = UUIDParameter(default="")
 
     instance = IntParameter(default=0)
 
