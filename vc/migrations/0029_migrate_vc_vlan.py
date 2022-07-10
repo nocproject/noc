@@ -29,14 +29,23 @@ class Migration(BaseMigration):
             WHERE l1 != 1
             """
         )
+        vlan_profiles_count = self.mongo_db["vlanprofiles"].count_documents({})
         # VC Migration
-        l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
-        vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
-        if vc_count:
+        # l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
+        l2domain_profile_id = self.mongo_db["l2domainprofiles"].find_one(
+            {"name": "default"}, {"_id": 1}
+        )["_id"]
+        # vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
+        vlan_profile_id = self.mongo_db["vlanprofiles"].find_one({"name": "default"}, {"_id": 1})[
+            "_id"
+        ]
+        vc_migrate = False
+        if vc_count and not vlan_profiles_count > 2:
             self.vc_migrate(l2domain_profile_id, vlan_profile_id)
+            vc_migrate = True
         # VLAN Migration
         vlans = self.mongo_db["vlans"].count_documents({"vlan": {"$ne": 1}})
-        if not vc_count and vlans:
+        if not vc_migrate and vlans:
             self.vlan_migrate(l2domain_profile_id)
 
     def vlan_migrate(self, default_l2d_profile_id):
