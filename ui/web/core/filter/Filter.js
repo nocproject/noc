@@ -21,7 +21,6 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.inv.platform.LookupField',
         'NOC.inv.vendor.LookupField',
         'NOC.sa.managedobjectprofile.LookupField',
-        'NOC.sa.managedobjectselector.LookupField',
         'NOC.inv.resourcegroup.TreeCombo',
         'NOC.sa.commandsnippet.LookupField',
         'NOC.sa.actioncommands.LookupField',
@@ -110,20 +109,6 @@ Ext.define('NOC.core.filter.Filter', {
             listeners: {
                 clear: 'setFilter',
                 select: 'setFilter'
-            }
-        },
-        {
-            xtype: 'sa.managedobjectselector.LookupField',
-            itemId: 'selector', // name of http request query param
-            fieldLabel: __('By Selector:'),
-            listeners: {
-                select: 'setFilter'
-            },
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
             }
         },
         {

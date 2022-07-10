@@ -122,7 +122,6 @@ id_lock = Lock()
     check=[
         ("sa.ManagedObject", "object_profile"),
         ("sa.ManagedObjectProfile", "cpe_profile"),
-        ("sa.ManagedObjectSelector", "filter_object_profile"),
     ],
     clean_lazy_labels="managedobjectprofile",
 )
