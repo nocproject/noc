@@ -36,7 +36,6 @@ id_lock = threading.Lock()
     check=[
         ("sa.ManagedObject", "version"),
         ("sa.ManagedObject", "next_version"),
-        ("sa.ManagedObjectSelector", "filter_version"),
         ("inv.FirmwarePolicy", "firmware"),
     ]
 )

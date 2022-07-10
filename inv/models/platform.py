@@ -40,7 +40,6 @@ id_lock = threading.Lock()
 @on_delete_check(
     check=[
         ("sa.ManagedObject", "platform"),
-        ("sa.ManagedObjectSelector", "filter_platform"),
         ("inv.FirmwarePolicy", "platform"),
     ],
     clean_lazy_labels="platform",
