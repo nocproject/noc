@@ -73,14 +73,15 @@ class MXService(FastAPIService):
                     self.stream_partitions[stream] = partitions
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
-                for body in route.iter_transmute(headers, msg.value):
-                    if not isinstance(body, bytes):
-                        # Transmute converts message to an arbitrary structure,
-                        # so convert back to the json
-                        body = orjson.dumps(body)
-                    metrics[("forwards", "%s:%s" % (stream, partition))] += 1
-                    self.logger.debug("[%s] Routing to %s:%s", msg.offset, stream, partition)
-                    self.publish(value=body, stream=stream, partition=partition, headers=headers)
+                body = route.transmute(headers, msg.value)
+                # for body in route.iter_transmute(headers, msg.value):
+                if not isinstance(body, bytes):
+                    # Transmute converts message to an arbitrary structure,
+                    # so convert back to the json
+                    body = orjson.dumps(body)
+                metrics[("forwards", f"{stream}:{partition}")] += 1
+                self.logger.debug("[%s] Routing to %s:%s", msg.offset, stream, partition)
+                self.publish(value=body, stream=stream, partition=partition, headers=headers)
                 routed = True
             if not routed:
                 self.logger.debug("[%d] Not routed", msg.offset)

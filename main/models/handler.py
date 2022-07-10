@@ -35,6 +35,7 @@ id_lock = Lock()
         ("pm.ThresholdConfig", "open_handler"),
         ("pm.ThresholdConfig", "close_handler"),
         ("fm.AlarmRule", "actions.handler"),
+        ("main.MessageRoute", "transmute_handler"),
     ]
 )
 class Handler(Document):
