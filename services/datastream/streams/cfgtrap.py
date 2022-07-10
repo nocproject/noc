@@ -40,6 +40,8 @@ class CfgTrapDataStream(DataStream):
             "trap_source_type",
             "event_processing_policy",
             "object_profile__event_processing_policy",
+            "object_profile__trapcollector_storm_policy",
+            "object_profile__trapcollector_storm_threshold",
         )[:1]
         if not mo:
             raise KeyError()
@@ -64,6 +66,8 @@ class CfgTrapDataStream(DataStream):
             trap_source_type,
             event_processing_policy,
             mop_event_processing_policy,
+            mop_trapcollector_storm_policy,
+            mop_trapcollector_storm_threshold,
         ) = mo[0]
         # Process event policy
         if (
@@ -96,6 +100,8 @@ class CfgTrapDataStream(DataStream):
             "effective_labels": effective_labels,
             "name": name,
             "bi_id": bi_id,
+            "storm_policy": mop_trapcollector_storm_policy,
+            "storm_threshold": mop_trapcollector_storm_threshold,
         }
         if remote_system:
             rs = RemoteSystem.get_by_id(remote_system)

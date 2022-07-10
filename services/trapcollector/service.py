@@ -30,11 +30,14 @@ from noc.core.mx import (
     MX_LABELS,
     MX_H_VALUE_SPLITTER,
 )
+from noc.core.service.stormprotection import StormProtection
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
+
+TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control | SNMP"
 
 
 class TrapCollectorService(FastAPIService):
@@ -51,6 +54,7 @@ class TrapCollectorService(FastAPIService):
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
         self.mx_message = config.message.enable_snmptrap
+        self.storm_protection: Optional[StormProtection] = None
 
     async def on_activate(self):
         # Listen sockets
@@ -69,6 +73,34 @@ class TrapCollectorService(FastAPIService):
         self.report_invalid_callback.start()
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
+        self.storm_protection = StormProtection(
+            config.trapcollector.storm_round_duration,
+            config.trapcollector.storm_threshold_reduction,
+            config.trapcollector.storm_record_ttl,
+            TRAPCOLLECTOR_STORM_ALARM_CLASS,
+        )
+        self.storm_protection.initialize()
+        self.storm_protection.raise_alarm_handler = self.on_storm_raise_alarm
+        self.storm_protection.close_alarm_handler = self.on_storm_close_alarm
+
+    def on_storm_raise_alarm(self, ip_address):
+        cfg = self.address_configs[ip_address]
+        msg = {
+            "$op": "raise",
+            "managed_object": cfg.id,
+            "alarm_class": TRAPCOLLECTOR_STORM_ALARM_CLASS,
+        }
+        self._publish_message(cfg, msg)
+
+    def on_storm_close_alarm(self, ip_address):
+        cfg = self.address_configs[ip_address]
+        msg = {"$op": "clear"}
+        self._publish_message(cfg, msg)
+
+    def _publish_message(self, cfg, msg: Dict[str, Any]):
+        msg["timestamp"] = datetime.datetime.now().isoformat()
+        msg["reference"] = f"{TRAPCOLLECTOR_STORM_ALARM_CLASS}{cfg.id}"
+        self.publish(orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition)
 
     async def get_pool_partitions(self, pool: str) -> int:
         parts = self.pool_partitions.get(pool)
@@ -193,6 +225,9 @@ class TrapCollectorService(FastAPIService):
         )
         if config.message.enable_snmptrap and "managed_object" in data:
             cfg.managed_object = ManagedObjectData(**data["managed_object"])
+        if "storm_policy" in data:
+            cfg.storm_policy = data["storm_policy"]
+            cfg.storm_threshold = data["storm_threshold"]
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:
