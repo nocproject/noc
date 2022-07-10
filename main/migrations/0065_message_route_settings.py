@@ -76,7 +76,7 @@ class Migration(BaseMigration):
                 and route["transmute"]
                 and route["transmute"][0].get("template")
             ):
-                route_new["transmute_template"] = route["transmute"]["template"]
+                route_new["transmute_template"] = route["transmute"][0]["template"]
             if name in processed:
                 route_new["name"] = f"{name}_{num}"
                 route_new["_id"] = bson.ObjectId()
