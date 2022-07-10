@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SNMP Trap Server
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,6 +38,10 @@ class TrapServer(UDPServer):
         cfg = self.service.lookup_config(address[0])
         if not cfg:
             return  # Invalid event source
+        if cfg.storm_policy != "D":
+            need_block = self.service.storm_protection.process_message(address[0], cfg)
+            if need_block:
+                return
         try:
             community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:

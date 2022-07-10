@@ -101,7 +101,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 38
+MANAGEDOBJECT_CACHE_VERSION = 39
 CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
