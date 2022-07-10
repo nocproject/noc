@@ -29,7 +29,7 @@ class Migration(BaseMigration):
             WHERE l1 != 1
             """
         )
-        vlan_profiles_count = self.mongo_db["vlanprofiles"].count_documents()
+        vlan_profiles_count = self.mongo_db["vlanprofiles"].count_documents({})
         # VC Migration
         # l2domain_profile_id = bson.ObjectId("61bee6f45c42c21338453613")
         l2domain_profile_id = self.mongo_db["l2domainprofiles"].find_one(
