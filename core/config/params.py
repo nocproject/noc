@@ -74,7 +74,7 @@ class SecretParameter(BaseParameter):
 
 class UUIDParameter(BaseParameter):
     def clean(self, v):
-        if not is_uuid(v):
+        if v and not is_uuid(v):
             raise ValueError(f"Invalid UUID value: {v}")
         return v
 
