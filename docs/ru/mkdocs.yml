@@ -4,7 +4,7 @@ site_author: The NOC Project
 repo_url: https://code.getnoc.com/noc/noc/
 repo_name: Gitlab
 edit_uri: -/edit/master/docs/ru/docs
-copyright: 2007-2021, The NOC Project
+copyright: 2007-2022, The NOC Project
 nav:
   - Home: index.md
   - License: doc-license.md

@@ -243,8 +243,8 @@ build:Docs:ru:
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-        - "docs/*"
-        - "docs/**/*"
+        - "docs/ru/*"
+        - "docs/ru/**/*"
 
 build:Docs:en:
   stage: Build
@@ -262,8 +262,8 @@ build:Docs:en:
   rules:
     - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
       changes:
-        - "docs/*"
-        - "docs/**/*"
+        - "docs/en/*"
+        - "docs/en/**/*"
 
 #Build Image section
 build:Release Image:
@@ -353,9 +353,9 @@ upload docs:
     SOURCE: build/docs/*
     DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
   rules:
-    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"')
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
       when: never
-    - if: ('$CI_COMMIT_BRANCH == "master"')
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "docs/*"
         - "docs/**/*"
@@ -369,6 +369,8 @@ upload dnssync:
     DEST: cdn/$S3_BUCKET/dnssync/
     BUILD_TARGET: dnssync
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - rust/$BUILD_TARGET/*
