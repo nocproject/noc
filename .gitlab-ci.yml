@@ -353,6 +353,8 @@ upload docs:
     SOURCE: build/docs/*
     DEST: cdn/$S3_BUCKET/$CI_COMMIT_REF_SLUG/
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "docs/*"
@@ -367,6 +369,8 @@ upload dnssync:
     DEST: cdn/$S3_BUCKET/dnssync/
     BUILD_TARGET: dnssync
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never    
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - rust/$BUILD_TARGET/*
