@@ -12,26 +12,21 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
-rx_interface_status = re.compile(r"^(?P<interface>\S+)\s+(?P<status>\S+).+$", re.IGNORECASE)
-
 
 class Script(BaseScript):
     name = "Brocade.IronWare.get_interface_status"
     interface = IGetInterfaceStatus
+    rx_interface_status = re.compile(r"^(?P<interface>\S+)\s+(?P<status>\S+).+$", re.IGNORECASE)
 
-    def execute(self, interface=None):
-        if self.has_snmp():
-            try:
-                # Get interface status
-                r = []
-                # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
-                    # ifOperStatus up(1)
-                    r += [{"interface": n, "status": int(s) == 1}]
-                return r
-            except self.snmp.TimeOutError:
-                pass
-        # Fallback to CLI
+    def execute_snmp(self, interface=None):
+        r = []
+        # IF-MIB::ifName, IF-MIB::ifOperStatus
+        for i, n, s in self.snmp.join(["1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8"]):
+            # ifOperStatus up(1)
+            r += [{"interface": n, "status": int(s) == 1}]
+        return r
+
+    def execute_cli(self, interface=None):
         r = []
         if interface:
             cmd = "show interface brief | include ^%s" % interface
@@ -42,7 +37,7 @@ class Script(BaseScript):
             ln = ln.replace("Disabled", " Disabled ")
             ln = ln.replace("Up", " Up ")
             ln = ln.replace("DisabN", " Disabled N")
-            match = rx_interface_status.match(ln)
+            match = self.rx_interface_status.match(ln)
             if match:
                 r += [
                     {

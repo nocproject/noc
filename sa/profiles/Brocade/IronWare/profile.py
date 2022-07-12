@@ -2,7 +2,7 @@
 # Vendor: Foundry
 # OS:     IronWare
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,3 +21,6 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "write memory\n"
     command_super = b"enable"
+    pattern_more = [
+        (rb"^--More--, next page: Space, next line: Return key, quit: Control-c'", b" "),
+    ]

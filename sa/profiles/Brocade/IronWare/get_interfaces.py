@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ class Script(BaseScript):
         r"untagged|(?P<from>\w+\s[0-9\.\/]+)(?P<to>\sto\s[0-9\.\/]+)?", re.MULTILINE | re.IGNORECASE
     )
 
-    def execute(self):
+    def execute_cli(self):
         rip = []
         try:
             c = self.cli("show ip rip int | inc ^Interface")

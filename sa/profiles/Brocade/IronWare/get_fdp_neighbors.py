@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_fdp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,10 +14,6 @@ from noc.sa.interfaces.igetfdpneighbors import IGetFDPNeighbors
 
 
 class Script(BaseScript):
-    """
-    Brocade.IronWare.get_fdp_neighbors
-    """
-
     name = "Brocade.IronWare.get_fdp_neighbors"
     interface = IGetFDPNeighbors
 
