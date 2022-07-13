@@ -280,7 +280,7 @@ class EscalationSequence(BaseSequence):
             metrics["escalation_closed_while_escalated"] += 1
             if tt_id and not alarm.escalation_tt:
                 alarm.escalation_ts = datetime.datetime.now()
-                alarm.escalation_tt = f"{self.alarm.managed_object.tt_system.name}:{tt_id}"
+                alarm.escalation_tt = tt_id
                 alarm.save()
             if not alarm.escalation_close_ts and not alarm.escalation_close_error:
                 self.escalation_doc.save()  # Will be fetched later
@@ -614,9 +614,13 @@ class EscalationSequence(BaseSequence):
         if not self.alarm.groups:
             yield from self.iter_alarms_root()
             return
-        yield ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by(
+        for aa in ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by(
             "root", "-timestamp"
-        ).first()
+        ):
+            if aa.managed_object.can_escalate():
+                # Skip Disabled Escalation
+                yield aa
+                break
         yield from self.alarm.iter_grouped()
 
     def iter_alarms_always_first(self) -> Iterable[ActiveAlarm]:
@@ -626,7 +630,11 @@ class EscalationSequence(BaseSequence):
         if not self.alarm.groups:
             yield from self.iter_alarms_always()
             return
-        yield ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by("timestamp").first()
+        for aa in ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by("timestamp"):
+            if aa.managed_object.can_escalate():
+                # Skip Disabled Escalation
+                yield aa
+                break
         yield from self.alarm.iter_grouped()
 
     def check_escalated(self):
