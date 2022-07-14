@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class Script(BaseScript):
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip domain-name\s+(?P<domain>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show running-config | include ^(hostname|ip domain-name)")
         fqdn = []
         match = self.rx_hostname.search(v)

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,10 +11,6 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-    """
-    Brocade.IronWare.get_config
-    """
-
     name = "Brocade.IronWare.get_config"
     interface = IGetConfig
 

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,13 +20,10 @@ class Script(BaseScript):
         r"^\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\d+\s+(?P<interface>\S+)"
     )
 
-    def execute(self):
+    def execute_cli(self):
         s = self.cli("show arp")
         r = []
-        for l in s.splitlines():
-            match = self.rx_line.match(l.strip())
-            if not match:
-                continue
+        for match in self.rx_line.finditer(s):
             type = match.group("type")
             mac = match.group("mac")
             if mac.lower() in ("incomplete" or "none") or type.lower() in ("pending", "invalid"):
