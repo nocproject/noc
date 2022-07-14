@@ -76,9 +76,9 @@ class Script(BaseScript):
         "10G-ZR": "NoName | Transceiver | 10G | XenPak ZR",
     }
 
-    def execute(self):
+    def execute_cli(self):
         objects = []
-        v = self.cli("show version")
+        v = self.cli("show version", cached=True)
         media = self.cli("show media")
         match = self.rx_hw.search(v)
         if match:
@@ -152,7 +152,7 @@ class Script(BaseScript):
         elif "SX" in match.group("platform"):
             chserial = self.rx_chserial.search(v)
             objects[0].update({"serial": chserial.group("serial")})
-            power = self.cli("show chassis")
+            power = self.cli("show chassis", cached=True)
             for line in self.sx_power.findall(power):
                 pwn = line[0]
                 descr = line[1]
@@ -233,7 +233,7 @@ class Script(BaseScript):
             partno = match[2]
             objects[0].update({"serial": serial, "description": descr, "part_no": partno})
             # Power for RX-chassis
-            power = self.cli("show chassis")
+            power = self.cli("show chassis", cached=True)
             for line in power.splitlines():
                 if "Power" in line and "Fail" not in line:
                     if "Power" == line.split()[0]:
@@ -254,12 +254,12 @@ class Script(BaseScript):
                                     "vendor": "BROCADE",
                                 }
                             ]
-            for l in v.splitlines():
-                if "Fabric" in l:
-                    partno = l.split(":")[2][:-1].strip()
+            for line in v.splitlines():
+                if "Fabric" in line:
+                    partno = line.split(":")[2][:-1].strip()
                     descr = "RX-BI-SFM3 Switch Fabric Module"
-                    n = l.split()[4]
-                    serial = l.split(":")[1].split(",")[0].strip()
+                    n = line.split()[4]
+                    serial = line.split(":")[1].split(",")[0].strip()
                     objects += [
                         {
                             "builtin": False,
@@ -309,7 +309,7 @@ class Script(BaseScript):
                             ]
         else:
             # Old FastIron/BigIron chassis/objects
-            serial = self.cli("show chassis").splitlines()[-1].split(":")[1].strip()
+            serial = self.cli("show chassis", cached=True).splitlines()[-1].split(":")[1].strip()
             objects[0].update({"serial": serial})
             for match1 in self.rx_item_ch.findall(v):
                 objects += [

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -74,6 +74,6 @@ class Script(BaseScript):
             ]
         return r
 
-    def execute(self):
+    def execute_cli(self):
         v = self.cli("show span")
         return self.process_pvst(v, proto="PVST+")

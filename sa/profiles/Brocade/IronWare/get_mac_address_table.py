@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,10 +14,6 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
-    """
-    Brocade.IronWare.get_mac_address_table
-    """
-
     name = "Brocade.IronWare.get_mac_address_table"
     interface = IGetMACAddressTable
 
@@ -36,7 +32,7 @@ class Script(BaseScript):
                 r.append([parts[0], parts[1], parts[3]])
         return r
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         if vlan:
             vlans = [vlan]
         else:
