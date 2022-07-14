@@ -22,5 +22,5 @@ class Profile(BaseProfile):
     command_save_config = "write memory\n"
     command_super = b"enable"
     pattern_more = [
-        (rb"^--More--, next page: Space, next line: Return key, quit: Control-c'", b" "),
+        (rb"^--More--, next page: Space, next line: Return key, quit: Control-c", b" "),
     ]
