@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -161,7 +161,9 @@ class Script(BaseScript):
         elif hw_ver:
             r["attributes"]["HW version"] = hw_ver
         if match and "serial" in match:
-            r["attributes"]["Serial Number"] = match["serial"]
+            r["attributes"]["Serial Number"] = match["serial"].replace(
+                "\x1b7", ""
+            )  # On QSW-4610-10T-AC 8.2.1.60
         elif serial:
             r["attributes"]["Serial Number"] = serial
         if "version" not in r:
