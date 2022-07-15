@@ -49,8 +49,8 @@
     environment:
       https_proxy: "{{ http_proxy }}"
       http_proxy: "{{ http_proxy }}"
-      tags:
-        - requirements
+    tags:
+      - requirements
 
 - name: Disable Transparent Hugepages (runtime)
   shell: |
