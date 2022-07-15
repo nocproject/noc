@@ -46,7 +46,6 @@
   when: mongo_repo_stat.changed
   vars:
     packages:
-      - mongodb-org
       - mongodb-org-server
       - mongodb-org-shell
       - mongodb-org-tools
