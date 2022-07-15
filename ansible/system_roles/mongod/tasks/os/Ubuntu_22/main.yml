@@ -29,6 +29,29 @@
   tags:
     - repo
 
+-  name: libssl1.1
+    apt_repository:
+      repo: "deb http://security.ubuntu.com/ubuntu impish-security main"
+      state: present
+      update_cache: "True"
+    environment:
+      https_proxy: "{{ http_proxy }}"
+      http_proxy: "{{ http_proxy }}"
+    tags:
+      - repo
+
+-  name: install libssl1.1
+    apt:
+      name: libssl1.1
+      state: present
+      update_cache: "True"
+      cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+    environment:
+      https_proxy: "{{ http_proxy }}"
+      http_proxy: "{{ http_proxy }}"
+      tags:
+        - requirements
+
 - name: Disable Transparent Hugepages (runtime)
   shell: |
     if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
