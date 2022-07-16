@@ -21,6 +21,7 @@ from noc.core.config.params import (
     SecondsParameter,
     ListParameter,
     BytesParameter,
+    UUIDParameter,
 )
 
 
@@ -60,6 +61,18 @@ def test_secret_parameters():
     assert config.secret is None
     config.secret = "password"
     assert config.secret == "password"
+
+
+def test_uuid_parameters():
+    class Config(BaseConfig):
+        installation_id = UUIDParameter()
+
+    config = Config()
+    assert config.installation_id is None
+    config.installation_id = "287fb1c7-dff8-495d-9c97-462a0456c817"
+    assert config.installation_id == "287fb1c7-dff8-495d-9c97-462a0456c817"
+    with pytest.raises(ValueError):
+        config.installation_id = "xxxxxx"
 
 
 def test_int_parameter():
