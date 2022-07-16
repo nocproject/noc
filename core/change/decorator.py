@@ -71,12 +71,16 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         elif hasattr(ov, "_instance"):
             # Embedded field
             ov = [str(x) for x in ov]
+        elif ov:
+            ov = str(ov)
         nv = getattr(document, field_name)
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
         elif hasattr(nv, "_instance"):
             # Embedded field
             nv = [str(x) for x in nv]
+        elif nv:
+            nv = str(nv)
         if str(ov or None) == str(nv or None):
             return None
         return ChangeField(field=field_name, old=ov, new=nv)
