@@ -11,7 +11,7 @@ import logging
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4, is_uuid
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +74,8 @@ class SecretParameter(BaseParameter):
 
 class UUIDParameter(BaseParameter):
     def clean(self, v):
+        if isinstance(v, bytes):
+            v = v.decode(DEFAULT_ENCODING)
         if v and not is_uuid(v):
             raise ValueError(f"Invalid UUID value: {v}")
         return v
