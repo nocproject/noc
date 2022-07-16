@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL
     )
     rx_stack = re.compile(
-        r"^\s*(?P<box_id>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+" r"(?P<serial>\S*)",
+        r"^\s*(?P<box_id>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+(?P<serial>\S*)",
         re.MULTILINE,
     )
     rx_mod = re.compile(r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
@@ -119,6 +119,7 @@ class Script(BaseScript):
                         if i["box_id"] == box_id:
                             p = {
                                 "type": "CHASSIS",
+                                "number": i["box_id"],
                                 "vendor": "DLINK",
                                 "part_no": [i["part_no"]],
                                 "revision": i["revision"],
