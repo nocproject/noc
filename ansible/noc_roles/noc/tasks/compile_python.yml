@@ -16,7 +16,7 @@
 
 - name: "Python{{ noc_py3_ver }} | Download archive's checksum"
   get_url:
-    url: "{{ noc_python_url ~ '_SHA1SUMS' }}"
+    url: "https://cdn.getnoc.com/noc/repo/Debian/20/python3.8.3.tar.gz_SHA1SUMS"
     dest: "{{ noc_dist }}"
     force: true
   environment:
