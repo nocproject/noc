@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Eltex.MES.get_inventory
 # ---------------------------------------------------------------------
@@ -47,7 +46,7 @@ class Script(BaseScript):
     )
     has_detail = True
 
-    def get_chassis(self, plat, ver, ser):
+    def get_chassis(self, plat, ver, ser, unit: int = None):
         match = self.rx_descr.search(plat)
         if match and match.group("descr").startswith("MES"):
             descr = match.group("descr")
@@ -90,6 +89,8 @@ class Script(BaseScript):
             r["revision"] = hardware.group("hardware")
         if descr:
             r["description"] = descr
+        if unit:
+            r["number"] = unit
         return r
 
     def get_pwr(self, type, pwr_type, platform):
@@ -213,16 +214,16 @@ class Script(BaseScript):
                         raise self.NotSupportedError()
                 if not self.is_has_image:
                     if has_unit_command:
-                        ver = self.cli("show version unit %s" % unit, cached=True)
+                        ver = self.cli(f"show version unit {unit}", cached=True)
                     else:
                         ver = self.cli("show version", cached=True)
                 else:
                     ver = ""
                 if has_unit_command:
-                    ser = self.cli("show system id unit %s" % unit, cached=True)
+                    ser = self.cli(f"show system id unit {unit}", cached=True)
                 else:
                     ser = self.cli("show system", cached=True)
-                r = self.get_chassis(plat, ver, ser)
+                r = self.get_chassis(plat, ver, ser, unit=unit)
                 platform = r["part_no"][0]
                 res += [r]
                 for match in self.rx_pwr.finditer(plat):
