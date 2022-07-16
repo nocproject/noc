@@ -32,7 +32,7 @@
   get_url:
     url: "https://cdn.getnoc.com/noc/repo/Debian/20/python3.8.3.tar.gz_SHA1SUMS"
     dest: "{{ noc_dist }}/Python-{{ py_rel_name }}.tar.gz"
-    checksum: "sha1:{{ python_checksum['content'] | b64decode }}"
+#    checksum: "sha1:{{ python_checksum['content'] | b64decode }}"
   register: python_archive_download
   environment:
     https_proxy: "{{ http_proxy }}"
