@@ -97,8 +97,8 @@ class Script(BaseScript):
                 r += [p]
         try:
             s = self.cli("show module_info")
-            for l in s.splitlines():
-                match = self.rx_mod3.search(l)
+            for line in s.splitlines():
+                match = self.rx_mod3.search(line)
                 if match and match.group("part_no") != "-":
                     p = {
                         "type": "MODULE",
