@@ -52,9 +52,15 @@ SQL_REMOVE = """
 class MaintenanceObject(EmbeddedDocument):
     object = ForeignKeyField(ManagedObject)
 
+    def __str__(self):
+        return f"{self.object}"
+
 
 class MaintenanceSegment(EmbeddedDocument):
     segment = ReferenceField(NetworkSegment)
+
+    def __str__(self):
+        return f"{self.segment}"
 
 
 @on_save
@@ -95,6 +101,9 @@ class Maintenance(Document):
     # @todo: Attachments
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    def __str__(self):
+        return f"[{'V' if self.is_completed else ' '}] {self.start}-{self.stop}: {self.subject}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
