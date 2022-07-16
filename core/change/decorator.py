@@ -7,11 +7,12 @@
 
 # Python modules
 from logging import getLogger
-from typing import Dict, Optional
+from typing import Optional, List
 
 # NOC modules
 from noc.models import is_document, get_model_id
 from .policy import change_tracker
+from .model import ChangeField
 
 logger = getLogger(__name__)
 
@@ -58,33 +59,31 @@ def _track_model(model):
 
 
 def _on_document_change(sender, document, created=False, *args, **kwargs):
-    def get_changed(field_name: str) -> Optional[Dict[str, str]]:
+    def get_changed(field_name: str) -> Optional[ChangeField]:
         """
         Return changed field with new and old value
         :param field_name:
         :return:
         """
-        # ov = instance.initial_data[field_name]
-        # if hasattr(ov, "pk"):
-        #     ov = str(ov.pk)
         ov = None
+        if hasattr(ov, "pk"):
+            ov = str(ov.pk)
+        elif hasattr(ov, "_instance"):
+            # Embedded field
+            ov = [str(x) for x in ov]
         nv = getattr(document, field_name)
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
-        if isinstance(ov, list):
-            # Embedded document
-            ov = [str(x) for x in ov]
-        else:
-            ov = str(ov)
-        if isinstance(nv, list):
+        elif hasattr(nv, "_instance"):
+            # Embedded field
             nv = [str(x) for x in nv]
-        else:
-            nv = str(nv)
-        return {"field": field_name, "old": ov, "new": nv}
+        if str(ov or None) == str(nv or None):
+            return None
+        return ChangeField(field=field_name, old=ov, new=nv)
 
     model_id = get_model_id(document)
     op = "create" if created else "update"
-    changed_fields = []
+    changed_fields: List[ChangeField] = []
     for f_name in document._changed_fields if not created else []:
         cf = get_changed(f_name)
         if cf:
@@ -120,7 +119,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
 
 
 def _on_model_change(sender, instance, created=False, *args, **kwargs):
-    def get_changed(field_name: str) -> Optional[Dict[str, str]]:
+    def get_changed(field_name: str) -> Optional[ChangeField]:
         """
         Return changed field with new and old value
         :param field_name:
@@ -132,11 +131,11 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         nv = getattr(instance, field_name)
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
-        if str(ov) == str(nv):
+        if str(ov or None) == str(nv or None):
             return None
-        return {"field": field_name, "old": ov, "new": nv}
+        return ChangeField(field=field_name, old=ov, new=nv)
 
-    changed_fields = []
+    changed_fields: List[ChangeField] = []
     # Check for instance proxying
     if hasattr(instance, "get_changed_instance"):
         instance = instance.get_changed_instance()
