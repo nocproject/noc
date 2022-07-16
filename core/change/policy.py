@@ -10,14 +10,14 @@ import contextlib
 from contextvars import ContextVar
 import time
 from collections import defaultdict
-from typing import Optional, Tuple, List, Dict
+from typing import Optional, Tuple, List, Dict, Literal
 from abc import ABCMeta, abstractmethod
 
 
 # NOC modules
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-
+from .model import ChangeField
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 
@@ -133,7 +133,13 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
     Simple policy, applies every registered change
     """
 
-    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
+    def register(
+        self,
+        op: Literal["create", "delete", "update"],
+        model: str,
+        id: str,
+        fields: Optional[List[ChangeField]] = None,
+    ) -> None:
         key = hash_int(id)
         t0 = time.time()
         defer(CHANGE_HANDLER, key=key, changes=[(op, model, str(id), fields, t0)])
@@ -142,13 +148,30 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
 class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
     def __init__(self):
         super().__init__()
-        self.changes: Dict[Tuple[str, str], Tuple[str, Optional[List], Optional[float]]] = {}
+        self.changes: Dict[
+            Tuple[str, str],
+            Tuple[Literal["create", "delete", "update"], Optional[List[ChangeField]], float],
+        ] = {}
 
-    def register(self, op: str, model: str, id: str, fields: Optional[List] = None) -> None:
-        def merge_fields(f1: Optional[List[str]], f2: Optional[List[str]]) -> Optional[List[str]]:
-            f1 = f1 or []
-            f2 = f2 or []
-            return list(set(f1) | set(f2))
+    def register(
+        self,
+        op: Literal["create", "delete", "update"],
+        model: str,
+        id: str,
+        fields: Optional[List[ChangeField]] = None,
+    ) -> None:
+        def merge_fields(
+            f1: Optional[List[ChangeField]], f2: Optional[List[ChangeField]]
+        ) -> Optional[List[ChangeField]]:
+            processed = set()
+            r = []
+            for x in f1 or []:
+                r.append(x)
+                processed.add(x.field)
+            for x in f2 or []:
+                if x.field not in processed:
+                    r.append(x)
+            return r
 
         t0 = time.time()
         prev = self.changes.get((model, id))
