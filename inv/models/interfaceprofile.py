@@ -81,6 +81,13 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     # Threshold processing
     threshold_profile = ReferenceField(ThresholdProfile)
 
+    def __str__(self):
+        return (
+            f"{self.metric_type} "
+            f"({self.enable_box}/{self.enable_periodic}/{self.is_stored}):"
+            f' {self.threshold_profile.name if self.threshold_profile else ""}'
+        )
+
 
 @bi_sync
 @change
