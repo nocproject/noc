@@ -25,9 +25,10 @@ class Script(BaseScript):
     SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
     def execute_cli(self):
-        macs = sorted(self.rx_mac.findall(self.cli("show version", cached=True)))
-        if not macs:
+        if self.is_foxgate_cli:
             macs = sorted(self.rx_mac2.findall(self.cli("show ip", cached=True)))
+        else:
+            macs = sorted(self.rx_mac.findall(self.cli("show version", cached=True)))
         return [
             {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
         ]

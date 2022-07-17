@@ -7,6 +7,8 @@
 
 # Python modules
 import re
+from typing import Set, Dict, Any
+from collections import defaultdict
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -78,142 +80,164 @@ class Script(BaseScript):
     )
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
 
-    def execute_cli(self):
-        interfaces = []
-        # Get LLDP interfaces
-        lldp = []
+    def get_switchport_cli(self) -> Dict[str, Dict[str, Any]]:
+        if self.is_foxgate_cli:
+            return {}
+        # New CLI syntax
+        result = defaultdict(lambda: {"untagged": None, "tagged": []})
+        v = self.cli("show switchport interface")
+        for match in self.rx_vlan.finditer(v):
+            ifname = match.group("ifname")
+            result[ifname]["untagged"] = match.group("untagged_vlan")
+            if match.group("tagged_vlans"):
+                tagged_vlans = match.group("tagged_vlans").replace(";", ",")
+                result[ifname]["tagged"] = self.expand_rangelist(tagged_vlans)
+        return result
+
+    def get_interface_lldp(self) -> Set[str]:
+        lldp = set()
+        if self.is_foxgate_cli:
+            return lldp
         c = self.cli("show lldp", ignore_errors=True)
         if self.rx_lldp_en.search(c):
             ll = self.rx_lldp.search(c)
             if ll:
-                lldp = ll.group("local_if").split()
+                lldp = set(ll.group("local_if").split())
+        return lldp
+
+    def get_interfaces_foxgatecli(self):
+        """
+        For FoxGate Like CLI syntax
+        :return:
+        """
+        v = self.cli("show interface", cached=True)
+        interfaces = {}
+        for match in self.rx_sh_int_old.finditer(v):
+            ifname = match.group("interface")
+            sub = {
+                "name": match.group("interface"),
+                "admin_status": match.group("admin_status") == "enabled",
+                "oper_status": match.group("oper_status") == "up",
+                "mac": match.group("mac"),
+                "enabled_afi": ["BRIDGE"],
+            }
+            if match.group("mode") == "access":
+                sub["untagged_vlan"] = match.group("untagged")
+            else:
+                sub["untagged_vlan"] = match.group("pvid")
+                sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
+            interfaces[ifname] = {
+                "name": ifname,
+                "type": "physical",
+                "admin_status": match.group("admin_status") == "enabled",
+                "oper_status": match.group("oper_status") == "up",
+                "mac": match.group("mac"),
+                "subinterfaces": [sub],
+            }
+
+        v = self.cli("show ip", cached=True)
+        match = self.rx_mgmt.search(v)
+        ip_address = f'{match.group("ip")}/{IPv4.netmask_to_len(match.group("mask"))}'
+        interfaces["system"] = {
+            "name": "system",
+            "type": "SVI",
+            "admin_status": True,
+            "oper_status": True,
+            "mac": match.group("mac"),
+            "subinterfaces": [
+                {
+                    "name": "system",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "mac": match.group("mac"),
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": [ip_address],
+                    "vlan_ids": match.group("vlan_id"),
+                }
+            ],
+        }
+        return [{"interfaces": list(interfaces.values())}]
+
+    def execute_cli(self, **kwargs):
+        interfaces = {}
+        if self.is_foxgate_cli:
+            return self.get_interfaces_foxgatecli()
+        # Get LLDP enabled interfaces
+        lldp = self.get_interface_lldp()
+        # Get switchports and fill tagged/untagged lists if they are not empty
+        switchports = self.get_switchport_cli()
         v = self.cli("show interface", cached=True)
         for match in self.rx_sh_int.finditer(v):
-            name = match.group("interface")
+            ifname = match.group("interface")
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
-            other = match.group("other")
-            match1 = self.rx_hw.search(other)
-            iface = {
-                "type": self.profile.get_interface_type(name),
-                "name": name,
+            sub = {
+                "name": ifname,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
+                "enabled_protocols": [],
+                "enabled_afi": [],
             }
-            sub = {"name": name, "admin_status": a_stat, "oper_status": o_stat}
-            # LLDP protocol
-            if name in lldp:
-                iface["enabled_protocols"] = ["LLDP"]
-            if iface["type"] == "physical":
-                sub["enabled_afi"] = ["BRIDGE"]
+            # Switchport
+            if ifname in switchports:
+                # Bridge
+                sub["enabled_afi"] += ["BRIDGE"]
+                u, t = switchports[ifname]["untagged"], switchports[ifname].get("tagged")
+                if u:
+                    sub["untagged_vlan"] = u
+                if t:
+                    sub["tagged_vlans"] = t
+            # Other
+            other = match.group("other")
+            # MTU
+            match1 = self.rx_mtu.search(other)
+            if match1:
+                sub["mtu"] = match1.group("mtu")
+            # PVID
+            match1 = self.rx_pvid.search(other)
+            if match1:
+                sub["untagged_vlan"] = match1.group("pvid")
+            if ifname.startswith("Vlan"):
+                sub["vlan_ids"] = [int(ifname[4:])]
+            # IP Address
+            match1 = self.rx_ip.search(other)
+            if match1 and "NULL" not in match1.group("ip"):
+                ip_address = f'{match1.group("ip")}/{IPv4.netmask_to_len(match1.group("mask"))}'
+                sub["ipv4_addresses"] = [ip_address]
+                sub["enabled_afi"] = ["IPv4"]
+            iface = {
+                "name": ifname,
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "type": self.profile.get_interface_type(ifname),
+                "enabled_protocols": [],
+                "subinterfaces": [sub],
+            }
+            # MAC
+            match1 = self.rx_hw.search(other)
             if match1.group("mac"):
                 iface["mac"] = match1.group("mac")
                 sub["mac"] = match1.group("mac")
+            # Description
             match1 = self.rx_alias.search(other)
             if match1 and match1.group("alias") != "(null),":
                 iface["description"] = match1.group("alias")
                 sub["description"] = match1.group("alias")
+            # Ifindex
             match1 = self.rx_index.search(other)
             if match1:
                 iface["snmp_ifindex"] = match1.group("ifindex")
                 sub["snmp_ifindex"] = match1.group("ifindex")
-            else:
-                if match.group("snmp_ifindex"):
-                    iface["snmp_ifindex"] = match.group("snmp_ifindex")
-                    sub["snmp_ifindex"] = match.group("snmp_ifindex")
-            # Correct alias and index on some device
-            match1 = self.rx_alias_and_index.search(other)
-            if match1:
-                if match1.group("alias") != "(null)":
-                    iface["description"] = match1.group("alias")
-                    sub["description"] = match1.group("alias")
-                iface["snmp_ifindex"] = match1.group("ifindex")
-                sub["snmp_ifindex"] = match1.group("ifindex")
-            match1 = self.rx_mtu.search(other)
-            if match1:
-                sub["mtu"] = match1.group("mtu")
-            match1 = self.rx_pvid.search(other)
-            if match1:
-                sub["untagged_vlan"] = match1.group("pvid")
-            if name.startswith("Vlan"):
-                sub["vlan_ids"] = [int(name[4:])]
+            elif match.group("snmp_ifindex"):
+                iface["snmp_ifindex"] = match.group("snmp_ifindex")
+                sub["snmp_ifindex"] = match.group("snmp_ifindex")
+            # LAG
             match1 = self.rx_lag_port.search(other)
             if match1:
                 iface["aggregated_interface"] = match1.group("lag_port")
-            match1 = self.rx_ip.search(other)
-            if match1:
-                if "NULL" in match1.group("ip"):
-                    continue
-                ip_address = "%s/%s" % (
-                    match1.group("ip"),
-                    IPv4.netmask_to_len(match1.group("mask")),
-                )
-                sub["ipv4_addresses"] = [ip_address]
-                sub["enabled_afi"] = ["IPv4"]
-            iface["subinterfaces"] = [sub]
-            interfaces += [iface]
-        if interfaces:
-            # New CLI syntax
-            v = self.cli("show switchport interface")
-            for match in self.rx_vlan.finditer(v):
-                ifname = match.group("ifname")
-                untagged_vlan = match.group("untagged_vlan")
-                for i in interfaces:
-                    if ifname == i["name"]:
-                        i["subinterfaces"][0]["untagged_vlan"] = untagged_vlan
-                        if match.group("tagged_vlans"):
-                            tagged_vlans = match.group("tagged_vlans").replace(";", ",")
-                            i["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(
-                                tagged_vlans
-                            )
-                        break
-        else:
-            # Old CLI syntax. V6.5.1.21 and older
-            for match in self.rx_sh_int_old.finditer(v):
-                iface = {
-                    "name": match.group("interface"),
-                    "type": "physical",
-                    "admin_status": match.group("admin_status") == "enabled",
-                    "oper_status": match.group("oper_status") == "up",
-                    "mac": match.group("mac"),
-                }
-                sub = {
-                    "name": match.group("interface"),
-                    "admin_status": match.group("admin_status") == "enabled",
-                    "oper_status": match.group("oper_status") == "up",
-                    "mac": match.group("mac"),
-                    "enabled_afi": ["BRIDGE"],
-                }
-                if match.group("mode") == "access":
-                    sub["untagged_vlan"] = match.group("untagged")
-                else:
-                    sub["untagged_vlan"] = match.group("pvid")
-                    sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
-                iface["subinterfaces"] = [sub]
-                interfaces += [iface]
-            v = self.cli("show ip", cached=True)
-            match = self.rx_mgmt.search(v)
-            ip_address = "%s/%s" % (
-                match.group("ip"),
-                IPv4.netmask_to_len(match.group("mask")),
-            )
-            iface = {
-                "name": "system",
-                "type": "SVI",
-                "admin_status": True,
-                "oper_status": True,
-                "mac": match.group("mac"),
-                "subinterfaces": [
-                    {
-                        "name": "system",
-                        "admin_status": True,
-                        "oper_status": True,
-                        "mac": match.group("mac"),
-                        "enabled_afi": ["IPv4"],
-                        "ipv4_addresses": [ip_address],
-                        "vlan_ids": match.group("vlan_id"),
-                    }
-                ],
-            }
-            interfaces += [iface]
-        return [{"interfaces": interfaces}]
+            # LLDP protocol
+            if ifname in lldp:
+                iface["enabled_protocols"] = ["LLDP"]
+            interfaces[ifname] = iface
+
+        return [{"interfaces": list(interfaces.values())}]

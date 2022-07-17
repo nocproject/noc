@@ -42,7 +42,7 @@ class Script(BaseScript):
     rx_ver_snmp2 = re.compile(r"^(?P<vendor>FoxGate) (?P<platform>\S+)$", re.MULTILINE)
 
     def execute_snmp(self):
-        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
+        v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         match = self.rx_ver_snmp.search(v)
         if match:
             return {
@@ -83,10 +83,9 @@ class Script(BaseScript):
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver_snmp.search(v)
+        vendor = "NAG"
         if match.group("vendor"):
             vendor = "FoxGate"
-        else:
-            vendor = "NAG"
         return {
             "vendor": vendor,
             "platform": match.group("platform"),

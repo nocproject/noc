@@ -7,10 +7,9 @@
 
 # Python modules
 import re
-from builtins import str
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_arp import Script as BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
 
@@ -24,26 +23,11 @@ class Script(BaseScript):
         r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+\d+)", re.MULTILINE
     )
 
-    def execute_snmp(self):
-        r = []
-        for v in self.snmp.get_tables(
-            ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2", "1.3.6.1.2.1.4.22.1.3"], bulk=True
-        ):
-            iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True)  # IF-MIB
-            mac = ":".join(["%02x" % ord(c) for c in v[2]])
-            # ip = ["%02x" % ord(c) for c in v[3]]
-            # ip = ".".join(str(int(c, 16)) for c in ip)
-            r.append({"ip": v[3], "mac": mac, "interface": iface})
-        return r
-
     def execute_cli(self):
-        r = []
-        try:
-            v = self.cli("show arp")
-            for match in self.rx_arp.finditer(v):
-                r += [match.groupdict()]
-        except self.CLISyntaxError:
+        if self.is_foxgate_cli:
             v = self.cli("show arp all")
-            for match in self.rx_arp2.finditer(v):
-                r += [match.groupdict()]
+            r = [match.groupdict() for match in self.rx_arp2.finditer(v)]
+        else:
+            v = self.cli("show arp")
+            r = [match.groupdict() for match in self.rx_arp.finditer(v)]
         return r

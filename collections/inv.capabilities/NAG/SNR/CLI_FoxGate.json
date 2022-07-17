@@ -1,0 +1,8 @@
+{
+    "name": "NAG | SNR | CLI | FoxGate",
+    "$collection": "inv.capabilities",
+    "uuid": "96cb024c-3062-415a-a2a7-d3503d7628c0",
+    "description": "Supported FoxGate CLI Syntax on SNR Profile",
+    "type": "bool",
+    "card_template": null
+}

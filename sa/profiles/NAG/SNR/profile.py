@@ -29,6 +29,7 @@ class Profile(BaseProfile):
     command_exit = "exit"
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}
+    matchers = {"is_foxgate_cli": {"caps": {"$in": ["NAG | SNR | CLI | FoxGate"]}}}
 
     rx_pager = re.compile(r"0 for no pausing")
 
