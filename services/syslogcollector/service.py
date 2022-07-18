@@ -146,7 +146,7 @@ class SyslogCollectorService(FastAPIService):
                         "collector": config.pool,
                         "address": source_address,
                         "managed_object": asdict(cfg.managed_object),
-                        "syslog": {
+                        "data": {
                             "facility": facility,
                             "severity": severity,
                             "message": message,
