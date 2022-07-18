@@ -41,10 +41,11 @@ Message contains JSON array, containing objects of following structure
 | {{ tab2 }} id             | String               | Remote System's ID                        |
 | {{ tab2 }} name           | String               | Remote System's Name                      |
 | {{ tab }} remote_id       | String               | Managed Object's ID in Remote System (if any)  |
-| snmptrap                 | Object {{ complex }}        |  SNMP Trap message body content              |
+| data                 | Object {{ complex }}        |  SNMP Trap message body content              |
 | {{ tab }} vars            | Array of {{ complex }} | SNMP Trap varbinds              |
-| {{ tab2 }} oid            | String               | Var OID value                      |
-| {{ tab2 }} value          | String               | Var OID value                      |
+| {{ tab2 }} oid            | String               | Var OID                        |
+| {{ tab2 }} value          | String               | Var value                      |
+| {{ tab2 }} value          | String               | Var in PDU value with base64 encode          |
 
 ## Example
 
@@ -75,39 +76,39 @@ Message contains JSON array, containing objects of following structure
     },
     "remote_id": "22"
   },
-  "snmptrap": {
+  "data": {
     "vars": [
       {
         "oid": "1.3.6.1.2.1.1.3.0",
-        "value": "2199886748",
-        "value_rest": ""
+        "value": 2294684216,
+        "value_raw": "QwUAiMYaOA=="
       },
       {
         "oid": "1.3.6.1.6.3.1.1.4.1.0",
         "value": "1.3.6.1.6.3.1.1.5.3",
-        "value_rest": ""
+        "value_raw": ""
       },
       {
         "oid": "1.3.6.1.2.1.2.2.1.1.9",
-        "value": "10104",
-        "value_rest": ""
+        "value": 10104,
+        "value_raw": "AgIneA=="
       },
       {
         "oid": "1.3.6.1.2.1.2.2.1.7.9",
-        "value": "1",
-        "value_rest": ""
+        "value": 1,
+        "value_raw": "AgEB"
       },
       {
         "oid": "1.3.6.1.2.1.2.2.1.8.9",
-        "value": "2",
-        "value_rest": ""
+        "value": 2,
+        "value_raw": "AgEC"
       },
       {
         "oid": "1.3.6.1.2.1.2.3",
         "value": "This is a Test",
-        "value_rest": ""
+        "value_raw": "BA5UaGlzIGlzIGEgVGVzdA=="
       }
-    ],
+    ]
   }
 }
 

@@ -26,9 +26,9 @@ class AdministrativeDomainData(object):
 @dataclass
 class ManagedObjectData(object):
     id: str
-    bi_id: int
     name: str
     administrative_domain: AdministrativeDomainData
+    bi_id: int = None
     labels: List[str] = None
     remote_system: Optional[RemoteSystemData] = None
     remote_id: Optional[str] = None

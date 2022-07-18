@@ -41,7 +41,7 @@ Message contains JSON array, containing objects of following structure
 | {{ tab2 }} id             | String               | Remote System's ID                        |
 | {{ tab2 }} name           | String               | Remote System's Name                      |
 | {{ tab }} remote_id       | String               | Managed Object's ID in Remote System (if any)  |
-| syslog                 | Object {{ complex }}        | Syslog message body content              |
+| data                 | Object {{ complex }}        | Syslog message body content              |
 | {{ tab }} facility            | String               | Syslog facility                         |
 | {{ tab }} severity            | String               | Syslog severity                            |
 | {{ tab }} message            | String               | Syslog message                             |
@@ -75,9 +75,10 @@ Message contains JSON array, containing objects of following structure
     },
     "remote_id": "22"
   },
-  "syslog": {
+  "data": {
     "severity": 1,
     "facility": 2,
-    "message": "Message 1",
+    "message": "Message 1"
   }
 }
+```

@@ -47,7 +47,7 @@ def decode_trap_pdu_v1(pdu):
 
 
 def decode_trap_pdu_v2c(pdu):
-    return dict(pdu[-1])
+    return dict((x[0], x[1]) for x in pdu[-1])
 
 
 PDU_PARSERS = {0: decode_trap_pdu_v1, 1: decode_trap_pdu_v2c}
