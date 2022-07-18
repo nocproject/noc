@@ -159,7 +159,7 @@ class TrapCollectorService(FastAPIService):
                         "collector": config.pool,
                         "address": source_address,
                         "managed_object": asdict(cfg.managed_object),
-                        "snmptrap": {"vars": raw_data},
+                        "data": {"vars": raw_data},
                     }
                 ),
                 stream=MX_STREAM,
