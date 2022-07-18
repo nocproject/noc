@@ -30,7 +30,7 @@ def decode_trap(packet, raw=False):
     raw_data = None
     if raw:
         raw_data = [
-            {"oid": oid, "value": value, "value_raw":  base64.b64encode(value_raw).decode("utf-8")}
+            {"oid": oid, "value": value, "value_raw": base64.b64encode(value_raw).decode("utf-8")}
             for oid, value, value_raw in pdu[-1]
         ]
     decoder = PDU_PARSERS.get(version)
