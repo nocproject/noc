@@ -37,6 +37,7 @@ class BERDecoder(object):
     def __init__(self, display_hints=None, include_raw=False):
         self.last_oid: Optional[str] = None
         self.oid_msg: Optional[bytes] = None
+        self.raw_pdu: Optional[bytes] = None
         self.display_hints = display_hints
         self.include_raw = include_raw
 
@@ -51,6 +52,9 @@ class BERDecoder(object):
         decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(
             msg
         )
+        if self.include_raw and is_constructed and is_implicit:
+            # Save pdu message
+            self.raw_pdu = msg
         value, rest = msg[offset : offset + length], msg[offset + length :]
         if is_implicit:
             return self.parse_implicit(value, tag), rest
@@ -477,7 +481,7 @@ encoder = BEREncoder()
 def decode(msg, include_raw=False):
     decoder = BERDecoder(include_raw=include_raw)
     data, _ = decoder.parse_tlv(msg)
-    return data
+    return data, decoder.raw_pdu
 
 
 # Calculate bitsting cache

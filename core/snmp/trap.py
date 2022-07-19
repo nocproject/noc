@@ -26,7 +26,7 @@ def decode_trap(packet, raw=False):
     :param raw:
     :return:
     """
-    version, community, pdu = decode(packet, include_raw=raw)
+    (version, community, pdu), raw_pdu = decode(packet, include_raw=raw)
     raw_data = None
     if raw:
         raw_data = [
@@ -36,7 +36,7 @@ def decode_trap(packet, raw=False):
     decoder = PDU_PARSERS.get(version)
     if decoder is None:
         raise UnsupportedSNMPVersion("Unsupported SNMP version %s" % version)
-    return community, decoder(pdu), raw_data
+    return community, decoder(pdu), raw_data, raw_pdu
 
 
 def decode_trap_pdu_v1(pdu):

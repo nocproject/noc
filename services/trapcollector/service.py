@@ -12,6 +12,7 @@ import asyncio
 from collections import defaultdict
 from dataclasses import asdict
 from typing import Optional, Any, Dict
+import base64
 
 # Third-party modules
 import orjson
@@ -127,8 +128,9 @@ class TrapCollectorService(FastAPIService):
         cfg: SourceConfig,
         timestamp: int,
         data: Dict[str, Any],
-        raw_data: Optional[bytes] = None,
         source_address: Optional[str] = None,
+        raw_data: Optional[bytes] = None,
+        raw_pdu: Optional[bytes] = None,
     ):
         """
         Spool message to be sent
@@ -158,7 +160,10 @@ class TrapCollectorService(FastAPIService):
                         "collector": config.pool,
                         "address": source_address,
                         "managed_object": asdict(cfg.managed_object),
-                        "data": {"vars": raw_data},
+                        "data": {
+                            "vars": raw_data,
+                            "raw_pdu": base64.b64encode(raw_pdu).decode("utf-8"),
+                        },
                     }
                 ),
                 stream=MX_STREAM,

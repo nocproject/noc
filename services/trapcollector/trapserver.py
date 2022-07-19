@@ -44,7 +44,7 @@ class TrapServer(UDPServer):
             if need_block:
                 return
         try:
-            community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
+            community, varbinds, raw_data, raw_pdu = decode_trap(data, raw=self.service.mx_message)
         except Exception as e:
             metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", codecs.encode(data, "hex"))
@@ -57,4 +57,4 @@ class TrapServer(UDPServer):
         body = {"source": "SNMP Trap", "collector": config.pool, "message_id": str(uuid.uuid4())}
         body.update(varbinds)
         body = {k: fm_escape(body[k]) for k in body}
-        self.service.register_message(cfg, ts, body, raw_data, address[0])
+        self.service.register_message(cfg, ts, body, address[0], raw_data, raw_pdu)
