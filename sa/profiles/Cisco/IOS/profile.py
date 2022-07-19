@@ -51,7 +51,7 @@ class Profile(BaseProfile):
         ("hints", "protocols", "ntp", "version", "3"),
         # ("hints", "protocols", "loop-detect", "status", False),
     ]
-    rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+):?(\d+)?\w*[\).]\S*")
+    rx_ver = re.compile(r"(\d+)\.?(\d+)?[\(.](\d+):?(\d+)?\w*[\).]?\S*")
 
     matchers = {
         "is_platform_7200": {"platform": {"$regex": r"720[0146]|730[14]"}},
@@ -75,7 +75,7 @@ class Profile(BaseProfile):
     }
 
     def cmp_version(self, x, y):
-        """12(25)SEC2, 12.4(19b), 12.2(54)SG1"""
+        """12(25)SEC2, 12.4(19b), 12.2(54)SG1 16.6.5"""
         a = [int(z) for z in self.rx_ver.findall(x)[0] if z]
         b = [int(z) for z in self.rx_ver.findall(y)[0] if z]
         return (a > b) - (a < b)
