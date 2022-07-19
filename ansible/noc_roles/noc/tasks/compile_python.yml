@@ -1,4 +1,3 @@
-#test
 ---
 - name: "Fail if Python version for download is not recommended"
   fail:
