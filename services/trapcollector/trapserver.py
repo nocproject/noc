@@ -10,6 +10,7 @@ import logging
 import time
 from typing import Tuple
 import codecs
+import uuid
 
 # NOC modules
 from noc.core.ioloop.udpserver import UDPServer
@@ -53,7 +54,7 @@ class TrapServer(UDPServer):
         # Get timestamp
         ts = int(time.time())
         # Build body
-        body = {"source": "SNMP Trap", "collector": config.pool}
+        body = {"source": "SNMP Trap", "collector": config.pool, "message_id": str(uuid.uuid4())}
         body.update(varbinds)
         body = {k: fm_escape(body[k]) for k in body}
         self.service.register_message(cfg, ts, body, raw_data, address[0])

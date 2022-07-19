@@ -15,7 +15,6 @@ from typing import Optional, Any, Dict
 
 # Third-party modules
 import orjson
-import uuid
 
 # NOC modules
 from noc.config import config
@@ -154,7 +153,7 @@ class TrapCollectorService(FastAPIService):
                 value=orjson.dumps(
                     {
                         "timestamp": now.replace(microsecond=0),
-                        "uuid": str(uuid.uuid4()),
+                        "message_id": data["message_id"],
                         "collector_type": "snmptrap",
                         "collector": config.pool,
                         "address": source_address,
