@@ -2,9 +2,12 @@
 # Vendor: HP
 # OS:     ProCurve
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+import re
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -30,18 +33,19 @@ class Profile(BaseProfile):
     #
     # Compare versions
     #
-    # Version format is <letter>.<major>.<minor>
+    # Version format is <letter>.<major>.<minor>[.<patch>]
     #
+    rx_ver = re.compile(rb"\d+")
+
     @classmethod
     def cmp_version(cls, v1, v2):
-        l1, mj1, mn1 = v1.split(".")
-        l2, mj2, mn2 = v2.split(".")
+        if v1.count(".") != v2.count("."):
+            return None
+        l1 = v1.split(".", 1)
+        l2 = v2.split(".", 1)
         if l1 != l2:
             # Different letters
             return None
-        a, b = int(mj1), int(mj2)
-        r = (a > b) - (a < b)
-        if r != 0:
-            return r
-        a, b = int(mn1), int(mn2)
+        a = [int(z) for z in cls.rx_ver.findall(v1)]
+        b = [int(z) for z in cls.rx_ver.findall(v2)]
         return (a > b) - (a < b)
