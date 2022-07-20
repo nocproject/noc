@@ -15,6 +15,7 @@ import fileinput
 TOWER_DB_PATH = "/opt/tower/var/tower/db/config.db"
 PG_VERSION = "9.6"
 PG_DEB_PATH = "/etc/postgresql/" + PG_VERSION + "/main/noc.conf"
+PG_RPM_PATH = "/var/lib/pgsql/" + PG_VERSION + "/data/noc.conf"
 NATS_DEB_PATH = "/etc/nats/nats-server.conf"
 LB_DEB_PATH = "/etc/liftbridge/liftbridge.yml"
 NGINX_DEB_PATH = "/etc/nginx/conf.d/noc.conf"
