@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,13 +9,15 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
     name = "Angtel.Topaz.get_interfaces"
     interface = IGetInterfaces
+
+    always_prefer = "S"
 
     rx_port = re.compile(
         r"^(?P<port>(?:Fa|Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"

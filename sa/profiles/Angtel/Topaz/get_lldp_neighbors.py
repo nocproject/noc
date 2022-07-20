@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.core.text import parse_table
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.validators import is_ipv4, is_ipv6, is_mac
@@ -35,6 +35,7 @@ from noc.core.lldp import (
 class Script(BaseScript):
     name = "Angtel.Topaz.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+    always_prefer = "S"
 
     rx_neighbor = re.compile(
         r"^Device ID:(?P<chassis_id>.+)\n"
@@ -65,7 +66,7 @@ class Script(BaseScript):
                 ifname = self.profile.convert_interface_name(d[0])
             except ValueError:
                 continue
-            v = self.cli("show lldp neighbors %s" % ifname)
+            v = self.cli(f"show lldp neighbors {ifname}")
             match = self.rx_neighbor.search(v)
             chassis_id = match.group("chassis_id").strip()
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
