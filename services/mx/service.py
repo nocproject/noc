@@ -7,13 +7,15 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict
+import asyncio
+from typing import Dict, Any
 
 # Third-party modules
 import orjson
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
+from noc.core.error import NOCError
 from noc.core.mx import MX_STREAM
 from noc.config import config
 from noc.core.liftbridge.message import Message
@@ -21,6 +23,7 @@ from noc.core.mx import MX_SHARDING_KEY
 from noc.services.mx.router.router import Router
 from noc.services.mx.router.action import DROP
 from noc.core.perf import metrics
+from noc.services.mx.datastream import RouteDataStreamClient
 
 
 class MXService(FastAPIService):
@@ -38,10 +41,44 @@ class MXService(FastAPIService):
         self.router = Router()
         self.stream_partitions: Dict[str, int] = {}
 
+    async def init_api(self):
+        # Postpone initialization process until config datastream is fully processed
+        self.ready_event = asyncio.Event()
+        asyncio.get_running_loop().create_task(self.get_mx_routes_config())
+        # Set by datastream.on_ready
+        await self.ready_event.wait()
+        # Process as usual
+        await super().init_api()
+
+    async def get_mx_routes_config(self):
+        """
+        Subscribe and track datastream changes
+        """
+        client = RouteDataStreamClient("cfgmxroute", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track MX route settings")
+            try:
+                await client.query(limit=config.message.ds_limit, block=True)
+            except NOCError as e:
+                self.logger.info("Failed to get MX route settings: %s", e)
+                await asyncio.sleep(1)
+
+    async def on_ready(self) -> None:
+        # Pass further initialization
+        self.ready_event.set()
+
     async def on_activate(self):
-        self.router.load()
+        #     self.router.load()
+        self.logger.info("Loader rules %s", len(self.router.chains))
         self.slot_number, self.total_slots = await self.acquire_slot()
         await self.subscribe_stream(MX_STREAM, self.slot_number, self.on_message, async_cursor=True)
+
+    async def update_route(self, data: Dict[str, Any]) -> None:
+        self.router.change_route(data)
+
+    async def delete_route(self, r_id: str) -> None:
+        self.router.delete_route(r_id)
 
     async def on_message(self, msg: Message) -> None:
         metrics["messages"] += 1

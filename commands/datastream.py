@@ -43,6 +43,7 @@ class Command(BaseCommand):
         "vrf": "ip.VRF",
         "prefix": "ip.Prefix",
         "address": "ip.Address",
+        "cfgmxroute": "main.MessageRoute",
     }
 
     def add_arguments(self, parser):

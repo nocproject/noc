@@ -472,6 +472,8 @@ class Config(BaseConfig):
         #
         enable_snmptrap = BooleanParameter(default=False)
         enable_syslog = BooleanParameter(default=False)
+        #
+        ds_limit = IntParameter(default=1000)
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
@@ -698,6 +700,15 @@ class Config(BaseConfig):
         cfgmetrics_ttl = SecondsParameter(
             default="0",
             help="Removing datastream cfgmetricscollector records older days",
+        )
+        enable_cfgmxroute = BooleanParameter(default=True)
+        enable_cfgmxroute_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgMXRoute datastream (Mongo greater 3.6 needed)",
+        )
+        cfgmxroute_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream CfgMXRoute records older days",
         )
         enable_cfgmomapping = BooleanParameter(default=True)
         enable_cfgmomapping_wait = BooleanParameter(

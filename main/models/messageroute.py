@@ -6,9 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Optional
+import threading
+import operator
 
 # Third-party modules
+import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
 from mongoengine.errors import ValidationError
@@ -16,11 +19,15 @@ from mongoengine.errors import ValidationError
 # NOC modules
 from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.change.decorator import change
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.config import config
 from .handler import Handler
 from .template import Template
 from .notificationgroup import NotificationGroup
 from .label import Label
+
+id_lock = threading.Lock()
 
 
 class HeaderMatch(EmbeddedDocument):
@@ -65,6 +72,7 @@ class MRAHeader(EmbeddedDocument):
         return self.header
 
 
+@change
 class MessageRoute(Document):
     meta = {"collection": "messageroutes", "strict": False, "auto_create_index": False}
 
@@ -84,6 +92,17 @@ class MessageRoute(Document):
     stream = StringField()
     notification_group = ForeignKeyField(NotificationGroup)
     headers = ListField(EmbeddedDocumentField(MRAHeader))
+
+    _id_cache = cachetools.TTLCache(100, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id) -> Optional["MessageRoute"]:
+        return MessageRoute.objects.filter(id=id).first()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmxroute:
+            yield "cfgmxroute", self.id
 
     def __str__(self):
         return self.name

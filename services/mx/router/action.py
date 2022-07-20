@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Type, Tuple, Dict, Iterator
+from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
+from dataclasses import dataclass
 
 # NOC modules
 from noc.core.liftbridge.message import Message
@@ -17,6 +18,20 @@ from noc.main.models.notificationgroup import NotificationGroup
 
 DROP = ""
 ACTION_TYPES: Dict[str, Type["Action"]] = {}
+
+
+@dataclass
+class HeaderItem(object):
+    header: str
+    value: str
+
+
+@dataclass
+class ActionCfg(object):
+    type: Literal["stream", "notification_group", "drop"]
+    stream: Optional[str] = None
+    notification_group: Optional[str] = None
+    headers: Optional[List[HeaderItem]] = None
 
 
 class ActionBase(type):
@@ -32,14 +47,31 @@ class ActionBase(type):
 class Action(object, metaclass=ActionBase):
     name: str
 
-    def __init__(self, mroute: MessageRoute):
-        self.headers: Dict[str, bytes] = {h.header: smart_bytes(h.value) for h in mroute.headers}
+    def __init__(self, cfg: ActionCfg):
+        self.headers: Dict[str, bytes] = {h.header: smart_bytes(h.value) for h in cfg.headers}
 
     @classmethod
     def from_action(cls, mroute: MessageRoute) -> "Action":
         global ACTION_TYPES
 
-        return ACTION_TYPES[mroute.action](mroute)
+        return ACTION_TYPES[mroute.type](
+            ActionCfg(
+                type=mroute.type, stream=mroute.stream, notification_group=mroute.notification_group
+            )
+        )
+
+    @classmethod
+    def from_data(cls, data):
+        global ACTION_TYPES
+
+        return ACTION_TYPES[data["action"]](
+            ActionCfg(
+                type=data["action"],
+                stream=data.get("stream"),
+                notification_group=data.get("notification_group"),
+                headers=[HeaderItem(**h) for h in data.get("headers", [])],
+            )
+        )
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         raise NotImplementedError
@@ -55,9 +87,9 @@ class DropAction(Action):
 class StreamAction(Action):
     name = "stream"
 
-    def __init__(self, mroute: MessageRoute):
-        super().__init__(mroute)
-        self.stream: str = mroute.stream
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.stream: str = cfg.stream
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         yield self.stream, self.headers
@@ -66,9 +98,9 @@ class StreamAction(Action):
 class NotificationAction(Action):
     name = "notification"
 
-    def __init__(self, mroute: MessageRoute):
-        super().__init__(mroute)
-        self.ng: NotificationGroup = mroute.notification_group
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.ng: NotificationGroup = NotificationGroup.get_by_id(cfg.notification_group)
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
         yield from self.ng.iter_actions()
