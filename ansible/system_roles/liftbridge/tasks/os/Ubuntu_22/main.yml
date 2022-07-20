@@ -1,0 +1,13 @@
+---
+- name: systemd script
+  template:
+    src: liftbridge_systemd.service.j2
+    dest: /lib/systemd/system/liftbridge.service
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - config
+  notify:
+    - reload systemd
+    - restart liftbridge
