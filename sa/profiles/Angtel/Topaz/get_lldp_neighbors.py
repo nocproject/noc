@@ -55,11 +55,11 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         v = v.replace("\n\n", "\n")
-        for l in parse_table(v):
-            if not l[0]:
-                data[-1] = [s[0] + s[1] for s in zip(data[-1], l)]
+        for row in parse_table(v):
+            if not row[0]:
+                data[-1] = [s[0] + s[1] for s in zip(data[-1], row)]
                 continue
-            data += [l]
+            data += [row]
 
         for d in data:
             try:

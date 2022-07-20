@@ -87,14 +87,14 @@ class Script(BaseScript):
         stp = self.get_stp()
         ctp = self.get_ctp()
         lldp = self.get_lldp()
-        for l in self.cli("show interfaces description").split("\n"):
-            match = self.rx_descr.match(l.strip())
+        for line in self.cli("show interfaces description").split("\n"):
+            match = self.rx_descr.match(line.strip())
             if match:
                 if match.group("port") == "Port":
                     continue
                 descr += [match.groupdict()]
-        for l in self.cli("show interfaces configuration").split("\n"):
-            match = self.rx_port1.match(l.strip())
+        for line in self.cli("show interfaces configuration").split("\n"):
+            match = self.rx_port1.match(line.strip())
             if match:
                 adm_status += [match.groupdict()]
         for match in self.rx_port.finditer(self.cli("show interfaces status", cached=True)):
@@ -145,8 +145,8 @@ class Script(BaseScript):
             interfaces += [iface]
         match = self.rx_mac.search(self.cli("show system", cached=True))
         mac = match.group("mac")
-        for l in self.cli("show ip interface").split("\n"):
-            match = self.rx_vlan_ipif.match(l.strip())
+        for line in self.cli("show ip interface").split("\n"):
+            match = self.rx_vlan_ipif.match(line.strip())
             if match:
                 ifname = "vlan" + match.group("vlan_id")
                 iface = {
