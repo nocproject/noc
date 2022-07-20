@@ -47,7 +47,7 @@ class Script(BaseScript):
     )
     fake_vendors = ["OEM", "CISCO-FINISAR"]
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         stacks = []
         s = self.scripts.get_switch()
