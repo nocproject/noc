@@ -35,7 +35,7 @@ class Profile(BaseProfile):
     #
     # Version format is <letter>.<major>.<minor>[.<patch>]
     #
-    rx_ver = re.compile(rb"\d+")
+    rx_ver = re.compile(r"\d+")
 
     @classmethod
     def cmp_version(cls, v1, v2):
