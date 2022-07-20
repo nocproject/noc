@@ -65,7 +65,8 @@ class Script(BaseScript):
                 stacks += [match.groupdict()]
         except self.CLISyntaxError:
             pass
-        r += [p]
+        if not stacks:
+            r += [p]
         box_id = 1
         match = self.rx_mod.search(s)
         if match:
