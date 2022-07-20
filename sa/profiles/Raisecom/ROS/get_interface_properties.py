@@ -16,6 +16,6 @@ class Script(BaseScript):
     requires = []
 
     def execute(self, **kwargs):
-        if self.is_ifname_use or self.is_iscom2624g:
+        if self.is_ifname_use or not self.is_ROS_version:
             self.SNMP_NAME_TABLE = "IF-MIB::ifName"
         return super().execute(**kwargs)
