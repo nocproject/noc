@@ -67,7 +67,7 @@ class Script(BaseScript):
             pass
         if not stacks:
             r += [p]
-        box_id = 1
+        box_id = "0"
         match = self.rx_mod.search(s)
         if match:
             p = {"type": "MODULE", "vendor": "DLINK", "part_no": [match.group("part_no")]}
