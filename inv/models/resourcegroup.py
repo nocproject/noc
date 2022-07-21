@@ -498,7 +498,13 @@ class ResourceGroup(Document):
             yield f"noc::resourcegroup::{rg.name}::<"
 
     @classmethod
-    def get_objects_from_expression(cls, s, model_id: Optional[str] = None):
+    def get_objects_from_expression(
+        cls,
+        s,
+        model_id: Optional[str] = None,
+        include_labels: List[str] = None,
+        exclude_labels: List[str] = None,
+    ):
         """
         Get list of Managed Object matching selector expression
 
@@ -514,6 +520,8 @@ class ResourceGroup(Document):
         :param cls:
         :param s:
         :param model_id:
+        :param include_labels:
+        :param exclude_labels:
         :return:
         """
         from noc.core.validators import is_int, is_objectid
@@ -531,11 +539,14 @@ class ResourceGroup(Document):
                 # ResourceGroup expression: @<resource group name>
                 o: "ResourceGroup" = ResourceGroup.objects.get(name=so[1:])
                 model = get_model(o.technology.service_model)
-                objects |= set(
-                    model.objects.filter(
-                        effective_service_groups__overlap=ResourceGroup.get_nested_ids(o)
-                    )
+                oo = model.objects.filter(
+                    effective_service_groups__overlap=ResourceGroup.get_nested_ids(o)
                 )
+                if include_labels:
+                    oo = oo.filter(effective_labels__overlap=include_labels)
+                if exclude_labels:
+                    oo = oo.exclude(effective_labels__overlap=exclude_labels)
+                objects |= set(oo)
             elif model_id:
                 # @todo Model get_by_q ?
                 model = get_model(model_id)
