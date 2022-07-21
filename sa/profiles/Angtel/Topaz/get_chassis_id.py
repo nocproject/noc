@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Angtel.Topaz.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -17,6 +17,8 @@ class Script(BaseScript):
     name = "Angtel.Topaz.get_chassis_id"
     cache = True
     interface = IGetChassisID
+
+    always_prefer = "S"
 
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
 
