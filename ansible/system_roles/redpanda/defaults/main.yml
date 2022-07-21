@@ -1,0 +1,6 @@
+redpanda_user: "redpanda"
+redpanda_group: "redpanda"
+redpanda_config_path: "{{ etc_prefix }}/redpanda"
+redpanda_pid_path: "{{ redpanda_run_path }}/redpanda.pid"
+redpanda_run_path: "/var/run/redpanda/"
+redpanda_bin_path: "/opt/redpanda/bin/"

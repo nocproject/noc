@@ -1,0 +1,5 @@
+- name: reload systemd
+  become: "True"
+  systemd:
+    name: redpanda
+    daemon_reload: "True"
