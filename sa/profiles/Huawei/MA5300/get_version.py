@@ -26,7 +26,7 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         # slot number
-        slots_count = self.snmp.get(mib["HUAWEI-DEVICE-MIB::hwSlots",0])
+        slots_count = self.snmp.get(mib["HUAWEI-DEVICE-MIB::hwSlots", 0])
         version = self.snmp.get(mib["HUAWEI-DEVICE-MIB::hwSysVersion", 0])
         platform = self.snmp.get(mib["HUAWEI-DEVICE-MIB::hwFrameDesc", 0])
         if slots_count == 8:
