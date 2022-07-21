@@ -31,7 +31,7 @@ class Script(BaseScript):
         platform = self.snmp.get(mib["HUAWEI-DEVICE-MIB::hwFrameDesc", 0])
         if slots_count == 8:
             platform = "MA5303"
-        if slots_count == 16:
+        elif slots_count == 16:
             platform = "MA5300"
         return {"vendor": "Huawei", "platform": platform, "version": version}
 
