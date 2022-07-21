@@ -16,6 +16,7 @@ class Script(BaseScript):
     requires = []
 
     def execute(self, **kwargs):
-        if self.is_ifname_use or not self.is_ROS_version:
+        if self.is_ifname_use or self.is_version_only_format:
+            # In version_only format ifDescr contain interface alias
             self.SNMP_NAME_TABLE = "IF-MIB::ifName"
         return super().execute(**kwargs)

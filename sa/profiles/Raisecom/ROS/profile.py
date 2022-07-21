@@ -42,7 +42,7 @@ class Profile(BaseProfile):
         "is_rotek": {"vendor": {"$in": ["Rotek", "ROTEK"]}},
         "is_gazelle": {"platform": {"$regex": r"^[SR]\d+[Ii]\S+"}},
         "is_ifname_use": {"platform": {"$regex": "QSW-8200"}},
-        "is_ROS_version": {"version": {"$regex": r"^ROS_\S+"}},
+        "is_version_only_format": {"version": {"$regex": r"^\d+\S+"}},  # Version format 5.2.1_20171221
     }
 
     rx_date_format = re.compile(r"(\S+)\s*\((.+)\)")
