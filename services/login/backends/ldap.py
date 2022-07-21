@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # LDAP Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from typing import Optional
 
 # Third-party modules
 import ldap3
@@ -34,7 +37,7 @@ class LdapBackend(BaseAuthBackend):
             ldap_domain = AuthLDAPDomain.get_by_name(domain)
             if not ldap_domain:
                 self.logger.error("LDAP Auth domain '%s' is not configured", domain)
-                raise self.LoginError("Invalid LDAP domain '%s'" % domain)
+                raise self.LoginError(f"Invalid LDAP domain '{domain}'")
         else:
             ldap_domain = AuthLDAPDomain.get_default_domain()
             if not ldap_domain:
@@ -42,40 +45,25 @@ class LdapBackend(BaseAuthBackend):
                 raise self.LoginError("Default LDAP domain is not configured")
         if not ldap_domain.is_active:
             self.logger.error("LDAP Auth domain '%s' is disabled", domain)
-            raise self.LoginError("LDAP Auth domain '%s' is disabled" % domain)
+            raise self.LoginError(f"LDAP Auth domain '{domain}' is disabled")
         # Get servers
         server_pool = self.get_server_pool(ldap_domain)
         if not server_pool:
             self.logger.error("No active servers configured for domain '%s'", domain)
-            raise self.LoginError("No active servers configured for domain '%s'" % domain)
-        # Connect and bind
-        connect_kwargs = self.get_connection_kwargs(ldap_domain, user, password)
-        dkw = connect_kwargs.copy()
-        if "password" in dkw:
-            dkw["password"] = "******"
-        self.logger.debug("Connect to ldap: %s", ", ".join("%s='%s'" % (kk, dkw[kk]) for kk in dkw))
-        connect = ldap3.Connection(server_pool, **connect_kwargs)
-        try:
-            self.logger.debug("Bind to ldap")
-            if not connect.bind():
-                raise self.LoginError("Failed to bind to LDAP: %s" % connect.result)
-        except (LDAPCommunicationError, LDAPServerPoolExhaustedError) as e:
-            self.logger.error("Failed to bind to LDAP: connect failed by %s" % e)
-            raise self.LoginError("Failed to bind to LDAP: connect failed by %s" % e)
-        # Rebind as privileged user
-        if ldap_domain.bind_user:
-            # Rebind as privileged user
-            connect = ldap3.Connection(
-                server_pool,
-                **self.get_connection_kwargs(
-                    ldap_domain, ldap_domain.bind_user, ldap_domain.bind_password
-                ),
-            )
-            if not connect.bind():
-                self.logger.error("Cannot bind as %s to search groups", ldap_domain.bind_user)
-                connect = None
+            raise self.LoginError(f"No active servers configured for domain '{domain}'")
         # Get user information
-        user_info = self.get_user_info(connect, ldap_domain, user)
+        if ldap_domain.type == "ad":
+            # Auth and get user_info
+            connect = self.get_server_connection(ldap_domain, server_pool, user, password)
+            user_info = self.get_user_info(connect, ldap_domain, user)
+        else:
+            # Get User Info and Check Auth
+            connect = self.get_server_connection(ldap_domain, server_pool)
+            user_info = self.get_user_info(connect, ldap_domain, user)
+            # Check user Auth
+            connect = self.get_server_connection(
+                ldap_domain, server_pool, user_info["user_dn"], password
+            )
         user_info["user"] = user
         user_info["domain"] = domain
         user_info["is_active"] = True
@@ -164,7 +152,36 @@ class LdapBackend(BaseAuthBackend):
         )
         return pool
 
-    def get_connection_kwargs(self, ldap_domain, user, password):
+    def get_server_connection(
+        self,
+        ldap_domain: "AuthLDAPDomain",
+        server_pool: "ldap3.ServerPool",
+        user: Optional[str] = None,
+        password: Optional[str] = None,
+    ) -> "ldap3.Connection":
+        # Connect and bind
+        if not user and not ldap_domain.bind_user:
+            raise self.LoginError("Failed to bind to LDAP: Bind User is not set")
+        elif not user:
+            self.logger.debug("Use Bind User credential for connect")
+            connect_kwargs = {"user": ldap_domain.bind_user, "password": ldap_domain.bind_password}
+        else:
+            connect_kwargs = self.get_connection_kwargs(ldap_domain, user, password)
+            dkw = connect_kwargs.copy()
+            if "password" in dkw:
+                dkw["password"] = "******"
+            self.logger.debug("Connect to ldap: %s", ", ".join(f"{kk}='{dkw[kk]}'" for kk in dkw))
+        connect = ldap3.Connection(server_pool, **connect_kwargs)
+        try:
+            self.logger.debug("Bind to ldap")
+            if not connect.bind():
+                raise self.LoginError(f"Failed to bind to LDAP: {connect.result}")
+        except (LDAPCommunicationError, LDAPServerPoolExhaustedError) as e:
+            self.logger.error("Failed to bind to LDAP: connect failed by %s" % e)
+            raise self.LoginError(f"Failed to bind to LDAP: connect failed by {e}")
+        return connect
+
+    def get_connection_kwargs(self, ldap_domain: "AuthLDAPDomain", user: str, password: str):
         """
         Return LDAP connection instance
         :param ldap_domain:
@@ -177,7 +194,10 @@ class LdapBackend(BaseAuthBackend):
                 user = r"%s\%s" % (ldap_domain.name, user)
             kwargs = {"user": user, "authentication": ldap3.NTLM}
         else:
-            kwargs = {"user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())}
+            # For Open LDAP userDN getting used bind_user, because it used for bind operation
+            # otherwise use _user_search_dn for user OU
+            # kwargs = {"user": f"uid={user},{ldap_domain.get_user_search_dn()}"}
+            kwargs = {"user": user}
         kwargs["password"] = password
         return kwargs
 
