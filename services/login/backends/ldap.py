@@ -194,7 +194,10 @@ class LdapBackend(BaseAuthBackend):
                 user = r"%s\%s" % (ldap_domain.name, user)
             kwargs = {"user": user, "authentication": ldap3.NTLM}
         else:
-            kwargs = {"user": f"uid={user},{ldap_domain.get_user_search_dn()}"}
+            # For Open LDAP userDN getting used bind_user, because it used for bind operation
+            # otherwise use _user_search_dn for user OU
+            # kwargs = {"user": f"uid={user},{ldap_domain.get_user_search_dn()}"}
+            kwargs = {"user": user}
         kwargs["password"] = password
         return kwargs
 
