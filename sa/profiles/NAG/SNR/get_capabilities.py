@@ -50,4 +50,4 @@ class Script(BaseScript):
         if has_lldp:
             caps["Network | LLDP"] = True
         if foxgate_cli:
-            caps["NAG | SNR | CLI | FoxGate"] = True
+            caps["NAG | SNR | CLI | Old"] = True

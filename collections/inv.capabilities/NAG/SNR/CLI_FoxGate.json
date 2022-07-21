@@ -1,5 +1,5 @@
 {
-    "name": "NAG | SNR | CLI | FoxGate",
+    "name": "NAG | SNR | CLI | Old",
     "$collection": "inv.capabilities",
     "uuid": "96cb024c-3062-415a-a2a7-d3503d7628c0",
     "description": "Supported FoxGate CLI Syntax on SNR Profile",
