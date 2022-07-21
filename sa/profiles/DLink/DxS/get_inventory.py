@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n", re.MULTILINE | re.DOTALL
     )
     rx_stack = re.compile(
-        r"^\s*(?P<box_id>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+" r"(?P<serial>\S*)",
+        r"^\s*(?P<box_id>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+(?P<serial>\S*)",
         re.MULTILINE,
     )
     rx_mod = re.compile(r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
@@ -47,7 +47,7 @@ class Script(BaseScript):
     )
     fake_vendors = ["OEM", "CISCO-FINISAR"]
 
-    def execute(self):
+    def execute_cli(self, **kwargs):
         r = []
         stacks = []
         s = self.scripts.get_switch()
@@ -65,8 +65,9 @@ class Script(BaseScript):
                 stacks += [match.groupdict()]
         except self.CLISyntaxError:
             pass
-        r += [p]
-        box_id = 1
+        if not stacks:
+            r += [p]
+        box_id = "0"
         match = self.rx_mod.search(s)
         if match:
             p = {"type": "MODULE", "vendor": "DLINK", "part_no": [match.group("part_no")]}
@@ -97,8 +98,8 @@ class Script(BaseScript):
                 r += [p]
         try:
             s = self.cli("show module_info")
-            for l in s.splitlines():
-                match = self.rx_mod3.search(l)
+            for line in s.splitlines():
+                match = self.rx_mod3.search(line)
                 if match and match.group("part_no") != "-":
                     p = {
                         "type": "MODULE",
@@ -119,6 +120,7 @@ class Script(BaseScript):
                         if i["box_id"] == box_id:
                             p = {
                                 "type": "CHASSIS",
+                                "number": i["box_id"],
                                 "vendor": "DLINK",
                                 "part_no": [i["part_no"]],
                                 "revision": i["revision"],
