@@ -148,6 +148,35 @@ def model_set_state(self, state, state_changed: datetime.datetime = None):
     self.state.on_enter_state(self)
 
 
+def model_touch(self, bulk=None):
+    if not self.state:
+        logger.info("[%s] No default state. Skipping", self)
+        return
+    opset = {}
+    ts = datetime.datetime.now()
+    if self.state.update_last_seen:
+        opset["last_seen"] = ts
+        self.last_seen = ts
+    if self.state.update_expired and self.state.ttl:
+        expired = ts + datetime.timedelta(seconds=self.state.ttl)
+        opset["expired"] = expired
+        self.expired = expired
+    if not self.first_discovered:
+        self.first_discovered = ts
+        opset["first_discovered"] = ts
+    if not opset:
+        return  # No changes
+    if bulk is not None:
+        # Queue to bulk operation
+        r = self.__class__.objects.get(id=self.pk)
+        for k, v in opset.items():
+            setattr(r, k, v)
+        bulk += [r]
+    else:
+        # Direct update
+        self.__class__.objects.filter(id=self.pk).update(**opset)
+
+
 def _on_document_post_save(sender, document, *args, **kwargs):
     if document.state is None:
         # No state, set default one
@@ -225,6 +254,12 @@ def workflow(cls):
 
         cls.set_state = model_set_state
         django_signals.post_save.connect(_on_model_post_save, sender=cls)
+        fields = [f.name for f in cls._meta.get_fields()]
+        if "state_changed" in fields:
+            cls._has_state_changed = True
+        if "last_seen" in fields and "expired" in fields and "first_discovered" in fields:
+            cls.touch = model_touch
+            cls._has_expired = True
     cls.fire_transition = fire_transition
     cls.fire_event = fire_event
     return cls
