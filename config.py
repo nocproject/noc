@@ -259,6 +259,9 @@ class Config(BaseConfig):
         alarm_close_retries = IntParameter(default=5)
         outage_refresh = SecondsParameter(default="60s")
         total_outage_refresh = SecondsParameter(default="60s")
+        generate_message_id = BooleanParameter(
+            default=False, help="Generate UUID for received Syslog and SNMP message"
+        )
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")

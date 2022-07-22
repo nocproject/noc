@@ -312,7 +312,9 @@ class ClassifierService(FastAPIService):
             r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
         return r
 
-    def register_mx_message(self, event: "ActiveEvent", resolved_raws: Optional[List[Dict[str, str]]]):
+    def register_mx_message(
+        self, event: "ActiveEvent", resolved_raws: Optional[List[Dict[str, str]]]
+    ):
         """
         Send event message to MX service
         :param event:

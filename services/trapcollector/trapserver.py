@@ -55,8 +55,10 @@ class TrapServer(UDPServer):
         # @todo: Check trap community
         # Get timestamp
         ts = int(time.time())
-        # message_id
-        message_id = str(uuid.uuid4())
+        # Message_id
+        message_id = None
+        if config.fm.generate_message_id:
+            message_id = str(uuid.uuid4())
         # Build body
         body = {
             "source": "SNMP Trap",
@@ -67,5 +69,5 @@ class TrapServer(UDPServer):
         body.update(varbinds)
         body = {k: fm_escape(body[k]) for k in body}
         self.service.register_message(cfg, ts, body)
-        if self.service.mx_message:
+        if config.message.enable_snmptrap:
             self.service.register_mx_message(cfg, ts, address[0], message_id, raw_pdu, raw_varbinds)

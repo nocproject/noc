@@ -53,7 +53,6 @@ class TrapCollectorService(FastAPIService):
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
-        self.mx_message = config.message.enable_snmptrap
         self.storm_protection: Optional[StormProtection] = None
 
     async def on_activate(self):
@@ -156,11 +155,10 @@ class TrapCollectorService(FastAPIService):
     ):
         metrics["events_message"] += 1
         n_partitions = get_mx_partitions()
-        now = datetime.datetime.now()
         self.publish(
             value=orjson.dumps(
                 {
-                    "timestamp": now.replace(microsecond=0),
+                    "timestamp":  datetime.datetime.fromtimestamp(timestamp).replace(microsecond=0),
                     "message_id": message_id,
                     "collector_type": "snmptrap",
                     "collector": config.pool,

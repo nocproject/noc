@@ -102,7 +102,9 @@ class SyslogCollectorService(FastAPIService):
         """
         Spool message to be sent
         """
-        message_id = str(uuid.uuid4())
+        message_id = None
+        if config.fm.generate_message_id:
+            message_id = str(uuid.uuid4())
         if cfg.process_events:
             # Send to classifier
             metrics["events_out"] += 1
@@ -144,11 +146,10 @@ class SyslogCollectorService(FastAPIService):
         if config.message.enable_snmptrap:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
-            now = datetime.datetime.now()
             self.publish(
                 value=orjson.dumps(
                     {
-                        "timestamp": now.replace(microsecond=0),
+                        "timestamp": datetime.datetime.fromtimestamp(timestamp).replace(microsecond=0),
                         "message_id": message_id,
                         "collector_type": "syslog",
                         "collector": config.pool,
