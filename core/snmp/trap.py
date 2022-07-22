@@ -1,12 +1,9 @@
 # ----------------------------------------------------------------------
 # SNMP Trap PDU Parser
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Python modules
-import base64
 
 # NOC modules
 from .ber import decode
