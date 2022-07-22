@@ -14,7 +14,7 @@ from collections import defaultdict
 import operator
 import re
 from time import perf_counter
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 # Third-party modules
 import cachetools
@@ -312,7 +312,13 @@ class ClassifierService(FastAPIService):
             r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
         return r
 
-    def register_mx_message(self, event: "ActiveEvent"):
+    def register_mx_message(self, event: "ActiveEvent", resolved_raws: Optional[List[Dict[str, str]]]):
+        """
+        Send event message to MX service
+        :param event:
+        :param resolved_raws: Raw variables for 'SNMP Trap' event
+        :return:
+        """
         metrics["events_message"] += 1
         self.logger.debug(
             "[%s|%s|%s] Register MX message",
@@ -337,8 +343,10 @@ class ClassifierService(FastAPIService):
                 "severity": event.raw_vars.get("severity", ""),
                 "message": event.raw_vars.get("message", ""),
             }
-        if event.source == E_SRC_SNMP_TRAP:
-            msg["data"] = {"vars": MIB.resolve_vars(event.raw_vars)}
+        elif event.source == E_SRC_SNMP_TRAP:
+            msg["data"] = {"vars": resolved_raws}
+        else:
+            msg["data"] = event.raw_vars
         # Register MX message
         self.publish(
             value=orjson.dumps(msg),
@@ -384,14 +392,12 @@ class ClassifierService(FastAPIService):
         resolved_vars = {"profile": event.managed_object.profile.name}
         # Store event variables
         event.raw_vars = data
-        if event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(
-                {
-                    item["resolved_oid"]: item["resolved_value"]
-                    for item in MIB.resolve_vars(event.raw_vars)
-                    if "resolved_oid" in item
-                }
-            )
+        resoved_raws = None
+        if config.message.enable_event and event.source == E_SRC_SNMP_TRAP:
+            resolved_vars.update(MIB.resolve_vars(event.raw_vars, include_raw=True))
+            resoved_raws = resolved_vars.pop("raw")
+        elif event.source == E_SRC_SNMP_TRAP:
+            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         event.resolved_vars = resolved_vars
         # Get matched event class
         if pre_event:
@@ -486,7 +492,7 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event)
         if config.message.enable_event:
-            self.register_mx_message(event)
+            self.register_mx_message(event, resoved_raws)
         # Call handlers
         if self.call_event_handlers(event):
             return
