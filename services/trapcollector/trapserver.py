@@ -45,7 +45,7 @@ class TrapServer(UDPServer):
                 return
         try:
             community, varbinds, raw_pdu, raw_varbinds = decode_trap(
-                data, raw=self.service.mx_message
+                data, raw=config.message.enable_snmptrap
             )
         except Exception as e:
             metrics["error", ("type", "decode_failed")] += 1
