@@ -10,6 +10,7 @@ import logging
 import time
 from typing import Tuple
 import codecs
+import uuid
 
 # NOC modules
 from noc.core.ioloop.udpserver import UDPServer
@@ -43,7 +44,9 @@ class TrapServer(UDPServer):
             if need_block:
                 return
         try:
-            community, varbinds, raw_data = decode_trap(data, raw=self.service.mx_message)
+            community, varbinds, raw_pdu, raw_varbinds = decode_trap(
+                data, raw=config.message.enable_snmptrap
+            )
         except Exception as e:
             metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", codecs.encode(data, "hex"))
@@ -52,8 +55,19 @@ class TrapServer(UDPServer):
         # @todo: Check trap community
         # Get timestamp
         ts = int(time.time())
+        # Message_id
+        message_id = None
+        if config.fm.generate_message_id:
+            message_id = str(uuid.uuid4())
         # Build body
-        body = {"source": "SNMP Trap", "collector": config.pool}
+        body = {
+            "source": "SNMP Trap",
+            "collector": config.pool,
+            "message_id": message_id,
+            "source_address": address[0],
+        }
         body.update(varbinds)
         body = {k: fm_escape(body[k]) for k in body}
-        self.service.register_message(cfg, ts, body, raw_data, address[0])
+        self.service.register_message(cfg, ts, body)
+        if config.message.enable_snmptrap:
+            self.service.register_mx_message(cfg, ts, address[0], message_id, raw_pdu, raw_varbinds)
