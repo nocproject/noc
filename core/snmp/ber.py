@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ASN.1 BER utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ class BERDecoder(object):
         self.last_oid: Optional[str] = None
         self.oid_msg: Optional[bytes] = None
         self.raw_pdu: Optional[bytes] = None
+        self.raw_varbinds: List[Tuple[str, Any, bytes]] = []
         self.display_hints = display_hints
         self.include_raw = include_raw
 
@@ -214,10 +215,10 @@ class BERDecoder(object):
             v, msg = self.parse_tlv(msg)
             if self.include_raw and self.last_oid == v:
                 self.oid_msg = msg
-            r += [v]
+            r.append(v)
         if self.include_raw and not msg and len(r) == 2:
             # last value
-            r.append(self.oid_msg)
+            self.raw_varbinds.append((self.last_oid, r[-1], self.oid_msg))
         return r
 
     def parse_implicit(self, msg, tag):
@@ -478,10 +479,12 @@ class BEREncoder(object):
 encoder = BEREncoder()
 
 
-def decode(msg, include_raw=False):
+def decode(
+    msg: bytes, include_raw: bool = False
+) -> Tuple[Tuple[int, bytes, List[Any]], Optional[bytes], List[Tuple[str, Any, bytes]]]:
     decoder = BERDecoder(include_raw=include_raw)
     data, _ = decoder.parse_tlv(msg)
-    return data, decoder.raw_pdu
+    return data, decoder.raw_pdu, decoder.raw_varbinds
 
 
 # Calculate bitsting cache

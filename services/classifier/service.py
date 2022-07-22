@@ -93,6 +93,13 @@ E_SRC_SNMP_TRAP = "SNMP Trap"
 E_SRC_SYSTEM = "system"
 E_SRC_OTHER = "other"
 
+E_SRC_MX_MESSAGE = {
+    E_SRC_SYSLOG: "syslog",
+    E_SRC_SNMP_TRAP: "snmptrap",
+    E_SRC_SYSTEM: "system",
+    E_SRC_OTHER: "other",
+}
+
 E_SRC_METRICS = {
     E_SRC_SYSLOG: "events_syslog",
     E_SRC_SNMP_TRAP: "events_snmp_trap",
@@ -317,7 +324,7 @@ class ClassifierService(FastAPIService):
         msg = {
             "timestamp": event.timestamp,
             "message_id": event.raw_vars.get("message_id"),
-            "collector_type": event.source,
+            "collector_type": E_SRC_MX_MESSAGE[event.source],
             "collector": event.raw_vars.get("collector"),
             "address": event.raw_vars.get("source_address"),
             "managed_object": self.get_managed_object_mx(event.managed_object),
@@ -331,7 +338,6 @@ class ClassifierService(FastAPIService):
                 "message": event.raw_vars.get("message", ""),
             }
         if event.source == E_SRC_SNMP_TRAP:
-            msg["collector_type"] = "snmptrap"
             msg["data"] = {"vars": MIB.resolve_vars(event.raw_vars)}
         # Register MX message
         self.publish(
