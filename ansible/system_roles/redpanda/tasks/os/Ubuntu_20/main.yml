@@ -3,7 +3,7 @@
   shell: |
     curl -1sLf https://packages.vectorized.io/sMIXnoa7DK12JW4A/redpanda/cfg/setup/bash.deb.sh | sudo -E bash
   args:
-    warn: no
+    warn: false
 
 - name: install redpanda from repository
   package:
@@ -14,6 +14,6 @@
 
 - name: set data dir file perms
   file:
-    path: /var/lib/redpanda/data
+    path: {{ redpanda_path_data }}
     owner: redpanda
     group: redpanda
