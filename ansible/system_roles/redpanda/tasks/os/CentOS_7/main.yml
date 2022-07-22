@@ -10,7 +10,7 @@
     name:
       - redpanda
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: set data dir file perms
   file:

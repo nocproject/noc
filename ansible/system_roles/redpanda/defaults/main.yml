@@ -1,3 +1,4 @@
+---
 redpanda_user: "redpanda"
 redpanda_group: "redpanda"
 redpanda_config_path: "{{ etc_prefix }}/redpanda"
