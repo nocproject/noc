@@ -11,11 +11,11 @@ import datetime
 import asyncio
 from collections import defaultdict
 from dataclasses import asdict
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List, Tuple
+import base64
 
 # Third-party modules
 import orjson
-import uuid
 
 # NOC modules
 from noc.config import config
@@ -53,7 +53,6 @@ class TrapCollectorService(FastAPIService):
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
-        self.mx_message = config.message.enable_snmptrap
         self.storm_protection: Optional[StormProtection] = None
 
     async def on_activate(self):
@@ -128,8 +127,6 @@ class TrapCollectorService(FastAPIService):
         cfg: SourceConfig,
         timestamp: int,
         data: Dict[str, Any],
-        raw_data: Optional[bytes] = None,
-        source_address: Optional[str] = None,
     ):
         """
         Spool message to be sent
@@ -146,30 +143,48 @@ class TrapCollectorService(FastAPIService):
             stream=cfg.stream,
             partition=cfg.partition,
         )
-        if self.mx_message:
-            metrics["events_message"] += 1
-            n_partitions = get_mx_partitions()
-            now = datetime.datetime.now()
-            self.publish(
-                value=orjson.dumps(
-                    {
-                        "timestamp": now.replace(microsecond=0),
-                        "uuid": str(uuid.uuid4()),
-                        "collector_type": "snmptrap",
-                        "collector": config.pool,
-                        "address": source_address,
-                        "managed_object": asdict(cfg.managed_object),
-                        "data": {"vars": raw_data},
-                    }
-                ),
-                stream=MX_STREAM,
-                partition=int(cfg.id) % n_partitions,
-                headers={
-                    MX_MESSAGE_TYPE: b"snmptrap",
-                    MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(cfg.effective_labels)),
-                    MX_SHARDING_KEY: smart_bytes(cfg.id),
-                },
-            )
+
+    def register_mx_message(
+        self,
+        cfg: SourceConfig,
+        timestamp: int,
+        source_address: Optional[str] = None,
+        message_id: Optional[str] = None,
+        raw_pdu: Optional[bytes] = None,
+        raw_varbinds: List[Tuple[str, Any, bytes]] = None,
+    ):
+        metrics["events_message"] += 1
+        n_partitions = get_mx_partitions()
+        self.publish(
+            value=orjson.dumps(
+                {
+                    "timestamp": datetime.datetime.fromtimestamp(timestamp).replace(microsecond=0),
+                    "message_id": message_id,
+                    "collector_type": "snmptrap",
+                    "collector": config.pool,
+                    "address": source_address,
+                    "managed_object": asdict(cfg.managed_object),
+                    "data": {
+                        "vars": [
+                            {
+                                "oid": oid,
+                                "value": value,
+                                "value_raw": base64.b64encode(value_raw).decode("utf-8"),
+                            }
+                            for oid, value, value_raw in raw_varbinds
+                        ],
+                        "raw_pdu": base64.b64encode(raw_pdu).decode("utf-8"),
+                    },
+                }
+            ),
+            stream=MX_STREAM,
+            partition=int(cfg.id) % n_partitions,
+            headers={
+                MX_MESSAGE_TYPE: b"snmptrap",
+                MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(cfg.effective_labels)),
+                MX_SHARDING_KEY: smart_bytes(cfg.id),
+            },
+        )
 
     async def get_object_mappings(self):
         """
