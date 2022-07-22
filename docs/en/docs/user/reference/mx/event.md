@@ -20,40 +20,41 @@ Message contains JSON array, containing objects of following structure
 
 | Name       | Type     | Description                                                          |
 | ---------- | -------- | -------------------------------------------------------------------- |
-| timestamp                 | DateTime | ISO 8601 timestamp (i.e. `YYYY-MM-DDTHH:MM:SS`) of register source message |
-| uuid                      | String               | Global `UUIDv4`                             |
-| collector_type            | String               | Event source (collector) `syslog/snmptrap/system`  |
-| collector                 | String               | Source collector Pool                            |
-| address                   | String               | SNMP Trap Source Address                      |
-| object                    | Object {{ complex }} | Managed Object                            |
-| {{ tab }} id              | String               | Managed Object's ID                       |
-| {{ tab }} bi_id           | Integer              | Managed Object's BI ID                    |
-| {{ tab }} name            | String               | Managed Object's name                             |
-| {{ tab }} labels          | Array of String               | Managed Object's labels              |
-| {{ tab }} administrative_domain  | Object {{ complex }} | Managed Object Administrative Domain's             |
-| {{ tab2 }} remote_system   | Object {{ complex }} | Managed Object Administrative Domain's [Remote System](../../../user/reference/concepts/remote-system/index.md) (if imported) |
-| {{ tab4 }} id             | String               | Remote System's ID                        |
-| {{ tab4 }} name           | String               | Remote System's Name                      |
-| {{ tab2 }} id             | Integer              | Managed Object Administrative Domain's ID     |
-| {{ tab2 }} name           | String               | Managed Object Administrative Domain's Name   |
-| {{ tab2 }} remote_id      | String               | Managed Object Administrative Domain's ID in Remote System (if any)  |
-| {{ tab }} remote_system   | Object {{ complex }} | Managed Object's [Remote System](../../../user/reference/concepts/remote-system/index.md) (if imported) |
-| {{ tab2 }} id             | String               | Remote System's ID                        |
-| {{ tab2 }} name           | String               | Remote System's Name                      |
-| {{ tab }} remote_id       | String               | Managed Object's ID in Remote System (if any)  |
-| event_class               | String               | Event Class                |
-| {{ tab }} id              | String               | Event Class' ID             |
-| {{ tab }} name            | String               | Event Class' Name            |
-| vars                      | Object {{ complex }} | Key-value dictionary of event's variables |
-| syslog_vars               | Object {{ complex }} | Syslog message body content              |
-| {{ tab }} facility        | String               | Syslog facility                         |
-| {{ tab }} severity        | String               | Syslog severity                            |
-| {{ tab }} message         | String               | Syslog message                             |
-| snmptrap_vars             | Object {{ complex }} | SNMP Trap message VarBinds              |
-| {{ tab }} oid             | String               | SNMP var OID                     |
-| {{ tab }} resolved_oid    | String               | Resolved SNMP Var OID               |
-| {{ tab }} value           | String               | SNMP Var value                             |
-| {{ tab }} resolved_value  | String               | Resolved SNMP Var value               |
+| timestamp                       | DateTime             | ISO 8601 timestamp (i.e. `YYYY-MM-DDTHH:MM:SS`) of register source message    |
+| message_id                      | String               | Global message identifier                                                     |
+| collector_type                  | String               | Event source (collector) `syslog/snmptrap/system`                             |
+| collector                       | String               | Source collector Pool                                                         |
+| address                         | String               | SNMP Trap Source Address                                                      |
+| managed_object                  | Object {{ complex }} | Managed Object details                                                        |
+| {{ tab }} id                    | String               | Managed Object's ID                                                           |
+| {{ tab }} remote_system         | Object {{ complex }} | Source [remote system](../concepts/remote-system/index.md) for Managed Object |
+| {{ tab2 }} id                   | String               | External system's id                                                          |
+| {{ tab2 }} name                 | String               | External system's name                                                        |
+| {{ tab }} name                  | String               | Managed Object's name                                                         |
+| {{ tab }} remote_id             | String               | External system's id (Opaque attribbute)                                      |
+| {{ tab }} bi_id                 | Integer              | Managed Object's BI ID                                                        |
+| {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details                                                 |
+| {{ tab2 }} id                   | String               | Administrative Domain's ID                                                    |
+| {{ tab2 }} name                 | String               | Administrative Domain's name                                                  |
+| {{ tab2 }} remote_id            | String               | Managed Object Administrative Domain's ID in Remote System (if any)            |
+| {{ tab2 }} remote_system        | Object {{ complex }} | Source [remote system](../concepts/remote-system/index.md) for Managed Object Administrative Domain |
+| {{ tab4 }} id                   | String               | External system's id                                                           |
+| {{ tab4 }} name                 | String               | External system's name                                                         |
+| {{ tab }} labels                | Array of String      | Managed Object's labels                                                        |
+| event_class                     | String               | Event Class (set by Classifier)                                                |
+| {{ tab }} id                    | String               | Event Class's ID                                                               |
+| {{ tab }} name                  | String               | Event Class's Name                                                             |
+| event_vars                      | Object {{ complex }} | Key-value dictionary of event's variables                                      |
+| data (syslog)                   | Object {{ complex }} | Syslog message body content                                                    |
+| {{ tab }} facility              | String               | Syslog facility                                                                |
+| {{ tab }} severity              | String               | Syslog severity                                                                |
+| {{ tab }} message               | String               | Syslog message                                                                 |
+| data (snmptrap)                 | Object {{ complex }} | SNMP Trap message VarBinds                                                     |
+| {{ tab }} vars                  | Array of {{ complex }} | SNMP Trap varbinds              |
+| {{ tab2 }} oid                  | String               | SNMP var OID                                                                   |
+| {{ tab2 }} resolved_oid         | String               | Resolved SNMP Var OID                                                          |
+| {{ tab2 }} value                | String               | SNMP Var value                                                                 |
+| {{ tab2 }} resolved_value       | String               | Resolved (with hints) SNMP Var value                                           |
 
 
 ## Example

@@ -18,40 +18,40 @@ Labels
 
 Message contains JSON array, containing objects of following structure
 
-| Name       | Type     | Description                                                          |
-| ---------- | -------- | -------------------------------------------------------------------- |
-| timestamp                 | DateTime | ISO 8601 timestamp (i.e. `YYYY-MM-DDTHH:MM:SS`) of collected metrics |
-| uuid                      | String               | Global `UUIDv4`                             |
-| collector_type            | String               | Always `syslog`                         |
-| collector                 | String               | Collector Pool                            |
-| address                   | String               | SNMP Trap Source Address                      |
-| object                    | Object {{ complex }} | Managed Object                            |
-| {{ tab }} id              | String               | Managed Object's ID                       |
-| {{ tab }} bi_id           | Integer              | Managed Object's BI ID                    |
-| {{ tab }} name            | String               | Managed Object's name                             |
-| {{ tab }} labels          | Array of String               | Managed Object's labels              |
-| {{ tab }} administrative_domain  | Object {{ complex }} | Managed Object Administrative Domain's             |
-| {{ tab2 }} remote_system   | Object {{ complex }} | Managed Object Administrative Domain's [Remote System](../../../user/reference/concepts/remote-system/index.md) (if imported) |
-| {{ tab4 }} id             | String               | Remote System's ID                        |
-| {{ tab4 }} name           | String               | Remote System's Name                      |
-| {{ tab2 }} id             | Integer               | Managed Object Administrative Domain's ID     |
-| {{ tab2 }} name           | String               | Managed Object Administrative Domain's Name   |
-| {{ tab2 }} remote_id       | String               | Managed Object Administrative Domain's ID in Remote System (if any)  |
-| {{ tab }} remote_system   | Object {{ complex }} | Managed Object's [Remote System](../../../user/reference/concepts/remote-system/index.md) (if imported) |
-| {{ tab2 }} id             | String               | Remote System's ID                        |
-| {{ tab2 }} name           | String               | Remote System's Name                      |
-| {{ tab }} remote_id       | String               | Managed Object's ID in Remote System (if any)  |
-| syslog                 | Object {{ complex }}        | Syslog message body content              |
-| {{ tab }} facility            | String               | Syslog facility                         |
-| {{ tab }} severity            | String               | Syslog severity                            |
-| {{ tab }} message            | String               | Syslog message                             |
+| Name       | Type     | Description                                                                                                    |
+| ---------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| timestamp                       | DateTime | ISO 8601 timestamp (i.e. `YYYY-MM-DDTHH:MM:SS`) of collected metrics                      |
+| message_id                      | String               | Global message identifier                                                     |
+| collector_type                  | String               | Always `syslog`                                                               |
+| collector                       | String               | Collector Pool                                                                |
+| address                         | String               | SNMP Trap Source Address                                                      |
+| managed_object                  | Object {{ complex }} | Managed Object details                                                        |
+| {{ tab }} id                    | String               | Managed Object's ID                                                           |
+| {{ tab }} remote_system         | Object {{ complex }} | Source [remote system](../concepts/remote-system/index.md) for Managed Object |
+| {{ tab2 }} id                   | String               | External system's id                                                          |
+| {{ tab2 }} name                 | String               | External system's name                                                        |
+| {{ tab }} name                  | String               | Managed Object's name                                                         |
+| {{ tab }} remote_id             | String               | External system's id (Opaque attribbute)                                      |
+| {{ tab }} bi_id                 | Integer              | Managed Object's BI ID                                                        |
+| {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details                                                 |
+| {{ tab2 }} id                   | String               | Administrative Domain's ID                                                    |
+| {{ tab2 }} name                 | String               | Administrative Domain's name                                                  |
+| {{ tab2 }} remote_id            | String               | Managed Object Administrative Domain's ID in Remote System (if any)           |
+| {{ tab2 }} remote_system        | Object {{ complex }} | Source [remote system](../concepts/remote-system/index.md) for Managed Object Administrative Domain |
+| {{ tab4 }} id                   | String               | External system's id                                                          |
+| {{ tab4 }} name                 | String               | External system's name                                                        |
+| {{ tab }} labels                | Array of String      | Managed Object's labels                                                       |
+| data                            | Object {{ complex }} | Syslog message body content                                                   |
+| {{ tab }} facility              | String               | Syslog facility                                                               |
+| {{ tab }} severity              | String               | Syslog severity                                                               |
+| {{ tab }} message               | String               | Syslog message                                                                |
 
 ## Example
 
 ```json
 {
   "timestamp": "2022-06-20T10:07:15",
-  "uuid": "3d6a2405-447c-44e7-b885-7a2deb43a26a",
+  "message_id": "3d6a2405-447c-44e7-b885-7a2deb43a26a",
   "collector_type": "syslog",
   "collector": "default",
   "address": "127.0.0.1",
@@ -75,9 +75,10 @@ Message contains JSON array, containing objects of following structure
     },
     "remote_id": "22"
   },
-  "syslog": {
+  "data": {
     "severity": 1,
     "facility": 2,
-    "message": "Message 1",
+    "message": "Message 1"
   }
 }
+```

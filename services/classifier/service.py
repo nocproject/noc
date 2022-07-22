@@ -14,7 +14,7 @@ from collections import defaultdict
 import operator
 import re
 from time import perf_counter
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 # Third-party modules
 import cachetools
@@ -92,6 +92,13 @@ E_SRC_SYSLOG = "syslog"
 E_SRC_SNMP_TRAP = "SNMP Trap"
 E_SRC_SYSTEM = "system"
 E_SRC_OTHER = "other"
+
+E_SRC_MX_MESSAGE = {
+    E_SRC_SYSLOG: "syslog",
+    E_SRC_SNMP_TRAP: "snmptrap",
+    E_SRC_SYSTEM: "system",
+    E_SRC_OTHER: "other",
+}
 
 E_SRC_METRICS = {
     E_SRC_SYSLOG: "events_syslog",
@@ -292,28 +299,40 @@ class ClassifierService(FastAPIService):
             ],
         }
         if o.remote_system:
-            r["managed_object"]["remote_system"] = {
+            r["remote_system"] = {
                 "id": str(o.remote_system.id),
                 "name": o.remote_system.name,
             }
-            r["managed_object"]["remote_id"] = o.remote_id
+            r["remote_id"] = o.remote_id
         if o.administrative_domain.remote_system:
-            r["managed_object"]["administrative_domain"]["remote_system"] = {
+            r["administrative_domain"]["remote_system"] = {
                 "id": str(o.administrative_domain.remote_system.id),
                 "name": o.administrative_domain.remote_system.name,
             }
-            r["managed_object"]["administrative_domain"][
-                "remote_id"
-            ] = o.administrative_domain.remote_id
+            r["administrative_domain"]["remote_id"] = o.administrative_domain.remote_id
         return r
 
-    def register_mx_message(self, event: "ActiveEvent"):
+    def register_mx_message(
+        self, event: "ActiveEvent", resolved_raws: Optional[List[Dict[str, str]]]
+    ):
+        """
+        Send event message to MX service
+        :param event:
+        :param resolved_raws: Raw variables for 'SNMP Trap' event
+        :return:
+        """
         metrics["events_message"] += 1
+        self.logger.debug(
+            "[%s|%s|%s] Register MX message",
+            event.id,
+            event.managed_object.name,
+            event.managed_object.address,
+        )
         n_partitions = get_mx_partitions()
         msg = {
-            "timestamp": time,
-            "uuid": event.raw_vars.get("uuid"),
-            "collector_type": event.source,
+            "timestamp": event.timestamp,
+            "message_id": event.raw_vars.get("message_id"),
+            "collector_type": E_SRC_MX_MESSAGE[event.source],
             "collector": event.raw_vars.get("collector"),
             "address": event.raw_vars.get("source_address"),
             "managed_object": self.get_managed_object_mx(event.managed_object),
@@ -321,13 +340,15 @@ class ClassifierService(FastAPIService):
             "event_vars": event.vars,
         }
         if event.source == E_SRC_SYSLOG:
-            msg["syslog_vars"] = {
+            msg["data"] = {
                 "facility": event.raw_vars.get("facility", ""),
                 "severity": event.raw_vars.get("severity", ""),
                 "message": event.raw_vars.get("message", ""),
             }
-        if event.source == E_SRC_SNMP_TRAP:
-            msg["snmp_vars"] = [{"oid": "", "named_oid": "", "value": "", "raw_value": ""}]
+        elif event.source == E_SRC_SNMP_TRAP:
+            msg["data"] = {"vars": resolved_raws}
+        else:
+            msg["data"] = event.raw_vars
         # Register MX message
         self.publish(
             value=orjson.dumps(msg),
@@ -373,14 +394,12 @@ class ClassifierService(FastAPIService):
         resolved_vars = {"profile": event.managed_object.profile.name}
         # Store event variables
         event.raw_vars = data
-        if event.source == E_SRC_SNMP_TRAP:
-            resolved_vars.update(
-                {
-                    item["resolved_oid"]: item["resolved_value"]
-                    for item in MIB.resolve_vars(event.raw_vars)
-                    if "resolved_oid" in item
-                }
-            )
+        resoved_raws = None
+        if config.message.enable_event and event.source == E_SRC_SNMP_TRAP:
+            resolved_vars.update(MIB.resolve_vars(event.raw_vars, include_raw=True))
+            resoved_raws = resolved_vars.pop("raw")
+        elif event.source == E_SRC_SNMP_TRAP:
+            resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         event.resolved_vars = resolved_vars
         # Get matched event class
         if pre_event:
@@ -474,8 +493,8 @@ class ClassifierService(FastAPIService):
         self.dedup_filter.register(event)
         # Fill suppress filter
         self.suppress_filter.register(event)
-        if config.message.enable_events:
-            self.register_mx_message(event)
+        if config.message.enable_event:
+            self.register_mx_message(event, resoved_raws)
         # Call handlers
         if self.call_event_handlers(event):
             return
@@ -756,7 +775,9 @@ class ClassifierService(FastAPIService):
         )  # raw_vars will be filled by classify_event()
         # Ignore event
         if self.patternset.find_ignore_rule(event, data):
-            self.logger.debug("Ignored event %s vars %s", event, data)
+            self.logger.debug(
+                "[%s|%s|%s] Ignored event %s vars %s", event_id, mo.name, mo.address, event, data
+            )
             metrics[CR_IGNORED] += 1
             return
         # Classify event
