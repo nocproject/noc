@@ -788,7 +788,6 @@ class ClassifierService(FastAPIService):
                 "[%s|%s|%s] Failed to process event: %s", event.id, mo.name, mo.address, e
             )
             metrics[CR_FAILED] += 1
-            error_report()
             return
         self.logger.info("[%s|%s|%s] Event processed successfully", event.id, mo.name, mo.address)
 
