@@ -14,7 +14,7 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
         "NOC.core.ListFormField",
         "NOC.sa.credentialcheckrule.Model",
         "Ext.ux.form.GridField",
-        "NOC.sa.authprofile.Model"
+        "NOC.sa.authprofile.LookupField"
     ],
     model: "NOC.sa.credentialcheckrule.Model",
     columns: [
@@ -51,15 +51,15 @@ Ext.define("NOC.sa.credentialcheckrule.Application", {
             allowBlank: false
         },
         {
-            xtype: "displayfield",
-            name: "uuid",
-            fieldLabel: __("UUID")
-        },
-        {
             name: "description",
             xtype: "textarea",
             fieldLabel: __("Description"),
             allowBlank: true
+        },
+        {
+            name: "is_active",
+            xtype: "checkbox",
+            boxLabel: __("Active")
         },
         {
             name: "preference",

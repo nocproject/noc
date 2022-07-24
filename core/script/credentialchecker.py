@@ -9,7 +9,8 @@
 import logging
 import enum
 from dataclasses import dataclass
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, List, Tuple, Iterator, Set, Dict, Union
+from collections import defaultdict
 
 # Third-party modules
 import cachetools
@@ -20,6 +21,7 @@ from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.text import safe_shadow
 from noc.sa.models.profile import Profile
+from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.core.mib import mib
 
@@ -28,6 +30,20 @@ CHECK_OIDS = [
     mib["SNMPv2-MIB::sysUpTime.0"],
     mib["SNMPv2-MIB::sysDescr.0"],
 ]
+
+
+@dataclass(frozen=True)
+class SuggestSNMP(object):
+    snmp_ro: Optional[str] = None
+    snmp_rw: Optional[str] = None
+    check_oids: List[str] = None
+
+
+@dataclass(frozen=True)
+class SuggestCLI(object):
+    user: Optional[str] = None
+    password: Optional[str] = None
+    super_password: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -77,7 +93,7 @@ class CredentialChecker(object):
         address,
         pool,
         labels: List[str] = None,
-        logger: Optional[logging.root] = None,
+        logger=None,
         profile: Optional[str] = None,
         calling_service: str = "credentialchecker",
         protocols: Optional[List[int]] = None,
@@ -98,13 +114,109 @@ class CredentialChecker(object):
         if self.profile is None or self.profile.is_generic:
             self.logger.error("CLI Access for Generic profile is not supported. Ignoring")
             self.ignoring_cli = True
+        # Credential
+        self.snmp_ro: Optional[str] = None
+        self.snmp_rw: Optional[str] = None
+        self.user: Optional[str] = None
+        self.password: Optional[str] = None
+        self.super_password: Optional[str] = None
+        self.auth_profile: Optional[AuthProfile] = None
+        self.auth_profiles: List[AuthProfile] = []
 
-    def iter_snmp(self) -> Tuple[str, str]:
+    def set_credential(
+        self,
+        snmp_ro: Optional[str] = None,
+        snmp_rw: Optional[str] = None,
+        user: Optional[str] = None,
+        password: Optional[str] = None,
+        super_password: Optional[str] = None,
+        auth_profile: Optional[str] = None,
+    ):
+        self.logger.info("Setting credentials")
+        if snmp_ro:
+            self.snmp_ro = snmp_ro
+        if snmp_rw:
+            self.snmp_rw = snmp_rw
+        if user:
+            self.user = user
+        if password:
+            self.password = password
+        if super_password:
+            self.super_password = super_password
+
+    def get_rules(self) -> Dict[Tuple[int, List[Protocol]], List[Union[SuggestCLI, SuggestSNMP]]]:
         """
-        Iter SNMP Credential
+        preference -> proto -> list[Credential]
+        Load ProfileCheckRules and return a list, grouped by preferences
+        [{
+            (method, param) -> [(
+                    match_method,
+                    value,
+                    action,
+                    profile,
+                    rule_name
+                ), ...]
+
+        }]
+        """
+        r = defaultdict(list)
+        for cc in CredentialCheckRule.objects.filter():
+            cc: "CredentialCheckRule"
+            for ap in cc.suggest_auth_profile:
+                ap = ap.auth_profile
+                if ap.user or ap.password:
+                    r[cc.preference, (Protocol(1), Protocol(2))] += [
+                        SuggestCLI(
+                            user=ap.user, password=ap.password, super_password=ap.super_password
+                        )
+                    ]
+                if ap.snmp_ro or ap.snmp_rw:
+                    r[cc.preference, (Protocol(6), Protocol(7))] += [
+                        SuggestSNMP(snmp_ro=ap.snmp_ro, snmp_rw=ap.snmp_rw)
+                    ]
+                self.auth_profiles.append(ap)
+            for ss in cc.suggest_snmp:
+                r[cc.preference, (Protocol(6), Protocol(7))] += [
+                    SuggestSNMP(snmp_ro=ss.snmp_ro, snmp_rw=ss.snmp_rw)
+                ]
+            for sc in cc.suggest_credential:
+                r[cc.preference, (Protocol(1), Protocol(2))] += [
+                    SuggestCLI(user=sc.user, password=sc.password, super_password=sc.super_password)
+                ]
+        return r
+
+    def iter_snmp(self) -> None:
+        """
+
+        for oid in self.CHECK_OIDS:
+            for (ro, rw) in self.object.auth_profile.iter_snmp():
+                for ver in sorted(self.CHECK_VERSION):
+                    if self.check_oid(oid, ro, self.CHECK_VERSION[ver]):
+                        self.logger.info("Guessed community: %s, version: %d", ro, ver)
+                        self.object._suggest_snmp = (ro, rw, self.CHECK_VERSION[ver])
+                        if self.object.get_access_preference() == "S":
+                            self.set_credentials(snmp_ro=ro, snmp_rw=rw)
+                        return
         :return: snmp_ro, snmp_rw
         """
-        yield
+        d = self.get_rules()
+        for proto in sorted(d, key=lambda x: x[0]):
+            if Protocol(6) not in proto[1]:
+                self.logger.info("Skipping proto")
+                continue
+            checked_cred = False
+            for cred in d[proto]:
+                if checked_cred:
+                    break
+                for ver in proto[1]:
+                    if self.check_oid(CHECK_OIDS[0], cred.snmp_ro, f"{ver.config.alias}_get"):
+                        self.logger.info(
+                            "Guessed community: %s, version: %d",
+                            cred.snmp_ro,
+                            ver.config.snmp_version,
+                        )
+                        checked_cred = True
+                        # self.set_credential()
 
     def iter_cli(self) -> Tuple[str, str, str]:
         """

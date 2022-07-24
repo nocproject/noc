@@ -21,7 +21,6 @@ from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
-from noc.core.script.credentialchecker import CHECK_OIDS
 from noc.main.models.label import Label
 from noc.sa.models.authprofile import AuthProfile
 
@@ -73,7 +72,7 @@ class CredentialCheckRule(Document):
         StringField(choices=["SNMPv1", "SNMPv2", "TELNET", "SSH", "HTTP", "HTTPS"])
     )
     # SNMP OID's for check
-    suggest_snmp_oids = ListField(StringField(), default=CHECK_OIDS)
+    suggest_snmp_oids = ListField(StringField())
 
     def __str__(self):
         return self.name
