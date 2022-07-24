@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # <describe module here>
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,9 @@ import socket
 import asyncio
 import contextlib
 from typing import Optional
+
+# NOC modules
+from noc.config import config
 from .base import BaseCLI
 
 
@@ -33,12 +36,16 @@ class BaseStream(object):
         self.logger = cli.logger
         self.tos = cli.tos
         self.socket: Optional[socket.socket] = None
+        self.connect_timeout: float = config.activator.connect_timeout
 
-    async def connect(self, address: str, port: Optional[int] = None):
+    async def connect(
+        self, address: str, port: Optional[int] = None, timeout: Optional[float] = None
+    ):
         """
         Process connection sequence
         :param address:
         :param port:
+        :param timeout:
         :return:
         """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,6 +69,7 @@ class BaseStream(object):
                 self.socket.setsockopt(socket.SOL_TCP, socket.TCP_KEEPCNT, self.KEEP_CNT)
         self.socket.setblocking(False)
         loop = asyncio.get_running_loop()
+        self.set_timeout(timeout or self.connect_timeout)
         try:
             await asyncio.wait_for(
                 loop.sock_connect(self.socket, (address, port or self.default_port)), self._timeout
@@ -81,6 +89,7 @@ class BaseStream(object):
         :return:
         """
         if not self.socket:
+            self.logger.warning("Wait for READ: No Socket Ready")
             return
         loop = asyncio.get_running_loop()
         read_ev = asyncio.Event()
