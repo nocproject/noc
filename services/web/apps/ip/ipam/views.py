@@ -250,7 +250,6 @@ class IPAMApplication(ExtApplication):
         return {
             "id": prefix.id,
             "name": prefix.prefix,
-            "row_class": prefix.profile.style.css_class_name if prefix.profile.style else "",
             "vrf": prefix.vrf.id,
             "vrf__label": f"{prefix.vrf.name} ({prefix.vrf.vpn_id})",
             "description": prefix.description,
@@ -274,6 +273,7 @@ class IPAMApplication(ExtApplication):
                 {
                     "id": p.id,
                     "name": p.prefix,
+                    "row_class": p.profile.style.css_class_name if p.profile.style else "",
                     "has_bookmark": is_bookmarks,
                     "description": p.description,
                     "afi": p.afi,
