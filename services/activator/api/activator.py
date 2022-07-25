@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
@@ -87,16 +90,19 @@ class ActivatorAPI(API):
         return result
 
     @staticmethod
-    def script_get_label(name, credentials, *args, **kwargs):
-        return "%s %s" % (name, credentials.get("address", "-"))
+    def script_get_label(name: str, credentials, *args, **kwargs):
+        return f'{name} {credentials.get("address", "-")}'
 
     @api
-    async def snmp_v1_get(self, address, community, oid):
+    async def snmp_v1_get(
+        self, address: str, community: str, oid: str, timeout: Optional[int] = None
+    ):
         """
         Perform SNMP v1 GET and return result
         :param address: IP address
         :param community: SNMP v2c community
         :param oid: Resolved oid
+        :param timeout: Timeout request
         :returns: Result as a string, or None, when no response
         """
         self.logger.debug("SNMP v1 GET %s %s", address, oid)
@@ -107,6 +113,7 @@ class ActivatorAPI(API):
                 community=community,
                 version=SNMP_v1,
                 tos=config.activator.tos,
+                timeout=timeout,
             )
             result = smart_text(result, errors="replace") if result else result
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
@@ -120,16 +127,19 @@ class ActivatorAPI(API):
         return result
 
     @staticmethod
-    def snmp_v1_get_get_label(address, community, oid):
-        return "%s %s" % (address, oid)
+    def snmp_v1_get_get_label(address: str, community: str, oid: str):
+        return f"{address} {oid}"
 
     @api
-    async def snmp_v2c_get(self, address, community, oid):
+    async def snmp_v2c_get(
+        self, address: str, community: str, oid: str, timeout: Optional[int] = None
+    ):
         """
         Perform SNMP v2c GET and return result
         :param address: IP address
         :param community: SNMP v2c community
         :param oid: Resolved oid
+        :param timeout: Timeout request
         :returns: Result as a string, or None, when no response
         """
         self.logger.debug("SNMP v2c GET %s %s", address, oid)
@@ -140,6 +150,7 @@ class ActivatorAPI(API):
                 community=community,
                 version=SNMP_v2c,
                 tos=config.activator.tos,
+                timeout=timeout,
             )
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
             result = smart_text(result, errors="replace") if result else result
@@ -153,8 +164,8 @@ class ActivatorAPI(API):
         return result
 
     @staticmethod
-    def snmp_v2_get_get_label(address, community, oid):
-        return "%s %s" % (address, oid)
+    def snmp_v2_get_get_label(address: str, community: str, oid: str):
+        return f"{address} {oid}"
 
     @api
     async def http_get(self, url, ignore_errors=False):

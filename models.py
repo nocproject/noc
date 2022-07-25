@@ -196,6 +196,7 @@ _MODELS = {
     "sa.CapsProfile": "noc.sa.models.capsprofile.CapsProfile",
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
     "sa.CPEStatus": "noc.sa.models.cpestatus.CPEStatus",
+    "sa.CredentialCheckRule": "noc.sa.models.credentialcheckrule.CredentialCheckRule",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
     "sa.ManagedObject": "noc.sa.models.managedobject.ManagedObject",
