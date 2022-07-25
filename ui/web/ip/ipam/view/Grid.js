@@ -123,5 +123,16 @@ Ext.define("NOC.ip.ipam.view.Grid", {
             dataIndex: "labels",
             renderer: NOC.render.LabelField
         }
-    ]
+    ],
+    viewConfig: {
+        enableTextSelection: true,
+        getRowClass: function(record) {
+            var c = record.get("row_class");
+            if(c) {
+                return c;
+            } else {
+                return "";
+            }
+        }
+    }
 });
