@@ -1066,6 +1066,9 @@ all:
     svc-liftbridge-exec:
       hosts:
         noc-node-oel7: {}
+    svc-redpanda-exec:
+      hosts:
+        noc-node-oel7: { }
     svc-mailsender:
       children:
         cfg-mailsender-noc_node_oel7:

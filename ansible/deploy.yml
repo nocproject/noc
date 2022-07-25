@@ -57,7 +57,6 @@
     - role: ui
     - role: mx
     - role: kafkasender
-    - role: redpanda
 
 
 - import_playbook: additional_roles/custom/service.yml

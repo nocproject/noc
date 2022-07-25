@@ -1065,6 +1065,9 @@ all:
     svc-liftbridge-exec:
       hosts:
         noc-node-ubuntu20: {}
+    svc-redpanda-exec:
+      hosts:
+        noc-node-ubuntu20: {}
     svc-login:
       children:
         cfg-login-noc-node-ubuntu20:

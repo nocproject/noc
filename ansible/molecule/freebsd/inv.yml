@@ -1057,6 +1057,9 @@ all:
     svc-liftbridge-exec:
       hosts:
         noc-node-freebsd12: {}
+    svc-redpanda-exec:
+      hosts:
+        noc-node-freebsd12: {}
     svc-login:
       children:
         cfg-login-noc-node-freebsd12:
