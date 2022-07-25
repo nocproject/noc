@@ -87,10 +87,14 @@ class ReportFilterApplication(SimpleReport):
         ):
             if len(o["data"]) < 2:
                 continue
-            if o["data"][0]["attr"] == "serial":
-                objects_serials[int(o["data"][1]["value"])] = o["data"][0]["value"]
-            else:
-                objects_serials[int(o["data"][0]["value"])] = o["data"][1]["value"]
+            serial = None
+            mo_id = None
+            for ii in o["data"]:
+                if ii["attr"] == "serial":
+                    serial = ii["value"]
+                if ii["attr"] == "managed_object":
+                    mo_id = int(ii["value"])
+            objects_serials[mo_id] = serial
 
         for mo in mos.values():
             platform = Platform.get_by_id(mo["platform"]) if mo.get("platform") else None
