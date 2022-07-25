@@ -1,7 +1,7 @@
 {
     "name": "DCN | WL | Enterprise_sysDescr",
     "$collection": "sa.profilecheckrules",
-    "uuid": "5d6d4d7c-3538-4f79-b0ad-59ac7cd56ea7",
+    "uuid": "c206040a-b0a0-4044-8e61-9fe8378472e4",
     "description": null,
     "preference": 9,
     "method": "snmp_v2c_get",
