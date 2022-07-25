@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from typing import Any, Dict
-
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -17,7 +14,6 @@ from mongoengine.fields import (
     ListField,
     BooleanField,
 )
-from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
