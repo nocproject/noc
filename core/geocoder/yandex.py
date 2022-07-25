@@ -21,9 +21,8 @@ from noc.config import config
 class YandexGeocoder(BaseGeocoder):
     name = "yandex"
 
-    def __init__(self, key=None, apikey=None, *args, **kwargs):
+    def __init__(self, apikey=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.key = key or config.geocoding.yandex_key
         self.apikey = apikey or config.geocoding.yandex_apikey
 
     def forward(self, query: str, bounds=None, region=None) -> Optional[GeoCoderResult]:
@@ -34,8 +33,6 @@ class YandexGeocoder(BaseGeocoder):
             # "&rspn=1&bbox=127.56,49.96~141.05,56.09"
             url += ["&rspn=1", "&bbox=%s~%s" % bounds]
         url += ["&geocode=%s" % urllib_quote(query)]
-        if self.key:
-            url += ["&key=%s" % urllib_quote(self.key)]
         if self.apikey:
             url += ["&apikey=%s" % urllib_quote(self.apikey)]
         code, response = self.get("".join(url))
@@ -49,42 +46,45 @@ class YandexGeocoder(BaseGeocoder):
             raise GeoCoderError("Cannot decode result")
         results = self.get_path(r, "response.GeoObjectCollection.featureMember") or []
         for rr in results:
+            path = []
             pos = self.get_path(rr, "GeoObject.Point.pos")
             if pos:
                 lon, lat = [float(x) for x in pos.split()]
             else:
                 lon, lat = None, None
-            path = [
-                self.get_path(
-                    rr,
-                    "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.CountryName",
-                ),
-                self.get_path(
-                    rr,
-                    "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName",
-                ),
-                self.get_path(
-                    rr,
-                    "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.SubAdministrativeAreaName",
-                ),
-                self.get_path(
-                    rr,
-                    "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName",
-                ),
-                self.get_path(
-                    rr,
-                    "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName",
-                ),
-                self.get_path(
-                    rr,
-                    "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.Premise.PremiseNumber",
-                ),
-            ]
-            path = [p for p in path if p]
+            for data in self.get_path(
+                rr, "GeoObject.metaDataProperty.GeocoderMetaData.Address.Components"
+            ):
+                if "country" in data["kind"]:
+                    path.append(data["name"])
+                if "province" in data["kind"]:
+                    path.append(data["name"])
+                if "area" in data["kind"] and data["name"] not in path:
+                    path.append(data["name"])
+                if "locality" in data["kind"] and data["name"] not in path:
+                    path.append(data["name"])
+                if "street" in data["kind"]:
+                    path.append(data["name"])
+                if "house" in data["kind"]:
+                    path.append(data["name"])
+            if path is None:
+                break
             is_exact = (
                 self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision")
                 == "exact"
             )
+            if is_exact:
+                return GeoCoderResult(
+                    exact=is_exact,
+                    query=query,
+                    path=path,
+                    lon=lon,
+                    lat=lat,
+                    id=None,
+                    scope="yandex",
+                    address=None,
+                )
+                break
             return GeoCoderResult(
                 exact=is_exact,
                 query=query,
