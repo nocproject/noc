@@ -55,17 +55,7 @@ class YandexGeocoder(BaseGeocoder):
             for data in self.get_path(
                 rr, "GeoObject.metaDataProperty.GeocoderMetaData.Address.Components"
             ):
-                if "country" in data["kind"]:
-                    path.append(data["name"])
-                if "province" in data["kind"]:
-                    path.append(data["name"])
-                if "area" in data["kind"] and data["name"] not in path:
-                    path.append(data["name"])
-                if "locality" in data["kind"] and data["name"] not in path:
-                    path.append(data["name"])
-                if "street" in data["kind"]:
-                    path.append(data["name"])
-                if "house" in data["kind"]:
+                if data["name"] not in path:
                     path.append(data["name"])
             if path is None:
                 break
@@ -84,7 +74,6 @@ class YandexGeocoder(BaseGeocoder):
                     scope="yandex",
                     address=None,
                 )
-                break
             return GeoCoderResult(
                 exact=is_exact,
                 query=query,
