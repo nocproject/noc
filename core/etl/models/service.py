@@ -1,20 +1,25 @@
 # ----------------------------------------------------------------------
 # ServiceModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List
+from typing import Optional, List, Union
 from datetime import datetime
 
 # NOC modules
-from .base import BaseModel
+from .base import BaseModel, _BaseModel
 from .typing import Reference
 from .serviceprofile import ServiceProfile
 from .managedobject import ManagedObject
 from .subscriber import Subscriber
+
+
+class CapsItem(_BaseModel):
+    name: str
+    value: Union[str, bool, int]
 
 
 class Service(BaseModel):
@@ -44,6 +49,7 @@ class Service(BaseModel):
     cpe_group: Optional[str]
     labels: Optional[List[str]]
     description: Optional[str] = None
+    capabilities: Optional[List[CapsItem]]
     checkpoint: Optional[str]
 
     class Config:
