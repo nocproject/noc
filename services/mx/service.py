@@ -89,7 +89,7 @@ class MXService(FastAPIService):
             self.logger.debug("[%d] Applying route %s", msg.offset, route.name)
             # Apply actions
             routed: bool = False
-            for stream, action_headers in route.iter_action(msg):
+            for stream, action_headers, body in route.iter_action(msg):
                 metrics["action_hits"] += 1
                 # Fameless drop
                 if stream == DROP:
@@ -110,7 +110,7 @@ class MXService(FastAPIService):
                     self.stream_partitions[stream] = partitions
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
-                body = route.transmute(headers, msg.value)
+                body = route.transmute(headers, body)
                 # for body in route.iter_transmute(headers, msg.value):
                 if not isinstance(body, bytes):
                     # Transmute converts message to an arbitrary structure,

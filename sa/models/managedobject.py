@@ -2189,6 +2189,15 @@ class ManagedObject(NOCModel):
             r.append(mai_id)
         return r
 
+    def get_message_context(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "address": self.address,
+            "profile": {"name": self.profile.name},
+        }
+
 
 @on_save
 class ManagedObjectAttribute(NOCModel):

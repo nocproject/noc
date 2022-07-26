@@ -9,10 +9,14 @@
 from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
 from dataclasses import dataclass
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import smart_bytes
+from noc.core.mx import MX_MESSAGE_TYPE
 from noc.main.models.notificationgroup import NotificationGroup
 
 
@@ -73,15 +77,15 @@ class Action(object, metaclass=ActionBase):
             )
         )
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         raise NotImplementedError
 
 
 class DropAction(Action):
     name = "drop"
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield DROP, {}
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        yield DROP, {}, msg.value
 
 
 class StreamAction(Action):
@@ -91,8 +95,8 @@ class StreamAction(Action):
         super().__init__(cfg)
         self.stream: str = cfg.stream
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield self.stream, self.headers
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        yield self.stream, self.headers, msg.value
 
 
 class NotificationAction(Action):
@@ -102,5 +106,10 @@ class NotificationAction(Action):
         super().__init__(cfg)
         self.ng: NotificationGroup = NotificationGroup.get_by_id(cfg.notification_group)
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield from self.ng.iter_actions()
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        mt = msg.headers.get(MX_MESSAGE_TYPE).decode("utf-8")
+        body = self.ng.render_message(mt, orjson.loads(msg.value))
+        for stream, header, render_template in self.ng.iter_actions():
+            yield stream, header, self.ng.render_message(
+                mt, orjson.loads(msg.value), render_template
+            ) if render_template else body

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Tuple, Dict, Iterator
+from typing import Tuple, Dict, Iterator, Optional, Any
 
 # Third-party modules
 from django.db import models
@@ -20,6 +20,8 @@ import cachetools
 from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.settings import LANGUAGE_CODE
+from noc.main.models.systemtemplate import SystemTemplate
+from noc.main.models.template import Template
 from noc.core.timepattern import TimePatternList
 from noc.core.mx import send_message, MX_TO
 from noc.core.model.decorator import on_delete_check
@@ -32,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 NOTIFICATION_TOPICS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
 MX_STREAMS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
+NOTIFICATION_DEFAULT_TEMPLATE = {"interface_status_change": "interface.status.change"}
 
 NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_TOPICS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
@@ -215,13 +218,26 @@ class NotificationGroup(NOCModel):
                 cls.get_effective_message(body, lang[(method, params)]),
             )
 
-    def iter_actions(self) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+    def iter_actions(self) -> Iterator[Tuple[str, Dict[str, bytes], Optional["Template"]]]:
         """
         mx-compatible actions. Yields tuples of `stream`, `headers`
         :return:
         """
         for method, param, _ in self.active_members:
-            yield MX_STREAMS[method], {"To": smart_bytes(param)}
+            yield MX_STREAMS[method], {"To": smart_bytes(param)}, None
+
+    @classmethod
+    def render_message(
+        cls, message_type: str, ctx: Dict[str, Any], template: Optional["Template"] = None
+    ) -> Dict[str, str]:
+        if not template and message_type in NOTIFICATION_DEFAULT_TEMPLATE:
+            template = SystemTemplate.objects.filter(
+                name=NOTIFICATION_DEFAULT_TEMPLATE[message_type]
+            ).first()
+        elif not template and message_type not in NOTIFICATION_DEFAULT_TEMPLATE:
+            # ?default template or context
+            return {}
+        return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
 
 
 class NotificationGroupUser(NOCModel):
