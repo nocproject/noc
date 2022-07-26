@@ -52,7 +52,7 @@ class Config(BaseConfig):
         script_threads = IntParameter(default=10)
         buffer_size = IntParameter(default=1048576)
         connect_retries = IntParameter(default=3, help="retries on immediate disconnect")
-        connect_timeout = FloatParameter(default=30.0, help="timeout after immediate disconnect")
+        connect_timeout = FloatParameter(default=55.0, help="timeout after immediate disconnect")
         http_connect_timeout = IntParameter(default=20)
         http_request_timeout = IntParameter(default=30)
         http_validate_cert = BooleanParameter(default=False)
