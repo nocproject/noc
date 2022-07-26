@@ -1,14 +1,18 @@
 # ----------------------------------------------------------------------
 # Service loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, Any
+
 # NOC modules
+from noc.inv.models.capability import Capability
+from noc.sa.models.service import Service as ServiceModel
 from .base import BaseLoader
 from ..models.service import Service
-from noc.sa.models.service import Service as ServiceModel
 
 
 class ServiceLoader(BaseLoader):
@@ -22,6 +26,22 @@ class ServiceLoader(BaseLoader):
 
     discard_deferred = True
     workflow_state_sync = True
+
+    post_save_fields = {"capabilities"}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.available_caps = {x.name for x in Capability.objects.filter()}
+
+    def post_save(self, o: ServiceModel, fields: Dict[str, Any]):
+        if not fields or "capabilities" not in fields:
+            return
+        for cc in fields["capabilities"] or []:
+            c_name = cc["name"]
+            if c_name not in self.available_caps:
+                continue
+            o.set_caps(c_name, cc["value"], source="etl", scope=self.system.name)
+        o.save()
 
     def find_object(self, v):
         """
