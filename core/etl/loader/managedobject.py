@@ -62,8 +62,8 @@ class ManagedObjectLoader(BaseLoader):
             return
         caps = {}
         for cc in fields["capabilities"] or []:
-            c_name = f'ETL | {self.system.name} | {cc["name"]}'
+            c_name = cc["name"]
             if c_name not in self.available_caps:
                 continue
             caps[c_name] = cc["value"]
-        o.update_caps(caps, source="etl")
+        o.update_caps(caps, source="etl", scope=self.system.name)

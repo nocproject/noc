@@ -849,6 +849,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "type": capability.type,
                         "value": c["value"],
                         "source": c["source"],
+                        "scope": c.get("scope", "")
                     }
                 ]
         return sorted(r, key=lambda x: x["capability"])

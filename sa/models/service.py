@@ -119,7 +119,7 @@ class Service(Document):
     cpe_model = StringField()
     cpe_group = StringField()
     # Capabilities
-    caps = ListField(EmbeddedDocumentField(CapsItem))
+    caps: List[CapsItem] = ListField(EmbeddedDocumentField(CapsItem))
     # Link to agent
     agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
@@ -181,6 +181,24 @@ class Service(Document):
 
     def get_caps(self) -> Dict[str, Any]:
         return CapsItem.get_caps(self.caps, self.profile.caps)
+
+    def set_caps(
+        self, key: str, value: Any, source: str = "manual", scope: Optional[str] = ""
+    ) -> None:
+        from noc.inv.models.capability import Capability
+
+        caps = Capability.get_by_name(key)
+        value = caps.clean_value(value)
+        for item in self.caps:
+            if str(item.capability) == str(caps.id):
+                if not scope or item.scope == scope:
+                    item.value = value
+                    break
+        else:
+            # Insert new item
+            self.caps += [
+                CapsItem(capability=caps, value=value, source=source, scope=scope or "")
+            ]
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
