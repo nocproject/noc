@@ -2287,7 +2287,8 @@ class ManagedObject(NOCModel):
                 """
                  UPDATE sa_managedobject
                  SET diagnostics = jsonb_set(diagnostics, %s, %s::jsonb)
-                 WHERE id = %s""", [diagnostic, orjson.dumps(check.dict()).decode("utf-8"), self.id]
+                 WHERE id = %s""",
+                [diagnostic, orjson.dumps(check.dict()).decode("utf-8"), self.id],
             )
 
         self._reset_caches(self.id)
