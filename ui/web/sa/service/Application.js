@@ -295,9 +295,15 @@ Ext.define("NOC.sa.service.Application", {
                             editor: "textfield"
                         },
                         {
+                            text: __("Source"),
+                            dataIndex: "source",
+                            width: 100,
+                            editor: "textfield"
+                        },
+                        {
                             text: __("Scope"),
                             dataIndex: "scope",
-                            width: 150,
+                            width: 50,
                             editor: "textfield"
                         }
                     ]

@@ -1729,6 +1729,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                         }
                     },
                     {
+                        text: __("Scope"),
+                        dataIndex: "scope",
+                        width: 50
+                    },
+                    {
                         text: __("Source"),
                         dataIndex: "source",
                         width: 100
