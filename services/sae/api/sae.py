@@ -193,7 +193,7 @@ class SAEAPI(API):
         if caps:
             for c in caps:
                 cc = Capability.get_by_id(c["capability"])
-                if cc and not cc.get("scope"):
+                if cc and not c.get("scope"):
                     capabilities[cc.name] = c.get("value")
         if auth_profile_id:
             user = ap_user
