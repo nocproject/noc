@@ -196,9 +196,7 @@ class Service(Document):
                     break
         else:
             # Insert new item
-            self.caps += [
-                CapsItem(capability=caps, value=value, source=source, scope=scope or "")
-            ]
+            self.caps += [CapsItem(capability=caps, value=value, source=source, scope=scope or "")]
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):
