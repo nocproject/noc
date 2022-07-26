@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import Optional, Type
+from asyncio.exceptions import TimeoutError
 
 # NOC module
 from noc.core.log import PrefixLoggerAdapter
@@ -84,6 +85,10 @@ class BaseCLI(object):
             self.logger.debug("Connection refused")
             metrics["cli_connection_refused", ("proto", self.name)] += 1
             raise ConnectionRefusedError
+        except TimeoutError:
+            self.logger.debug("Connection timeout")
+            metrics["cli_connection_timeout", ("proto", self.name)] += 1
+            raise ConnectionRefusedError("Connection timeout")
         self.logger.debug("Connected")
         await self.stream.startup()
 
