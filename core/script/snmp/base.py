@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Callable, List
+from typing import Optional, Dict, Callable, List, Union
 import weakref
 
 # NOC modules
@@ -94,7 +94,7 @@ class SNMP(object):
 
     def get(
         self,
-        oids: List[str],
+        oids: Union[List[str], str],
         cached: bool = False,
         version: Optional[str] = None,
         raw_varbinds=False,
@@ -261,7 +261,7 @@ class SNMP(object):
                     response_parser=self.script.profile.get_snmp_response_parser(self.script),
                     rate_limit=self.rate_limit,
                 )
-                return r
+                return r or []
             except SNMPError as e:
                 if e.code == TIMED_OUT:
                     raise self.TimeOutError()
