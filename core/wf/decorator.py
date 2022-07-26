@@ -135,11 +135,34 @@ def model_set_state(self, state, state_changed: datetime.datetime = None):
     :param object:
     :return:
     """
-    # Set field
+    # Direct update arguments
+    set_op = {"state": str(state.id)}
+    prev_labels = self.state.labels if self.state else []
+    # Set state field
     self.state = state
-    # Update database directly
+    # Set start field
+    if self._has_state_changed:
+        self.state_changed = state_changed or datetime.datetime.now()
+        set_op["state_changed"] = self.state_changed
+    # Fill expired field
+    if self._has_expired:
+        if state.ttl:
+            self.expired = datetime.datetime.now() + datetime.timedelta(seconds=state.ttl)
+        else:
+            self.expired = None
+        set_op["expired"] = self.expired
+    # Update database include effective labels directly
     # to avoid full save
-    self.__class__.objects.filter(id=self.id).update(state=str(state.id))
+    if hasattr(self, "effective_labels"):
+        obj_labels = set(self.effective_labels)
+        if obj_labels and prev_labels:
+            obj_labels -= set(prev_labels)
+        state_labels = set([ll for ll in state.labels if self.can_set_label(ll)])
+        if state_labels:
+            obj_labels.update(state_labels)
+        set_op["effective_labels"] = list(obj_labels)
+    # Update record
+    self.__class__.objects.filter(id=self.id).update(**set_op)
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:
