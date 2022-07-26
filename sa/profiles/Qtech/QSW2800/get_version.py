@@ -107,7 +107,15 @@ class Script(BaseScript):
         "1.3.6.1.4.1.27514.102.1.2.40": "QSW-8300-52F",
     }
 
-    def fix_platform(self, oid):
+    def fix_platform(self, platform: str) -> str:
+        """
+        For customize
+        :param platform:
+        :return:
+        """
+        return platform
+
+    def get_platform_by_sysoid(self, oid: str) -> str:
         if oid.startswith("."):
             oid = oid[1:]
         # self.snmp.get(mib[".1.3.6.1.4.1.27514.1.1.1.1.1.1", 0], cached=True)
@@ -146,7 +154,8 @@ class Script(BaseScript):
                 break
         if not match or "platform" not in match or match["platform"] == "Switch":
             oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
-            r["platform"] = self.fix_platform(oid)
+            r["platform"] = self.get_platform_by_sysoid(oid)
+        r["platform"] = self.fix_platform(r["platform"])
         if "version" not in r and sys_descr:
             r["version"] = self.rx_version.search(sys_descr).group("version")
         if match and "bootprom" in match:
@@ -157,7 +166,9 @@ class Script(BaseScript):
         elif hw_ver:
             r["attributes"]["HW version"] = hw_ver
         if match and "serial" in match:
-            r["attributes"]["Serial Number"] = match["serial"]
+            r["attributes"]["Serial Number"] = match["serial"].replace(
+                "\x1b7", ""
+            )  # On QSW-4610-10T-AC 8.2.1.60
         elif serial:
             r["attributes"]["Serial Number"] = serial
         if "version" not in r:
@@ -177,7 +188,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return {}
         r = parse_kv(self.info_map, v, ":")
-        platform = self.fix_platform(r["sysid"])
+        platform = self.get_platform_by_sysoid(r["sysid"])
         return {
             "vendor": "Qtech",
             "platform": platform,
@@ -199,12 +210,12 @@ class Script(BaseScript):
                     v = self.cli("show vendor")
                     match = self.rx_vendor.search(v)
                     if match:
-                        platform = self.fix_platform(match.group("oid"))
+                        platform = self.get_platform_by_sysoid(match.group("oid"))
                 except self.CLISyntaxError:
                     pass
             return {
                 "vendor": "Qtech",
-                "platform": platform,
+                "platform": self.fix_platform(platform),
                 "version": version,
                 "attributes": {
                     "Boot PROM": bootprom,
