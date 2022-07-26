@@ -16,7 +16,7 @@ from threading import Lock
 import datetime
 from dataclasses import dataclass
 from itertools import chain
-from typing import Tuple, Iterable, List, Any, Dict, Set
+from typing import Tuple, Iterable, List, Any, Dict, Set, Literal
 
 # Third-party modules
 import orjson
@@ -40,6 +40,7 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
+from noc.core.wf.diagnostic import DiagnosticState
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -101,7 +102,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 39
+MANAGEDOBJECT_CACHE_VERSION = 40
 CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
@@ -123,6 +124,18 @@ class MaintenanceItems(BaseModel):
 
 class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
+
+
+class CheckItem(BaseModel):
+    check: str
+    state: DiagnosticState
+    scope: Literal["access", "all", "discovery", "default"] = "default"
+    reason: Optional[str] = None
+    changed: Optional[datetime.datetime] = None
+
+
+class CheckItems(BaseModel):
+    __root__: Dict[str, CheckItem]
 
 
 @dataclass(frozen=True)
@@ -592,6 +605,13 @@ class ManagedObject(NOCModel):
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
+    diagnostics: Dict[str, CheckItem] = PydanticField(
+        "Diagnostic Items",
+        schema=CheckItems,
+        blank=True,
+        null=True,
+        default=dict,
+    )
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -638,22 +658,22 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, id: int) -> "Optional[ManagedObject]":
+    def get_by_id(cls, oid: int) -> "Optional[ManagedObject]":
         """
         Get ManagedObject by id. Cache returned instance for future use.
 
-        :param id: Managed Object's id
+        :param oid: Managed Object's id
         :return: ManagedObject instance
         """
-        mo = ManagedObject.objects.filter(id=id)[:1]
+        mo = ManagedObject.objects.filter(id=oid)[:1]
         if mo:
             return mo[0]
         return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        mo = ManagedObject.objects.filter(bi_id=id)[:1]
+    def get_by_bi_id(cls, bi_id) -> "Optional[ManagedObject]":
+        mo = ManagedObject.objects.filter(bi_id=bi_id)[:1]
         if mo:
             return mo[0]
         else:
@@ -2069,6 +2089,11 @@ class ManagedObject(NOCModel):
             # If use Link.objects.filter(linked_objects=mo.id).first() - 1.27 ms,
             # Interface = 39.4 µs
             yield ["noc::is_linked::="]
+        if instance.diagnostics:
+            for d in instance.diagnostics.values():
+                yield Label.ensure_labels(
+                    [f"funcs::{d.scope}::{d.check}::{d.state}"], enable_managedobject=True
+                )
 
     @classmethod
     def can_set_label(cls, label: str) -> bool:
@@ -2217,6 +2242,96 @@ class ManagedObject(NOCModel):
             },
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
+
+    def set_diagnostic(
+        self,
+        check: str,
+        state: Literal["enabled", "disabled", "blocked", "unknown"],
+        scope: str = "default",
+        reason: Optional[str] = None,
+        bulk: Optional[List[CheckItem]] = None,
+    ):
+        """
+
+        :param check:
+        :param state:
+        :param scope:
+        :param reason:
+        :param bulk:
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        now = datetime.datetime.now()
+        state = DiagnosticState(state)
+        diagnostic = f"{scope}::{check}"
+        if state == "unknown" and diagnostic in self.diagnostics:
+            check = None
+        elif diagnostic not in self.diagnostics:
+            check = CheckItem(check=check, scope=scope, state=state, changed=now, reason=reason)
+        else:
+            check = self.diagnostics[diagnostic]
+        if not check:
+            del self.diagnostics[diagnostic]
+        elif state == check.state:
+            # Already set
+            return
+        elif check.state == "blocked":
+            # Disable
+            return
+        check.state = state
+        check.changed = now
+        self.diagnostics[diagnostic] = check
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                """
+                 UPDATE sa_managedobject
+                 SET diagnostics = jsonb_set(diagnostics, %s, %s::jsonb)
+                 WHERE id = %s""", [diagnostic, orjson.dumps(check.dict()).decode("utf-8"), self.id]
+            )
+
+        self._reset_caches(self.id)
+
+    def get_config_diagnostics(self) -> Optional[List[CheckItem]]:
+        """
+        Return diagnostic
+        :return:
+        """
+        r = []
+        if "S" not in self.access_preference:
+            r += [
+                CheckItem(
+                    check="snmpv1",
+                    state="blocked",
+                    scope="access",
+                    reason="Disable by AccessPreference",
+                ),
+                CheckItem(
+                    check="snmpv2",
+                    state="blocked",
+                    scope="access",
+                    reason="Disable by AccessPreference",
+                ),
+            ]
+        if "C" not in self.access_preference or self.scheme != 1:
+            r += [
+                CheckItem(
+                    check="telnet",
+                    state="blocked",
+                    scope="access",
+                    reason="Disable by AccessPreference",
+                ),
+            ]
+        if "C" not in self.access_preference or self.scheme != 2:
+            r += [
+                CheckItem(
+                    check="ssh",
+                    state="blocked",
+                    scope="access",
+                    reason="Disable by AccessPreference",
+                ),
+            ]
+        return r
 
 
 @on_save
