@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Qtech.QSW.get_version
+# Qtech.QSW2800.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
@@ -53,6 +53,8 @@ class Script(BaseScript):
         "1.3.6.1.4.1.6339.1.1.1.228": "QSW-3450-28T-AC",
         "1.3.6.1.4.1.6339.1.1.1.3": "QSW-3470-28T-AC",
         "1.3.6.1.4.1.6339.1.1.1.244": "S5750E-28X-SI-24F-D",
+        "1.3.6.1.4.1.6339.1.1.1.301": "QSW-3470-10T-AC-POE",
+        "1.3.6.1.4.1.6339.1.1.1.310": "QSW-4610-28T-AC",
         "1.3.6.1.4.1.6339.1.1.2.40": "QSW-8300-52F",
         "1.3.6.1.4.1.6339.1.1.2.59": "QSW-8200-28F-AC-DC",
         "1.3.6.1.4.1.13464.1.3.13": "QSW-2900-24T",
@@ -68,11 +70,14 @@ class Script(BaseScript):
         "1.3.6.1.4.1.27514.1.1.1.234": "QSW-8200-28F-AC-DC",
         "1.3.6.1.4.1.27514.1.1.1.235": "QSW-8200-28F-AC-DC",
         "1.3.6.1.4.1.27514.1.1.1.248": "QSW-3450-28T-POE-AC",
+        "1.3.6.1.4.1.27514.1.1.1.280": "QSW-3750-52T-AC",
         "1.3.6.1.4.1.27514.1.1.1.282": "QSW-3470-10T-AC",
-        "1.3.6.1.4.1.6339.1.1.1.301": "QSW-3470-10T-AC-POE",
+        "1.3.6.1.4.1.27514.1.1.1.299": "QSW-3750-28T-AC",
         "1.3.6.1.4.1.27514.1.1.1.310": "QSW-3580-28T-AC",
         "1.3.6.1.4.1.27514.1.1.1.337": "QSW-2850-28T-AC",
+        "1.3.6.1.4.1.27514.1.1.1.350": "QSW-4610-10T-AC",
         "1.3.6.1.4.1.27514.1.1.1.354": "QSW-3470-28T-AC-POE",
+        "1.3.6.1.4.1.27514.1.1.1.355": "QSW-3750-28T-AC",
         "1.3.6.1.4.1.27514.1.1.1.356": "QSW-3470-10T-AC-POE",
         "1.3.6.1.4.1.27514.1.1.1.339": "QSW-2850-18T-AC",
         "1.3.6.1.4.1.27514.1.1.1.351": "QSW-3500-10T-AC",
@@ -102,15 +107,7 @@ class Script(BaseScript):
         "1.3.6.1.4.1.27514.102.1.2.40": "QSW-8300-52F",
     }
 
-    def fix_platform(self, platform: str) -> str:
-        """
-        For customize
-        :param platform:
-        :return:
-        """
-        return platform
-
-    def get_platform_by_sysoid(self, oid: str) -> str:
+    def fix_platform(self, oid):
         if oid.startswith("."):
             oid = oid[1:]
         # self.snmp.get(mib[".1.3.6.1.4.1.27514.1.1.1.1.1.1", 0], cached=True)
@@ -149,8 +146,7 @@ class Script(BaseScript):
                 break
         if not match or "platform" not in match or match["platform"] == "Switch":
             oid = self.snmp.get(mib["SNMPv2-MIB::sysObjectID", 0])
-            r["platform"] = self.get_platform_by_sysoid(oid)
-        r["platform"] = self.fix_platform(r["platform"])
+            r["platform"] = self.fix_platform(oid)
         if "version" not in r and sys_descr:
             r["version"] = self.rx_version.search(sys_descr).group("version")
         if match and "bootprom" in match:
@@ -161,9 +157,7 @@ class Script(BaseScript):
         elif hw_ver:
             r["attributes"]["HW version"] = hw_ver
         if match and "serial" in match:
-            r["attributes"]["Serial Number"] = match["serial"].replace(
-                "\x1b7", ""
-            )  # On QSW-4610-10T-AC 8.2.1.60
+            r["attributes"]["Serial Number"] = match["serial"]
         elif serial:
             r["attributes"]["Serial Number"] = serial
         if "version" not in r:
@@ -183,7 +177,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return {}
         r = parse_kv(self.info_map, v, ":")
-        platform = self.get_platform_by_sysoid(r["sysid"])
+        platform = self.fix_platform(r["sysid"])
         return {
             "vendor": "Qtech",
             "platform": platform,
@@ -205,12 +199,12 @@ class Script(BaseScript):
                     v = self.cli("show vendor")
                     match = self.rx_vendor.search(v)
                     if match:
-                        platform = self.get_platform_by_sysoid(match.group("oid"))
+                        platform = self.fix_platform(match.group("oid"))
                 except self.CLISyntaxError:
                     pass
             return {
                 "vendor": "Qtech",
-                "platform": self.fix_platform(platform),
+                "platform": platform,
                 "version": version,
                 "attributes": {
                     "Boot PROM": bootprom,
