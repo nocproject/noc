@@ -560,7 +560,7 @@ class ManagedObject(NOCModel):
     labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     #
-    caps = PydanticField(
+    caps: List[Dict[str, Any]] = PydanticField(
         "Caps Items",
         schema=CapsItems,
         blank=True,
@@ -1391,17 +1391,19 @@ class ManagedObject(NOCModel):
 
         yield from Interface.objects.filter(managed_object=self.id)
 
-    def get_caps(self) -> Dict[str, Any]:
+    def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
         """
         Returns a dict of effective object capabilities
         """
 
         caps = {}
+        scope = scope or ""
         if self.caps:
             for c in self.caps:
                 cc = Capability.get_by_id(c["capability"])
-                if cc:
-                    caps[cc.name] = c.get("value")
+                if not cc or (scope and c.get("scope", "") != scope):
+                    continue
+                caps[cc.name] = c.get("value")
         return caps
 
     def save(self, **kwargs):
@@ -1410,14 +1412,17 @@ class ManagedObject(NOCModel):
             kwargs["update_fields"] = self._allow_update_fields
         super().save(**kwargs)
 
-    def update_caps(self, caps: Dict[str, Any], source: str) -> Dict[str, Any]:
+    def update_caps(
+        self, caps: Dict[str, Any], source: str, scope: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Update existing capabilities with a new ones.
         :param caps: dict of caps name -> caps value
         :param source: Source name
+        :param scope: Scope name
         """
 
-        o_label = f"{self.name}|{source}"
+        o_label = f"{scope or ''}{self.name}|{source}"
         # Update existing capabilities
         new_caps = []
         seen = set()
@@ -1425,13 +1430,22 @@ class ManagedObject(NOCModel):
         for ci in self.caps:
             c = Capability.get_by_id(ci["capability"])
             cs = ci.get("source")
+            css = ci.get("scope", "")
             cv = ci.get("value")
             if not c:
                 logger.info("[%s] Removing unknown capability id %s", o_label, ci["capability"])
                 continue
+            cv = c.clean_value(cv)
             cn = c.name
             seen.add(cn)
-            if cs == source:
+            if scope and scope != css:
+                logger.info(
+                    "[%s] Not changing capability %s: from other scope '%s'",
+                    o_label,
+                    cn,
+                    css,
+                )
+            elif cs == source:
                 if cn in caps:
                     if caps[cn] != cv:
                         logger.info(
@@ -1445,7 +1459,7 @@ class ManagedObject(NOCModel):
                     continue
             elif cn in caps:
                 logger.info(
-                    "[%s] Not changing capability %s: " "Already set with source '%s'",
+                    "[%s] Not changing capability %s: Already set with source '%s'",
                     o_label,
                     cn,
                     cs,
@@ -1482,18 +1496,20 @@ class ManagedObject(NOCModel):
         return caps
 
     def set_caps(
-        self, key: str, value: Any, source: str = "manual", scope: Optional[str] = None
+        self, key: str, value: Any, source: str = "manual", scope: Optional[str] = ""
     ) -> None:
         caps = Capability.get_by_name(key)
         value = caps.clean_value(value)
         for item in self.caps:
             if item["capability"] == str(caps.id):
-                if not scope or item.scope == scope:
+                if not scope or item.get("scope", "") == scope:
                     item["value"] = value
                     break
         else:
             # Insert new item
-            self.caps += [{"capability": str(caps.id), "value": value, "source": source}]
+            self.caps += [
+                {"capability": str(caps.id), "value": value, "source": source, "scope": scope or ""}
+            ]
 
     def disable_discovery(self):
         """
