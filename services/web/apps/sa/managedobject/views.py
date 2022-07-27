@@ -43,6 +43,7 @@ from noc.sa.interfaces.base import (
     ModelParameter,
     StringParameter,
     BooleanParameter,
+    IntParameter,
 )
 from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
@@ -138,6 +139,7 @@ class ManagedObjectApplication(ExtModelApplication):
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"),
     ]
+    clean_fields = {"id": IntParameter(), "address": StringParameter(strip_value=True)}
 
     @staticmethod
     @cachetools.cached({})
