@@ -152,7 +152,7 @@ class Route(object):
             if isinstance(data, bytes):
                 data = orjson.loads(data)
             ctx = {"headers": headers, **data}
-            data = self.transmute_template.render_body(**ctx)
+            data = self.transmute_template.render_body(ctx)
         return data
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
@@ -186,7 +186,7 @@ class Route(object):
             self.transmute_handler = Handler.get_by_id(data["transmute_handler"])
         if "transmute_template" in data:
             template = Template.objects.get(id=data["transmute_template"])
-            self.transmute_template = JTemplate(template.body)
+            self.transmute_template = TransmuteTemplate(JTemplate(template.body))
         if "render_template" in data:
             self.render_template = data["render_template"]
         # Compile action part
