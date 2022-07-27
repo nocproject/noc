@@ -265,7 +265,6 @@ class Config(BaseConfig):
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")
-        yandex_key = SecretParameter(default="")
         yandex_apikey = SecretParameter(default="")
         google_key = SecretParameter(default="")
         google_language = StringParameter(default="en")
