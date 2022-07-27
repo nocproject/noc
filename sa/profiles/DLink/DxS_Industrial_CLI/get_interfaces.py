@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Industrial_CLI.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface = re.compile(
-        r"^\s*(?P<ifname>(?:Eth|vlan|mgmt_ipif |Port-channel)\S+) is (?P<admin_status>\S+),? [Ll]ink status is (?P<oper_status>\S+)\s*\n"
+        r"^\s*(?P<ifname>(?:Eth|vlan|mgmt_ipif |Port-channel)\S+) is (?P<admin_status>\S+),? (?:fiber |copper )?[Ll]ink status is (?P<oper_status>\S+)\s*\n"
         r"^\s*Interface type: \S+\s*\n"
         r"^\s*Interface description:(?P<descr>.*)\n"
         r"(^\s*MAC [Aa]ddress: (?P<mac>\S+)\s*\n)?",
