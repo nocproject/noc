@@ -2195,7 +2195,11 @@ class ManagedObject(NOCModel):
             "name": self.name,
             "description": self.description,
             "address": self.address,
-            "profile": {"name": self.profile.name},
+            "administrative_domain": {
+                "id": str(self.profile.id),
+                "name": self.administrative_domain.name,
+            },
+            "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
 
 

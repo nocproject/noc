@@ -16,7 +16,7 @@ Labels
 
 ## Message Format
 
-Message contains JSON array, containing objects of following structure
+Message contains JSON object, containing objects of following structure
 
 | Name       | Type     | Description                                                          |
 | ---------- | -------- | -------------------------------------------------------------------- |
@@ -59,3 +59,68 @@ Message contains JSON array, containing objects of following structure
 
 ## Example
 
+```json
+{
+  "timestamp": "2022-07-23T19:04:52",
+  "message_id": "2075b637-3a6c-4e09-b7b6-2f6ac63f68bb",
+  "collector_type": "snmptrap",
+  "collector": "default",
+  "address": "127.0.0.1",
+  "managed_object": {
+    "id": "450",
+    "bi_id": 7602684790455147111,
+    "name": "device-1",
+    "administrative_domain": {
+      "id": 11,
+      "name": "default",
+      "remote_system": {
+        "id": "596e715fc165cf1e082ea14c",
+        "name": "TEST"
+      },
+      "remote_id": "1"
+    },
+    "labels": [],
+    "remote_system": {
+      "id": "596e715fc165cf1e082ea14c",
+      "name": "TEST"
+    },
+    "remote_id": "22"
+  },
+  "event_class": {
+    "id": "5ec11167c8e0399ae0e05eb1",
+    "name": "Chassis | CPU | CPU Rate Limit"
+  },
+  "event_vars": {
+    "cpu": "32",
+    "traffic": "mcRouting"
+  },
+  "data": {
+    "vars": [
+      {
+        "oid": "1.3.6.1.2.1.1.3.0",
+        "value": "402494183",
+        "resolved_oid": "DISMAN-EVENT-MIB::sysUpTimeInstance",
+        "resolved_value": "402494183"
+      },
+      {
+        "oid": "1.3.6.1.6.3.1.1.4.1.0",
+        "value": "1.3.6.1.4.1.35265.1.23.1.773.1.0.1",
+        "resolved_oid": "SNMPv2-MIB::snmpTrapOID.0",
+        "resolved_value": "ELTEX-MES-SWITCH-RATE-LIMITER-MIB::eltCpuRateLimiterTrap"
+      },
+      {
+        "oid": "1.3.6.1.4.1.35265.1.23.1.773.1.1.1.1.1.22",
+        "value": "22",
+        "resolved_oid": "ELTEX-MES-SWITCH-RATE-LIMITER-MIB::eltCpuRateLimiterIndex.22",
+        "resolved_value": "mcRouting"
+      },
+      {
+        "oid": "1.3.6.1.4.1.35265.1.23.1.773.1.1.1.1.2.22",
+        "value": "32",
+        "resolved_oid": "ELTEX-MES-SWITCH-RATE-LIMITER-MIB::eltCpuRateLimiterValue.22",
+        "resolved_value": "32"
+      }
+    ]
+  }
+}
+```
