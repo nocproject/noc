@@ -234,9 +234,9 @@ class NotificationGroup(NOCModel):
             template = SystemTemplate.objects.filter(
                 name=NOTIFICATION_DEFAULT_TEMPLATE[message_type]
             ).first()
-        elif not template and message_type not in NOTIFICATION_DEFAULT_TEMPLATE:
-            # ?default template or context
-            return {}
+        if not template:
+            logger.warning("Not template for message type: %s", message_type)
+            return ctx
         return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
 
 

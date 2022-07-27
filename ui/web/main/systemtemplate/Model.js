@@ -26,7 +26,8 @@ Ext.define("NOC.main.systemtemplate.Model", {
         },
         {
             name: "template__label",
-            type: "string"
+            type: "string",
+            persist:false
         },
         {
             name: "template",

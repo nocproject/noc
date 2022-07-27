@@ -35,6 +35,8 @@ class CfgMetricsCollectorDataStream(DataStream):
             r["headers"] = [{"header": m.header, "value": m.value} for m in route.headers]
         if route.notification_group:
             r["notification_group"] = str(route.notification_group.id)
+        if route.render_template:
+            r["render_template"] = str(route.render_template.id)
         if route.transmute_template:
             r["transmute_template"] = str(route.transmute_template.id)
         if route.transmute_handler:

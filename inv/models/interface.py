@@ -39,7 +39,7 @@ from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
-from noc.core.comp import smart_bytes
+from noc.core.comp import DEFAULT_ENCODING
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
 
@@ -441,26 +441,20 @@ class Interface(Document):
                     "Sending status change notification to %s",
                     self.profile.status_change_notification.name,
                 )
-                msg = self.managed_object.get_message_context()
-                msg.update({"name": self.name, "description": self.description, "status": status})
                 send_message(
-                    data=msg,
+                    data={
+                        "name": self.name,
+                        "description": self.description,
+                        "status": status,
+                        "managed_object": self.managed_object.get_message_context(),
+                    },
                     message_type="interface_status_change",
                     headers={
-                        MX_LABELS: smart_bytes(MX_H_VALUE_SPLITTER.join(self.effective_labels)),
+                        MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
+                            encoding=DEFAULT_ENCODING
+                        ),
                     },
                 )
-                # self.profile.status_change_notification.notify(
-                #     subject="[%s] Interface %s(%s) is %s"
-                #     % (
-                #         self.managed_object.name,
-                #         self.name,
-                #         self.description or "",
-                #         "up" if status else "down",
-                #     ),
-                #     body="Interface %s (%s) is %s"
-                #     % (self.name, self.description or "", "up" if status else "down"),
-                # )
 
     @property
     def parent(self) -> "Interface":
