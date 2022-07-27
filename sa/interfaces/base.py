@@ -39,9 +39,10 @@ class StringParameter(Parameter):
     Check value is string
     """
 
-    def __init__(self, required=True, default=None, choices=None, aliases=None):
+    def __init__(self, required=True, default=None, choices=None, aliases=None, strip_value=False):
         self.choices = set(choices) if choices else None
         self.aliases = aliases
+        self.strip_value = strip_value
         super().__init__(required=required, default=default)
 
     def clean(self, value):
@@ -52,6 +53,8 @@ class StringParameter(Parameter):
                 value = str(value)
             except Exception:
                 self.raise_error(value)
+        if self.strip_value:
+            value = value.strip()
         if self.aliases:
             value = self.aliases.get(value, value)
         if self.choices and value not in self.choices:
