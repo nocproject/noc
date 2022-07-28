@@ -42,6 +42,7 @@ def template_validator(value):
         ("ip.PrefixProfile", "name_template"),
         ("main.SystemTemplate", "template"),
         ("main.MessageRoute", "transmute_template"),
+        ("main.MessageRoute", "render_template"),
         ("sa.AdministrativeDomain", "bioseg_floating_name_template"),
         ("sa.ManagedObjectProfile", "beef_path_template"),
         ("sa.ManagedObjectProfile", "config_mirror_template"),

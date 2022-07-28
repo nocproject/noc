@@ -150,6 +150,7 @@ Ext.define("NOC.main.messageroute.Application", {
                             xtype: "combobox",
                             store: [
                                 ["drop", "drop"],
+                                ["dump", "dump"],
                                 ["stream", "stream"],
                                 ["notification", "notificaiton"]
                             ],
@@ -167,6 +168,11 @@ Ext.define("NOC.main.messageroute.Application", {
                             name: "notification_group",
                             xtype: "main.notificationgroup.LookupField",
                             fieldLabel: __("Notification Group")
+                        },
+                        {
+                            name: "render_template",
+                            xtype: "main.template.LookupField",
+                            fieldLabel: __("Render Template")
                         }
                     ]
                 },
