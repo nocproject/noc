@@ -610,8 +610,8 @@ class DiscoveryCheck(object):
                     if remove_labels:
                         obj.labels = [ll for ll in obj.labels if ll not in remove_labels]
                         changes += [("labels", obj.labels)]
-                    obj.extra_labels["sa"] = v
-                    changes += [("extra_labels", {"sa": sa_labels})]
+                    obj.extra_labels.update({"sa": v})
+                    changes += [("extra_labels", {"sa": v})]
                 continue
             if v != vv:
                 if not isinstance(v, int) or not hasattr(vv, "id") or v != vv.id:
