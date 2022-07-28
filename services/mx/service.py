@@ -21,7 +21,7 @@ from noc.config import config
 from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_SHARDING_KEY
 from noc.services.mx.router.router import Router
-from noc.services.mx.router.action import DROP
+from noc.services.mx.router.action import DROP, DUMP
 from noc.core.perf import metrics
 from noc.services.mx.datastream import RouteDataStreamClient
 
@@ -89,13 +89,21 @@ class MXService(FastAPIService):
             self.logger.debug("[%d] Applying route %s", msg.offset, route.name)
             # Apply actions
             routed: bool = False
-            for stream, action_headers in route.iter_action(msg):
+            for stream, action_headers, body in route.iter_action(msg):
                 metrics["action_hits"] += 1
                 # Fameless drop
                 if stream == DROP:
                     metrics["action_drops"] += 1
                     self.logger.debug("[%s] Dropped. Stopping processing", msg.offset)
                     return
+                elif stream == DUMP:
+                    self.logger.info(
+                        "[%s] Dump. Message headers: %s;\n-----\n Body: %s \n----\n ",
+                        msg.offset,
+                        msg.headers,
+                        msg.value,
+                    )
+                    continue
                 # Build resulting headers
                 headers = {}
                 headers.update(msg.headers)
@@ -110,7 +118,7 @@ class MXService(FastAPIService):
                     self.stream_partitions[stream] = partitions
                 partition = sharding_key % partitions
                 # Single message may be transmuted in zero or more messages
-                body = route.transmute(headers, msg.value)
+                body = route.transmute(headers, body)
                 # for body in route.iter_transmute(headers, msg.value):
                 if not isinstance(body, bytes):
                     # Transmute converts message to an arbitrary structure,

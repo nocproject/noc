@@ -16,7 +16,7 @@ Labels
 
 ## Message Format
 
-Message contains JSON array, containing objects of following structure
+Message contains JSON object, containing objects of following structure
 
 | Name       | Type     | Description                                                          |
 | ---------- | -------- | -------------------------------------------------------------------- |
