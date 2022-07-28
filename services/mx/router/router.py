@@ -15,7 +15,7 @@ from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional
 from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_MESSAGE_TYPE
 from noc.main.models.messageroute import MessageRoute
-from noc.core.comp import smart_bytes
+from noc.core.comp import DEFAULT_ENCODING
 from .route import Route
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class Router(object):
         for num, route in enumerate(
             MessageRoute.objects.filter(is_active=True).order_by("order"), start=1
         ):
-            self.chains[smart_bytes(route.type)] += [Route.from_route(route)]
+            self.chains[route.type.encode(encoding=DEFAULT_ENCODING)] += [Route.from_route(route)]
         logger.info("Loading %s route", num)
 
     def has_route(self, route_id: str) -> bool:
@@ -120,7 +120,7 @@ class Router(object):
             chains[r.type].append(r)
         for chain in chains:
             logger.info("[%s] Rebuild chain", chain)
-            self.chains[smart_bytes(chain)] = list(
+            self.chains[chain.encode(encoding=DEFAULT_ENCODING)] = list(
                 sorted(
                     [r for r in chains[chain]],
                     key=operator.attrgetter("order"),
