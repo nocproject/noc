@@ -378,6 +378,9 @@ class IGetInterfaces(BaseInterface):
                             "noc::topology::direction",
                             "noc::interface::role",
                             "noc::interface::hints",
+                            "technology::pon",
+                            "technology::ethernet",
+                            "technology::dsl",
                         ],
                     ),
                     "subinterfaces": ListOfParameter(
