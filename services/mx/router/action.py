@@ -9,14 +9,21 @@
 from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
 from dataclasses import dataclass
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.main.models.messageroute import MessageRoute
-from noc.core.comp import smart_bytes
+from noc.core.comp import DEFAULT_ENCODING
+from noc.core.mx import MX_MESSAGE_TYPE
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
 
 
 DROP = ""
+PASS = "<pass>"
+DUMP = "<dump>"
 ACTION_TYPES: Dict[str, Type["Action"]] = {}
 
 
@@ -31,6 +38,7 @@ class ActionCfg(object):
     type: Literal["stream", "notification_group", "drop"]
     stream: Optional[str] = None
     notification_group: Optional[str] = None
+    render_template: Optional[str] = None
     headers: Optional[List[HeaderItem]] = None
 
 
@@ -48,7 +56,9 @@ class Action(object, metaclass=ActionBase):
     name: str
 
     def __init__(self, cfg: ActionCfg):
-        self.headers: Dict[str, bytes] = {h.header: smart_bytes(h.value) for h in cfg.headers}
+        self.headers: Dict[str, bytes] = {
+            h.header: h.value.encode(encoding=DEFAULT_ENCODING) for h in cfg.headers
+        }
 
     @classmethod
     def from_action(cls, mroute: MessageRoute) -> "Action":
@@ -69,19 +79,27 @@ class Action(object, metaclass=ActionBase):
                 type=data["action"],
                 stream=data.get("stream"),
                 notification_group=data.get("notification_group"),
+                render_template=data.get("render_template"),
                 headers=[HeaderItem(**h) for h in data.get("headers", [])],
             )
         )
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         raise NotImplementedError
 
 
 class DropAction(Action):
     name = "drop"
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield DROP, {}
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        yield DROP, {}, msg.value
+
+
+class DumpAction(Action):
+    name = "dump"
+
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        yield DUMP, {}, msg.value
 
 
 class StreamAction(Action):
@@ -91,8 +109,8 @@ class StreamAction(Action):
         super().__init__(cfg)
         self.stream: str = cfg.stream
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield self.stream, self.headers
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        yield self.stream, self.headers, msg.value
 
 
 class NotificationAction(Action):
@@ -101,6 +119,12 @@ class NotificationAction(Action):
     def __init__(self, cfg: ActionCfg):
         super().__init__(cfg)
         self.ng: NotificationGroup = NotificationGroup.get_by_id(cfg.notification_group)
+        self.rt: Template = Template.get_by_id(cfg.render_template)
 
-    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield from self.ng.iter_actions()
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        mt = msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)
+        body = self.ng.render_message(mt, orjson.loads(msg.value), self.rt)
+        for stream, header, render_template in self.ng.iter_actions():
+            yield stream, header, self.ng.render_message(
+                mt, orjson.loads(msg.value), render_template
+            ) if render_template else body

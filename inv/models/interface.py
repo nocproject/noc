@@ -28,6 +28,7 @@ from typing import Optional, Iterable, List
 from noc.config import config
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.resourcegroup.decorator import resourcegroup
+from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -38,6 +39,7 @@ from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
+from noc.core.comp import DEFAULT_ENCODING
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
 
@@ -87,7 +89,7 @@ class Interface(Document):
             "effective_labels",
         ],
     }
-    managed_object = ForeignKeyField(ManagedObject)
+    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
     name = StringField()  # Normalized via Profile.convert_interface_name
     # Optional default interface name in case the `name` can be reconfigured
     default_name = StringField()
@@ -439,16 +441,19 @@ class Interface(Document):
                     "Sending status change notification to %s",
                     self.profile.status_change_notification.name,
                 )
-                self.profile.status_change_notification.notify(
-                    subject="[%s] Interface %s(%s) is %s"
-                    % (
-                        self.managed_object.name,
-                        self.name,
-                        self.description or "",
-                        "up" if status else "down",
-                    ),
-                    body="Interface %s (%s) is %s"
-                    % (self.name, self.description or "", "up" if status else "down"),
+                send_message(
+                    data={
+                        "name": self.name,
+                        "description": self.description,
+                        "status": status,
+                        "managed_object": self.managed_object.get_message_context(),
+                    },
+                    message_type="interface_status_change",
+                    headers={
+                        MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
+                            encoding=DEFAULT_ENCODING
+                        ),
+                    },
                 )
 
     @property

@@ -32,7 +32,14 @@ MX_LANG = "Language"
 #
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
-MESSAGE_TYPES = {"alarm", "managedobject", "reboot", "metrics", "notification"}
+MESSAGE_TYPES = {
+    "alarm",
+    "managedobject",
+    "reboot",
+    "metrics",
+    "notification",
+    "interface_status_change",
+}
 MESSAGE_HEADERS = {
     MX_SHARDING_KEY,
     MX_CHANGE_ID,
