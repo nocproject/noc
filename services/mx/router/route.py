@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Tuple, Dict, List, Iterator, Callable, Union, Any, Optional, DefaultDict
+from typing import Tuple, Dict, List, Iterator, Callable, Union, Any, Optional, DefaultDict, Literal
 from dataclasses import dataclass
 from collections import defaultdict
 
@@ -19,6 +19,8 @@ from noc.core.liftbridge.message import Message
 from noc.core.comp import smart_bytes
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.main.models.messageroute import MessageRoute
+from noc.main.models.template import Template as TTemplate
+from noc.main.models.handler import Handler
 from .action import Action
 
 T_BODY = Union[bytes, Any]
@@ -38,9 +40,77 @@ class RenderTemplate(object):
         )
 
 
+@dataclass
+class HeaderItem(object):
+    header: str
+    op: Literal["==", "!=", "regex"]
+    value: str
+
+    def __str__(self):
+        return f"{self.op} {self.header} {self.value}"
+
+    @property
+    def is_eq(self) -> bool:
+        return self.op == "=="
+
+    @property
+    def is_ne(self) -> bool:
+        return self.op == "!="
+
+    @property
+    def is_re(self) -> bool:
+        return self.op == "regex"
+
+
+@dataclass(frozen=True)
+class MatchItem(object):
+    labels: Optional[List[str]] = None
+    exclude_labels: Optional[List[str]] = None
+    administrative_domain: Optional[int] = None
+    headers: Optional[List[HeaderItem]] = None
+
+    @classmethod
+    def from_data(cls, data: List[Dict[str, Any]]) -> List["MatchItem"]:
+        r = []
+        for match in data:
+            r += [
+                MatchItem(
+                    labels=match["labels"],
+                    exclude_labels=match["exclude_labels"],
+                    administrative_domain=match.get("administrative_domain"),
+                    headers=[
+                        HeaderItem(header=h["header"], op=h["op"], value=h["value"])
+                        for h in match["headers"]
+                    ],
+                )
+            ]
+        return r
+
+    @classmethod
+    def from_route(cls, route: MessageRoute) -> List["MatchItem"]:
+        r = []
+        for match in route.match:
+            r += [
+                MatchItem(
+                    labels=match.labels,
+                    exclude_labels=match.exclude_labels,
+                    administrative_domain=match.administrative_domain.id
+                    if match.administrative_domain
+                    else None,
+                    headers=[
+                        HeaderItem(header=h.header, op=h.op, value=h.value)
+                        for h in match.headers_match
+                    ],
+                )
+            ]
+        return r
+
+
 class Route(object):
-    def __init__(self, name: str):
+    def __init__(self, name: str, r_type: str, order: int):
         self.name = name
+        self.type = r_type
+        self.order = order
         self.match_co: str = ""  # Code object for matcher
         self.actions: List[Action] = []
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
@@ -83,20 +153,43 @@ class Route(object):
         for a in self.actions:
             yield from a.iter_action(msg)
 
-    @classmethod
-    def from_route(cls, route: MessageRoute) -> "Route":
+    def set_type(self, r_type: str):
+        self.type = smart_bytes(r_type)
+
+    def set_order(self, order: int):
+        self.order = order
+
+    def is_differ(self, data) -> bool:
         """
-        Build Route from database config
-        :param route:
+
+        :param data:
         :return:
         """
-        r = Route(route.name)
+        return True
+
+    def update(self, data):
+        self.match_co = self.compile_match(MatchItem.from_data(data["match"]))
+        # Compile transmute part
+        # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
+        if "transmute_handler" in data:
+            self.transmute_handler = Handler.get_by_id(data["transmute_handler"])
+        if "transmute_template" in data:
+            template = TTemplate.objects.get(id=data["transmute_template"])
+            self.render_template = RenderTemplate(
+                subject_template=template.subject,
+                body_template=template.body,
+            )
+        # Compile action part
+        self.actions = [Action.from_data(data)]
+
+    @classmethod
+    def compile_match(cls, matches: List[MatchItem]):
         expr = []
         # Compile match section
         match_eq: DefaultDict[str, List[bytes]] = defaultdict(list)
         match_re: DefaultDict[str, List[bytes]] = defaultdict(list)
         match_ne: List[Tuple[str, bytes]] = []
-        for match in route.match:
+        for match in matches:
             if match.labels:
                 expr += [f"{set(smart_bytes(ll) for ll in match.labels)!r}.intersection(labels)"]
             if match.exclude_labels:
@@ -105,9 +198,9 @@ class Route(object):
                 ]
             if match.administrative_domain:
                 expr += [
-                    f"headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}] == {match.administrative_domain.id}"
+                    f"headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}] == {match.administrative_domain}"
                 ]
-            for h_match in match.headers_match:
+            for h_match in match.headers:
                 if h_match.is_eq:
                     match_eq[h_match.header] += [smart_bytes(h_match.value)]
                 elif h_match.is_ne:
@@ -134,7 +227,28 @@ class Route(object):
             cond_code = " and ".join(expr)
         else:
             cond_code = "True"
-        r.match_co = compile(cond_code, "<string>", "eval")
+        return compile(cond_code, "<string>", "eval")
+
+    @classmethod
+    def from_data(cls, data) -> "Route":
+        """
+        Build Route from data config
+        :param data:
+        :return:
+        """
+        r = Route(data["name"], data["type"], data["order"])
+        r.update(data)
+        return r
+
+    @classmethod
+    def from_route(cls, route: MessageRoute) -> "Route":
+        """
+        Build Route from database config
+        :param route:
+        :return:
+        """
+        r = Route(route.name, route.type, route.order)
+        r.match_co = cls.compile_match(MatchItem.from_route(route))
         # Compile transmute part
         # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
         r.transmute_handler = route.transmute_handler
