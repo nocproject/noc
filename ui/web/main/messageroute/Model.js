@@ -78,6 +78,15 @@ Ext.define("NOC.main.messageroute.Model", {
             persist: false
         },
         {
+            name: "render_template",
+            type: "string"
+        },
+        {
+            name: "render_template__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "headers",
             type: "auto"
         }
