@@ -19,7 +19,7 @@ from noc.core.liftbridge.message import Message
 from noc.core.comp import smart_bytes
 from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.main.models.messageroute import MessageRoute
-from noc.main.models.template import Template
+from noc.main.models.template import Template as TTemplate
 from noc.main.models.handler import Handler
 from .action import Action
 
@@ -174,7 +174,7 @@ class Route(object):
         if "transmute_handler" in data:
             self.transmute_handler = Handler.get_by_id(data["transmute_handler"])
         if "transmute_template" in data:
-            template = Template.objects.get(id=data["transmute_template"])
+            template = TTemplate.objects.get(id=data["transmute_template"])
             self.render_template = RenderTemplate(
                 subject_template=template.subject,
                 body_template=template.body,
