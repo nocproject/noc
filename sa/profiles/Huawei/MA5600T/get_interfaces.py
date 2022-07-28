@@ -161,7 +161,7 @@ class Script(BaseScript):
         ports = {}
         for match in self.rx_ports.finditer(v):
             state = match.group("state")
-            ports["0/%d/%s" % (slot_n, match.group("port"))] = {
+            ports[f'0/{slot_n}/{match.group("port")}'] = {
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
                 "type": match.group("type"),
@@ -333,7 +333,7 @@ class Script(BaseScript):
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
                         "enabled_protocols": [],
-                        "hints": ["noc::interface::role::uplink"],
+                        "hints": ["noc::interface::role::uplink", "technology::ethernet::1000base"],
                         "subinterfaces": [
                             {
                                 "name": ifname,
@@ -355,15 +355,19 @@ class Script(BaseScript):
 
             if b_type in {"ADSL", "VDSL"}:
                 for p_name, p in ports.items():
+                    hints = []
                     if p["type"] == "VDSL":
                         ifindex = self.snmp_index("VDSL2", 0, slot, int(p["num"]))
+                        hints += ["technology::dsl::vdsl"]
                     else:
                         ifindex = self.snmp_index(p["type"], 0, slot, int(p["num"]))
+                        hints += ["technology::dsl::adsl"]
                     interfaces[p_name] = {
                         "name": p_name,
                         "type": "physical",
                         "admin_status": True,
                         "oper_status": p["state"],
+                        "hints": hints,
                         "snmp_ifindex": ifindex,
                         "enabled_protocols": [],
                         "subinterfaces": [],
@@ -375,10 +379,10 @@ class Script(BaseScript):
                 for p_name, p in ports.items():
                     if self.is_gpon_uplink:
                         ifindex = self.snmp_index("XG-PON", 0, slot, int(p["num"]))
-                        hints = ["noc::interface::role::uplink"]
+                        hints = ["noc::interface::role::uplink", "technology::pon::xgpon"]
                     else:
                         ifindex = self.snmp_index("GPON", 0, slot, int(p["num"]))
-                        hints = []
+                        hints = ["technology::pon::gpon"]
                     # ifname = "0/%d/%d" % (i, int(p["num"]))
                     interfaces[p_name] = {
                         "name": p_name,
