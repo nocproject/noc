@@ -468,6 +468,8 @@ class Config(BaseConfig):
         enable_metrics = BooleanParameter(default=False)
         # Comma-separated list of metric scopes
         enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
+        #
+        ds_limit = IntParameter(default=1000)
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
