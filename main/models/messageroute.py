@@ -91,6 +91,7 @@ class MessageRoute(Document):
     action = StringField(choices=["drop", "stream", "notification"], default="notification")
     stream = StringField()
     notification_group = ForeignKeyField(NotificationGroup)
+    render_template = ForeignKeyField(Template)
     headers = ListField(EmbeddedDocumentField(MRAHeader))
 
     _id_cache = cachetools.TTLCache(100, ttl=60)

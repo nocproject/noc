@@ -1290,6 +1290,7 @@ nav:
               - Overview: user/reference/mx/index.md
               - alarm: user/reference/mx/alarm.md
               - event: user/reference/mx/event.md
+              - interface_status_change: user/reference/mx/interface_status_change.md
               - managedobject: user/reference/mx/managedobject.md
               - metrics: user/reference/mx/metrics.md
               - reboot: user/reference/mx/reboot.md

@@ -41,6 +41,7 @@ MESSAGE_TYPES = {
     "snmptrap",
     "syslog",
     "event",
+    "interface_status_change",
 }
 MESSAGE_HEADERS = {
     MX_SHARDING_KEY,
