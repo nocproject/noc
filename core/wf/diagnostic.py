@@ -7,7 +7,8 @@
 
 # Python modules
 import enum
-from typing import Optional
+from dataclasses import dataclass
+from typing import Optional, List, Dict
 
 EVENT_TRANSITION = {
     "disable": {"unknown": "blocked", "enabled": "blocked", "failed": "blocked"},
@@ -47,3 +48,23 @@ class DiagnosticState(str, enum.Enum):
 
     def fire_event(self, event: str) -> "DiagnosticState":
         return DiagnosticEvent(event).get_state(self)
+
+    @property
+    def is_blocked(self) -> bool:
+        return self.value == "blocked"
+
+
+@dataclass(frozen=True)
+class DiagnosticConfig(object):
+    diagnostic: str
+    checks: Optional[List[str]] = None  # CheckItem name, param
+    dependent: Optional[List[str]] = None  # Dependency diagnostic
+    policy: str = "ANY"
+    blocked: bool = False  # Block by config
+    reason: Optional[str] = None
+
+
+DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {
+    True: DiagnosticState("enabled"),
+    False: DiagnosticState("failed"),
+}
