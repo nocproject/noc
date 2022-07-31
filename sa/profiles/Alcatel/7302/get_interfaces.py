@@ -100,27 +100,32 @@ class Script(BaseScript):
 
     def get_subifaces_cli(self):
         sub = defaultdict(list)
+        v = ""
         try:
             v = self.cli("show bridge port")
-            for match in self.rx_bridge_port.finditer(v):
-                ifname = match.group("ifname")
-                if ifname.startswith("isam:"):
-                    _, port_id, vpi, vci = ifname.split(":")
-                else:
-                    port_id, vpi, vci = ifname.split(":")
-                name = "%s:%s:%s" % (port_id, vpi, vci)
-                sub[port_id] += [
-                    {
-                        "name": name,
-                        "vci": vci,
-                        "vpi": vpi,
-                        # "snmp_ifindex": vciifindex,
-                        "enabled_afi": ["ATM", "BRIDGE"],
-                        "untagged_vlan": match.group("pvid"),
-                    }
-                ]
         except self.CLISyntaxError:
             pass
+        except self.CLIOperationError:
+            raise NotImplementedError("Internal processing error")
+        for match in self.rx_bridge_port.finditer(v):
+            ifname = match.group("ifname")
+            if ":" not in ifname:
+                continue
+            if ifname.startswith("isam:"):
+                _, port_id, vpi, vci = ifname.split(":")
+            else:
+                port_id, vpi, vci = ifname.split(":")
+            sub[port_id] += [
+                {
+                    "name": f"{port_id}:{vpi}:{vci}",
+                    "vci": vci,
+                    "vpi": vpi,
+                    # "snmp_ifindex": vciifindex,
+                    "enabled_afi": ["ATM", "BRIDGE"],
+                    "untagged_vlan": match.group("pvid"),
+                }
+            ]
+
         if not sub:
             v = self.cli("info configure bridge port")
             for match in self.rx_bridge_port2.finditer(v):
@@ -131,10 +136,9 @@ class Script(BaseScript):
                     _, port_id, vpi, vci = ifname.split(":")
                 else:
                     port_id, vpi, vci = ifname.split(":")
-                name = "%s:%s:%s" % (port_id, vpi, vci)
                 sub[port_id] += [
                     {
-                        "name": name,
+                        "name": f"{port_id}:{vpi}:{vci}",
                         "vci": vci,
                         "vpi": vpi,
                         # "snmp_ifindex": vciifindex,
@@ -186,13 +190,13 @@ class Script(BaseScript):
             if not match:
                 continue
             ifname = match.group("ifname")
-            hints = []
+            hints = ["technology::dsl"]
             if ifname.startswith("ethernet"):
                 if ifname.startswith("ethernet:1/1/1:"):
                     port_id = "ethernet:" + ifname.split(":")[-1]
                 else:
                     port_id = ifname
-                hints = ["noc::topology::direction::nni"]
+                hints = ["noc::topology::direction::nni", "technology::ethernet"]
             else:
                 port_id = ifname.split(":", 1)[-1]
                 slot_id = tuple(port_id.split("/")[:-1])
