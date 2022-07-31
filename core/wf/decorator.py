@@ -48,7 +48,8 @@ def document_set_state(self, state, state_changed: datetime.datetime = None):
     * Invalidate caches
     * Call State on_enter_handlers
     :param self:
-    :param object:
+    :param state:
+    :param state_changed:
     :return:
     """
     # Direct update arguments
@@ -132,7 +133,8 @@ def model_set_state(self, state, state_changed: datetime.datetime = None):
     * Invalidate caches
     * Call State on_enter_handlers
     :param self:
-    :param object:
+    :param state:
+    :param state_changed:
     :return:
     """
     # Direct update arguments
