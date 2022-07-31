@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Alcatel.7302.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -86,6 +86,9 @@ class Script(BaseScript):
                 r[-1]["serial"] = sn
             if b_revision is not None:
                 r[-1]["revision"] = b_revision
+        if not slots:
+            # Inventory OID's is not supported
+            raise NotImplementedError
         platform = self.port_map[slots]
         v = self.snmp.get("1.3.6.1.4.1.637.61.1.23.2.1.3.1")
         if v in ["LEEU", "LEUS", "MLSA"]:
