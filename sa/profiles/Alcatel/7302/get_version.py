@@ -35,7 +35,10 @@ class Script(BaseScript):
 
     def execute_cli(self, **kwargs):
         self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
-        v = self.cli("show equipment slot", cached=True)
+        try:
+            v = self.cli("show equipment slot", cached=True)
+        except self.CLIOperationError:
+            raise NotImplementedError("Internal processing error")
         slots = self.rx_slots.search(v)
         platform = self.port_map[int(slots.group("slot_count"))]
         try:
