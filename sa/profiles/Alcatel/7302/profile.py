@@ -3,7 +3,7 @@
 # HW:     7302/7330
 # Author: scanbox@gmail.com
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?:typ:|leg:|)\S+(?:>|#)"
     pattern_syntax_error = rb"invalid token"
     pattern_more = [(rb"Press <space>\(page\)/<enter>\(line\)/q\(quit\) to continue...", b" ")]
+    pattern_operation_error = rb"Internal processing error"
     command_save_config = "admin software-mngt shub database save"
     command_exit = "logout"
 
