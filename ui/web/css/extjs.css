@@ -642,3 +642,26 @@ table {
     border-radius: 50%;
     margin-top: 2.75px;
 }
+
+/* state filed */
+.noc-state-field {
+    padding: 0 3px;
+    border: 1px solid;
+    border-left: none;
+}
+
+.noc-state-field:first-child {
+    border-left: 1px solid;
+}
+
+.noc-state-blocked {
+    background: darkgrey;
+}
+
+.noc-state-failed {
+    background: goldenrod;
+}
+
+.noc-state-enabled {
+    background: lightgreen;
+}
