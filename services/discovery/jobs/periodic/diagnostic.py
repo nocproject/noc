@@ -7,13 +7,12 @@
 
 from typing import Optional, Dict, List, Union, Set
 from dataclasses import dataclass
+from collections import defaultdict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.managedobject import ManagedObject
-from noc.core.checkers.base import Checker
+from noc.core.checkers.base import Checker, Check
 from noc.core.checkers.loader import loader
-from noc.core.checkers.credentialchecker import CredentialChecker
 
 
 @dataclass
@@ -37,13 +36,26 @@ class DiagnosticCheck(DiscoveryCheck):
     """
 
     name = "diagnostic"
-    CHECKERS: Dict[Set[str], Checker] = {}
+    CHECKERS: Dict[str, Checker] = {}  # Checkers Instance
+    CHECK_MAP: Dict[str, str] = {}  # CheckName -> CheckerName mapping
+
+    CHECK_CACHE = {}  # Cache cache
+
+    def load_checkers(self):
+        """
+        Load available checkers
+        :return:
+        """
+        for checker in loader:
+            self.CHECKERS[checker] = loader[checker](self.object)
+            for c in self.CHECKERS[checker].CHECKS:
+                self.CHECK_MAP[c] = self.CHECKERS[checker].name
 
     def handler(self):
-        object: ManagedObject = self.object
-        self.CHECKERS[{c for c in CredentialChecker.CHECKS}] = CredentialChecker(self.object)
+        self.load_checkers()
         checks: List[CheckResult] = []
-        for dc in object.iter_diagnostic_configs():
+        # configs: Dict[str, DiagnosticConfig] = {}
+        for dc in self.object.iter_diagnostic_configs():
             if not dc.checks or dc.blocked:
                 # Diagnostic without checks
                 continue
@@ -58,33 +70,38 @@ class DiagnosticCheck(DiscoveryCheck):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue
             # Get checker
-            checkers = self.get_checkers(dc.checks)
-            if not checkers:
-                self.logger.warning("[%s|%s] Unknown checkers. Skipping", dc.diagnostic, dc.checks)
-                continue
-            self.logger.info("[%s|%s] Run checker", dc.diagnostic, dc.checks)
-            for c in checkers:
-                c.run()
-            # Cached checks
-            # parse result data
+            checks += self.do_check(dc.checks)
+        self.logger.info("Result: %s", checks)
+        # Processed Check
+
         # Update diagnostics
-        object.update_diagnostics(checks)
+        # object.update_diagnostics([CheckData(name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error) for cr in checks])
         # self.set_problem(
         #     alarm_class="Discovery | Guess | CLI Credentials",
         #     message="Failed to guess CLI credentials (%s)" % message,
         #     fatal=True,
         # )
 
-    def get_checkers(self, checks: List[str]) -> List[Checker]:
-        checks = set(checks)
+    def do_check(self, checks: List[Check]) -> List[CheckResult]:
+        """
+        Run checks on Checker
+        :param checks:
+        :return:
+        """
         r = []
-        for cc in self.CHECKERS:
-            if not checks.intersection(cc):
+        # Group check by checker
+        do_checks: Dict[str, List[Check]] = defaultdict(list)
+        for c in checks:
+            if c.name not in self.CHECK_MAP:
+                self.logger.warning("[%s] Unknown check. Skipping", c.name)
                 continue
-            checks -= cc
-            r += [self.CHECKERS[cc]]
-            if not checks:
-                break
-        if checks:
-            self.logger.warning("[%s] Unknown checkers. Skipping", checks)
+            if c in self.CHECK_CACHE:
+                r.append(self.CHECK_CACHE[c])
+                continue
+            do_checks[self.CHECK_MAP[c.name]] += [Check]
+
+        for checker, d_checks in do_checks.items():
+            checker = self.CHECKERS[checker]
+            self.logger.info("[%s] Run checker", d_checks)
+            r += checker.run(d_checks)
         return r

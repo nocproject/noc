@@ -9,7 +9,7 @@
 import logging
 import enum
 from dataclasses import dataclass
-from typing import Optional, List, Tuple, Union, Set, Iterator
+from typing import Optional, List, Tuple, Union, Set, Iterator, Dict
 
 # Third-party modules
 import cachetools
@@ -65,6 +65,13 @@ class Protocol(enum.Enum):
     SNMPv1 = 6
     SNMPv2c = 7
     SNMPv3 = 8
+
+
+@dataclass(frozen=True)
+class ProtocolResult(object):
+    protocol: Protocol
+    status: bool
+    error: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -228,40 +235,44 @@ class CredentialChecker(object):
                     r.add(sc)
         # return r
 
-    def do_check(self, protocols: List[Protocol]):
+    def do_check(self, *protocols: Tuple[Protocol, ...]) -> List[ProtocolResult]:
         """
-
+        Detect Protocol Status
         :param protocols:
         :return:
         """
-        s_protocols = protocols[:]
-        while protocols:
-            for suggest in self.iter_suggests(protocols):
-                s_result = SuggestResult(protocols=[], credential=suggest)
+        r: Dict[Protocol: ProtocolResult] = {}
+        protocols = protocols or SUGGEST_PROTOCOLS
+        for suggest in self.iter_suggests(protocols):
             for proto in suggest.protocols:
-                if proto in self.refused_proto:
+                if proto in r:
+                    # Skip already detect proto
                     continue
-                if isinstance(suggest, SuggestCLI):
-                    result, message = self.check_login(
-                        suggest.user, suggest.password, suggest.super_password, protocol=proto
-                    )
-                else:
-                    c_oids = suggest.check_oids or CHECK_OIDS
-                    result, message = self.check_oid(
-                        c_oids[0], suggest.snmp_ro, f"{proto.config.alias}_get"
+                if isinstance(suggest, SuggestSNMP):
+                    oid = suggest.check_oids or CHECK_OIDS
+                    status, message = self.check_oid(
+                        oid[0], suggest.snmp_ro, f"{proto.config.alias}_get"
                     )
                     self.logger.info(
                         "Guessed community: %s, version: %d",
                         suggest.snmp_ro,
                         proto.config.snmp_version,
                     )
-                if result:
-                    s_result.protocols.append(proto)
+                elif isinstance(suggest, SuggestCLI):
+                    status, message = self.check_login(
+                        suggest.user, suggest.password, suggest.super_password, protocol=proto
+                    )
+                else:
+                    self.logger.info("Not check")
+                    continue
+                if status:
+                    r[proto] = ProtocolResult(protocol=proto, status=status)
                 elif self.is_unsupported_error(message):
-                    self.refused_proto.add(proto)
-            if s_result.protocols:
-                self.result.append(s_result)
+                    r[proto] = ProtocolResult(protocol=proto, status=status, error=message)
+            if not set(protocols) - set(r):
+                # If check all proto
                 break
+        return list(r.values())
 
     def do_snmp_check(self):
         """

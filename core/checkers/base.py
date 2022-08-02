@@ -26,9 +26,9 @@ class Check(object):
 
 
 class Checker(object):
-    """
+    """ """
 
-    """
+    name: str
     CHECKS: List[str]
 
     def __init__(self, c_object):
