@@ -4,13 +4,18 @@
     curl -1sLf https://packages.vectorized.io/sMIXnoa7DK12JW4A/redpanda/cfg/setup/bash.deb.sh | sudo -E bash
   args:
     warn: false
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: install redpanda from repository
-  package:
-    name:
-      - redpanda
+  apt:
+    name: redpanda
     state: present
     update_cache: true
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: set data dir file perms
   file:
