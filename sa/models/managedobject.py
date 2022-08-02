@@ -40,6 +40,7 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
+from noc.core.wf.diagnostic import DiagnosticState, DiagnosticConfig, DIAGNOSTIC_CHECK_STATE
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -101,7 +102,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 39
+MANAGEDOBJECT_CACHE_VERSION = 40
 CREDENTIAL_CACHE_VERSION = 4
 
 Credentials = namedtuple(
@@ -123,6 +124,37 @@ class MaintenanceItems(BaseModel):
 
 class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
+
+
+class CheckResult(BaseModel):
+    name: str
+    status: bool  # True - OK, False - Fail
+    skipped: bool = False
+    error: Optional[str] = None  # Description if Fail
+
+
+class DiagnosticItem(BaseModel):
+    diagnostic: str
+    state: DiagnosticState = DiagnosticState("unknown")
+    checks: Optional[List[CheckResult]]
+    # scope: Literal["access", "all", "discovery", "default"] = "default"
+    # policy: str = "ANY
+    reason: Optional[str] = None
+    changed: Optional[datetime.datetime] = None
+
+    def get_check_state(self):
+        # Any policy
+        return any(c.status for c in self.checks if not c.skipped)
+
+
+class DiagnosticItems(BaseModel):
+    __root__: Dict[str, DiagnosticItem]
+
+
+def default(obj):
+    if isinstance(obj, BaseModel):
+        return obj.dict()
+    raise TypeError
 
 
 @dataclass(frozen=True)
@@ -592,6 +624,13 @@ class ManagedObject(NOCModel):
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
+    diagnostics: Dict[str, DiagnosticItem] = PydanticField(
+        "Diagnostic Items",
+        schema=DiagnosticItems,
+        blank=True,
+        null=True,
+        default=dict,
+    )
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -626,6 +665,7 @@ class ManagedObject(NOCModel):
         "segment_path",
         "container_path",
         "affected_maintenances",
+        "diagnostics",
     )
 
     def __str__(self):
@@ -638,22 +678,22 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, id: int) -> "Optional[ManagedObject]":
+    def get_by_id(cls, oid: int) -> "Optional[ManagedObject]":
         """
         Get ManagedObject by id. Cache returned instance for future use.
 
-        :param id: Managed Object's id
+        :param oid: Managed Object's id
         :return: ManagedObject instance
         """
-        mo = ManagedObject.objects.filter(id=id)[:1]
+        mo = ManagedObject.objects.filter(id=oid)[:1]
         if mo:
             return mo[0]
         return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        mo = ManagedObject.objects.filter(bi_id=id)[:1]
+    def get_by_bi_id(cls, bi_id) -> "Optional[ManagedObject]":
+        mo = ManagedObject.objects.filter(bi_id=bi_id)[:1]
         if mo:
             return mo[0]
         else:
@@ -2069,6 +2109,11 @@ class ManagedObject(NOCModel):
             # If use Link.objects.filter(linked_objects=mo.id).first() - 1.27 ms,
             # Interface = 39.4 µs
             yield ["noc::is_linked::="]
+        if instance.diagnostics:
+            for d in instance.diagnostics.values():
+                yield Label.ensure_labels(
+                    [f'funcs::{d["diagnostic"]}::{d["state"]}'], enable_managedobject=True
+                )
 
     @classmethod
     def can_set_label(cls, label: str) -> bool:
@@ -2217,6 +2262,207 @@ class ManagedObject(NOCModel):
             },
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
+
+    def set_diagnostic_state(self, diagnostic: str, state: bool):
+        """
+        Set diagnostic state
+        :param diagnostic:
+        :param state:
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        state = DIAGNOSTIC_CHECK_STATE[state]
+        if diagnostic not in self.diagnostics:
+            # logger.info("[%s] Adding diagnostic", dc.diagnostic)
+            d = DiagnosticItem(diagnostic=diagnostic)
+        else:
+            d = DiagnosticItem.parse_obj(self.diagnostics[diagnostic])
+        if d.state.is_blocked or d.state == state:
+            return
+        logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
+        d.state = state
+        d.changed = datetime.datetime.now()
+        self.diagnostics[diagnostic] = d
+        with pg_connection.cursor() as cursor:
+            # Update
+            logger.debug("[%s] Saving changes: %s", diagnostic, d)
+            cursor.execute(
+                """
+                 UPDATE sa_managedobject
+                 SET diagnostics = diagnostics || %s::jsonb
+                 WHERE id = %s""",
+                [orjson.dumps({diagnostic: d}, default=default).decode("utf-8"), self.id],
+            )
+
+    def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
+        """
+        Iterate over object diagnostics
+        :return:
+        """
+        if not self.is_managed:
+            return
+        ac = self.get_access_preference()
+        # SNMP Diagnostic
+        yield DiagnosticConfig(
+            "SNMP",
+            display_description="Check Device response by SNMP request",
+            checks=["SNMPv1", "SNMPv2"],
+            blocked=ac == "C",
+            check_policy="F",
+            reason="Blocked by AccessPreference" if ac == "C" else None,
+        )
+        # Profile Check ?
+        # CLI Diagnostic
+        yield DiagnosticConfig(
+            "CLI",
+            display_description="Check Device response by CLI (TELNET/SSH) request",
+            checks=["TELNET", "SSH"],
+            blocked=ac == "S",
+            check_policy="F",
+            reason="Blocked by AccessPreference" if ac == "S" else None,
+        )
+        # HTTP Diagnostic
+        yield DiagnosticConfig(
+            "HTTP",
+            display_description="Check Device response by HTTP/HTTPS request",
+            show_in_display=False,
+            checks=["HTTP", "HTTPS"],
+            blocked=False,
+            reason=None,
+        )
+        # Access Diagnostic (Blocked - block SNMP & CLI Check ?
+        yield DiagnosticConfig("Access", dependent=["SNMP", "CLI", "HTTP"], show_in_display=False)
+        # FM
+        yield DiagnosticConfig(
+            # Reset if change IP/Policy change
+            "SNMPTRAP",
+            display_description="Register One SNMP Trap on device",
+            blocked=self.trap_source_type != "d",
+            check_policy="D",
+            reason="Disable by source settings" if self.trap_source_type != "d" else "",
+        )
+        yield DiagnosticConfig(
+            # Reset if change IP/Policy change
+            "SYSLOG",
+            display_description="Register One Syslog on device",
+            blocked=self.syslog_source_type != "d",
+            check_policy="D",
+            reason="Disable by source settings" if self.syslog_source_type != "d" else "",
+        )
+        #
+
+    def update_diagnostics(self, checks: List[CheckResult] = None):
+        """
+        Update diagnostics by Checks Result ?Source - discovery/manual
+
+        If dependent and checks set -  checks dependent first
+        :param checks:
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        now = datetime.datetime.now()
+        checks = checks or []
+        diagnostics: Dict[str, DiagnosticItem] = {}
+        processed = set()
+        dependency = []
+        # check_result = {c.name: c for c in checks}
+        for dc in self.iter_diagnostic_configs():
+            # Filter checks
+            dc_checks = [cr for cr in checks if dc.checks and cr.name in dc.checks]
+            # Get or Create DiagnosticItem
+            if dc.diagnostic not in self.diagnostics:
+                # logger.info("[%s] Adding diagnostic", dc.diagnostic)
+                d = DiagnosticItem(diagnostic=dc.diagnostic, checks=dc_checks)
+            else:
+                d = DiagnosticItem.parse_obj(self.diagnostics[dc.diagnostic])
+            processed.add(dc.diagnostic)
+            # Calculate state
+            state = None
+            if dc.blocked:
+                state = DiagnosticState.blocked
+            elif dc_checks or dc.dependent:
+                check_statuses = [c.status for c in dc_checks if not c.skipped]
+                # Check first
+                if check_statuses:
+                    # ANY or ALL policy appply
+                    c_state = (
+                        any(check_statuses) if dc.state_policy == "ANY" else all(check_statuses)
+                    )
+                    state = DIAGNOSTIC_CHECK_STATE[c_state]
+                # Dependent second
+                if dc.dependent:
+                    dependency.append(dc)
+            else:
+                logger.info("[%s] Not calculate state. Skipping", dc.diagnostic)
+                continue
+            # Compare state and update
+            if not state or d.state == state:
+                logger.info("[%s] State is same", dc.diagnostic)
+                continue
+            logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
+            d.state = state
+            d.changed = now
+            d.checks = dc_checks
+            diagnostics[dc.diagnostic] = d
+        # Remove
+        removed = []
+        for d in set(self.diagnostics) - set(processed):
+            del self.diagnostics[d]
+            removed += [d]
+        # Dependency
+        for dc in dependency:
+            d_states = []
+            for dd in dc.dependent:
+                if dd in diagnostics:
+                    if diagnostics[dd].state.is_blocked:
+                        continue
+                    d_states.append(diagnostics[dd].state)
+                elif dd in self.diagnostics:
+                    if self.diagnostics[dd]["state"] == "blocked":
+                        continue
+                    d_states.append(DiagnosticState(self.diagnostics[dd]["state"]))
+            if not d_states:
+                # Unknown state, Remove
+                if dc.diagnostic in self.diagnostics:
+                    removed += [dc.diagnostic]
+                    del self.diagnostics[dc.diagnostic]
+                if dc.diagnostic in diagnostics:
+                    del diagnostics[dc.diagnostic]
+                continue
+            if dc.diagnostic not in diagnostics:
+                diagnostics[dc.diagnostic] = DiagnosticItem(diagnostic=dc.diagnostic, checks=[])
+            diagnostics[dc.diagnostic].state = DIAGNOSTIC_CHECK_STATE[
+                DiagnosticState.enabled in d_states
+                if dc.state_policy == "ANY"
+                else DiagnosticState.failed not in d_states
+            ]
+        # Update
+        if not diagnostics and not removed:
+            return
+        self.diagnostics.update(diagnostics)
+        with pg_connection.cursor() as cursor:
+            # Update
+            if diagnostics:
+                logger.debug("[%s] Saving changes", list(diagnostics))
+                cursor.execute(
+                    """
+                     UPDATE sa_managedobject
+                     SET diagnostics = diagnostics || %s::jsonb
+                     WHERE id = %s""",
+                    [orjson.dumps(diagnostics, default=default).decode("utf-8"), self.id],
+                )
+            if removed:
+                logger.debug("[%s] Removed diagnostics", list(removed))
+                cursor.execute(
+                    f"""
+                     UPDATE sa_managedobject
+                     SET diagnostics = diagnostics {" #- %s " * len(removed)}
+                     WHERE id = %s""",
+                    ["{%s}" % r for r in removed] + [self.id],
+                )
+        self._reset_caches(self.id)
 
 
 @on_save

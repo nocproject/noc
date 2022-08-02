@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Migrate ManagedObject Affected Maintenances
+# Migrate ManagedObject diagnostics state
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
@@ -16,6 +16,6 @@ class Migration(BaseMigration):
     def migrate(self):
         self.db.add_column(
             "sa_managedobject",
-            "affected_maintenances",
-            models.JSONField("Maintenance Items", null=True, blank=True, default=lambda: "{}"),
+            "diagnostics",
+            models.JSONField("Diagnostic check items", null=True, blank=True, default=lambda: "{}"),
         )
