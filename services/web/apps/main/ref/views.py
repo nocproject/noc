@@ -202,7 +202,7 @@ class RefAppplication(ExtApplication):
         for name in checker_loader:
             checker = checker_loader[name]
             for check in checker.CHECKS:
-                r += [{"id": check.name, "label": check.label or check.name}]
+                r += [{"id": check, "label": check}]
         return r  # list(sorted(r))
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
