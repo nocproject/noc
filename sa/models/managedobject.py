@@ -2335,13 +2335,13 @@ class ManagedObject(NOCModel):
             blocked=self.trap_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.trap_source_type != "d" else "",
-        ),
+        )
         yield DiagnosticConfig(
             "SYSLOG",
             blocked=self.syslog_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.syslog_source_type != "d" else "",
-        ),
+        )
         #
 
     def update_diagnostics(self, checks: List[CheckResult] = None):
