@@ -34,19 +34,20 @@ CHECK_OIDS = [
 @dataclass(frozen=True)
 class ProtoConfig(object):
     alias: str
+    check: Optional[str] = None
     snmp_version: Optional[int] = None
     is_http: bool = False
     is_cli: bool = False
 
 
 CONFIGS = {
-    1: ProtoConfig("telnet", is_cli=True),
-    2: ProtoConfig("ssh", is_cli=True),
-    3: ProtoConfig("http", is_http=True),
-    4: ProtoConfig("https", is_http=True),
+    1: ProtoConfig("telnet", is_cli=True, check="TELNET"),
+    2: ProtoConfig("ssh", is_cli=True, check="SSH"),
+    3: ProtoConfig("http", is_http=True, check="HTTP"),
+    4: ProtoConfig("https", is_http=True, check="HTTPS"),
     5: ProtoConfig("beef", is_cli=True),
-    6: ProtoConfig("snmp_v1", snmp_version=0),
-    7: ProtoConfig("snmp_v2c", snmp_version=1),
+    6: ProtoConfig("snmp_v1", snmp_version=0, check="SNMPv1"),
+    7: ProtoConfig("snmp_v2c", snmp_version=1, check="SNMPv2c"),
     8: ProtoConfig("snmp_v3", snmp_version=3),
 }
 
@@ -126,7 +127,7 @@ class CredentialChecker(object):
         logger=None,
         profile: Optional[str] = None,
         calling_service: str = "credentialchecker",
-        protocols: Optional[List[int]] = None,
+        # protocols: Optional[List[int]] = None,
     ):
         self.address = address
         self.pool = pool
@@ -135,13 +136,16 @@ class CredentialChecker(object):
             logger or self.base_logger, "%s][%s" % (self.pool or "", self.address or "")
         )
         self.calling_service = calling_service
-        self.profile = profile
-        self.profile: "Profile" = Profile.get_by_name(profile) if profile else None
-        self.protocols: Optional[List[Protocol]] = protocols
+        self.profile: Optional["Profile"] = profile
+        if isinstance(self.profile, str):
+            self.profile = Profile.get_by_name(profile) if profile else None
+        # self.protocols: Optional[List[Protocol]] = protocols
         self.ignoring_cli = False
         if self.profile is None or self.profile.is_generic:
             self.logger.error("CLI Access for Generic profile is not supported. Ignoring")
             self.ignoring_cli = True
+        # Unsupported Error Proto
+        self.refused_proto: Set[Protocol] = set()
         # Credential
         self.auth_profiles: Set[AuthProfile] = set()
         self.result: List[SuggestResult] = []
@@ -172,10 +176,10 @@ class CredentialChecker(object):
         for cc in ccr.order_by("preference"):
             sp = cc.suggest_protocols or protocols or SUGGEST_PROTOCOLS
             cli_protocols = self.merge_protocols(
-                SUGGEST_CLI, protocols, cc.suggest_protocols, self.protocols, order=sp
+                SUGGEST_CLI, protocols, cc.suggest_protocols, order=sp
             )
             snmp_protocols = self.merge_protocols(
-                SUGGEST_SNMP, protocols, cc.suggest_protocols, self.protocols, order=sp
+                SUGGEST_SNMP, protocols, cc.suggest_protocols, order=sp
             )
             for ap in cc.suggest_auth_profile:
                 ap = ap.auth_profile
@@ -222,7 +226,42 @@ class CredentialChecker(object):
                     if sc not in r:
                         yield sc
                     r.add(sc)
-        return r
+        # return r
+
+    def do_check(self, protocols: List[Protocol]):
+        """
+
+        :param protocols:
+        :return:
+        """
+        s_protocols = protocols[:]
+        while protocols:
+            for suggest in self.iter_suggests(protocols):
+                s_result = SuggestResult(protocols=[], credential=suggest)
+            for proto in suggest.protocols:
+                if proto in self.refused_proto:
+                    continue
+                if isinstance(suggest, SuggestCLI):
+                    result, message = self.check_login(
+                        suggest.user, suggest.password, suggest.super_password, protocol=proto
+                    )
+                else:
+                    c_oids = suggest.check_oids or CHECK_OIDS
+                    result, message = self.check_oid(
+                        c_oids[0], suggest.snmp_ro, f"{proto.config.alias}_get"
+                    )
+                    self.logger.info(
+                        "Guessed community: %s, version: %d",
+                        suggest.snmp_ro,
+                        proto.config.snmp_version,
+                    )
+                if result:
+                    s_result.protocols.append(proto)
+                elif self.is_unsupported_error(message):
+                    self.refused_proto.add(proto)
+            if s_result.protocols:
+                self.result.append(s_result)
+                break
 
     def do_snmp_check(self):
         """
@@ -259,11 +298,10 @@ class CredentialChecker(object):
         """
         if self.ignoring_cli:
             return
-        refused_proto = set()
         for suggest in self.iter_suggests(SUGGEST_CLI):
             s_result = SuggestResult(protocols=[], credential=suggest)
             for proto in suggest.protocols:
-                if proto in refused_proto:
+                if proto in self.refused_proto:
                     continue
                 result, message = self.check_login(
                     suggest.user, suggest.password, suggest.super_password, protocol=proto
@@ -271,12 +309,12 @@ class CredentialChecker(object):
                 if result:
                     s_result.protocols.append(proto)
                 elif self.is_unsupported_error(message):
-                    refused_proto.add(proto)
+                    self.refused_proto.add(proto)
             if s_result.protocols:
                 self.result.append(s_result)
                 break
 
-    def check_oid(self, oid: str, community: str, version="snmp_v2c_get"):
+    def check_oid(self, oid: str, community: str, version="snmp_v2c_get") -> Tuple[bool, str]:
         """
         Perform SNMP GET. Param is OID or symbolic name, version is activator method
         todo mass check
@@ -291,12 +329,14 @@ class CredentialChecker(object):
                 "activator", pool=self.pool, calling_service=self.calling_service
             ).__getattr__(version)(self.address, community, oid)
             self.logger.info("Result: %s", r)
-            return r is not None
+            return r is not None, ""
         except RPCError as e:
             self.logger.debug("RPC Error: %s", e)
-            return False
+            return False, str(e)
 
-    def check_login(self, user: str, password: str, super_password: str, protocol: Protocol):
+    def check_login(
+        self, user: str, password: str, super_password: str, protocol: Protocol
+    ) -> Tuple[bool, str]:
         """
         Check user, password for cli proto
         :param user:
