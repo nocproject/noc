@@ -57,12 +57,21 @@ class DiagnosticState(str, enum.Enum):
 @dataclass(frozen=True)
 class DiagnosticConfig(object):
     diagnostic: str
+    blocked: bool = False  # Block by config
+    # Check config
     checks: Optional[List[str]] = None  # CheckItem name, param
     dependent: Optional[List[str]] = None  # Dependency diagnostic
-    state_policy: str = "ANY"  #
+    state_policy: str = "ANY"  # Calculate State on checks.
+    # ANY - Any check has OK, ALL - ALL checks has OK
+    # Discovery Config
     check_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
-    blocked: bool = False  # Block by config
-    reason: Optional[str] = None
+    # reason: Optional[str] = None
+    # Display Config
+    show_in_display: bool = True  # Show diagnostic on UI
+    display_description: Optional[str] = None  # Description for show User
+    display_order: int = 0  # Order on displayed list
+    # FM Config
+    alarm_class: Optional[str] = None  # Default AlarmClass for raise alarm
 
 
 DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {

@@ -2286,7 +2286,7 @@ class ManagedObject(NOCModel):
         self.diagnostics[diagnostic] = d
         with pg_connection.cursor() as cursor:
             # Update
-            logger.info("[%s] Saving changes: %s", diagnostic, d)
+            logger.debug("[%s] Saving changes: %s", diagnostic, d)
             cursor.execute(
                 """
                  UPDATE sa_managedobject
@@ -2306,6 +2306,7 @@ class ManagedObject(NOCModel):
         # SNMP Diagnostic
         yield DiagnosticConfig(
             "SNMP",
+            display_description="Check Device response by SNMP request",
             checks=["SNMPv1", "SNMPv2"],
             blocked=ac == "C",
             check_policy="F",
@@ -2315,6 +2316,7 @@ class ManagedObject(NOCModel):
         # CLI Diagnostic
         yield DiagnosticConfig(
             "CLI",
+            display_description="Check Device response by CLI (TELNET/SSH) request",
             checks=["TELNET", "SSH"],
             blocked=ac == "S",
             check_policy="F",
@@ -2323,21 +2325,27 @@ class ManagedObject(NOCModel):
         # HTTP Diagnostic
         yield DiagnosticConfig(
             "HTTP",
+            display_description="Check Device response by HTTP/HTTPS request",
+            show_in_display=False,
             checks=["HTTP", "HTTPS"],
             blocked=False,
             reason=None,
         )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?
-        yield DiagnosticConfig("Access", dependent=["SNMP", "CLI", "HTTP"])
+        yield DiagnosticConfig("Access", dependent=["SNMP", "CLI", "HTTP"], show_in_display=False)
         # FM
         yield DiagnosticConfig(
+            # Reset if change IP/Policy change
             "SNMPTRAP",
+            display_description="Register One SNMP Trap on device",
             blocked=self.trap_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.trap_source_type != "d" else "",
         )
         yield DiagnosticConfig(
+            # Reset if change IP/Policy change
             "SYSLOG",
+            display_description="Register One Syslog on device",
             blocked=self.syslog_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.syslog_source_type != "d" else "",
@@ -2437,7 +2445,7 @@ class ManagedObject(NOCModel):
         with pg_connection.cursor() as cursor:
             # Update
             if diagnostics:
-                logger.info("[%s] Saving changes", list(diagnostics))
+                logger.debug("[%s] Saving changes", list(diagnostics))
                 cursor.execute(
                     """
                      UPDATE sa_managedobject
@@ -2446,7 +2454,7 @@ class ManagedObject(NOCModel):
                     [orjson.dumps(diagnostics, default=default).decode("utf-8"), self.id],
                 )
             if removed:
-                logger.info("[%s] Removed diagnostics", list(removed))
+                logger.debug("[%s] Removed diagnostics", list(removed))
                 cursor.execute(
                     f"""
                      UPDATE sa_managedobject
