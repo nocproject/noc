@@ -19,7 +19,7 @@ class CredentialChecker(Checker):
     base_logger = logging.getLogger("credentialchecker")
     name = "credentialchecker"
     CHECKS: List[str] = ["TELNET", "SSH", "SNMPv1", "SNMPv2c"]
-    PROTO_CHECK_MAP = {p.check: p for p in Protocol if p.config.check}
+    PROTO_CHECK_MAP = {p.config.check: p for p in Protocol if p.config.check}
 
     def run(self, checks: List[Check]) -> List[CheckResult]:
         """
@@ -29,10 +29,14 @@ class CredentialChecker(Checker):
         cc = CredentialCheckerScript(
             self.object.address,
             self.object.pool,
-            self.object.labels,
+            self.object.effective_labels,
             profile=self.object.profile.name,
         )
+        self.base_logger.info("[%s] Run for checks:  %s", self.name, checks)
         r = cc.do_check(*[self.PROTO_CHECK_MAP[c.name] for c in checks])
         # @todo set credential
 
-        return [CheckResult(check=pr.protocol.config.check, status=pr.status, error=pr.error) for pr in r]
+        return [
+            CheckResult(check=pr.protocol.config.check, status=pr.status, error=pr.error)
+            for pr in r
+        ]

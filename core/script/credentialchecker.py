@@ -241,7 +241,7 @@ class CredentialChecker(object):
         :param protocols:
         :return:
         """
-        r: Dict[Protocol: ProtocolResult] = {}
+        r: Dict[Protocol:ProtocolResult] = {}
         protocols = protocols or SUGGEST_PROTOCOLS
         for suggest in self.iter_suggests(protocols):
             for proto in suggest.protocols:

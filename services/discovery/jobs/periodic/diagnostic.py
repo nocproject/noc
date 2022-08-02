@@ -5,7 +5,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from typing import Optional, Dict, List, Union, Set
+# Python modules
+from typing import Optional, Dict, List, Union
 from dataclasses import dataclass
 from collections import defaultdict
 
@@ -70,7 +71,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue
             # Get checker
-            checks += self.do_check(dc.checks)
+            checks += self.do_check([Check(name=dc) for dc in dc.checks])
         self.logger.info("Result: %s", checks)
         # Processed Check
 
@@ -98,7 +99,7 @@ class DiagnosticCheck(DiscoveryCheck):
             if c in self.CHECK_CACHE:
                 r.append(self.CHECK_CACHE[c])
                 continue
-            do_checks[self.CHECK_MAP[c.name]] += [Check]
+            do_checks[self.CHECK_MAP[c.name]] += [c]
 
         for checker, d_checks in do_checks.items():
             checker = self.CHECKERS[checker]

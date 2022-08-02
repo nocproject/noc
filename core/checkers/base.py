@@ -24,6 +24,9 @@ class Check(object):
     name: str
     arg0: Optional[str] = None
 
+    def __str__(self):
+        return f"{self.name}:{self.arg0 or ''}"
+
 
 class Checker(object):
     """ """
