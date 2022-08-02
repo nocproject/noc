@@ -246,6 +246,24 @@ class ManagedObjectApplication(ExtModelApplication):
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
+        data["diagnostics"] = [
+            {
+                "name": d["diagnostic"][:6],
+                "description": "XXX",
+                "state": d["state"],
+                "state__label": d["state"],
+                "details": [
+                    {
+                        "name": c["name"],
+                        "state": {True: "OK", False: "Error"}[c["status"]],
+                        "error": c["error"],
+                    }
+                    for c in d["checks"]
+                ],
+                "reason": d["reason"] or "",
+            }
+            for d in o.diagnostics.values()
+        ]
         return data
 
     def clean(self, data):

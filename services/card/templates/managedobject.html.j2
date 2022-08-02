@@ -11,11 +11,33 @@
     .metric-header .collapsed .fa {
         transform: rotate(90deg);
     }
-
     .row-bordered:after {
         content: "";
         display: block;
         border-bottom: 1px solid #c0c0c0;
+    }
+    .panel-diag {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: flex-end;
+    }
+    .noc-state-field {
+        padding: 0 3px;
+        border: 1px solid #c0c0c0;
+        border-left: none;
+    }
+    .panel-diag > .noc-state-field:first-child {
+        border-left: 1px solid #c0c0c0;
+    }
+    .noc-state-blocked {
+        background: darkgrey;
+    }
+    .noc-state-failed {
+        background: goldenrod;
+    }
+    .noc-state-enabled {
+        background: lightgreen;
     }
 </style>
 <div class="panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger', 'unmanaged': 'default'}[current_state] }}">
@@ -24,6 +46,11 @@
         <span style="float: right">
             {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start | timestamp }}){% endif %}
         </span>
+    </div>
+    <div class="panel-diag">
+    {% for d in diagnostics %}
+        <span class="noc-state-field noc-state-{{ d["state"] }}">{{ d["name"] }}</span>
+    {% endfor %}
     </div>
     <div class="panel-body">
         <div class="container-fluid">

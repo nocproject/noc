@@ -491,6 +491,19 @@ class ManagedObjectCard(BaseCard):
             "attributes": list(
                 ManagedObjectAttribute.objects.filter(managed_object=self.object.id)
             ),
+            "diagnostics": [
+                {
+                    "name": d["diagnostic"],
+                    "state": d["state"],
+                    "state__label": d["state"],
+                    "details": [
+                        {"name": c["name"], "state": c["status"], "error": c["error"]}
+                        for c in d["checks"]
+                    ],
+                    "reason": d["reason"] or "",
+                }
+                for d in self.object.diagnostics.values()
+            ],
             "confdb": None,
         }
         try:
