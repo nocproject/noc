@@ -59,7 +59,8 @@ class DiagnosticConfig(object):
     diagnostic: str
     checks: Optional[List[str]] = None  # CheckItem name, param
     dependent: Optional[List[str]] = None  # Dependency diagnostic
-    policy: str = "ANY"
+    state_policy: str = "ANY"  #
+    check_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
     blocked: bool = False  # Block by config
     reason: Optional[str] = None
 

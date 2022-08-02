@@ -249,10 +249,15 @@ class ManagedObjectApplication(ExtModelApplication):
         data["diagnostics"] = [
             {
                 "name": d["diagnostic"][:6],
+                "description": "XXX",
                 "state": d["state"],
                 "state__label": d["state"],
                 "details": [
-                    {"name": c["name"], "state": c["status"], "error": c["error"]}
+                    {
+                        "name": c["name"],
+                        "state": {True: "OK", False: "Error"}[c["status"]],
+                        "error": c["error"],
+                    }
                     for c in d["checks"]
                 ],
                 "reason": d["reason"] or "",

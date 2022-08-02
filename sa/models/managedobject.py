@@ -2270,11 +2270,30 @@ class ManagedObject(NOCModel):
         :param state:
         :return:
         """
+        from django.db import connection as pg_connection
+
+        state = DIAGNOSTIC_CHECK_STATE[state]
         if diagnostic not in self.diagnostics:
+            # logger.info("[%s] Adding diagnostic", dc.diagnostic)
+            d = DiagnosticItem(diagnostic=diagnostic)
+        else:
+            d = DiagnosticItem.parse_obj(self.diagnostics[diagnostic])
+        if d.state.is_blocked or d.state == state:
             return
-        elif self.diagnostics[diagnostic].state.is_blocked:
-            return
-        self.diagnostics[diagnostic] = DiagnosticState(DIAGNOSTIC_CHECK_STATE[state])
+        logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
+        d.state = state
+        d.changed = datetime.datetime.now()
+        self.diagnostics[diagnostic] = d
+        with pg_connection.cursor() as cursor:
+            # Update
+            logger.info("[%s] Saving changes: %s", diagnostic, d)
+            cursor.execute(
+                """
+                 UPDATE sa_managedobject
+                 SET diagnostics = diagnostics || %s::jsonb
+                 WHERE id = %s""",
+                [orjson.dumps({diagnostic: d}, default=default).decode("utf-8"), self.id],
+            )
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2289,17 +2308,41 @@ class ManagedObject(NOCModel):
             "SNMP",
             checks=["SNMPv1", "SNMPv2"],
             blocked=ac == "C",
+            check_policy="F",
             reason="Blocked by AccessPreference" if ac == "C" else None,
         )
+        # Profile Check ?
         # CLI Diagnostic
         yield DiagnosticConfig(
             "CLI",
             checks=["TELNET", "SSH"],
             blocked=ac == "S",
+            check_policy="F",
             reason="Blocked by AccessPreference" if ac == "S" else None,
         )
+        # HTTP Diagnostic
+        yield DiagnosticConfig(
+            "HTTP",
+            checks=["HTTP", "HTTPS"],
+            blocked=False,
+            reason=None,
+        )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?
-        yield DiagnosticConfig("Access", dependent=["SNMP", "CLI"])
+        yield DiagnosticConfig("Access", dependent=["SNMP", "CLI", "HTTP"])
+        # FM
+        yield DiagnosticConfig(
+            "SNMPTRAP",
+            blocked=self.trap_source_type != "d",
+            check_policy="D",
+            reason="Disable by source settings" if self.trap_source_type != "d" else "",
+        ),
+        yield DiagnosticConfig(
+            "SYSLOG",
+            blocked=self.syslog_source_type != "d",
+            check_policy="D",
+            reason="Disable by source settings" if self.syslog_source_type != "d" else "",
+        ),
+        #
 
     def update_diagnostics(self, checks: List[CheckResult] = None):
         """
@@ -2319,37 +2362,41 @@ class ManagedObject(NOCModel):
         # check_result = {c.name: c for c in checks}
         for dc in self.iter_diagnostic_configs():
             # Filter checks
-            checks = [cr for cr in checks if cr.name in dc.checks]
+            dc_checks = [cr for cr in checks if dc.checks and cr.name in dc.checks]
             # Get or Create DiagnosticItem
             if dc.diagnostic not in self.diagnostics:
                 # logger.info("[%s] Adding diagnostic", dc.diagnostic)
-                d = DiagnosticItem(diagnostic=dc.diagnostic, checks=checks)
+                d = DiagnosticItem(diagnostic=dc.diagnostic, checks=dc_checks)
             else:
                 d = DiagnosticItem.parse_obj(self.diagnostics[dc.diagnostic])
             # Calculate state
             state = None
             if dc.blocked:
                 state = DiagnosticState.blocked
-            elif checks or dc.dependent:
-                check_statuses = [c.status for c in checks if not c.skipped]
+            elif dc_checks or dc.dependent:
+                check_statuses = [c.status for c in dc_checks if not c.skipped]
                 # Check first
                 if check_statuses:
                     # ANY or ALL policy appply
-                    c_state = any(check_statuses) if dc.policy == "ANY" else all(check_statuses)
+                    c_state = (
+                        any(check_statuses) if dc.state_policy == "ANY" else all(check_statuses)
+                    )
                     state = DIAGNOSTIC_CHECK_STATE[c_state]
                 # Dependent second
                 if dc.dependent:
                     dependency.append(dc)
             else:
+                logger.info("[%s] Not calculate state. Skipping", dc.diagnostic)
                 continue
             processed.add(dc.diagnostic)
             # Compare state and update
             if not state or d.state == state:
+                logger.info("[%s] State is same", dc.diagnostic)
                 continue
             logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
             d.state = state
             d.changed = now
-            d.checks = checks
+            d.checks = dc_checks
             diagnostics[dc.diagnostic] = d
         # Remove
         removed = []
@@ -2380,6 +2427,8 @@ class ManagedObject(NOCModel):
                 diagnostics[dc.diagnostic] = DiagnosticItem(diagnostic=dc.diagnostic, checks=[])
             diagnostics[dc.diagnostic].state = DIAGNOSTIC_CHECK_STATE[
                 DiagnosticState.enabled in d_states
+                if dc.state_policy == "ANY"
+                else DiagnosticState.failed not in d_states
             ]
         # Update
         if not diagnostics and not removed:
