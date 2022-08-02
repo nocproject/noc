@@ -28,16 +28,8 @@ class DiagnosticEvent(str, enum.Enum):
 
     def get_state(self, state: "DiagnosticState") -> Optional["DiagnosticState"]:
         if state.value not in EVENT_TRANSITION[self.value]:
-            print("Not allowed transition")
             return
         return DiagnosticState(EVENT_TRANSITION[self.value][state.value])
-
-    @classmethod
-    def print_transitions(cls):
-        for event in EVENT_TRANSITION:
-            event = DiagnosticEvent(event)
-            for state1, state2 in EVENT_TRANSITION[event.value].items():
-                print(f"{event}:  {DiagnosticState(state1)} ---> {DiagnosticState(state2)}")
 
 
 class DiagnosticState(str, enum.Enum):
