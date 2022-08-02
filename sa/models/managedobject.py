@@ -2377,6 +2377,7 @@ class ManagedObject(NOCModel):
                 d = DiagnosticItem(diagnostic=dc.diagnostic, checks=dc_checks)
             else:
                 d = DiagnosticItem.parse_obj(self.diagnostics[dc.diagnostic])
+            processed.add(dc.diagnostic)
             # Calculate state
             state = None
             if dc.blocked:
@@ -2396,7 +2397,6 @@ class ManagedObject(NOCModel):
             else:
                 logger.info("[%s] Not calculate state. Skipping", dc.diagnostic)
                 continue
-            processed.add(dc.diagnostic)
             # Compare state and update
             if not state or d.state == state:
                 logger.info("[%s] State is same", dc.diagnostic)
