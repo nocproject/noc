@@ -15,6 +15,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.core.tagfield.Tagfield",
         "NOC.core.label.LabelField",
         "NOC.core.label.LabelDisplay",
+        "NOC.core.status.StatusField",
         "NOC.core.PasswordField",
         "NOC.sa.administrativedomain.TreeCombo",
         "NOC.sa.administrativedomain.LookupField",
@@ -413,16 +414,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Is Managed?"),
                                     allowBlank: true,
                                     groupEdit: true
+                                },
+                                {
+                                    name: "bi_id",
+                                    xtype: "displayfield",
+                                    fieldLabel: __("BI ID"),
+                                    allowBlank: true
                                 }
                             ]
                         }, {
                             xtype: "container",
                             items: [ // second column
                                 {
-                                    name: "bi_id",
-                                    xtype: "displayfield",
-                                    fieldLabel: __("BI ID"),
-                                    allowBlank: true
+                                    name: "diagnostics",
+                                    fieldLabel: __("Diag"),
+                                    xtype: "statusfield",
+                                    allowBlank: true,
                                 },
                                 {
                                     name: "labels",
