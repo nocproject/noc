@@ -16,14 +16,13 @@ Ext.define("NOC.core.status.StatusField", {
     '<div id="{id}" data-ref="inputEl" tabindex="-1" role="textbox" aria-readonly="true"',
     ' aria-labelledby="{cmpId}-labelEl" {inputAttrTpl}',
     '<tpl if="fieldStyle"> style="{fieldStyle}"</tpl>',
-    ' class="{fieldCls} {fieldCls}-{ui} label-display"',
-    ' style="display: flex;flex-wrap: wrap;align-items: flex-start;">{value}</div>',
+    ' class="{fieldCls} {fieldCls}-{ui} label-display noc-state-container">{value}</div>',
     {
       compiled: true,
       disableFormats: true
     }
   ],
-//  <tpl if="{error}}">({error})</tpl>
+
   getDisplayValue: function() {
     var me = this,
       value = this.getRawValue(),
@@ -33,7 +32,6 @@ Ext.define("NOC.core.status.StatusField", {
         '<span class="noc-state-field noc-state-{state}"',
         '<tpl if="details.length &gt; 0">',
         'data-qtip="{[this.tip(values)]}"',
-        // '<tpl for="details">data-qtip="{name}: {state}<br/>"</tpl>',
         '</tpl>',
         '>{[this.strip(values)]}</span>',
         '</tpl>',
