@@ -96,6 +96,7 @@ all:
           has_svc_pgbouncer: true
           has_svc_ping: true
           has_svc_postgres: true
+          has_svc_redpanda: true
           has_svc_sae: true
           has_svc_scheduler: true
           has_svc_syslogcollector: true
@@ -1065,6 +1066,14 @@ all:
     svc-liftbridge-exec:
       hosts:
         noc-node-ubuntu20: {}
+    svc-redpanda:
+      children:
+        cfg-redpanda-noc-node-ubuntu20:
+          hosts:
+            noc-node-ubuntu20: {}
+        svc-redpanda-read:
+          hosts:
+            noc-node-ubuntu20: {}
     svc-redpanda-exec:
       hosts:
         noc-node-ubuntu20: {}

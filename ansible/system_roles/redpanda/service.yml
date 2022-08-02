@@ -3,7 +3,7 @@
   hosts: svc-redpanda-exec
   become: "True"
   any_errors_fatal: "False"
-  serial: 50%
+  serial: 30%
   gather_facts: "True"
   tags:
     - redpanda
@@ -13,7 +13,6 @@
     - "vars/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
   roles:
     - role: redpanda
-      when: redpanda_complete is not defined
     - role: goss
       tags: [goss]
       vars:
