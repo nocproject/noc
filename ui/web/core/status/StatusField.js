@@ -30,7 +30,7 @@ Ext.define("NOC.core.status.StatusField", {
       chip = new Ext.XTemplate([
         '<tpl for=".">',
         '<span class="noc-state-field noc-state-{state}"',
-        '<tpl if="details.length &gt; 0">',
+        '<tpl if="description.length &gt; 0">',
         'data-qtip="{[this.tip(values)]}"',
         '</tpl>',
         '>{[this.strip(values)]}</span>',
@@ -44,8 +44,12 @@ Ext.define("NOC.core.status.StatusField", {
           tip: function(value) {
             var tip = "",
               details = value.details;
+
+            if(value.description) {
+              tip += "<div>" + value.description + "</div>";
+            }
             for(var i = 0; i < details.length; i++) {
-              tip += "<div>" + details[i].name + " : " + details[i].state;
+              tip += "<div style='padding-left: 5px;'>" + details[i].name + " : " + details[i].state;
               if(details[i].error) {
                 tip += " (" + details[i].error + ")";
               }
