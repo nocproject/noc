@@ -99,7 +99,7 @@ class ActivatorAPI(API):
         address: str,
         community: str,
         oid: str,
-        timeout: Optional[int] = None,
+        timeout: Optional[int] = 10,
         return_error: bool = False,
     ):
         """
@@ -145,7 +145,7 @@ class ActivatorAPI(API):
         address: str,
         community: str,
         oid: str,
-        timeout: Optional[int] = None,
+        timeout: Optional[int] = 10,
         return_error: bool = False,
     ):
         """

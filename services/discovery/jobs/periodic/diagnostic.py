@@ -73,7 +73,6 @@ class DiagnosticCheck(DiscoveryCheck):
                 elif cc.action:
                     h = getattr(self, f"action_{cc.action.action}")
                     h(cc.action)
-                    changed = True
                 checks.append(cc)
             # Update diagnostics
             self.object.update_diagnostics(

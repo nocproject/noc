@@ -915,7 +915,9 @@ class ManagedObject(NOCModel):
             or "snmp_rate_limit" in self.changed_fields
         ):
             cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
-        if self.initial_data["id"] is None or self._access_fields.intersection(set(self.changed_fields)):
+        if self.initial_data["id"] is None or self._access_fields.intersection(
+            set(self.changed_fields)
+        ):
             diagnostics += ["SNMP", "CLI", "Access"]
         if "trap_source_type" in self.changed_fields:
             diagnostics = ["SYSLOG"]
@@ -2138,7 +2140,7 @@ class ManagedObject(NOCModel):
             for d in instance.diagnostics:
                 d = instance.get_diagnostic(d)
                 yield Label.ensure_labels(
-                    [f'funcs::{d.diagnostic}::{d.state}'], enable_managedobject=True
+                    [f"funcs::{d.diagnostic}::{d.state}"], enable_managedobject=True
                 )
 
     @classmethod
