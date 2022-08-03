@@ -6,29 +6,22 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, List, Union
-from dataclasses import dataclass
+from typing import Dict, List
 from collections import defaultdict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.checkers.base import Checker, Check
+from noc.core.checkers.base import (
+    Checker,
+    Check,
+    CheckResult,
+    ProfileSet,
+    CredentialSet,
+    MetricsSet,
+)
 from noc.core.checkers.loader import loader
-
-
-@dataclass
-class Metric(object):
-    metric_type: str
-    value: float
-
-
-@dataclass
-class CheckResult(object):
-    name: str
-    status: bool  # True - OK, False - Fail
-    skipped: bool = False
-    error: Optional[str] = None  # Description if Fail
-    data: Optional[Union[Metric]] = None
+from noc.sa.models.managedobject import CheckData
+from noc.sa.models.profile import Profile
 
 
 class DiagnosticCheck(DiscoveryCheck):
@@ -55,7 +48,7 @@ class DiagnosticCheck(DiscoveryCheck):
     def handler(self):
         self.load_checkers()
         checks: List[CheckResult] = []
-        # configs: Dict[str, DiagnosticConfig] = {}
+        # Processed Check
         for dc in self.object.iter_diagnostic_configs():
             if not dc.checks or dc.blocked:
                 # Diagnostic without checks
@@ -71,17 +64,24 @@ class DiagnosticCheck(DiscoveryCheck):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue
             # Get checker
-            checks += self.do_check([Check(name=dc) for dc in dc.checks])
+            for cc in self.do_check([Check(name=dc) for dc in dc.checks]):
+                if cc.action and not hasattr(self, cc.action.action):
+                    self.logger.warning(
+                        "[%s|%s] Unknown action", dc.diagnostic, cc.check, cc.action.action
+                    )
+                elif cc.action:
+                    h = getattr(self, f"action_{cc.action.action}")
+                    h(cc.action)
+                checks.append(cc)
         self.logger.info("Result: %s", checks)
-        # Processed Check
-
         # Update diagnostics
-        # object.update_diagnostics([CheckData(name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error) for cr in checks])
-        # self.set_problem(
-        #     alarm_class="Discovery | Guess | CLI Credentials",
-        #     message="Failed to guess CLI credentials (%s)" % message,
-        #     fatal=True,
-        # )
+        self.object.update_diagnostics(
+            [
+                CheckData(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
+                for cr in checks
+            ]
+        )
+        # Fire workflow event diagnostic ?
 
     def do_check(self, checks: List[Check]) -> List[CheckResult]:
         """
@@ -106,3 +106,55 @@ class DiagnosticCheck(DiscoveryCheck):
             self.logger.info("[%s] Run checker", d_checks)
             r += checker.run(d_checks)
         return r
+
+    def action_set_sa_profile(self, data: ProfileSet):
+        """
+        Setting Object Profile Check result
+        :param data:
+        :return:
+        """
+        # if "profile" not in data:
+        #     return  # Cannot detect
+        profile = Profile.get_by_name(data.profile)
+        if profile.id == self.object.profile.id:
+            self.logger.info("Profile is correct: %s", profile)
+        else:
+            self.logger.info(
+                "Profile change detected: %s -> %s. Fixing database, resetting platform info",
+                self.object.profile.name,
+                profile.name,
+            )
+            self.invalidate_neighbor_cache()
+            self.object.profile = profile
+            self.object.vendor = None
+            self.object.plarform = None
+            self.object.version = None
+            self.object.save()
+
+    def action_set_credential(self, data: CredentialSet):
+        """
+        :param data:
+        :return:
+        """
+        changed = False
+        for cred in ["snmp_ro", "snmp_rw", "user", "password", "super_password"]:
+            nc = getattr(data, cred)
+            if not nc:
+                continue
+            oc = getattr(self.object, cred, None)
+            if nc != oc:
+                changed = True
+                setattr(self.object, cred, nc)
+        # Reset auth profile to continue operations with new credentials
+        if changed:
+            self.logger.info("Setting credentials")
+            self.object.auth_profile = None
+            self.object.save()
+
+    def action_set_metrics(self, data: MetricsSet):
+        """
+        Register Diagnostic Metrics
+        :param data:
+        :return:
+        """
+        self.logger.info("Register metric: %s", data)

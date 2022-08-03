@@ -71,6 +71,7 @@ class Protocol(enum.Enum):
 class ProtocolResult(object):
     protocol: Protocol
     status: bool
+    skipped: bool = False
     error: Optional[str] = None
 
 
@@ -253,11 +254,17 @@ class CredentialChecker(object):
                     status, message = self.check_oid(
                         oid[0], suggest.snmp_ro, f"{proto.config.alias}_get"
                     )
+                    if not status and not message:
+                        message = "SNMP Timeout"
                     self.logger.info(
                         "Guessed community: %s, version: %d",
                         suggest.snmp_ro,
                         proto.config.snmp_version,
                     )
+                elif isinstance(suggest, SuggestCLI) and self.ignoring_cli:
+                    # Skipped
+                    r[proto] = ProtocolResult(protocol=proto, status=True, skipped=True)
+                    continue
                 elif isinstance(suggest, SuggestCLI):
                     status, message = self.check_login(
                         suggest.user, suggest.password, suggest.super_password, protocol=proto
@@ -298,7 +305,16 @@ class CredentialChecker(object):
 
     @staticmethod
     def is_unsupported_error(message) -> bool:
+        """
+        Todo replace to code
+        :param message:
+        :return:
+        """
         if "Exception: TimeoutError()" in message:
+            return True
+        if "Error: Connection refused" in message:
+            return True
+        if "SNMP Timeout" in message:
             return True
         return False
 
@@ -334,15 +350,16 @@ class CredentialChecker(object):
         :param version:
         :return:
         """
-        self.logger.info("Trying community '%s': %s, version: %s", community, oid, version)
+        self.logger.info("Trying community '%s': %s, version: %s", safe_shadow(community), oid, version)
+        self.logger.debug("Trying community '%s': %s, version: %s", community, oid, version)
         try:
-            r = open_sync_rpc(
+            result, message = open_sync_rpc(
                 "activator", pool=self.pool, calling_service=self.calling_service
-            ).__getattr__(version)(self.address, community, oid)
-            self.logger.info("Result: %s", r)
-            return r is not None, ""
+            ).__getattr__(version)(self.address, community, oid, 10, True)
+            self.logger.info("Result: %s (%s)", result, message)
+            return result is not None, message or ""
         except RPCError as e:
-            self.logger.debug("RPC Error: %s", e)
+            self.logger.info("RPC Error: %s", e)
             return False, str(e)
 
     def check_login(

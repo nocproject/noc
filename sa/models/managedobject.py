@@ -40,7 +40,17 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticConfig, DIAGNOSTIC_CHECK_STATE
+from noc.core.wf.diagnostic import (
+    DiagnosticState,
+    DiagnosticConfig,
+    DIAGNOSTIC_CHECK_STATE,
+    PROFILE_DIAG,
+    SNMP_DIAG,
+    CLI_DIAG,
+    SNMPTRAP_DIAG,
+    SYSLOG_DIAG,
+    HTTP_DIAG,
+)
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -126,7 +136,7 @@ class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
 
 
-class CheckResult(BaseModel):
+class CheckData(BaseModel):
     name: str
     status: bool  # True - OK, False - Fail
     skipped: bool = False
@@ -136,7 +146,7 @@ class CheckResult(BaseModel):
 class DiagnosticItem(BaseModel):
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckResult]]
+    checks: Optional[List[CheckData]]
     # scope: Literal["access", "all", "discovery", "default"] = "default"
     # policy: str = "ANY
     reason: Optional[str] = None
@@ -2305,17 +2315,26 @@ class ManagedObject(NOCModel):
         ac = self.get_access_preference()
         # SNMP Diagnostic
         yield DiagnosticConfig(
-            "SNMP",
+            SNMP_DIAG,
             display_description="Check Device response by SNMP request",
-            checks=["SNMPv1", "SNMPv2"],
+            checks=["SNMPv1", "SNMPv2c"],
             blocked=ac == "C",
             check_policy="F",
             reason="Blocked by AccessPreference" if ac == "C" else None,
         )
+        yield DiagnosticConfig(
+            PROFILE_DIAG,
+            display_description="Check device profile",
+            show_in_display=False,
+            checks=["PROFILE"],
+            blocked=not self.object_profile.enable_box_discovery_profile,
+            check_policy="A",
+            # reason="Blocked by AccessPreference" if ac == "C" else None,
+        )
         # Profile Check ?
         # CLI Diagnostic
         yield DiagnosticConfig(
-            "CLI",
+            CLI_DIAG,
             display_description="Check Device response by CLI (TELNET/SSH) request",
             checks=["TELNET", "SSH"],
             blocked=ac == "S",
@@ -2324,7 +2343,7 @@ class ManagedObject(NOCModel):
         )
         # HTTP Diagnostic
         yield DiagnosticConfig(
-            "HTTP",
+            HTTP_DIAG,
             display_description="Check Device response by HTTP/HTTPS request",
             show_in_display=False,
             checks=["HTTP", "HTTPS"],
@@ -2336,7 +2355,7 @@ class ManagedObject(NOCModel):
         # FM
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
-            "SNMPTRAP",
+            SNMPTRAP_DIAG,
             display_description="Register One SNMP Trap on device",
             blocked=self.trap_source_type != "d",
             check_policy="D",
@@ -2344,7 +2363,7 @@ class ManagedObject(NOCModel):
         )
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
-            "SYSLOG",
+            SYSLOG_DIAG,
             display_description="Register One Syslog on device",
             blocked=self.syslog_source_type != "d",
             check_policy="D",
@@ -2352,7 +2371,7 @@ class ManagedObject(NOCModel):
         )
         #
 
-    def update_diagnostics(self, checks: List[CheckResult] = None):
+    def update_diagnostics(self, checks: List[CheckData] = None):  # Update on save
         """
         Update diagnostics by Checks Result ?Source - discovery/manual
 
