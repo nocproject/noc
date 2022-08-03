@@ -9,9 +9,9 @@
 from typing import List
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult
+from .base import Check, ObjectChecker, CheckResult, CredentialSet
 from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript
-from ..script.credentialchecker import Protocol
+from ..script.credentialchecker import Protocol, SNMPCredential, CLICredential
 
 
 class CredentialChecker(ObjectChecker):
@@ -31,13 +31,26 @@ class CredentialChecker(ObjectChecker):
             profile=self.object.profile,
         )
         r = []
-        for pr in cc.do_check(*[self.PROTO_CHECK_MAP[c.name] for c in checks]):
-            r += [
-                CheckResult(
-                    check=pr.protocol.config.check,
-                    status=pr.status,
-                    error=pr.error,
-                    skipped=pr.skipped,
-                )
-            ]
+        # @todo Bad interface, need reworked
+        for sr in cc.do_check(*[self.PROTO_CHECK_MAP[c.name] for c in checks]):
+            action = None
+            if not action and sr.credential:
+                if isinstance(sr.credential, SNMPCredential):
+                    action = CredentialSet(snmp_ro=sr.credential.snmp_ro)
+                elif isinstance(sr.credential, CLICredential):
+                    action = CredentialSet(
+                        user=sr.credential.user,
+                        password=sr.credential.password,
+                        super_password=sr.credential.super_password,
+                    )
+            for pr in sr.protocols:
+                r += [
+                    CheckResult(
+                        check=pr.protocol.config.check,
+                        status=pr.status,
+                        error=pr.error,
+                        skipped=pr.skipped,
+                        action=action,
+                    )
+                ]
         return r

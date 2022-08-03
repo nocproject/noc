@@ -16,12 +16,12 @@ from ..wf.diagnostic import DiagnosticState, SNMP_DIAG
 
 
 class ProfileChecker(ObjectChecker):
-    name = "profile"
+    name = "profilechecker"
     CHECKS: List[str] = ["PROFILE"]
     CHECK_SNMP_VERSION_MAP = {
         p.config.check: p.config.snmp_version
         for p in Protocol
-        if p.config.snmp_version and p.config.check
+        if p.config.snmp_version is not None and p.config.check
     }
 
     def run(self, checks: List[Check]) -> List[CheckResult]:
@@ -32,12 +32,13 @@ class ProfileChecker(ObjectChecker):
         snmp_community, snmp_version = None, []
         if (
             SNMP_DIAG in self.object.diagnostics
-            and self.object.diagnostics[SNMP_DIAG] == DiagnosticState.enabled
+            and self.object.get_diagnostic(SNMP_DIAG).state == DiagnosticState.enabled
         ):
             snmp_community = self.object.credentials.snmp_ro
             snmp_version = [
-                self.CHECK_SNMP_VERSION_MAP[check]
-                for check in self.object.diagnostics[SNMP_DIAG]["checks"]
+                self.CHECK_SNMP_VERSION_MAP[check.name]
+                for check in self.object.get_diagnostic(SNMP_DIAG).checks
+                if check.status
             ]
         # caps = self.object.get_caps()
         # if caps.get("SNMP | v2c") is False or caps.get("SNMP | v2c") is None:

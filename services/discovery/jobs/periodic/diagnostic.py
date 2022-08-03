@@ -47,7 +47,7 @@ class DiagnosticCheck(DiscoveryCheck):
 
     def handler(self):
         self.load_checkers()
-        checks: List[CheckResult] = []
+        # checks: List[CheckResult] = []
         # Processed Check
         for dc in self.object.iter_diagnostic_configs():
             if not dc.checks or dc.blocked:
@@ -59,28 +59,31 @@ class DiagnosticCheck(DiscoveryCheck):
             if (
                 dc.check_policy == "F"
                 and dc.diagnostic in self.object.diagnostics
-                and self.object.diagnostics[dc.diagnostic].state == "enabled"
+                and self.object.get_diagnostic(dc.diagnostic).state == "enabled"
             ):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue
             # Get checker
-            for cc in self.do_check([Check(name=dc) for dc in dc.checks]):
-                if cc.action and not hasattr(self, cc.action.action):
+            checks: List[CheckResult] = []
+            for cc in self.do_check([Check(name=c) for c in dc.checks]):
+                if cc.action and not hasattr(self, f"action_{cc.action.action}"):
                     self.logger.warning(
-                        "[%s|%s] Unknown action", dc.diagnostic, cc.check, cc.action.action
+                        "[%s|%s] Unknown action: %s", dc.diagnostic, cc.check, cc.action.action
                     )
                 elif cc.action:
                     h = getattr(self, f"action_{cc.action.action}")
                     h(cc.action)
+                    changed = True
                 checks.append(cc)
-        self.logger.info("Result: %s", checks)
-        # Update diagnostics
-        self.object.update_diagnostics(
-            [
-                CheckData(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
-                for cr in checks
-            ]
-        )
+            # Update diagnostics
+            self.object.update_diagnostics(
+                [
+                    CheckData(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
+                    for cr in checks
+                ],
+            )
+        # self.logger.info("Result: %s", checks)
+        # self.object.update_diagnostics()  # ? All ?
         # Fire workflow event diagnostic ?
 
     def do_check(self, checks: List[Check]) -> List[CheckResult]:
@@ -137,6 +140,7 @@ class DiagnosticCheck(DiscoveryCheck):
         :return:
         """
         changed = False
+        # For password change - cleanup credential ?
         for cred in ["snmp_ro", "snmp_rw", "user", "password", "super_password"]:
             nc = getattr(data, cred)
             if not nc:

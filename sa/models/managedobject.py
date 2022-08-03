@@ -677,6 +677,21 @@ class ManagedObject(NOCModel):
         "affected_maintenances",
         "diagnostics",
     )
+    # Access affected fields
+    _access_fields = {
+        "scheme",
+        "address",
+        "port",
+        "auth_profile",
+        "object_profile",
+        "user",
+        "password",
+        "super_password",
+        "snmp_ro",
+        "snmp_rw",
+        "access_preference",
+        "cli_privilege_policy",
+    }
 
     def __str__(self):
         return self.name
@@ -870,6 +885,7 @@ class ManagedObject(NOCModel):
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = ["managedobject-name-to-id-%s" % self.name]
+        diagnostics = []
         # Notify new object
         if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
@@ -889,27 +905,22 @@ class ManagedObject(NOCModel):
         # Invalidate credentials cache
         if (
             self.initial_data["id"] is None
-            or "scheme" in self.changed_fields
-            or "address" in self.changed_fields
-            or "port" in self.changed_fields
-            or "auth_profile" in self.changed_fields
-            or "object_profile" in self.changed_fields
-            or "user" in self.changed_fields
-            or "password" in self.changed_fields
-            or "super_password" in self.changed_fields
-            or "snmp_ro" in self.changed_fields
-            or "snmp_rw" in self.changed_fields
+            or self._access_fields.intersection(set(self.changed_fields))
             or "profile" in self.changed_fields
             or "vendor" in self.changed_fields
             or "platform" in self.changed_fields
             or "version" in self.changed_fields
             or "pool" in self.changed_fields
-            or "access_preference" in self.changed_fields
-            or "cli_privilege_policy" in self.changed_fields
             or "remote_path" in self.changed_fields
             or "snmp_rate_limit" in self.changed_fields
         ):
             cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
+        if self.initial_data["id"] is None or self._access_fields.intersection(set(self.changed_fields)):
+            diagnostics += ["SNMP", "CLI", "Access"]
+        if "trap_source_type" in self.changed_fields:
+            diagnostics = ["SYSLOG"]
+        if "syslog_source_type" in self.changed_fields:
+            diagnostics += ["SNMPTRAP"]
         # Rebuild paths
         if (
             self.initial_data["id"] is None
@@ -977,6 +988,10 @@ class ManagedObject(NOCModel):
             from noc.inv.models.discoveryid import DiscoveryID
 
             DiscoveryID.clean_for_object(self)
+        # Set Diagnostics
+        if diagnostics:
+            self.reset_diagnostic(diagnostics)
+            self.update_diagnostics()
 
     def on_delete(self):
         # Reset discovery cache
@@ -2120,9 +2135,10 @@ class ManagedObject(NOCModel):
             # Interface = 39.4 µs
             yield ["noc::is_linked::="]
         if instance.diagnostics:
-            for d in instance.diagnostics.values():
+            for d in instance.diagnostics:
+                d = instance.get_diagnostic(d)
                 yield Label.ensure_labels(
-                    [f'funcs::{d["diagnostic"]}::{d["state"]}'], enable_managedobject=True
+                    [f'funcs::{d.diagnostic}::{d.state}'], enable_managedobject=True
                 )
 
     @classmethod
@@ -2273,11 +2289,12 @@ class ManagedObject(NOCModel):
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
 
-    def set_diagnostic_state(self, diagnostic: str, state: bool):
+    def set_diagnostic_state(self, diagnostic: str, state: bool, saved: bool = True):
         """
         Set diagnostic state
         :param diagnostic:
         :param state:
+        :param saved:
         :return:
         """
         from django.db import connection as pg_connection
@@ -2293,7 +2310,9 @@ class ManagedObject(NOCModel):
         logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
         d.state = state
         d.changed = datetime.datetime.now()
-        self.diagnostics[diagnostic] = d
+        self.diagnostics[diagnostic] = d.dict()
+        if not saved:
+            return
         with pg_connection.cursor() as cursor:
             # Update
             logger.debug("[%s] Saving changes: %s", diagnostic, d)
@@ -2371,7 +2390,7 @@ class ManagedObject(NOCModel):
         )
         #
 
-    def update_diagnostics(self, checks: List[CheckData] = None):  # Update on save
+    def update_diagnostics(self, checks: List[CheckData] = None, saved=True):  # Update on save
         """
         Update diagnostics by Checks Result ?Source - discovery/manual
 
@@ -2414,7 +2433,7 @@ class ManagedObject(NOCModel):
                 if dc.dependent:
                     dependency.append(dc)
             else:
-                logger.info("[%s] Not calculate state. Skipping", dc.diagnostic)
+                logger.debug("[%s] Not calculate state. Skipping", dc.diagnostic)
                 continue
             # Compare state and update
             if not state or d.state == state:
@@ -2422,7 +2441,7 @@ class ManagedObject(NOCModel):
                 continue
             logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
             d.state = state
-            d.changed = now
+            d.changed = now.isoformat(sep=" ")
             d.checks = dc_checks
             diagnostics[dc.diagnostic] = d
         # Remove
@@ -2460,7 +2479,9 @@ class ManagedObject(NOCModel):
         # Update
         if not diagnostics and not removed:
             return
-        self.diagnostics.update(diagnostics)
+        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
+        if not saved:
+            return
         with pg_connection.cursor() as cursor:
             # Update
             if diagnostics:
@@ -2474,6 +2495,39 @@ class ManagedObject(NOCModel):
                 )
             if removed:
                 logger.debug("[%s] Removed diagnostics", list(removed))
+                cursor.execute(
+                    f"""
+                     UPDATE sa_managedobject
+                     SET diagnostics = diagnostics {" #- %s " * len(removed)}
+                     WHERE id = %s""",
+                    ["{%s}" % r for r in removed] + [self.id],
+                )
+        self._reset_caches(self.id)
+
+    def get_diagnostic(self, diagnostic) -> Optional[DiagnosticItem]:
+        if diagnostic not in self.diagnostics:
+            return
+        if isinstance(self.diagnostics[diagnostic], DiagnosticItem):
+            return self.diagnostics[diagnostic]
+        return DiagnosticItem.parse_obj(self.diagnostics[diagnostic])
+
+    def reset_diagnostic(self, diagnostics: List[str]):
+        """
+
+        :param diagnostics:
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        removed = []
+        for d in diagnostics:
+            if d in self.diagnostics:
+                del self.diagnostics[d]
+                removed.append(d)
+        # If Failed state - clear alarm
+        if removed:
+            logger.debug("[%s] Removed diagnostics", list(removed))
+            with pg_connection.cursor() as cursor:
                 cursor.execute(
                     f"""
                      UPDATE sa_managedobject

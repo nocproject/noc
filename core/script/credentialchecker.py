@@ -75,36 +75,49 @@ class ProtocolResult(object):
     error: Optional[str] = None
 
 
-@dataclass(frozen=True)
-class SuggestSNMP(object):
-    preference: int
-    protocols: Tuple[Protocol, ...]
-    snmp_ro: Optional[str] = None
+@dataclass(frozen=Tuple)
+class SNMPCredential(object):
+    snmp_ro: str = None
     snmp_rw: Optional[str] = None
-    check_oids: Optional[Tuple[str, ...]] = None
 
 
-@dataclass(frozen=True)
-class SuggestCLI(object):
-    preference: int
-    protocols: Tuple[Protocol, ...]
+@dataclass(frozen=Tuple)
+class CLICredential(object):
     user: Optional[str] = None
     password: Optional[str] = None
     super_password: Optional[str] = None
 
 
 @dataclass(frozen=True)
-class SuggestConfig(object):
+class SuggestSNMPConfig(object):
     preference: int
+    protocols: Tuple[Protocol, ...]
+    snmp_ro: Optional[str] = None
+    snmp_rw: Optional[str] = None
     check_oids: Optional[Tuple[str, ...]] = None
-    protocols: Optional[Tuple[Protocol, ...]] = None
+
+    def get_credential(self) -> SNMPCredential:
+        return SNMPCredential(self.snmp_ro, self.snmp_rw)
+
+
+@dataclass(frozen=True)
+class SuggestCLIConfig(object):
+    preference: int
+    protocols: Tuple[Protocol, ...]
+    user: Optional[str] = None
+    password: Optional[str] = None
+    super_password: Optional[str] = None
+
+    def get_credential(self) -> CLICredential:
+        return CLICredential(
+            user=self.user, password=self.password, super_password=self.super_password
+        )
 
 
 @dataclass
 class SuggestResult(object):
-    protocols: List[Protocol]
-    credential: Union[SuggestSNMP, SuggestCLI]
-    error: Optional[str] = None
+    protocols: List[ProtocolResult]
+    credential: Union[CLICredential, SNMPCredential]
 
 
 @dataclass(frozen=True)
@@ -167,9 +180,24 @@ class CredentialChecker(object):
             )
         )
 
+    @staticmethod
+    def is_unsupported_error(message) -> bool:
+        """
+        Todo replace to error_code
+        :param message:
+        :return:
+        """
+        if "Exception: TimeoutError()" in message:
+            return True
+        if "Error: Connection refused" in message:
+            return True
+        if "SNMP Timeout" in message:
+            return True
+        return False
+
     def iter_suggests(
         self, protocols: Tuple[Protocol, ...] = None
-    ) -> Iterator[Union[SuggestCLI, SuggestSNMP]]:
+    ) -> Iterator[Union[SuggestCLIConfig, SuggestSNMPConfig]]:
         """
         Load ProfileCheckRules and return a list, grouped by preferences
 
@@ -197,7 +225,7 @@ class CredentialChecker(object):
                 auth_profiles.add(ap)
                 # self.auth_profiles.add(ap)
                 if (ap.user or ap.password) and cli_protocols:
-                    sc = SuggestCLI(
+                    sc = SuggestCLIConfig(
                         cc.preference,
                         cli_protocols,
                         user=ap.user,
@@ -208,7 +236,7 @@ class CredentialChecker(object):
                         yield sc
                     r.add(sc)
                 if (ap.snmp_ro or ap.snmp_rw) and snmp_protocols:
-                    ss = SuggestSNMP(
+                    ss = SuggestSNMPConfig(
                         cc.preference, snmp_protocols, snmp_ro=ap.snmp_ro, snmp_rw=ap.snmp_rw
                     )
                     if ss not in r:
@@ -216,7 +244,7 @@ class CredentialChecker(object):
                     r.add(ss)
             if snmp_protocols:
                 for ss in cc.suggest_snmp:
-                    ss = SuggestSNMP(
+                    ss = SuggestSNMPConfig(
                         cc.preference, snmp_protocols, snmp_ro=ss.snmp_ro, snmp_rw=ss.snmp_rw
                     )
                     if ss not in r:
@@ -224,7 +252,7 @@ class CredentialChecker(object):
                     r.add(ss)
             if cli_protocols:
                 for sc in cc.suggest_credential:
-                    sc = SuggestCLI(
+                    sc = SuggestCLIConfig(
                         cc.preference,
                         snmp_protocols,
                         user=sc.user,
@@ -236,20 +264,22 @@ class CredentialChecker(object):
                     r.add(sc)
         # return r
 
-    def do_check(self, *protocols: Tuple[Protocol, ...]) -> List[ProtocolResult]:
+    def do_check(self, *protocols: Tuple[Protocol, ...]) -> List[SuggestResult]:
         """
         Detect Protocol Status
         :param protocols:
         :return:
         """
+        sr: List[SuggestResult] = []
         r: Dict[Protocol:ProtocolResult] = {}
         protocols = protocols or SUGGEST_PROTOCOLS
         for suggest in self.iter_suggests(protocols):
+            success = False
             for proto in suggest.protocols:
                 if proto in r:
                     # Skip already detect proto
                     continue
-                if isinstance(suggest, SuggestSNMP):
+                if isinstance(suggest, SuggestSNMPConfig):
                     oid = suggest.check_oids or CHECK_OIDS
                     status, message = self.check_oid(
                         oid[0], suggest.snmp_ro, f"{proto.config.alias}_get"
@@ -261,33 +291,42 @@ class CredentialChecker(object):
                         suggest.snmp_ro,
                         proto.config.snmp_version,
                     )
-                elif isinstance(suggest, SuggestCLI) and self.ignoring_cli:
+                elif isinstance(suggest, SuggestCLIConfig) and self.ignoring_cli:
                     # Skipped
                     r[proto] = ProtocolResult(protocol=proto, status=True, skipped=True)
                     continue
-                elif isinstance(suggest, SuggestCLI):
+                elif isinstance(suggest, SuggestCLIConfig):
                     status, message = self.check_login(
                         suggest.user, suggest.password, suggest.super_password, protocol=proto
                     )
+
                 else:
                     self.logger.info("Not check")
                     continue
                 if status:
                     r[proto] = ProtocolResult(protocol=proto, status=status)
+                    success = True
                 elif self.is_unsupported_error(message):
                     r[proto] = ProtocolResult(protocol=proto, status=status, error=message)
+            if success:
+                sr.append(
+                    SuggestResult(
+                        protocols=[r[p] for p in suggest.protocols if p in r],
+                        credential=suggest.get_credential(),
+                    )
+                )
             if not set(protocols) - set(r):
                 # If check all proto
                 break
-        return list(r.values())
+        return sr
 
     def do_snmp_check(self):
         """
 
         :return:
         """
+        protocols = []
         for suggest in self.iter_suggests(SUGGEST_SNMP):
-            s_result = SuggestResult(protocols=[], credential=suggest)
             for oid in suggest.check_oids or CHECK_OIDS:
                 for proto in suggest.protocols:
                     if self.check_oid(oid, suggest.snmp_ro, f"{proto.config.alias}_get"):
@@ -296,27 +335,17 @@ class CredentialChecker(object):
                             suggest.snmp_ro,
                             proto.config.snmp_version,
                         )
-                        s_result.protocols.append(proto)
-                if s_result.protocols:
-                    self.result.append(s_result)
+                        protocols.append(ProtocolResult(protocol=proto, status=True))
+                if protocols:
+                    self.result.append(
+                        SuggestResult(
+                            protocols=protocols,
+                            credential=suggest.get_credential(),
+                        )
+                    )
                     break
-            if s_result.protocols:
+            if protocols:
                 break
-
-    @staticmethod
-    def is_unsupported_error(message) -> bool:
-        """
-        Todo replace to code
-        :param message:
-        :return:
-        """
-        if "Exception: TimeoutError()" in message:
-            return True
-        if "Error: Connection refused" in message:
-            return True
-        if "SNMP Timeout" in message:
-            return True
-        return False
 
     def do_cli_check(self):
         """
@@ -325,8 +354,8 @@ class CredentialChecker(object):
         """
         if self.ignoring_cli:
             return
+        protocols = []
         for suggest in self.iter_suggests(SUGGEST_CLI):
-            s_result = SuggestResult(protocols=[], credential=suggest)
             for proto in suggest.protocols:
                 if proto in self.refused_proto:
                     continue
@@ -334,11 +363,17 @@ class CredentialChecker(object):
                     suggest.user, suggest.password, suggest.super_password, protocol=proto
                 )
                 if result:
-                    s_result.protocols.append(proto)
+                    protocols.append(ProtocolResult(protocol=proto, status=True))
                 elif self.is_unsupported_error(message):
                     self.refused_proto.add(proto)
-            if s_result.protocols:
-                self.result.append(s_result)
+                    protocols.append(ProtocolResult(protocol=proto, status=False, error=message))
+            if protocols:
+                self.result.append(
+                    SuggestResult(
+                        protocols=protocols,
+                        credential=suggest.get_credential(),
+                    )
+                )
                 break
 
     def check_oid(self, oid: str, community: str, version="snmp_v2c_get") -> Tuple[bool, str]:
@@ -350,7 +385,9 @@ class CredentialChecker(object):
         :param version:
         :return:
         """
-        self.logger.info("Trying community '%s': %s, version: %s", safe_shadow(community), oid, version)
+        self.logger.info(
+            "Trying community '%s': %s, version: %s", safe_shadow(community), oid, version
+        )
         self.logger.debug("Trying community '%s': %s, version: %s", community, oid, version)
         try:
             result, message = open_sync_rpc(
@@ -418,31 +455,31 @@ class CredentialChecker(object):
             ):
                 return ap
 
-    def get_credential(self) -> Optional[Credential]:
-        """
-        Return Address Credential
-        :return:
-        """
-        if not self.result:
-            return
-        protocols = []
-        snmp_ro, snmp_rw = None, None
-        user, password, super_password = None, None, None
-        for sc in self.result:
-            if set(SUGGEST_SNMP).intersection(set(sc.protocols)):
-                protocols += list(sc.protocols)
-                snmp_ro = sc.credential.snmp_ro
-                snmp_rw = sc.credential.snmp_rw
-            if set(SUGGEST_CLI).intersection(set(sc.protocols)):
-                protocols += list(sc.protocols)
-                user = sc.credential.user
-                password = sc.credential.password
-                super_password = sc.credential.super_password
-        return Credential(
-            protocols=protocols,
-            user=user,
-            password=password,
-            super_password=super_password,
-            snmp_ro=snmp_ro,
-            snmp_rw=snmp_rw,
-        )
+    # def get_credential(self) -> Optional[Credential]:
+    #     """
+    #     Return Address Credential
+    #     :return:
+    #     """
+    #     if not self.result:
+    #         return
+    #     protocols = []
+    #     snmp_ro, snmp_rw = None, None
+    #     user, password, super_password = None, None, None
+    #     for sc in self.result:
+    #         if set(SUGGEST_SNMP).intersection(set(sc.protocols)):
+    #             protocols += list(sc.protocols)
+    #             snmp_ro = sc.credential.snmp_ro
+    #             snmp_rw = sc.credential.snmp_rw
+    #         if set(SUGGEST_CLI).intersection(set(sc.protocols)):
+    #             protocols += list(sc.protocols)
+    #             user = sc.credential.user
+    #             password = sc.credential.password
+    #             super_password = sc.credential.super_password
+    #     return Credential(
+    #         protocols=protocols,
+    #         user=user,
+    #         password=password,
+    #         super_password=super_password,
+    #         snmp_ro=snmp_ro,
+    #         snmp_rw=snmp_rw,
+    #     )

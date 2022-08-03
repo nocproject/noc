@@ -156,7 +156,7 @@ class ProfileChecker(object):
             d[r.preference][k] += [(r.match_method, r.value, r.action, r.profile, r.name)]
         return d
 
-    def iter_rules(self) -> Iterable[List[Tuple[str, str], List[Tuple[str, str, str, str, str]]]]:
+    def iter_rules(self) -> Iterable[List[Tuple[Tuple[str, str], List[Tuple[str, str, str, str, str]]]]]:
         d = self.get_rules()
         for p in sorted(d):
             yield list(d[p].items())
