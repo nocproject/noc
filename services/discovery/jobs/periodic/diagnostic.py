@@ -132,6 +132,7 @@ class DiagnosticCheck(DiscoveryCheck):
             self.object.plarform = None
             self.object.version = None
             self.object.save()
+            self.object.update_init()
 
     def action_set_credential(self, data: CredentialSet):
         """
@@ -153,6 +154,7 @@ class DiagnosticCheck(DiscoveryCheck):
             self.logger.info("Setting credentials")
             self.object.auth_profile = None
             self.object.save()
+            self.object.update_init()
 
     def action_set_metrics(self, data: MetricsSet):
         """

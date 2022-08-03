@@ -86,7 +86,13 @@ from noc.core.scheduler.job import Job
 from noc.main.models.handler import Handler
 from noc.core.handler import get_handler
 from noc.core.script.loader import loader as script_loader
-from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
+from noc.core.model.decorator import (
+    on_save,
+    on_init,
+    on_delete,
+    on_delete_check,
+    _get_field_snapshot,
+)
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
@@ -918,9 +924,16 @@ class ManagedObject(NOCModel):
         if self.initial_data["id"] is None or self._access_fields.intersection(
             set(self.changed_fields)
         ):
-            diagnostics += ["SNMP", "CLI", "Access"]
+            diagnostics += ["CLI", "Access"]
+        if (
+            "auth_profile" in self.changed_fields
+            or "snmp_ro" in self.changed_fields
+            or "snmp_rw" in self.changed_fields
+            or "address" in self.changed_fields
+        ):
+            diagnostics += ["SNMP"]
         if "trap_source_type" in self.changed_fields:
-            diagnostics = ["SYSLOG"]
+            diagnostics += ["SYSLOG"]
         if "syslog_source_type" in self.changed_fields:
             diagnostics += ["SNMPTRAP"]
         # Rebuild paths
@@ -2538,6 +2551,13 @@ class ManagedObject(NOCModel):
                     ["{%s}" % r for r in removed] + [self.id],
                 )
         self._reset_caches(self.id)
+
+    def update_init(self):
+        """
+        Update initial_data field
+        :return:
+        """
+        self.initial_data = _get_field_snapshot(self.__class__, self)
 
 
 @on_save
