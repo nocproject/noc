@@ -189,6 +189,7 @@ if __name__ == "__main__":
     os.system(f"chown nats {NATS_DEB_PATH}")
     os.system(f"chown clickhouse {CLICKHOUSE_DEB_PATH}")
     os.system(f"chown postgres {PGBOUNCER}")
+    os.system(f"chown grafana {GRAFANA_DEB_PATH}")
     os.system("systemctl restart nats-server")
     os.system("systemctl restart liftbridge")
     os.system("systemctl restart postgresql")
@@ -197,6 +198,7 @@ if __name__ == "__main__":
     os.system("systemctl restart clickhouse-server")
     os.system("systemctl restart postgresql")
     os.system("systemctl restart pgbouncer")
+    os.system("systemctl restart grafana-server")
 
     os.system("systemctl restart noc")
     change_inside_tower(old_ip_address, my_ip)
