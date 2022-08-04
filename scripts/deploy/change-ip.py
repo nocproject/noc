@@ -184,6 +184,7 @@ if __name__ == "__main__":
 
     print("Restarting services")
     os.system(f"chown nats {NATS_DEB_PATH}")
+    os.system(f"chown clickhouse {CLICKHOUSE_DEB_PATH}")
     os.system("systemctl restart nats-server")
     os.system("systemctl restart liftbridge")
     os.system("systemctl restart postgresql")
