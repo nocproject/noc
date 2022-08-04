@@ -651,17 +651,13 @@ table {
 }
 
 .noc-state-field {
-    padding: 0 3px;
-    border: 1px solid;
-    border-left: none;
-}
-
-.noc-state-field:first-child {
-    border-left: 1px solid;
+    padding: 2px 5px 3px 5px;
+    border: 1px solid #a1a1a1;
+    margin: -1px 0 0 -1px;
 }
 
 .noc-state-blocked {
-    background: darkgrey;
+    background: #d8d8d8;
 }
 
 .noc-state-failed {
