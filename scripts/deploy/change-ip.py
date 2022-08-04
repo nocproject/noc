@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+import subprocess
 import sys
 import socket
 import fileinput
@@ -56,15 +57,17 @@ def take_postgresql_version():
     distr_family = guess_system_type()
     ver = ""
     if distr_family == "deb":
-        ver = str(os.system('dpkg-query -W -f=\'${package} ${status}\n\' postgresql-*|grep "install ok installed" | grep '
-                        '-Po "(\\d.?\\d+)"|sort -u'))
+        sp = subprocess.run(['dpkg-query -W -f=\'${package} ${status}\n\' postgresql-*|grep "install ok installed" | grep -Po "(\\d.?\\d+)"|sort -u'], stdout=PIPE, shell=True)
+        ver = str(sp.stdout.decode('utf-8')).rstrip('\n')
+        return ver
     if distr_family == "rpm":
-        out = str(os.system('yum list installed postgresql*|grep -Po \'postgresql\\K\\d*(?=-server)\''))
-        if out == "96":
+        sp = subprocess.run(['yum list installed postgresql*|grep -Po \'postgresql\\K\\d*(?=-server)\''], stdout=PIPE, shell=True)
+        ver = str(sp.stdout.decode('utf-8')).rstrip('\n')
+        if ver == "96":
             ver = "9.6"
+            return ver
         else:
-            ver = out
-    return ver
+            return ver
 
 
 def guess_system_type():
