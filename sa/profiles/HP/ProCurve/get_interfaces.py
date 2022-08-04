@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ class Script(BaseScript):
         "ifType": "type",
         "ifAdminStatus": "admin_status",
         "ifOperStatus": "oper_status",
+        "ifAlias": "description",
     }
 
     rx_ip = re.compile(
@@ -83,6 +84,16 @@ class Script(BaseScript):
                     iface[self.objstr[leaf]] = self.iftypes[val]
                 elif leaf[-6:] == "Status":
                     iface[self.objstr[leaf]] = val == "1"
+                elif leaf == "ifAlias":
+                    # IF-MIB::ifName.1 = STRING: A1
+                    # IF-MIB::ifName.2 = STRING: A2
+                    # IF-MIB::ifName.3 = STRING: A3
+                    #
+                    # IF-MIB::ifDescr.1 = STRING: A1
+                    # IF-MIB::ifDescr.2 = STRING: A2
+                    # IF-MIB::ifDescr.3 = STRING: A3
+                    if iface["name"] == iface["description"]:
+                        iface["description"] = val
                 else:
                     iface[self.objstr[leaf]] = val
             ifname = iface["name"]
@@ -93,8 +104,8 @@ class Script(BaseScript):
             sub["enabled_afi"] = []
             del sub["type"]
 
-            for l in sh_ip.split("\n"):
-                match = self.rx_ip.search(l)
+            for line in sh_ip.split("\n"):
+                match = self.rx_ip.search(line)
                 if match:
                     if match.group("name") == sub["name"]:
                         sub["enabled_afi"] += ["IPv4"]
