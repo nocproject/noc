@@ -13,5 +13,5 @@
 - name: start Redpanda
   systemd:
     name: redpanda
-    enabled: yes
+    enabled: true
     state: started
