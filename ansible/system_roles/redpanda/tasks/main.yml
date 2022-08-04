@@ -4,3 +4,14 @@
   tags:
     - requirements
     - config
+
+- name: Redpanda config
+  import_tasks: config.yml
+  tags:
+    - config
+
+- name: start Redpanda
+  systemd:
+    name: redpanda
+    enabled: yes
+    state: started

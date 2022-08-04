@@ -1,0 +1,53 @@
+---
+- name: Combine variables for config
+  set_fact:
+    config_file: "{{ redpanda_config_path }}/liftbridge.yml"
+    pandaproxy: {}
+    redpanda:
+      admin:
+        address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+        port: 9644
+      data_directory: /var/lib/redpanda/data
+      developer_mode: true
+      kafka_api:
+        - address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+          port: 9092
+      node_id: 2
+      rpc_server:
+        address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+        port: 33145
+      seed_servers:
+        - host:
+            address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+            port: 33145
+    rpk:
+      additional_start_flags:
+        - --memory=1G
+      coredump_dir: /var/lib/redpanda/coredump
+      enable_memory_locking: false
+      enable_usage_stats: false
+      overprovisioned: false
+      tune_aio_events: false
+      tune_ballast_file: false
+      tune_clocksource: false
+      tune_coredump: false
+      tune_cpu: false
+      tune_disk_irq: false
+      tune_disk_nomerges: false
+      tune_disk_scheduler: false
+      tune_disk_write_cache: false
+      tune_fstrim: false
+      tune_network: false
+      tune_swappiness: false
+      tune_transparent_hugepages: false
+    schema_registry: { }
+  when: groups['svc-redpanda-exec'] | length == 1
+
+- name: Place redpanda config
+  copy:
+    content: "{{ config | to_nice_yaml }}"
+    dest: "{{ redpanda_config_path }}/redpanda.yml"
+    owner: "{{ redpanda_user }}"
+    group: "{{ redpanda_group }}"
+  tags:
+    - config
