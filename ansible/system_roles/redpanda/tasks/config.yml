@@ -5,20 +5,20 @@
     pandaproxy: {}
     redpanda:
       admin:
-        address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+        address: "{{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }}"
         port: 9644
       data_directory: /var/lib/redpanda/data
       developer_mode: true
       kafka_api:
-        - address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+        - address: "{{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }}"
           port: 9092
       node_id: 2
       rpc_server:
-        address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+        address: "{{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }}"
         port: 33145
       seed_servers:
         - host:
-            address: "{{ hostvars[host]['ansible_facts']['ens192']['ipv4']['address'] }}"
+            address: "{{ hostvars[host]['ansible_facts']['eth0']['ipv4']['address'] }}"
             port: 33145
     rpk:
       additional_start_flags:
