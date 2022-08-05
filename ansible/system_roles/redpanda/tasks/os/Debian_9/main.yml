@@ -1,16 +1,33 @@
 ---
+- name: Get Redpanda Key from remote server
+  get_url:
+    url: "https://packages.vectorized.io/nzc4ZYQK3WRGd9sy/redpanda/gpg.988A7B0A4918BC85.key"
+    dest: "/tmp/gpg.988A7B0A4918BC85.key"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: Add key to repo redpanda
+  apt_key:
+    file: "/tmp/gpg.988A7B0A4918BC85.key"
+    state: present
+
 - name: add the redpanda repo
-  shell: |
-    curl -1sLf https://packages.vectorized.io/sMIXnoa7DK12JW4A/redpanda/cfg/setup/bash.deb.sh | sudo -E bash
-  args:
-    warn: false
+  apt_repository:
+    repo: deb https://packages.vectorized.io/sMIXnoa7DK12JW4A/redpanda/deb/ubuntu focal main
+    state: present
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: install redpanda from repository
-  package:
-    name:
-      - redpanda
+  apt:
+    name: redpanda
     state: present
     update_cache: true
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: set data dir file perms
   file:
