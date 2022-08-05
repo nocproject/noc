@@ -1,7 +1,7 @@
 ---
 - name: Combine variables for config
   set_fact:
-    config_file: "{{ redpanda_config_path }}/liftbridge.yml"
+    config_file: "{{ redpanda_config_path }}/redpanda.yml"
     pandaproxy: {}
     redpanda:
       admin:
