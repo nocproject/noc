@@ -31,7 +31,7 @@
 
 - name: add repo libssl1.1
   apt_repository:
-    repo: "deb http://ftp.de.debian.org/debian sid main"
+    repo: "deb http://security.ubuntu.com/ubuntu focal-security main"
     state: present
     update_cache: "True"
   environment:
