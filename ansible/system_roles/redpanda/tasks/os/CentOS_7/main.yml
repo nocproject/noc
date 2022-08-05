@@ -1,19 +1,20 @@
 ---
-- name: Get Redpanda Key from remote server
-  get_url:
-    url: "https://packages.vectorized.io/nzc4ZYQK3WRGd9sy/redpanda/gpg.988A7B0A4918BC85.key"
-    dest: "/tmp/gpg.988A7B0A4918BC85.key"
-  environment:
-    https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ http_proxy }}"
+#- name: Get Redpanda Key from remote server
+#  get_url:
+#    url: "https://packages.vectorized.io/nzc4ZYQK3WRGd9sy/redpanda/gpg.988A7B0A4918BC85.key"
+#    dest: "/tmp/gpg.988A7B0A4918BC85.key"
+#  environment:
+#    https_proxy: "{{ http_proxy }}"
+#    http_proxy: "{{ http_proxy }}"
 
-- name: Add key to repo redpanda
-  yum_key:
-    file: "/tmp/gpg.988A7B0A4918BC85.key"
-    state: present
+#- name: Add key to repo redpanda
+#  yum_key:
+#    file: "/tmp/gpg.988A7B0A4918BC85.key"
+#    state: present
 
 - name: add the redpanda repo
   yum_repository:
+    gpgkey: "https://packages.vectorized.io/nzc4ZYQK3WRGd9sy/redpanda/gpg.988A7B0A4918BC85.key"
     baseurl: https://packages.vectorized.io/nzc4ZYQK3WRGd9sy/redpanda/rpm/el/7/$basearch
     state: present
   environment:
