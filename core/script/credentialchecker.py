@@ -148,7 +148,6 @@ class CredentialChecker(object):
         logger=None,
         profile: Optional[str] = None,
         calling_service: str = "credentialchecker",
-        # protocols: Optional[List[int]] = None,
     ):
         self.address = address
         self.pool = pool
@@ -160,13 +159,10 @@ class CredentialChecker(object):
         self.profile: Optional["Profile"] = profile
         if isinstance(self.profile, str):
             self.profile = Profile.get_by_name(profile) if profile else None
-        # self.protocols: Optional[List[Protocol]] = protocols
         self.ignoring_cli = False
         if self.profile is None or self.profile.is_generic:
             self.logger.error("CLI Access for Generic profile is not supported. Ignoring")
             self.ignoring_cli = True
-        # Unsupported Error Proto
-        self.refused_proto: Set[Protocol] = set()
         # Credential
         self.auth_profiles: Set[AuthProfile] = set()
         self.result: List[SuggestResult] = []
@@ -355,9 +351,10 @@ class CredentialChecker(object):
         if self.ignoring_cli:
             return
         protocols = []
+        refused_proto: Set[Protocol] = set()
         for suggest in self.iter_suggests(SUGGEST_CLI):
             for proto in suggest.protocols:
-                if proto in self.refused_proto:
+                if proto in refused_proto:
                     continue
                 result, message = self.check_login(
                     suggest.user, suggest.password, suggest.super_password, protocol=proto
@@ -365,7 +362,7 @@ class CredentialChecker(object):
                 if result:
                     protocols.append(ProtocolResult(protocol=proto, status=True))
                 elif self.is_unsupported_error(message):
-                    self.refused_proto.add(proto)
+                    refused_proto.add(proto)
                     protocols.append(ProtocolResult(protocol=proto, status=False, error=message))
             if protocols:
                 self.result.append(

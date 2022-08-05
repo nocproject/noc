@@ -45,8 +45,10 @@ class DiagnosticCheck(DiscoveryCheck):
                 self.CHECK_MAP[c] = self.CHECKERS[checker].name
 
     def handler(self):
+        # Loading checkers
         self.load_checkers()
         # checks: List[CheckResult] = []
+        bulk = []
         # Processed Check
         for dc in self.object.iter_diagnostic_configs():
             if not dc.checks or dc.blocked:
@@ -79,11 +81,12 @@ class DiagnosticCheck(DiscoveryCheck):
                     CheckStatus(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
                     for cr in checks
                 ],
-                saved=False
+                bulk=bulk,
             )
-        self.object.save_diagnostics(self.object.id, self.object.diagnostics)
-        # self.logger.info("Result: %s", checks)
-        # self.object.update_diagnostics()  # ? All ?
+        if bulk:
+            self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
+            self.object.save_diagnostics(self.object.id, bulk)
+        #
         # Fire workflow event diagnostic ?
 
     def do_check(self, checks: List[Check]) -> List[CheckResult]:

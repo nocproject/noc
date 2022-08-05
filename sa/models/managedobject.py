@@ -999,9 +999,11 @@ class ManagedObject(NOCModel):
             from noc.inv.models.discoveryid import DiscoveryID
 
             DiscoveryID.clean_for_object(self)
-        # Set Diagnostics
+        # Update configured state on diagnostics
         if diagnostics:
+            # Reset changed diagnostic
             self.reset_diagnostic(diagnostics)
+            # Update complex diagnostics
             self.update_diagnostics()
 
     def on_delete(self):
@@ -2301,14 +2303,20 @@ class ManagedObject(NOCModel):
         }
 
     def set_diagnostic_state(
-        self, diagnostic: str, state: bool, reason: Optional[str] = None, saved: bool = True
+        self,
+        diagnostic: str,
+        state: bool,
+        reason: Optional[str] = None,
+        changed_ts: Optional[datetime.datetime] = None,
+        bulk: Optional[List[DiagnosticItem]] = None,
     ):
         """
-        Set diagnostic state
-        :param diagnostic:
-        :param state:
-        :param reason:
-        :param saved:
+        Set diagnostic ok/fail state
+        :param diagnostic: Diagnotic Name
+        :param state: True - Enabled; False - Failed
+        :param reason: Reason state changed
+        :param changed_ts: Timestamp changed
+        :param bulk: Return changed diagnostic without saved
         :return:
         """
         state = DIAGNOSTIC_CHECK_STATE[state]
@@ -2320,12 +2328,15 @@ class ManagedObject(NOCModel):
         if d.state.is_blocked or d.state == state:
             return
         logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
+        changed = changed_ts or datetime.datetime.now()
         d.state = state
         d.reason = reason
-        d.changed = datetime.datetime.now().isoformat(sep=" ")
+        d.changed = changed.isoformat(sep=" ")
         self.diagnostics[diagnostic] = d.dict()
-        if saved:
-            self.save_diagnostics(self.id, {diagnostic: d})
+        if bulk is not None:
+            bulk += [d]
+        else:
+            self.save_diagnostics(self.id, [d])
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2392,20 +2403,22 @@ class ManagedObject(NOCModel):
         )
         #
 
-    def update_diagnostics(self, checks: List[CheckStatus] = None, saved=True):  # Update on save
+    def update_diagnostics(
+        self, checks: List[CheckStatus] = None, bulk: Optional[List[DiagnosticItem]] = None
+    ):
         """
         Update diagnostics by Checks Result ?Source - discovery/manual
 
         If dependent and checks set -  checks dependent first
         :param checks: List check status
-        :param saved: Save changes to database
+        :param bulk: Return changed diagnostic without saved
         :return:
         """
         now = datetime.datetime.now()
         checks = checks or []
         diagnostics: Dict[str, DiagnosticItem] = {}
         processed = set()
-        dependency = []
+        dependency: List[DiagnosticConfig] = []
         # check_result = {c.name: c for c in checks}
         for dc in self.iter_diagnostic_configs():
             # Filter checks
@@ -2425,12 +2438,12 @@ class ManagedObject(NOCModel):
                 check_statuses = [c.status for c in dc_checks if not c.skipped]
                 # Check first
                 if check_statuses:
-                    # ANY or ALL policy appply
+                    # ANY or ALL policy apply
                     c_state = (
                         any(check_statuses) if dc.state_policy == "ANY" else all(check_statuses)
                     )
                     state = DIAGNOSTIC_CHECK_STATE[c_state]
-                # Dependent second
+                # Defer Dependent
                 if dc.dependent:
                     dependency.append(dc)
             else:
@@ -2438,7 +2451,7 @@ class ManagedObject(NOCModel):
                 continue
             # Compare state and update
             if not state or d.state == state:
-                logger.info("[%s] State is same", dc.diagnostic)
+                logger.debug("[%s] State is same", dc.diagnostic)
                 continue
             logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
             d.state = state
@@ -2450,7 +2463,7 @@ class ManagedObject(NOCModel):
         for d in set(self.diagnostics) - set(processed):
             del self.diagnostics[d]
             removed += [d]
-        # Dependency
+        # Calculate State for defer Dependent
         for dc in dependency:
             d_states = []
             for dd in dc.dependent:
@@ -2459,7 +2472,7 @@ class ManagedObject(NOCModel):
                         continue
                     d_states.append(diagnostics[dd].state)
                 elif dd in self.diagnostics:
-                    if self.diagnostics[dd]["state"] == "blocked":
+                    if self.diagnostics[dd]["state"] == DiagnosticState.blocked:
                         continue
                     d_states.append(DiagnosticState(self.diagnostics[dd]["state"]))
             if not d_states:
@@ -2481,21 +2494,23 @@ class ManagedObject(NOCModel):
         if not diagnostics and not removed:
             return
         self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
-        if saved:
-            self.save_diagnostics(self.id, diagnostics, removed)
+        if bulk is not None:
+            bulk += list(diagnostics.values())
+        else:
+            self.save_diagnostics(self.id, list(diagnostics.values()), removed)
 
     @classmethod
     def save_diagnostics(
         cls,
         mo_id: int,
-        diagnostics: Optional[Dict[str, Any]] = None,
+        diagnostics: Optional[List[DiagnosticItem]] = None,
         removed: Optional[List[str]] = None,
     ):
         """
         Update diagnostic on database
-        :param mo_id:
-        :param diagnostics:
-        :param removed:
+        :param mo_id: ManagedObject id
+        :param diagnostics: List diagnostics Item for save
+        :param removed: List diagnostic name for remove
         :return:
         """
         from django.db import connection as pg_connection
@@ -2510,7 +2525,12 @@ class ManagedObject(NOCModel):
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics || %s::jsonb
                      WHERE id = %s""",
-                    [orjson.dumps(diagnostics, default=default).decode("utf-8"), mo_id],
+                    [
+                        orjson.dumps(
+                            {d.diagnostic: d for d in diagnostics}, default=default
+                        ).decode("utf-8"),
+                        mo_id,
+                    ],
                 )
             if removed:
                 logger.debug("[%s] Removed diagnostics", list(removed))

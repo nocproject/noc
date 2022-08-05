@@ -84,6 +84,8 @@ class MODiscoveryJob(PeriodicJob):
         # Clean up all open alarms as they has been disabled
         if self.get_umbrella_settings():
             self.update_alarms(self.problems, self.umbrella_cls)
+        # Update diagnostics statuses
+        self.update_diagnostics(self.problems)
         # Write job log
         key = "discovery-%s-%s" % (self.attrs[self.ATTR_CLASS], self.attrs[self.ATTR_KEY])
         problems = {}
@@ -98,7 +100,8 @@ class MODiscoveryJob(PeriodicJob):
                 problems[p.check][path] = p.message
             else:
                 # p["path"] == ""
-                problems[p.check][path] += "; %s" % p.message
+                problems[p.check][path] += f"; {p.message}"
+
         get_db()["noc.joblog"].update(
             {"_id": key},
             {
@@ -133,7 +136,14 @@ class MODiscoveryJob(PeriodicJob):
         self.check_timings += [(name, perf_counter() - t)]
 
     def set_problem(
-        self, check=None, alarm_class=None, path=None, message=None, fatal=False, **kwargs
+        self,
+        check: Optional[str] = None,
+        alarm_class: Optional[str] = None,
+        path: Optional[List[str]] = None,
+        message: Optional[str] = None,
+        fatal: bool = False,
+        diagnostic: Optional[str] = None,
+        **kwargs,
     ):
         """
         Set discovery problem
@@ -143,6 +153,7 @@ class MODiscoveryJob(PeriodicJob):
         :param message: Text message
         :param fatal: True if problem is fatal and all following checks
             must be disabled
+        :param diagnostic: Diagnostic name affected by problem
         :param kwargs: Optional variables
         :return:
         """
@@ -161,7 +172,9 @@ class MODiscoveryJob(PeriodicJob):
                     "check": check,
                     "alarm_class": alarm_class,
                     # in MongoDB Key must be string
-                    "path": [str(path)] if path else [],
+                    # "path": [str(path)] if path else [],
+                    "labels": [],
+                    "diagnostic": diagnostic,
                     "message": message,
                     "fatal": fatal,
                     "vars": kwargs,
@@ -296,6 +309,30 @@ class MODiscoveryJob(PeriodicJob):
             umbrella_changed = True
         if umbrella and umbrella_changed:
             AlarmEscalation.watch_escalations(umbrella)
+
+    def update_diagnostics(self, problems: List[ProblemItem]):
+        """
+        Syn problems to object diagnostic statuses
+        :param problems:
+        :return:
+        """
+        self.logger.info("Updating diagnostics statuses")
+        # Get diagnostics with enabled discovery
+        discovery_diagnostics = {dc.diagnostic for dc in self.object.iter_diagnostic_configs()}
+        #
+        bulk = []
+        now = datetime.datetime.now()
+        # Processed failed diagnostics
+        for p in problems:
+            if not p.diagnostic or p.diagnostic not in discovery_diagnostics:
+                continue
+            self.object.set_diagnostic_state(
+                p.diagnostic, state=False, reason=p.message, changed_ts=now, bulk=bulk
+            )
+            discovery_diagnostics.remove(p.diagnostic)
+        # Set OK state
+        for diagnostic in discovery_diagnostics:
+            self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
 
     def update_alarms(
         self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
@@ -738,7 +775,15 @@ class DiscoveryCheck(object):
                 except ValueError as e:
                     self.logger.info("Failed to unlink: %s", e)
 
-    def set_problem(self, alarm_class=None, path=None, message=None, fatal=False, **kwargs):
+    def set_problem(
+        self,
+        alarm_class: Optional[str] = None,
+        path: Optional[List[str]] = None,
+        message: Optional[str] = None,
+        fatal: bool = False,
+        diagnostic: Optional[str] = None,
+        **kwargs,
+    ):
         """
         Set discovery problem
         :param alarm_class: Alarm class instance or name
@@ -746,14 +791,16 @@ class DiscoveryCheck(object):
         :param message: Text message
         :param fatal: True if problem is fatal and all following checks
             must be disabled
+        :param diagnostic: Diagnostic name affected by problem
         :param kwargs: Dict containing optional variables
         :return:
         """
-        self.logger.info("Set path: %s" % path)
+        self.logger.info("Set path: %s", path)
         self.job.set_problem(
             check=self.name,
             alarm_class=alarm_class,
             path=path,
+            diagnostic=diagnostic,
             message=message,
             fatal=fatal,
             **kwargs,
