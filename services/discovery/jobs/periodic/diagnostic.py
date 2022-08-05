@@ -17,10 +17,9 @@ from noc.core.checkers.base import (
     CheckResult,
     ProfileSet,
     CredentialSet,
-    MetricsSet,
 )
 from noc.core.checkers.loader import loader
-from noc.sa.models.managedobject import CheckData
+from noc.sa.models.managedobject import CheckStatus
 from noc.sa.models.profile import Profile
 
 
@@ -77,10 +76,12 @@ class DiagnosticCheck(DiscoveryCheck):
             # Update diagnostics
             self.object.update_diagnostics(
                 [
-                    CheckData(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
+                    CheckStatus(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
                     for cr in checks
                 ],
+                saved=False
             )
+        self.object.save_diagnostics(self.object.id, self.object.diagnostics)
         # self.logger.info("Result: %s", checks)
         # self.object.update_diagnostics()  # ? All ?
         # Fire workflow event diagnostic ?
@@ -155,11 +156,3 @@ class DiagnosticCheck(DiscoveryCheck):
             self.object.auth_profile = None
             self.object.save()
             self.object.update_init()
-
-    def action_set_metrics(self, data: MetricsSet):
-        """
-        Register Diagnostic Metrics
-        :param data:
-        :return:
-        """
-        self.logger.info("Register metric: %s", data)

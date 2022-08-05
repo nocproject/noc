@@ -142,7 +142,7 @@ class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
 
 
-class CheckData(BaseModel):
+class CheckStatus(BaseModel):
     name: str
     status: bool  # True - OK, False - Fail
     skipped: bool = False
@@ -152,7 +152,7 @@ class CheckData(BaseModel):
 class DiagnosticItem(BaseModel):
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckData]]
+    checks: Optional[List[CheckStatus]]
     # scope: Literal["access", "all", "discovery", "default"] = "default"
     # policy: str = "ANY
     reason: Optional[str] = None
@@ -932,10 +932,6 @@ class ManagedObject(NOCModel):
             or "address" in self.changed_fields
         ):
             diagnostics += ["SNMP"]
-        if "trap_source_type" in self.changed_fields:
-            diagnostics += ["SYSLOG"]
-        if "syslog_source_type" in self.changed_fields:
-            diagnostics += ["SNMPTRAP"]
         # Rebuild paths
         if (
             self.initial_data["id"] is None
@@ -2304,16 +2300,17 @@ class ManagedObject(NOCModel):
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
 
-    def set_diagnostic_state(self, diagnostic: str, state: bool, saved: bool = True):
+    def set_diagnostic_state(
+        self, diagnostic: str, state: bool, reason: Optional[str] = None, saved: bool = True
+    ):
         """
         Set diagnostic state
         :param diagnostic:
         :param state:
+        :param reason:
         :param saved:
         :return:
         """
-        from django.db import connection as pg_connection
-
         state = DIAGNOSTIC_CHECK_STATE[state]
         if diagnostic not in self.diagnostics:
             # logger.info("[%s] Adding diagnostic", dc.diagnostic)
@@ -2324,20 +2321,11 @@ class ManagedObject(NOCModel):
             return
         logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
         d.state = state
-        d.changed = datetime.datetime.now()
+        d.reason = reason
+        d.changed = datetime.datetime.now().isoformat(sep=" ")
         self.diagnostics[diagnostic] = d.dict()
-        if not saved:
-            return
-        with pg_connection.cursor() as cursor:
-            # Update
-            logger.debug("[%s] Saving changes: %s", diagnostic, d)
-            cursor.execute(
-                """
-                 UPDATE sa_managedobject
-                 SET diagnostics = diagnostics || %s::jsonb
-                 WHERE id = %s""",
-                [orjson.dumps({diagnostic: d}, default=default).decode("utf-8"), self.id],
-            )
+        if saved:
+            self.save_diagnostics(self.id, {diagnostic: d})
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2365,7 +2353,6 @@ class ManagedObject(NOCModel):
             check_policy="A",
             # reason="Blocked by AccessPreference" if ac == "C" else None,
         )
-        # Profile Check ?
         # CLI Diagnostic
         yield DiagnosticConfig(
             CLI_DIAG,
@@ -2405,16 +2392,15 @@ class ManagedObject(NOCModel):
         )
         #
 
-    def update_diagnostics(self, checks: List[CheckData] = None, saved=True):  # Update on save
+    def update_diagnostics(self, checks: List[CheckStatus] = None, saved=True):  # Update on save
         """
         Update diagnostics by Checks Result ?Source - discovery/manual
 
         If dependent and checks set -  checks dependent first
-        :param checks:
+        :param checks: List check status
+        :param saved: Save changes to database
         :return:
         """
-        from django.db import connection as pg_connection
-
         now = datetime.datetime.now()
         checks = checks or []
         diagnostics: Dict[str, DiagnosticItem] = {}
@@ -2460,7 +2446,7 @@ class ManagedObject(NOCModel):
             d.checks = dc_checks
             diagnostics[dc.diagnostic] = d
         # Remove
-        removed = []
+        removed: List[str] = []
         for d in set(self.diagnostics) - set(processed):
             del self.diagnostics[d]
             removed += [d]
@@ -2495,10 +2481,28 @@ class ManagedObject(NOCModel):
         if not diagnostics and not removed:
             return
         self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
-        if not saved:
+        if saved:
+            self.save_diagnostics(self.id, diagnostics, removed)
+
+    @classmethod
+    def save_diagnostics(
+        cls,
+        mo_id: int,
+        diagnostics: Optional[Dict[str, Any]] = None,
+        removed: Optional[List[str]] = None,
+    ):
+        """
+        Update diagnostic on database
+        :param mo_id:
+        :param diagnostics:
+        :param removed:
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        if not diagnostics and not removed:
             return
         with pg_connection.cursor() as cursor:
-            # Update
             if diagnostics:
                 logger.debug("[%s] Saving changes", list(diagnostics))
                 cursor.execute(
@@ -2506,7 +2510,7 @@ class ManagedObject(NOCModel):
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics || %s::jsonb
                      WHERE id = %s""",
-                    [orjson.dumps(diagnostics, default=default).decode("utf-8"), self.id],
+                    [orjson.dumps(diagnostics, default=default).decode("utf-8"), mo_id],
                 )
             if removed:
                 logger.debug("[%s] Removed diagnostics", list(removed))
@@ -2515,9 +2519,9 @@ class ManagedObject(NOCModel):
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics {" #- %s " * len(removed)}
                      WHERE id = %s""",
-                    ["{%s}" % r for r in removed] + [self.id],
+                    ["{%s}" % r for r in removed] + [mo_id],
                 )
-        self._reset_caches(self.id)
+        cls._reset_caches(mo_id)
 
     def get_diagnostic(self, diagnostic) -> Optional[DiagnosticItem]:
         if diagnostic not in self.diagnostics:
