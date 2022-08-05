@@ -55,7 +55,7 @@ class Script(BaseScript):
         version = self.scripts.get_version()
         if slots > 1:
             if version["platform"] not in ["IES-2000", "IES-2000M", "IES-3000", "IES-3000M"]:
-                for i in range(1, slots+1):
+                for i in range(1, slots + 1):
                     match = self.rx_slot.search(self.cli("lcman show %s" % i))
                     if match:
                         part_no = match.group("part_no")
