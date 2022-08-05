@@ -2377,7 +2377,7 @@ class ManagedObject(NOCModel):
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             SNMPTRAP_DIAG,
-            display_description="Register One SNMP Trap on device",
+            display_description="Received SNMP Trap from device",
             blocked=self.trap_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.trap_source_type != "d" else "",
@@ -2385,7 +2385,7 @@ class ManagedObject(NOCModel):
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             SYSLOG_DIAG,
-            display_description="Register One Syslog on device",
+            display_description="Received SYSLOG from device",
             blocked=self.syslog_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.syslog_source_type != "d" else "",

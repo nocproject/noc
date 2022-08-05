@@ -183,17 +183,3 @@ class CfgTrapDataStream(DataStream):
     @classmethod
     def filter_pool(cls, name):
         return {f"{cls.F_META}.pool": name}
-
-    @classmethod
-    def update_diagnostic_state(cls, obj_id, state: DiagnosticState, reason: Optional[str] = None):
-        if state == DiagnosticState.blocked and not reason:
-            return
-        mo = ManagedObject.objects.filter(id=obj_id).values("diagnostics").first()
-        if cls.DIAGNOSTIC in mo["diagnostics"]:
-            diagnostic = DiagnosticItem.parse_obj(mo["diagnostics"][cls.DIAGNOSTIC])
-        else:
-            diagnostic = DiagnosticItem(diagnostic=cls.DIAGNOSTIC)
-        if diagnostic.state != state:
-            diagnostic.state = state
-            diagnostic.reason = reason
-            ManagedObject.save_diagnostics(obj_id, {cls.DIAGNOSTIC: diagnostic.dict()})

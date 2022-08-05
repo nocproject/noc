@@ -261,14 +261,14 @@ class ManagedObjectApplication(ExtModelApplication):
                                 "state": {True: "OK", False: "Error"}[c["status"]],
                                 "error": c["error"],
                             }
-                            for c in d["checks"]
+                            for c in d["checks"] or []
                         ],
                         "reason": d["reason"] or "",
                     }
                     for d in o.diagnostics.values()
                     if d_config[d["diagnostic"]].show_in_display
                 ],
-                key=lambda x: d_config[x["name"]].display_order,
+                key=lambda x: d_config[x["name"]].display_order if x["name"] in d_config else 99,
             )
         )
         return data

@@ -317,7 +317,7 @@ class DataStream(object):
             data = cls.get_object(obj_id)
             meta = cls.get_meta(data)
             if cls.DIAGNOSTIC:
-                cls.update_diagnostic_state(obj_id, state=DiagnosticState.enabled)
+                cls.update_diagnostic_state(obj_id, state=DiagnosticState.unknown)
             return data, meta
         except KeyError as e:
             if cls.DIAGNOSTIC:
@@ -724,11 +724,18 @@ class DataStream(object):
 
     @classmethod
     def update_diagnostic_state(cls, obj_id, state: DiagnosticState, reason: Optional[str] = None):
-        """
-        Update Object Diagnostic for cfg stream
-        :param obj_id:
-        :param state:
-        :param reason:
-        :return:
-        """
-        ...
+        from noc.sa.models.managedobject import ManagedObject, DiagnosticItem
+
+        if state == DiagnosticState.blocked and not reason:
+            return
+        mo = ManagedObject.objects.filter(id=obj_id).values("diagnostics").first()
+        if cls.DIAGNOSTIC in mo["diagnostics"]:
+            diagnostic = DiagnosticItem.parse_obj(mo["diagnostics"][cls.DIAGNOSTIC])
+        else:
+            diagnostic = DiagnosticItem(diagnostic=cls.DIAGNOSTIC)
+        if diagnostic.state != state and state == DiagnosticState.unknown:
+            ManagedObject.save_diagnostics(obj_id, removed=[cls.DIAGNOSTIC])
+        elif diagnostic.state != state:
+            diagnostic.state = state
+            diagnostic.reason = reason
+            ManagedObject.save_diagnostics(obj_id, {cls.DIAGNOSTIC: diagnostic.dict()})
