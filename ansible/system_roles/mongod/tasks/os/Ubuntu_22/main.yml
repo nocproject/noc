@@ -58,7 +58,7 @@
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
     echo never > /sys/kernel/mm/transparent_hugepage/defrag;
     fi
-notify: restart mongod
+  notify: restart mongod
 
 - name: ReInstall MongoDB on version change
   apt:
