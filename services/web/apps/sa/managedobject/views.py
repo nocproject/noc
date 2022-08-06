@@ -246,24 +246,31 @@ class ManagedObjectApplication(ExtModelApplication):
         # Expand resource groups fields
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
-        data["diagnostics"] = [
-            {
-                "name": d["diagnostic"][:6],
-                "description": "XXX",
-                "state": d["state"],
-                "state__label": d["state"],
-                "details": [
+        d_config = {d.diagnostic: d for d in o.iter_diagnostic_configs()}
+        data["diagnostics"] = list(
+            sorted(
+                [
                     {
-                        "name": c["name"],
-                        "state": {True: "OK", False: "Error"}[c["status"]],
-                        "error": c["error"],
+                        "name": d["diagnostic"][:6],
+                        "description": d_config[d["diagnostic"]].display_description,
+                        "state": d["state"],
+                        "state__label": d["state"],
+                        "details": [
+                            {
+                                "name": c["name"],
+                                "state": {True: "OK", False: "Error"}[c["status"]],
+                                "error": c["error"],
+                            }
+                            for c in d["checks"] or []
+                        ],
+                        "reason": d["reason"] or "",
                     }
-                    for c in d["checks"]
+                    for d in o.diagnostics.values()
+                    if d_config[d["diagnostic"]].show_in_display
                 ],
-                "reason": d["reason"] or "",
-            }
-            for d in o.diagnostics.values()
-        ]
+                key=lambda x: d_config[x["name"]].display_order if x["name"] in d_config else 99,
+            )
+        )
         return data
 
     def clean(self, data):

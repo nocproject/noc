@@ -7,6 +7,7 @@
 
 # NOC modules
 from noc.core.datastream.base import DataStream
+from noc.core.wf.diagnostic import SNMPTRAP_DIAG
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
@@ -15,6 +16,7 @@ from noc.sa.models.managedobject import ManagedObject
 
 class CfgTrapDataStream(DataStream):
     name = "cfgtrap"
+    DIAGNOSTIC = SNMPTRAP_DIAG
     clean_id = DataStream.clean_id_int
 
     @classmethod
@@ -76,7 +78,7 @@ class CfgTrapDataStream(DataStream):
             or str(event_processing_policy) == "D"
             or str(trap_source_type) == "d"
         ):
-            raise KeyError()
+            raise KeyError("Disabled by trap source ManagedObject")
         # Process trap sources
         pool = str(Pool.get_by_id(pool).name)
         r = {
@@ -122,14 +124,14 @@ class CfgTrapDataStream(DataStream):
             # Loopback address
             r["addresses"] = cls._get_loopback_addresses(mo_id)
             if not r["addresses"]:
-                raise KeyError()
+                raise KeyError("No Loopback interface with address")
         elif trap_source_type == "a":
             # All interface addresses
             r["addresses"] = cls._get_all_addresses(mo_id)
             if not r["addresses"]:
-                raise KeyError()
+                raise KeyError("No interfaces with IP")
         else:
-            raise KeyError()
+            raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
         return r
 
     @classmethod
@@ -177,4 +179,4 @@ class CfgTrapDataStream(DataStream):
 
     @classmethod
     def filter_pool(cls, name):
-        return {"%s.pool" % cls.F_META: name}
+        return {f"{cls.F_META}.pool": name}

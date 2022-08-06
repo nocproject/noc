@@ -19,6 +19,7 @@ class ProblemItem(object):
     path: List[str] = field(default_factory=list)
     labels: List[str] = field(default_factory=list)
     fatal: bool = False
+    diagnostic: Optional[str] = None
     vars: Dict[str, Any] = field(default_factory=dict)
     code: Optional[str] = None
     check: Optional[str] = None

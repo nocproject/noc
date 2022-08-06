@@ -40,7 +40,17 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticConfig, DIAGNOSTIC_CHECK_STATE
+from noc.core.wf.diagnostic import (
+    DiagnosticState,
+    DiagnosticConfig,
+    DIAGNOSTIC_CHECK_STATE,
+    PROFILE_DIAG,
+    SNMP_DIAG,
+    CLI_DIAG,
+    SNMPTRAP_DIAG,
+    SYSLOG_DIAG,
+    HTTP_DIAG,
+)
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -76,7 +86,13 @@ from noc.core.scheduler.job import Job
 from noc.main.models.handler import Handler
 from noc.core.handler import get_handler
 from noc.core.script.loader import loader as script_loader
-from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
+from noc.core.model.decorator import (
+    on_save,
+    on_init,
+    on_delete,
+    on_delete_check,
+    _get_field_snapshot,
+)
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
@@ -126,7 +142,7 @@ class CapsItems(BaseModel):
     __root__: List[ModelCapsItem]
 
 
-class CheckResult(BaseModel):
+class CheckStatus(BaseModel):
     name: str
     status: bool  # True - OK, False - Fail
     skipped: bool = False
@@ -136,7 +152,7 @@ class CheckResult(BaseModel):
 class DiagnosticItem(BaseModel):
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckResult]]
+    checks: Optional[List[CheckStatus]]
     # scope: Literal["access", "all", "discovery", "default"] = "default"
     # policy: str = "ANY
     reason: Optional[str] = None
@@ -667,6 +683,21 @@ class ManagedObject(NOCModel):
         "affected_maintenances",
         "diagnostics",
     )
+    # Access affected fields
+    _access_fields = {
+        "scheme",
+        "address",
+        "port",
+        "auth_profile",
+        "object_profile",
+        "user",
+        "password",
+        "super_password",
+        "snmp_ro",
+        "snmp_rw",
+        "access_preference",
+        "cli_privilege_policy",
+    }
 
     def __str__(self):
         return self.name
@@ -860,6 +891,7 @@ class ManagedObject(NOCModel):
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = ["managedobject-name-to-id-%s" % self.name]
+        diagnostics = []
         # Notify new object
         if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
@@ -879,27 +911,27 @@ class ManagedObject(NOCModel):
         # Invalidate credentials cache
         if (
             self.initial_data["id"] is None
-            or "scheme" in self.changed_fields
-            or "address" in self.changed_fields
-            or "port" in self.changed_fields
-            or "auth_profile" in self.changed_fields
-            or "object_profile" in self.changed_fields
-            or "user" in self.changed_fields
-            or "password" in self.changed_fields
-            or "super_password" in self.changed_fields
-            or "snmp_ro" in self.changed_fields
-            or "snmp_rw" in self.changed_fields
+            or self._access_fields.intersection(set(self.changed_fields))
             or "profile" in self.changed_fields
             or "vendor" in self.changed_fields
             or "platform" in self.changed_fields
             or "version" in self.changed_fields
             or "pool" in self.changed_fields
-            or "access_preference" in self.changed_fields
-            or "cli_privilege_policy" in self.changed_fields
             or "remote_path" in self.changed_fields
             or "snmp_rate_limit" in self.changed_fields
         ):
             cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
+        if self.initial_data["id"] is None or self._access_fields.intersection(
+            set(self.changed_fields)
+        ):
+            diagnostics += ["CLI", "Access"]
+        if (
+            "auth_profile" in self.changed_fields
+            or "snmp_ro" in self.changed_fields
+            or "snmp_rw" in self.changed_fields
+            or "address" in self.changed_fields
+        ):
+            diagnostics += ["SNMP"]
         # Rebuild paths
         if (
             self.initial_data["id"] is None
@@ -967,6 +999,12 @@ class ManagedObject(NOCModel):
             from noc.inv.models.discoveryid import DiscoveryID
 
             DiscoveryID.clean_for_object(self)
+        # Update configured state on diagnostics
+        if diagnostics:
+            # Reset changed diagnostic
+            self.reset_diagnostic(diagnostics)
+            # Update complex diagnostics
+            self.update_diagnostics()
 
     def on_delete(self):
         # Reset discovery cache
@@ -2110,9 +2148,10 @@ class ManagedObject(NOCModel):
             # Interface = 39.4 µs
             yield ["noc::is_linked::="]
         if instance.diagnostics:
-            for d in instance.diagnostics.values():
+            for d in instance.diagnostics:
+                d = instance.get_diagnostic(d)
                 yield Label.ensure_labels(
-                    [f'funcs::{d["diagnostic"]}::{d["state"]}'], enable_managedobject=True
+                    [f"funcs::{d.diagnostic}::{d.state}"], enable_managedobject=True
                 )
 
     @classmethod
@@ -2263,15 +2302,23 @@ class ManagedObject(NOCModel):
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
 
-    def set_diagnostic_state(self, diagnostic: str, state: bool):
+    def set_diagnostic_state(
+        self,
+        diagnostic: str,
+        state: bool,
+        reason: Optional[str] = None,
+        changed_ts: Optional[datetime.datetime] = None,
+        bulk: Optional[List[DiagnosticItem]] = None,
+    ):
         """
-        Set diagnostic state
-        :param diagnostic:
-        :param state:
+        Set diagnostic ok/fail state
+        :param diagnostic: Diagnotic Name
+        :param state: True - Enabled; False - Failed
+        :param reason: Reason state changed
+        :param changed_ts: Timestamp changed
+        :param bulk: Return changed diagnostic without saved
         :return:
         """
-        from django.db import connection as pg_connection
-
         state = DIAGNOSTIC_CHECK_STATE[state]
         if diagnostic not in self.diagnostics:
             # logger.info("[%s] Adding diagnostic", dc.diagnostic)
@@ -2281,19 +2328,15 @@ class ManagedObject(NOCModel):
         if d.state.is_blocked or d.state == state:
             return
         logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
+        changed = changed_ts or datetime.datetime.now()
         d.state = state
-        d.changed = datetime.datetime.now()
-        self.diagnostics[diagnostic] = d
-        with pg_connection.cursor() as cursor:
-            # Update
-            logger.debug("[%s] Saving changes: %s", diagnostic, d)
-            cursor.execute(
-                """
-                 UPDATE sa_managedobject
-                 SET diagnostics = diagnostics || %s::jsonb
-                 WHERE id = %s""",
-                [orjson.dumps({diagnostic: d}, default=default).decode("utf-8"), self.id],
-            )
+        d.reason = reason
+        d.changed = changed.isoformat(sep=" ")
+        self.diagnostics[diagnostic] = d.dict()
+        if bulk is not None:
+            bulk += [d]
+        else:
+            self.save_diagnostics(self.id, [d])
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2305,17 +2348,25 @@ class ManagedObject(NOCModel):
         ac = self.get_access_preference()
         # SNMP Diagnostic
         yield DiagnosticConfig(
-            "SNMP",
+            SNMP_DIAG,
             display_description="Check Device response by SNMP request",
-            checks=["SNMPv1", "SNMPv2"],
+            checks=["SNMPv1", "SNMPv2c"],
             blocked=ac == "C",
             check_policy="F",
             reason="Blocked by AccessPreference" if ac == "C" else None,
         )
-        # Profile Check ?
+        yield DiagnosticConfig(
+            PROFILE_DIAG,
+            display_description="Check device profile",
+            show_in_display=False,
+            checks=["PROFILE"],
+            blocked=not self.object_profile.enable_box_discovery_profile,
+            check_policy="A",
+            # reason="Blocked by AccessPreference" if ac == "C" else None,
+        )
         # CLI Diagnostic
         yield DiagnosticConfig(
-            "CLI",
+            CLI_DIAG,
             display_description="Check Device response by CLI (TELNET/SSH) request",
             checks=["TELNET", "SSH"],
             blocked=ac == "S",
@@ -2324,7 +2375,7 @@ class ManagedObject(NOCModel):
         )
         # HTTP Diagnostic
         yield DiagnosticConfig(
-            "HTTP",
+            HTTP_DIAG,
             display_description="Check Device response by HTTP/HTTPS request",
             show_in_display=False,
             checks=["HTTP", "HTTPS"],
@@ -2336,37 +2387,38 @@ class ManagedObject(NOCModel):
         # FM
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
-            "SNMPTRAP",
-            display_description="Register One SNMP Trap on device",
+            SNMPTRAP_DIAG,
+            display_description="Received SNMP Trap from device",
             blocked=self.trap_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.trap_source_type != "d" else "",
         )
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
-            "SYSLOG",
-            display_description="Register One Syslog on device",
+            SYSLOG_DIAG,
+            display_description="Received SYSLOG from device",
             blocked=self.syslog_source_type != "d",
             check_policy="D",
             reason="Disable by source settings" if self.syslog_source_type != "d" else "",
         )
         #
 
-    def update_diagnostics(self, checks: List[CheckResult] = None):
+    def update_diagnostics(
+        self, checks: List[CheckStatus] = None, bulk: Optional[List[DiagnosticItem]] = None
+    ):
         """
         Update diagnostics by Checks Result ?Source - discovery/manual
 
         If dependent and checks set -  checks dependent first
-        :param checks:
+        :param checks: List check status
+        :param bulk: Return changed diagnostic without saved
         :return:
         """
-        from django.db import connection as pg_connection
-
         now = datetime.datetime.now()
         checks = checks or []
         diagnostics: Dict[str, DiagnosticItem] = {}
         processed = set()
-        dependency = []
+        dependency: List[DiagnosticConfig] = []
         # check_result = {c.name: c for c in checks}
         for dc in self.iter_diagnostic_configs():
             # Filter checks
@@ -2386,32 +2438,32 @@ class ManagedObject(NOCModel):
                 check_statuses = [c.status for c in dc_checks if not c.skipped]
                 # Check first
                 if check_statuses:
-                    # ANY or ALL policy appply
+                    # ANY or ALL policy apply
                     c_state = (
                         any(check_statuses) if dc.state_policy == "ANY" else all(check_statuses)
                     )
                     state = DIAGNOSTIC_CHECK_STATE[c_state]
-                # Dependent second
+                # Defer Dependent
                 if dc.dependent:
                     dependency.append(dc)
             else:
-                logger.info("[%s] Not calculate state. Skipping", dc.diagnostic)
+                logger.debug("[%s] Not calculate state. Skipping", dc.diagnostic)
                 continue
             # Compare state and update
             if not state or d.state == state:
-                logger.info("[%s] State is same", dc.diagnostic)
+                logger.debug("[%s] State is same", dc.diagnostic)
                 continue
             logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
             d.state = state
-            d.changed = now
+            d.changed = now.isoformat(sep=" ")
             d.checks = dc_checks
             diagnostics[dc.diagnostic] = d
         # Remove
-        removed = []
+        removed: List[str] = []
         for d in set(self.diagnostics) - set(processed):
             del self.diagnostics[d]
             removed += [d]
-        # Dependency
+        # Calculate State for defer Dependent
         for dc in dependency:
             d_states = []
             for dd in dc.dependent:
@@ -2420,7 +2472,7 @@ class ManagedObject(NOCModel):
                         continue
                     d_states.append(diagnostics[dd].state)
                 elif dd in self.diagnostics:
-                    if self.diagnostics[dd]["state"] == "blocked":
+                    if self.diagnostics[dd]["state"] == DiagnosticState.blocked:
                         continue
                     d_states.append(DiagnosticState(self.diagnostics[dd]["state"]))
             if not d_states:
@@ -2441,9 +2493,31 @@ class ManagedObject(NOCModel):
         # Update
         if not diagnostics and not removed:
             return
-        self.diagnostics.update(diagnostics)
+        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
+        if bulk is not None:
+            bulk += list(diagnostics.values())
+        else:
+            self.save_diagnostics(self.id, list(diagnostics.values()), removed)
+
+    @classmethod
+    def save_diagnostics(
+        cls,
+        mo_id: int,
+        diagnostics: Optional[List[DiagnosticItem]] = None,
+        removed: Optional[List[str]] = None,
+    ):
+        """
+        Update diagnostic on database
+        :param mo_id: ManagedObject id
+        :param diagnostics: List diagnostics Item for save
+        :param removed: List diagnostic name for remove
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        if not diagnostics and not removed:
+            return
         with pg_connection.cursor() as cursor:
-            # Update
             if diagnostics:
                 logger.debug("[%s] Saving changes", list(diagnostics))
                 cursor.execute(
@@ -2451,7 +2525,12 @@ class ManagedObject(NOCModel):
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics || %s::jsonb
                      WHERE id = %s""",
-                    [orjson.dumps(diagnostics, default=default).decode("utf-8"), self.id],
+                    [
+                        orjson.dumps(
+                            {d.diagnostic: d for d in diagnostics}, default=default
+                        ).decode("utf-8"),
+                        mo_id,
+                    ],
                 )
             if removed:
                 logger.debug("[%s] Removed diagnostics", list(removed))
@@ -2460,9 +2539,49 @@ class ManagedObject(NOCModel):
                      UPDATE sa_managedobject
                      SET diagnostics = diagnostics {" #- %s " * len(removed)}
                      WHERE id = %s""",
+                    ["{%s}" % r for r in removed] + [mo_id],
+                )
+        cls._reset_caches(mo_id)
+
+    def get_diagnostic(self, diagnostic) -> Optional[DiagnosticItem]:
+        if diagnostic not in self.diagnostics:
+            return
+        if isinstance(self.diagnostics[diagnostic], DiagnosticItem):
+            return self.diagnostics[diagnostic]
+        return DiagnosticItem.parse_obj(self.diagnostics[diagnostic])
+
+    def reset_diagnostic(self, diagnostics: List[str]):
+        """
+
+        :param diagnostics:
+        :return:
+        """
+        from django.db import connection as pg_connection
+
+        removed = []
+        for d in diagnostics:
+            if d in self.diagnostics:
+                del self.diagnostics[d]
+                removed.append(d)
+        # If Failed state - clear alarm
+        if removed:
+            logger.debug("[%s] Removed diagnostics", list(removed))
+            with pg_connection.cursor() as cursor:
+                cursor.execute(
+                    f"""
+                     UPDATE sa_managedobject
+                     SET diagnostics = diagnostics {" #- %s " * len(removed)}
+                     WHERE id = %s""",
                     ["{%s}" % r for r in removed] + [self.id],
                 )
         self._reset_caches(self.id)
+
+    def update_init(self):
+        """
+        Update initial_data field
+        :return:
+        """
+        self.initial_data = _get_field_snapshot(self.__class__, self)
 
 
 @on_save

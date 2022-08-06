@@ -95,7 +95,12 @@ class ActivatorAPI(API):
 
     @api
     async def snmp_v1_get(
-        self, address: str, community: str, oid: str, timeout: Optional[int] = None
+        self,
+        address: str,
+        community: str,
+        oid: str,
+        timeout: Optional[int] = 10,
+        return_error: bool = False,
     ):
         """
         Perform SNMP v1 GET and return result
@@ -103,9 +108,11 @@ class ActivatorAPI(API):
         :param community: SNMP v2c community
         :param oid: Resolved oid
         :param timeout: Timeout request
+        :param return_error:
         :returns: Result as a string, or None, when no response
         """
         self.logger.debug("SNMP v1 GET %s %s", address, oid)
+        message = ""
         try:
             result = await snmp_get(
                 address=address,
@@ -119,11 +126,13 @@ class ActivatorAPI(API):
             self.logger.debug("SNMP GET %s %s returns %s", address, oid, result)
         except SNMPError as e:
             metrics["error", ("type", "snmp_v1_error")] += 1
-            result = None
+            result, message = None, str(e)
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
         except Exception as e:
-            result = None
+            result, message = None, str(e)
             self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oid, e)
+        if return_error:
+            return result, message
         return result
 
     @staticmethod
@@ -132,7 +141,12 @@ class ActivatorAPI(API):
 
     @api
     async def snmp_v2c_get(
-        self, address: str, community: str, oid: str, timeout: Optional[int] = None
+        self,
+        address: str,
+        community: str,
+        oid: str,
+        timeout: Optional[int] = 10,
+        return_error: bool = False,
     ):
         """
         Perform SNMP v2c GET and return result
@@ -140,9 +154,11 @@ class ActivatorAPI(API):
         :param community: SNMP v2c community
         :param oid: Resolved oid
         :param timeout: Timeout request
+        :param return_error:
         :returns: Result as a string, or None, when no response
         """
         self.logger.debug("SNMP v2c GET %s %s", address, oid)
+        message = ""
         try:
             result = await snmp_get(
                 address=address,
@@ -156,11 +172,13 @@ class ActivatorAPI(API):
             result = smart_text(result, errors="replace") if result else result
         except SNMPError as e:
             metrics["error", ("type", "snmp_v2_error")] += 1
-            result = None
+            result, message = None, str(e)
             self.logger.debug("SNMP GET %s %s returns error %s", address, oid, e)
         except Exception as e:
-            result = None
+            result, message = None, str(e)
             self.logger.debug("SNMP GET %s %s returns unknown error %s", address, oid, e)
+        if return_error:
+            return result, message
         return result
 
     @staticmethod

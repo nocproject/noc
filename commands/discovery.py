@@ -67,7 +67,15 @@ class Command(BaseCommand):
             "metrics",
             "alarms",
         ],
-        "periodic": ["uptime", "interfacestatus", "mac", "metrics", "cpestatus", "alarms"],
+        "periodic": [
+            "uptime",
+            "interfacestatus",
+            "mac",
+            "metrics",
+            "cpestatus",
+            "alarms",
+            "diagnostic",
+        ],
         "segment": ["mac"],
     }
 
