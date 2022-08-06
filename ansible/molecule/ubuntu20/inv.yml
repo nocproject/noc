@@ -96,6 +96,7 @@ all:
           has_svc_pgbouncer: true
           has_svc_ping: true
           has_svc_postgres: true
+          has_svc_redpanda: true
           has_svc_sae: true
           has_svc_scheduler: true
           has_svc_syslogcollector: true

@@ -1,0 +1,5 @@
+---
+galaxy_info:
+  author: Yuriy Degtyarev
+  description: Redpanda cluster role
+  license: BSD
