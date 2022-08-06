@@ -1,0 +1,17 @@
+---
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}_{{ ansible_distribution_major_version }}/main.yml"
+  tags:
+    - requirements
+    - config
+
+- name: Redpanda config
+  import_tasks: config.yml
+  tags:
+    - config
+
+- name: start Redpanda
+  systemd:
+    name: redpanda
+    enabled: true
+    state: started

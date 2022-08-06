@@ -1,0 +1,27 @@
+---
+forms:
+  Redpanda:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Redpanda stream service <br/>
+      <strong>Long description</strong>: Redpanda provides lightweight, fault-tolerant message streams by implementing a durable stream augmentation for the NATS messaging system
+      <strong>Scale Recommendations</strong>: At least one per system, or 3 like cluster. <br/>
+      <strong>docs</strong>: <a href=https://docs.redpanda.com/docs/deployment/production-deployment/ target=_blank>Redpanda docs</a> <br/>
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - debug
+        - info
+        - warn
+        - error
+    redpanda_insecure:
+      label: "don't check certificates"
+      type: bool
+      default: false
+services:
+  redpanda:
+    level: system
+    category: external
+    port: 9092
