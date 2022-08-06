@@ -5,16 +5,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional
-
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
-from noc.sa.models.managedobject import ManagedObject, DiagnosticItem
-from noc.core.wf.diagnostic import SYSLOG_DIAG, DiagnosticState
+from noc.sa.models.managedobject import ManagedObject
+from noc.core.wf.diagnostic import SYSLOG_DIAG
 
 
 class CfgSyslogDataStream(DataStream):

@@ -5,16 +5,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from typing import Optional
-
 # NOC modules
 from noc.core.datastream.base import DataStream
-from noc.core.wf.diagnostic import SNMPTRAP_DIAG, DiagnosticState
+from noc.core.wf.diagnostic import SNMPTRAP_DIAG
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
-from noc.sa.models.managedobject import ManagedObject, DiagnosticItem
+from noc.sa.models.managedobject import ManagedObject
 
 
 class CfgTrapDataStream(DataStream):
