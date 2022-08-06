@@ -24,6 +24,7 @@ from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
 from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
+from noc.core.checkers.loader import loader as checker_loader
 from noc.core.window import wf_choices
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.mx import MESSAGE_TYPES, MESSAGE_HEADERS
@@ -191,6 +192,18 @@ class RefAppplication(ExtApplication):
 
     def build_messageheader(self):
         return [{"id": x, "label": x} for x in sorted(MESSAGE_HEADERS)]
+
+    def build_check(self):
+        """
+        Checkers names
+        :return:
+        """
+        r = []
+        for name in checker_loader:
+            checker = checker_loader[name]
+            for check in checker.CHECKS:
+                r += [{"id": check, "label": check}]
+        return r  # list(sorted(r))
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):

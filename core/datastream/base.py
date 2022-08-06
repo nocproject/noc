@@ -27,6 +27,7 @@ from noc.core.comp import smart_text, smart_bytes
 from noc.models import get_model
 from noc.core.hash import hash_int
 from noc.core.mx import send_message, MX_CHANGE_ID
+from noc.core.wf.diagnostic import DiagnosticState
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +63,8 @@ class DataStream(object):
     BULK_SIZE = 500
 
     META_MAX_DEPTH = 3
+
+    DIAGNOSTIC: str = None
 
     _collections: Dict[str, pymongo.collection.Collection] = {}
     _collections_async: Dict[str, pymongo.collection.Collection] = {}
@@ -313,8 +316,12 @@ class DataStream(object):
         try:
             data = cls.get_object(obj_id)
             meta = cls.get_meta(data)
+            if cls.DIAGNOSTIC:
+                cls.update_diagnostic_state(obj_id, state=DiagnosticState.unknown)
             return data, meta
-        except KeyError:
+        except KeyError as e:
+            if cls.DIAGNOSTIC:
+                cls.update_diagnostic_state(obj_id, state=DiagnosticState.blocked, reason=str(e))
             return cls.get_deleted_object(obj_id), None
 
     @classmethod
@@ -714,3 +721,21 @@ class DataStream(object):
         if cls.F_ADM_DOMAIN_META in data:
             del data[cls.F_ADM_DOMAIN_META]
         return data
+
+    @classmethod
+    def update_diagnostic_state(cls, obj_id, state: DiagnosticState, reason: Optional[str] = None):
+        from noc.sa.models.managedobject import ManagedObject, DiagnosticItem
+
+        if state == DiagnosticState.blocked and not reason:
+            return
+        mo = ManagedObject.objects.filter(id=obj_id).values("diagnostics").first()
+        if cls.DIAGNOSTIC in mo["diagnostics"]:
+            diagnostic = DiagnosticItem.parse_obj(mo["diagnostics"][cls.DIAGNOSTIC])
+        else:
+            diagnostic = DiagnosticItem(diagnostic=cls.DIAGNOSTIC)
+        if diagnostic.state != state and state == DiagnosticState.unknown:
+            ManagedObject.save_diagnostics(obj_id, removed=[cls.DIAGNOSTIC])
+        elif diagnostic.state != state:
+            diagnostic.state = state
+            diagnostic.reason = reason
+            ManagedObject.save_diagnostics(obj_id, {cls.DIAGNOSTIC: diagnostic.dict()})

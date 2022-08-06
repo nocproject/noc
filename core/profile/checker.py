@@ -8,9 +8,10 @@
 # Python modules
 import logging
 import operator
-from threading import Lock
 import re
 from collections import defaultdict
+from threading import Lock
+from typing import Optional, List, Dict, Tuple, Iterable
 
 # Third-party modules
 import cachetools
@@ -20,6 +21,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.error import NOCError
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
+from noc.sa.models.profile import Profile
 from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.core.mib import mib
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
@@ -34,20 +36,20 @@ class ProfileChecker(object):
 
     def __init__(
         self,
-        address=None,
-        pool=None,
+        address: Optional[str] = None,
+        pool: Optional[str] = None,
         logger=None,
-        snmp_community=None,
-        calling_service="profilechecker",
-        snmp_version=None,
+        snmp_community: Optional[str] = None,
+        calling_service: str = "profilechecker",
+        snmp_version: Optional[List[int]] = None,
     ):
         self.address = address
         self.pool = pool
         self.logger = PrefixLoggerAdapter(
             logger or self.base_logger, "%s][%s" % (self.pool or "", self.address or "")
         )
-        self.result_cache = {}  # (method, param) -> result
-        self.error = None
+        self.result_cache: Dict[Tuple[str, str], str] = {}  # (method, param) -> result
+        self.error: Optional[str] = None
         self.snmp_community = snmp_community
         self.calling_service = calling_service
         self.snmp_version = snmp_version or [SNMP_v2c]
@@ -59,7 +61,7 @@ class ProfileChecker(object):
             self.logger.error("No SNMP credentials. Ignoring")
             self.ignoring_snmp = True
 
-    def find_profile(self, method, param, result):
+    def find_profile(self, method: str, param: str, result: str) -> Optional[Profile]:
         """
         Find profile by method
         :param method: Fingerprint getting method
@@ -81,7 +83,7 @@ class ProfileChecker(object):
                 # @todo: process MAYBE rule
                 return profile
 
-    def get_profile(self):
+    def get_profile(self) -> Optional[Profile]:
         """
         Returns profile for object, or None when not known
         """
@@ -107,10 +109,7 @@ class ProfileChecker(object):
                     self.error = str(e)
                     return None
         if snmp_result or http_result:
-            self.error = "Not find profile for OID: %s or HTTP string: %s" % (
-                snmp_result,
-                http_result,
-            )
+            self.error = f"Not find profile for OID: {snmp_result} or HTTP string: {http_result}"
         elif not snmp_result:
             self.error = "Cannot fetch snmp data, check device for SNMP access"
         elif not http_result:
@@ -118,7 +117,7 @@ class ProfileChecker(object):
         self.logger.info("Cannot detect profile: %s", self.error)
         return None
 
-    def get_error(self):
+    def get_error(self) -> Optional[str]:
         """
         Get error message
         :return:
@@ -130,7 +129,7 @@ class ProfileChecker(object):
     def get_profile_check_rules(cls):
         return list(ProfileCheckRule.objects.all().order_by("preference"))
 
-    def get_rules(self):
+    def get_rules(self) -> Dict[int, Dict[Tuple[str, str], List[Tuple[str, str, str, str, str]]]]:
         """
         Load ProfileCheckRules and return a list, grouped by preferences
         [{
@@ -157,7 +156,9 @@ class ProfileChecker(object):
             d[r.preference][k] += [(r.match_method, r.value, r.action, r.profile, r.name)]
         return d
 
-    def iter_rules(self):
+    def iter_rules(
+        self,
+    ) -> Iterable[List[Tuple[Tuple[str, str], List[Tuple[str, str, str, str, str]]]]]:
         d = self.get_rules()
         for p in sorted(d):
             yield list(d[p].items())
@@ -167,7 +168,7 @@ class ProfileChecker(object):
     def get_re(cls, regexp):
         return re.compile(regexp)
 
-    def do_check(self, method, param):
+    def do_check(self, method: str, param: str) -> Optional[str]:
         """
         Perform check
         """
@@ -175,7 +176,7 @@ class ProfileChecker(object):
         if (method, param) in self.result_cache:
             self.logger.debug("Using cached value")
             return self.result_cache[method, param]
-        h = getattr(self, "check_%s" % method, None)
+        h = getattr(self, f"check_{method}", None)
         if not h:
             self.logger.error("Invalid check method '%s'. Ignoring", method)
             return None
@@ -216,7 +217,7 @@ class ProfileChecker(object):
         url = "https://%s%s" % (self.address, param)
         return self.https_get(url)
 
-    def is_match(self, result, method, value):
+    def is_match(self, result: str, method: str, value: str) -> bool:
         """
         Returns True when result matches value
         """

@@ -18,6 +18,14 @@ EVENT_TRANSITION = {
     "expire": {"enabled": "unknown", "failed": "unknown"},
 }
 
+# BuiltIn Diagnostics
+SNMP_DIAG = "SNMP"
+PROFILE_DIAG = "Profile"
+CLI_DIAG = "CLI"
+HTTP_DIAG = "HTTP"
+SYSLOG_DIAG = "SYSLOG"
+SNMPTRAP_DIAG = "SNMPTRAP"
+
 
 class DiagnosticEvent(str, enum.Enum):
     disable = "disable"
@@ -57,7 +65,7 @@ class DiagnosticConfig(object):
     # ANY - Any check has OK, ALL - ALL checks has OK
     # Discovery Config
     check_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
-    # reason: Optional[str] = None
+    reason: Optional[str] = None
     # Display Config
     show_in_display: bool = True  # Show diagnostic on UI
     display_description: Optional[str] = None  # Description for show User

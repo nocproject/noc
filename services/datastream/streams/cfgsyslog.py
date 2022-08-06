@@ -11,11 +11,13 @@ from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.wf.diagnostic import SYSLOG_DIAG
 
 
 class CfgSyslogDataStream(DataStream):
     name = "cfgsyslog"
     clean_id = DataStream.clean_id_int
+    DIAGNOSTIC = SYSLOG_DIAG
 
     @classmethod
     def get_object(cls, id):
@@ -69,7 +71,7 @@ class CfgSyslogDataStream(DataStream):
         ) = mo[0]
         # Check if object capable to receive syslog events
         if not is_managed or str(syslog_source_type) == "d":
-            raise KeyError()
+            raise KeyError("Disabled by trap source ManagedObject")
         # Get effective event processing policy
         event_processing_policy = str(event_processing_policy)
         mop_event_processing_policy = str(mop_event_processing_policy)
@@ -84,7 +86,7 @@ class CfgSyslogDataStream(DataStream):
         )
         # Check syslog events may be processed
         if not effective_epp and not effective_sap:
-            raise KeyError()
+            raise KeyError("No policy settings with Syslog")
         # Process syslog sources
         pool = str(Pool.get_by_id(pool).name)
         r = {
@@ -131,14 +133,14 @@ class CfgSyslogDataStream(DataStream):
             # Loopback address
             r["addresses"] = cls._get_loopback_addresses(mo_id)
             if not r["addresses"]:
-                raise KeyError()
+                raise KeyError("No Loopback interface with address")
         elif syslog_source_type == "a":
             # All interface addresses
             r["addresses"] = cls._get_all_addresses(mo_id)
             if not r["addresses"]:
-                raise KeyError()
+                raise KeyError("No interfaces with IP")
         else:
-            raise KeyError()
+            raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
         return r
 
     @classmethod
@@ -186,4 +188,4 @@ class CfgSyslogDataStream(DataStream):
 
     @classmethod
     def filter_pool(cls, name):
-        return {"%s.pool" % cls.F_META: name}
+        return {f"{cls.F_META}.pool": name}
