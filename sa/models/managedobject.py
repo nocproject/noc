@@ -2352,7 +2352,9 @@ class ManagedObject(NOCModel):
             display_description="Check Device response by SNMP request",
             checks=["SNMPv1", "SNMPv2c"],
             blocked=ac == "C",
-            check_policy="F",
+            run_policy="F",
+            run_order="B",
+            discovery_box=True,
             reason="Blocked by AccessPreference" if ac == "C" else None,
         )
         yield DiagnosticConfig(
@@ -2361,8 +2363,12 @@ class ManagedObject(NOCModel):
             show_in_display=False,
             checks=["PROFILE"],
             blocked=not self.object_profile.enable_box_discovery_profile,
-            check_policy="A",
-            # reason="Blocked by AccessPreference" if ac == "C" else None,
+            run_policy="A",
+            run_order="B",
+            discovery_box=True,
+            reason="Blocked by ObjectProfile AccessPreference"
+            if not self.object_profile.enable_box_discovery_profile
+            else None,
         )
         # CLI Diagnostic
         yield DiagnosticConfig(
@@ -2370,7 +2376,8 @@ class ManagedObject(NOCModel):
             display_description="Check Device response by CLI (TELNET/SSH) request",
             checks=["TELNET", "SSH"],
             blocked=ac == "S",
-            check_policy="F",
+            run_policy="F",
+            run_order="B",
             reason="Blocked by AccessPreference" if ac == "S" else None,
         )
         # HTTP Diagnostic
@@ -2380,6 +2387,8 @@ class ManagedObject(NOCModel):
             show_in_display=False,
             checks=["HTTP", "HTTPS"],
             blocked=False,
+            run_policy="D",  # Not supported
+            run_order="B",
             reason=None,
         )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?
@@ -2390,7 +2399,7 @@ class ManagedObject(NOCModel):
             SNMPTRAP_DIAG,
             display_description="Received SNMP Trap from device",
             blocked=self.trap_source_type != "d",
-            check_policy="D",
+            run_policy="D",
             reason="Disable by source settings" if self.trap_source_type != "d" else "",
         )
         yield DiagnosticConfig(
@@ -2398,7 +2407,7 @@ class ManagedObject(NOCModel):
             SYSLOG_DIAG,
             display_description="Received SYSLOG from device",
             blocked=self.syslog_source_type != "d",
-            check_policy="D",
+            run_policy="D",
             reason="Disable by source settings" if self.syslog_source_type != "d" else "",
         )
         #
@@ -2575,6 +2584,22 @@ class ManagedObject(NOCModel):
                     ["{%s}" % r for r in removed] + [self.id],
                 )
         self._reset_caches(self.id)
+
+    def register_diagnostic_data(self, diagnostic, state, data, from_state, ts):
+        """
+        Raise alarm and save change to bi
+        1. Raise & clear Alarm
+        2. Send data to BI Model
+        3. Register MX Message
+        4. Register object notification
+        :param diagnostic:
+        :param state:
+        :param data:
+        :param from_state:
+        :param ts:
+        :return:
+        """
+        ...
 
     def update_init(self):
         """

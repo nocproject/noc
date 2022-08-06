@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, List
+from typing import Dict, List, Optional, Literal
 from collections import defaultdict
 
 # NOC modules
@@ -35,6 +35,10 @@ class DiagnosticCheck(DiscoveryCheck):
 
     CHECK_CACHE = {}  # Cache check result
 
+    def __init__(self, job, run_order: Optional[Literal["B", "A"]] = None):
+        super().__init__(job)
+        self.run_order = run_order
+
     def load_checkers(self):
         """
         Load available checkers
@@ -50,16 +54,23 @@ class DiagnosticCheck(DiscoveryCheck):
         self.load_checkers()
         # checks: List[CheckResult] = []
         bulk = []
-        # Processed Check
+        # Processed Check ? Filter param
         for dc in self.object.iter_diagnostic_configs():
+            # Check on Discovery run
+            if (self.is_box and not dc.discovery_box) or (
+                self.is_periodic and not dc.discovery_periodic
+            ):
+                continue
+            if dc.discovery_order != self.run_order:
+                continue
             if not dc.checks or dc.blocked:
                 # Diagnostic without checks
                 continue
-            if dc.check_policy not in {"A", "F"}:
+            if dc.run_policy not in {"A", "F"}:
                 self.logger.info("[%s] Diagnostic for manual run. Skipping", dc.diagnostic)
                 continue
             if (
-                dc.check_policy == "F"
+                dc.run_policy == "F"
                 and dc.diagnostic in self.object.diagnostics
                 and self.object.get_diagnostic(dc.diagnostic).state == "enabled"
             ):
