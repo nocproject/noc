@@ -28,6 +28,8 @@ MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"
 MX_TO = "To"
+MX_NOTIFICATION = "notification"
+MX_NOTIFICATION_CHANNEL = "Notification-Channel"
 MX_LANG = "Language"
 #
 MX_H_VALUE_SPLITTER = ";"
@@ -37,7 +39,6 @@ MESSAGE_TYPES = {
     "managedobject",
     "reboot",
     "metrics",
-    "notification",
     "snmptrap",
     "syslog",
     "event",

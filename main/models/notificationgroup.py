@@ -224,7 +224,7 @@ class NotificationGroup(NOCModel):
         :return:
         """
         for method, param, _ in self.active_members:
-            yield MX_STREAMS[method], {"To": smart_bytes(param)}, None
+            yield MX_STREAMS[method], {MX_TO: smart_bytes(param)}, None
 
     @classmethod
     def render_message(
