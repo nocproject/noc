@@ -84,7 +84,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         with Span(sample=self.object.box_telemetry_sample), change_tracker.bulk_changes():
             has_cli = "C" in self.object.get_access_preference()
             ResolverCheck(self).run()
-            DiagnosticCheck(self).run()
+            DiagnosticCheck(self, run_order="B").run()
             # Run remaining checks
             if has_cli and self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
@@ -146,7 +146,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             MetricsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
-        DiagnosticCheck(self).run()
+        DiagnosticCheck(self, run_order="A").run()
 
     def get_running_policy(self):
         return self.object.get_effective_box_discovery_running_policy()

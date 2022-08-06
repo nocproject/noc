@@ -38,7 +38,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
                 self.logger.info("Invalid credentials. Stopping")
                 return
             ResolverCheck(self).run()
-            DiagnosticCheck(self).run()
+            DiagnosticCheck(self, run_order="B").run()
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
                 with self.object.open_session():
@@ -59,7 +59,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:
             MetricsCheck(self).run()
-        DiagnosticCheck(self).run()
+        DiagnosticCheck(self, run_order="A").run()
 
     def get_running_policy(self):
         return self.object.get_effective_periodic_discovery_running_policy()

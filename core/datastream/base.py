@@ -738,4 +738,4 @@ class DataStream(object):
         elif diagnostic.state != state:
             diagnostic.state = state
             diagnostic.reason = reason
-            ManagedObject.save_diagnostics(obj_id, {cls.DIAGNOSTIC: diagnostic.dict()})
+            ManagedObject.save_diagnostics(obj_id, [diagnostic])

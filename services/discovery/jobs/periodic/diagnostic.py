@@ -61,7 +61,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 self.is_periodic and not dc.discovery_periodic
             ):
                 continue
-            if dc.discovery_order != self.run_order:
+            if dc.run_order != self.run_order:
                 continue
             if not dc.checks or dc.blocked:
                 # Diagnostic without checks
