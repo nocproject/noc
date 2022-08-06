@@ -17,6 +17,7 @@ from noc.core.checkers.base import (
     CheckResult,
     ProfileSet,
     CredentialSet,
+    MetricValue,
 )
 from noc.core.checkers.loader import loader
 from noc.sa.models.managedobject import CheckStatus
@@ -32,7 +33,7 @@ class DiagnosticCheck(DiscoveryCheck):
     CHECKERS: Dict[str, Checker] = {}  # Checkers Instance
     CHECK_MAP: Dict[str, str] = {}  # CheckName -> CheckerName mapping
 
-    CHECK_CACHE = {}  # Cache cache
+    CHECK_CACHE = {}  # Cache check result
 
     def load_checkers(self):
         """
@@ -109,8 +110,11 @@ class DiagnosticCheck(DiscoveryCheck):
 
         for checker, d_checks in do_checks.items():
             checker = self.CHECKERS[checker]
-            self.logger.info("[%s] Run checker", d_checks)
-            r += checker.run(d_checks)
+            self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
+            try:
+                r += checker.run(d_checks, "discovery")
+            except Exception as e:
+                self.logger.error("[%s] Error when run checker: %s", str(e))
         return r
 
     def action_set_sa_profile(self, data: ProfileSet):
@@ -159,3 +163,14 @@ class DiagnosticCheck(DiscoveryCheck):
             self.object.auth_profile = None
             self.object.save()
             self.object.update_init()
+
+    def register_diagnostic_metrics(self, metrics: List[MetricValue]):
+        """
+        Metrics Labels:
+          noc::diagnostic::<name>
+          noc::check::<name>
+          arg0
+        :param metrics:
+        :return:
+        """
+        ...

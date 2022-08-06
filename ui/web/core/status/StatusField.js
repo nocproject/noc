@@ -48,12 +48,17 @@ Ext.define("NOC.core.status.StatusField", {
             if(value.description) {
               tip += "<div>" + value.description + "</div>";
             }
-            for(var i = 0; i < details.length; i++) {
-              tip += "<div style='padding-left: 5px;'>" + details[i].name + " : " + details[i].state;
-              if(details[i].error) {
-                tip += " (" + details[i].error + ")";
+            if(!value.reason) {
+              for (var i = 0; i < details.length; i++) {
+                tip += "<div style='padding-left: 5px;'>" + details[i].name + " : " + details[i].state;
+                if (details[i].error) {
+                  tip += " (" + details[i].error + ")";
+                }
+                tip += "</div>";
               }
-              tip += "</div>";
+            }
+            if(value.reason) {
+              tip += "<div>" + "Reason: " + value.reason + "</div>";
             }
             return tip;
           }

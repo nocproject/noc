@@ -27,12 +27,6 @@ class MetricValue(object):
 
 
 @dataclass(frozen=True)
-class MetricsSet(object):
-    metrics: List[MetricValue]
-    action: str = "set_metric"
-
-
-@dataclass(frozen=True)
 class CredentialSet(object):
     user: Optional[str] = None
     password: Optional[str] = None
@@ -48,9 +42,11 @@ class CheckResult(object):
     status: bool  # True - OK, False - Fail
     skipped: bool = False  # Check was skipped (Example, no credential)
     error: Optional[str] = None  # Description if Fail
-    data: Optional[Dict[str, Any]] = None
+    data: Optional[Dict[str, Any]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    action: Optional[Union[ProfileSet, CredentialSet, MetricsSet]] = None
+    action: Optional[Union[ProfileSet, CredentialSet]] = None
+    # Metrics collected
+    metrics: Optional[List[MetricValue]] = None
 
 
 @dataclass(frozen=True)
@@ -63,15 +59,18 @@ class Check(object):
 
 
 class Checker(object):
-    """ """
+    """
+    Base class for Checkers. Check some facts and return result
+    """
 
     name: str
     CHECKS: List[str]
 
-    def run(self, checks: List[Check]) -> List[CheckResult]:
+    def run(self, checks: List[Check], calling_service: Optional[str] = None) -> List[CheckResult]:
         """
         Do check and return result
         :param checks:
+        :param calling_service:
         :return:
         """
         ...

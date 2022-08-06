@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Optional
 
 # NOC modules
 from .base import Check, ObjectChecker, CheckResult, ProfileSet
@@ -16,6 +16,10 @@ from ..wf.diagnostic import DiagnosticState, SNMP_DIAG
 
 
 class ProfileChecker(ObjectChecker):
+    """
+    Check ManagedObject profile by rules
+    """
+
     name = "profilechecker"
     CHECKS: List[str] = ["PROFILE"]
     CHECK_SNMP_VERSION_MAP = {
@@ -24,7 +28,7 @@ class ProfileChecker(ObjectChecker):
         if p.config.snmp_version is not None and p.config.check
     }
 
-    def run(self, checks: List[Check]) -> List[CheckResult]:
+    def run(self, checks: List[Check], calling_service: Optional[str] = None) -> List[CheckResult]:
         """
         :param checks:
         :return:
@@ -50,7 +54,7 @@ class ProfileChecker(ObjectChecker):
             self.object.address,
             self.object.pool.name,
             logger=self.logger,
-            calling_service="discovery",
+            calling_service=calling_service or self.name,
             snmp_community=snmp_community,
             snmp_version=snmp_version,
         )

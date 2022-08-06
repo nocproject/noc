@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List
+from typing import List, Optional
 
 # NOC modules
 from .base import Check, ObjectChecker, CheckResult, CredentialSet
@@ -15,13 +15,18 @@ from ..script.credentialchecker import Protocol, SNMPCredential, CLICredential
 
 
 class CredentialChecker(ObjectChecker):
+    """
+    Check ManagedObject supported access protocols and credential
+    """
+
     name = "credentialchecker"
     CHECKS: List[str] = ["TELNET", "SSH", "SNMPv1", "SNMPv2c"]
     PROTO_CHECK_MAP = {p.config.check: p for p in Protocol if p.config.check}
 
-    def run(self, checks: List[Check]) -> List[CheckResult]:
+    def run(self, checks: List[Check], calling_service: Optional[str] = None) -> List[CheckResult]:
         """
         :param checks:
+        :param calling_service:
         :return:
         """
         cc = CredentialCheckerScript(
@@ -29,6 +34,7 @@ class CredentialChecker(ObjectChecker):
             self.object.pool,
             self.object.effective_labels,
             profile=self.object.profile,
+            calling_service=calling_service or self.name,
         )
         r = []
         # @todo Bad interface, need reworked

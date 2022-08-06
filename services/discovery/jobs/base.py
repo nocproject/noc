@@ -317,8 +317,8 @@ class MODiscoveryJob(PeriodicJob):
         :return:
         """
         self.logger.info("Updating diagnostics statuses")
-        # Get diagnostics with enabled discovery
-        discovery_diagnostics = {dc.diagnostic for dc in self.object.iter_diagnostic_configs()}
+        # Get diagnostics with enabled discovery (Box/Periodic filtered)
+        discovery_diagnostics = set()
         #
         bulk = []
         now = datetime.datetime.now()
@@ -333,6 +333,9 @@ class MODiscoveryJob(PeriodicJob):
         # Set OK state
         for diagnostic in discovery_diagnostics:
             self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
+        if bulk:
+            self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
+            self.object.save_diagnostics(self.object.id, bulk)
 
     def update_alarms(
         self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
