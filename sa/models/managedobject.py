@@ -16,10 +16,11 @@ from threading import Lock
 import datetime
 from dataclasses import dataclass
 from itertools import chain
-from typing import Tuple, Iterable, List, Any, Dict, Set
+from typing import Tuple, Iterable, List, Any, Dict, Set, Optional
 
 # Third-party modules
 import orjson
+import cachetools
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import (
     Q,
@@ -33,8 +34,6 @@ from django.db.models import (
     SET_NULL,
     CASCADE,
 )
-import cachetools
-from typing import Optional
 from pydantic import BaseModel
 
 # NOC modules
@@ -51,6 +50,7 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     HTTP_DIAG,
 )
+from noc.core.checkers.base import CheckData
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -2325,7 +2325,7 @@ class ManagedObject(NOCModel):
             # logger.info("[%s] Adding diagnostic", dc.diagnostic)
             d = DiagnosticItem(diagnostic=diagnostic)
         else:
-            d = DiagnosticItem.parse_obj(self.diagnostics[diagnostic])
+            d = self.get_diagnostic(diagnostic)
         if d.state.is_blocked or d.state == state:
             return
         logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
@@ -2333,11 +2333,15 @@ class ManagedObject(NOCModel):
         d.state = state
         d.reason = reason
         d.changed = changed.isoformat(sep=" ")
-        self.diagnostics[diagnostic] = d.dict()
         if bulk is not None:
             bulk += [d]
         else:
             self.save_diagnostics(self.id, [d])
+            self.sync_diagnostic_alarm([d.diagnostic])
+            self.register_diagnostic_change(
+                d.diagnostic, d.state, from_state=self.diagnostics[diagnostic]["state"], ts=changed
+            )
+        self.diagnostics[diagnostic] = d.dict()
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2423,7 +2427,7 @@ class ManagedObject(NOCModel):
         #
 
     def update_diagnostics(
-        self, checks: List[CheckStatus] = None, bulk: Optional[List[DiagnosticItem]] = None
+        self, checks: List[CheckData] = None, bulk: Optional[List[DiagnosticItem]] = None
     ):
         """
         Update diagnostics by Checks Result ?Source - discovery/manual
@@ -2438,16 +2442,23 @@ class ManagedObject(NOCModel):
         diagnostics: Dict[str, DiagnosticItem] = {}
         processed = set()
         dependency: List[DiagnosticConfig] = []
+        last_state = {}
         # check_result = {c.name: c for c in checks}
         for dc in self.iter_diagnostic_configs():
             # Filter checks
-            dc_checks = [cr for cr in checks if dc.checks and cr.name in dc.checks]
+            # dc_checks = [cr for cr in checks if dc.checks and cr.name in dc.checks]
+            dc_checks = [
+                CheckStatus(name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error)
+                for cr in checks
+                if dc.checks and cr.name in dc.checks
+            ]
             # Get or Create DiagnosticItem
             if dc.diagnostic not in self.diagnostics:
                 # logger.info("[%s] Adding diagnostic", dc.diagnostic)
                 d = DiagnosticItem(diagnostic=dc.diagnostic, checks=dc_checks)
             else:
-                d = DiagnosticItem.parse_obj(self.diagnostics[dc.diagnostic])
+                d = self.get_diagnostic(dc.diagnostic)
+            last_state[d.diagnostic] = d.state
             processed.add(dc.diagnostic)
             # Calculate state
             state = None
@@ -2491,9 +2502,10 @@ class ManagedObject(NOCModel):
                         continue
                     d_states.append(diagnostics[dd].state)
                 elif dd in self.diagnostics:
-                    if self.diagnostics[dd]["state"] == DiagnosticState.blocked:
+                    dd = self.get_diagnostic(dd)
+                    if dd.state == DiagnosticState.blocked:
                         continue
-                    d_states.append(DiagnosticState(self.diagnostics[dd]["state"]))
+                    d_states.append(dd.state)
             if not d_states:
                 # Unknown state, Remove
                 if dc.diagnostic in self.diagnostics:
@@ -2512,11 +2524,20 @@ class ManagedObject(NOCModel):
         # Update
         if not diagnostics and not removed:
             return
-        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
         if bulk is not None:
             bulk += list(diagnostics.values())
         else:
             self.save_diagnostics(self.id, list(diagnostics.values()), removed)
+            self.sync_diagnostic_alarm(list(diagnostics))
+            # Register changed message
+            for di in diagnostics.values():
+                self.register_diagnostic_change(
+                    di.diagnostic,
+                    state=di.state,
+                    from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
+                    ts=di.changed,
+                )
+        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
 
     @classmethod
     def save_diagnostics(
@@ -2578,10 +2599,15 @@ class ManagedObject(NOCModel):
         from django.db import connection as pg_connection
 
         removed = []
+        ts = datetime.datetime.now()
         for d in diagnostics:
             if d in self.diagnostics:
-                del self.diagnostics[d]
-                removed.append(d)
+                d = self.get_diagnostic(d)
+                self.register_diagnostic_change(
+                    d.diagnostic, state=DiagnosticState.unknown, from_state=d.state, ts=ts
+                )
+                del self.diagnostics[d.diagnostic]
+                removed.append(d.diagnostic)
         # If Failed state - clear alarm
         if removed:
             logger.debug("[%s] Removed diagnostics", list(removed))
@@ -2593,6 +2619,7 @@ class ManagedObject(NOCModel):
                      WHERE id = %s""",
                     ["{%s}" % r for r in removed] + [self.id],
                 )
+            self.sync_diagnostic_alarm(removed)
         self._reset_caches(self.id)
 
     def sync_diagnostic_alarm(self, diagnostics: Optional[List[str]] = None):
@@ -2610,16 +2637,15 @@ class ManagedObject(NOCModel):
         alarm_classes: Dict[str, str] = {}  # diagnostic -> AlarmClass Map
         messages: List[Dict[str, Any]] = []  # Messages for send dispose
         processed = set()
+        diagnostics = set(diagnostics or [])
         for dc in self.iter_diagnostic_configs():
             if not dc.alarm_class:
                 continue
             alarm_classes[dc.diagnostic] = dc.alarm_class
-            if diagnostics and (
-                not set(dc.dependent).intersection(set(diagnostics))
-                or dc.diagnostic not in diagnostics
-            ):
-                continue
             if dc.diagnostic in processed:
+                continue
+            if diagnostics and not dc.dependent and dc.diagnostic not in diagnostics:
+                # Skip non-changed diagnostics
                 continue
             d = self.get_diagnostic(dc.diagnostic)
             if dc.dependent:
@@ -2633,7 +2659,7 @@ class ManagedObject(NOCModel):
                 messages += [
                     {
                         "timestamp": now,
-                        "reference": f"dc:{self.object.id}:{d.diagnostic}",
+                        "reference": f"dc:{self.id}:{d.diagnostic}",
                         "$op": "raise",
                         "alarm_class": dc.alarm_class,
                         "vars": [{"reason": d.reason}],
@@ -2643,7 +2669,7 @@ class ManagedObject(NOCModel):
                 messages += [
                     {
                         "timestamp": now,
-                        "reference": f"dc:{self.object.id}:{d.diagnostic}",
+                        "reference": f"dc:{self.id}:{d.diagnostic}",
                         "$op": "clear",
                     }
                 ]
@@ -2678,16 +2704,16 @@ class ManagedObject(NOCModel):
                 stream=stream,
                 partition=partition,
             )
-            self.logger.debug(
+            logger.info(
                 "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
             )
 
-    def register_diagnostic_data(
+    def register_diagnostic_change(
         self,
         diagnostic: str,
         state: str,
-        data,
         from_state: Optional[str] = None,
+        data: Optional[Dict[str, Any]] = None,
         ts: Optional[datetime.datetime] = None,
     ):
         """
@@ -2720,8 +2746,8 @@ class ManagedObject(NOCModel):
             dd["data"] = orjson.dumps(data).decode(DEFAULT_ENCODING)
         svc.register_metrics("diagnostichistory", [dd], key=self.bi_id)
         # Send Stream
-        if from_state:
-            # ? always send (from policy)
+        # ? always send (from policy)
+        if config.message.enable_diagnostic_change:
             send_message(
                 data={
                     "name": diagnostic,

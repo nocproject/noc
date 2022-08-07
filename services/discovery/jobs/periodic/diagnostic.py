@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, List, Optional, Literal
+from typing import Dict, List, Optional, Literal, Iterable
 from collections import defaultdict
 
 # NOC modules
@@ -15,12 +15,13 @@ from noc.core.checkers.base import (
     Checker,
     Check,
     CheckResult,
+    CheckData,
     ProfileSet,
     CredentialSet,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
-from noc.sa.models.managedobject import CheckStatus
+from noc.core.wf.diagnostic import DiagnosticState
 from noc.sa.models.profile import Profile
 
 
@@ -45,15 +46,16 @@ class DiagnosticCheck(DiscoveryCheck):
         :return:
         """
         for checker in loader:
-            self.CHECKERS[checker] = loader[checker](self.object)
+            self.CHECKERS[checker] = loader[checker](self.object, self.logger, "discovery")
             for c in self.CHECKERS[checker].CHECKS:
                 self.CHECK_MAP[c] = self.CHECKERS[checker].name
 
     def handler(self):
         # Loading checkers
         self.load_checkers()
-        # checks: List[CheckResult] = []
         bulk = []
+        metrics: List[MetricValue] = []
+        last_state: Dict[str, DiagnosticState] = {}
         # Processed Check ? Filter param
         for dc in self.object.iter_diagnostic_configs():
             # Check on Discovery run
@@ -72,25 +74,27 @@ class DiagnosticCheck(DiscoveryCheck):
             if (
                 dc.run_policy == "F"
                 and dc.diagnostic in self.object.diagnostics
-                and self.object.get_diagnostic(dc.diagnostic).state == "enabled"
+                and self.object.get_diagnostic(dc.diagnostic).state == DiagnosticState.enabled
             ):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue
             # Get checker
             checks: List[CheckResult] = []
-            for cc in self.do_check([Check(name=c) for c in dc.checks]):
-                if cc.action and not hasattr(self, f"action_{cc.action.action}"):
+            for cr in self.iter_checks([Check(name=c) for c in dc.checks]):
+                if cr.action and not hasattr(self, f"action_{cr.action.action}"):
                     self.logger.warning(
-                        "[%s|%s] Unknown action: %s", dc.diagnostic, cc.check, cc.action.action
+                        "[%s|%s] Unknown action: %s", dc.diagnostic, cr.check, cr.action.action
                     )
-                elif cc.action:
-                    h = getattr(self, f"action_{cc.action.action}")
-                    h(cc.action)
-                checks.append(cc)
+                elif cr.action:
+                    h = getattr(self, f"action_{cr.action.action}")
+                    h(cr.action)
+                checks.append(cr)
+                if cr.metrics:
+                    metrics += cr.metrics
             # Update diagnostics
             self.object.update_diagnostics(
                 [
-                    CheckStatus(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
+                    CheckData(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
                     for cr in checks
                 ],
                 bulk=bulk,
@@ -98,15 +102,20 @@ class DiagnosticCheck(DiscoveryCheck):
         if bulk:
             self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
             self.object.save_diagnostics(self.object.id, bulk)
+            self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
+            for di in bulk:
+                self.object.register_diagnostic_change(
+                    di.diagnostic,
+                    state=di.state,
+                    from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
+                    ts=di.changed,
+                )
         #
+        if metrics:
+            self.register_diagnostic_metrics(metrics)
         # Fire workflow event diagnostic ?
 
-    def do_check(self, checks: List[Check]) -> List[CheckResult]:
-        """
-        Run checks on Checker
-        :param checks:
-        :return:
-        """
+    def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
         r = []
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
@@ -118,15 +127,14 @@ class DiagnosticCheck(DiscoveryCheck):
                 r.append(self.CHECK_CACHE[c])
                 continue
             do_checks[self.CHECK_MAP[c.name]] += [c]
-
         for checker, d_checks in do_checks.items():
             checker = self.CHECKERS[checker]
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
-                r += checker.run(d_checks, "discovery")
+                for check in checker.iter_result(d_checks):
+                    yield check
             except Exception as e:
                 self.logger.error("[%s] Error when run checker: %s", str(e))
-        return r
 
     def action_set_sa_profile(self, data: ProfileSet):
         """

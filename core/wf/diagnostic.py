@@ -68,7 +68,9 @@ class DiagnosticConfig(object):
     run_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
     run_order: str = "B"  # B - Before all discovery, A - After all discovery
     discovery_box: bool = False  # Run on periodic discovery
-    discovery_periodic = False  # Run on box discovery
+    discovery_periodic: bool = False  # Run on box discovery
+    #
+    save_history: bool = False
     # Display Config
     show_in_display: bool = True  # Show diagnostic on UI
     display_description: Optional[str] = None  # Description for show User
