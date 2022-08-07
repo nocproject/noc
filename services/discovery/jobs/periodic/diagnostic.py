@@ -134,7 +134,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 for check in checker.iter_result(d_checks):
                     yield check
             except Exception as e:
-                self.logger.error("[%s] Error when run checker: %s", str(e))
+                self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
 
     def action_set_sa_profile(self, data: ProfileSet):
         """

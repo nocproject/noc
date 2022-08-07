@@ -36,7 +36,7 @@ class CredentialChecker(ObjectChecker):
             if sr.credential and isinstance(sr.credential, SNMPCredential):
                 action = CredentialSet(snmp_ro=sr.credential.snmp_ro)
             elif sr.credential and isinstance(sr.credential, CLICredential):
-                CredentialSet(
+                action = CredentialSet(
                     user=sr.credential.user,
                     password=sr.credential.password,
                     super_password=sr.credential.super_password,

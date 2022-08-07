@@ -21,7 +21,7 @@ import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Set
 from builtins import str, object
 
 # NOC modules
@@ -60,6 +60,8 @@ class MODiscoveryJob(PeriodicJob):
     # Job families
     is_box = False
     is_periodic = False
+    # Get diagnostics with enabled discovery (Box/Periodic filtered)
+    discovery_diagnostics = set()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -316,26 +318,27 @@ class MODiscoveryJob(PeriodicJob):
         :param problems:
         :return:
         """
-        self.logger.info("Updating diagnostics statuses")
-        # Get diagnostics with enabled discovery (Box/Periodic filtered)
-        discovery_diagnostics = set()
+        self.logger.info(
+            "Updating diagnostics statuses: %s", ";".join(p.diagnostic for p in problems)
+        )
         #
         bulk = []
         now = datetime.datetime.now()
+        processed = set()
         # Processed failed diagnostics
         for p in problems:
-            if not p.diagnostic or p.diagnostic not in discovery_diagnostics:
-                continue
-            self.object.set_diagnostic_state(
-                p.diagnostic, state=False, reason=p.message, changed_ts=now, bulk=bulk
-            )
-            discovery_diagnostics.remove(p.diagnostic)
+            if p.diagnostic and p.diagnostic in self.discovery_diagnostics:
+                self.object.set_diagnostic_state(
+                    p.diagnostic, state=False, reason=p.message, changed_ts=now, bulk=bulk
+                )
+                processed.add(p.diagnostic)
         # Set OK state
-        for diagnostic in discovery_diagnostics:
+        for diagnostic in self.discovery_diagnostics - processed:
             self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
         if bulk:
             self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
             self.object.save_diagnostics(self.object.id, bulk)
+            self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
 
     def update_alarms(
         self, problems: List[ProblemItem], group_cls: str = None, group_reference: str = None
@@ -575,19 +578,21 @@ class DiscoveryCheck(object):
             except RPCRemoteError as e:
                 self.logger.error("RPC Remote error (%s): %s", e.remote_code, e)
                 if e.remote_code:
-                    message = "Remote error code %s" % e.remote_code
+                    message = f"Remote error code {e.remote_code}"
                 else:
-                    message = "Remote error code %s, message: %s" % (e.remote_code, e)
+                    message = f"Remote error code {e.remote_code}, message: {e}"
                 self.set_problem(
                     alarm_class=self.error_map.get(e.remote_code),
                     message=message,
+                    diagnostic="CLI" if e.default_code in self.error_map else None,
                     fatal=e.remote_code in self.fatal_errors,
                 )
                 span.set_error_from_exc(e, e.remote_code)
             except RPCError as e:
                 self.set_problem(
                     alarm_class=self.error_map.get(e.default_code),
-                    message="RPC Error: %s" % e,
+                    message=f"RPC Error: {e}",
+                    diagnostic="CLI" if e.default_code in self.error_map else None,
                     fatal=e.default_code in self.fatal_errors,
                 )
                 self.logger.error("Terminated due RPC error: %s", e)
@@ -595,7 +600,7 @@ class DiscoveryCheck(object):
             except Exception as e:
                 self.set_problem(
                     alarm_class="Discovery | Error | Unhandled Exception",
-                    message="Unhandled exception: %s" % e,
+                    message=f"Unhandled exception: {e}",
                 )
                 error_report(logger=self.logger)
                 span.set_error_from_exc(e)

@@ -171,6 +171,8 @@ class DiagnosticItems(BaseModel):
 def default(obj):
     if isinstance(obj, BaseModel):
         return obj.dict()
+    elif isinstance(obj, datetime.datetime):
+        return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
 
 
@@ -2485,7 +2487,7 @@ class ManagedObject(NOCModel):
                 continue
             logger.info("[%s] Change diagnostic state: %s -> %s", dc.diagnostic, d.state, state)
             d.state = state
-            d.changed = now.isoformat(sep=" ")
+            d.changed = now.replace(microsecond=0).isoformat(sep=" ")
             d.checks = dc_checks
             diagnostics[dc.diagnostic] = d
         # Remove
@@ -2516,11 +2518,14 @@ class ManagedObject(NOCModel):
                 continue
             if dc.diagnostic not in diagnostics:
                 diagnostics[dc.diagnostic] = DiagnosticItem(diagnostic=dc.diagnostic, checks=[])
-            diagnostics[dc.diagnostic].state = DIAGNOSTIC_CHECK_STATE[
+            state = DIAGNOSTIC_CHECK_STATE[
                 DiagnosticState.enabled in d_states
                 if dc.state_policy == "ANY"
                 else DiagnosticState.failed not in d_states
             ]
+            if state != diagnostics[dc.diagnostic].state:
+                diagnostics[dc.diagnostic].state = state
+                diagnostics[dc.diagnostic].changed = now.replace(microsecond=0).isoformat(sep=" ")
         # Update
         if not diagnostics and not removed:
             return
@@ -2652,7 +2657,7 @@ class ManagedObject(NOCModel):
                 groups[dc.diagnostic] = []
                 for d_name in dc.dependent:
                     dd = self.get_diagnostic(d_name)
-                    if dd.state == DiagnosticState.failed:
+                    if dd and dd.state == DiagnosticState.failed:
                         groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason}]
                     processed.add(d_name)
             elif d.state == d.state.failed:
@@ -2731,6 +2736,8 @@ class ManagedObject(NOCModel):
         from noc.core.service.loader import get_service
 
         svc = get_service()
+        if isinstance(ts, str):
+            ts = datetime.datetime.fromisoformat(ts)
         now = ts or datetime.datetime.now()
         # Send Data
         dd = {

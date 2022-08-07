@@ -52,6 +52,7 @@ class ProfileChecker(ObjectChecker):
         profile = checker.get_profile()
         if not profile:
             yield CheckResult(check="PROFILE", status=bool(profile), error=checker.get_error())
+            return
         # Skipped
         yield CheckResult(
             check="PROFILE",
