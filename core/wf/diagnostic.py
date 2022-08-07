@@ -77,6 +77,7 @@ class DiagnosticConfig(object):
     display_order: int = 0  # Order on displayed list
     # FM Config
     alarm_class: Optional[str] = None  # Default AlarmClass for raise alarm
+    alarm_labels: Optional[List[str]] = None
 
 
 DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {

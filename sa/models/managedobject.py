@@ -2331,19 +2331,20 @@ class ManagedObject(NOCModel):
         if d.state.is_blocked or d.state == state:
             return
         logger.info("[%s] Change diagnostic state: %s -> %s", diagnostic, d.state, state)
+        last_state = d.state
         changed = changed_ts or datetime.datetime.now()
         d.state = state
         d.reason = reason
         d.changed = changed.isoformat(sep=" ")
+        self.diagnostics[diagnostic] = d.dict()
         if bulk is not None:
             bulk += [d]
         else:
             self.save_diagnostics(self.id, [d])
             self.sync_diagnostic_alarm([d.diagnostic])
             self.register_diagnostic_change(
-                d.diagnostic, d.state, from_state=self.diagnostics[diagnostic]["state"], ts=changed
+                d.diagnostic, d.state, from_state=last_state, ts=changed
             )
-        self.diagnostics[diagnostic] = d.dict()
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """
@@ -2362,7 +2363,8 @@ class ManagedObject(NOCModel):
             run_policy="F",
             run_order="B",
             discovery_box=True,
-            alarm_class="Discovery | Guess | SNMP Community",
+            alarm_class="NOC | Managed Object | Access Lost",
+            alarm_labels=["noc::access::method::SNMP"],
             reason="Blocked by AccessPreference" if ac == "C" else None,
         )
         yield DiagnosticConfig(
@@ -2385,7 +2387,8 @@ class ManagedObject(NOCModel):
             display_description="Check Device response by CLI (TELNET/SSH) request",
             checks=["TELNET", "SSH"],
             discovery_box=True,
-            alarm_class="Discovery | Guess | CLI Credentials",
+            alarm_class="NOC | Managed Object | Access Lost",
+            alarm_labels=["noc::access::method::CLI"],
             blocked=ac == "S",
             run_policy="F",
             run_order="B",
@@ -2396,6 +2399,8 @@ class ManagedObject(NOCModel):
             HTTP_DIAG,
             display_description="Check Device response by HTTP/HTTPS request",
             show_in_display=False,
+            alarm_class="NOC | Managed Object | Access Lost",
+            alarm_labels=["noc::access::method::HTTP"],
             checks=["HTTP", "HTTPS"],
             blocked=False,
             run_policy="D",  # Not supported
@@ -2407,7 +2412,7 @@ class ManagedObject(NOCModel):
             "Access",
             dependent=["SNMP", "CLI", "HTTP"],
             show_in_display=False,
-            alarm_class="NOC | Managed Object | Management Access Lost",
+            alarm_class="NOC | Managed Object | Access Degraded",
         )
         # FM
         yield DiagnosticConfig(
@@ -2529,6 +2534,7 @@ class ManagedObject(NOCModel):
         # Update
         if not diagnostics and not removed:
             return
+        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
         if bulk is not None:
             bulk += list(diagnostics.values())
         else:
@@ -2542,7 +2548,6 @@ class ManagedObject(NOCModel):
                     from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
                     ts=di.changed,
                 )
-        self.diagnostics.update({d: dd.dict() for d, dd in diagnostics.items()})
 
     @classmethod
     def save_diagnostics(
@@ -2639,14 +2644,18 @@ class ManagedObject(NOCModel):
 
         now = datetime.datetime.now()
         groups = {}
-        alarm_classes: Dict[str, str] = {}  # diagnostic -> AlarmClass Map
+        alarms = {}
+        alarm_config: Dict[str, Dict[str, Any]] = {}  # diagnostic -> AlarmClass Map
         messages: List[Dict[str, Any]] = []  # Messages for send dispose
         processed = set()
         diagnostics = set(diagnostics or [])
         for dc in self.iter_diagnostic_configs():
             if not dc.alarm_class:
                 continue
-            alarm_classes[dc.diagnostic] = dc.alarm_class
+            alarm_config[dc.diagnostic] = {
+                "alarm_class": dc.alarm_class,
+                "alarm_labels": dc.alarm_labels or [],
+            }
             if dc.diagnostic in processed:
                 continue
             if diagnostics and not dc.dependent and dc.diagnostic not in diagnostics:
@@ -2661,45 +2670,45 @@ class ManagedObject(NOCModel):
                         groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason}]
                     processed.add(d_name)
             elif d and d.state == d.state.failed:
-                messages += [
-                    {
-                        "timestamp": now,
-                        "reference": f"dc:{self.id}:{d.diagnostic}",
-                        "$op": "raise",
-                        "alarm_class": dc.alarm_class,
-                        "vars": [{"reason": d.reason}],
-                    }
-                ]
+                alarms[dc.diagnostic] = {
+                    "timestamp": now,
+                    "reference": f"dc:{self.id}:{d.diagnostic}",
+                    "$op": "raise",
+                    "alarm_class": dc.alarm_class,
+                    "labels": dc.alarm_labels or [],
+                    "vars": [{"reason": d.reason}],
+                }
             else:
-                messages += [
-                    {
-                        "timestamp": now,
-                        "reference": f"dc:{self.id}:{d.diagnostic}",
-                        "$op": "clear",
-                    }
-                ]
-            processed.add(dc.diagnostic)
-
+                alarms[dc.diagnostic] = {
+                    "timestamp": now,
+                    "reference": f"dc:{self.id}:{d.diagnostic}",
+                    "$op": "clear",
+                }
+        # Group Alarm
         for d in groups:
             messages += [
                 {
                     "$op": "ensure_group",
                     "reference": f"dc:{d}:{self.id}",
-                    "alarm_class": alarm_classes[d],
+                    "alarm_class": alarm_config[d]["alarm_class"],
                     "alarms": [
                         {
                             "reference": f'dc:{dd["diagnostic"]}:{self.id}',
-                            "alarm_class": alarm_classes[dd["diagnostic"]],
+                            "alarm_class": alarm_config[dd["diagnostic"]]["alarm_class"],
                             "managed_object": self.id,
                             "timestamp": now,
-                            "labels": [],
+                            "labels": alarm_config[dd["diagnostic"]]["alarm_labels"],
                             "vars": {"reason": dd["reason"]},
                         }
                         for dd in groups[d]
                     ],
                 }
             ]
-
+        # Other
+        for d in alarms:
+            if d in processed:
+                continue
+            messages += [alarms[d]]
         # Send Dispose
         svc = get_service()
         for msg in messages:
