@@ -10,7 +10,7 @@ import logging
 import threading
 from collections import defaultdict
 import asyncio
-from typing import Optional, Dict
+from typing import Optional, Dict, List, Any
 
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
@@ -67,7 +67,7 @@ class ServiceStub(object):
         for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
-    def register_metrics(self, table, data):
+    def register_metrics(self, table: str, data: List[Dict[str, Any]], key: Optional[int] = None):
         self._metrics[table] += data
 
     def publish(

@@ -30,11 +30,11 @@ class DiagnosticHistory(Model):
     ts = DateTimeField(description=_("Created"))
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     # diagnostic = ReferenceField(ManagedObject, description=_("Object Name"))
-    diagnostic_name = StringField(description=_("Diagnostic Name"))
+    diagnostic_name = StringField(description=_("Diagnostic Name"), low_cardinality=True)
     # agent = ReferenceField(Agent, description=_("Object Name"))
     # service = ReferenceField(ManagedObject, description=_("Object Name"))
-    from_state = StringField(description=_("From state"))
-    state = StringField(description=_("Current diagnotic state"))
+    from_state = StringField(description=_("From state"), low_cardinality=True)
+    state = StringField(description=_("Current diagnotic state"), low_cardinality=True)
     data = StringField(description=_("Collected data (JSON)"))
 
     @classmethod

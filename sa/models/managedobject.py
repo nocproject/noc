@@ -51,6 +51,7 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     HTTP_DIAG,
 )
+from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -108,7 +109,7 @@ from noc.core.change.policy import change_tracker
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
-from noc.core.comp import smart_text, smart_bytes
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.models.problem import ProblemItem
@@ -1367,7 +1368,7 @@ class ManagedObject(NOCModel):
                     logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
                     fs.makedirs(dir_path, recreate=True)
                 logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
-                fs.writebytes(path, smart_bytes(data))
+                fs.writebytes(path, data.encode(encoding=DEFAULT_ENCODING))
         except storage.Error as e:
             logger.error("[%s] Failed to mirror config: %s", self.name, e)
 
@@ -2355,6 +2356,7 @@ class ManagedObject(NOCModel):
             run_policy="F",
             run_order="B",
             discovery_box=True,
+            alarm_class="Discovery | Guess | SNMP Community",
             reason="Blocked by AccessPreference" if ac == "C" else None,
         )
         yield DiagnosticConfig(
@@ -2362,6 +2364,7 @@ class ManagedObject(NOCModel):
             display_description="Check device profile",
             show_in_display=False,
             checks=["PROFILE"],
+            alarm_class="Discovery | Guess | Profile",
             blocked=not self.object_profile.enable_box_discovery_profile,
             run_policy="A",
             run_order="B",
@@ -2375,6 +2378,8 @@ class ManagedObject(NOCModel):
             CLI_DIAG,
             display_description="Check Device response by CLI (TELNET/SSH) request",
             checks=["TELNET", "SSH"],
+            discovery_box=True,
+            alarm_class="Discovery | Guess | CLI Credentials",
             blocked=ac == "S",
             run_policy="F",
             run_order="B",
@@ -2392,7 +2397,12 @@ class ManagedObject(NOCModel):
             reason=None,
         )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?
-        yield DiagnosticConfig("Access", dependent=["SNMP", "CLI", "HTTP"], show_in_display=False)
+        yield DiagnosticConfig(
+            "Access",
+            dependent=["SNMP", "CLI", "HTTP"],
+            show_in_display=False,
+            alarm_class="NOC | Managed Object | Management Access Lost",
+        )
         # FM
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
@@ -2585,13 +2595,106 @@ class ManagedObject(NOCModel):
                 )
         self._reset_caches(self.id)
 
-    def register_diagnostic_data(self, diagnostic, state, data, from_state, ts):
+    def sync_diagnostic_alarm(self, diagnostics: Optional[List[str]] = None):
         """
-        Raise alarm and save change to bi
-        1. Raise & clear Alarm
-        2. Send data to BI Model
-        3. Register MX Message
-        4. Register object notification
+        Raise & clear Alarm for diagnostic. Only diagnostics with alarm_class set will be synced.
+        If diagnostics param is set and alarm_class is not set - clear alarm
+         For dependent - Group alarm base on diagnostic with alarm for depended
+        :param diagnostics: If set - sync only params diagnostic and depends
+        :return:
+        """
+        from noc.core.service.loader import get_service
+
+        now = datetime.datetime.now()
+        groups = {}
+        alarm_classes: Dict[str, str] = {}  # diagnostic -> AlarmClass Map
+        messages: List[Dict[str, Any]] = []  # Messages for send dispose
+        processed = set()
+        for dc in self.iter_diagnostic_configs():
+            if not dc.alarm_class:
+                continue
+            alarm_classes[dc.diagnostic] = dc.alarm_class
+            if diagnostics and (
+                not set(dc.dependent).intersection(set(diagnostics))
+                or dc.diagnostic not in diagnostics
+            ):
+                continue
+            if dc.diagnostic in processed:
+                continue
+            d = self.get_diagnostic(dc.diagnostic)
+            if dc.dependent:
+                groups[dc.diagnostic] = []
+                for d_name in dc.dependent:
+                    dd = self.get_diagnostic(d_name)
+                    if dd.state == DiagnosticState.failed:
+                        groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason}]
+                    processed.add(d_name)
+            elif d.state == d.state.failed:
+                messages += [
+                    {
+                        "timestamp": now,
+                        "reference": f"dc:{self.object.id}:{d.diagnostic}",
+                        "$op": "raise",
+                        "alarm_class": dc.alarm_class,
+                        "vars": [{"reason": d.reason}],
+                    }
+                ]
+            else:
+                messages += [
+                    {
+                        "timestamp": now,
+                        "reference": f"dc:{self.object.id}:{d.diagnostic}",
+                        "$op": "clear",
+                    }
+                ]
+            processed.add(dc.diagnostic)
+
+        for d in groups:
+            messages += [
+                {
+                    "$op": "ensure_group",
+                    "reference": f"dc:{d}:{self.id}",
+                    "alarm_class": alarm_classes[d],
+                    "alarms": [
+                        {
+                            "reference": f'dc:{dd["diagnostic"]}:{self.id}',
+                            "alarm_class": alarm_classes[dd["diagnostic"]],
+                            "managed_object": self.id,
+                            "timestamp": now,
+                            "labels": [],
+                            "vars": {"reason": dd["reason"]},
+                        }
+                        for dd in groups[d]
+                    ],
+                }
+            ]
+
+        # Send Dispose
+        svc = get_service()
+        for msg in messages:
+            stream, partition = self.alarms_stream_and_partition
+            svc.publish(
+                orjson.dumps(msg),
+                stream=stream,
+                partition=partition,
+            )
+            self.logger.debug(
+                "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
+            )
+
+    def register_diagnostic_data(
+        self,
+        diagnostic: str,
+        state: str,
+        data,
+        from_state: Optional[str] = None,
+        ts: Optional[datetime.datetime] = None,
+    ):
+        """
+        Save diagnostic state changes to Archive.
+        1. Send data to BI Model
+        2. Register MX Message
+        3. Register object notification
         :param diagnostic:
         :param state:
         :param data:
@@ -2599,7 +2702,42 @@ class ManagedObject(NOCModel):
         :param ts:
         :return:
         """
-        ...
+        from noc.core.service.loader import get_service
+
+        svc = get_service()
+        now = ts or datetime.datetime.now()
+        # Send Data
+        dd = {
+            "date": now.date().isoformat(),
+            "ts": now.isoformat(sep=" "),
+            "managed_object": self.bi_id,
+            "diagnostic_name": diagnostic,
+            "state": state,
+        }
+        if from_state:
+            dd["from_state"] = from_state
+        if data:
+            dd["data"] = orjson.dumps(data).decode(DEFAULT_ENCODING)
+        svc.register_metrics("diagnostichistory", [dd], key=self.bi_id)
+        # Send Stream
+        if from_state:
+            # ? always send (from policy)
+            send_message(
+                data={
+                    "name": diagnostic,
+                    "description": self.description,
+                    "state": state,
+                    "from_state": from_state,
+                    "managed_object": self.get_message_context(),
+                },
+                message_type="diagnostic_change",
+                headers={
+                    MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
+                        encoding=DEFAULT_ENCODING
+                    ),
+                },
+            )
+        # Send Notification
 
     def update_init(self):
         """
