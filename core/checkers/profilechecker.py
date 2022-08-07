@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional, Iterable
+from typing import List, Iterable
 
 # NOC modules
 from .base import Check, ObjectChecker, CheckResult, ProfileSet

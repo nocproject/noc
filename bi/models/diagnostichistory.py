@@ -21,7 +21,9 @@ from noc.core.translation import ugettext as _
 class DiagnosticHistory(Model):
     class Meta(object):
         db_table = "diagnostichistory"
-        engine = MergeTree("date", ("date", "diagnostic_name"), primary_keys=("date", "diagnostic_name"))
+        engine = MergeTree(
+            "date", ("date", "diagnostic_name"), primary_keys=("date", "diagnostic_name")
+        )
 
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))

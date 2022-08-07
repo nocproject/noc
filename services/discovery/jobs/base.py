@@ -21,7 +21,7 @@ import bson
 import cachetools
 import orjson
 from pymongo import UpdateOne
-from typing import List, Dict, Any, Optional, Tuple, Set
+from typing import List, Dict, Any, Optional, Tuple
 from builtins import str, object
 
 # NOC modules
@@ -312,28 +312,44 @@ class MODiscoveryJob(PeriodicJob):
         if umbrella and umbrella_changed:
             AlarmEscalation.watch_escalations(umbrella)
 
+    def load_diagnostic(self, is_box: bool = False, is_periodic: bool = False):
+        r = set()
+        for dc in self.object.iter_diagnostic_configs():
+            if (is_box and not dc.discovery_box) or (is_periodic and not dc.discovery_periodic):
+                continue
+            # if dc.run_order != self.run_order:
+            #     continue
+            if not dc.checks or dc.blocked:
+                # Diagnostic without checks
+                continue
+            if dc.run_policy not in {"A", "F"}:
+                continue
+            r.add(dc.diagnostic)
+        return r
+
     def update_diagnostics(self, problems: List[ProblemItem]):
         """
         Syn problems to object diagnostic statuses
         :param problems:
         :return:
         """
-        self.logger.info(
-            "Updating diagnostics statuses: %s", ";".join(p.diagnostic for p in problems)
-        )
         #
+        discovery_diagnostics = self.load_diagnostic(
+            is_box=self.is_box, is_periodic=self.is_periodic
+        )
+        self.logger.info("Updating diagnostics statuses")
         bulk = []
         now = datetime.datetime.now()
         processed = set()
         # Processed failed diagnostics
         for p in problems:
-            if p.diagnostic and p.diagnostic in self.discovery_diagnostics:
+            if p.diagnostic and p.diagnostic in discovery_diagnostics:
                 self.object.set_diagnostic_state(
                     p.diagnostic, state=False, reason=p.message, changed_ts=now, bulk=bulk
                 )
                 processed.add(p.diagnostic)
         # Set OK state
-        for diagnostic in self.discovery_diagnostics - processed:
+        for diagnostic in discovery_diagnostics - processed:
             self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
         if bulk:
             self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
@@ -584,7 +600,7 @@ class DiscoveryCheck(object):
                 self.set_problem(
                     alarm_class=self.error_map.get(e.remote_code),
                     message=message,
-                    diagnostic="CLI" if e.default_code in self.error_map else None,
+                    diagnostic="CLI" if e.remote_code in self.error_map else None,
                     fatal=e.remote_code in self.fatal_errors,
                 )
                 span.set_error_from_exc(e, e.remote_code)

@@ -2660,7 +2660,7 @@ class ManagedObject(NOCModel):
                     if dd and dd.state == DiagnosticState.failed:
                         groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason}]
                     processed.add(d_name)
-            elif d.state == d.state.failed:
+            elif d and d.state == d.state.failed:
                 messages += [
                     {
                         "timestamp": now,
