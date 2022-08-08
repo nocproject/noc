@@ -18,7 +18,7 @@ from .udpserver.config import (
     SERVER_ADDRESS,
     SERVER_PORT,
 )
-from noc.core.ioloop.udpserver_tornado import UDPServer
+from noc.core.ioloop.udpserver import UDPServer
 
 
 class UDPServerStub(UDPServer):
