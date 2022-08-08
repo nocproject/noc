@@ -1,44 +1,47 @@
-Install
--------
-Disable SELINUX. See distro docs.
+Installation
+----
 
-Clone NOC to your favorite location. In docs use default path `/opt/noc`
+1. Disable SELINUX. See distro docs.
+
+2. Clone NOC to your favorite location. The default path is `/opt/noc`
 ```
 git clone https://code.getnoc.com/noc/noc.git /opt/noc
 
 cd /opt/noc/docker
 ```
-Run *pre.sh* script for make dirs\permissions\config
+3. Run noc-docker-setup.sh script to make dirs/permissions/config
 ```
 ./noc-docker-setup.sh -p all
 ```
-Check `./var/...-noc/etc/noc.conf` and edit config if needed
 
-Install `docker-compose`- 
+4. Check the `./var/...-noc/etc/noc.conf` and edit configuration if required
+
+5. Install `docker-compose`:  
 see URL: https://docs.docker.com/compose/install/
 
-Check `docker` daemon is running.
+6. Check if `docker` daemon is running.
 
-Preparing to launch containers:
+7. Prepare to launch containers:
 ```
 export DOCKER_CLIENT_TIMEOUT=200
 docker-compose up --no-start
 ```
-Run initial db init and migrations:
+
+8. Perform initial db initialization and migrations:
 ```
 docker-compose up migrate
 ```
-Wait for process to finish and then run noc itself.
 
-Be aware that command will run lots of noc daemons and intended
+Note: Be aware that command will run lots of noc daemons and expected
 to be pretty slow.  
-On laptops with ssd it took at about 2 minutes to get everything started
+On laptops with SSD it takes about 2 minutes to get everything started
 
-Start `NOC` in docker: 
+9. Start `NOC` in the docker: 
 ```
 docker-compose up -d 
 ```
-Go to https://0.0.0.0 with default credentials:
+
+10. Go to https://0.0.0.0 using default credentials:
 ```
 Username: admin
 Password: admin
@@ -47,10 +50,10 @@ Password: admin
 # Limitations
 
 * Only single node. No way to scale `noc` daemons to multihost.
-* Databases outside container in `./var/<composerprefix>-...` . 
-* Only single pool "default". No way to add equipment from different vrfs.
-* need 30G+ free space on block device
-* SSD block device highly recommended. Start more that 2 minutes.
+* Databases are outside container in `./var/<composerprefix>-...` . 
+* Only single pool: "default". No way to add equipment from different VRFs.
+* Need 30G+ free space on block device
+* SSD block device is highly recommended. It starts more than 2 minutes.
 
 Contributing
 ----
