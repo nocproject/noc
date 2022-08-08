@@ -24,4 +24,3 @@ class Script(BaseScript):
                 a += [int(i[1])]
         r = [{"vlan_id": int(i)} for i in a]
         return r
-

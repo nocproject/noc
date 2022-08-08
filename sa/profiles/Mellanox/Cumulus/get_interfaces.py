@@ -36,45 +36,43 @@ class Script(BaseScript):
     rx_ip = re.compile(r"^IP:\s+(?P<ip>[1-9:]\S+\d)\s*\n", re.MULTILINE)
     rx_vlan_id = re.compile(r"^\s+VLAN Id (?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_vlans = re.compile(
-        r"^All VLANs on L2 Port\s*\n"
-        r"^--------------------\s*\n"
-        r"^(?P<vlans>\d\S+)\s*\n",
-        re.MULTILINE
+        r"^All VLANs on L2 Port\s*\n" r"^--------------------\s*\n" r"^(?P<vlans>\d\S+)\s*\n",
+        re.MULTILINE,
     )
     rx_untagged = re.compile(
-        r"^Untagged\s*\n"
-        r"^--------\s*\n"
-        r"^(?P<untagged>\d+)\s*\n",
-        re.MULTILINE
+        r"^Untagged\s*\n" r"^--------\s*\n" r"^(?P<untagged>\d+)\s*\n", re.MULTILINE
     )
 
     INTERFACE_TYPES = {
-        "Loopback":     "loopback",
-        "Mgmt":         "management",
-        "Trunk/L2":     "physical",
+        "Loopback": "loopback",
+        "Mgmt": "management",
+        "Trunk/L2": "physical",
         "NotConfigured": "physical",
-        "Bridge/L2":    "SVI",
-        "SubInt/L3":    "other",
+        "Bridge/L2": "SVI",
+        "SubInt/L3": "other",
         "Interface/L3": "SVI",
-        "VRF":          "other",
-        "802.3ad":      "aggregated",
+        "VRF": "other",
+        "802.3ad": "aggregated",
     }
 
     def execute_cli(self):
-        vrfs = [{
-            "forwarding_instance": "default",
-            "type": "table",
-            "interfaces": [],
-        }]
+        vrfs = [
+            {
+                "forwarding_instance": "default",
+                "type": "table",
+                "interfaces": [],
+            }
+        ]
         v = self.cli("net show vrf")
         for match in self.rx_vrf.finditer(v):
-            vrfs += [{
-                "forwarding_instance": match.group("vrf"),
-                "type": "VRF",
-                "interfaces": [],
-            }]
+            vrfs += [
+                {
+                    "forwarding_instance": match.group("vrf"),
+                    "type": "VRF",
+                    "interfaces": [],
+                }
+            ]
         bridge_name = "bridge"  # default value
-        interfaces = []
         v = self.cli("net show interface all")
         for line in parse_table(v):
             if not line[0]:
@@ -99,7 +97,7 @@ class Script(BaseScript):
                 "snmp_ifindex": match.group("snmp_ifindex"),
                 "subinterfaces": [],
             }
-            sub =  {
+            sub = {
                 "name": match.group("ifname"),
                 "admin_status": match.group("admin_status") == "Enabled",
                 "oper_status": oper_status,
@@ -145,7 +143,10 @@ class Script(BaseScript):
                     sub["vlan_ids"] = match1.group("vlan_id")
             if iftype == "Bridge/L2":
                 for vrf in vrfs:
-                    if vrf["forwarding_instance"] == match.group("vrf") and vrf["type"] in ("VRF", "table"):
+                    if vrf["forwarding_instance"] == match.group("vrf") and vrf["type"] in (
+                        "VRF",
+                        "table",
+                    ):
                         vrf["interfaces"] += [iface]
                         bridge_name = iface["name"]
                         break
@@ -159,7 +160,10 @@ class Script(BaseScript):
                 continue
             iface["subinterfaces"] += [sub]
             for vrf in vrfs:
-                if vrf["forwarding_instance"] == match.group("vrf") and vrf["type"] in ("VRF", "table"):
+                if vrf["forwarding_instance"] == match.group("vrf") and vrf["type"] in (
+                    "VRF",
+                    "table",
+                ):
                     vrf["interfaces"] += [iface]
                     break
 
