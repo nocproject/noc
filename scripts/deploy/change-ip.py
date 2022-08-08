@@ -2,33 +2,38 @@
 # ----------------------------------------------------------------------
 # Change NOC's ip address
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import os
+import subprocess
 import sys
 import socket
 import fileinput
 
 TOWER_DB_PATH = "/opt/tower/var/tower/db/config.db"
-PG_VERSION = "9.6"
-PG_DEB_PATH = "/etc/postgresql/" + PG_VERSION + "/main/noc.conf"
 NATS_DEB_PATH = "/etc/nats/nats-server.conf"
 LB_DEB_PATH = "/etc/liftbridge/liftbridge.yml"
 NGINX_DEB_PATH = "/etc/nginx/conf.d/noc.conf"
 MONGO_DEB_PATH = "/etc/mongod.conf"
-CONSUL_DEB_PATH = "/etc/consul/config.json"
+CONSUL_DEB_PATH = "/etc/consul.d/consul.hcl"
 CONSUL_ng_path = "/etc/consul.d/nginx.json"
 CONSUL_nats_path = "/etc/consul.d/nats.json"
 CONSUL_lift_path = "/etc/consul.d/liftbridge.json"
 CONSUL_pg_path = "/etc/consul.d/scripts/postgres_check.sh"
 GRAFANA_DEB_PATH = "/etc/grafana/grafana.ini"
+GRAFANA_DS_NOC = "/var/lib/grafana/provisioning/datasources/NocDS.yml"
+GRAFANA_DS_CH = "/var/lib/grafana/provisioning/datasources/nocchdb.yml"
 CLICKHOUSE_DEB_PATH = "/etc/clickhouse-server/users.xml"
+TELEGRAF_PG = "/etc/telegraf/telegraf.d/postgresql.conf"
+TELEGRAF_MG = "/etc/telegraf/telegraf.d/mongodb.conf"
+TELEGRAF_NG = "/etc/telegraf/telegraf.d/nginx.conf"
+PGBOUNCER = "/etc/pgbouncer/pgbouncer.ini"
+
 
 ALL_PATHS = [
-    PG_DEB_PATH,
     MONGO_DEB_PATH,
     NATS_DEB_PATH,
     LB_DEB_PATH,
@@ -40,7 +45,46 @@ ALL_PATHS = [
     CONSUL_pg_path,
     GRAFANA_DEB_PATH,
     CLICKHOUSE_DEB_PATH,
+    GRAFANA_DS_NOC,
+    GRAFANA_DS_CH,
+    TELEGRAF_PG,
+    TELEGRAF_MG,
+    TELEGRAF_NG,
+    PGBOUNCER
 ]
+
+def take_postgresql_version():
+    distr_family = guess_system_type()
+    ver = ""
+    if distr_family == "deb":
+        sp = subprocess.run(['dpkg-query -W -f=\'${package} ${status}\n\' postgresql-*|grep "install ok installed" | '
+                             'grep -Po "(\\d.?\\d+)"|sort -u'], stdout=subprocess.PIPE, shell=True)
+        ver = str(sp.stdout.decode('utf-8')).rstrip('\n')
+        return ver
+    if distr_family == "rpm":
+        sp = subprocess.run(['yum list installed postgresql* | '
+                             'grep -Po \'postgresql\\K\\d*(?=-server)\''], stdout=subprocess.PIPE, shell=True)
+        ver = str(sp.stdout.decode('utf-8')).rstrip('\n')
+        if ver == "96":
+            ver = "9.6"
+            return ver
+        else:
+            return ver
+
+
+def guess_system_type():
+    """Trys to figure out what system do we have, deb or rpm like"""
+    stream = os.popen('grep "^NAME=" /etc/os-release |cut -d "=" -f 2 | sed -e \'s/^"//\' -e \'s/"$//\'')
+    output = stream.read().rstrip('\n')
+
+    if "Ubuntu" in output or "Debian GNU/Linux" in output:
+        distr_fam = "deb"
+    elif "Red Hat Enterprise Linux Server" in output or "CentOS Linux" in output:
+        distr_fam = "rpm"
+    else:
+        print("Can't guess systemc type, sorry. Let it be Debian or Ubuntu!")
+        distr_fam = "deb"
+    return distr_fam
 
 
 def get_my_ip():
@@ -86,8 +130,8 @@ def get_old_ip():
 
 def set_hosts_address(address):
     """Set new IP to /etc/hosts"""
-    deb_path = "/etc/hosts"
-    for path in [deb_path]:
+    etc_path = "/etc/hosts"
+    for path in [etc_path]:
         try:
             if os.path.isfile(path):
                 hostname = socket.gethostname()
@@ -122,22 +166,41 @@ def change_inside_tower(old_ip, new_ip):
 
 
 if __name__ == "__main__":
+    PG_VERSION = take_postgresql_version()
+    PG_DEB_PATH = "/etc/postgresql/" + PG_VERSION + "/main/noc.conf"
+    PG_RPM_PATH = "/var/lib/pgsql/" + PG_VERSION + "/data/noc.conf"
+
     old_ip_address = get_old_ip()
     print("Old ip was: ", old_ip_address)
 
     my_ip = get_my_ip()
     print("Local ip is: ", my_ip)
 
+    distr_fam = guess_system_type()
+    print("Distr family is: ", distr_fam)
+
+    if distr_fam == "deb":
+        ALL_PATHS.append(PG_DEB_PATH)
+    elif distr_fam == "rpm":
+        ALL_PATHS.append(PG_RPM_PATH)
+
     set_hosts_address(my_ip)
     change_ip_everywhere(ALL_PATHS, old_ip_address, my_ip)
 
     print("Restarting services")
     os.system(f"chown nats {NATS_DEB_PATH}")
+    os.system(f"chown clickhouse {CLICKHOUSE_DEB_PATH}")
+    os.system(f"chown postgres {PGBOUNCER}")
+    os.system(f"chown grafana {GRAFANA_DEB_PATH}")
     os.system("systemctl restart nats-server")
     os.system("systemctl restart liftbridge")
     os.system("systemctl restart postgresql")
     os.system("systemctl restart consul")
     os.system("systemctl restart mongod")
+    os.system("systemctl restart clickhouse-server")
+    os.system("systemctl restart postgresql")
+    os.system("systemctl restart pgbouncer")
+    os.system("systemctl restart grafana-server")
 
     os.system("systemctl restart noc")
     change_inside_tower(old_ip_address, my_ip)
