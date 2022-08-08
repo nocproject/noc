@@ -23,7 +23,7 @@ class CredentialChecker(ObjectChecker):
     CHECKS: List[str] = ["TELNET", "SSH", "SNMPv1", "SNMPv2c"]
     PROTO_CHECK_MAP = {p.config.check: p for p in Protocol if p.config.check}
 
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
+    def iter_result(self, checks=None) -> Iterable[CheckResult]:
         cc = CredentialCheckerScript(
             self.object.address,
             self.object.pool,
@@ -31,7 +31,14 @@ class CredentialChecker(ObjectChecker):
             profile=self.object.profile,
             calling_service=self.calling_service,
         )
-        for sr in cc.do_check(*[self.PROTO_CHECK_MAP[c.name] for c in checks]):
+        protocols = []
+        for c in checks or []:
+            if isinstance(c, Check):
+                c = c.name
+            if c not in self.PROTO_CHECK_MAP:
+                continue
+            protocols += [self.PROTO_CHECK_MAP[c]]
+        for sr in cc.do_check(*protocols):
             action = None
             if sr.credential and isinstance(sr.credential, SNMPCredential):
                 action = CredentialSet(snmp_ro=sr.credential.snmp_ro)

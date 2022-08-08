@@ -9,7 +9,7 @@
 from typing import List, Iterable
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult, ProfileSet
+from .base import ObjectChecker, CheckResult, ProfileSet
 from ..profile.checker import ProfileChecker as ProfileCheckerProfile
 from ..script.credentialchecker import Protocol
 from ..wf.diagnostic import DiagnosticState, SNMP_DIAG
@@ -28,7 +28,7 @@ class ProfileChecker(ObjectChecker):
         if p.config.snmp_version is not None and p.config.check
     }
 
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
+    def iter_result(self, checks=None) -> Iterable[CheckResult]:
         if (
             SNMP_DIAG in self.object.diagnostics
             and self.object.get_diagnostic(SNMP_DIAG).state == DiagnosticState.enabled

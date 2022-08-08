@@ -76,25 +76,21 @@ class Checker(object):
     name: str
     CHECKS: List[str]
 
-    def run(self, checks: List[Check]) -> List[CheckResult]:
+    def iter_result(
+        self, checks: Optional[List[Union[Check, str]]] = None
+    ) -> Iterable[CheckResult]:
         """
-        Do check and return result
-        :param checks:
-        :param calling_service:
-        :return:
-        """
-        ...
-
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
-        """
-
-        :param checks:
+        Iterate over result
+        :param checks: List checks param for run
         :return:
         """
         ...
 
 
 class ObjectChecker(Checker):
+    """
+    Checkers supported ManagedObject
+    """
     def __init__(self, c_object, logger=None, calling_service: Optional[str] = None):
         self.object = c_object
         self.logger = PrefixLoggerAdapter(
