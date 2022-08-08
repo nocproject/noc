@@ -50,21 +50,31 @@ ALL_PATHS = [
     TELEGRAF_PG,
     TELEGRAF_MG,
     TELEGRAF_NG,
-    PGBOUNCER
+    PGBOUNCER,
 ]
+
 
 def take_postgresql_version():
     distr_family = guess_system_type()
     ver = ""
     if distr_family == "deb":
-        sp = subprocess.run(['dpkg-query -W -f=\'${package} ${status}\n\' postgresql-*|grep "install ok installed" | '
-                             'grep -Po "(\\d.?\\d+)"|sort -u'], stdout=subprocess.PIPE, shell=True)
-        ver = str(sp.stdout.decode('utf-8')).rstrip('\n')
+        sp = subprocess.run(
+            [
+                "dpkg-query -W -f='${package} ${status}\n' postgresql-*|grep \"install ok installed\" | "
+                'grep -Po "(\\d.?\\d+)"|sort -u'
+            ],
+            stdout=subprocess.PIPE,
+            shell=True,
+        )
+        ver = str(sp.stdout.decode("utf-8")).rstrip("\n")
         return ver
     if distr_family == "rpm":
-        sp = subprocess.run(['yum list installed postgresql* | '
-                             'grep -Po \'postgresql\\K\\d*(?=-server)\''], stdout=subprocess.PIPE, shell=True)
-        ver = str(sp.stdout.decode('utf-8')).rstrip('\n')
+        sp = subprocess.run(
+            ["yum list installed postgresql* | " "grep -Po 'postgresql\\K\\d*(?=-server)'"],
+            stdout=subprocess.PIPE,
+            shell=True,
+        )
+        ver = str(sp.stdout.decode("utf-8")).rstrip("\n")
         if ver == "96":
             ver = "9.6"
             return ver
@@ -74,8 +84,10 @@ def take_postgresql_version():
 
 def guess_system_type():
     """Trys to figure out what system do we have, deb or rpm like"""
-    stream = os.popen('grep "^NAME=" /etc/os-release |cut -d "=" -f 2 | sed -e \'s/^"//\' -e \'s/"$//\'')
-    output = stream.read().rstrip('\n')
+    stream = os.popen(
+        'grep "^NAME=" /etc/os-release |cut -d "=" -f 2 | sed -e \'s/^"//\' -e \'s/"$//\''
+    )
+    output = stream.read().rstrip("\n")
 
     if "Ubuntu" in output or "Debian GNU/Linux" in output:
         distr_fam = "deb"
