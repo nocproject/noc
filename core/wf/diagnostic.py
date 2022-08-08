@@ -61,17 +61,23 @@ class DiagnosticConfig(object):
     # Check config
     checks: Optional[List[str]] = None  # CheckItem name, param
     dependent: Optional[List[str]] = None  # Dependency diagnostic
-    state_policy: str = "ANY"  # Calculate State on checks.
     # ANY - Any check has OK, ALL - ALL checks has OK
+    state_policy: str = "ANY"  # Calculate State on checks.
+    reason: Optional[str] = None  # Reason current state
     # Discovery Config
-    check_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
-    reason: Optional[str] = None
+    run_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
+    run_order: str = "B"  # B - Before all discovery, A - After all discovery
+    discovery_box: bool = False  # Run on periodic discovery
+    discovery_periodic: bool = False  # Run on box discovery
+    #
+    save_history: bool = False
     # Display Config
     show_in_display: bool = True  # Show diagnostic on UI
     display_description: Optional[str] = None  # Description for show User
     display_order: int = 0  # Order on displayed list
     # FM Config
     alarm_class: Optional[str] = None  # Default AlarmClass for raise alarm
+    alarm_labels: Optional[List[str]] = None
 
 
 DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {

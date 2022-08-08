@@ -8,7 +8,7 @@
 # Python modules
 import logging
 from dataclasses import dataclass
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any, Union, Iterable
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -24,6 +24,7 @@ class ProfileSet(object):
 class MetricValue(object):
     metric_type: str
     value: float
+    labels: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
@@ -50,6 +51,15 @@ class CheckResult(object):
 
 
 @dataclass(frozen=True)
+class CheckData(object):
+    name: str
+    status: bool  # True - OK, False - Fail
+    skipped: bool = False  # Check was skipped (Example, no credential)
+    error: Optional[str] = None  # Description if Fail
+    data: Optional[Dict[str, Any]] = None  # Collected check data
+
+
+@dataclass(frozen=True)
 class Check(object):
     name: str
     arg0: Optional[str] = None
@@ -66,20 +76,26 @@ class Checker(object):
     name: str
     CHECKS: List[str]
 
-    def run(self, checks: List[Check], calling_service: Optional[str] = None) -> List[CheckResult]:
+    def iter_result(
+        self, checks: Optional[List[Union[Check, str]]] = None
+    ) -> Iterable[CheckResult]:
         """
-        Do check and return result
-        :param checks:
-        :param calling_service:
+        Iterate over result
+        :param checks: List checks param for run
         :return:
         """
         ...
 
 
 class ObjectChecker(Checker):
-    def __init__(self, c_object, logger=None):
+    """
+    Checkers supported ManagedObject
+    """
+
+    def __init__(self, c_object, logger=None, calling_service: Optional[str] = None):
         self.object = c_object
         self.logger = PrefixLoggerAdapter(
             logger or logging.getLogger(self.name),
             f"{self.object.pool or ''}][{self.object or ''}",
         )
+        self.calling_service = calling_service or self.name
