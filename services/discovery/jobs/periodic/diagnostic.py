@@ -6,7 +6,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, List, Optional, Literal, Iterable
+import datetime
+from typing import Dict, List, Optional, Literal, Iterable, Any
 from collections import defaultdict
 
 # NOC modules
@@ -23,6 +24,7 @@ from noc.core.checkers.base import (
 from noc.core.checkers.loader import loader
 from noc.core.wf.diagnostic import DiagnosticState
 from noc.sa.models.profile import Profile
+from noc.pm.models.metrictype import MetricType
 
 
 class DiagnosticCheck(DiscoveryCheck):
@@ -55,6 +57,8 @@ class DiagnosticCheck(DiscoveryCheck):
         self.load_checkers()
         bulk = []
         metrics: List[MetricValue] = []
+        # Diagnostic Data
+        d_data: Dict[str, Any] = defaultdict(dict)  # Diagnostic -> Data
         last_state: Dict[str, DiagnosticState] = {}
         # Processed Check ? Filter param
         for dc in self.object.iter_diagnostic_configs():
@@ -91,10 +95,18 @@ class DiagnosticCheck(DiscoveryCheck):
                 checks.append(cr)
                 if cr.metrics:
                     metrics += cr.metrics
+                if cr.data:
+                    d_data[dc.diagnostic].update(cr.data)
             # Update diagnostics
             self.object.update_diagnostics(
                 [
-                    CheckData(name=cr.check, status=cr.status, skipped=cr.skipped, error=cr.error)
+                    CheckData(
+                        name=cr.check,
+                        status=cr.status,
+                        skipped=cr.skipped,
+                        error=cr.error,
+                        data=cr.data,
+                    )
                     for cr in checks
                 ],
                 bulk=bulk,
@@ -108,6 +120,8 @@ class DiagnosticCheck(DiscoveryCheck):
                     di.diagnostic,
                     state=di.state,
                     from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
+                    data=d_data.get(di.diagnostic),
+                    reason=di.reason,
                     ts=di.changed,
                 )
         #
@@ -192,4 +206,26 @@ class DiagnosticCheck(DiscoveryCheck):
         :param metrics:
         :return:
         """
-        ...
+        r = {}
+        now = datetime.datetime.now()
+        # Group Metric by row
+        for m in metrics:
+            mt = MetricType.get_by_name(m.metric_type)
+            if not mt:
+                self.logger.warning("Unknown MetricType: %s", m.metric_type)
+                continue
+            if mt.scope.table_name not in r:
+                r[mt.scope.table_name] = {}
+            key = tuple(m.labels or [])
+            if key not in r[mt.scope.table_name]:
+                r[mt.scope.table_name][key] = {
+                    "date": now.date().isoformat(),
+                    "ts": now.replace(microsecond=0).isoformat(sep=" "),
+                    "managed_object": self.object.bi_id,
+                    "labels": m.labels,
+                    mt.field_name: m.value,
+                }
+                continue
+            r[mt.scope.table_name][key][mt.field_name] = m.value
+        for table, data in r.items():
+            self.service.register_metrics(table, list(data.values()), key=self.object.bi_id)

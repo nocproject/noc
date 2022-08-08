@@ -2311,6 +2311,7 @@ class ManagedObject(NOCModel):
         state: bool,
         reason: Optional[str] = None,
         changed_ts: Optional[datetime.datetime] = None,
+        data: Optional[Dict[str, Any]] = None,
         bulk: Optional[List[DiagnosticItem]] = None,
     ):
         """
@@ -2319,6 +2320,7 @@ class ManagedObject(NOCModel):
         :param state: True - Enabled; False - Failed
         :param reason: Reason state changed
         :param changed_ts: Timestamp changed
+        :param data: Collected checks data
         :param bulk: Return changed diagnostic without saved
         :return:
         """
@@ -2343,7 +2345,7 @@ class ManagedObject(NOCModel):
             self.save_diagnostics(self.id, [d])
             self.sync_diagnostic_alarm([d.diagnostic])
             self.register_diagnostic_change(
-                d.diagnostic, d.state, from_state=last_state, ts=changed
+                d.diagnostic, d.state, from_state=last_state, data=data, reason=reason, ts=changed
             )
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
@@ -2448,7 +2450,7 @@ class ManagedObject(NOCModel):
         checks = checks or []
         diagnostics: Dict[str, DiagnosticItem] = {}
         processed = set()
-        dependency: List[DiagnosticConfig] = []
+        dependency: List[Tuple[DiagnosticConfig, DiagnosticItem]] = []
         last_state = {}
         # check_result = {c.name: c for c in checks}
         for dc in self.iter_diagnostic_configs():
@@ -2482,7 +2484,10 @@ class ManagedObject(NOCModel):
                     state = DIAGNOSTIC_CHECK_STATE[c_state]
                 # Defer Dependent
                 if dc.dependent:
-                    dependency.append(dc)
+                    if state:
+                        d.state = state
+                    dependency.append((dc, d))
+                    continue
             else:
                 logger.debug("[%s] Not calculate state. Skipping", dc.diagnostic)
                 continue
@@ -2501,36 +2506,41 @@ class ManagedObject(NOCModel):
             del self.diagnostics[d]
             removed += [d]
         # Calculate State for defer Dependent
-        for dc in dependency:
-            d_states = []
+        for dc, d in dependency:
+            d_states = [d.state]
+            # Dependency states
             for dd in dc.dependent:
                 if dd in diagnostics:
-                    if diagnostics[dd].state.is_blocked:
-                        continue
-                    d_states.append(diagnostics[dd].state)
+                    dd = diagnostics[dd]
                 elif dd in self.diagnostics:
                     dd = self.get_diagnostic(dd)
-                    if dd.state == DiagnosticState.blocked:
-                        continue
-                    d_states.append(dd.state)
-            if not d_states:
+                else:
+                    logger.warning("[%s] Unknown dependency: %s", dc.diagnostic, dd)
+                    continue
+                if dd.state.is_blocked:
+                    # Skipping ?
+                    continue
+                d_states.append(dd.state)
+            # Calculate State
+            state = DiagnosticState.enabled
+            if DiagnosticState.enabled not in d_states and DiagnosticState.failed not in d_states:
+                state = DiagnosticState.unknown
+            elif dc.state_policy == "ANY" and DiagnosticState.enabled not in d_states:
+                state = DiagnosticState.failed
+            elif dc.state_policy == "ALL" and DiagnosticState.failed in d_states:
+                state = DiagnosticState.failed
+            if state == DiagnosticState.unknown and dc.diagnostic in self.diagnostics:
                 # Unknown state, Remove
-                if dc.diagnostic in self.diagnostics:
-                    removed += [dc.diagnostic]
-                    del self.diagnostics[dc.diagnostic]
-                if dc.diagnostic in diagnostics:
-                    del diagnostics[dc.diagnostic]
+                removed += [dc.diagnostic]
+                del self.diagnostics[dc.diagnostic]
                 continue
-            if dc.diagnostic not in diagnostics:
-                diagnostics[dc.diagnostic] = DiagnosticItem(diagnostic=dc.diagnostic, checks=[])
-            state = DIAGNOSTIC_CHECK_STATE[
-                DiagnosticState.enabled in d_states
-                if dc.state_policy == "ANY"
-                else DiagnosticState.failed not in d_states
-            ]
-            if state != diagnostics[dc.diagnostic].state:
-                diagnostics[dc.diagnostic].state = state
-                diagnostics[dc.diagnostic].changed = now.replace(microsecond=0).isoformat(sep=" ")
+            elif state != d.state:
+                logger.info(
+                    "[%s] Change complex diagnostic state: %s -> %s", dc.diagnostic, d.state, state
+                )
+                d.state = state
+                d.changed = now.replace(microsecond=0).isoformat(sep=" ")
+                diagnostics[dc.diagnostic] = d
         # Update
         if not diagnostics and not removed:
             return
@@ -2546,6 +2556,7 @@ class ManagedObject(NOCModel):
                     di.diagnostic,
                     state=di.state,
                     from_state=last_state.get(di.diagnostic, DiagnosticState.unknown),
+                    reason=di.reason,
                     ts=di.changed,
                 )
 
@@ -2616,20 +2627,23 @@ class ManagedObject(NOCModel):
                 self.register_diagnostic_change(
                     d.diagnostic, state=DiagnosticState.unknown, from_state=d.state, ts=ts
                 )
-                del self.diagnostics[d.diagnostic]
                 removed.append(d.diagnostic)
         # If Failed state - clear alarm
-        if removed:
-            logger.debug("[%s] Removed diagnostics", list(removed))
-            with pg_connection.cursor() as cursor:
-                cursor.execute(
-                    f"""
-                     UPDATE sa_managedobject
-                     SET diagnostics = diagnostics {" #- %s " * len(removed)}
-                     WHERE id = %s""",
-                    ["{%s}" % r for r in removed] + [self.id],
-                )
-            self.sync_diagnostic_alarm(removed)
+        if not removed:
+            return
+        logger.debug("[%s] Removed diagnostics", ";".join(removed))
+        self.sync_diagnostic_alarm(removed)
+        with pg_connection.cursor() as cursor:
+            cursor.execute(
+                f"""
+                 UPDATE sa_managedobject
+                 SET diagnostics = diagnostics {" #- %s " * len(removed)}
+                 WHERE id = %s""",
+                ["{%s}" % r for r in removed] + [self.id],
+            )
+        for d in removed:
+            # Do after sync-alarm and register_changed
+            del self.diagnostics[d]
         self._reset_caches(self.id)
 
     def sync_diagnostic_alarm(self, diagnostics: Optional[List[str]] = None):
@@ -2643,7 +2657,9 @@ class ManagedObject(NOCModel):
         from noc.core.service.loader import get_service
 
         now = datetime.datetime.now()
+        # Group Alarms
         groups = {}
+        #
         alarms = {}
         alarm_config: Dict[str, Dict[str, Any]] = {}  # diagnostic -> AlarmClass Map
         messages: List[Dict[str, Any]] = []  # Messages for send dispose
@@ -2660,6 +2676,9 @@ class ManagedObject(NOCModel):
                 continue
             if diagnostics and not dc.dependent and dc.diagnostic not in diagnostics:
                 # Skip non-changed diagnostics
+                continue
+            if diagnostics and dc.dependent and not diagnostics.intersection(set(dc.dependent)):
+                # Skip non-affected depended diagnostics
                 continue
             d = self.get_diagnostic(dc.diagnostic)
             if dc.dependent:
@@ -2718,7 +2737,7 @@ class ManagedObject(NOCModel):
                 stream=stream,
                 partition=partition,
             )
-            logger.info(
+            logger.debug(
                 "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
             )
 
@@ -2726,7 +2745,8 @@ class ManagedObject(NOCModel):
         self,
         diagnostic: str,
         state: str,
-        from_state: Optional[str] = None,
+        from_state: str = DiagnosticState.unknown,
+        reason: Optional[str] = None,
         data: Optional[Dict[str, Any]] = None,
         ts: Optional[datetime.datetime] = None,
     ):
@@ -2735,10 +2755,11 @@ class ManagedObject(NOCModel):
         1. Send data to BI Model
         2. Register MX Message
         3. Register object notification
-        :param diagnostic:
-        :param state:
-        :param data:
-        :param from_state:
+        :param diagnostic: - Diagnostic name
+        :param state: Current state
+        :param from_state: Previous State
+        :param data: Checked data
+        :param reason:
         :param ts:
         :return:
         """
@@ -2751,13 +2772,14 @@ class ManagedObject(NOCModel):
         # Send Data
         dd = {
             "date": now.date().isoformat(),
-            "ts": now.isoformat(sep=" "),
+            "ts": now.replace(microsecond=0).isoformat(sep=" "),
             "managed_object": self.bi_id,
             "diagnostic_name": diagnostic,
             "state": state,
+            "from_state": from_state,
         }
-        if from_state:
-            dd["from_state"] = from_state
+        if reason:
+            dd["reason"] = reason
         if data:
             dd["data"] = orjson.dumps(data).decode(DEFAULT_ENCODING)
         svc.register_metrics("diagnostichistory", [dd], key=self.bi_id)
@@ -2767,9 +2789,9 @@ class ManagedObject(NOCModel):
             send_message(
                 data={
                     "name": diagnostic,
-                    "description": self.description,
                     "state": state,
                     "from_state": from_state,
+                    "reason": reason,
                     "managed_object": self.get_message_context(),
                 },
                 message_type="diagnostic_change",

@@ -24,6 +24,7 @@ class ProfileSet(object):
 class MetricValue(object):
     metric_type: str
     value: float
+    labels: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
