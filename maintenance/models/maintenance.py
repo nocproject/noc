@@ -99,6 +99,15 @@ class Maintenance(Document):
     # <external system name>:<external tt id>
     escalation_tt = StringField(required=False)
     # @todo: Attachments
+    escalation_policy = StringField(
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("S", "Suspend"),
+            ("M", "Maintenance")
+        ],
+        default="S",
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

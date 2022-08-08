@@ -24,6 +24,7 @@ from noc.fm.models.alarmescalation import AlarmEscalation, EscalationItem as AEs
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.maintenance.models.maintenance import Maintenance
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
@@ -66,20 +67,24 @@ class BaseSequence(ABC):
         self.logger = PrefixLoggerAdapter(logger, str(alarm_id))
         self.login: str = login
 
-    def retry_job(self, msg: str) -> NoReturn:
+    def retry_job(self, delay: None, msg: str) -> NoReturn:
         """
         Reschedule current job and stop escalatio
         """
         global RETRY_DELTA, RETRY_TIMEOUT, next_retry, retry_lock
 
-        now = datetime.datetime.now()
-        retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
-        with retry_lock:
-            if retry < next_retry:
-                retry = next_retry
-            next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
-        delta = retry - now
-        delay = delta.seconds + (1 if delta.microseconds else 0)
+        if not delay:
+            now = datetime.datetime.now()
+            retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
+            with retry_lock:
+                if retry < next_retry:
+                    retry = next_retry
+                next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
+
+            delta = retry - now
+            delay = delta.seconds + (1 if delta.microseconds else 0)
+        else:
+            delay = delay.seconds + 60
         Job.retry_after(delay, msg)
 
     def stop_sequence(self) -> NoReturn:
@@ -678,6 +683,15 @@ class EscalationSequence(BaseSequence):
         if not mnt_ids:
             return
         for m_id in mnt_ids:
+            maintenance = Maintenance.get_by_id(m_id)
+            if maintenance.escalation_policy == "E":
+                self.logger.info("Escalation enable")
+                return
+            if maintenance.escalation_policy == "S":
+                delay = maintenance.stop - self.escalation_doc.timestamp
+                self.retry_job(delay, "Escalation suspended, retry after Maintenance")
+                self.logger.info("Escalation suspended, retry after Maintenance")
+                continue
             self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
@@ -718,7 +732,8 @@ class EscalationSequence(BaseSequence):
                     self.create_tt(esc_item, ctx)
                     self.notify_escalated_consequences()
                 # Send notification
-                notify = self.notify(esc_item, ctx)
+                if not self.is_under_maintenance():
+                    notify = self.notify(esc_item, ctx)
                 if esc_item.stop_processing:
                     logger.debug("Stopping processing")
                     break
