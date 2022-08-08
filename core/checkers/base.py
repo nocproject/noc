@@ -91,6 +91,7 @@ class ObjectChecker(Checker):
     """
     Checkers supported ManagedObject
     """
+
     def __init__(self, c_object, logger=None, calling_service: Optional[str] = None):
         self.object = c_object
         self.logger = PrefixLoggerAdapter(
