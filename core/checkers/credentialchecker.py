@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional
+from typing import List, Iterable
 
 # NOC modules
 from .base import Check, ObjectChecker, CheckResult, CredentialSet
@@ -23,40 +23,36 @@ class CredentialChecker(ObjectChecker):
     CHECKS: List[str] = ["TELNET", "SSH", "SNMPv1", "SNMPv2c"]
     PROTO_CHECK_MAP = {p.config.check: p for p in Protocol if p.config.check}
 
-    def run(self, checks: List[Check], calling_service: Optional[str] = None) -> List[CheckResult]:
-        """
-        :param checks:
-        :param calling_service:
-        :return:
-        """
+    def iter_result(self, checks=None) -> Iterable[CheckResult]:
         cc = CredentialCheckerScript(
             self.object.address,
             self.object.pool,
             self.object.effective_labels,
             profile=self.object.profile,
-            calling_service=calling_service or self.name,
+            calling_service=self.calling_service,
         )
-        r = []
-        # @todo Bad interface, need reworked
-        for sr in cc.do_check(*[self.PROTO_CHECK_MAP[c.name] for c in checks]):
+        protocols = []
+        for c in checks or []:
+            if isinstance(c, Check):
+                c = c.name
+            if c not in self.PROTO_CHECK_MAP:
+                continue
+            protocols += [self.PROTO_CHECK_MAP[c]]
+        for sr in cc.do_check(*protocols):
             action = None
-            if not action and sr.credential:
-                if isinstance(sr.credential, SNMPCredential):
-                    action = CredentialSet(snmp_ro=sr.credential.snmp_ro)
-                elif isinstance(sr.credential, CLICredential):
-                    action = CredentialSet(
-                        user=sr.credential.user,
-                        password=sr.credential.password,
-                        super_password=sr.credential.super_password,
-                    )
+            if sr.credential and isinstance(sr.credential, SNMPCredential):
+                action = CredentialSet(snmp_ro=sr.credential.snmp_ro)
+            elif sr.credential and isinstance(sr.credential, CLICredential):
+                action = CredentialSet(
+                    user=sr.credential.user,
+                    password=sr.credential.password,
+                    super_password=sr.credential.super_password,
+                )
             for pr in sr.protocols:
-                r += [
-                    CheckResult(
-                        check=pr.protocol.config.check,
-                        status=pr.status,
-                        error=pr.error,
-                        skipped=pr.skipped,
-                        action=action,
-                    )
-                ]
-        return r
+                yield CheckResult(
+                    check=pr.protocol.config.check,
+                    status=pr.status,
+                    error=pr.error,
+                    skipped=pr.skipped,
+                    action=action,
+                )

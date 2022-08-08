@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Box Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,9 +16,6 @@ from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 from noc.core.span import Span
 from noc.core.change.policy import change_tracker
 from .resolver import ResolverCheck
-from .suggestsnmp import SuggestSNMPCheck
-from .profile import ProfileCheck
-from .suggestcli import SuggestCLICheck
 from .version import VersionCheck
 from .caps import CapsCheck
 from .interface import InterfaceCheck
@@ -51,6 +48,7 @@ from .segmentation import SegmentationCheck
 from ..periodic.cpestatus import CPEStatusCheck
 from .ifdesc import IfDescCheck
 from ..periodic.alarms import AlarmsCheck
+from ..periodic.diagnostic import DiagnosticCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -86,16 +84,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         with Span(sample=self.object.box_telemetry_sample), change_tracker.bulk_changes():
             has_cli = "C" in self.object.get_access_preference()
             ResolverCheck(self).run()
-            if self.object.auth_profile and self.object.auth_profile.enable_suggest:
-                SuggestSNMPCheck(self).run()
-            if self.object.object_profile.enable_box_discovery_profile:
-                ProfileCheck(self).run()
-            if has_cli and self.object.auth_profile and self.object.auth_profile.enable_suggest:
-                SuggestCLICheck(self).run()
-                if self.object.auth_profile and self.object.auth_profile.enable_suggest:
-                    # Still suggest
-                    self.logger.info("Cannot choose valid credentials. Stopping")
-                    return
+            DiagnosticCheck(self, run_order="B").run()
             # Run remaining checks
             if has_cli and self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
@@ -157,6 +146,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             MetricsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
+        DiagnosticCheck(self, run_order="A").run()
 
     def get_running_policy(self):
         return self.object.get_effective_box_discovery_running_policy()

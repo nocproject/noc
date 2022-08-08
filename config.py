@@ -475,6 +475,8 @@ class Config(BaseConfig):
         enable_snmptrap = BooleanParameter(default=False)
         enable_syslog = BooleanParameter(default=False)
         #
+        enable_diagnostic_change = BooleanParameter(default=False)
+        #
         ds_limit = IntParameter(default=1000)
 
     class mongo(ConfigSection):

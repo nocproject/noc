@@ -1,0 +1,21 @@
+{
+    "name": "NOC | Managed Object | Access Degraded",
+    "$collection": "fm.alarmclasses",
+    "uuid": "3b4f09fe-6ad8-4383-a9c6-83d24fb79086",
+    "description": "Group Alarm Class - lost access to Managed Object one or more methods",
+    "is_unique": true,
+    "reference": [],
+    "is_ephemeral": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [{
+        "name": "reason",
+        "description": "Reason by access lost"
+    }],
+    "subject_template": "Access Degraded by {% for aa in alarm.iter_grouped()  %} {{aa.vars.method}}{% endfor %}",
+    "body_template": "NOC is unable to interact with object using Access methods. SA tasks will fall back to availability methods, possible loosing some functionality.\n \n{% for aa in alarm.iter_grouped()  %}\n==============\n   {{ aa.body }}\n==============\n{% endfor %}\n\n",
+    "symptoms": "NOC cannot interact with the box",
+    "probable_causes": "Device or Access server is misconfigured, community mismatch or misconfigured ACL",
+    "recommended_actions": "Check Access configuration",
+    "recover_time": 300
+}

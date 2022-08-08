@@ -1,0 +1,28 @@
+{
+    "name": "NOC | Managed Object | Access Lost",
+    "$collection": "fm.alarmclasses",
+    "uuid": "6c8986fb-999c-4033-96dd-8d84a099d222",
+    "description": "Lost access to Managed Object one or more methods",
+    "is_unique": true,
+    "reference": ["method"],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "reason",
+            "description": "Reason by access lost"
+        },
+        {
+            "name": "method",
+            "description": "Method that lost access",
+            "default_labels": ["noc::access::method::*"]
+        }
+    ],
+    "subject_template": "Access Lost by {{ method }}",
+    "body_template": "NOC is unable to interact with object using {{ method  }}. SA tasks will fall back to availability methods, possible loosing some functionality.",
+    "symptoms": "NOC cannot interact with the box",
+    "probable_causes": "Device or Access server is misconfigured, community mismatch or misconfigured ACL",
+    "recommended_actions": "Check Access configuration",
+    "recover_time": 300
+}

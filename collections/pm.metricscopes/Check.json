@@ -1,0 +1,48 @@
+{
+    "name": "Check",
+    "$collection": "pm.metricscopes",
+    "uuid": "9ff42891-ce37-402f-930c-e9359d05734e",
+    "table_name": "check",
+    "description": "Scope for Diagnostic check metrics.",
+    "key_fields": [
+        {
+            "field_name": "managed_object",
+            "model": "sa.ManagedObject"
+        },
+        {
+            "field_name": "agent",
+            "model": "pm.Agent"
+        },
+        {
+            "field_name": "service",
+            "model": "sa.Service"
+        }
+    ],
+    "enable_timedelta": true,
+    "labels": [
+        {
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": true,
+            "label": "noc::diagnostic::*",
+            "store_column": "diagnostic_name"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": true,
+            "is_required": true,
+            "label": "noc::check::name::*",
+            "store_column": "check_name"
+        },
+        {
+            "is_order_key": true,
+            "is_path": true,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::check::arg0::*",
+            "view_column": "check_arg0"
+        }
+    ]
+}

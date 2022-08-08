@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional
+from typing import List, Iterable
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult, ProfileSet
+from .base import ObjectChecker, CheckResult, ProfileSet
 from ..profile.checker import ProfileChecker as ProfileCheckerProfile
 from ..script.credentialchecker import Protocol
 from ..wf.diagnostic import DiagnosticState, SNMP_DIAG
@@ -28,12 +28,7 @@ class ProfileChecker(ObjectChecker):
         if p.config.snmp_version is not None and p.config.check
     }
 
-    def run(self, checks: List[Check], calling_service: Optional[str] = None) -> List[CheckResult]:
-        """
-        :param checks:
-        :return:
-        """
-        snmp_community, snmp_version = None, []
+    def iter_result(self, checks=None) -> Iterable[CheckResult]:
         if (
             SNMP_DIAG in self.object.diagnostics
             and self.object.get_diagnostic(SNMP_DIAG).state == DiagnosticState.enabled
@@ -44,29 +39,24 @@ class ProfileChecker(ObjectChecker):
                 for check in self.object.get_diagnostic(SNMP_DIAG).checks
                 if check.status
             ]
-        # caps = self.object.get_caps()
-        # if caps.get("SNMP | v2c") is False or caps.get("SNMP | v2c") is None:
-        #     snmp_version = [SNMP_v1, SNMP_v2c]
-        # else:
-        #     snmp_version = [SNMP_v2c, SNMP_v1]
-        #
+        else:
+            snmp_community, snmp_version = None, []
         checker = ProfileCheckerProfile(
             self.object.address,
             self.object.pool.name,
             logger=self.logger,
-            calling_service=calling_service or self.name,
+            calling_service=self.calling_service,
             snmp_community=snmp_community,
             snmp_version=snmp_version,
         )
         profile = checker.get_profile()
         if not profile:
-            return [CheckResult(check="PROFILE", status=bool(profile), error=checker.get_error())]
+            yield CheckResult(check="PROFILE", status=bool(profile), error=checker.get_error())
+            return
         # Skipped
-        return [
-            CheckResult(
-                check="PROFILE",
-                status=bool(profile),
-                data={"profile": profile.name},
-                action=ProfileSet(profile=profile.name),
-            )
-        ]
+        yield CheckResult(
+            check="PROFILE",
+            status=bool(profile),
+            data={"profile": profile.name},
+            action=ProfileSet(profile=profile.name),
+        )
