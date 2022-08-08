@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS_Industrial_CLI.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -63,7 +63,10 @@ class Script(BaseScript):
         v = self.cli("show interfaces status")
         t = parse_table(v)
         for i in t:
-            ifname = i[0]
+            # Convert eth1/0/21(f) to eth1/0/21 ans skip eth1/0/21(c)
+            ifname = i[0].replace("(f)", "")
+            if "(c)" in ifname:
+                continue
             iface = {"local_interface": ifname, "neighbors": []}
             if_range = "%s-%s" % (ifname[3:], ifname.split("/")[2])
             if not has_if_range:
