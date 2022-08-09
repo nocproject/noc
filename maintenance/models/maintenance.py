@@ -100,12 +100,7 @@ class Maintenance(Document):
     escalation_tt = StringField(required=False)
     # @todo: Attachments
     escalation_policy = StringField(
-        choices=[
-            ("E", "Enable"),
-            ("D", "Disable"),
-            ("S", "Suspend"),
-            ("M", "Maintenance")
-        ],
+        choices=[("E", "Enable"), ("D", "Disable"), ("S", "Suspend"), ("M", "Maintenance")],
         default="S",
     )
 
