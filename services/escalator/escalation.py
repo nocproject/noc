@@ -685,14 +685,15 @@ class EscalationSequence(BaseSequence):
         for m_id in mnt_ids:
             maintenance = Maintenance.get_by_id(m_id)
             if maintenance.escalation_policy == "E":
-                self.logger.info("Escalation enable")
+                self.logger.info("Escalation allowed by maintenance policy")
                 return
-            if maintenance.escalation_policy == "S":
+            elif maintenance.escalation_policy == "S":
                 delay = maintenance.stop - self.escalation_doc.timestamp
                 self.retry_job(delay, "Escalation suspended, retry after Maintenance")
                 self.logger.info("Escalation suspended, retry after Maintenance")
                 continue
-            self.log_alarm(f"Object is under maintenance: {m_id}")
+            else:
+                self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
     def process(self) -> None:
