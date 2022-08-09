@@ -15,7 +15,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
         "Ext.ux.form.GridField",
         "Ext.ux.form.StringsField",
         "NOC.main.ref.check.LookupField",
-        "NOC.sa.diagnosticconfig.LookupField",
+        "NOC.sa.objectdiagnosticconfig.LookupField",
         "NOC.fm.alarmclass.LookupField"
     ],
     model: "NOC.sa.objectdiagnosticconfig.Model",
@@ -167,14 +167,14 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                 {
                     text: __("Periodic"),
                     dataIndex: "enable_periodic",
-                    width: 50,
+                    width: 75,
                     renderer: NOC.render.Bool,
                     editor: "checkbox"
                 },
                 {
                     text: __("Save History"),
                     dataIndex: "save_history",
-                    width: 50,
+                    width: 75,
                     renderer: NOC.render.Bool,
                     editor: "checkbox"
                 },
@@ -186,14 +186,12 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                         xtype: "combobox",
                         store: [
                             ["A", __("Always")],
-                            ["F", __("Unknown or Failed")],
-                            ["M", __("Manual")]
+                            ["F", __("Unknown or Failed")]
                         ]
                     },
                     renderer: NOC.render.Choices({
-                        "A": __("Persistent"),
-                        "F": __("Unknown or Failed"),
-                        "M": __("Manual")
+                        "A": __("Always"),
+                        "F": __("Unknown or Failed")
                     })
                 },
                 {
@@ -211,7 +209,21 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                         "A": __("After"),
                         "B": __("Before")
                     })
-                }
+                },
+                {
+                    text: __("Match Labels"),
+                    dataIndex: "labels",
+                    renderer: NOC.render.LabelField,
+                    editor: {
+                        xtype: "labelfield",
+                        filterProtected: false,
+                        isTree: false,
+                        pickerPosition: "down",
+                        query: {
+                             "allow_matched": true
+                        }},
+                    width: 200
+                },
             ]
         },
     ]

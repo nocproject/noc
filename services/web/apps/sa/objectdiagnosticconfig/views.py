@@ -16,8 +16,8 @@ class DiagnosticConfigApplication(ExtDocApplication):
     DiagnosticConfig application
     """
 
-    title = "ObjectDiagnosticConfig"
-    menu = [_("Setup"), _("ObjectDiagnosticConfigs")]
+    title = "Object Diagnostic Config"
+    menu = [_("Setup"), _("Object Diagnostic Configs")]
     model = ObjectDiagnosticConfig
     query_fields = ["name__icontains", "description__icontains"]
     default_ordering = ["name"]
