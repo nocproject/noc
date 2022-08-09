@@ -203,6 +203,7 @@ _MODELS = {
     "sa.ManagedObjectAttribute": "noc.sa.models.managedobject.ManagedObjectAttribute",
     "sa.ManagedObjectProfile": "noc.sa.models.managedobjectprofile.ManagedObjectProfile",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
+    "sa.ObjectDiagnosticConfig": "noc.sa.models.objectdiagnosticconfig.ObjectDiagnosticConfig",
     "sa.ObjectStatus": "noc.sa.models.objectstatus.ObjectStatus",
     "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
