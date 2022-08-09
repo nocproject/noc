@@ -9,6 +9,7 @@
 import asyncio
 import os
 from subprocess import Popen
+import sys
 from typing import Tuple
 
 # NOC modules
@@ -51,6 +52,6 @@ async def server_routine():
 def test_server_operation():
     # start clients
     devnull = open(os.devnull, "w")
-    Popen(["python", "tests/udpserver/client.py"], stdout=devnull)
+    Popen([sys.executable, "tests/udpserver/client.py"], stdout=devnull)
     # start server
     asyncio.run(server_routine())

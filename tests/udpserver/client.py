@@ -27,7 +27,7 @@ class UDPClient:
         self.client_id = client_id
         self.datagrams_quantity = datagrams_quantity
         self.sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-        self.sock.setblocking(0)
+        self.sock.setblocking(False)
         await self.send_datagrams()
         self.sock.close()
 
