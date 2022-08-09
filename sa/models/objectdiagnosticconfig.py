@@ -23,10 +23,11 @@ from mongoengine.fields import (
     LongField,
     IntField,
 )
+from mongoengine.queryset.base import NULLIFY
 import cachetools
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField
+from noc.core.model.decorator import tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.fm.models.alarmclass import AlarmClass
@@ -58,6 +59,7 @@ class DiagnosticCheck(EmbeddedDocument):
 
 
 @bi_sync
+@tree(field="diagnostics")
 class ObjectDiagnosticConfig(Document):
     meta = {
         "collection": "objectdiagnosticconfigs",
@@ -79,7 +81,7 @@ class ObjectDiagnosticConfig(Document):
     #
     state_policy = StringField(choices=["ALL", "ANY"], default="ANY")
     checks = EmbeddedDocumentListField(DiagnosticCheck)
-    diagnostics = ListField(PlainReferenceField("self"))
+    diagnostics = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
     # Alarm Settings
     alarm_class = ReferenceField(AlarmClass)
     alarm_labels = ListField(StringField())
