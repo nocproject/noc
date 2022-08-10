@@ -39,7 +39,7 @@ class MetricsNode(BaseCDAGNode):
     config_cls = MetricsNodeConfig
     dot_shape = "folder"
 
-    def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[ValueType]:
+    def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[Dict[str, ValueType]]:
         r = {}
         rk = {}
         cleaners = scope_cleaners.get(self.config.scope) or {}
@@ -73,7 +73,6 @@ class MetricsNode(BaseCDAGNode):
     def set_scope_cleaners(scope: str, cleaners: Dict[str, Callable]) -> None:
         """
         Set cleaners for scope
-
         :param scope: Scope name
         :param cleaners: Scope cleaners
         """

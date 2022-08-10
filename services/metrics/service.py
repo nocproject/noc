@@ -49,8 +49,8 @@ def unscope(x):
 @dataclass
 class ScopeInfo(object):
     scope: str
-    key_fields: Tuple[str]
-    key_labels: Tuple[str]
+    key_fields: Tuple[str, ...]
+    key_labels: Tuple[str, ...]
     units: Dict[str, str]
 
 
@@ -91,7 +91,6 @@ class MetricsService(FastAPIService):
         self.scopes: Dict[str, ScopeInfo] = {}
         self.metric_configs: Dict[str, ProbeNodeConfig] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
-        self.profile_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
         self.graph: Optional[CDAG] = None
         self.change_log: Optional[ChangeLog] = None
@@ -100,7 +99,7 @@ class MetricsService(FastAPIService):
         self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
         self.mappings_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
-        self.lazy_init: bool = True
+        self.lazy_init: bool = False
         self.disable_spool: bool = False
 
     async def on_activate(self):
@@ -130,9 +129,9 @@ class MetricsService(FastAPIService):
     async def on_deactivate(self):
         if self.change_log:
             await self.change_log.flush()
+            if config.metrics.compact_on_stop:
+                await self.change_log.compact()
             self.change_log = None
-        if config.metrics.compact_on_stop:
-            await self.change_log.compact()
 
     async def log_runner(self):
         self.logger.info("Run log runner")
