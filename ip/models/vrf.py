@@ -118,6 +118,14 @@ class VRF(NOCModel):
         blank=False,
         default="M",
     )
+    # Last state change
+    state_changed = models.DateTimeField("State Changed", null=True, blank=True)
+    # Timestamp expired
+    expired = models.DateTimeField("Expired", null=True, blank=True)
+    # Timestamp of last seen
+    last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
+    # Timestamp of first discovery
+    first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"
