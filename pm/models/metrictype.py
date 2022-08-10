@@ -122,6 +122,7 @@ class MetricType(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _field_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
@@ -172,13 +173,18 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id) -> Optional["MetricType"]:
-        return MetricType.objects.filter(id=id).first()
+    def get_by_id(cls, oid) -> Optional["MetricType"]:
+        return MetricType.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name) -> Optional["MetricType"]:
         return MetricType.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_field_cache"), lock=lambda _: id_lock)
+    def get_by_field_name(cls, fname) -> Optional["MetricType"]:
+        return MetricType.objects.filter(field_name=fname).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
