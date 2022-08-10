@@ -71,14 +71,14 @@ class Prefix(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
-    vrf = CachedForeignKey(
+    vrf: "VRF" = CachedForeignKey(
         VRF, verbose_name=_("VRF"), default=VRF.get_global, on_delete=models.CASCADE
     )
-    afi = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
-    prefix = CIDRField(_("Prefix"))
-    name = models.CharField(_("Name"), max_length=255, null=True, blank=True)
-    profile = DocumentReferenceField(PrefixProfile, null=False, blank=False)
-    asn = CachedForeignKey(
+    afi: str = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
+    prefix: str = CIDRField(_("Prefix"))
+    name: str = models.CharField(_("Name"), max_length=255, null=True, blank=True)
+    profile: "PrefixProfile" = DocumentReferenceField(PrefixProfile, null=False, blank=False)
+    asn: "AS" = CachedForeignKey(
         AS,
         verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
@@ -86,7 +86,7 @@ class Prefix(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
-    project = CachedForeignKey(
+    project: "Project" = CachedForeignKey(
         Project,
         verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -94,7 +94,7 @@ class Prefix(NOCModel):
         blank=True,
         related_name="prefix_set",
     )
-    vc = models.ForeignKey(
+    vc: "VC" = models.ForeignKey(
         VC,
         verbose_name=_("VC"),
         null=True,
@@ -102,14 +102,14 @@ class Prefix(NOCModel):
         on_delete=models.SET_NULL,
         help_text=_("VC bound to prefix"),
     )
-    description = models.TextField(_("Description"), blank=True, null=True)
+    description: str = models.TextField(_("Description"), blank=True, null=True)
     # Labels
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
-    tt = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
-    state = DocumentReferenceField(State, null=True, blank=True)
+    tt: int = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
+    state: "State" = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
