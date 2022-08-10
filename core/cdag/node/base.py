@@ -278,7 +278,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         self.check_input(name)
         inputs = tx.get_inputs(self)
-        if inputs[name] is not None:
+        if name in inputs and inputs[name] is not None:
             return  # Already activated
         inputs[name] = value  # Activate input
         if any(True for n, v in inputs.items() if v is None and self.is_required_input(n)):

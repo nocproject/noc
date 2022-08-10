@@ -79,10 +79,3 @@ class MetricsNode(BaseCDAGNode):
         """
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
-
-    @staticmethod
-    def add_scope_cleaner(scope: str, field: str, cleaner: Callable) -> None:
-        if scope not in scope_cleaners:
-            scope_cleaners[scope] = {}
-        if field not in scope_cleaners[scope]:
-            scope_cleaners[scope][field] = cleaner

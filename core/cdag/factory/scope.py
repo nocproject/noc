@@ -74,10 +74,13 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                 probes=[],
                 key_fields=[kf.field_name for kf in self.scope.key_fields],
             )
-            if self.lazy_init:
-                return sc
             for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
                 name = mt.field_name
+                cleaner = mt.get_cleaner()
+                if cleaner:
+                    sc.cleaners[name] = cleaner
+                if self.lazy_init:
+                    continue
                 sc.probes.append(
                     ProbeConfig(
                         name=name,
@@ -88,9 +91,6 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                         ),
                     )
                 )
-                cleaner = mt.get_cleaner()
-                if cleaner:
-                    sc.cleaners[name] = cleaner
             scope_config[self.scope.table_name] = sc
         return sc
 

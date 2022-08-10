@@ -60,30 +60,16 @@ class Card(object):
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
 
-    def add_probe(self, metric_field, probe_config=None, prefix: str = None, state=None):
-        mt = MetricType.get_by_field_name(metric_field)
-        if not mt:
-            return None
-        sender = [s for s in self.senders if s.config.scope == mt.scope.table_name]
-        if not sender:
-            return
-        sender = sender[0]
-        # Add cleaners to sender
-        sender.add_scope_cleaner(mt.scope.name, mt.field_name, mt.get_cleaner())
-        # Create Probe
-        p = ProbeNode.construct(
-            metric_field,
-            prefix=prefix,
-            state=state,
-            config=probe_config,
-            sticky=True,
-        )
-        # Subscribe
-        p.subscribe(sender, metric_field, dynamic=True)
-        p.freeze()
-        self.probes[unscope(metric_field)] = p
-        #
-        metrics["cdag_nodes"] += 1
+    def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
+        """
+        Get probe sender by name
+        :param name:
+        :return:
+        """
+        sender = [s for s in self.senders if s.config.scope == name]
+        if sender:
+            return sender[0]
+        return
 
 
 @dataclass
@@ -352,7 +338,7 @@ class MetricsService(FastAPIService):
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node in src.nodes.values():
-            metrics["cdag_nodes"] += 1
+            metrics["cdag_nodes", ("type", node.name)] += 1
             clone_and_add_node(node)
         # Subscribe
         for o_node in src.nodes.values():
@@ -462,6 +448,32 @@ class MetricsService(FastAPIService):
             self.dispose_partitions[pool] = parts
         return parts
 
+    def add_probe(self, metric_field: str, k: MetricKey) -> Optional[ProbeNode]:
+        card = self.cards[k]
+        mt = MetricType.get_by_field_name(metric_field)
+        if not mt:
+            return None
+        sender = card.get_sender(mt.scope.table_name)
+        if not sender:
+            return
+        prefix = self.get_key_hash(k)
+        state_id = f"{self.get_key_hash(k)}::{metric_field}"
+        # Create Probe
+        p = ProbeNode.construct(
+            metric_field,
+            prefix=prefix,
+            state=self.start_state.get(state_id),
+            config=self.metric_configs.get(metric_field),
+            sticky=True,
+        )
+        # Subscribe
+        p.subscribe(sender, metric_field, dynamic=True)
+        p.freeze()
+        card.probes[unscope(metric_field)] = p
+        #
+        metrics["cdag_nodes", ("type", "probe")] += 1
+        return p
+
     def activate_card(
         self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
     ) -> Dict[str, Dict[str, Any]]:
@@ -477,14 +489,7 @@ class MetricsService(FastAPIService):
                 continue  # Missed field
             probe = card.probes.get(n)
             if self.lazy_init and not probe:
-                state_id = f"{self.get_key_hash(k)}::{n}"
-                card.add_probe(
-                    n,
-                    probe_config=self.metric_configs.get(n),
-                    prefix=self.get_key_hash(k),
-                    state=self.start_state.get(state_id),
-                )
-                probe = card.probes.get(n)
+                probe = self.add_probe(n, k)
             if not probe:
                 continue
             probe.activate(tx, "ts", ts)
