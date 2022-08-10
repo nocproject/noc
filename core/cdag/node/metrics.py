@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.service.loader import get_service
+from noc.core.perf import metrics
 from .base import BaseCDAGNode, ValueType, Category
 
 
@@ -63,6 +64,7 @@ class MetricsNode(BaseCDAGNode):
         r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", t)
         if labels:
             r["labels"] = labels
+        metrics["spooled_metrics", ("scope", self.config.scope)] += 1
         if self.config.spool:
             get_service().register_metrics(self.config.scope, [r])
         return r
@@ -77,3 +79,10 @@ class MetricsNode(BaseCDAGNode):
         """
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
+
+    @staticmethod
+    def add_scope_cleaner(scope: str, field: str, cleaner: Callable) -> None:
+        if scope not in scope_cleaners:
+            scope_cleaners[scope] = {}
+        if field not in scope_cleaners[scope]:
+            scope_cleaners[scope][field] = cleaner

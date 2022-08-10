@@ -55,11 +55,13 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
         namespace: Optional[str] = None,
         spool: bool = True,
         sticky: bool = False,
+        lazy_init: bool = False,
     ):
         super().__init__(graph, ctx, namespace)
         self.scope = scope
         self.spool = spool
         self.sticky = sticky
+        self.lazy_init = lazy_init
 
     def get_scope_config(self) -> ScopeConfig:
         sc = scope_config.get(self.scope.table_name)
@@ -72,6 +74,8 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                 probes=[],
                 key_fields=[kf.field_name for kf in self.scope.key_fields],
             )
+            if self.lazy_init:
+                return sc
             for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
                 name = mt.field_name
                 sc.probes.append(

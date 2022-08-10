@@ -29,6 +29,7 @@ from noc.core.mongo.connection_async import connect_async
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
+from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.services.metrics.changelog import ChangeLog
@@ -39,6 +40,10 @@ from noc.config import config
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
 rx_var = re.compile(r"\{\s*(\S+)\s*\}")
+
+
+def unscope(x):
+    return sys.intern(x.rsplit("::", 1)[-1])
 
 
 @dataclass
@@ -54,6 +59,30 @@ class Card(object):
     __slots__ = ("probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
+
+    def add_probe(self, metric_field, probe_config=None, state=None):
+        mt = MetricType.get_by_field_name(metric_field)
+        if not mt:
+            return None
+        sender = [s for s in self.senders if s.config.scope == mt.scope.table_name]
+        if not sender:
+            return
+        sender = sender[0]
+        # Add cleaners to sender
+        sender.add_scope_cleaner(mt.scope.name, mt.field_name, mt.get_cleaner())
+        # Create Probe
+        p = ProbeNode(
+            metric_field,
+            state=state,
+            config=probe_config,
+            sticky=True,
+        )
+        # Subscribe
+        p.subscribe(sender, p.name, dynamic=True)
+        p.freeze()
+        self.probes[unscope(metric_field)] = p
+        #
+        metrics["cdag_nodes"] += 1
 
 
 @dataclass
@@ -73,7 +102,9 @@ class MetricsService(FastAPIService):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.scopes: Dict[str, ScopeInfo] = {}
+        self.metric_configs: Dict[str, ProbeNodeConfig] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
+        self.profile_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
         self.graph: Optional[CDAG] = None
         self.change_log: Optional[ChangeLog] = None
@@ -82,6 +113,8 @@ class MetricsService(FastAPIService):
         self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
         self.mappings_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
+        self.lazy_init: bool = True
+        self.disable_spool: bool = False
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -180,7 +213,7 @@ class MetricsService(FastAPIService):
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
-            state.update(self.activate_card(card, si, item))
+            state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
             await self.change_log.feed(state)
@@ -194,6 +227,10 @@ class MetricsService(FastAPIService):
         for mt in MetricType.objects.all():
             if mt.units:
                 units[mt.scope.id][mt.field_name] = mt.units.code
+            self.metric_configs[mt.field_name] = ProbeNodeConfig(
+                unit=(mt.units.code or "1") if mt.units else "1",
+                scale=mt.scale.code if mt.scale else "1",
+            )
         for ms in MetricScope.objects.all():
             self.logger.debug("Loading scope %s", ms.table_name)
             si = ScopeInfo(
@@ -250,6 +287,7 @@ class MetricsService(FastAPIService):
             return None
         # Apply CDAG to a common graph and collect inputs to the card
         card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k, labels=labels)
+        metrics["project_cards"] += 1
         self.cards[k] = card
         return card
 
@@ -269,7 +307,9 @@ class MetricsService(FastAPIService):
         if not ms:
             return None  # Not found
         cdag = CDAG(f"scope::{k[0]}", {})
-        factory = MetricScopeCDAGFactory(cdag, scope=ms, sticky=True)
+        factory = MetricScopeCDAGFactory(
+            cdag, scope=ms, sticky=True, spool=self.disable_spool, lazy_init=self.lazy_init
+        )
         factory.construct()
         self.scope_cdag[k[0]] = cdag
         return cdag
@@ -278,11 +318,11 @@ class MetricsService(FastAPIService):
         """
         Project `src` to a current graph and return the controlling Card
         :param src:
+        :param prefix:
+        :param k:
+        :param labels:
         :return:
         """
-
-        def unscope(x):
-            return sys.intern(x.rsplit("::", 1)[-1])
 
         def clone_and_add_node(
             n: BaseCDAGNode, config: Optional[Dict[str, Any]] = None
@@ -311,6 +351,7 @@ class MetricsService(FastAPIService):
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node in src.nodes.values():
+            metrics["cdag_nodes"] += 1
             clone_and_add_node(node)
         # Subscribe
         for o_node in src.nodes.values():
@@ -421,7 +462,7 @@ class MetricsService(FastAPIService):
         return parts
 
     def activate_card(
-        self, card: Card, si: ScopeInfo, data: Dict[str, Any]
+        self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
     ) -> Dict[str, Dict[str, Any]]:
         """
         Activate card and return changed state
@@ -434,6 +475,12 @@ class MetricsService(FastAPIService):
             if not mu:
                 continue  # Missed field
             probe = card.probes.get(n)
+            if self.lazy_init and not probe:
+                state_id = f"{self.get_key_hash(k)}::{n}"
+                card.add_probe(
+                    n, probe_config=self.metric_configs.get(n), state=self.start_state.get(state_id)
+                )
+                probe = card.probes.get(n)
             if not probe:
                 continue
             probe.activate(tx, "ts", ts)
