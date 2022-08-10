@@ -60,7 +60,7 @@ class Card(object):
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
 
-    def add_probe(self, metric_field, probe_config=None, state=None):
+    def add_probe(self, metric_field, probe_config=None, prefix: str = None, state=None):
         mt = MetricType.get_by_field_name(metric_field)
         if not mt:
             return None
@@ -71,14 +71,15 @@ class Card(object):
         # Add cleaners to sender
         sender.add_scope_cleaner(mt.scope.name, mt.field_name, mt.get_cleaner())
         # Create Probe
-        p = ProbeNode(
+        p = ProbeNode.construct(
             metric_field,
+            prefix=prefix,
             state=state,
             config=probe_config,
             sticky=True,
         )
         # Subscribe
-        p.subscribe(sender, p.name, dynamic=True)
+        p.subscribe(sender, metric_field, dynamic=True)
         p.freeze()
         self.probes[unscope(metric_field)] = p
         #
@@ -308,7 +309,7 @@ class MetricsService(FastAPIService):
             return None  # Not found
         cdag = CDAG(f"scope::{k[0]}", {})
         factory = MetricScopeCDAGFactory(
-            cdag, scope=ms, sticky=True, spool=self.disable_spool, lazy_init=self.lazy_init
+            cdag, scope=ms, sticky=True, spool=not self.disable_spool, lazy_init=self.lazy_init
         )
         factory.construct()
         self.scope_cdag[k[0]] = cdag
@@ -478,7 +479,10 @@ class MetricsService(FastAPIService):
             if self.lazy_init and not probe:
                 state_id = f"{self.get_key_hash(k)}::{n}"
                 card.add_probe(
-                    n, probe_config=self.metric_configs.get(n), state=self.start_state.get(state_id)
+                    n,
+                    probe_config=self.metric_configs.get(n),
+                    prefix=self.get_key_hash(k),
+                    state=self.start_state.get(state_id),
                 )
                 probe = card.probes.get(n)
             if not probe:
