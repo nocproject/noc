@@ -136,8 +136,8 @@ class Address(NOCModel):
         return f"{self.vrf.name}({self.afi}): {self.address}"
 
     @classmethod
-    def get_by_id(cls, id) -> Optional["Address"]:
-        address = Address.objects.filter(id=id)[:1]
+    def get_by_id(cls, oid) -> Optional["Address"]:
+        address = Address.objects.filter(id=oid)[:1]
         if address:
             return address[0]
         return None
@@ -192,11 +192,24 @@ class Address(NOCModel):
             return a.vrf
         return None
 
+    def save(self, *args, **kwargs):
+        """
+        Override default save() method to set AFI,
+        parent prefix, and check VRF group restrictions
+        :param kwargs:
+        :return:
+        """
+        self.clean()
+        super().save(*args, **kwargs)
+
     def clean(self):
         """
         Field validation
         :return:
         """
+        # Avoid django's validation failure
+        from .prefix import Prefix
+
         # Get proper AFI
         self.afi = "6" if ":" in self.address else "4"
         # Check prefix is of AFI type
@@ -265,7 +278,3 @@ class Address(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_ipaddress")
-
-
-# Avoid django's validation failure
-from .prefix import Prefix
