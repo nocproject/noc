@@ -57,7 +57,7 @@ class SyslogCollectorService(FastAPIService):
         for addr, port in server.iter_listen(config.syslogcollector.listen):
             self.logger.info("Starting syslog server at %s:%s", addr, port)
             try:
-                server.listen(port, addr)
+                await server.listen(port, addr)
             except OSError as e:
                 metrics["error", ("type", "socket_listen_error")] += 1
                 self.logger.error("Failed to start syslog server at %s:%s: %s", addr, port, e)
