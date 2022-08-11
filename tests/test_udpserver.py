@@ -33,7 +33,7 @@ class UDPServerStub(UDPServer):
 
 async def server_routine():
     udpserver = UDPServerStub()
-    udpserver.listen(SERVER_PORT, SERVER_ADDRESS)
+    await udpserver.listen(SERVER_PORT, SERVER_ADDRESS)
     udpserver.start()
     while True:
         received_old = udpserver.received
