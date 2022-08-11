@@ -1,29 +1,41 @@
 # ----------------------------------------------------------------------
-# Tornado IOLoop UDP server
+# Asyncio UDP server
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
-import platform
+import asyncio
 import errno
+import logging
 import os
+import platform
+import socket
 import sys
+from typing import Iterable, List, Tuple, Optional, Any
 
-# Third-party modules
-from tornado.ioloop import IOLoop
-from tornado.platform.auto import set_close_exec
-from tornado import process
-from typing import Iterable, Tuple, Optional, Any
+logger = logging.getLogger(__name__)
+
+
+class UDPServerProtocol(asyncio.DatagramProtocol):
+    def __init__(self, server):
+        super().__init__()
+        self._server = server
+
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        self._server.on_read(data, addr)
+
+    def error_received(self, exc):
+        logger.error("UDP server received error %s" % exc)
 
 
 class UDPServer(object):
     def __init__(self):
-        self._sockets = {}  # fd -> socket object
-        self._pending_sockets = []
-        self._started: bool = False
+        self._transports: List[asyncio.BaseTransport] = []
 
     def iter_listen(self, cfg: str) -> Iterable[Tuple[str, int]]:
         """
@@ -43,113 +55,29 @@ class UDPServer(object):
                 addr, port = "", listen
             yield addr, int(port)
 
-    def listen(self, port: int, address: str = "") -> None:
-        """Starts accepting connections on the given port.
-
-        This method may be called more than once to listen on multiple ports.
-        `listen` takes effect immediately; it is not necessary to call
-        `UDPServer.start` afterwards.  It is, however, necessary to start
-        the `.IOLoop`.
-        """
+    async def listen(self, port: int, address: str = "") -> None:
         sockets = self.bind_udp_sockets(port, address=address)
-        self.add_sockets(sockets)
+        await self.create_endpoints(sockets)
 
-    def add_sockets(self, sockets):
-        """Makes this server start accepting connections on the given sockets.
-
-        The ``sockets`` parameter is a list of socket objects such as
-        those returned by `~tornado.netutil.bind_sockets`.
-        `add_sockets` is typically used in combination with that
-        method and `tornado.process.fork_processes` to provide greater
-        control over the initialization of a multi-process server.
-        """
-        for sock in sockets:
-            self._sockets[sock.fileno()] = sock
-            IOLoop.current().add_handler(sock.fileno(), self.accept_handler, IOLoop.READ)
-
-    def add_socket(self, socket):
-        """Singular version of `add_sockets`.  Takes a single socket object."""
-        self.add_sockets([socket])
-
-    def bind(self, port, address=None, family=socket.AF_UNSPEC, backlog=128):
-        """Binds this server to the given port on the given address.
-
-        To start the server, call `start`. If you want to run this server
-        in a single process, you can call `listen` as a shortcut to the
-        sequence of `bind` and `start` calls.
-
-        Address may be either an IP address or hostname.  If it's a hostname,
-        the server will listen on all IP addresses associated with the
-        name.  Address may be an empty string or None to listen on all
-        available interfaces.  Family may be set to either `socket.AF_INET`
-        or `socket.AF_INET6` to restrict to IPv4 or IPv6 addresses, otherwise
-        both will be used if available.
-
-        The ``backlog`` argument has the same meaning as for
-        `socket.listen <socket.socket.listen>`.
-
-        This method may be called multiple times prior to `start` to listen
-        on multiple ports or interfaces.
-        """
-        sockets = self.bind_udp_sockets(port, address=address, family=family, backlog=backlog)
-        if self._started:
-            self.add_sockets(sockets)
-        else:
-            self._pending_sockets.extend(sockets)
-
-    def start(self, num_processes: int = 1):
-        """Starts this server in the `.IOLoop`.
-
-        By default, we run the server in this process and do not fork any
-        additional child process.
-
-        If num_processes is ``None`` or <= 0, we detect the number of cores
-        available on this machine and fork that number of child
-        processes. If num_processes is given and > 1, we fork that
-        specific number of sub-processes.
-
-        Since we use processes and not threads, there is no shared memory
-        between any server code.
-
-        Note that multiple processes are not compatible with the autoreload
-        module (or the ``autoreload=True`` option to `tornado.web.Application`
-        which defaults to True when ``debug=True``).
-        When using multiple processes, no IOLoops can be created or
-        referenced until after the call to ``TCPServer.start(n)``.
-        """
-        assert not self._started
-        self._started = True
-        if num_processes != 1:
-            process.fork_processes(num_processes)
-        sockets = self._pending_sockets
-        self._pending_sockets = []
-        self.add_sockets(sockets)
+    def start(self):
+        pass
 
     def stop(self):
-        """Stops listening for new connections.
-
-        Requests currently in progress may still continue after the
-        server is stopped.
-        """
-        for fd, sock in self._sockets.items():
-            IOLoop.current().remove_handler(fd)
-            sock.close()
-
-    def accept_handler(self, fd, events):
-        sock = self._sockets[fd]
-        while True:
-            try:
-                data, address = sock.recvfrom(2500)
-            except OSError as e:
-                if e.args[0] in (errno.EWOULDBLOCK, errno.EAGAIN):
-                    return
-                raise
-            self.on_read(data, address)
+        for transport in self._transports:
+            transport.close()
 
     def on_read(self, data: bytes, address: Tuple[str, int]):
         """
         To be overriden
         """
+
+    async def create_endpoints(self, sockets):
+        loop = asyncio.get_running_loop()
+        for sock in sockets:
+            transport, protocol = await loop.create_datagram_endpoint(
+                lambda: UDPServerProtocol(self), sock=sock
+            )
+            self._transports.append(transport)
 
     def bind_udp_sockets(
         self, port, address: str = None, family: int = socket.AF_UNSPEC, flags: Any = None
@@ -207,7 +135,6 @@ class UDPServer(object):
                 if e.args[0] == errno.EAFNOSUPPORT:
                     continue
                 raise
-            set_close_exec(sock.fileno())
             if os.name != "nt":
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             if af == socket.AF_INET6:
@@ -228,7 +155,7 @@ class UDPServer(object):
             if requested_port == 0 and bound_port is not None:
                 sockaddr = tuple([host, bound_port] + list(sockaddr[2:]))
 
-            sock.setblocking(0)
+            sock.setblocking(False)
             self.setup_socket(sock)
             sock.bind(sockaddr)
             bound_port = sock.getsockname()[1]
