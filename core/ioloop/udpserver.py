@@ -8,31 +8,35 @@
 # Python modules
 import asyncio
 import errno
+import logging
 import os
 import platform
 import socket
 import sys
-from typing import Iterable, Tuple, Optional, Any
+from typing import Iterable, List, Tuple, Optional, Any
+
+logger = logging.getLogger(__name__)
 
 
-class UDPServerProtocol:
+class UDPServerProtocol(asyncio.DatagramProtocol):
     def __init__(self, server):
+        super().__init__()
         self._server = server
 
     def connection_made(self, transport):
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        # message = data #data.decode()
-        # print('Received %r from %s' % (message, addr))
         self._server.on_read(data, addr)
 
     def error_received(self, exc):
-        # print('Received error %s' % exc)
-        pass
+        logger.error("UDP server received error %s" % exc)
 
 
 class UDPServer(object):
+    def __init__(self):
+        self._transports: List[asyncio.BaseTransport] = []
+
     def iter_listen(self, cfg: str) -> Iterable[Tuple[str, int]]:
         """
         Parses listen configuration and yield (address, port) tuples.
@@ -58,6 +62,10 @@ class UDPServer(object):
     def start(self):
         pass
 
+    def stop(self):
+        for transport in self._transports:
+            transport.close()
+
     def on_read(self, data: bytes, address: Tuple[str, int]):
         """
         To be overriden
@@ -66,10 +74,10 @@ class UDPServer(object):
     async def create_endpoints(self, sockets):
         loop = asyncio.get_running_loop()
         for sock in sockets:
-            print("*** sock", sock, type(sock))
             transport, protocol = await loop.create_datagram_endpoint(
                 lambda: UDPServerProtocol(self), sock=sock
             )
+            self._transports.append(transport)
 
     def bind_udp_sockets(
         self, port, address: str = None, family: int = socket.AF_UNSPEC, flags: Any = None
@@ -147,7 +155,7 @@ class UDPServer(object):
             if requested_port == 0 and bound_port is not None:
                 sockaddr = tuple([host, bound_port] + list(sockaddr[2:]))
 
-            sock.setblocking(0)
+            sock.setblocking(False)
             self.setup_socket(sock)
             sock.bind(sockaddr)
             bound_port = sock.getsockname()[1]
