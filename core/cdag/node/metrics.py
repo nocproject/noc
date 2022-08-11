@@ -14,6 +14,7 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.service.loader import get_service
+from noc.core.perf import metrics
 from .base import BaseCDAGNode, ValueType, Category
 
 
@@ -38,7 +39,7 @@ class MetricsNode(BaseCDAGNode):
     config_cls = MetricsNodeConfig
     dot_shape = "folder"
 
-    def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[ValueType]:
+    def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[Dict[str, ValueType]]:
         r = {}
         rk = {}
         cleaners = scope_cleaners.get(self.config.scope) or {}
@@ -63,6 +64,7 @@ class MetricsNode(BaseCDAGNode):
         r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", t)
         if labels:
             r["labels"] = labels
+        metrics["spooled_metrics", ("scope", self.config.scope)] += 1
         if self.config.spool:
             get_service().register_metrics(self.config.scope, [r])
         return r
@@ -71,7 +73,6 @@ class MetricsNode(BaseCDAGNode):
     def set_scope_cleaners(scope: str, cleaners: Dict[str, Callable]) -> None:
         """
         Set cleaners for scope
-
         :param scope: Scope name
         :param cleaners: Scope cleaners
         """
