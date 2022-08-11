@@ -66,10 +66,7 @@ class Card(object):
         :param name:
         :return:
         """
-        sender = [s for s in self.senders if s.config.scope == name]
-        if sender:
-            return sender[0]
-        return
+        return next((s for s in self.senders if s.config.scope == name), None)
 
 
 @dataclass
