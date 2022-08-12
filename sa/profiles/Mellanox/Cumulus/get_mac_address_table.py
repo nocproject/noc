@@ -30,10 +30,12 @@ class Script(BaseScript):
             if not is_vlan(match.group("vlan_id")):
                 # In some cases may be 0
                 continue
-            r += [{
-                "vlan_id": match.group("vlan_id"),
-                "mac": match.group("mac"),
-                "interfaces": [match.group("iface")],
-                "type": {"no": "D", "yes": "C"}[match.group("type")],
-            }]
+            r += [
+                {
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [match.group("iface")],
+                    "type": {"no": "D", "yes": "C"}[match.group("type")],
+                }
+            ]
         return r
