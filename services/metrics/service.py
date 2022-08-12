@@ -33,6 +33,7 @@ from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
+from noc.core.cdag.factory.config import ConfigCDAGFactory
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient
 from noc.config import config as global_config
@@ -56,7 +57,7 @@ class ScopeInfo(object):
 
 @dataclass
 class Card(object):
-    __slots__ = ("alarm", "probes", "senders")
+    __slots__ = ("alarms", "probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
     alarms: List[AlarmNode]
@@ -73,7 +74,8 @@ class Card(object):
 @dataclass
 class Rule(object):
     match_labels: Set[str]
-    nodes: List[BaseCDAGNode]
+    match_scopes: Set[str]
+    graph: CDAG
     configs: Dict[str, Any]  # NodeId -> Config
 
     def is_matched(self, labels: Set[str]) -> bool:
@@ -116,6 +118,7 @@ class MetricsService(FastAPIService):
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
+        self.load_rules()
         if global_config.metrics.compact_on_start:
             await self.change_log.compact()
         self.start_state = await self.change_log.get_state()
@@ -247,15 +250,40 @@ class MetricsService(FastAPIService):
         from noc.pm.models.metricrule import MetricRule
 
         for mr in MetricRule.objects.filter(is_active=True):
+            mr: MetricRule
             for item in mr.items:
                 if not item.is_active:
                     continue
-                ma = item.metric_action.get_config()
-                self.rules[f"{mr.name}-{ma.name}"] = Rule(
+                graph = CDAG(f"{mr.name}-{item.metric_action.name}")
+                g_config = item.metric_action.get_config()
+                scopes = set()
+                for mt in item.metric_action.compose_inputs:
+                    scopes.add(mt.metric_type.scope.table_name)
+                    graph.add_node(
+                        mt.metric_type.field_name,
+                        node_type="probe",
+                        config={"unit": "1"},
+                        sticky=True,
+                    )
+                f = ConfigCDAGFactory(graph, g_config)
+                f.construct()
+                configs = {}
+                for node in g_config.nodes:
+                    if node.name == "probe" or not node.config:
+                        continue
+                    configs[node.name] = node.config
+                # for node in graph.nodes.values():
+                #     if node.name == "probe" or not node.config:
+                #         continue
+                #     configs[node.node_id] = node.config.dict()
+                self.rules[graph.graph_id] = Rule(
                     match_labels=set(sys.intern(label) for label in mr.match_labels),
-                    nodes=ma.nodes,
-                    configs={node.node_id: node.config for node in ma.nodes if node.config},
+                    match_scopes=scopes,
+                    graph=graph,
+                    configs=configs,
                 )
+
+        self.logger.info("Loading %d metric rules", len(self.rules))
 
     @staticmethod
     def get_key(si: ScopeInfo, data: Dict[str, Any]) -> MetricKey:
@@ -283,6 +311,21 @@ class MetricsService(FastAPIService):
         d = hashlib.sha512(str(k).encode("utf-8")).digest()
         return codecs.encode(d, "base-64")[:7].decode("utf-8")
 
+    @staticmethod
+    def merge_labels(l1: Optional[List[str]], l2: List[str]) -> List[str]:
+        """
+        Merge labels list
+        :param l1:
+        :param l2:
+        :return:
+        """
+        if not l1:
+            return l2
+        if not l2:
+            return l1
+        l2_set = set(l2)
+        return l2[:] + [x for x in l1 if x not in l2_set]
+
     async def get_card(self, k: MetricKey, labels: List[str]) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
@@ -302,7 +345,18 @@ class MetricsService(FastAPIService):
         card = await self.project_cdag(cdag, prefix=self.get_key_hash(k))
         metrics["project_cards"] += 1
         self.cards[k] = card
-        self.apply_rules(k, labels)
+        # Getting Context
+        key_ctx = dict(k[1])
+        if "managed_object" in key_ctx:
+            mo_info = self.mo_map.get(key_ctx["managed_object"])
+        else:
+            mo_info = None
+        if mo_info:
+            mo_labels = mo_info.labels
+        else:
+            mo_labels = None
+        # Apply rules
+        self.apply_rules(k, self.merge_labels(mo_labels, labels))
         return card
 
     def get_scope_cdag(self, k: MetricKey) -> Optional[CDAG]:
@@ -386,9 +440,11 @@ class MetricsService(FastAPIService):
         card = self.cards[k]
         mt = MetricType.get_by_field_name(metric_field)
         if not mt:
+            self.logger.debug("[%s] Unknown metric field: %s", k, metric_field)
             return None
         sender = card.get_sender(mt.scope.table_name)
         if not sender:
+            self.logger.debug("[%s] Sender is not found on Card: %s", k, mt.scope.table_name)
             return
         prefix = self.get_key_hash(k)
         state_id = f"{self.get_key_hash(k)}::{metric_field}"
@@ -418,35 +474,46 @@ class MetricsService(FastAPIService):
         card = self.cards[k]
         s_labels = set(labels)
         for rule in self.rules.values():
+            if k[0] not in rule.match_scopes:
+                continue
             if not rule.is_matched(s_labels):
                 continue
             nodes = {}
             # Node
-            for node in rule.nodes:
+            for node in rule.graph.nodes.values():
                 if node.name == "probe" and node.node_id in card.probes:
+                    # Probe node, will be replace to Card probes
                     nodes[node.node_id] = card.probes[node.node_id]
                     continue
                 elif node.name == "probe" and node.node_id not in card.probes:
-                    # Metrics probe is not initialized yet ?add_probe
-                    self.add_probe(node.node_id, k)
-                    nodes[node.node_id] = card.probes[node.node_id]
-                    break
+                    # Metrics probe is not initialized yet, add_probe
+                    probe = self.add_probe(node.node_id, k)
+                    nodes[node.node_id] = probe
+                    continue
+                # @todo add rule-id to hash for multiple rules
                 nodes[node.node_id] = self.clone_and_add_node(
-                    node, prefix="xxx", config=rule.config.get(node.node_id)
+                    node, prefix=self.get_key_hash(k), config=rule.configs.get(node.node_id)
                 )
-            if "alarm" not in nodes or "probe" not in nodes:
-                self.logger.warning("Rules without ending output. Skipping")
+            if "alarm" not in nodes and "probe" not in nodes:
+                self.logger.warning(
+                    "[%s] Rules without ending output. Skipping", rule.graph.graph_id
+                )
                 continue
-
             # Subscribe
             # Complex Node subscribe to sender
             # Probe node resubscribe to probe
-            for o_node in rule.nodes:
+            for o_node in rule.graph.nodes.values():
                 node = nodes[o_node.node_id]
                 for rs in o_node.iter_subscribers():
                     node.subscribe(
                         nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                     )
+            # Compact the storage
+            for node in nodes.values():
+                if node.bound_inputs:
+                    # Filter Probe nodes
+                    node.freeze()
+            # Add alarms nodes for clear alarm on delete
             card.alarms += [nodes["alarm"]]
 
     def activate_card(

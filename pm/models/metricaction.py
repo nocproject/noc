@@ -7,7 +7,7 @@
 
 # Python modules
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, Optional, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -27,6 +27,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
+from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sa.interfaces.base import (
@@ -198,3 +199,104 @@ class MetricAction(Document):
     def get_json_path(self) -> str:
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    def get_config(self, prefix: str = None) -> Optional[GraphConfig]:
+        """
+
+        :param prefix:
+        :return:
+        """
+        inputs = []
+        nodes = {}
+        prefix = f"{prefix}-" if prefix else ""
+        for num, ci in enumerate(self.compose_inputs):
+            inputs += [InputItem(name=ci.metric_type.field_name, node=ci.metric_type.field_name)]
+        # Probe nodes
+        if self.compose_function:
+            nodes[f"{prefix}compose"] = NodeItem(
+                name=f"{prefix}compose",
+                type=self.compose_function,
+                description="",
+                config=None,
+                inputs=inputs[:],
+            )
+            g_input = InputItem(name="x", node=f"{prefix}compose")
+        else:
+            g_input = InputItem(name="x", node=inputs[0].node)
+        if self.compose_metric_type:
+            nodes[self.compose_metric_type.field_name] = NodeItem(
+                name=self.compose_metric_type.field_name,
+                type="probe",
+                inputs=inputs[:],
+            )
+        key_input = None
+        # Activation
+        if self.activation_config and self.activation_config.window_function:
+            config = {
+                "min_window": self.activation_config.min_window,
+                "max_window": self.activation_config.max_window,
+            }
+            config.update(self.activation_config.window_config)
+            nodes[f"{prefix}activation-window"] = NodeItem(
+                name=f"{prefix}activation-window",
+                type=self.activation_config.window_function,
+                config=config,
+                inputs=[InputItem(name="x", node=g_input.node)],
+            )
+            key_input = InputItem(name="x", node=f"{prefix}activation-window")
+        if self.activation_config and self.activation_config.activation_function:
+            nodes[f"{prefix}activation-function"] = NodeItem(
+                name=f"{prefix}activation-function",
+                type=self.activation_config.activation_function,
+                config=self.activation_config.activation_config,
+                inputs=[key_input or g_input],
+            )
+            key_input = InputItem(name="x", node=f"{prefix}activation-function")
+        dkey_input = None
+        key_function = self.key_function if self.key_function and self.key_function != "disable" else None
+        # Deactivation
+        if (
+            key_function
+            and self.deactivation_config
+            and self.deactivation_config.window_function
+        ):
+            config = {
+                "min_window": self.deactivation_config.min_window,
+                "max_window": self.deactivation_config.max_window,
+            }
+            config.update(self.deactivation_config.window_config)
+            nodes[f"{prefix}deactivation-window"] = NodeItem(
+                name=f"{prefix}deactivation-window",
+                type=self.deactivation_config.window_function,
+                config=config,
+                inputs=[g_input],
+            )
+            dkey_input = InputItem(name="x", node=f"{prefix}deactivation-window")
+        if key_function and self.deactivation_config and self.deactivation_config.activation_function:
+            nodes[f"{prefix}deactivation-function"] = NodeItem(
+                name=f"{prefix}deactivation-function",
+                type=self.deactivation_config.activation_function,
+                config=self.deactivation_config.activation_config,
+                inputs=[dkey_input or g_input],
+            )
+            # dkey_input = InputItem(name="deactivation-function", node="deactivation-function")
+        # Key function
+        if key_function:
+            nodes[f"{prefix}key"] = NodeItem(
+                name=f"{prefix}key",
+                type=self.key_function,
+                inputs=[key_input or g_input],
+            )
+            key_input = InputItem(name="x", node=f"{prefix}key")
+        # Alarm
+        if self.alarm_config:
+            nodes[f"{prefix}alarm"] = NodeItem(
+                name=f"{prefix}alarm",
+                type="alarm",
+                inputs=[key_input or g_input],
+                config={
+                    "alarm_class": self.alarm_config.alarm_class.name,
+                    "reference": self.alarm_config.reference,
+                },
+            )
+        return GraphConfig(nodes=list(nodes.values()))

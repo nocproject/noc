@@ -64,6 +64,9 @@ class ProbeNode(BaseCDAGNode):
         self.convert = self.get_convert(self.config.unit)
         self.base, self.exp = self.get_scale(self.config.scale)
 
+    def __str__(self):
+        return f"{self.name}: {self.node_id}"
+
     def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
         def upscale(v: ValueType) -> Optional[ValueType]:
             if v is None:
@@ -92,7 +95,12 @@ class ProbeNode(BaseCDAGNode):
             return upscale(x)
         # No conversation. Skipping
         if unit not in self.convert:
-            logger.warning("Not conversation rule from unit %s to %s", unit, self.config.unit)
+            logger.warning(
+                "[%s] Not conversation rule from unit %s to %s",
+                self.node_id,
+                unit,
+                self.config.unit,
+            )
             return None
         fn = self.convert[unit]
         kwargs = {}
