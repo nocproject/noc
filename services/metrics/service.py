@@ -9,7 +9,7 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any, Dict, Tuple, List, Optional, Set
 import sys
 import asyncio
 import codecs
@@ -30,12 +30,12 @@ from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
+from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.services.metrics.changelog import ChangeLog
-from noc.services.metrics.rule import iter_rules
 from noc.services.metrics.datastream import MetricsDataStreamClient
-from noc.config import config
+from noc.config import config as global_config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
@@ -56,9 +56,10 @@ class ScopeInfo(object):
 
 @dataclass
 class Card(object):
-    __slots__ = ("probes", "senders")
+    __slots__ = ("alarm", "probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
+    alarms: List[AlarmNode]
 
     def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
         """
@@ -67,6 +68,16 @@ class Card(object):
         :return:
         """
         return next((s for s in self.senders if s.config.scope == name), None)
+
+
+@dataclass
+class Rule(object):
+    match_labels: Set[str]
+    nodes: List[BaseCDAGNode]
+    configs: Dict[str, Any]  # NodeId -> Config
+
+    def is_matched(self, labels: Set[str]) -> bool:
+        return labels.issuperset(self.match_labels)
 
 
 @dataclass
@@ -96,7 +107,8 @@ class MetricsService(FastAPIService):
         self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
         self.mappings_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
-        self.lazy_init: bool = False
+        self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
+        self.lazy_init: bool = True
         self.disable_spool: bool = False
 
     async def on_activate(self):
@@ -104,13 +116,13 @@ class MetricsService(FastAPIService):
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
-        if config.metrics.compact_on_start:
+        if global_config.metrics.compact_on_start:
             await self.change_log.compact()
         self.start_state = await self.change_log.get_state()
         self.graph = CDAG("metrics")
-        if config.metrics.flush_interval > 0:
+        if global_config.metrics.flush_interval > 0:
             asyncio.create_task(self.log_runner())
-        if config.metrics.compact_interval > 0:
+        if global_config.metrics.compact_interval > 0:
             asyncio.create_task(self.compact_runnner())
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
@@ -126,24 +138,24 @@ class MetricsService(FastAPIService):
     async def on_deactivate(self):
         if self.change_log:
             await self.change_log.flush()
-            if config.metrics.compact_on_stop:
+            if global_config.metrics.compact_on_stop:
                 await self.change_log.compact()
             self.change_log = None
 
     async def log_runner(self):
         self.logger.info("Run log runner")
         while True:
-            await asyncio.sleep(config.metrics.flush_interval)
+            await asyncio.sleep(global_config.metrics.flush_interval)
             if self.change_log:
                 await self.change_log.flush()
 
     async def compact_runnner(self):
         self.logger.info("Run compact runner")
         # Randomize compaction on different slots to prevent the load spikes
-        await asyncio.sleep(random.random() * config.metrics.compact_interval)
+        await asyncio.sleep(random.random() * global_config.metrics.compact_interval)
         while True:
             await self.change_log.compact()
-            await asyncio.sleep(config.metrics.compact_interval)
+            await asyncio.sleep(global_config.metrics.compact_interval)
 
     async def get_object_mappings(self):
         """
@@ -156,7 +168,7 @@ class MetricsService(FastAPIService):
             self.logger.info("Starting to track object mappings")
             try:
                 await client.query(
-                    limit=config.metrics.ds_limit,
+                    limit=global_config.metrics.ds_limit,
                     block=True,
                     filter_policy="delete",
                 )
@@ -206,7 +218,7 @@ class MetricsService(FastAPIService):
         Load ScopeInfo structures
         :return:
         """
-        units = defaultdict(dict)
+        units: Dict[str, Dict[str, str]] = defaultdict(dict)
         for mt in MetricType.objects.all():
             if mt.units:
                 units[mt.scope.id][mt.field_name] = mt.units.code
@@ -226,6 +238,24 @@ class MetricsService(FastAPIService):
             self.logger.debug(
                 "[%s] key fields: %s, key labels: %s", si.scope, si.key_fields, si.key_labels
             )
+
+    def load_rules(self):
+        """
+
+        :return:
+        """
+        from noc.pm.models.metricrule import MetricRule
+
+        for mr in MetricRule.objects.filter(is_active=True):
+            for item in mr.items:
+                if not item.is_active:
+                    continue
+                ma = item.metric_action.get_config()
+                self.rules[f"{mr.name}-{ma.name}"] = Rule(
+                    match_labels=set(sys.intern(label) for label in mr.match_labels),
+                    nodes=ma.nodes,
+                    configs={node.node_id: node.config for node in ma.nodes if node.config},
+                )
 
     @staticmethod
     def get_key(si: ScopeInfo, data: Dict[str, Any]) -> MetricKey:
@@ -269,9 +299,10 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), k=k, labels=labels)
+        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k))
         metrics["project_cards"] += 1
         self.cards[k] = card
+        self.apply_rules(k, labels)
         return card
 
     def get_scope_cdag(self, k: MetricKey) -> Optional[CDAG]:
@@ -297,45 +328,32 @@ class MetricsService(FastAPIService):
         self.scope_cdag[k[0]] = cdag
         return cdag
 
-    async def project_cdag(self, src: CDAG, prefix: str, k: MetricKey, labels: List[str]) -> Card:
+    def clone_and_add_node(
+        self, n: BaseCDAGNode, prefix: str, config: Optional[Dict[str, Any]] = None
+    ) -> BaseCDAGNode:
+        """
+        Clone node and add it to the graph
+        """
+        node_id = n.node_id
+        state_id = f"{prefix}::{node_id}"
+        state = self.start_state.pop(state_id, None)
+        new_node = n.clone(node_id, prefix=prefix, state=state, config=config)
+        # nodes[node_id] = new_node
+        metrics["cdag_nodes", ("type", n.name)] += 1
+        return new_node
+
+    async def project_cdag(self, src: CDAG, prefix: str) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
         :param src:
         :param prefix:
-        :param k:
-        :param labels:
         :return:
         """
-
-        def clone_and_add_node(
-            n: BaseCDAGNode, config: Optional[Dict[str, Any]] = None
-        ) -> BaseCDAGNode:
-            """
-            Clone node and add it to the graph
-            """
-            node_id = n.node_id
-            state_id = f"{prefix}::{node_id}"
-            state = self.start_state.pop(state_id, None)
-            new_node = n.clone(node_id, prefix=prefix, state=state, config=config)
-            nodes[node_id] = new_node
-            return new_node
-
-        def expand(s: str, ctx: Dict[str, Any]) -> str:
-            return rx_var.sub(lambda x: str(ctx.get(x, "")), s)
-
-        def merge_labels(l1: Optional[List[str]], l2: List[str]) -> List[str]:
-            if not l1:
-                return l2
-            if not l2:
-                return l1
-            l2_set = set(l2)
-            return l2[:] + [x for x in l1 if x not in l2_set]
 
         nodes: Dict[str, BaseCDAGNode] = {}
         # Clone nodes
         for node in src.nodes.values():
-            metrics["cdag_nodes", ("type", node.name)] += 1
-            clone_and_add_node(node)
+            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix)
         # Subscribe
         for o_node in src.nodes.values():
             node = nodes[o_node.node_id]
@@ -343,87 +361,6 @@ class MetricsService(FastAPIService):
                 node.subscribe(
                     nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                 )
-        # Apply rules
-        key_ctx = dict(k[1])
-        if "managed_object" in key_ctx:
-            mo_info = self.mo_map.get(key_ctx["managed_object"])
-        else:
-            mo_info = None
-        if mo_info:
-            mo_labels = mo_info.labels
-        else:
-            mo_labels = None
-        for item in iter_rules(k[0], merge_labels(mo_labels, labels)):
-            first_input_node: Optional[BaseCDAGNode] = nodes.get(item.metric_type.field_name)
-            if not first_input_node:
-                self.logger.error("Cannot find probe node %s", item.metric_type.field_name)
-                continue
-            prev, prev_deactivation = first_input_node, first_input_node
-            # Compose
-            if item.compose_node:
-                compose_node = clone_and_add_node(item.compose_node)
-                if item.compose_inputs:
-                    for probe_name, input_name in item.compose_inputs.items():
-                        probe_node = nodes.get(probe_name)
-                        if not probe_node:
-                            self.logger.error("Cannot find probe node %s", probe_node)
-                            continue
-                        probe_node.subscribe(compose_node, input_name)
-                else:
-                    prev.subscribe(compose_node, compose_node.first_input())
-                prev, prev_deactivation = compose_node, compose_node
-            #
-            if item.activation_node_window:
-                activation_node_window = clone_and_add_node(item.activation_node_window)
-                prev.subscribe(activation_node_window, activation_node_window.first_input())
-                prev = activation_node_window
-            if item.activation_node_activation:
-                activation_node_activation = clone_and_add_node(item.activation_node_activation)
-                prev.subscribe(activation_node_activation, activation_node_activation.first_input())
-                prev = activation_node_activation
-            # Deactivation
-            if item.deactivation_node_window and item.key_node:
-                deactivation_node_window = clone_and_add_node(item.deactivation_node_window)
-                prev_deactivation.subscribe(
-                    deactivation_node_window, deactivation_node_window.first_input()
-                )
-                prev_deactivation = deactivation_node_window
-            if item.deactivation_node_activation and item.key_node:
-                deactivation_node_activation = clone_and_add_node(item.deactivation_node_activation)
-                prev_deactivation.subscribe(
-                    deactivation_node_activation, deactivation_node_activation.first_input()
-                )
-                prev_deactivation = deactivation_node_activation
-            # Key
-            if item.key_node and prev_deactivation:
-                key_node = clone_and_add_node(item.key_node)
-                # @todo fix, first - always key ?
-                key, value = list(key_node.iter_inputs())
-                prev_deactivation.subscribe(key_node, key)
-                prev.subscribe(key_node, value)
-                prev = key_node
-            # Alarm
-            if item.alarm_node:
-                # Expand key fields
-                if not mo_info:
-                    self.logger.error("Cannot find managed_object for %s. Skipping alarm node.", k)
-                else:
-                    # Collect labels
-                    labels = item.alarm_node.config.labels or []
-                    if k[2]:
-                        labels += k[2]
-                    # Expand config
-                    n_parts = await self.get_dispose_partitions(mo_info.fm_pool)
-                    alarm_config = {
-                        "managed_object": str(mo_info.id),
-                        "pool": mo_info.fm_pool,
-                        "partition": mo_info.id % n_parts,
-                        "reference": expand(item.alarm_node.config.reference, key_ctx),
-                        "labels": labels or None,
-                    }
-                    # Clone alarm node
-                    alarm_node = clone_and_add_node(item.alarm_node, config=alarm_config)
-                    prev.subscribe(alarm_node, alarm_node.first_input())
         # Compact the storage
         for node in nodes.values():
             node.freeze()
@@ -431,6 +368,7 @@ class MetricsService(FastAPIService):
         return Card(
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
+            alarms=[],
         )
 
     async def get_dispose_partitions(self, pool: str) -> int:
@@ -469,6 +407,47 @@ class MetricsService(FastAPIService):
         #
         metrics["cdag_nodes", ("type", "probe")] += 1
         return p
+
+    def apply_rules(self, k: MetricKey, labels: List[str]):
+        """
+        Apply rule structure
+        :param k:
+        :param labels:
+        :return:
+        """
+        card = self.cards[k]
+        s_labels = set(labels)
+        for rule in self.rules.values():
+            if not rule.is_matched(s_labels):
+                continue
+            nodes = {}
+            # Node
+            for node in rule.nodes:
+                if node.name == "probe" and node.node_id in card.probes:
+                    nodes[node.node_id] = card.probes[node.node_id]
+                    continue
+                elif node.name == "probe" and node.node_id not in card.probes:
+                    # Metrics probe is not initialized yet ?add_probe
+                    self.add_probe(node.node_id, k)
+                    nodes[node.node_id] = card.probes[node.node_id]
+                    break
+                nodes[node.node_id] = self.clone_and_add_node(
+                    node, prefix="xxx", config=rule.config.get(node.node_id)
+                )
+            if "alarm" not in nodes or "probe" not in nodes:
+                self.logger.warning("Rules without ending output. Skipping")
+                continue
+
+            # Subscribe
+            # Complex Node subscribe to sender
+            # Probe node resubscribe to probe
+            for o_node in rule.nodes:
+                node = nodes[o_node.node_id]
+                for rs in o_node.iter_subscribers():
+                    node.subscribe(
+                        nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
+                    )
+            card.alarms += [nodes["alarm"]]
 
     def activate_card(
         self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
