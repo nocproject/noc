@@ -70,7 +70,6 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                     name: "display_order",
                     xtype: "numberfield",
                     fieldLabel: __("Display Order"),
-                    uiStyle: "small",
                     value: 800,
                     minValue: 0,
                     allowBlank: true
@@ -91,7 +90,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                     name: "alarm_class",
                     xtype: "fm.alarmclass.LookupField",
                     fieldLabel: __("Alarm Class"),
-                    uiStyle: 'large',
+                    uiStyle: "large",
                     allowBlank: true
                 },
                 {
