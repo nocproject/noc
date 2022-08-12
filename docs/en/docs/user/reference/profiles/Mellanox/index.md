@@ -9,6 +9,7 @@ network equipment.
 ## Supported Profiles
 
 - [Mellanox.Onyx](Mellanox.Onyx.md)
+- [Mellanox.Cumulus](Mellanox.Cumulus.md)
 
 ## Supported Platforms
 
