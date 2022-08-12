@@ -313,6 +313,7 @@ nav:
               - Mellanox:
                   - Overview: user/reference/profiles/Mellanox/index.md
                   - Mellanox.Onyx: user/reference/profiles/Mellanox/Mellanox.Onyx.md
+                  - Mellanox.Cumulus: user/reference/profiles/Mellanox/Mellanox.Cumulus.md
               - MikroTik:
                   - Overview: user/reference/profiles/MikroTik/index.md
                   - MikroTik.RouterOS: user/reference/profiles/MikroTik/MikroTik.RouterOS.md
