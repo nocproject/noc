@@ -57,40 +57,20 @@ Ext.define("NOC.pm.metricrule.Application", {
                     uiStyle: 'large'
                 },
                 {
-                    name: "match_labels",
-                    xtype: "labelfield",
-                    fieldLabel: __("Match Labels"),
-                    allowBlank: true,
-                    isTree: true,
-                    pickerPosition: "down",
-                    uiStyle: "extra",
-                    query: {
-                        "allow_matched": true
-                    }
-                },
-                {
-                    name: "items",
+                    name: "actions",
                     xtype: "listform",
-                    fieldLabel: __("Items"),
+                    fieldLabel: __("Actions"),
                     labelAlign: "top",
                     items: [
                         {
                             name: "metric_action",
                             xtype: "pm.metricaction.LookupField",
                             fieldLabel: __("Metric Action"),
+                            listeners: {
+                                scope: me,
+                                select: me.onSelectQuery
+                            },
                             allowBlank: false
-                        },
-                        {
-                            name: "match_labels",
-                            xtype: "labelfield",
-                            fieldLabel: __("Match Labels"),
-                            allowBlank: true,
-                            isTree: true,
-                            pickerPosition: "down",
-                            uiStyle: "extra",
-                            query: {
-                                "allow_matched": true
-                            }
                         },
                         {
                             name: "is_active",
@@ -98,9 +78,9 @@ Ext.define("NOC.pm.metricrule.Application", {
                             boxLabel: __("Active")
                         },
                         {
-                            name: "query_params",
+                            name: "metric_action_params",
                             xtype: "gridfield",
-                            fieldLabel: __("Query Parameters"),
+                            fieldLabel: __("Action Params"),
                             columns: [
                                 {
                                     dataIndex: "name",
@@ -118,7 +98,62 @@ Ext.define("NOC.pm.metricrule.Application", {
                                     editor: "textfield",
                                     width: 200
                                 },
+                                {
+                                    dataIndex: "min_value",
+                                    text: __("Min.Value"),
+                                    width: 70
+                                },
+                                {
+                                    dataIndex: "max_value",
+                                    text: __("Max.Value"),
+                                    width: 70
+                                },
+                                {
+                                    dataIndex: "default",
+                                    text: __("Default"),
+                                    width: 100
+                                },
+                                {
+                                    dataIndex: "description",
+                                    text: __("Description"),
+                                    flex: 1
+                                }
                             ]
+                        }
+                    ]
+                },
+                {
+                    name: "match",
+                    xtype: "listform",
+                    fieldLabel: __("Match Rules"),
+                    labelAlign: "top",
+                    rows: 5,
+                    items: [
+                        {
+                            name: "labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Match Labels"),
+                            allowBlank: true,
+                            isTree: true,
+                            filterProtected: false,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
+                        },
+                        {
+                            name: "exclude_labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Exclude Match Labels"),
+                            allowBlank: true,
+                            isTree: true,
+                            filterProtected: false,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
                         }
                     ]
                 }
@@ -127,4 +162,19 @@ Ext.define("NOC.pm.metricrule.Application", {
         me.callParent();
     },
     //
+    onSelectQuery: function(field, record) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/pm/metricaction/" + record.get("id") + "/",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText),
+                    queryParamsField = field.up().getForm().findField("metric_action_params"),
+                    rulesForm = field.up().up(),
+                    scrollPos = rulesForm.scroll;
+                queryParamsField.setValue(data.params);
+                rulesForm.scrollTo(scrollPos.x, scrollPos.y);
+            }
+        })
+    }
 });

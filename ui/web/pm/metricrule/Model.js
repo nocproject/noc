@@ -29,7 +29,11 @@ Ext.define("NOC.pm.metricrule.Model", {
             defaultValue: true
         },
         {
-            name: "items",
+            name: "match",
+            type: "auto"
+        },
+        {
+            name: "actions",
             type: "auto"
         },
     ]
