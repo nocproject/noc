@@ -714,6 +714,15 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream CfgMXRoute records older days",
         )
+        enable_cfgmetricrules = BooleanParameter(default=True)
+        enable_cfgmetricrules_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for CfgMetricRules datastream (Mongo greater 3.6 needed)",
+        )
+        cfgmetricrules_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream CfgMetricRules records older days",
+        )
         enable_cfgmomapping = BooleanParameter(default=True)
         enable_cfgmomapping_wait = BooleanParameter(
             default=True,
@@ -849,6 +858,8 @@ class Config(BaseConfig):
         compact_on_stop = BooleanParameter(default=False)
         flush_interval = SecondsParameter(default="1")
         compact_interval = SecondsParameter(default="5m")
+        # Metrics
+        disable_spool = BooleanParameter(default=False, help="Disable send metrics to Clickhouse")
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
 

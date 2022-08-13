@@ -35,7 +35,7 @@ from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory
 from noc.services.metrics.changelog import ChangeLog
-from noc.services.metrics.datastream import MetricsDataStreamClient
+from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.config import config as global_config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
@@ -80,6 +80,15 @@ class Rule(object):
 
     def is_matched(self, labels: Set[str]) -> bool:
         return labels.issuperset(self.match_labels)
+
+    def is_diff(self):
+        """
+        Diff nodes config ?
+        Diff config or diff structure
+        Diff condition
+        :return:
+        """
+        ...
 
 
 @dataclass
@@ -128,6 +137,7 @@ class MetricsService(FastAPIService):
         if global_config.metrics.compact_interval > 0:
             asyncio.create_task(self.compact_runnner())
         # Start tracking changes
+        asyncio.get_running_loop().create_task(self.get_metric_rules_mappings())
         asyncio.get_running_loop().create_task(self.get_object_mappings())
         # Subscribe metrics stream
         asyncio.get_running_loop().create_task(self.subscribe_metrics())
@@ -169,6 +179,25 @@ class MetricsService(FastAPIService):
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
+            try:
+                await client.query(
+                    limit=global_config.metrics.ds_limit,
+                    block=True,
+                    filter_policy="delete",
+                )
+            except NOCError as e:
+                self.logger.info("Failed to get object mappings: %s", e)
+                await asyncio.sleep(1)
+
+    async def get_metric_rules_mappings(self):
+        """
+        Subscribe and track datastream changes
+        """
+        # Register RPC aliases
+        client = MetricRulesDataStreamClient("cfgmetricrules", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track metric rules")
             try:
                 await client.query(
                     limit=global_config.metrics.ds_limit,
@@ -582,6 +611,17 @@ class MetricsService(FastAPIService):
         Called when all mappings are ready.
         """
         self.mappings_ready_event.set()
+
+    def invalidate_cards(self):
+        """
+        Remove cards
+        :return:
+        """
+    async def update_rules(self, data: Dict[str, Any]) -> None:
+        ...
+
+    async def delete_rules(self, r_id: str) -> None:
+        ...
 
 
 if __name__ == "__main__":
