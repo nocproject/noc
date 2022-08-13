@@ -29,6 +29,10 @@ Ext.define("NOC.pm.metricaction.Model", {
             type: "string"
         },
         {
+            name: "params",
+            type: "auto"
+        },
+        {
             name: "compose_inputs",
             type: "auto"
         },

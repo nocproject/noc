@@ -323,6 +323,76 @@ Ext.define("NOC.pm.metricaction.Application", {
                         },
                         {
                             xtype: "container",
+                            defaults: {
+                                minWidth: me.formMinWidth - 22,
+                                maxWidth: me.formMaxWidth - 22,
+                            },
+                            items: [
+                                {
+                                    name: "params",
+                                    xtype: "gridfield",
+                                    fieldLabel: __("Parameters"),
+                                    labelAlign: "top",
+                                    width: me.formMinWidth,
+                                    columns: [
+                                        {
+                                            dataIndex: "name",
+                                            text: __("Name"),
+                                            editor: "textfield",
+                                            width: 150
+                                        },
+                                        {
+                                            dataIndex: "type",
+                                            text: __("Type"),
+                                            width: 70,
+                                            editor: {
+                                                xtype: "combobox",
+                                                store: [
+                                                    ["str", "str"],
+                                                    ["int", "int"],
+                                                    ["bool", "bool"],
+                                                    ["float", "float"]
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            dataIndex: "min_value",
+                                            text: __("Min. Value"),
+                                            editor: {
+                                                xtype: "numberfield",
+                                                forcePrecision: true,
+                                                decimalPrecision: 1,
+                                            },
+                                            width: 50
+                                        },
+                                        {
+                                            dataIndex: "max_value",
+                                            text: __("Max. Value"),
+                                            editor: {
+                                                xtype: "numberfield",
+                                                forcePrecision: true,
+                                                decimalPrecision: 1,
+                                            },
+                                            width: 50
+                                        },
+                                        {
+                                            dataIndex: "default",
+                                            text: __("Default"),
+                                            editor: "textfield",
+                                            width: 75
+                                        },
+                                        {
+                                            dataIndex: "description",
+                                            text: __("Description"),
+                                            editor: "textfield",
+                                            flex: 1
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            xtype: "container",
                             layout: "column",
                             minWidth: me.formMinWidth,
                             maxWidth: me.formMaxWidth,
