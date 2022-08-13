@@ -371,6 +371,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         else:
             self.bound_inputs.add(name)
 
+    def unsubscribe(self, node: "BaseCDAGNode", name: Optional[str] = None) -> None:
+        """
+        Unsubscribe node
+        :param node: Connected node
+        :param name: Connected input name
+        :return:
+        """
+        ...
+
     def get_value(self, *args, **kwargs) -> Optional[ValueType]:  # pragma: no cover
         """
         Calculate node value. Returns None when input is malformed and should not be propagated

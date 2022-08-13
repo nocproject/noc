@@ -9,7 +9,7 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional, Set
+from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet
 import sys
 import asyncio
 import codecs
@@ -57,10 +57,11 @@ class ScopeInfo(object):
 
 @dataclass
 class Card(object):
-    __slots__ = ("alarms", "probes", "senders")
+    __slots__ = ("alarms", "probes", "senders", "is_dirty")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
     alarms: List[AlarmNode]
+    is_dirty: bool
 
     def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
         """
@@ -70,25 +71,72 @@ class Card(object):
         """
         return next((s for s in self.senders if s.config.scope == name), None)
 
+    @classmethod
+    def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:
+        """
+        Iterate over nodes subscribed to Probes on Card
+        :return:
+        """
+        for s in node.iter_subscribers():
+            yield s.node
+            yield from cls.iter_subscribed_nodes(s.node)
+
+    def invalidate_card(self):
+        """
+        Remove all subscribed node and set  is_dirty for applied rules
+        :return:
+        """
+        for probe in self.probes.values():
+            for node in self.iter_subscribed_nodes(probe):
+                if node in self.senders or node in self.probes or node in self.alarms:
+                    continue
+                print("Delete node", node.node_id, node.name)
+                del node
+            # Cleanup Subscribe
+            for s in list(probe.iter_subscribers()):
+                if s.node in self.senders or s.node in self.probes or s.node in self.alarms:
+                    continue
+                probe.unsubscribe(s.node, s.input)
+        self.is_dirty = True
+
 
 @dataclass
 class Rule(object):
     match_labels: Set[str]
     match_scopes: Set[str]
     graph: CDAG
-    configs: Dict[str, Any]  # NodeId -> Config
+    configs: Dict[str, Dict[str, Any]]  # NodeId -> Config
 
     def is_matched(self, labels: Set[str]) -> bool:
         return labels.issuperset(self.match_labels)
 
-    def is_diff(self):
+    def is_differ(self, rule: "Rule") -> FrozenSet[str]:
         """
-        Diff nodes config ?
-        Diff config or diff structure
-        Diff condition
+        Diff nodes config - update configs only
+        Diff graph nodes or structure - rebuld Card Rules
+        Diff condition - rebuild or remove Card Rules
         :return:
         """
-        ...
+        r = []
+        if self.graph != rule.graph:
+            r.append("graph")
+        if self.match_labels != rule.match_labels:
+            r.append("conditions")
+        if self.configs != rule.configs:
+            r.append("configs")
+        return frozenset(r)
+
+    def update_config(self, configs: Dict[str, Dict[str, Any]]):
+        """
+        Update node config
+        :param configs:
+        :return:
+        """
+        for node_id in configs:
+            if node_id in self.configs:
+                self.configs[node_id].update(configs[node_id])
+            else:
+                self.configs[node_id] = configs[node_id]
 
 
 @dataclass
@@ -240,6 +288,9 @@ class MetricsService(FastAPIService):
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
+            # Apply Rules after invalidate cache
+            if card.is_dirty:
+                self.apply_rules(mk, labels)
             state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
@@ -374,18 +425,8 @@ class MetricsService(FastAPIService):
         card = await self.project_cdag(cdag, prefix=self.get_key_hash(k))
         metrics["project_cards"] += 1
         self.cards[k] = card
-        # Getting Context
-        key_ctx = dict(k[1])
-        if "managed_object" in key_ctx:
-            mo_info = self.mo_map.get(key_ctx["managed_object"])
-        else:
-            mo_info = None
-        if mo_info:
-            mo_labels = mo_info.labels
-        else:
-            mo_labels = None
-        # Apply rules
-        self.apply_rules(k, self.merge_labels(mo_labels, labels))
+        # Apply Rules
+        self.apply_rules(k, labels)
         return card
 
     def get_scope_cdag(self, k: MetricKey) -> Optional[CDAG]:
@@ -452,6 +493,7 @@ class MetricsService(FastAPIService):
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
             alarms=[],
+            is_dirty=False,
         )
 
     async def get_dispose_partitions(self, pool: str) -> int:
@@ -501,7 +543,17 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards[k]
-        s_labels = set(labels)
+        # Getting Context
+        key_ctx = dict(k[1])
+        if "managed_object" in key_ctx:
+            mo_info = self.mo_map.get(key_ctx["managed_object"])
+        else:
+            mo_info = None
+        if mo_info:
+            mo_labels = mo_info.labels
+        else:
+            mo_labels = None
+        s_labels = set(self.merge_labels(mo_labels, labels))
         for rule in self.rules.values():
             if k[0] not in rule.match_scopes:
                 continue
@@ -551,6 +603,7 @@ class MetricsService(FastAPIService):
                     node.freeze()
             # Add alarms nodes for clear alarm on delete
             card.alarms += [nodes["alarm"]]
+        card.is_dirty = False
 
     def activate_card(
         self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
@@ -612,11 +665,6 @@ class MetricsService(FastAPIService):
         """
         self.mappings_ready_event.set()
 
-    def invalidate_cards(self):
-        """
-        Remove cards
-        :return:
-        """
     async def update_rules(self, data: Dict[str, Any]) -> None:
         ...
 
