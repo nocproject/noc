@@ -111,7 +111,7 @@ class MetricsService(FastAPIService):
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
-        self.disable_spool: bool = False
+        self.disable_spool: bool = global_config.metrics.disable_spool
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -466,7 +466,7 @@ class MetricsService(FastAPIService):
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
         """
-        Apply rule structure
+        Apply rule Graph
         :param k:
         :param labels:
         :return:
@@ -485,8 +485,12 @@ class MetricsService(FastAPIService):
                     # Probe node, will be replace to Card probes
                     nodes[node.node_id] = card.probes[node.node_id]
                     continue
-                elif node.name == "probe" and node.node_id not in card.probes:
-                    # Metrics probe is not initialized yet, add_probe
+                elif (
+                    node.name == "probe"
+                    and node.node_id not in card.probes
+                    and "compose_" not in node.node_id
+                ):
+                    # Metrics probe is not initialized yet, add_probe. Skip compose  metric node
                     probe = self.add_probe(node.node_id, k)
                     nodes[node.node_id] = probe
                     continue
@@ -500,7 +504,6 @@ class MetricsService(FastAPIService):
                 )
                 continue
             # Subscribe
-            # Complex Node subscribe to sender
             # Probe node resubscribe to probe
             for o_node in rule.graph.nodes.values():
                 node = nodes[o_node.node_id]
@@ -508,6 +511,10 @@ class MetricsService(FastAPIService):
                     node.subscribe(
                         nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                     )
+                if "_compose" in node.node_id:
+                    # Complex Node subscribe to sender
+                    sender = card.get_sender("interface")
+                    node.subscribe(sender, node.node_id, dynamic=True)
             # Compact the storage
             for node in nodes.values():
                 if node.bound_inputs:

@@ -253,13 +253,11 @@ class MetricAction(Document):
             )
             key_input = InputItem(name="x", node=f"{prefix}activation-function")
         dkey_input = None
-        key_function = self.key_function if self.key_function and self.key_function != "disable" else None
+        key_function = (
+            self.key_function if self.key_function and self.key_function != "disable" else None
+        )
         # Deactivation
-        if (
-            key_function
-            and self.deactivation_config
-            and self.deactivation_config.window_function
-        ):
+        if key_function and self.deactivation_config and self.deactivation_config.window_function:
             config = {
                 "min_window": self.deactivation_config.min_window,
                 "max_window": self.deactivation_config.max_window,
@@ -272,7 +270,11 @@ class MetricAction(Document):
                 inputs=[g_input],
             )
             dkey_input = InputItem(name="x", node=f"{prefix}deactivation-window")
-        if key_function and self.deactivation_config and self.deactivation_config.activation_function:
+        if (
+            key_function
+            and self.deactivation_config
+            and self.deactivation_config.activation_function
+        ):
             nodes[f"{prefix}deactivation-function"] = NodeItem(
                 name=f"{prefix}deactivation-function",
                 type=self.deactivation_config.activation_function,

@@ -79,11 +79,11 @@ class ProbeNode(BaseCDAGNode):
                 return v * base ** (exp - self.exp)
             elif self.exp == 0:
                 # Base mismatch, Target scale is 1
-                return v * base ** exp
+                return v * base**exp
             elif exp == 0:
                 # Base mismatch, Source scale is 1
-                return v * self.base ** -self.exp
-            return v * (base ** exp) * self.base ** -self.exp
+                return v * self.base**-self.exp
+            return v * (base**exp) * self.base**-self.exp
 
         if "," in unit:
             # <scale>,<unit>
