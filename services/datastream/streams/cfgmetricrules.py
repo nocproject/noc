@@ -30,7 +30,7 @@ class CfgMetricRuleDataStream(DataStream):
         for action in m_rule.actions:
             if not action.is_active:
                 continue
-            r["actions"] = {
+            r_action = {
                 "id": str(action.metric_action.id),
                 "name": str(action.metric_action),
                 "graph_config": action.metric_action.get_config(
@@ -39,15 +39,16 @@ class CfgMetricRuleDataStream(DataStream):
                 "inputs": [],
             }
             for mt in action.metric_action.compose_inputs:
-                r["actions"]["inputs"] += [
+                r_action["inputs"] += [
                     {
                         "input_name": mt.input_name,
                         "probe_id": mt.metric_type.field_name,
                         "sender_id": mt.metric_type.scope.table_name,
                     }
                 ]
+            r["actions"] += [r_action]
         for match in m_rule.match or []:
-            if not match.labels or not match.exclude_labels:
+            if not match.labels and not match.exclude_labels:
                 continue
             r["match"] += [
                 {

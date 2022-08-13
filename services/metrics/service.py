@@ -33,7 +33,7 @@ from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
-from noc.core.cdag.factory.config import ConfigCDAGFactory
+from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.config import config as global_config
@@ -57,10 +57,11 @@ class ScopeInfo(object):
 
 @dataclass
 class Card(object):
-    __slots__ = ("alarms", "probes", "senders", "is_dirty")
+    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
     alarms: List[AlarmNode]
+    affected_rules: Set[str]
     is_dirty: bool
 
     def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
@@ -102,13 +103,15 @@ class Card(object):
 
 @dataclass
 class Rule(object):
-    match_labels: Set[str]
+    id: str
+    match_labels: FrozenSet[FrozenSet[str]]
+    exclude_labels: Optional[FrozenSet[FrozenSet[str]]]
     match_scopes: Set[str]
     graph: CDAG
     configs: Dict[str, Dict[str, Any]]  # NodeId -> Config
 
     def is_matched(self, labels: Set[str]) -> bool:
-        return labels.issuperset(self.match_labels)
+        return any(labels.issuperset(ml) for ml in self.match_labels)
 
     def is_differ(self, rule: "Rule") -> FrozenSet[str]:
         """
@@ -118,7 +121,8 @@ class Rule(object):
         :return:
         """
         r = []
-        if self.graph != rule.graph:
+        if set(self.graph.nodes) != set(rule.graph.nodes):
+            # If compare Graph Node config always diff if change
             r.append("graph")
         if self.match_labels != rule.match_labels:
             r.append("conditions")
@@ -126,17 +130,20 @@ class Rule(object):
             r.append("configs")
         return frozenset(r)
 
-    def update_config(self, configs: Dict[str, Dict[str, Any]]):
+    def update_config(self, configs: Dict[str, Dict[str, Any]]) -> Set[str]:
         """
-        Update node config
+        Update node config, return changed node
         :param configs:
         :return:
         """
+        update_configs = set()
         for node_id in configs:
-            if node_id in self.configs:
+            if node_id in self.configs and self.configs != configs[node_id]:
                 self.configs[node_id].update(configs[node_id])
+                update_configs.add(node_id)
             else:
                 self.configs[node_id] = configs[node_id]
+        return update_configs
 
 
 @dataclass
@@ -175,7 +182,6 @@ class MetricsService(FastAPIService):
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
-        self.load_rules()
         if global_config.metrics.compact_on_start:
             await self.change_log.compact()
         self.start_state = await self.change_log.get_state()
@@ -322,49 +328,6 @@ class MetricsService(FastAPIService):
                 "[%s] key fields: %s, key labels: %s", si.scope, si.key_fields, si.key_labels
             )
 
-    def load_rules(self):
-        """
-
-        :return:
-        """
-        from noc.pm.models.metricrule import MetricRule
-
-        for mr in MetricRule.objects.filter(is_active=True):
-            mr: MetricRule
-            for item in mr.items:
-                if not item.is_active:
-                    continue
-                graph = CDAG(f"{mr.name}-{item.metric_action.name}")
-                g_config = item.metric_action.get_config()
-                scopes = set()
-                for mt in item.metric_action.compose_inputs:
-                    scopes.add(mt.metric_type.scope.table_name)
-                    graph.add_node(
-                        mt.metric_type.field_name,
-                        node_type="probe",
-                        config={"unit": "1"},
-                        sticky=True,
-                    )
-                f = ConfigCDAGFactory(graph, g_config)
-                f.construct()
-                configs = {}
-                for node in g_config.nodes:
-                    if node.name == "probe" or not node.config:
-                        continue
-                    configs[node.name] = node.config
-                # for node in graph.nodes.values():
-                #     if node.name == "probe" or not node.config:
-                #         continue
-                #     configs[node.node_id] = node.config.dict()
-                self.rules[graph.graph_id] = Rule(
-                    match_labels=set(sys.intern(label) for label in mr.match_labels),
-                    match_scopes=scopes,
-                    graph=graph,
-                    configs=configs,
-                )
-
-        self.logger.info("Loading %d metric rules", len(self.rules))
-
     @staticmethod
     def get_key(si: ScopeInfo, data: Dict[str, Any]) -> MetricKey:
         def iter_key_labels():
@@ -493,6 +456,7 @@ class MetricsService(FastAPIService):
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
             alarms=[],
+            affected_rules=set(),
             is_dirty=False,
         )
 
@@ -554,7 +518,7 @@ class MetricsService(FastAPIService):
         else:
             mo_labels = None
         s_labels = set(self.merge_labels(mo_labels, labels))
-        for rule in self.rules.values():
+        for rule_id, rule in self.rules.items():
             if k[0] not in rule.match_scopes:
                 continue
             if not rule.is_matched(s_labels):
@@ -603,6 +567,8 @@ class MetricsService(FastAPIService):
                     node.freeze()
             # Add alarms nodes for clear alarm on delete
             card.alarms += [nodes["alarm"]]
+            #
+            card.affected_rules.add(rule_id)
         card.is_dirty = False
 
     def activate_card(
@@ -665,11 +631,73 @@ class MetricsService(FastAPIService):
         """
         self.mappings_ready_event.set()
 
-    async def update_rules(self, data: Dict[str, Any]) -> None:
-        ...
+    def invalidate_card_rules(self, rules: Iterable[str]):
+        """
+        Invalidate Cards on rules
+        :param rules:
+        :return:
+        """
+        rules = set(rules)
+        num = 0
+        for num, c in enumerate(self.cards.values()):
+            if c.affected_rules and c.affected_rules.intersection(rules):
+                c.invalidate_card()
+        self.logger.info("Invalidate %s cards", num)
 
-    async def delete_rules(self, r_id: str) -> None:
-        ...
+    def update_rules(self, data: Dict[str, Any]) -> None:
+        invalidate_rules = set()
+        for action in data["actions"]:
+            graph = CDAG(f'{data["name"]}-{action["name"]}')
+            g_config = GraphConfig(**action["graph_config"])
+            scopes = set()
+            for a_input in action["inputs"]:
+                scopes.add(a_input["sender_id"])
+                graph.add_node(
+                    a_input["probe_id"],
+                    node_type="probe",
+                    config={"unit": "1"},
+                    sticky=True,
+                )
+            f = ConfigCDAGFactory(graph, g_config)
+            f.construct()
+            configs = {}
+            for node in g_config.nodes:
+                if node.name == "probe" or not node.config:
+                    continue
+                configs[node.name] = node.config
+            r = Rule(
+                id=f'{data["id"]}-{action["id"]}',
+                match_labels=frozenset(
+                    frozenset(sys.intern(label) for label in d["labels"]) for d in data["match"]
+                ),
+                exclude_labels=None,
+                match_scopes=scopes,
+                graph=graph,
+                configs=configs,
+            )
+            r_id = sys.intern(r.id)
+            if r_id not in self.rules:
+                self.rules[r_id] = r
+                continue
+            diff = self.rules[r_id].is_differ(r)
+            if diff == {"configs"}:
+                # Config only update
+                uc = self.rules[r_id].update_config(r.configs)
+                self.logger.info("[%s] Update node configs: %s", r.id, uc)
+            elif diff.intersection({"conditions", "graph"}):
+                # Invalidate Cards
+                self.logger.info("[%s] %s Changed. Invalidate cards for rules", r.id, diff)
+                invalidate_rules.add(r_id)
+        if invalidate_rules:
+            self.invalidate_card_rules(invalidate_rules)
+
+    def delete_rules(self, r_id: str) -> None:
+        invalidate_rules = set()
+        for r in self.rules:
+            if r.startswith(r_id):
+                invalidate_rules.add(r)
+        if invalidate_rules:
+            self.invalidate_card_rules(invalidate_rules)
 
 
 if __name__ == "__main__":

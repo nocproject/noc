@@ -28,16 +28,10 @@ class MetricsDataStreamClient(DataStreamClient):
 
 class MetricRulesDataStreamClient(DataStreamClient):
     async def on_change(self, data):
-        self.service.update_rules(
-            mo_id=int(data["id"]),
-            bi_id=int(data["bi_id"]),
-            fm_pool=data["fm_pool"],
-            labels=data.get("labels") or [],
-            metric_labels=data.get("metric_labels") or [],
-        )
+        self.service.update_rules(data)
 
     async def on_delete(self, data):
-        self.service.delete_rules(int(data["id"]))
+        self.service.delete_rules(data["id"])
 
     # async def on_ready(self):
     #     await self.service.on_mappings_ready()
