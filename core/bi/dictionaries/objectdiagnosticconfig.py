@@ -8,7 +8,9 @@
 # NOC modules
 from noc.core.clickhouse.model import DictionaryModel
 from noc.core.clickhouse.fields import StringField
-from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig as ObjectDiagnosticConfigModel
+from noc.sa.models.objectdiagnosticconfig import (
+    ObjectDiagnosticConfig as ObjectDiagnosticConfigModel,
+)
 
 
 class ObjectDiagnosticConfig(DictionaryModel):
