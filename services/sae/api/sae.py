@@ -85,13 +85,14 @@ class SAEAPI(API):
             return None
 
     @api
-    async def script(self, object_id, script, args=None, timeout=None):
+    async def script(self, object_id, script, args=None, timeout=None, streaming=None):
         """
         Execute SA script against ManagedObject
         :param object_id: Managed Object id
         :param script: Script name (Either with or without profile)
         :param args: Dict with input arguments
         :param timeout: Script timeout in seconds
+        :param streaming:
         """
         # Resolve object data
         data = self.get_object_data(object_id)
@@ -119,6 +120,9 @@ class SAEAPI(API):
                 data["version"],
                 args,
                 timeout,
+                None,  # session
+                None,  # session_timeout
+                streaming,
             ],
         )
 

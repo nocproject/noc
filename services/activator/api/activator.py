@@ -1,12 +1,15 @@
 # ---------------------------------------------------------------------
 # Activator API
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Dict, Any
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
@@ -18,6 +21,9 @@ from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.comp import smart_text
+from ..models.streaming import StreamingConfig
+
+NS = 1_000_000_000
 
 
 class ActivatorAPI(API):
@@ -36,14 +42,15 @@ class ActivatorAPI(API):
     @executor("script")
     def script(
         self,
-        name,
+        name: str,
         credentials,
         capabilities=None,
         version=None,
-        args=None,
-        timeout=None,
-        session=None,
-        session_idle_timeout=None,
+        args: Optional[Dict[str, Any]] = None,
+        timeout: Optional[int] = None,
+        session: Optional[str] = None,
+        session_idle_timeout: Optional[int] = None,
+        streaming: Optional[StreamingConfig] = None,
     ):
         """
         Execute SA script
@@ -66,11 +73,12 @@ class ActivatorAPI(API):
         :param session: Unique session id to share CLI stream
         :param session_idle_timeout: Hold CLI stream up to
             session_idle_timeout seconds after script completion
+        :param streaming: Send result to stream for processed on service
         """
         script_class = loader.get_script(name)
         if not script_class:
             metrics["error", ("type", "invalid_script")] += 1
-            raise APIError("Invalid script: %s" % name)
+            raise APIError(f"Invalid script: {name}")
         script = script_class(
             service=self.service,
             credentials=credentials,
@@ -87,7 +95,34 @@ class ActivatorAPI(API):
         except script.ScriptError as e:
             metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
-        return result
+
+        if not streaming or not result:
+            return result
+        streaming = StreamingConfig(**streaming)
+        self.service.publish(
+            value=self.clean_streaming_result(result, streaming),
+            stream=streaming.stream,
+            partition=streaming.partition,
+            headers={},
+        )
+        return []
+
+    def clean_streaming_result(self, result, s_config: "StreamingConfig") -> bytes:
+        """
+        :param result:
+        :param s_config:
+        :return:
+        """
+        if s_config.format and hasattr(self, f"format_{s_config.format}"):
+            h = getattr(self, f"format_{s_config.format}")
+            result = h(result, s_config)
+        elif s_config.data and isinstance(result, dict):
+            result.update(s_config.get_data())
+        elif s_config.data and isinstance(result, list):
+            data = s_config.get_data()
+            for ss in result:
+                ss.update(data)
+        return orjson.dumps(result)
 
     @staticmethod
     def script_get_label(name: str, credentials, *args, **kwargs):
@@ -204,17 +239,17 @@ class ActivatorAPI(API):
         if 200 <= code <= 299:
             return smart_text(body, errors="replace")
         elif ignore_errors:
-            metrics["error", ("type", "http_error_%s" % code)] += 1
+            metrics["error", ("type", f"http_error_{code}")] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             return smart_text(header, errors="replace") + smart_text(body, errors="replace")
         else:
-            metrics["error", ("type", "http_error_%s" % code)] += 1
+            metrics["error", ("type", f"http_error_{code}")] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             return None
 
     @staticmethod
     def http_get_get_label(url):
-        return "%s" % url
+        return f"{url}"
 
     @api
     @executor("script")
