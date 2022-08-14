@@ -49,7 +49,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Model", {
         {
             name: "run_order",
             type: "string",
-            defaultValue: "A"
+            defaultValue: "E"
         },
         {
             name: "enable_box",
@@ -83,7 +83,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Model", {
             type: "auto"
         },
         {
-            name: "math",
+            name: "match",
             type: "auto"
         },
         {

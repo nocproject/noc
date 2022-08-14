@@ -2365,7 +2365,7 @@ class ManagedObject(NOCModel):
             checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
             blocked=ac == "C",
             run_policy="F",
-            run_order="B",
+            run_order="S",
             discovery_box=True,
             alarm_class="NOC | Managed Object | Access Lost",
             alarm_labels=["noc::access::method::SNMP"],
@@ -2379,7 +2379,7 @@ class ManagedObject(NOCModel):
             alarm_class="Discovery | Guess | Profile",
             blocked=not self.object_profile.enable_box_discovery_profile,
             run_policy="A",
-            run_order="B",
+            run_order="S",
             discovery_box=True,
             reason="Blocked by ObjectProfile AccessPreference"
             if not self.object_profile.enable_box_discovery_profile
@@ -2395,7 +2395,7 @@ class ManagedObject(NOCModel):
             alarm_labels=["noc::access::method::CLI"],
             blocked=ac == "S",
             run_policy="F",
-            run_order="B",
+            run_order="S",
             reason="Blocked by AccessPreference" if ac == "S" else None,
         )
         # HTTP Diagnostic
@@ -2408,7 +2408,7 @@ class ManagedObject(NOCModel):
             checks=[Check("HTTP"), Check("HTTPS")],
             blocked=False,
             run_policy="D",  # Not supported
-            run_order="B",
+            run_order="S",
             reason=None,
         )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?

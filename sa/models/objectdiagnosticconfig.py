@@ -53,6 +53,8 @@ class DiagnosticCheck(EmbeddedDocument):
     check = StringField(required=True)
     arg0 = StringField()
 
+    def __str__(self):
+        return f"{self.check}:{self.arg0}"
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {"check": self.check}
@@ -136,7 +138,7 @@ class ObjectDiagnosticConfig(Document):
 
         return DiagnosticConfig(
             diagnostic=self.name,
-            checks=[Check(name=c.name, arg0=c.arg0) for c in self.checks],
+            checks=[Check(name=c.check, arg0=c.arg0) for c in self.checks],
             dependent=self.diagnostics,
             state_policy=self.state_policy,
             run_policy=self.run_policy,
@@ -162,7 +164,7 @@ class ObjectDiagnosticConfig(Document):
         deferred = list()
         for odc in ObjectDiagnosticConfig.objects.filter(match__labels__in=object.effective_labels):
             dc = odc.get_diagnostic_config()
-            if odc.dependent:
+            if odc.diagnostics:
                 deferred.append(dc)
                 continue
             yield dc

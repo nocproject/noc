@@ -38,7 +38,7 @@ class DiagnosticCheck(DiscoveryCheck):
 
     CHECK_CACHE = {}  # Cache check result
 
-    def __init__(self, job, run_order: Optional[Literal["B", "A"]] = None):
+    def __init__(self, job, run_order: Optional[Literal["S", "E"]] = None):
         super().__init__(job)
         self.run_order = run_order
 

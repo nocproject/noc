@@ -69,7 +69,7 @@ class DiagnosticConfig(object):
     reason: Optional[str] = None  # Reason current state
     # Discovery Config
     run_policy: str = "A"  # A - Always, M - manual, F - Unknown or Failed, D - Disable
-    run_order: str = "B"  # B - Before all discovery, A - After all discovery
+    run_order: str = "S"  # S - Before all discovery, E - After all discovery
     discovery_box: bool = False  # Run on periodic discovery
     discovery_periodic: bool = False  # Run on box discovery
     #

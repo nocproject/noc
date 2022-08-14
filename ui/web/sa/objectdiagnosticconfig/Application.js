@@ -57,12 +57,6 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
             allowBlank: true
         },
         {
-            name: "is_active",
-            xtype: "checkbox",
-            boxLabel: __("Active"),
-            allowBlank: true
-        },
-        {
             xtype: "fieldset",
             title: __("Display Settings"),
             items: [
@@ -93,6 +87,18 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "enable_box",
+                    xtype: "checkbox",
+                    boxLabel: __("Enable Box"),
+                    allowBlank: true
+                },
+                {
+                    name: "enable_periodic",
+                    xtype: "checkbox",
+                    boxLabel: __("Enable Periodic"),
+                    allowBlank: true
+                },
+                {
                     name: "run_policy",
                     xtype: "combobox",
                     fieldLabel: __("Run Policy"),
@@ -109,8 +115,8 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
                     xtype: "combobox",
                     fieldLabel: __("Run Order"),
                     store: [
-                        ["A", __("After")],
-                        ["B", __("Before")]
+                        ["S", __("On Start")],
+                        ["E", __("After End")]
                     ],
                     allowBlank: true,
                     value: "A",
