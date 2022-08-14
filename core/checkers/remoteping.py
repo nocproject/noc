@@ -46,6 +46,7 @@ class RemotePing(ObjectChecker):
                 yield CheckResult(
                     RP_DIAG,
                     status=bool(r["success"]),
+                    arg0=c.arg0,
                     metrics=[
                         MetricValue(
                             "Check | Result",
