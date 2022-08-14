@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from typing import Dict, Any, Optional
 import orjson
 import datetime
 import smtplib
@@ -25,7 +26,7 @@ from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_TO
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.comp import smart_text
+from noc.core.comp import DEFAULT_ENCODING
 
 MAILSENDER_STREAM = "mailsender"
 
@@ -58,23 +59,31 @@ class MailSenderService(FastAPIService):
             metrics["messages_drops"] += 1
             return
         metrics["messages_processed"] += 1
-        return self.send_mail(smart_text(dst), orjson.loads(msg.value))
+        return self.send_mail(
+            msg.offset, orjson.loads(msg.value), dst.decode(encoding=DEFAULT_ENCODING)
+        )
 
-    def send_mail(self, message_id: str, data: str) -> None:
-        attachments = data["attachments"] or []
+    def send_mail(
+        self, message_id: int, data: Dict[str, Any], address_to: Optional[str] = None
+    ) -> None:
+        attachments = data.get("attachments", [])
         self.tz = pytz.timezone(config.timezone)
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
-        address = data["address"]
-        if isinstance(address, str):
-            address = [address]
+        if "address" in data:
+            address = [data["address"]]
+        elif address_to:
+            address = [address_to]
+        else:
+            self.logger.warning("[%s] Message without address", message_id)
+            return
         from_address = config.mailsender.from_address
         message = MIMEMultipart()
         message["From"] = from_address
         message["To"] = ", ".join(address)
         message["Date"] = md
-        message["Subject"] = Header(smart_text(data["subject"]), "utf-8")
-        message.attach(MIMEText(smart_text(data["body"]), _charset="utf-8"))
+        message["Subject"] = Header(data["subject"], "utf-8")
+        message.attach(MIMEText(data["body"], _charset="utf-8"))
         for a in attachments:
             part = MIMEBase("application", "octet-stream")
             if "transfer-encoding" in a:

@@ -10,7 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Tuple, Dict, Iterator, Optional, Any
+from typing import Tuple, Dict, Iterator, Optional, Any, Set, List
 
 # Third-party modules
 from django.db import models
@@ -23,20 +23,18 @@ from noc.settings import LANGUAGE_CODE
 from noc.main.models.systemtemplate import SystemTemplate
 from noc.main.models.template import Template
 from noc.core.timepattern import TimePatternList
-from noc.core.mx import send_message, MX_TO
+from noc.core.mx import send_message, MX_TO, NOTIFICATION_METHODS, MX_NOTIFICATION_CHANNEL
 from noc.core.model.decorator import on_delete_check
-from noc.core.comp import smart_bytes
+from noc.core.comp import DEFAULT_ENCODING
 from .timepattern import TimePattern
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
-NOTIFICATION_TOPICS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
-MX_STREAMS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
 NOTIFICATION_DEFAULT_TEMPLATE = {"interface_status_change": "interface.status.change"}
 
-NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_TOPICS)]
+NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_METHODS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
 
 
@@ -123,7 +121,7 @@ class NotificationGroup(NOCModel):
         return m
 
     @property
-    def active_members(self):
+    def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
         """
         List of currently active members: (method, param, language)
         """
@@ -147,22 +145,39 @@ class NotificationGroup(NOCModel):
         return "Cannot translate message"
 
     @classmethod
-    def send_notification(cls, method, address, subject, body, attachments=None):
-        topic = NOTIFICATION_TOPICS.get(method)
-        if not topic:
+    def send_notification(
+        cls,
+        method: str,
+        address: str,
+        subject: str,
+        body: str,
+        attachments: Optional[List[str]] = None,
+    ):
+        """
+        Send notification message to MX service for processing
+        :param method:
+        :param address:
+        :param subject:
+        :param body:
+        :param attachments:
+        :return:
+        """
+        if method not in NOTIFICATION_METHODS:
             logging.error("Unknown notification method: %s", method)
             return
         logging.debug("Sending notification to %s via %s", address, method)
-        data = {
-            "address": address,
-            "subject": subject,
-            "body": body,
-            "attachments": attachments or [],
-        }
         send_message(
-            data,
+            {
+                "address": address,
+                "subject": subject,
+                "body": body,
+                "attachments": attachments or [],
+            },
             message_type="notification",
-            headers={MX_TO: smart_bytes(topic)},
+            headers={
+                MX_NOTIFICATION_CHANNEL: method.encode(encoding=DEFAULT_ENCODING),
+                MX_TO: address.encode(encoding=DEFAULT_ENCODING),
+            },
         )
 
     def notify(self, subject, body, link=None, attachments=None):
@@ -224,7 +239,7 @@ class NotificationGroup(NOCModel):
         :return:
         """
         for method, param, _ in self.active_members:
-            yield MX_STREAMS[method], {"To": smart_bytes(param)}, None
+            yield method, {MX_TO: param.encode(encoding=DEFAULT_ENCODING)}, None
 
     @classmethod
     def render_message(

@@ -16,7 +16,7 @@ from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_MESSAGE_TYPE
 from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import DEFAULT_ENCODING
-from .route import Route
+from .route import Route, DefaultNotificationRoute
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ class Router(object):
     def __init__(self):
         self.chains: DefaultDict[bytes, List[Route]] = defaultdict(list)
         self.routes: Dict[str, Route] = {}
+        self.default_route: Optional[DefaultNotificationRoute] = DefaultNotificationRoute()
 
     def load(self):
         """
@@ -131,6 +132,10 @@ class Router(object):
         mt = msg.headers.get(MX_MESSAGE_TYPE)
         if not mt:
             return
+        # Check default Route
+        if self.default_route and self.default_route.is_match(msg):
+            yield self.default_route
+        # Iterate over routes
         for route in self.chains[mt]:
             if route.is_match(msg):
                 yield route
