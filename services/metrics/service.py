@@ -57,6 +57,10 @@ class ScopeInfo(object):
 
 @dataclass
 class Card(object):
+    """
+    Store Input probe nodes
+    """
+
     __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
@@ -91,7 +95,7 @@ class Card(object):
             for node in self.iter_subscribed_nodes(probe):
                 if node in self.senders or node in self.probes or node in self.alarms:
                     continue
-                print("Delete node", node.node_id, node.name)
+                metrics["cdag_nodes", ("type", node.name)] -= 1
                 del node
             # Cleanup Subscribe
             for s in list(probe.iter_subscribers()):
@@ -103,6 +107,10 @@ class Card(object):
 
 @dataclass
 class Rule(object):
+    """
+    Store Rule actions, configs and conditions
+    """
+
     id: str
     match_labels: FrozenSet[FrozenSet[str]]
     exclude_labels: Optional[FrozenSet[FrozenSet[str]]]
@@ -160,8 +168,8 @@ class MetricsService(FastAPIService):
     name = "metrics"
     use_mongo = True
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         self.scopes: Dict[str, ScopeInfo] = {}
         self.metric_configs: Dict[str, ProbeNodeConfig] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
@@ -172,6 +180,7 @@ class MetricsService(FastAPIService):
         self.mo_map: Dict[int, ManagedObjectInfo] = {}
         self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
         self.mappings_ready_event = asyncio.Event()
+        self.rules_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
@@ -294,9 +303,6 @@ class MetricsService(FastAPIService):
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
-            # Apply Rules after invalidate cache
-            if card.is_dirty:
-                self.apply_rules(mk, labels)
             state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
@@ -352,7 +358,7 @@ class MetricsService(FastAPIService):
         Calculate persistent hash for metric key
         """
         d = hashlib.sha512(str(k).encode("utf-8")).digest()
-        return codecs.encode(d, "base-64")[:7].decode("utf-8")
+        return codecs.encode(d, "base_64")[:7].decode("utf-8")
 
     @staticmethod
     def merge_labels(l1: Optional[List[str]], l2: List[str]) -> List[str]:
@@ -378,7 +384,12 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards.get(k)
-        if card:
+
+        if card and card.is_dirty:
+            # Apply Rules after invalidate cache
+            self.apply_rules(k, labels)
+            return card
+        elif card:
             return card
         # Generate new CDAG
         cdag = self.get_scope_cdag(k)
@@ -419,21 +430,20 @@ class MetricsService(FastAPIService):
         self, n: BaseCDAGNode, prefix: str, config: Optional[Dict[str, Any]] = None
     ) -> BaseCDAGNode:
         """
-        Clone node and add it to the graph
+        Clone node without subscribers and apply state and config
         """
         node_id = n.node_id
         state_id = f"{prefix}::{node_id}"
         state = self.start_state.pop(state_id, None)
         new_node = n.clone(node_id, prefix=prefix, state=state, config=config)
-        # nodes[node_id] = new_node
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
 
     async def project_cdag(self, src: CDAG, prefix: str) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
-        :param src:
-        :param prefix:
+        :param src: Applied graph
+        :param prefix: Unique card prefix
         :return:
         """
 
@@ -472,6 +482,12 @@ class MetricsService(FastAPIService):
         return parts
 
     def add_probe(self, metric_field: str, k: MetricKey) -> Optional[ProbeNode]:
+        """
+        Add new probe to card
+        :param metric_field: Metric field name
+        :param k: Metrik key
+        :return:
+        """
         card = self.cards[k]
         mt = MetricType.get_by_field_name(metric_field)
         if not mt:
@@ -480,7 +496,7 @@ class MetricsService(FastAPIService):
         sender = card.get_sender(mt.scope.table_name)
         if not sender:
             self.logger.debug("[%s] Sender is not found on Card: %s", k, mt.scope.table_name)
-            return
+            return None
         prefix = self.get_key_hash(k)
         state_id = f"{self.get_key_hash(k)}::{metric_field}"
         # Create Probe
@@ -502,8 +518,8 @@ class MetricsService(FastAPIService):
     def apply_rules(self, k: MetricKey, labels: List[str]):
         """
         Apply rule Graph
-        :param k:
-        :param labels:
+        :param k: Metric key
+        :param labels: Metric labels
         :return:
         """
         card = self.cards[k]
@@ -518,12 +534,11 @@ class MetricsService(FastAPIService):
         else:
             mo_labels = None
         s_labels = set(self.merge_labels(mo_labels, labels))
+        # Appy matched rules
         for rule_id, rule in self.rules.items():
-            if k[0] not in rule.match_scopes:
+            if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
                 continue
-            if not rule.is_matched(s_labels):
-                continue
-            nodes = {}
+            nodes: Dict[str, BaseCDAGNode] = {}
             # Node
             for node in rule.graph.nodes.values():
                 if node.name == "probe" and node.node_id in card.probes:
@@ -568,7 +583,7 @@ class MetricsService(FastAPIService):
             # Add alarms nodes for clear alarm on delete
             card.alarms += [nodes["alarm"]]
             #
-            card.affected_rules.add(rule_id)
+            card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
 
     def activate_card(
@@ -577,7 +592,7 @@ class MetricsService(FastAPIService):
         """
         Activate card and return changed state
         """
-        units = data.get("_units") or {}
+        units: Dict[str, str] = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
         for n in data:
@@ -630,21 +645,29 @@ class MetricsService(FastAPIService):
         Called when all mappings are ready.
         """
         self.mappings_ready_event.set()
+        self.logger.info("%d ManagedObject mappings has been loaded", len(self.mo_map))
 
     def invalidate_card_rules(self, rules: Iterable[str]):
         """
-        Invalidate Cards on rules
+        Invalidate Cards on rules by identifiers
         :param rules:
         :return:
         """
         rules = set(rules)
+        self.logger.info("Invalidate card for rules: %s", ";".join(rules))
         num = 0
-        for num, c in enumerate(self.cards.values()):
+        for c in self.cards.values():
             if c.affected_rules and c.affected_rules.intersection(rules):
                 c.invalidate_card()
+                num += 1
         self.logger.info("Invalidate %s cards", num)
 
     def update_rules(self, data: Dict[str, Any]) -> None:
+        """
+        Apply Metric Rules change
+        :param data:
+        :return:
+        """
         invalidate_rules = set()
         for action in data["actions"]:
             graph = CDAG(f'{data["name"]}-{action["name"]}')
@@ -692,12 +715,24 @@ class MetricsService(FastAPIService):
             self.invalidate_card_rules(invalidate_rules)
 
     def delete_rules(self, r_id: str) -> None:
+        """
+        Remove rules for ID
+        :param r_id: Rule
+        :return:
+        """
         invalidate_rules = set()
         for r in self.rules:
             if r.startswith(r_id):
                 invalidate_rules.add(r)
         if invalidate_rules:
             self.invalidate_card_rules(invalidate_rules)
+
+    async def on_rules_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.rules_ready_event.set()
+        self.logger.info("%d Metric Rules has been loaded", len(self.rules))
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Optional, Type, Dict, List, Iterable, Tuple, Set
+from typing import Any, Optional, Type, Dict, List, Iterable, Tuple, Set, Union
 from enum import Enum
 import inspect
 from dataclasses import dataclass
@@ -268,7 +268,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if not self.has_input(name):
             raise KeyError(f"Invalid input: {name}")
 
-    def activate(self, tx: Transaction, name: str, value: ValueType) -> None:
+    def activate(self, tx: Transaction, name: str, value: Union[ValueType, str]) -> None:
         """
         Activate named input with
         :param tx: Transaction instance
@@ -378,7 +378,30 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param name: Connected input name
         :return:
         """
-        ...
+        if node == self:
+            raise ValueError("Cannot subscribe to self")
+        name = sys.intern(name)
+        if not self.has_subscriber(node, name):
+            return
+        # Cleanup const
+        if self.is_const_input(name):
+            del self.const_inputs[name]
+        # Cleanup input
+        if self.is_dynamic_input(name):
+            del self.dynamic_inputs[name]
+        # Remove Subscriber
+        prev = None
+        for s in self.iter_subscribers():
+            if s.node != node and s.input != name:
+                prev = s
+                continue
+            if not prev:
+                self._subscribers = None
+            elif s.next:
+                prev.next = s.next
+            else:
+                prev.next = None
+            break
 
     def get_value(self, *args, **kwargs) -> Optional[ValueType]:  # pragma: no cover
         """
@@ -432,6 +455,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         Add new dynamic input
         :param name: Input name
+        :param is_key:
         :return:
         """
         if not self.allow_dynamic:

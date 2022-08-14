@@ -33,5 +33,5 @@ class MetricRulesDataStreamClient(DataStreamClient):
     async def on_delete(self, data):
         self.service.delete_rules(data["id"])
 
-    # async def on_ready(self):
-    #     await self.service.on_mappings_ready()
+    async def on_ready(self):
+        await self.service.on_rules_ready()
