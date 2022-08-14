@@ -6,9 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import List, Dict, Any
+import operator
+from typing import List, Dict, Any, Optional
+from threading import Lock
 
 # Third-party modules
+import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     ListField,
@@ -20,8 +23,12 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.change.decorator import change
 from noc.main.models.label import Label
-from .metricaction import MetricAction
+from noc.pm.models.metricaction import MetricAction
+from noc.config import config
+
+id_lock = Lock()
 
 
 class Match(EmbeddedDocument):
@@ -52,6 +59,7 @@ class MetricActionItem(EmbeddedDocument):
         self.metric_action_params = ma_params
 
 
+@change
 class MetricRule(Document):
     meta = {
         "collection": "metricrules",
@@ -62,9 +70,20 @@ class MetricRule(Document):
     description = StringField()
     is_active = BooleanField(default=True)
     #
-    match = EmbeddedDocumentListField(Match)
+    match: List["Match"] = EmbeddedDocumentListField(Match)
     #
     actions: List["MetricActionItem"] = EmbeddedDocumentListField(MetricActionItem)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __str__(self) -> str:
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, oid) -> Optional["MetricRule"]:
+        return MetricRule.objects.filter(id=oid).first()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmetricrules:
+            yield "cfgmetricrules", self.id

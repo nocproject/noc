@@ -44,6 +44,7 @@ class Command(BaseCommand):
         "prefix": "ip.Prefix",
         "address": "ip.Address",
         "cfgmxroute": "main.MessageRoute",
+        "cfgmetricrules": "pm.MetricRule",
     }
 
     def add_arguments(self, parser):
