@@ -659,6 +659,8 @@ class MetricsService(FastAPIService):
         for c in self.cards.values():
             if c.affected_rules and c.affected_rules.intersection(rules):
                 c.invalidate_card()
+                c.affected_rules = set()
+                # c.affected_rules -= rules
                 num += 1
         self.logger.info("Invalidate %s cards", num)
 
