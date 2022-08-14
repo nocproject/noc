@@ -21,3 +21,11 @@ class DiagnosticConfigApplication(ExtDocApplication):
     model = ObjectDiagnosticConfig
     query_fields = ["name__icontains", "description__icontains"]
     default_ordering = ["name"]
+
+    def instance_to_dict(self, o, fields=None, nocustom=False):
+        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
+        r["checks"] = [
+            {"check": c["check"], "check__label": c["check"], "arg0": c.get("arg0")}
+            for c in r.get("checks", [])
+        ]
+        return r

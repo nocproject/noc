@@ -24,10 +24,10 @@ from mongoengine.fields import (
     IntField,
 )
 from mongoengine.queryset.base import NULLIFY
+from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC modules
-from noc.core.model.decorator import tree
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.core.wf.diagnostic import DiagnosticConfig
@@ -55,6 +55,7 @@ class DiagnosticCheck(EmbeddedDocument):
 
     def __str__(self):
         return f"{self.check}:{self.arg0}"
+
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {"check": self.check}
@@ -64,13 +65,12 @@ class DiagnosticCheck(EmbeddedDocument):
 
 
 @bi_sync
-@tree(field="diagnostics")
 class ObjectDiagnosticConfig(Document):
     meta = {
         "collection": "objectdiagnosticconfigs",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [],
+        "indexes": ["match.labels", "match.exclude_labels"],
         "json_collection": "sa.objectdiagnosticconfigs",
         "json_unique_fields": ["name"],
     }
@@ -103,8 +103,8 @@ class ObjectDiagnosticConfig(Document):
     # Object id in BI
     bi_id = LongField(unique=True)
 
-    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return self.name
@@ -119,6 +119,35 @@ class ObjectDiagnosticConfig(Document):
     def get_by_bi_id(cls, oid) -> Optional["ObjectDiagnosticConfig"]:
         return ObjectDiagnosticConfig.objects.filter(bi_id=oid).first()
 
+    def clean(self):
+        if self in self.diagnostics:
+            raise ValidationError({"diagnostics": "Same diagnostic in depend check not allowed"})
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "name": self.name,
+            "$collection": self._meta["json_collection"],
+            "uuid": self.uuid,
+            "description": self.description,
+            #
+            "show_in_display": self.show_in_display,
+            "display_order": self.display_order,
+            #
+            "state_policy": self.state_policy,
+            "checks": [c.json_data for c in self.checks],
+            #
+            "save_history": self.save_history,
+            "enable_box": self.enable_box,
+            "enable_periodic": self.enable_periodic,
+            "enable_manual": self.enable_manual,
+            "run_policy": self.run_policy,
+            "run_order": self.run_order,
+        }
+        if self.alarm_class:
+            r["alarm_class__name"] = self.alarm_class.name
+        return r
+
     def to_json(self) -> str:
         return to_json(
             self.json_data,
@@ -127,12 +156,11 @@ class ObjectDiagnosticConfig(Document):
                 "$collection",
                 "uuid",
                 "description",
-                "policy",
-                "show_in_info",
-                "checks",
-                "diagnostics",
             ],
         )
+
+    def get_json_path(self) -> str:
+        return f"{self.name}.json"
 
     def get_diagnostic_config(self) -> "DiagnosticConfig":
 

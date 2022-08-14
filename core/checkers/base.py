@@ -41,6 +41,7 @@ class CredentialSet(object):
 class CheckResult(object):
     check: str
     status: bool  # True - OK, False - Fail
+    arg0: Optional[str] = None  # Checked Argument
     skipped: bool = False  # Check was skipped (Example, no credential)
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
@@ -75,6 +76,7 @@ class Checker(object):
 
     name: str
     CHECKS: List[str]
+    USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
 
     def iter_result(
         self, checks: Optional[List[Union[Check, str]]] = None

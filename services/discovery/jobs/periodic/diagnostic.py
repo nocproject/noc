@@ -93,6 +93,18 @@ class DiagnosticCheck(DiscoveryCheck):
                     h = getattr(self, f"action_{cr.action.action}")
                     h(cr.action)
                 checks.append(cr)
+                metrics += [
+                    MetricValue(
+                        "Check | Status",
+                        value=int(cr.status),
+                        labels=[
+                            f"noc::check::name::{cr.check}",
+                            f"noc::diagnostic::{dc.diagnostic}",
+                        ],
+                    )
+                ]
+                if cr.arg0:
+                    metrics[-1].labels += [f"noc::check::arg0::{cr.arg0}"]
                 if cr.metrics:
                     metrics += cr.metrics
                 if cr.data:

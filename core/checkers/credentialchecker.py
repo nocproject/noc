@@ -22,6 +22,7 @@ class CredentialChecker(ObjectChecker):
     name = "credentialchecker"
     CHECKS: List[str] = ["TELNET", "SSH", "SNMPv1", "SNMPv2c"]
     PROTO_CHECK_MAP = {p.config.check: p for p in Protocol if p.config.check}
+    USER_DISCOVERY_USE = False
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
         cc = CredentialCheckerScript(

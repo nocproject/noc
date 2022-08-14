@@ -47,7 +47,13 @@ class RemotePing(ObjectChecker):
                     RP_DIAG,
                     status=bool(r["success"]),
                     metrics=[
-                        MetricValue("Check | Status", value=int(bool(r["success"]))),
-                        MetricValue("Check | Value", r["success"]),
+                        MetricValue(
+                            "Check | Result",
+                            r["success"],
+                            labels=[
+                                f"noc::check::name::{c.name}",
+                                f"noc::check::arg0::{c.arg0}",
+                            ],
+                        )
                     ],
                 )
