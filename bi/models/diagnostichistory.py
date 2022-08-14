@@ -29,7 +29,7 @@ class DiagnosticHistory(Model):
     date = DateField(description=_("Date"))
     ts = DateTimeField(description=_("Created"))
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
-    diagnostic = ReferenceField(ObjectDiagnosticConfig, description=_("Diagnostic Reference")),
+    diagnostic = ReferenceField(ObjectDiagnosticConfig, description=_("Diagnostic Reference"))
     diagnostic_name = StringField(description=_("Diagnostic Name"), low_cardinality=True)
     # agent = ReferenceField(Agent, description=_("Object Name"))
     # service = ReferenceField(ManagedObject, description=_("Object Name"))

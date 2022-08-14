@@ -2354,7 +2354,6 @@ class ManagedObject(NOCModel):
         Iterate over object diagnostics
         :return:
         """
-        from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
 
         if not self.is_managed:
             return
