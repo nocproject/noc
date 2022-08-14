@@ -37,6 +37,31 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Model", {
             defaultValue: 1000
         },
         {
+            name: "save_history",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "run_policy",
+            type: "string",
+            defaultValue: "F"
+        },
+        {
+            name: "run_order",
+            type: "string",
+            defaultValue: "A"
+        },
+        {
+            name: "enable_box",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_periodic",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "state_policy",
             type: "string",
             defaultValue: "ANY"
@@ -58,7 +83,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Model", {
             type: "auto"
         },
         {
-            name: "runs",
+            name: "math",
             type: "auto"
         },
         {

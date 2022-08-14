@@ -84,7 +84,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 continue
             # Get checker
             checks: List[CheckResult] = []
-            for cr in self.iter_checks([Check(name=c) for c in dc.checks]):
+            for cr in self.iter_checks(dc.checks):
                 if cr.action and not hasattr(self, f"action_{cr.action.action}"):
                     self.logger.warning(
                         "[%s|%s] Unknown action: %s", dc.diagnostic, cr.check, cr.action.action

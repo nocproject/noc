@@ -84,6 +84,42 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
         },
         {
             xtype: "fieldset",
+            title: __("Run Policy"),
+            items: [
+                {
+                    name: "save_history",
+                    xtype: "checkbox",
+                    boxLabel: __("Save History"),
+                    allowBlank: true
+                },
+                {
+                    name: "run_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Run Policy"),
+                    store: [
+                        ["A", __("Always")],
+                        ["F", __("Unknown or Failed")]
+                    ],
+                    allowBlank: true,
+                    value: "F",
+                    uiStyle: "large"
+                },
+                {
+                    name: "run_order",
+                    xtype: "combobox",
+                    fieldLabel: __("Run Order"),
+                    store: [
+                        ["A", __("After")],
+                        ["B", __("Before")]
+                    ],
+                    allowBlank: true,
+                    value: "A",
+                    uiStyle: "large"
+                }
+            ]
+        },
+        {
+            xtype: "fieldset",
             title: __("Alarm"),
             items: [
                 {
@@ -151,79 +187,38 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
             name: "diagnostics",
         },
         {
-            name: "runs",
-            fieldLabel: __("Run Config"),
-            xtype: "gridfield",
-            allowBlank: true,
-            columns: [
+            name: "match",
+            xtype: "listform",
+            fieldLabel: __("Match Rules"),
+            rows: 5,
+            items: [
                 {
-                    text: __("Box"),
-                    dataIndex: "enable_box",
-                    width: 50,
-                    renderer: NOC.render.Bool,
-                    editor: "checkbox"
+                    name: "labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Match Labels"),
+                    allowBlank: true,
+                    isTree: true,
+                    filterProtected: false,
+                    pickerPosition: "down",
+                    uiStyle: "extra",
+                    query: {
+                        "allow_matched": true
+                    }
                 },
                 {
-                    text: __("Periodic"),
-                    dataIndex: "enable_periodic",
-                    width: 75,
-                    renderer: NOC.render.Bool,
-                    editor: "checkbox"
-                },
-                {
-                    text: __("Save History"),
-                    dataIndex: "save_history",
-                    width: 75,
-                    renderer: NOC.render.Bool,
-                    editor: "checkbox"
-                },
-                {
-                    text: __("Run Policy"),
-                    dataIndex: "run_policy",
-                    width: 100,
-                    editor: {
-                        xtype: "combobox",
-                        store: [
-                            ["A", __("Always")],
-                            ["F", __("Unknown or Failed")]
-                        ]
-                    },
-                    renderer: NOC.render.Choices({
-                        "A": __("Always"),
-                        "F": __("Unknown or Failed")
-                    })
-                },
-                {
-                    text: __("Run Order"),
-                    dataIndex: "run_order",
-                    width: 100,
-                    editor: {
-                        xtype: "combobox",
-                        store: [
-                            ["A", __("After")],
-                            ["B", __("Before")]
-                        ]
-                    },
-                    renderer: NOC.render.Choices({
-                        "A": __("After"),
-                        "B": __("Before")
-                    })
-                },
-                {
-                    text: __("Match Labels"),
-                    dataIndex: "labels",
-                    renderer: NOC.render.LabelField,
-                    editor: {
-                        xtype: "labelfield",
-                        filterProtected: false,
-                        isTree: false,
-                        pickerPosition: "down",
-                        query: {
-                             "allow_matched": true
-                        }},
-                    width: 200
-                },
+                    name: "exclude_labels",
+                    xtype: "labelfield",
+                    fieldLabel: __("Exclude Match Labels"),
+                    allowBlank: true,
+                    isTree: true,
+                    filterProtected: false,
+                    pickerPosition: "down",
+                    uiStyle: "extra",
+                    query: {
+                        "allow_matched": true
+                    }
+                }
             ]
-        },
+        }
     ]
 });

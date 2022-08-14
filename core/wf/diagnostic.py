@@ -10,6 +10,9 @@ import enum
 from dataclasses import dataclass
 from typing import Optional, List, Dict
 
+# NOC modules
+from noc.core.checkers.base import Check
+
 EVENT_TRANSITION = {
     "disable": {"unknown": "blocked", "enabled": "blocked", "failed": "blocked"},
     "fail": {"unknown": "failed", "enabled": "failed"},
@@ -59,7 +62,7 @@ class DiagnosticConfig(object):
     diagnostic: str
     blocked: bool = False  # Block by config
     # Check config
-    checks: Optional[List[str]] = None  # CheckItem name, param
+    checks: Optional[List[Check]] = None  # CheckItem name, param
     dependent: Optional[List[str]] = None  # Dependency diagnostic
     # ANY - Any check has OK, ALL - ALL checks has OK
     state_policy: str = "ANY"  # Calculate State on checks.
