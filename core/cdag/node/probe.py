@@ -64,6 +64,9 @@ class ProbeNode(BaseCDAGNode):
         self.convert = self.get_convert(self.config.unit)
         self.base, self.exp = self.get_scale(self.config.scale)
 
+    def __str__(self):
+        return f"{self.name}: {self.node_id}"
+
     def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
         def upscale(v: ValueType) -> Optional[ValueType]:
             if v is None:
@@ -76,11 +79,11 @@ class ProbeNode(BaseCDAGNode):
                 return v * base ** (exp - self.exp)
             elif self.exp == 0:
                 # Base mismatch, Target scale is 1
-                return v * base ** exp
+                return v * base**exp
             elif exp == 0:
                 # Base mismatch, Source scale is 1
-                return v * self.base ** -self.exp
-            return v * (base ** exp) * self.base ** -self.exp
+                return v * self.base**-self.exp
+            return v * (base**exp) * self.base**-self.exp
 
         if "," in unit:
             # <scale>,<unit>
@@ -92,7 +95,12 @@ class ProbeNode(BaseCDAGNode):
             return upscale(x)
         # No conversation. Skipping
         if unit not in self.convert:
-            logger.warning("Not conversation rule from unit %s to %s", unit, self.config.unit)
+            logger.warning(
+                "[%s] Not conversation rule from unit %s to %s",
+                self.node_id,
+                unit,
+                self.config.unit,
+            )
             return None
         fn = self.convert[unit]
         kwargs = {}
