@@ -17,7 +17,15 @@ import orjson
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
+from noc.core.mx import (
+    MX_LABELS,
+    MX_H_VALUE_SPLITTER,
+    MX_ADMINISTRATIVE_DOMAIN_ID,
+    MX_NOTIFICATION_CHANNEL,
+    MX_NOTIFICATION,
+    MX_MESSAGE_TYPE,
+    NOTIFICATION_METHODS,
+)
 from noc.main.models.messageroute import MessageRoute
 from noc.main.models.template import Template
 from noc.main.models.handler import Handler
@@ -115,6 +123,11 @@ class MatchItem(object):
 
 
 class Route(object):
+    """
+    Route Notification. Contains condition and action.
+    If condition is matched - do action
+    """
+
     def __init__(self, name: str, r_type: str, order: int):
         self.name = name
         self.type = r_type
@@ -272,3 +285,31 @@ class Route(object):
         # Compile action part
         r.actions = [Action.from_action(route)]
         return r
+
+
+class DefaultNotificationRoute(Route):
+    """
+    Default Route for Notification Message
+    Route by Notification-Channel message header
+    """
+
+    def __init__(self):
+        super().__init__(name="default", r_type=MX_NOTIFICATION, order=0)
+
+    def is_match(self, msg: Message) -> bool:
+        if (
+            MX_NOTIFICATION_CHANNEL in msg.headers
+            and msg.headers.get(MX_MESSAGE_TYPE) == MX_NOTIFICATION
+        ):
+            return True
+        return False
+
+    def transmute(self, headers: Dict[str, bytes], data: bytes) -> Union[bytes, Dict[str, Any]]:
+        return data
+
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+        method = msg.headers.get(MX_NOTIFICATION_CHANNEL)
+        if method not in NOTIFICATION_METHODS:
+            # Check available channel for sender
+            return
+        yield NOTIFICATION_METHODS[method], {}, msg.value
