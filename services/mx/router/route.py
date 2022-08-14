@@ -293,13 +293,15 @@ class DefaultNotificationRoute(Route):
     Route by Notification-Channel message header
     """
 
+    MX_NOTIFICATION_EN = MX_NOTIFICATION.encode(DEFAULT_ENCODING)
+
     def __init__(self):
         super().__init__(name="default", r_type=MX_NOTIFICATION, order=0)
 
     def is_match(self, msg: Message) -> bool:
         if (
             MX_NOTIFICATION_CHANNEL in msg.headers
-            and msg.headers.get(MX_MESSAGE_TYPE) == MX_NOTIFICATION
+            and msg.headers.get(MX_MESSAGE_TYPE) == self.MX_NOTIFICATION_EN
         ):
             return True
         return False
@@ -308,7 +310,7 @@ class DefaultNotificationRoute(Route):
         return data
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        method = msg.headers.get(MX_NOTIFICATION_CHANNEL)
+        method = msg.headers.get(MX_NOTIFICATION_CHANNEL).decode(DEFAULT_ENCODING)
         if method not in NOTIFICATION_METHODS:
             # Check available channel for sender
             return

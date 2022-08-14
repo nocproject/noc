@@ -76,7 +76,7 @@ def send_message(
     """
     msg_headers = {
         MX_MESSAGE_TYPE: message_type.encode(DEFAULT_ENCODING),
-        MX_SHARDING_KEY: sharding_key,
+        MX_SHARDING_KEY: str(sharding_key).encode(DEFAULT_ENCODING),
     }
     if headers:
         msg_headers.update(headers)
