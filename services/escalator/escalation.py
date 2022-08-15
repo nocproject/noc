@@ -73,18 +73,17 @@ class BaseSequence(ABC):
         """
         global RETRY_DELTA, RETRY_TIMEOUT, next_retry, retry_lock
 
-        if not delay:
-            now = datetime.datetime.now()
-            retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
-            with retry_lock:
-                if retry < next_retry:
-                    retry = next_retry
-                next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
-
-            delta = retry - now
-            delay = delta.seconds + (1 if delta.microseconds else 0)
-        else:
-            delay = delay.seconds + 60
+        if delay:
+            Job.retry_after(delay.seconds + 60, msg)
+            return
+        now = datetime.datetime.now()
+        retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
+        with retry_lock:
+            if retry < next_retry:
+                retry = next_retry
+            next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
+        delta = retry - now
+        delay = delta.seconds + (1 if delta.microseconds else 0)
         Job.retry_after(delay, msg)
 
     def stop_sequence(self) -> NoReturn:
@@ -691,6 +690,7 @@ class EscalationSequence(BaseSequence):
                 delay = maintenance.stop - self.escalation_doc.timestamp
                 self.retry_job(delay, "Escalation suspended, retry after Maintenance")
                 self.logger.info("Escalation suspended, retry after Maintenance")
+                self.log_alarm(f"Escalation suspended. Object is under maintenance: {m_id}")
                 continue
             else:
                 self.log_alarm(f"Object is under maintenance: {m_id}")
