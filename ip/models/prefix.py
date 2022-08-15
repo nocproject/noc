@@ -6,9 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from collections import defaultdict
 import operator
 from threading import Lock
-from collections import defaultdict
+from typing import List, Optional
 
 # Third-party modules
 from django.db import models, connection
@@ -71,14 +72,14 @@ class Prefix(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
-    vrf = CachedForeignKey(
+    vrf: "VRF" = CachedForeignKey(
         VRF, verbose_name=_("VRF"), default=VRF.get_global, on_delete=models.CASCADE
     )
-    afi = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
-    prefix = CIDRField(_("Prefix"))
-    name = models.CharField(_("Name"), max_length=255, null=True, blank=True)
-    profile = DocumentReferenceField(PrefixProfile, null=False, blank=False)
-    asn = CachedForeignKey(
+    afi: str = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
+    prefix: str = CIDRField(_("Prefix"))
+    name: str = models.CharField(_("Name"), max_length=255, null=True, blank=True)
+    profile: "PrefixProfile" = DocumentReferenceField(PrefixProfile, null=False, blank=False)
+    asn: "AS" = CachedForeignKey(
         AS,
         verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
@@ -86,7 +87,7 @@ class Prefix(NOCModel):
         blank=True,
         on_delete=models.CASCADE,
     )
-    project = CachedForeignKey(
+    project: "Project" = CachedForeignKey(
         Project,
         verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -94,7 +95,7 @@ class Prefix(NOCModel):
         blank=True,
         related_name="prefix_set",
     )
-    vc = models.ForeignKey(
+    vc: "VC" = models.ForeignKey(
         VC,
         verbose_name=_("VC"),
         null=True,
@@ -102,14 +103,14 @@ class Prefix(NOCModel):
         on_delete=models.SET_NULL,
         help_text=_("VC bound to prefix"),
     )
-    description = models.TextField(_("Description"), blank=True, null=True)
+    description: str = models.TextField(_("Description"), blank=True, null=True)
     # Labels
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
     )
-    tt = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
-    state = DocumentReferenceField(State, null=True, blank=True)
+    tt: int = models.IntegerField("TT", blank=True, null=True, help_text=_("Ticket #"))
+    state: "State" = DocumentReferenceField(State, null=True, blank=True)
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
@@ -124,7 +125,7 @@ class Prefix(NOCModel):
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL,
     )
-    prefix_discovery_policy = models.CharField(
+    prefix_discovery_policy: str = models.CharField(
         _("Prefix Discovery Policy"),
         max_length=1,
         choices=[("P", "Profile"), ("E", "Enable"), ("D", "Disable")],
@@ -132,7 +133,7 @@ class Prefix(NOCModel):
         blank=False,
         null=False,
     )
-    address_discovery_policy = models.CharField(
+    address_discovery_policy: str = models.CharField(
         _("Address Discovery Policy"),
         max_length=1,
         choices=[("P", "Profile"), ("E", "Enable"), ("D", "Disable")],
@@ -148,23 +149,31 @@ class Prefix(NOCModel):
         blank=False,
         default="M",
     )
+    # Last state change
+    state_changed = models.DateTimeField("State Changed", null=True, blank=True)
+    # Timestamp expired
+    expired = models.DateTimeField("Expired", null=True, blank=True)
+    # Timestamp of last seen
+    last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
+    # Timestamp of first discovery
+    first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
 
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
-        return "%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
+        return f"{self.vrf.name}({self.afi}): {self.prefix}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["Prefix"]:
         mo = Prefix.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
         return None
 
     @property
-    def has_transition(self):
+    def has_transition(self) -> bool:
         """
         Check prefix has ipv4/ipv6 transition
         :return:
@@ -180,7 +189,7 @@ class Prefix(NOCModel):
                 return False
 
     @classmethod
-    def get_parent(cls, vrf, afi, prefix):
+    def get_parent(cls, vrf, afi, prefix) -> Optional["Prefix"]:
         """
         Get nearest closing prefix
         """
@@ -195,15 +204,15 @@ class Prefix(NOCModel):
         return None
 
     @property
-    def is_ipv4(self):
+    def is_ipv4(self) -> bool:
         return self.afi == "4"
 
     @property
-    def is_ipv6(self):
+    def is_ipv6(self) -> bool:
         return self.afi == "6"
 
     @property
-    def is_root(self):
+    def is_root(self) -> bool:
         """
         Returns true if the prefix is a root of VRF
         """
@@ -343,7 +352,7 @@ class Prefix(NOCModel):
         )
 
     @property
-    def short_description(self):
+    def short_description(self) -> str:
         """
         Returns first line of description
         :return:
@@ -353,7 +362,7 @@ class Prefix(NOCModel):
         return ""
 
     @property
-    def netmask(self):
+    def netmask(self) -> Optional[str]:
         """
         returns Netmask for IPv4
         :return:
@@ -363,7 +372,7 @@ class Prefix(NOCModel):
         return None
 
     @property
-    def broadcast(self):
+    def broadcast(self) -> Optional[str]:
         """
         Returns Broadcast for IPv4
         :return:
@@ -373,7 +382,7 @@ class Prefix(NOCModel):
         return None
 
     @property
-    def wildcard(self):
+    def wildcard(self) -> Optional[str]:
         """
         Returns Cisco wildcard for IPv4
         :return:
@@ -383,7 +392,7 @@ class Prefix(NOCModel):
         return ""
 
     @property
-    def size(self):
+    def size(self) -> Optional[int]:
         """
         Returns IPv4 prefix size
         :return:
@@ -392,7 +401,7 @@ class Prefix(NOCModel):
             return IPv4(self.prefix).size
         return None
 
-    def can_view(self, user):
+    def can_view(self, user) -> bool:
         """
         Returns True if user has view access
         :param user:
@@ -400,7 +409,7 @@ class Prefix(NOCModel):
         """
         return PrefixAccess.user_can_view(user, self.vrf, self.afi, self.prefix)
 
-    def can_change(self, user):
+    def can_change(self, user) -> bool:
         """
         Returns True if user has change access
         :param user:
@@ -408,7 +417,7 @@ class Prefix(NOCModel):
         """
         return PrefixAccess.user_can_change(user, self.vrf, self.afi, self.prefix)
 
-    def has_bookmark(self, user):
+    def has_bookmark(self, user) -> bool:
         """
         Check the user has bookmark on prefix
         :param user:
@@ -416,13 +425,9 @@ class Prefix(NOCModel):
         """
         from .prefixbookmark import PrefixBookmark  # noqa
 
-        try:
-            PrefixBookmark.objects.get(user=user, prefix=self)
-            return True
-        except PrefixBookmark.DoesNotExist:
-            return False
+        return bool(PrefixBookmark.objects.filter(user=user, prefix=self).first())
 
-    def toggle_bookmark(self, user):
+    def toggle_bookmark(self, user) -> bool:
         """
         Toggle user bookmark. Returns new bookmark state
         :param user:
@@ -456,8 +461,8 @@ class Prefix(NOCModel):
         return r
 
     @classmethod
-    def get_search_result_url(cls, obj_id):
-        return "/api/card/view/prefix/%s/" % obj_id
+    def get_search_result_url(cls, obj_id) -> str:
+        return f"/api/card/view/prefix/{obj_id}/"
 
     def get_path(self):
         return (
@@ -468,7 +473,7 @@ class Prefix(NOCModel):
         )
 
     @property
-    def address_ranges(self):
+    def address_ranges(self) -> List["AddressRange"]:
         """
         All prefix-related address ranges
         :return:
@@ -494,7 +499,7 @@ class Prefix(NOCModel):
             )
         )
 
-    def rebase(self, vrf, new_prefix):
+    def rebase(self, vrf, new_prefix) -> Optional["Prefix"]:
         """
         Rebase prefix to a new location
         :param vrf:
@@ -582,23 +587,23 @@ class Prefix(NOCModel):
             yield str(fp)
 
     @property
-    def effective_address_discovery(self):
+    def effective_address_discovery(self) -> str:
         if self.address_discovery_policy == "P":
             return self.profile.address_discovery_policy
         return self.address_discovery_policy
 
     @property
-    def effective_prefix_discovery(self):
+    def effective_prefix_discovery(self) -> str:
         if self.prefix_discovery_policy == "P":
             return self.profile.prefix_discovery_policy
         return self.prefix_discovery_policy
 
     @property
-    def effective_prefix_special_address(self):
+    def effective_prefix_special_address(self) -> str:
         return self.profile.prefix_special_address_policy
 
     @property
-    def usage(self):
+    def usage(self) -> Optional[float]:
         if self.is_ipv4:
             usage = getattr(self, "_usage_cache", None)
             if usage is not None:
@@ -621,7 +626,7 @@ class Prefix(NOCModel):
         return None
 
     @property
-    def usage_percent(self):
+    def usage_percent(self) -> str:
         u = self.usage
         if u is None:
             return ""
@@ -666,7 +671,7 @@ class Prefix(NOCModel):
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     @property
-    def address_usage(self):
+    def address_usage(self) -> Optional[float]:
         if self.is_ipv4:
             usage = getattr(self, "_address_usage_cache", None)
             if usage is not None:
@@ -692,13 +697,13 @@ class Prefix(NOCModel):
             return None
 
     @property
-    def address_usage_percent(self):
+    def address_usage_percent(self) -> str:
         u = self.address_usage
         if u is None:
             return ""
         return "%.2f%%" % u
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """
         Check prefix is empty and does not contain nested prefixes
         and addresses
@@ -717,7 +722,7 @@ class Prefix(NOCModel):
         """
         self._disable_delete_protection = True
 
-    def get_effective_as(self):
+    def get_effective_as(self) -> Optional["AS"]:
         """
         Return effective AS (first found upwards)
         :return: AS instance or None

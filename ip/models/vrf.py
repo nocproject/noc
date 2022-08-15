@@ -66,7 +66,7 @@ class VRF(NOCModel):
         ordering = ["name"]
 
     name = models.CharField(_("VRF"), unique=True, max_length=64, help_text=_("Unique VRF Name"))
-    profile = DocumentReferenceField(VPNProfile)
+    profile: VPNProfile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
         VRFGroup, verbose_name=_("VRF Group"), null=True, blank=True, on_delete=models.CASCADE
     )
@@ -118,6 +118,14 @@ class VRF(NOCModel):
         blank=False,
         default="M",
     )
+    # Last state change
+    state_changed = models.DateTimeField("State Changed", null=True, blank=True)
+    # Timestamp expired
+    expired = models.DateTimeField("Expired", null=True, blank=True)
+    # Timestamp of last seen
+    last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
+    # Timestamp of first discovery
+    first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"

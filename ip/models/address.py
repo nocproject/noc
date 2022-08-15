@@ -1,12 +1,14 @@
 # ---------------------------------------------------------------------
 # Address model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
-from noc.core.translation import ugettext as _
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 
@@ -17,7 +19,7 @@ from noc.core.model.base import NOCModel
 from noc.project.models.project import Project
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import INETField, MACField
-from noc.core.validators import ValidationError, check_fqdn, check_ipv4, check_ipv6
+from noc.core.validators import ValidationError, check_fqdn, is_ipv4, is_ipv6
 from noc.main.models.textindex import full_text_search
 from noc.main.models.label import Label
 from noc.core.model.fields import DocumentReferenceField
@@ -25,6 +27,7 @@ from noc.core.wf.decorator import workflow
 from noc.wf.models.state import State
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
+from noc.core.translation import ugettext as _
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .addressprofile import AddressProfile
@@ -45,14 +48,14 @@ class Address(NOCModel):
         unique_together = [("vrf", "afi", "address")]
 
     prefix = models.ForeignKey("ip.Prefix", verbose_name=_("Prefix"), on_delete=models.CASCADE)
-    vrf = models.ForeignKey(
+    vrf: "VRF" = models.ForeignKey(
         VRF, verbose_name=_("VRF"), default=VRF.get_global, on_delete=models.CASCADE
     )
-    afi = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
-    address = INETField(_("Address"))
-    profile = DocumentReferenceField(AddressProfile, null=False, blank=False)
-    name = models.CharField(_("Name"), max_length=255, null=False, blank=False)
-    fqdn = models.CharField(
+    afi: str = models.CharField(_("Address Family"), max_length=1, choices=AFI_CHOICES)
+    address: str = INETField(_("Address"))
+    profile: "AddressProfile" = DocumentReferenceField(AddressProfile, null=False, blank=False)
+    name: str = models.CharField(_("Name"), max_length=255, null=False, blank=False)
+    fqdn: str = models.CharField(
         _("FQDN"),
         max_length=255,
         help_text=_("Full-qualified Domain Name"),
@@ -82,7 +85,7 @@ class Address(NOCModel):
         help_text=_("Set if address belongs to the Managed Object's interface"),
     )
     subinterface = models.CharField("SubInterface", max_length=128, null=True, blank=True)
-    description = models.TextField(_("Description"), blank=True, null=True)
+    description: str = models.TextField(_("Description"), blank=True, null=True)
     # Labels
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
@@ -118,15 +121,23 @@ class Address(NOCModel):
         blank=False,
         default="M",
     )
+    # Last state change
+    state_changed = models.DateTimeField("State Changed", null=True, blank=True)
+    # Timestamp expired
+    expired = models.DateTimeField("Expired", null=True, blank=True)
+    # Timestamp of last seen
+    last_seen = models.DateTimeField("Last Seen", null=True, blank=True)
+    # Timestamp of first discovery
+    first_discovered = models.DateTimeField("First Discovered", null=True, blank=True)
 
     csv_ignored_fields = ["prefix"]
 
     def __str__(self):
-        return "%s(%s): %s" % (self.vrf.name, self.afi, self.address)
+        return f"{self.vrf.name}({self.afi}): {self.address}"
 
     @classmethod
-    def get_by_id(cls, id):
-        address = Address.objects.filter(id=id)[:1]
+    def get_by_id(cls, oid) -> Optional["Address"]:
+        address = Address.objects.filter(id=oid)[:1]
         if address:
             return address[0]
         return None
@@ -159,11 +170,11 @@ class Address(NOCModel):
                         yield ds, dz_id
 
     @classmethod
-    def get_afi(cls, address):
+    def get_afi(cls, address: str) -> str:
         return "6" if ":" in address else "4"
 
     @classmethod
-    def get_collision(cls, vrf, address):
+    def get_collision(cls, vrf: "VRF", address: str) -> Optional["Address"]:
         """
         Check VRFGroup restrictions
         :param vrf:
@@ -174,13 +185,12 @@ class Address(NOCModel):
         if not vrf.vrf_group or vrf.vrf_group.address_constraint != "G":
             return None
         afi = cls.get_afi(address)
-        try:
-            a = Address.objects.get(
-                afi=afi, address=address, vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
-            )
+        a = Address.objects.get(
+            afi=afi, address=address, vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
+        ).first()
+        if a:
             return a.vrf
-        except Address.DoesNotExist:
-            return None
+        return None
 
     def save(self, *args, **kwargs):
         """
@@ -197,14 +207,16 @@ class Address(NOCModel):
         Field validation
         :return:
         """
-        super().clean()
+        # Avoid django's validation failure
+        from .prefix import Prefix
+
         # Get proper AFI
         self.afi = "6" if ":" in self.address else "4"
         # Check prefix is of AFI type
-        if self.is_ipv4:
-            check_ipv4(self.address)
-        elif self.is_ipv6:
-            check_ipv6(self.address)
+        if self.is_ipv4 and not is_ipv4(self.address):
+            raise ValidationError({"address": f"Invalid IPv4 {self.address}"})
+        elif self.is_ipv6 and not is_ipv6(self.address):
+            raise ValidationError({"address": f"Invalid IPv6 {self.address}"})
         # Check VRF
         if not self.vrf:
             self.vrf = VRF.get_global()
@@ -214,10 +226,10 @@ class Address(NOCModel):
         cv = self.get_collision(self.vrf, self.address)
         if cv:
             # Collision detected
-            raise ValidationError("Address already exists in VRF %s" % cv)
+            raise ValidationError({"vrf": f"Address already exists in VRF {cv}"})
 
     @property
-    def short_description(self):
+    def short_description(self) -> str:
         """
         First line of description
         """
@@ -231,18 +243,18 @@ class Address(NOCModel):
         Full-text search
         """
         content = [self.address, self.name]
-        card = "Address %s, Name %s" % (self.address, self.name)
+        card = f"Address {self.address}, Name {self.name}"
         if self.fqdn:
             content += [self.fqdn]
-            card += ", FQDN %s" % self.fqdn
+            card += f", FQDN {self.fqdn}"
         if self.mac:
             content += [self.mac]
-            card += ", MAC %s" % self.mac
+            card += f", MAC {self.mac}"
         if self.description:
             content += [self.description]
-            card += " (%s)" % self.description
+            card += f" ({self.description})"
         r = {
-            "id": "ip.address:%s" % self.id,
+            "id": f"ip.address:{self.id}",
             "title": self.address,
             "content": "\n".join(content),
             "card": card,
@@ -252,21 +264,17 @@ class Address(NOCModel):
         return r
 
     @classmethod
-    def get_search_result_url(cls, obj_id):
-        return "/api/card/view/address/%s/" % obj_id
+    def get_search_result_url(cls, obj_id) -> str:
+        return f"/api/card/view/address/{obj_id}/"
 
     @property
-    def is_ipv4(self):
+    def is_ipv4(self) -> bool:
         return self.afi == "4"
 
     @property
-    def is_ipv6(self):
+    def is_ipv6(self) -> bool:
         return self.afi == "6"
 
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_ipaddress")
-
-
-# Avoid django's validation failure
-from .prefix import Prefix
