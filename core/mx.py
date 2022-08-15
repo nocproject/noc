@@ -14,7 +14,7 @@ import orjson
 
 # NOC services
 from noc.core.service.loader import get_service
-from noc.core.comp import smart_bytes
+from noc.core.comp import DEFAULT_ENCODING
 from noc.core.liftbridge.base import LiftBridgeClient
 from noc.core.ioloop.util import run_sync
 
@@ -28,6 +28,8 @@ MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
 MX_LABELS = "Labels"
 MX_TO = "To"
+MX_NOTIFICATION = "notification"
+MX_NOTIFICATION_CHANNEL = "Notification-Channel"
 MX_LANG = "Language"
 #
 MX_H_VALUE_SPLITTER = ";"
@@ -37,7 +39,6 @@ MESSAGE_TYPES = {
     "managedobject",
     "reboot",
     "metrics",
-    "notification",
     "interface_status_change",
 }
 MESSAGE_HEADERS = {
@@ -48,6 +49,8 @@ MESSAGE_HEADERS = {
     MX_TO,
     MX_LANG,
 }
+# Method -> Sender stream map, ?autoregister
+NOTIFICATION_METHODS = {"mail": "mailsender", "tg": "tgsender", "icq": "icqsender"}
 
 _mx_partitions: Optional[int] = None
 _mx_lock = Lock()
@@ -62,15 +65,15 @@ def send_message(
     """
     Build message and schedule to send to mx service
 
-    :param data:
-    :param message_type:
-    :param headers:
-    :param sharding_key:
+    :param data: Data for transmit
+    :param message_type: Message type
+    :param headers: additional message headers
+    :param sharding_key: Key for sharding over MX services
     :return:
     """
     msg_headers = {
-        MX_MESSAGE_TYPE: smart_bytes(message_type),
-        MX_SHARDING_KEY: smart_bytes(sharding_key),
+        MX_MESSAGE_TYPE: message_type.encode(DEFAULT_ENCODING),
+        MX_SHARDING_KEY: str(sharding_key).encode(DEFAULT_ENCODING),
     }
     if headers:
         msg_headers.update(headers)
