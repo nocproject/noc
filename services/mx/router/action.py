@@ -16,7 +16,7 @@ import orjson
 from noc.core.liftbridge.message import Message
 from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 
@@ -124,7 +124,7 @@ class NotificationAction(Action):
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         mt = msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)
         body = self.ng.render_message(mt, orjson.loads(msg.value), self.rt)
-        for stream, header, render_template in self.ng.iter_actions():
-            yield stream, header, self.ng.render_message(
+        for method, header, render_template in self.ng.iter_actions():
+            yield NOTIFICATION_METHODS[method], header, self.ng.render_message(
                 mt, orjson.loads(msg.value), render_template
             ) if render_template else body
