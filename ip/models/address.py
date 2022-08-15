@@ -137,17 +137,26 @@ class Address(NOCModel):
         if config.datastream.enable_dnszone:
             from noc.dns.models.dnszone import DNSZone
 
-            if self.fqdn:
+            fqdn_changed, address_changed = [self.fqdn, changed_fields.get("fqdn")], [
+                self.address,
+                changed_fields.get("address"),
+            ]
+            for fqdn in fqdn_changed:
+                if not fqdn:
+                    continue
                 # Touch forward zone
-                fz = DNSZone.get_zone(self.fqdn)
+                fz = DNSZone.get_zone(fqdn)
                 if fz:
-                    for ds, id in fz.iter_changed_datastream(changed_fields=changed_fields):
-                        yield ds, id
+                    for ds, dz_id in fz.iter_changed_datastream(changed_fields=changed_fields):
+                        yield ds, dz_id
+            for address in address_changed:
+                if not address:
+                    continue
                 # Touch reverse zone
-                rz = DNSZone.get_zone(self.address)
+                rz = DNSZone.get_zone(address)
                 if rz:
-                    for ds, id in rz.iter_changed_datastream(changed_fields=changed_fields):
-                        yield ds, id
+                    for ds, dz_id in rz.iter_changed_datastream(changed_fields=changed_fields):
+                        yield ds, dz_id
 
     @classmethod
     def get_afi(cls, address):
