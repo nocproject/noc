@@ -190,13 +190,13 @@ class Script(BaseScript):
             if not match:
                 continue
             ifname = match.group("ifname")
-            hints = ["technology::dsl"]
+            hints = ["technology::dsl::adsl"]
             if ifname.startswith("ethernet"):
                 if ifname.startswith("ethernet:1/1/1:"):
                     port_id = "ethernet:" + ifname.split(":")[-1]
                 else:
                     port_id = ifname
-                hints = ["noc::topology::direction::nni", "technology::ethernet"]
+                hints = ["noc::topology::direction::nni", "technology::ethernet::1000base"]
             else:
                 port_id = ifname.split(":", 1)[-1]
                 slot_id = tuple(port_id.split("/")[:-1])
@@ -466,5 +466,5 @@ class Script(BaseScript):
         return rack, shelf, slot, port + 1
 
     @staticmethod
-    def clean_mac(mac):
+    def clean_mac(mac: str):
         return mac or None
