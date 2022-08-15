@@ -67,7 +67,7 @@ class BaseSequence(ABC):
         self.logger = PrefixLoggerAdapter(logger, str(alarm_id))
         self.login: str = login
 
-    def retry_job(self, delay: None, msg: str) -> NoReturn:
+    def retry_job(self, msg: str, delay=None) -> NoReturn:
         """
         Reschedule current job and stop escalatio
         """
@@ -688,7 +688,7 @@ class EscalationSequence(BaseSequence):
                 return
             elif maintenance.escalation_policy == "S":
                 delay = maintenance.stop - self.escalation_doc.timestamp
-                self.retry_job(delay, "Escalation suspended, retry after Maintenance")
+                self.retry_job("Escalation suspended, retry after Maintenance", delay)
                 self.logger.info("Escalation suspended, retry after Maintenance")
                 self.log_alarm(f"Escalation suspended. Object is under maintenance: {m_id}")
                 continue
