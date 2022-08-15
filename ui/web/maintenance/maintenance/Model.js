@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // maintenance.maintenance Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2022 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.maintenance.maintenance.Model");
@@ -50,7 +50,12 @@ Ext.define("NOC.maintenance.maintenance.Model", {
         {
             name: "escalate_managed_object__label",
             type: "string",
-            persist: false
+            //persist: false
+        },
+        {
+            name: "escalation_policy",
+            type: "string",
+            defaultValue: "S"
         },
         {
             name: "escalation_tt",
