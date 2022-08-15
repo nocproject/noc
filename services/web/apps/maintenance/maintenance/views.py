@@ -139,6 +139,7 @@ class MaintenanceApplication(ExtDocApplication):
             "escalate_managed_object__label": o.escalate_managed_object.name
             if o.escalate_managed_object
             else "",
+            "escalation_policy": o.escalation_policy,
             "escalation_tt": o.escalation_tt if o.escalation_tt else None,
             "is_completed": o.is_completed,
             "direct_objects": [],

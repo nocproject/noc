@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // maintenance.maintenance application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2022 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.maintenance.maintenance.Application");
@@ -104,7 +104,6 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     flex: 1
                 }
             ],
-
             fields: [
                 {
                     name: "subject",
@@ -202,10 +201,29 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                     boxLabel: __("Suppress alarms")
                 },
                 {
+                    name: "escalation_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Escalation Policy"),
+                    allowBlank: true,
+                    store: [
+                        ["E", __("Enable")],
+                        ["D", __("Disable")],
+                        ["S", __("Suspend")],
+                        ["M", __("Maintenance")]
+                    ],
+                    uiStyle: "medium",
+                    listeners: {
+                            change: function(field, value) {
+                                this.nextSibling().setDisabled(value !== "M");
+                            }
+}
+                },
+                {
                     name: "escalate_managed_object",
                     xtype: "sa.managedobject.LookupField",
                     fieldLabel: __("Escalate to"),
-                    allowBlank: true
+                    allowBlank: true,
+                    disabled: true,
                 }
             ],
             gridToolbar: [
@@ -293,6 +311,10 @@ Ext.define("NOC.maintenance.maintenance.Application", {
             ]
         }
     ],
+    ePolicy: function() {
+        var me = this;
+        return true
+    },
 
     editRecord: function(record) {
         var me = this,
