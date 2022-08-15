@@ -125,7 +125,7 @@ class Prefix(NOCModel):
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL,
     )
-    prefix_discovery_policy = models.CharField(
+    prefix_discovery_policy: str = models.CharField(
         _("Prefix Discovery Policy"),
         max_length=1,
         choices=[("P", "Profile"), ("E", "Enable"), ("D", "Disable")],
@@ -133,7 +133,7 @@ class Prefix(NOCModel):
         blank=False,
         null=False,
     )
-    address_discovery_policy = models.CharField(
+    address_discovery_policy: str = models.CharField(
         _("Address Discovery Policy"),
         max_length=1,
         choices=[("P", "Profile"), ("E", "Enable"), ("D", "Disable")],
@@ -425,11 +425,7 @@ class Prefix(NOCModel):
         """
         from .prefixbookmark import PrefixBookmark  # noqa
 
-        try:
-            PrefixBookmark.objects.get(user=user, prefix=self)
-            return True
-        except PrefixBookmark.DoesNotExist:
-            return False
+        return bool(PrefixBookmark.objects.filter(user=user, prefix=self).first())
 
     def toggle_bookmark(self, user) -> bool:
         """
@@ -607,7 +603,7 @@ class Prefix(NOCModel):
         return self.profile.prefix_special_address_policy
 
     @property
-    def usage(self) -> Optional[str]:
+    def usage(self) -> Optional[float]:
         if self.is_ipv4:
             usage = getattr(self, "_usage_cache", None)
             if usage is not None:
@@ -675,7 +671,7 @@ class Prefix(NOCModel):
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     @property
-    def address_usage(self) -> Optional[str]:
+    def address_usage(self) -> Optional[float]:
         if self.is_ipv4:
             usage = getattr(self, "_address_usage_cache", None)
             if usage is not None:

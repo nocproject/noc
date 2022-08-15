@@ -66,7 +66,7 @@ class VRF(NOCModel):
         ordering = ["name"]
 
     name = models.CharField(_("VRF"), unique=True, max_length=64, help_text=_("Unique VRF Name"))
-    profile = DocumentReferenceField(VPNProfile)
+    profile: VPNProfile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
         VRFGroup, verbose_name=_("VRF Group"), null=True, blank=True, on_delete=models.CASCADE
     )
