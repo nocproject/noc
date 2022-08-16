@@ -25,6 +25,6 @@ class Script(BaseScript):
             self.cli("\x1A")
             return {"result": True, "message": ""}
         except NOCError as e:
-            return {"result": False, "message": "Error: %s (%s)" % (e.default_msg, e.message)}
+            return {"result": False, "message": f"Error: {e.default_msg} ({e!r})"}
         except Exception as e:
             return {"result": False, "message": "Exception: %s" % repr(e)}
