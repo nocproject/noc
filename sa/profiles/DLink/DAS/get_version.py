@@ -81,24 +81,6 @@ class Script(BaseScript):
         port_num = self.rx_port.search(v).group("port_num")
         return "DAS-3224" if int(port_num) == 24 else "DAS-3248"
 
-    def get_vendor(self, v: str) -> Tuple[str, str]:
-        """
-        Normalize platform name for DAS- models
-        :param platform:
-        :return:
-        """
-        match1 = self.rx_vendor.search(v)
-        if match1 and match1.group("vendor").startswith("FG-ACE-24"):
-            return (
-                "Nateks",
-                "FG-ACE-24",
-            )
-        platform = self.OID_TABLE[match.group("sys_oid")]
-        if platform == "DAS-32xx":
-            platform = self.get_conexant_platform()
-        return "DLink", platform
-        return "DLink", None
-
     def execute_cli(self, **kwargs):
         v = self.cli("get system info")
         vendor = "DLink"
@@ -125,7 +107,6 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {},
         }
-        serial, hardware = None, None
         try:
             v = self.cli("get sys eeprom256")
             r["attributes"] = {
