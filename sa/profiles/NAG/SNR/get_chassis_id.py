@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,11 +20,15 @@ class Script(BaseScript):
     cache = True
 
     rx_mac = re.compile(r"^\s+\S+\s+mac\s+(\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
+    rx_mac2 = re.compile(r"^MAC address\s+: (?P<mac>\S+)", re.MULTILINE)
 
     SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
     def execute_cli(self):
-        macs = sorted(self.rx_mac.findall(self.cli("show version", cached=True)))
+        if self.is_foxgate_cli:
+            macs = sorted(self.rx_mac2.findall(self.cli("show ip", cached=True)))
+        else:
+            macs = sorted(self.rx_mac.findall(self.cli("show version", cached=True)))
         return [
             {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
         ]
