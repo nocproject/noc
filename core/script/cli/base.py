@@ -84,10 +84,14 @@ class BaseCLI(object):
         except ConnectionRefusedError:
             self.logger.debug("Connection refused")
             metrics["cli_connection_refused", ("proto", self.name)] += 1
+            # Check connection by stream exist, that delete it
+            self.stream = None
             raise ConnectionRefusedError
         except TimeoutError:
             self.logger.debug("Connection timeout")
             metrics["cli_connection_timeout", ("proto", self.name)] += 1
+            # Check connection by stream exist, that delete it
+            self.stream = None
             raise ConnectionRefusedError("Connection timeout")
         self.logger.debug("Connected")
         await self.stream.startup()
