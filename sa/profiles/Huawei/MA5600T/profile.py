@@ -51,7 +51,8 @@ class Profile(BaseProfile):
         rb"\s*Failure:\s*System is busy, please retry after a while|"
         rb"It will take several minutes to save configuration file, please wait|"
         rb"Failure:\s*System is reading or writing flash, please retry after a while|"
-        rb"Failure:\s*Command can not be executed rightly, the cause is:\s*Loading\s*\(backuping,rollbacking...\) command being executed. Please retry later)"
+        rb"Failure:\s*Command can not be executed rightly, the cause is:\s*Loading\s*\(backuping,rollbacking...\) command being executed. Please retry later)|"
+        rb"RUNNING\s+WARNING\s+\S+\s\S+12:44:17\n\s+EVENT\s+NAME\s*:"
     )
     # Found on MA5616, V800R015C10
     send_on_syntax_error = BaseProfile.send_backspaces
