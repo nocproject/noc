@@ -15,15 +15,18 @@ class StreamingConfig(object):
     # Liftbridge stream name
     stream: str
     # Liftbridge partition
-    partition: int
+    partition: int = 0
     # TimeZone offset in seconds
     utc_offset: Optional[int] = 0
-    # Stream message format
-    format: Optional[str] = None
     # Optional data
     data: Optional[Dict[str, Any]] = None
 
     def get_data(self):
+        """
+        Convert data format:
+        {"meta.id": "123"} ->  {"meta": {"id": "123}}
+        :return:
+        """
         r = {}
         if not self.data:
             return r

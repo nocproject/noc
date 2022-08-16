@@ -352,6 +352,42 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         self.collect_profile_metrics(metrics)
         return self.get_metrics()
 
+    def clean_streaming_result(self, result):
+        """
+        {
+            "ts": m["ts"],
+            "scope": mt.scope.table_name,
+            "labels": m["labels"],
+            mt.field_name: m["value"],
+            "_units": {mt.field_name: units},
+            "managed_object": mo.bi_id,
+        }
+        :param result:
+        :return:
+        """
+        data = {}
+        s_data = self.streaming.get_data()
+        self.streaming.data = None
+        managed_object = s_data["managed_object"]
+        for rr in self.metrics:
+            data_mt = rr["metrics"].replace(" ", "_")
+            scope_name = s_data[data_mt]["scope"]
+            field_name = s_data[data_mt]["field"]
+            mm = (scope_name, tuple(rr["labels"]))
+            if mm not in data:
+                data[mm] = {
+                    "ts": rr["ts"],
+                    "managed_object": managed_object,
+                    "scope": scope_name,
+                    "labels": rr["labels"],
+                    "_units": {},
+                }
+                if self.streaming.utc_offset:
+                    data[mm]["ts"] += self.streaming.utc_offset * NS
+            data[mm][field_name] = rr["value"]
+            data[mm]["_units"][field_name] = rr["units"]
+        return list(data.values())
+
     def iter_handlers(self, metric):
         """
         Generator yilding possible handlers for metrics collection in order of preference
