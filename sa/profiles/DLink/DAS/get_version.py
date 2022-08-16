@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from typing import Tuple
 import re
 
 # NOC modules
@@ -65,6 +66,9 @@ class Script(BaseScript):
             version = self.snmp.get("1.3.6.1.4.1.171.10.65.1.6.1.3.0")
         else:
             version = self.snmp.get("")
+        if platform.startswith("DAS-41"):
+            # For DAS-4192DC
+            version = self.snmp.get("1.3.6.1.4.1.3646.1300.6.1.11.1.4.10500")
         if p == "1.3.6.1.4.1.3278.1.12":
             n = self.snmp.get("1.3.6.1.2.1.1.5.0")
             if n.startswith("FG-ACE-24"):
@@ -77,32 +81,59 @@ class Script(BaseScript):
         port_num = self.rx_port.search(v).group("port_num")
         return "DAS-3224" if int(port_num) == 24 else "DAS-3248"
 
+    def get_vendor(self, v: str) -> Tuple[str, str]:
+        """
+        Normalize platform name for DAS- models
+        :param platform:
+        :return:
+        """
+        match1 = self.rx_vendor.search(v)
+        if match1 and match1.group("vendor").startswith("FG-ACE-24"):
+            return (
+                "Nateks",
+                "FG-ACE-24",
+            )
+        platform = self.OID_TABLE[match.group("sys_oid")]
+        if platform == "DAS-32xx":
+            platform = self.get_conexant_platform()
+        return "DLink", platform
+        return "DLink", None
+
     def execute_cli(self, **kwargs):
         v = self.cli("get system info")
+        vendor = "DLink"
         match = self.rx_descr.search(v)
         platform = match.group("platform")
+        if not platform:
+            raise NotImplementedError
+        # Version
         match = self.rx_ver.search(v)
         if not match:
             match = self.rx_ver2.search(v)
+        # Fix vendor
         if not platform.startswith("DAS-"):
             match1 = self.rx_vendor.search(v)
             if match1 and match1.group("vendor").startswith("FG-ACE-24"):
-                r = {"vendor": "Nateks", "platform": "FG-ACE-24", "version": match.group("version")}
+                vendor, platform = "Nateks", "FG-ACE-24"
             else:
                 platform = self.OID_TABLE[match.group("sys_oid")]
                 if platform == "DAS-32xx":
                     platform = self.get_conexant_platform()
-                r = {"vendor": "DLink", "platform": platform, "version": match.group("version")}
-
-        if match.group("hardware") and match.group("hardware").strip():
-            hardware = match.group("hardware").strip()
-        else:
-            hardware = ""
+        r = {
+            "vendor": vendor,
+            "platform": platform,
+            "version": match.group("version"),
+            "attributes": {},
+        }
+        serial, hardware = None, None
         try:
             v = self.cli("get sys eeprom256")
-            serial = self.rx_serial.search(v).group("serial")
-            hardware = self.rx_hardware.search(v).group("hardware")
+            r["attributes"] = {
+                "Serial Number": self.rx_serial.search(v).group("serial"),
+                "HW version": self.rx_hardware.search(v).group("hardware"),
+            }
         except self.CLISyntaxError:
-            serial = ""
-        r["attributes"] = {"Serial Number": serial, "HW version": hardware}
+            pass
+        if "HW version" not in r["attributes"] and match.group("hardware").strip():
+            r["attributes"]["HW version"] = match.group("hardware").strip()
         return r
