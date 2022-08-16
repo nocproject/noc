@@ -506,7 +506,24 @@ class MetricsCheck(DiscoveryCheck):
             self.job.context["time_delta"] = int(round(ts - self.job.context["last_run"]))
         self.job.context["last_run"] = ts
         self.logger.debug("Collecting metrics: %s", metrics)
-        result = [MData(**r) for r in self.object.scripts.get_metrics(metrics=metrics)]
+        s_data = {"managed_object": self.object.bi_id}
+        for mc in metrics:
+            mt = MetricType.get_by_name(mc["metric"])
+            mt_name = mt.name.name.replace(" ", "_")
+            s_data[f"{mt_name}.scope"] = mt.scope.table_name
+            s_data[f"{mt_name}.field"] = mt.field_name
+        result = [
+            MData(**r)
+            for r in self.object.scripts.get_metrics(
+                metrics=metrics,
+                streaming={
+                    "stream": "metrics",
+                    "partition": 0,
+                    "utc_offset": 9000,
+                    "data": s_data,
+                },
+            )
+        ]
         if not result:
             self.logger.info("No metrics found")
             return
