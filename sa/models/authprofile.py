@@ -7,6 +7,7 @@
 
 # Python modules
 import operator
+from typing import Optional
 from threading import Lock
 
 # Third-party modules
@@ -84,11 +85,8 @@ class AuthProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        try:
-            return AuthProfile.objects.get(id=id)
-        except AuthProfile.DoesNotExist:
-            return None
+    def get_by_id(cls, aid) -> Optional["AuthProfile"]:
+        return AuthProfile.objects.get(id=aid).first()
 
     def on_save(self):
         from .managedobject import CREDENTIAL_CACHE_VERSION
@@ -103,59 +101,6 @@ class AuthProfile(NOCModel):
     def enable_suggest(self):
         return self.type == "S"
 
-    def iter_snmp(self):
-        """
-        Yield all possible snmp_ro, snmp_rw tuples
-        :return:
-        """
-        if self.enable_suggest:
-            for s in self.authprofilesuggestsnmp_set.all():
-                yield s.snmp_ro, s.snmp_rw
-
-    def iter_cli(self):
-        """
-        Yield all possible user, password, super_password
-        :return:
-        """
-        if self.enable_suggest:
-            for s in self.authprofilesuggestcli_set.all():
-                yield s.user, s.password, s.super_password
-
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_authprofile")
-
-
-class AuthProfileSuggestSNMP(NOCModel):
-    class Meta(object):
-        verbose_name = "Auth Profile Suggest SNMP"
-        verbose_name_plural = "Auth Profile Suggest SNMP"
-        db_table = "sa_authprofilesuggestsnmp"
-        app_label = "sa"
-
-    auth_profile = models.ForeignKey(
-        AuthProfile, verbose_name="Auth Profile", on_delete=models.CASCADE
-    )
-    snmp_ro = models.CharField("RO Community", blank=True, null=True, max_length=64)
-    snmp_rw = models.CharField("RW Community", blank=True, null=True, max_length=64)
-
-    def __str__(self):
-        return self.auth_profile.name
-
-
-class AuthProfileSuggestCLI(NOCModel):
-    class Meta(object):
-        verbose_name = "Auth Profile Suggest CLI"
-        verbose_name_plural = "Auth Profile Suggest CLI"
-        db_table = "sa_authprofilesuggestcli"
-        app_label = "sa"
-
-    auth_profile = models.ForeignKey(
-        AuthProfile, verbose_name="Auth Profile", on_delete=models.CASCADE
-    )
-    user = models.CharField("User", max_length=32, blank=True, null=True)
-    password = models.CharField("Password", max_length=32, blank=True, null=True)
-    super_password = models.CharField("Super Password", max_length=32, blank=True, null=True)
-
-    def __str__(self):
-        return self.auth_profile.name
