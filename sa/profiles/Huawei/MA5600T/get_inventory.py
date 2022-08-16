@@ -94,10 +94,10 @@ class Script(BaseScript):
             return []
         r = []
         # hwAnaChannelTable
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.2.1.2", bulk=False):
-            key = oid.rsplit(".", 1)[-1]
-            measure = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.4.{key}")
-            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}")
+        for oid, v in self.snmp.getnext(mib["HUAWEI-ENVIRONMENT-MIB::hwAnaName"], bulk=False):
+            _, key = oid.rsplit(".", 1)
+            measure = self.snmp.get(mib["HUAWEI-ENVIRONMENT-MIB::hwAnaMeasureType", key])
+            value = self.snmp.get(mib["HUAWEI-ENVIRONMENT-MIB::hwAnaCurrentValue", key])
             if value and value != self.SNMP_UNKNOWN_VALUE and measure:
                 r += [
                     {
@@ -105,15 +105,17 @@ class Script(BaseScript):
                         "status": True,
                         "description": v,
                         "measurement": self.MEASURE_TYPES[measure],
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.2.1.9.{key}",
+                        "snmp_oid": mib["HUAWEI-ENVIRONMENT-MIB::hwAnaCurrentValue", key],
                     }
                 ]
         # hwDigChannelTable
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.3.1.2", bulk=False):
-            key = oid.rsplit(".", 1)[-1]
+        for oid, v in self.snmp.getnext(
+            mib["HUAWEI-ENVIRONMENT-MIB::hwDigChannelName"], bulk=False
+        ):
+            _, key1, key2 = oid.rsplit(".", 2)
             v = v.lower()
             if "door" in v or "heater" in v:
-                value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}")
+                value = self.snmp.get(mib["HUAWEI-ENVIRONMENT-MIB::hwDigChannelState", key1, key2])
                 if value and value != self.SNMP_INVALID_VALUE:
                     r += [
                         {
@@ -121,13 +123,13 @@ class Script(BaseScript):
                             "status": True,
                             "description": v,
                             "measurement": "Scalar",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.3.1.4.{key}",
+                            "snmp_oid": mib["HUAWEI-ENVIRONMENT-MIB::hwDigChannelState", key1, key2],
                         }
                     ]
         # hwFanTable
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.1.1.5.1.1", bulk=False):
-            key = oid.rsplit(".", 1)[-1]
-            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}")
+        for oid, v in self.snmp.getnext(mib["HUAWEI-ENVIRONMENT-MIB::hwFanName"], bulk=False):
+            _, key = oid.rsplit(".", 1)
+            value = self.snmp.get(mib["HUAWEI-ENVIRONMENT-MIB::hwCurrentTemp", key])
             if value and value != self.SNMP_UNKNOWN_VALUE:
                 r += [
                     {
@@ -135,10 +137,10 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Температура в блоке вентиляторов",
                         "measurement": "Celsius",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.7.{key}",
+                        "snmp_oid": mib["HUAWEI-ENVIRONMENT-MIB::hwCurrentTemp", key],
                     }
                 ]
-            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}")
+            value = self.snmp.get(mib["HUAWEI-ENVIRONMENT-MIB::hwFanSpeed", key])
             if value and value != self.SNMP_INVALID_VALUE:
                 r += [
                     {
@@ -146,12 +148,12 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Скорость вращения вентиляторов",
                         "measurement": "Percent",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.1.1.5.1.9.{key}",
+                        "snmp_oid": mib["HUAWEI-ENVIRONMENT-MIB::hwFanSpeed", key],
                     }
                 ]
         # hwACInputEntry
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.2.1.2", bulk=False):
-            key = oid.rsplit(".", 1)[-1]
+        for oid, v in self.snmp.getnext(mib["HUAWEI-POWER-MIB::hwACPowerState"], bulk=False):
+            _, key = oid.rsplit(".", 1)
             if v:
                 r += [
                     {
@@ -159,10 +161,10 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Наличие напряжения AC",
                         "measurement": "Scalar",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.2.{key}",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwACPowerState", key],
                     }
                 ]
-            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}")
+            value = self.snmp.get(mib["HUAWEI-POWER-MIB::hwACVoltA", key])
             if value and value != self.SNMP_INVALID_VALUE:
                 r += [
                     {
@@ -170,12 +172,12 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Напряжение AC",
                         "measurement": "Volt AC",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.2.1.3.{key}",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwACVoltA", key],
                     }
                 ]
         # hwDCOutEntry
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.3.1.1", bulk=False):
-            key = oid.rsplit(".", 1)[-1]
+        for oid, v in self.snmp.getnext(mib["HUAWEI-POWER-MIB::hwDCVoltageOut"], bulk=False):
+            _, key = oid.rsplit(".", 1)
             if v:
                 r += [
                     {
@@ -183,10 +185,10 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Напряжение DC",
                         "measurement": "Volt DC",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.1.{key}",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwDCVoltageOut", key],
                     }
                 ]
-            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}")
+            value = self.snmp.get(mib["HUAWEI-POWER-MIB::hwDCCurrentOut", key])
             if value and value != self.SNMP_INVALID_VALUE:
                 r += [
                     {
@@ -194,10 +196,10 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Ток DC",
                         "measurement": "Ampere",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.2.{key}",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwDCCurrentOut", key],
                     }
                 ]
-            value = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}")
+            value = self.snmp.get(mib["HUAWEI-POWER-MIB::hwDCVoltageOutState", key])
             if value:
                 r += [
                     {
@@ -205,52 +207,53 @@ class Script(BaseScript):
                         "status": True,
                         "description": "Наличие напряжения DC",
                         "measurement": "Scalar",
-                        "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.3.1.5.{key}",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwDCVoltageOutState", key],
                     }
                 ]
         # hwBatteryTable
-        for oid, v in self.snmp.getnext("1.3.6.1.4.1.2011.6.2.1.6.3.1.2", bulk=False):
-            key = oid.rsplit(".", 1)[-1]
-            if v > 0:
-                volt = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}")
-                current = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}")
-                temp = self.snmp.get(f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}")
-                if temp != self.SNMP_UNKNOWN_VALUE and volt != self.SNMP_INVALID_VALUE:
+        for oid, v in self.snmp.getnext(mib["HUAWEI-POWER-MIB::hwBatteryCapacity"], bulk=False):
+            _, key = oid.rsplit(".", 1)
+            if v <= 0:
+                continue
+            volt = self.snmp.get(mib["HUAWEI-POWER-MIB::hwBatteryVoltage", key])
+            current = self.snmp.get(mib["HUAWEI-POWER-MIB::hwBatteryCurrent", key])
+            temp = self.snmp.get(mib["HUAWEI-POWER-MIB::hwBatteryTemperature", key])
+            if temp != self.SNMP_UNKNOWN_VALUE and volt != self.SNMP_INVALID_VALUE:
+                r += [
+                    {
+                        "name": "battery_volt",
+                        "status": True,
+                        "description": "Напряжение АКБ",
+                        "measurement": "Volt DC",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwBatteryVoltage", key],
+                    }
+                ]
+                if current != self.SNMP_INVALID_VALUE:
                     r += [
                         {
-                            "name": "battery_volt",
+                            "name": "battery_current",
                             "status": True,
-                            "description": "Напряжение АКБ",
-                            "measurement": "Volt DC",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.4.{key}",
+                            "description": "Ток АКБ",
+                            "measurement": "Ampere",
+                            "snmp_oid": mib["HUAWEI-POWER-MIB::hwBatteryCurrent", key],
                         }
                     ]
-                    if current != self.SNMP_INVALID_VALUE:
-                        r += [
-                            {
-                                "name": "battery_current",
-                                "status": True,
-                                "description": "Ток АКБ",
-                                "measurement": "Ampere",
-                                "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.6.{key}",
-                            }
-                        ]
-                    r += [
-                        {
-                            "name": "battery_temp",
-                            "status": True,
-                            "description": "Температура АКБ",
-                            "measurement": "Celsius",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.7.{key}",
-                        },
-                        {
-                            "name": "battery_state",
-                            "status": True,
-                            "description": "Текущее состояние АКБ",
-                            "measurement": "Scalar",
-                            "snmp_oid": f"1.3.6.1.4.1.2011.6.2.1.6.3.1.8.{key}",
-                        },
-                    ]
+                r += [
+                    {
+                        "name": "battery_temp",
+                        "status": True,
+                        "description": "Температура АКБ",
+                        "measurement": "Celsius",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwBatteryTemperature", key],
+                    },
+                    {
+                        "name": "battery_state",
+                        "status": True,
+                        "description": "Текущее состояние АКБ",
+                        "measurement": "Scalar",
+                        "snmp_oid": mib["HUAWEI-POWER-MIB::hwBatteryRowStatus", key],
+                    },
+                ]
         return r
 
     def parse_elabel(self, out):
