@@ -138,14 +138,14 @@ def define_env(env):
 
         :return:
         """
-        r = ["<details>", "", "| Key     | Value  |", "| --- | --- |"]
+        r = ["<details>", "", "", "| Key     | Value  |", "| --- | --- |"]
         for item in rules:
             r += [f"|   | {item.data['name'].replace('|', '&#124')}  |"]
             for p in item.data["patterns"]:
                 if p["key_re"] in {"^source$", "^profile$"}:
                     continue
                 r += [f"| {p['key_re']} | {p['value_re']} |"]
-        r += ["", "</details>"]
+        r += ["", "", "</details>"]
         return "\n".join(r)
 
     @env.macro
