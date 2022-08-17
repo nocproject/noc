@@ -125,7 +125,58 @@ def define_env(env):
             ]
         return "\n".join(r)
 
+    def get_detail(rules):
+        """
+        <details>
+
+        | Key     | Value                                |
+        |--------------------------------------|--------------------------------------|
+        | message | XXXX                   xxxxxxxxxxxxx |
+        |         | <Rule Name>                                  |
+        | message | XXXX                   xxxxxxxxxxxxx |
+        </details>
+
+        :return:
+        """
+        r = ["<details>", "", "| Key     | Value  |", "| --- | --- |"]
+        for item in rules:
+            r += [f"|   | {item.data['name'].replace('|', '&#124')}  |"]
+            for p in item.data["patterns"]:
+                if p["key_re"] in {"^source$", "^profile$"}:
+                    continue
+                r += [f"| {p['key_re']} | {p['value_re']} |"]
+        r += ["", "</details>"]
+        return "\n".join(r)
+
+    @env.macro
+    def supported_events(profile: str) -> str:
+        nonlocal profile_events
+
+        from noc.core.collection.base import Collection
+        rules_collections = Collection("fm.eventclassificationrules")
+
+        if not profile_events:
+            for item in rules_collections.get_items().values():
+                if not item.data.get("patterns"):
+                    continue
+                p = [p['value_re'] for p in item.data['patterns'] if p['key_re'] == '^profile$']
+                if p:
+                    p = p[0].strip("^$ ").replace("\\", "")
+                else:
+                    p = "Common"
+                if p not in profile_events:
+                    profile_events[p] = defaultdict(list)
+                profile_events[p][item.data["event_class__name"]] += [item]
+        r = []
+        for cc in profile_events[profile]:
+            c = [f"|{cc.replace('|', '&#124')} | x |", "| --- | --- |"]
+            c += [get_detail(profile_events[profile][cc]), ""]
+            r += c
+
+        return "\n".join(r)
+
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
+    profile_events = {}  # profile -> [event_rules]
     script_profiles = defaultdict(set)  # script -> {profile}
     doc_root = "docs/ru/docs"
