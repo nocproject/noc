@@ -153,13 +153,14 @@ def define_env(env):
         nonlocal profile_events
 
         from noc.core.collection.base import Collection
+
         rules_collections = Collection("fm.eventclassificationrules")
 
         if not profile_events:
             for item in rules_collections.get_items().values():
                 if not item.data.get("patterns"):
                     continue
-                p = [p['value_re'] for p in item.data['patterns'] if p['key_re'] == '^profile$']
+                p = [p["value_re"] for p in item.data["patterns"] if p["key_re"] == "^profile$"]
                 if p:
                     p = p[0].strip("^$ ").replace("\\", "")
                 else:
