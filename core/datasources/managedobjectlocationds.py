@@ -29,7 +29,7 @@ class ManagedObjectLocationDS(BaseDataSource):
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields, require_index=True)]
+        data = [mm async for mm in cls.iter_query(fields, **args, **kwargs)]
         return pd.DataFrame.from_records(data, index="container_id")
 
     @classmethod
