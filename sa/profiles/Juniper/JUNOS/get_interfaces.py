@@ -236,7 +236,7 @@ class Script(BaseScript):
                                     untagged1, tagged1, l3_ids = self.get_vlan_port_mapping(v)
                             vlans_requested = True
                         if untagged.get(si["name"]):
-                            si["untagged_vlans"] = untagged[si["name"]]
+                            si["untagged_vlan"] = untagged[si["name"]]
                         if tagged.get(si["name"]):
                             si["tagged_vlans"] = sorted(tagged[si["name"]])
                         # Set vlan_ids for EX series
