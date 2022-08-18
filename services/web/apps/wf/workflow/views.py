@@ -123,7 +123,9 @@ class WorkflowApplication(ExtDocApplication):
             ),
         },
     )
-    def api_save_config(self, request, id, name, description, states, transitions, **kwargs):
+    def api_save_config(
+        self, request, id, name, description, is_active, states, transitions, **kwargs
+    ):
         if id == self.NEW_ID:
             wf = Workflow()
         else:
@@ -131,6 +133,7 @@ class WorkflowApplication(ExtDocApplication):
         # Update workflow
         wf.name = name
         wf.description = description
+        wf.is_active = is_active
         wf.save()
         # Get current state
         current_states = {}  # str(id) -> state
