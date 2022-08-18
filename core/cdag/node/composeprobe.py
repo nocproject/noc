@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional
+from typing import Optional, Callable
 import inspect
 import time
 
@@ -35,7 +35,7 @@ class ComposeProbeNode(ProbeNode):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.expression = get_fn(self.config_cls.expression)
+        self.expression: Callable = get_fn(self.config.expression)
         self.probe_inputs = set(inspect.signature(self.expression).parameters)
 
     def get_value(self, ts: int, **kwargs) -> Optional[ValueType]:
