@@ -6,7 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 from collections import defaultdict
 
 # NOC modules
