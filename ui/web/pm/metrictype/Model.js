@@ -63,6 +63,14 @@ Ext.define("NOC.pm.metrictype.Model", {
             persist: false
         },
         {
+            name: "compose_inputs",
+            type: "auto"
+        },
+        {
+            name: "compose_expression",
+            type: "string"
+        },
+        {
             name: "agent_mappings",
             type: "auto"
         },

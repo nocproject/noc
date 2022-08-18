@@ -19,21 +19,25 @@ from mongoengine.fields import (
     ObjectIdField,
     LongField,
     ListField,
-    EmbeddedDocumentField,
+    ReferenceField,
+    EmbeddedDocumentListField,
 )
+from mongoengine.queryset.base import NULLIFY
+from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC Modules
 from noc.config import config
-from noc.inv.models.capability import Capability
 from noc.core.mongo.fields import PlainReferenceField
-from noc.main.models.doccategory import category
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.expr import get_vars
+from noc.main.models.doccategory import category
+from noc.inv.models.capability import Capability
 from .metricscope import MetricScope
 from .measurementunits import MeasurementUnits
 from .scale import Scale
@@ -108,11 +112,11 @@ class MetricType(Document):
     )
     # Scale
     scale: "Scale" = PlainReferenceField(Scale, default=Scale.get_default_scale)
-    # Measure name, like 'kbit/s'
-    # Compatible to Grafana
-    measure = StringField()
+    # Compose expression
+    compose_inputs = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
+    compose_expression = StringField()
     # Agent mappings
-    agent_mappings = ListField(EmbeddedDocumentField(AgentMappingItem))
+    agent_mappings = EmbeddedDocumentListField(AgentMappingItem)
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
     # Object id in BI, used for counter context hashing
@@ -146,7 +150,24 @@ class MetricType(Document):
             r["agent_mappings"] = [m.json_data() for m in self.agent_mappings]
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
+        if self.compose_expression:
+            r["compose_expression"] = self.compose_expression
         return r
+
+    def clean(self):
+        if self.compose_inputs and self in self.compose_inputs:
+            raise ValidationError({"compose_inputs": "Not allowed same in Compose Metrics"})
+        if self.compose_expression:
+            try:
+                metric_fields = get_vars(self.compose_expression)
+            except Exception as e:
+                raise ValidationError({"compose_expression": str(e)})
+            for m_f in metric_fields:
+                mt = MetricType.get_by_field_name(m_f)
+                if not mt or mt not in self.compose_inputs:
+                    raise ValidationError(
+                        {"compose_expression": f"Unknown variable {m_f} on expression"}
+                    )
 
     def to_json(self) -> str:
         return to_json(

@@ -9,8 +9,10 @@ console.debug("Defining NOC.pm.metrictype.Application");
 Ext.define("NOC.pm.metrictype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.CMText",
         "NOC.core.JSONPreview",
         "NOC.pm.metrictype.Model",
+        "NOC.core.tagfield.Tagfield",
         "NOC.pm.metricscope.LookupField",
         "NOC.pm.measurementunits.LookupField",
         "NOC.pm.scale.LookupField"
@@ -104,15 +106,87 @@ Ext.define("NOC.pm.metrictype.Application", {
                     uiStyle: "medium"
                 },
                 {
-                  name: "units",
-                  xtype: "pm.measurementunits.LookupField",
-                  fieldLabel: __("Metric Measurement Units"),
-                  allowBlank: true
+                    xtype: "fieldset",
+                    title: __("Measurement Units"),
+                    tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
+                        "Do not Edit field directly!"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "before",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                padding: "0 8 0 0"
+                            },
+                            items: [
+                                {
+                                  name: "units",
+                                  xtype: "pm.measurementunits.LookupField",
+                                  fieldLabel: __("Metric Measurement Units"),
+                                  labelWidth: 150,
+                                  allowBlank: true
+                                },
+                                {
+                                  name: "scale",
+                                  xtype: "pm.scale.LookupField",
+                                  fieldLabel: __("Metric Scale")
+                                }
+                            ]
+                        }
+                        ],
+                    listeners: {
+                        render: me.addTooltip
+                    }
                 },
                 {
-                  name: "scale",
-                  xtype: "pm.scale.LookupField",
-                  fieldLabel: __("Metric Scale")
+                    xtype: "fieldset",
+                    title: __("Compose Expression"),
+                    tooltip: __("Field on this use in ETL proccess (sync on external system). <br/>" +
+                        "Do not Edit field directly!"),
+                    layout: "vbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                labelAlign: "top",
+                                padding: "0 8 0 0"
+                            },
+                            items: [
+                                {
+                                    xtype: "core.tagfield",
+                                    url: "/pm/metrictype/lookup/",
+                                    fieldLabel: __("Input Metric Type"),
+                                    tooltip: __("Metric Type inputs to Expression"),
+                                    name: "compose_inputs",
+                                    labelWidth: 150,
+                                    width: 300,
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
+                                },
+                                {
+                                    name: "compose_expression",
+                                    xtype: "textarea",
+                                    fieldLabel: __("Compose Expression"),
+                                    allowBlank: true,
+                                    labelWidth: 150,
+                                    uiStyle: "medium"
+                                }
+                            ]
+                        }
+                        ],
+                    listeners: {
+                        render: me.addTooltip
+                    }
                 },
                 {
                     name: "agent_mappings",
