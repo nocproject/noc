@@ -96,6 +96,13 @@ class ExtDocApplication(ExtApplication):
                     self.clean_fields[f.name] = ListOfParameter(
                         element=EmbeddedDocumentParameter(f.field.document_type)
                     )
+                elif isinstance(f.field, ReferenceField):
+                    dt = f.field.document_type_obj
+                    if dt == "self":
+                        dt = self.model
+                    self.clean_fields[f.name] = ListOfParameter(
+                        element=DocumentParameter(dt, required=f.required)
+                    )
             elif isinstance(f, EmbeddedDocumentField):
                 self.clean_fields[f.name] = EmbeddedDocumentParameter(f.document_type)
             elif isinstance(f, ReferenceField):
