@@ -19,7 +19,21 @@ from noc.wf.models.wfmigration import WFMigration
 class Command(BaseCommand):
     help = "Workflow maintenance"
 
-    PROFILE_MAP = {"crm.SubscriberProfile": "crm.Subscriber", "crm.SupplierProfile": "crm.Supplier"}
+    PROFILE_MAP = {
+        "crm.SubscriberProfile": "crm.Subscriber",
+        "crm.SupplierProfile": "crm.Supplier",
+        "ip.AddressProfile": "ip.Address",
+        "ip.PrefixProfile": "ip.Prefix",
+        "phone.PhoneNumberProfile": "phone.PhoneNumber",
+        "phone.PhoneRangeProfile": "phone.PhoneRange",
+        "vc.L2DomainProfile": "vc.L2Domain",
+        "vc.VLANProfile": "vc.VLAN",
+        "vc.VPNProfile": "vc.VPN",
+        "inv.SensorProfile": "inv.Sensor",
+        "pm.AgentProfile": "pm.Agent",
+        "sa.ServiceProfile": "sa.Service",
+        "sla.SLAProfile": "sla.SLAProbe",
+    }
 
     EXPIRE_MODELS = ["vc.VLAN"]
 
@@ -73,10 +87,10 @@ class Command(BaseCommand):
                 self.print("No translations")
                 continue
             for ostate in tr:
-                c = imodel.objects.filter(state=ostate.id).count()
+                c = imodel.objects.filter(state=ostate.id, profile=pid).count()
                 self.print("  %s -> %s: %d records" % (ostate, tr[ostate], c))
                 if c and not dry_run:
-                    for o in imodel.objects.filter(state=ostate.id):
+                    for o in imodel.objects.filter(state=ostate.id, profile=pid):
                         o.set_state(tr[ostate])
 
     def handle_expire(self, dry_run=False, model=None, *args, **kwargs):
