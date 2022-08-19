@@ -227,6 +227,7 @@ class Script(BaseScript):
                             if self.is_switch and (
                                 self.profile.command_exist(self, "vlans")
                                 or self.profile.command_exist(self, "vlan")
+                                or not self.is_cli_help_supported
                             ):
                                 v = self.cli("show vlans detail")
                                 untagged, tagged, l3_ids = self.get_vlan_port_mapping(v)
