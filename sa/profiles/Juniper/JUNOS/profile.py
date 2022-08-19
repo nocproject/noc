@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+from typing import Optional
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -53,6 +54,7 @@ class Profile(BaseProfile):
         "is_work_em": {"platform": {"$regex": "vrr|csrx"}},
         "is_gte_16": {"version": {"$gte": "16"}},
         "is_srx_6xx": {"platform": {"$regex": r"srx6.\d+"}},
+        "is_cli_help_supported": {"caps": {"$in": ["Juniper | CLI | Help"]}},
     }
 
     rx_ver = re.compile(r"\d+")
@@ -160,9 +162,11 @@ class Profile(BaseProfile):
                 return False
         return True
 
-    def command_exist(self, script, cmd):
+    def command_exist(self, script, cmd) -> Optional[bool]:
+        if not script.is_cli_help_supported:
+            return None
         c = script.cli(
-            'help apropos "%s" | match "^show %s" ' % (cmd, cmd), cached=True, ignore_errors=True
+            f'help apropos "{cmd}" | match "^show {cmd}" ', cached=True, ignore_errors=True
         )
         return ("show " + cmd in c) and ("error: nothing matches" not in c)
 
