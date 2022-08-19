@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Ericsson.SEOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,3 +40,6 @@ class Script(BaseScript):
                 for oid, iftype in self.snmp.getnext(mib["IF-MIB::ifType"])
             }
         return self.INTERFACE_TYPES.get(self._iftype_map[ifindex], "other")
+
+    def is_subinterface(self, iface):
+        return False

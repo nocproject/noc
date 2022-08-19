@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -187,6 +187,10 @@ class Script(BaseScript):
         """
         return True
 
+    def is_subinterface(self, iface):
+        if "." in iface:
+            return True
+
     def execute_snmp(self, **kwargs):
         ifaces = {}  # For interfaces
         subifaces = {}  # For subinterfaces like Fa 0/1.XXX
@@ -202,7 +206,7 @@ class Script(BaseScript):
                 iface["ifindex"], iface["interface"], iface.get("oper_status")
             ):
                 continue
-            if "." in iface["interface"]:
+            if self.is_subinterface(iface["interface"]):
                 subifaces[iface["ifindex"]] = {
                     "name": iface["interface"],
                     "snmp_ifindex": iface["ifindex"],
