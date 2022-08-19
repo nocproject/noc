@@ -13,5 +13,3 @@ Field | Type | Description
 --- | --- | ---
 date | Date | Measurement Date
 ts | DateTime | Measurement Timestamp
-[attempts](../types/ping/attempts.md) | UInt16 | [Ping \| Attempts](../types/ping/attempts.md)
-[rtt](../types/ping/rtt.md) | UInt32 | [Ping \| RTT](../types/ping/rtt.md)
