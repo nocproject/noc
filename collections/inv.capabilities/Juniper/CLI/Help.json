@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | CLI | Help",
+    "$collection": "inv.capabilities",
+    "uuid": "e84b574c-26a7-45a4-a9cc-7c59786e104b",
+    "description": "Supported 'help' command on Juniper CLI",
+    "type": "bool",
+    "card_template": null
+}

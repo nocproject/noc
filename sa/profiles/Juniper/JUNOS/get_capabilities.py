@@ -104,10 +104,21 @@ class Script(BaseScript):
             i += 1
         return i
 
+    @false_on_cli_error
+    def has_cli_help(self):
+        """
+        Check device CLI help.. command supported
+        :return:
+        """
+        self.cli("help")
+        return True
+
     def execute_platform_cli(self, caps):
         np = self.get_rpm_probes()
         if np > 0:
             caps["Juniper | RPM | Probes"] = np
+        if self.has_cli_help():
+            caps["Juniper | CLI | Help"] = True
 
     def execute_platform_snmp(self, caps):
         np = 0
