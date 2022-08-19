@@ -19,7 +19,21 @@ from noc.wf.models.wfmigration import WFMigration
 class Command(BaseCommand):
     help = "Workflow maintenance"
 
-    PROFILE_MAP = {"crm.SubscriberProfile": "crm.Subscriber", "crm.SupplierProfile": "crm.Supplier"}
+    PROFILE_MAP = {
+        "crm.SubscriberProfile": "crm.Subscriber",
+        "crm.SupplierProfile": "crm.Supplier",
+        "ip.AddressProfile": "ip.Address",
+        "ip.PrefixProfile": "ip.Prefix",
+        "phone.PhoneNumberProfile": "phone.PhoneNumber",
+        "phone.PhoneRangeProfile": "phone.PhoneRange",
+        "vc.L2DomainProfile": "vc.L2Domain",
+        "vc.VLANProfile": "vc.VLAN",
+        "vc.VPNProfile": ["vc.VPN", "ip.VRF"],
+        "inv.SensorProfile": "inv.Sensor",
+        "pm.AgentProfile": "pm.Agent",
+        "sa.ServiceProfile": "sa.Service",
+        "sla.SLAProfile": "sla.SLAProbe",
+    }
 
     EXPIRE_MODELS = ["vc.VLAN"]
 
@@ -62,7 +76,10 @@ class Command(BaseCommand):
         if not wfm:
             self.die("Invalid migration %s" % wfm.name)
         pmodel = get_model(profile)
-        imodel = get_model(self.PROFILE_MAP[profile])
+        models = self.PROFILE_MAP[profile]
+        if isinstance(models, str):
+            models = [models]
+        imodels = [get_model(model) for model in models]
         for pid in profiles:
             p = pmodel.get_by_id(pid)
             if not p:
@@ -73,11 +90,14 @@ class Command(BaseCommand):
                 self.print("No translations")
                 continue
             for ostate in tr:
-                c = imodel.objects.filter(state=ostate.id).count()
-                self.print("  %s -> %s: %d records" % (ostate, tr[ostate], c))
-                if c and not dry_run:
-                    for o in imodel.objects.filter(state=ostate.id):
-                        o.set_state(tr[ostate])
+                for imodel in imodels:
+                    c = imodel.objects.filter(state=ostate.id, profile=pid).count()
+                    self.print(
+                        f"  {ostate} -> {tr[ostate]}: {c} records in  model '{imodel.__name__}'"
+                    )
+                    if c and not dry_run:
+                        for o in imodel.objects.filter(state=ostate.id, profile=pid):
+                            o.set_state(tr[ostate])
 
     def handle_expire(self, dry_run=False, model=None, *args, **kwargs):
         model = model or self.EXPIRE_MODELS
