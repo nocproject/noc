@@ -20,10 +20,10 @@ The connection may be established only with the same or compatible types.
 
 Connection type examples:
 
-- [RJ45](../../reference/connection-type/electrical/rj45.md)
-- [C13](../../reference/connection-type/power/iec-60320-c13.md)
-- [C14](../../reference/connection-type/power/iec-60320-c14.md)
-- [LC](../../reference/connection-type/optical/lc.md)
+- [RJ45](../../reference/connection-type/index.md)
+- [C13](../../reference/connection-type/index.md)
+- [C14](../../reference/connection-type/index.md)
+- [LC](../../reference/connection-type/index.md)
 
 Type may be considered as mechanical form-factor, something like the form, size,
 and patterns of pins and holes.
