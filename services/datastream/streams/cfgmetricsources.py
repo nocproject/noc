@@ -31,5 +31,15 @@ class CfgMetricSourcesDataStream(DataStream):
         if not config or (not config["metrics"] and not config["items"]):
             raise KeyError("Not Configured metrics")
         # Used bi_id as id
-        config["id"] = sid
+        config["id"] = str(sid)
         return config
+
+    @classmethod
+    def get_deleted_object(cls, sid):
+        """
+        Generate item for deleted object
+        :param id:
+        :return:
+        """
+        source_type, sid = sid.split("::")
+        return {"id": str(sid), "$deleted": True}

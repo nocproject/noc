@@ -37,6 +37,7 @@ from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.config import config as global_config
 
+# MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
 
 
@@ -158,12 +159,11 @@ class ItemConfig(object):
     Match by key_labels
     """
 
-    __slots__ = ("key_labels", "labels", "metrics", "compose_metrics", "node_vars")
+    __slots__ = ("key_labels", "labels", "metrics", "compose_metrics")
     key_labels: FrozenSet[str]  # noc::interface::*, noc::interface::Fa 0/24
-    labels: Optional[List[str]]
-    metrics: List[str]  # Metric Field list setting on source
+    labels: Optional[Tuple[str]]
+    metrics: Tuple[str]  # Metric Field list setting on source
     compose_metrics: Optional[List[str]]
-    node_vars: Optional[Dict[str, str]]  # Add variable node to graph
 
 
 @dataclass(frozen=True)
@@ -182,9 +182,23 @@ class SourceConfig(object):
     type: Literal["managed_object", "sla_probe", "sensor", "agent"]
     bi_id: int
     fm_pool: str
-    labels: Optional[List[str]]
-    metrics: List[str]
+    labels: Optional[Tuple[str]]
+    metrics: Tuple[str]
     items: List[ItemConfig]
+
+    def is_differ(self, sc: "SourceConfig"):
+        """
+        Compare Source Config
+        * condition - Diff labels
+        * items - Diff items
+        * metrics (additional Compose Metrics)
+        :param sc:
+        :return:
+        """
+        r = []
+        if set(self.labels).difference(sc.labels):
+            r += ["condition"]
+        return r
 
 
 @dataclass(frozen=True)
@@ -230,10 +244,11 @@ class MetricsService(FastAPIService):
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
-        self.disable_spool: bool = global_config.metrics.disable_spool
+        self.disable_spool: bool = True  # global_config.metrics.disable_spool
 
     async def on_activate(self):
-        self.slot_number, self.total_slots = await self.acquire_slot()
+        # self.slot_number, self.total_slots = await self.acquire_slot()
+        self.slot_number, self.total_slots = 0, 1
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
@@ -561,25 +576,27 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", "probe")] += 1
         return p
 
-    def get_source_info(self, k: MetricKey) -> SourceInfo:
+    def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
         """
-
+        Get source Info by Metric Key
         :param k:
         :return:
         """
-        key_ctx = dict(k[1])
-        if "managed_object" in key_ctx:
-            mo_info = self.sources_config.get(key_ctx["managed_object"])
-        else:
-            mo_info = None
-        if mo_info:
-            mo_labels = mo_info.labels
-        else:
-            mo_labels = None
+        key_ctx, source = dict(k[1]), None
+        if "sensor" in key_ctx:
+            source = self.sources_config.get(key_ctx["sensor"])
+        elif "sla_probe" in key_ctx:
+            source = self.sources_config.get(key_ctx["sla_probe"])
+        if "agent" in key_ctx:
+            source = self.sources_config.get(key_ctx["agent"])
+        elif "managed_object" in key_ctx:
+            source = self.sources_config.get(key_ctx["managed_object"])
+        if not source:
+            return
         return SourceInfo(
-            bi_id=mo_info.bi_id,
-            fm_pool=mo_info.fm_pool,
-            labels=mo_labels,
+            bi_id=source.bi_id,
+            fm_pool=source.fm_pool,
+            labels=list(source.labels),
             metric_labels=[],
             compose_metrics=[],
         )
@@ -594,6 +611,9 @@ class MetricsService(FastAPIService):
         card = self.cards[k]
         # Getting Context
         source = self.get_source_info(k)
+        if not source:
+            self.logger.info("[%s] Unknown metric source. Skipping apply rules", k)
+            return
         s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         for rule_id, rule in self.rules.items():
@@ -682,32 +702,37 @@ class MetricsService(FastAPIService):
         """
         Update source config.
         """
+        sc_id = int(data["id"])
         sc = SourceConfig(
             type=data["type"],
             bi_id=data["bi_id"],
-            fm_pool=sys.intern(data["fm_pool"]),
-            labels=[sys.intern(ll["label"]) for ll in data["labels"]],
-            metrics=[sys.intern(m["name"]) for m in data["metrics"]],
+            fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
+            labels=tuple(sys.intern(ll["label"]) for ll in sorted(data["labels"])),
+            metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
             items=[],
         )
         for item in data.get("items", []):
             sc.items.append(
                 ItemConfig(
                     key_labels=frozenset(item["key_labels"]),
-                    labels=[sys.intern(ll["label"]) for ll in item["labels"]],
-                    metrics=[sys.intern(m["name"]) for m in data["metrics"]],
+                    labels=tuple(sys.intern(ll["label"]) for ll in item["labels"]),
+                    metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
                     compose_metrics=[],
-                    node_vars={},
                 )
             )
-        self.sources_config[int(data["id"])] = sc
+        if sc_id not in self.sources_config:
+            self.sources_config[sc_id] = sc
+            return
+        diff = self.sources_config[sc_id].is_differ(sc)
+        if "condition" in diff:
+            self.invalidate_card_config(sc)
 
     def delete_source_config(self, c_id: int) -> None:
         """
         Delete source config
         """
-        if c_id in self.sources_config:
-            del self.sources_config[c_id]
+        if int(c_id) in self.sources_config:
+            del self.sources_config[int(c_id)]
 
     async def on_mappings_ready(self) -> None:
         """
@@ -715,6 +740,36 @@ class MetricsService(FastAPIService):
         """
         self.mappings_ready_event.set()
         self.logger.info("%d SourceConfigs has been loaded", len(self.sources_config))
+
+    def invalidate_card_config(self, sc: SourceConfig, delete: bool = False):
+        """
+        Invalidate Cards on config
+        :param sc:
+        :param delete: Remove Card
+        :return:
+        """
+        #
+        key_ctx = (sc.type, sc.bi_id)
+        affected_cards = []
+        for mk in self.cards:
+            # Filter card by ctx
+            if key_ctx not in mk[1]:
+                continue
+            # Filter card by key labels
+            for item in sc.items:
+                if item.key_labels - set(mk[2]):
+                    continue
+                affected_cards.append(mk)
+            affected_cards.append(mk)
+            self.logger.info("[%s] Found Card", mk)
+        if not affected_cards:
+            return
+        #
+        for mk in affected_cards:
+            card = self.cards[mk]
+            card.invalidate_card()
+            card.affected_rules = set()
+        self.logger.info("Invalidate %s cards", len(affected_cards))
 
     def invalidate_card_rules(self, rules: Iterable[str]):
         """

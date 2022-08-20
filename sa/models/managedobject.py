@@ -2828,16 +2828,19 @@ class ManagedObject(NOCModel):
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         items = []
         for iface in Interface.objects.filter(managed_object=mo.id):
+            metrics = [
+                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
+                for mc in iface.profile.metrics
+            ]
+            if not metrics:
+                continue
             items.append(
                 {
                     "key_labels": [f"noc::interface::{iface.name}"],
                     "labels": [
                         {"label": ll, "expose_metric": False} for ll in iface.effective_labels
                     ],
-                    "metrics": [
-                        {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
-                        for mc in iface.profile.metrics
-                    ],
+                    "metrics": metrics,
                 }
             )
         return {
