@@ -37,6 +37,7 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
+from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
 
@@ -56,17 +57,17 @@ class SLAProbe(Document):
         "indexes": ["managed_object", "labels", "effective_labels"],
     }
 
-    managed_object = ForeignKeyField(ManagedObject)
-    agent = PlainReferenceField(Agent)
+    managed_object: ManagedObject = ForeignKeyField(ManagedObject)
+    agent: Agent = PlainReferenceField(Agent)
     # Probe name (<managed object>, <group>, <name> triple must be unique
     name = StringField()
     # Probe profile
-    profile = PlainReferenceField(SLAProfile, default=SLAProfile.get_default_profile)
+    profile: SLAProfile = PlainReferenceField(SLAProfile, default=SLAProfile.get_default_profile)
     # Probe group (Owner)
     group = StringField()
     # Optional description
     description = StringField()
-    state = PlainReferenceField(State)
+    state: State = PlainReferenceField(State)
     # Timestamp of last seen
     last_seen = DateTimeField()
     # Timestamp expired
@@ -106,6 +107,10 @@ class SLAProbe(Document):
     def get_by_bi_id(cls, id):
         return SLAProbe.objects.filter(bi_id=id).first()
 
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmetricsources:
+            yield "cfgmetricsources", f"sla.SLAProbe::{self.bi_id}"
+
     def clean(self):
         if self.extra_labels:
             self.labels += [
@@ -128,9 +133,33 @@ class SLAProbe(Document):
         return None
 
     @classmethod
-    def iter_effective_labels(self, probe: "SLAProbe") -> List[str]:
+    def iter_effective_labels(cls, probe: "SLAProbe") -> List[str]:
         return probe.labels + probe.profile.labels
 
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_slaprobe")
+
+    @classmethod
+    def get_metric_config(cls, sla_probe: "SLAProbe"):
+        """
+        Return MetricConfig for Metrics service
+        :param sla_probe:
+        :return:
+        """
+        labels = []
+        for ll in sla_probe.effective_labels:
+            l_c = Label.get_by_name(ll)
+            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
+        return {
+            "id": f"sla.::{sla_probe.bi_id}",
+            "type": "sla_probe",
+            "bi_id": sla_probe.bi_id,
+            "fm_pool": sla_probe.managed_object.get_effective_fm_pool().name,
+            "labels": labels,
+            "metrics": [
+                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
+                for mc in sla_probe.profile.metrics
+            ],
+            "items": [],
+        }

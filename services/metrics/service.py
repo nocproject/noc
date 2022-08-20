@@ -9,13 +9,12 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet
+from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet, Literal
 import sys
 import asyncio
 import codecs
 import hashlib
 import random
-import re
 
 # Third-party modules
 import orjson
@@ -39,8 +38,6 @@ from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRules
 from noc.config import config as global_config
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
-
-rx_var = re.compile(r"\{\s*(\S+)\s*\}")
 
 
 def unscope(x):
@@ -154,6 +151,56 @@ class Rule(object):
         return update_configs
 
 
+@dataclass(frozen=True)
+class ItemConfig(object):
+    """
+    Metric Source Item Config
+    Match by key_labels
+    """
+
+    __slots__ = ("key_labels", "labels", "metrics", "compose_metrics", "node_vars")
+    key_labels: FrozenSet[str]  # noc::interface::*, noc::interface::Fa 0/24
+    labels: Optional[List[str]]
+    metrics: List[str]  # Metric Field list setting on source
+    compose_metrics: Optional[List[str]]
+    node_vars: Optional[Dict[str, str]]  # Add variable node to graph
+
+
+@dataclass(frozen=True)
+class SourceConfig(object):
+    """
+    Configuration for Metric Source and Items.
+    Contains configured metrics, labels and alarm node config
+    Supported Source:
+    * managed_object
+    * agent
+    * sla_probe
+    * sensor
+    """
+
+    __slots__ = ("type", "bi_id", "fm_pool", "labels", "metrics", "items")
+    type: Literal["managed_object", "sla_probe", "sensor", "agent"]
+    bi_id: int
+    fm_pool: str
+    labels: Optional[List[str]]
+    metrics: List[str]
+    items: List[ItemConfig]
+
+
+@dataclass(frozen=True)
+class SourceInfo(object):
+    """
+    Source Info for applied metric Card
+    """
+
+    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels", "compose_metrics")
+    bi_id: int
+    fm_pool: str
+    labels: Optional[List[str]]
+    metric_labels: Optional[List[str]]
+    compose_metrics: Optional[List[str]]
+
+
 @dataclass
 class ManagedObjectInfo(object):
     __slots__ = ("id", "bi_id", "fm_pool", "labels", "metric_labels")
@@ -177,17 +224,17 @@ class MetricsService(FastAPIService):
         self.graph: Optional[CDAG] = None
         self.change_log: Optional[ChangeLog] = None
         self.start_state: Dict[str, Dict[str, Any]] = {}
-        self.mo_map: Dict[int, ManagedObjectInfo] = {}
-        self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
+        self.sources_config: Dict[int, SourceConfig] = {}
         self.mappings_ready_event = asyncio.Event()
         self.rules_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
-        self.disable_spool: bool = global_config.metrics.disable_spool
+        self.disable_spool: bool = True  # global_config.metrics.disable_spool
 
     async def on_activate(self):
-        self.slot_number, self.total_slots = await self.acquire_slot()
+        # self.slot_number, self.total_slots = await self.acquire_slot()
+        self.slot_number, self.total_slots = 0, 1
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
@@ -238,7 +285,7 @@ class MetricsService(FastAPIService):
         Subscribe and track datastream changes
         """
         # Register RPC aliases
-        client = MetricsDataStreamClient("cfgmomapping", service=self)
+        client = MetricsDataStreamClient("cfgmetricsources", service=self)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
@@ -515,6 +562,29 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", "probe")] += 1
         return p
 
+    def get_source_info(self, k: MetricKey) -> SourceInfo:
+        """
+
+        :param k:
+        :return:
+        """
+        key_ctx = dict(k[1])
+        if "managed_object" in key_ctx:
+            mo_info = self.sources_config.get(key_ctx["managed_object"])
+        else:
+            mo_info = None
+        if mo_info:
+            mo_labels = mo_info.labels
+        else:
+            mo_labels = None
+        return SourceInfo(
+            bi_id=mo_info.bi_id,
+            fm_pool=mo_info.fm_pool,
+            labels=mo_labels,
+            metric_labels=[],
+            compose_metrics=[],
+        )
+
     def apply_rules(self, k: MetricKey, labels: List[str]):
         """
         Apply rule Graph
@@ -524,16 +594,8 @@ class MetricsService(FastAPIService):
         """
         card = self.cards[k]
         # Getting Context
-        key_ctx = dict(k[1])
-        if "managed_object" in key_ctx:
-            mo_info = self.mo_map.get(key_ctx["managed_object"])
-        else:
-            mo_info = None
-        if mo_info:
-            mo_labels = mo_info.labels
-        else:
-            mo_labels = None
-        s_labels = set(self.merge_labels(mo_labels, labels))
+        source = self.get_source_info(k)
+        s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         for rule_id, rule in self.rules.items():
             if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
@@ -617,35 +679,43 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
 
-    def update_mapping(
-        self, mo_id: int, bi_id: int, fm_pool: str, labels: List[str], metric_labels: List[str]
-    ) -> None:
+    def update_source_config(self, data: Dict[str, Any]) -> None:
         """
-        Update managed object mapping.
+        Update source config.
         """
-        self.mo_map[bi_id] = ManagedObjectInfo(
-            id=mo_id,
-            bi_id=bi_id,
-            fm_pool=fm_pool,
-            labels=[sys.intern(x) for x in labels],
-            metric_labels=[sys.intern(x) for x in metric_labels],
+        sc = SourceConfig(
+            type=data["type"],
+            bi_id=data["bi_id"],
+            fm_pool=sys.intern(data["fm_pool"]),
+            labels=[sys.intern(ll["label"]) for ll in data["labels"]],
+            metrics=[sys.intern(m["name"]) for m in data["metrics"]],
+            items=[],
         )
-        self.mo_id_map[mo_id] = self.mo_map[bi_id]
+        for item in data.get("items", []):
+            sc.items.append(
+                ItemConfig(
+                    key_labels=frozenset(item["key_labels"]),
+                    labels=[sys.intern(ll["label"]) for ll in item["labels"]],
+                    metrics=[sys.intern(m["name"]) for m in data["metrics"]],
+                    compose_metrics=[],
+                    node_vars={},
+                )
+            )
+        self.sources_config[int(data["id"])] = sc
 
-    def delete_mapping(self, mo_id: int) -> None:
+    def delete_source_config(self, c_id: int) -> None:
         """
-        Delete managed object mapping.
+        Delete source config
         """
-        if mo_id in self.mo_id_map:
-            del self.mo_map[self.mo_id_map[mo_id].bi_id]
-            del self.mo_id_map[mo_id]
+        if c_id in self.sources_config:
+            del self.sources_config[c_id]
 
     async def on_mappings_ready(self) -> None:
         """
         Called when all mappings are ready.
         """
         self.mappings_ready_event.set()
-        self.logger.info("%d ManagedObject mappings has been loaded", len(self.mo_map))
+        self.logger.info("%d SourceConfigs has been loaded", len(self.sources_config))
 
     def invalidate_card_rules(self, rules: Iterable[str]):
         """

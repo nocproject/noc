@@ -791,6 +791,11 @@ class ManagedObjectProfile(NOCModel):
                 "id", flat=True
             ):
                 yield "cfgtrap", mo_id
+        if config.datastream.enable_cfgmetricsources and "metrics" in changed_fields:
+            for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
+                "bi_id", flat=True
+            ):
+                yield "enable_cfgmetricsources", f"sa.ManagedObject::{mo_id}"
 
     def iter_pools(self):
         """
