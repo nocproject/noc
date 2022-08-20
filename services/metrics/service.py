@@ -230,11 +230,10 @@ class MetricsService(FastAPIService):
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
-        self.disable_spool: bool = True  # global_config.metrics.disable_spool
+        self.disable_spool: bool = global_config.metrics.disable_spool
 
     async def on_activate(self):
-        # self.slot_number, self.total_slots = await self.acquire_slot()
-        self.slot_number, self.total_slots = 0, 1
+        self.slot_number, self.total_slots = await self.acquire_slot()
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
