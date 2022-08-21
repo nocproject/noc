@@ -22,7 +22,7 @@ from noc.core.service.loader import get_service
 
 SQL = """
      SELECT ts, labels, %s FROM %s
-     WHERE managed_object=%s and date >= '%s' and ts >= '%s' %s FORMAT JSONEachRow 
+     WHERE managed_object=%s and date >= '%s' and ts >= '%s' %s FORMAT JSONEachRow
 """
 
 NS = 1_000_000_000
