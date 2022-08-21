@@ -783,13 +783,14 @@ class MetricsService(FastAPIService):
                 card.affected_rules = set()
             else:
                 card.is_dirty = True
-            if card.alarms and card.alarms[0].config.pool != sc.fm_pool:
-                # Hack for ConfigProxy use
-                card.alarms[0].config._ConfigProxy__override["pool"] = sc.fm_pool
-            if delete:
-                for a in card.alarms:
-                    if a.is_active:
-                        a.clear_alarm("Metrics has been disabled")
+            # Check alarm
+            for a in card.alarms:
+                if delete:
+                    a.reset_state()
+                    continue
+                if a.config.pool != sc.fm_pool:
+                    # Hack for ConfigProxy use
+                    a.config._ConfigProxy__override["pool"] = sc.fm_pool
             num = 1
         self.logger.info("Invalidate %s cards", num)
 

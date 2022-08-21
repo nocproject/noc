@@ -98,7 +98,7 @@ class AlarmNode(BaseCDAGNode):
             msg["vars"] = {v.name: q(v.value) for v in self.config.vars}
         self.publish_message(msg)
         self.state.active = True
-        logger.info(
+        logger.debug(
             "[%s|%s|%s|%s] Raise alarm: %s",
             self.node_id,
             self.config.managed_object,
@@ -119,7 +119,7 @@ class AlarmNode(BaseCDAGNode):
         }
         self.publish_message(msg)
         self.state.active = False
-        logger.info(
+        logger.debug(
             "[%s|%s] Clear alarm", self.config.managed_object, ";".join(self.config.labels or [])
         )
 
@@ -133,3 +133,13 @@ class AlarmNode(BaseCDAGNode):
 
     def is_active(self) -> bool:
         return self.state.active
+
+    def reset_state(self):
+        """
+        Reset Alarm Node state
+        :return:
+        """
+        if not self.is_active():
+            return
+        self.clear_alarm("Reset by change node config")
+        self.state.active = False

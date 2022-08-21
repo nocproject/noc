@@ -38,7 +38,7 @@ class CfgMetricSourcesDataStream(DataStream):
     def get_deleted_object(cls, sid):
         """
         Generate item for deleted object
-        :param id:
+        :param sid:
         :return:
         """
         source_type, sid = sid.split("::")

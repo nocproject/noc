@@ -152,7 +152,6 @@ class SLAProbe(Document):
             l_c = Label.get_by_name(ll)
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         return {
-            "id": f"sla.::{sla_probe.bi_id}",
             "type": "sla_probe",
             "bi_id": sla_probe.bi_id,
             "fm_pool": sla_probe.managed_object.get_effective_fm_pool().name,
