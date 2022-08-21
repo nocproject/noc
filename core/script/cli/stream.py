@@ -146,8 +146,11 @@ class BaseStream(object):
             data = data[sent:]
 
     def close(self):
-        self.socket.close()
-        self.socket = None
+        # On SSH close call when 'SSH session reset' and if call stream.close second - socket is None
+        # Check socket exists before close.
+        if self.socket:
+            self.socket.close()
+            self.socket = None
 
     def set_timeout(self, timeout: Optional[float] = None):
         self._timeout = timeout
