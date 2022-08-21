@@ -17,6 +17,8 @@ from .window import WindowNode, WindowConfig
 
 from .base import ValueType, Category
 
+NS = 1_000_000_000
+
 
 class ExpDecayNodeState(BaseModel):
     times: List[int] = []
@@ -39,6 +41,6 @@ class ExpDecayNode(WindowNode):
     def get_window_value(
         self, values: List[ValueType], timestamps: List[int]
     ) -> Optional[ValueType]:
-        t0 = timestamps[-1]
+        t0 = timestamps[-1] // NS
         nk = self.config.k
-        return sum(v * exp(nk * (t0 - ts)) for ts, v in zip(timestamps, values))
+        return sum(v * exp(nk * t0 - ts // NS) for ts, v in zip(timestamps, values))
