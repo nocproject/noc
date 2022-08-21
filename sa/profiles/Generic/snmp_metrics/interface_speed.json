@@ -5,7 +5,7 @@
     "$type": "ifindex",
     "oid": "IF-MIB::ifHighSpeed.{{ ifIndex }}",
     "type": "gauge",
-    "scale": 1000000,
+    "scale": "scale(1000000)",
     "units": "bit/s"
   },
   "normal": {
