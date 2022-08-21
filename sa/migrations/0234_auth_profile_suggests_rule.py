@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from pymongo import InsertOne
 import bson
+from pymongo import InsertOne
+from django.db import models
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -16,7 +17,7 @@ from noc.core.migration.base import BaseMigration
 class Migration(BaseMigration):
     def migrate(self):
         coll = self.mongo_db["noc.credentialcheckrules"]
-
+        # Migrate suggests profiles
         credentials = {}
         for ap_id, au_name, au_descr in self.db.execute(
             """
@@ -64,3 +65,21 @@ class Migration(BaseMigration):
             bulk += [InsertOne(doc)]
         if bulk:
             coll.bulk_write(bulk)
+        # Additional fields
+        self.db.add_column(
+            "sa_authprofile",
+            "enable_suggest_by_rule",
+            models.BooleanField(default=True),
+        )
+        self.db.add_column(
+            "sa_authprofile",
+            "preferred_profile_credential",
+            models.BooleanField(default=True),
+        )
+        # Reset suggest on non-suggest profile
+        self.db.execute(
+            """
+                UPDATE sa_authprofile SET enable_suggest_by_rule = FALSE
+                WHERE type != 'S'
+                """
+        )
