@@ -36,7 +36,7 @@ class DumpNode(BaseCDAGNode):
     """
 
     name = "dump"
-    categories = [Category.UTIL]
+    categories = [Category.DEBUG]
     config_cls = DumpNodeConfig
     dot_shape = "folder"
 
