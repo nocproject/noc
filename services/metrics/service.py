@@ -159,11 +159,10 @@ class ItemConfig(object):
     Match by key_labels
     """
 
-    __slots__ = ("key_labels", "labels", "metrics", "compose_metrics")
-    key_labels: FrozenSet[str]  # noc::interface::*, noc::interface::Fa 0/24
-    labels: Optional[Tuple[str]]
-    metrics: Tuple[str]  # Metric Field list setting on source
-    compose_metrics: Optional[List[str]]
+    __slots__ = ("key_labels", "metric_labels", "metrics")
+    key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
+    metric_labels: Optional[Tuple[str, ...]]
+    metrics: Tuple[str, ...]  # Metric Field list setting on source
 
 
 @dataclass(frozen=True)
@@ -207,12 +206,11 @@ class SourceInfo(object):
     Source Info for applied metric Card
     """
 
-    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels", "compose_metrics")
+    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels")
     bi_id: int
     fm_pool: str
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
-    compose_metrics: Optional[List[str]]
 
 
 @dataclass
@@ -244,11 +242,10 @@ class MetricsService(FastAPIService):
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
-        self.disable_spool: bool = True  # global_config.metrics.disable_spool
+        self.disable_spool: bool = global_config.metrics.disable_spool
 
     async def on_activate(self):
-        # self.slot_number, self.total_slots = await self.acquire_slot()
-        self.slot_number, self.total_slots = 0, 1
+        self.slot_number, self.total_slots = await self.acquire_slot()
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
@@ -598,7 +595,6 @@ class MetricsService(FastAPIService):
             fm_pool=source.fm_pool,
             labels=list(source.labels),
             metric_labels=[],
-            compose_metrics=[],
         )
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
@@ -635,9 +631,19 @@ class MetricsService(FastAPIService):
                     probe = self.add_probe(node.node_id, k)
                     nodes[node.node_id] = probe
                     continue
+                config = rule.configs.get(node.node_id)
+                if node.node_id == "alarm":
+                    config = config.copy()
+                    config.update(
+                        {
+                            "managed_object": f"bi_id:{source.bi_id}",
+                            "pool": source.fm_pool,
+                            "labels": k[2],
+                        }
+                    )
                 # @todo add rule-id to hash for multiple rules
                 nodes[node.node_id] = self.clone_and_add_node(
-                    node, prefix=self.get_key_hash(k), config=rule.configs.get(node.node_id)
+                    node, prefix=self.get_key_hash(k), config=config
                 )
             if "alarm" not in nodes and "probe" not in nodes:
                 self.logger.warning(
@@ -662,7 +668,8 @@ class MetricsService(FastAPIService):
                     # Filter Probe nodes
                     node.freeze()
             # Add alarms nodes for clear alarm on delete
-            card.alarms += [nodes["alarm"]]
+            if "alarm" in nodes:
+                card.alarms += [nodes["alarm"]]
             #
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
@@ -707,17 +714,16 @@ class MetricsService(FastAPIService):
             type=data["type"],
             bi_id=data["bi_id"],
             fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
-            labels=tuple(sys.intern(ll["label"]) for ll in sorted(data["labels"])),
+            labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
             metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
             items=[],
         )
         for item in data.get("items", []):
             sc.items.append(
                 ItemConfig(
-                    key_labels=frozenset(item["key_labels"]),
-                    labels=tuple(sys.intern(ll["label"]) for ll in item["labels"]),
+                    key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
+                    metric_labels=tuple(),
                     metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
-                    compose_metrics=[],
                 )
             )
         if sc_id not in self.sources_config:
@@ -732,6 +738,7 @@ class MetricsService(FastAPIService):
         Delete source config
         """
         if int(c_id) in self.sources_config:
+            self.invalidate_card_config(self.sources_config[int(c_id)], delete=True)
             del self.sources_config[int(c_id)]
 
     async def on_mappings_ready(self) -> None:
@@ -741,6 +748,26 @@ class MetricsService(FastAPIService):
         self.mappings_ready_event.set()
         self.logger.info("%d SourceConfigs has been loaded", len(self.sources_config))
 
+    def iter_cards(self, sc: SourceConfig) -> Iterable[Card]:
+        """
+        Iter cards matched source config
+        :param sc: Source Config for filter
+        :return:
+        """
+        # Generate context
+        key_ctx = (sc.type, sc.bi_id)
+        for mk in self.cards:
+            # Filter card by ctx
+            if key_ctx not in mk[1]:
+                continue
+            # Filter card by key labels
+            for item in sc.items:
+                if set(item.key_labels) - set(mk[2]):
+                    continue
+                yield self.cards[mk]
+            self.logger.info("[%s] Found Card", mk)
+            yield self.cards[mk]
+
     def invalidate_card_config(self, sc: SourceConfig, delete: bool = False):
         """
         Invalidate Cards on config
@@ -748,28 +775,23 @@ class MetricsService(FastAPIService):
         :param delete: Remove Card
         :return:
         """
-        #
-        key_ctx = (sc.type, sc.bi_id)
-        affected_cards = []
-        for mk in self.cards:
-            # Filter card by ctx
-            if key_ctx not in mk[1]:
-                continue
-            # Filter card by key labels
-            for item in sc.items:
-                if item.key_labels - set(mk[2]):
-                    continue
-                affected_cards.append(mk)
-            affected_cards.append(mk)
-            self.logger.info("[%s] Found Card", mk)
-        if not affected_cards:
-            return
-        #
-        for mk in affected_cards:
-            card = self.cards[mk]
-            card.invalidate_card()
-            card.affected_rules = set()
-        self.logger.info("Invalidate %s cards", len(affected_cards))
+        num = 0
+        for card in self.iter_cards(sc):
+            # Invalidate all card otherwise check rules condition need labels from metrics
+            if card.affected_rules:
+                card.invalidate_card()
+                card.affected_rules = set()
+            else:
+                card.is_dirty = True
+            if card.alarms and card.alarms[0].config.pool != sc.fm_pool:
+                # Hack for ConfigProxy use
+                card.alarms[0].config._ConfigProxy__override["pool"] = sc.fm_pool
+            if delete:
+                for a in card.alarms:
+                    if a.is_active:
+                        a.clear_alarm("Metrics has been disabled")
+            num = 1
+        self.logger.info("Invalidate %s cards", num)
 
     def invalidate_card_rules(self, rules: Iterable[str]):
         """

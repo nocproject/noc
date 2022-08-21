@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # Alarm node
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List
+import logging
 import datetime
+from typing import Optional, List
 
 # Third-party modules
 from pydantic import BaseModel
@@ -29,8 +30,9 @@ class VarItem(BaseModel):
 
 
 class AlarmNodeConfig(BaseModel):
-    reference: str
     alarm_class: str
+    reference: Optional[str] = None
+    suppress_publish = False  # For service test used
     pool: str = ""
     partition: int = 0
     managed_object: Optional[str]  # Not user-settable
@@ -38,6 +40,22 @@ class AlarmNodeConfig(BaseModel):
     activation_level: float = 1.0
     deactivation_level: float = 1.0
     vars: Optional[List[VarItem]]
+
+    @classmethod
+    def get_reference(cls, config: "AlarmNodeConfig") -> str:
+        """
+        Create Alarm reference by config
+        :param config: Alarm Config
+        :return:
+        """
+        if config.reference:
+            return config.reference
+        if config.labels:
+            return f"th:{config.managed_object}:{config.alarm_class}:{';'.join(config.labels)}"
+        return f"th:{config.managed_object}:{config.alarm_class}"
+
+
+logger = logging.getLogger(__name__)
 
 
 class AlarmNode(BaseCDAGNode):
@@ -57,7 +75,7 @@ class AlarmNode(BaseCDAGNode):
             self.raise_alarm(x)
         return None
 
-    def raise_alarm(self, x: ValueType):
+    def raise_alarm(self, x: ValueType) -> None:
         """
         Raise alarm
         """
@@ -68,32 +86,50 @@ class AlarmNode(BaseCDAGNode):
 
         msg = {
             "$op": "raise",
-            "reference": self.config.reference,
+            "reference": self.config_cls.get_reference(self.config),
             "timestamp": datetime.datetime.now().isoformat(),
             "managed_object": self.config.managed_object,
             "alarm_class": self.config.alarm_class,
             "labels": self.config.labels if self.config.labels else [],
+            "vars": {"ovalue": x, "tvalue": self.config.activation_level},
         }
         # Render vars
         if self.config.vars:
             msg["vars"] = {v.name: q(v.value) for v in self.config.vars}
-        svc = get_service()
-        svc.publish(
-            orjson.dumps(msg), stream=f"dispose.{self.config.pool}", partition=self.config.partition
-        )
+        self.publish_message(msg)
         self.state.active = True
+        logger.info(
+            "[%s|%s|%s|%s] Raise alarm: %s",
+            self.node_id,
+            self.config.managed_object,
+            ";".join(self.config.labels or []),
+            self.config.pool,
+            x,
+        )
 
-    def clear_alarm(self):
+    def clear_alarm(self, message: Optional[str] = None) -> None:
         """
         Clear alarm
         """
         msg = {
             "$op": "clear",
-            "reference": self.config.reference,
+            "reference": self.config_cls.get_reference(self.config),
             "timestamp": datetime.datetime.now().isoformat(),
+            "message": message,
         }
+        self.publish_message(msg)
+        self.state.active = False
+        logger.info(
+            "[%s|%s] Clear alarm", self.config.managed_object, ";".join(self.config.labels or [])
+        )
+
+    def publish_message(self, msg):
+        if self.config.suppress_publish or not self.config.pool:
+            return
         svc = get_service()
         svc.publish(
             orjson.dumps(msg), stream=f"dispose.{self.config.pool}", partition=self.config.partition
         )
-        self.state.active = False
+
+    def is_active(self) -> bool:
+        return self.state.active
