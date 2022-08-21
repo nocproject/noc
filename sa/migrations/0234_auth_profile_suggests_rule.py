@@ -83,3 +83,4 @@ class Migration(BaseMigration):
                 WHERE type != 'S'
                 """
         )
+        # ManagedObject Update

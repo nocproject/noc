@@ -102,7 +102,7 @@ class AuthProfile(NOCModel):
     dynamic_classification_policy = models.CharField(
         _("Dynamic Classification Policy"),
         max_length=1,
-        choices=[("D", "Disable"), ("R", "By Rule")],
+        choices=[("D", "Disable"), ("R", "By Rule"), ("U", "By Username/SNMP RO")],
         default="R",
     )
     match_rules = PydanticField(

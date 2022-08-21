@@ -21,7 +21,7 @@ class Migration(BaseMigration):
             models.CharField(
                 "Dynamic Classification Policy",
                 max_length=1,
-                choices=[("D", "Disable"), ("R", "By Rule")],
+                choices=[("D", "Disable"), ("R", "By Rule"), ("U", "By Username/SNMP RO")],
                 default="R",
             ),
         )
