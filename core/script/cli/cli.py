@@ -122,6 +122,7 @@ class CLI(BaseCLI):
                 await self.start_stream()
             except ConnectionRefusedError:
                 self.error = CLIConnectionRefused("Connection refused")
+                metrics["cli_connection_refused", ("proto", self.name)] += 1
                 return
         metrics["cli_commands", ("proto", self.name)] += 1
         # Send command
@@ -184,7 +185,7 @@ class CLI(BaseCLI):
                 metrics["cli_reads", ("proto", self.name)] += 1
                 r = await self.stream.read(self.BUFFER_SIZE)
             except (asyncio.TimeoutError, TimeoutError):
-                self.logger.info("Timeout error")
+                self.logger.warning("Timeout error")
                 metrics["cli_timeouts", ("proto", self.name)] += 1
                 # Stream must be closed to prevent hanging read callbacks
                 # @todo: Really? May be changed during migration to asyncio
