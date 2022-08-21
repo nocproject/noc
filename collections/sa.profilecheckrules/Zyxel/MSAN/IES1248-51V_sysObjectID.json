@@ -1,0 +1,13 @@
+{
+    "name": "Zyxel | MSAN | IES-1248-51V sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f8c50932-4df9-4aa2-9232-ddc75da5af6a",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.890.1.5.11.17",
+    "action": "match",
+    "profile__name": "Zyxel.MSAN"
+}
