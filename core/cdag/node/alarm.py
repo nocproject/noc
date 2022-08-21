@@ -95,7 +95,7 @@ class AlarmNode(BaseCDAGNode):
         }
         # Render vars
         if self.config.vars:
-            msg["vars"] = {v.name: q(v.value) for v in self.config.vars}
+            msg["vars"].update({v.name: q(v.value) for v in self.config.vars})
         self.publish_message(msg)
         self.state.active = True
         logger.debug(
