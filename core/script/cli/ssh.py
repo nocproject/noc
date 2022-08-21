@@ -97,6 +97,9 @@ class SSHStream(BaseStream):
             self.logger.debug("User is authenticated")
             self.logger.debug("Open channel")
             self.channel = self.session.open_session()
+            if isinstance(self.channel, int):
+                # Return error code, see handle_error_codes on utils
+                raise SSH2Error(f"SSH Error code: {self.channel}")
             self.channel.pty("xterm")
             self.channel.shell()
             self.session.keepalive_config(False, 60)
