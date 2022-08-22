@@ -191,6 +191,10 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": match.group("admin_status") == "enable",
                         "oper_status": match.group("oper_status") == "up",
+                        "hints": [
+                            "noc::topology::direction::nni",
+                            "technology::ethernet::1000base",
+                        ],
                         "subinterfaces": [
                             {
                                 "name": ifname,
@@ -209,6 +213,7 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": match.group("admin_status") == "enable",
                         "oper_status": match.group("oper_status") == "up",
+                        "hints": ["technology::dsl::adsl"],
                         "subinterfaces": [],
                     }
                     v = self.cli("show atm pvc interface %s" % ifname)
@@ -290,6 +295,10 @@ class Script(BaseScript):
                         "name": ifname,
                         "type": "physical",
                         "admin_status": admin_status,
+                        "hints": [
+                            "noc::topology::direction::nni",
+                            "technology::ethernet::1000base",
+                        ],
                         "oper_status": oper_status,
                         "subinterfaces": [
                             {
@@ -323,6 +332,7 @@ class Script(BaseScript):
                         "type": "physical",
                         "admin_status": admin_status,
                         "oper_status": oper_status,
+                        "hints": ["technology::dsl::adsl"],
                         "subinterfaces": [],
                     }
                     v = self.cli("show atm vc %s" % ifname)
