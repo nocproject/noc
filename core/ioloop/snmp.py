@@ -112,7 +112,7 @@ async def snmp_get(
                 result = resp.varbinds[0][1]
             logger.debug("[%s] GET result: %r", address, result)
             return result
-        elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
+        elif resp.error_status == NO_SUCH_NAME and resp.varbinds and len(oids) > 1:
             # One or more invalid oids
             b_idx = resp.error_index - 1
             logger.debug(
