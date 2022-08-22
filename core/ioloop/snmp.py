@@ -31,6 +31,7 @@ from noc.core.snmp.error import (
     UNREACHABLE,
     BER_ERROR,
     END_OID_TREE,
+    BAD_VALUE,
 )
 from noc.core.ioloop.udp import UDPSocket, UDPSocketContext
 from noc.core.comp import smart_text
@@ -108,8 +109,11 @@ async def snmp_get(
                         result[oid_map[k]] = v
                     else:
                         logger.error("[%s] Invalid oid %s returned in reply", address, k)
-            else:
+            elif resp.varbinds:
                 result = resp.varbinds[0][1]
+            else:
+                # Device return empty varbinds, perhaps need more info
+                raise SNMPError(code=BAD_VALUE, oid=oids)
             logger.debug("[%s] GET result: %r", address, result)
             return result
         elif resp.error_status == NO_SUCH_NAME and resp.varbinds and len(oids) > 1:
