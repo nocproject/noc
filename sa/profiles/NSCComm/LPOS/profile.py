@@ -2,7 +2,7 @@
 # Vendor: NSCComm http://www.ecitele.com/
 # OS:     LPOS
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,3 +22,10 @@ class Profile(BaseProfile):
     username_submit = b"\r"
     password_submit = b"\r"
     command_submit = b"\r"
+    pattern_syntax_error = rb"Unknown command"
+
+    matchers = {"is_sprinter": {"platform": {"$in": ["Sprinter TX"]}}}
+
+    @classmethod
+    def get_interface_type(cls, name):
+        return "physical"

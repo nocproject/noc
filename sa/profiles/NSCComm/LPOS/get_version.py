@@ -23,8 +23,22 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
-        v = self.cli("stats", cached=True)
+    def execute_snmp(self, **kwargs):
+        version = self.snmp.get("1.3.6.1.4.1.42926.2.3.1.2.0")
+        version = " ".join(version.split()[1:3])
+        hw_version = self.snmp.get("1.3.6.1.4.1.42926.2.3.1.1.0")
+        return {
+            "vendor": "NSCComm",
+            "platform": "Sprinter TX",
+            "version": version,
+            "attributes": {"HW version": hw_version},
+        }
+
+    def execute_cli(self):
+        try:
+            v = self.cli("stats", cached=True)
+        except self.CLISyntaxError:
+            raise NotImplementedError
         match = self.rx_ver.search(v)
         return {
             "vendor": "NSCComm",

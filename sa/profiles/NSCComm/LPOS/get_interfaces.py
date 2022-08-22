@@ -1,16 +1,17 @@
-# - coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # NSCComm.LPOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
+# Python modules
 import re
+
+# NOC modules
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
+from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -40,8 +41,10 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_cli(self):
         interfaces = []
+        if self.is_sprinter:
+            raise NotImplementedError
         v = self.cli("ethstat")
         for match in self.rx_eth.finditer(v):
             iface = {
