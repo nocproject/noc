@@ -91,9 +91,9 @@ class Script(BaseScript):
             r[0]["sensors"] = sensors
         return r
 
-    def fill_ports(self, script):
+    def fill_ports(self):
         r = []
-        v = script.cli("show card")
+        v = self.cli("show card")
         for line in v.splitlines():
             match = self.rx_card.search(line)
             if match:
@@ -102,7 +102,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         r = self.get_inv_from_version()
-        ports = self.profile.fill_ports(self)
+        ports = self.fill_ports()
         for p in ports:
             i = {
                 "type": self.type[p["cfgtype"]],
