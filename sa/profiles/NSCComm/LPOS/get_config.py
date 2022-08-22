@@ -15,5 +15,7 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute_cli(self, **kwargs):
+        if self.is_sprinter:
+            return ""
         v = self.cli("show cfg.sys")
         return self.cleaned_config(v)

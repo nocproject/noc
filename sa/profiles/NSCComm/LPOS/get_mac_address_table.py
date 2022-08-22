@@ -10,7 +10,7 @@
 import re
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_mac_address_table import Script as BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
@@ -23,8 +23,10 @@ class Script(BaseScript):
     )
     types = {"learned": "D"}
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
+        if self.is_sprinter:
+            raise NotImplementedError
         v = self.cli("mapmac -f")
         for match in self.rx_line.finditer(v):
             if match.group("type") in ["mcast", "bcast"]:
