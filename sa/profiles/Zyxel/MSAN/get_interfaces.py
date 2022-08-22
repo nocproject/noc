@@ -93,7 +93,7 @@ class Script(BaseScript):
             r += [match.group("port")]
         return r
 
-    def execute(self):
+    def execute_cli(self):
         slots = self.profile.get_slots_n(self)
         interfaces = []
         iface_mac = []
@@ -155,6 +155,7 @@ class Script(BaseScript):
                     "type": "physical",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
+                    "hints": ["noc::topology::direction::nni", "technology::ethernet::1000base"],
                     "enabled_protocols": [],
                     "subinterfaces": [
                         {
@@ -174,7 +175,7 @@ class Script(BaseScript):
                 interfaces += [iface]
                 port_num += 1
             port_show = True
-            for i in range(1, slots):
+            for i in range(1, slots + 1):
                 if port_show:
                     try:
                         v = self.cli("port show %s" % i)
@@ -278,6 +279,10 @@ class Script(BaseScript):
                             tagged += [v["vid"]]
                     iface = {"name": ifname, "type": "physical", "subinterfaces": []}
                     if ifname.startswith("Enet"):
+                        iface["hints"] = [
+                            "noc::topology::direction::nni",
+                            "technology::ethernet::1000base",
+                        ]
                         iface["subinterfaces"] += [{"name": ifname, "enabled_afi": ["BRIDGE"]}]
                         if untagged:
                             iface["subinterfaces"][0]["untagged_vlan"] = untagged
@@ -324,6 +329,10 @@ class Script(BaseScript):
                                 continue
                             sub["tagged_vlans"] += [vid]
                         iface["subinterfaces"] += [sub]
+                        iface["hints"] = [
+                            "noc::topology::direction::nni",
+                            "technology::ethernet::1000base",
+                        ]
                         interfaces += [iface]
                     if ifname.startswith("adsl"):
                         for match in self.rx_sub_o2.finditer(adsl):
@@ -344,6 +353,7 @@ class Script(BaseScript):
                                     "vci": int(match.group("vci")),
                                 }
                             ]
+                        iface["hints"] = ["technology::dsl::adsl"]
                         interfaces += [iface]
                     if ifname.startswith("gshdsl"):
                         for match in self.rx_sub_o3.finditer(adsl):
@@ -370,6 +380,7 @@ class Script(BaseScript):
                             sub["vlan_ids"] = int(match.group("pvid"))
                         elif vid != 1:
                             sub["vlan_ids"] = int(vid)
+                        iface["hints"] = ["technology::dsl::shdsl"]
                         iface["subinterfaces"] = [sub]
                         interfaces += [iface]
                 c = self.cli("ip device list")
