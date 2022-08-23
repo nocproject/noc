@@ -165,6 +165,23 @@ class Config(BaseConfig):
         # 3:2,2 - first shard has 2 replicas an weight 3,
         #   second shard has 2 replicas and weight 1
         cluster_topology = StringParameter(default="1")
+        # Magic Number
+        enable_default_value = BooleanParameter(
+            default=False, help="Setting default value for Clickhouse metric Column"
+        )
+        # UInt
+        default_UInt8 = IntParameter(default=254)
+        default_UInt16 = IntParameter(default=65534)
+        default_UInt32 = IntParameter(default=4294967294)
+        default_UInt64 = IntParameter(default=18446744073709551614)
+        # Int
+        default_Int8 = IntParameter(default=-127)
+        default_Int16 = IntParameter(default=-32767)
+        default_Int32 = IntParameter(default=-2147483647)
+        default_Int64 = IntParameter(default=-9223372036854775807)
+        # Float
+        default_Float32 = FloatParameter(default=-2147483647.0)
+        default_Float64 = FloatParameter(default=-9223372036854775807.0)
 
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
