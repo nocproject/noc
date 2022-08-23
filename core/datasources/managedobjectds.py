@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python Modules
-from typing import Optional, Iterable, Dict, Any, List
+from typing import Optional, Iterable, Dict, Any, List, Tuple, Set
 
 # Third-party modules
 import pandas as pd
@@ -25,6 +25,13 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
+
+
+def get_capabilities() -> Iterable[Tuple[str, str]]:
+    for key, c_type, value in (
+        Capability.objects.filter().order_by("name").scalar("id", "type", "name")
+    ):
+        yield key, c_type, value
 
 
 class ManagedObjectDS(BaseDataSource):
@@ -101,6 +108,9 @@ class ManagedObjectDS(BaseDataSource):
             internal_name="id",
             type="bool",
         ),
+    ] + [
+        FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
+        for c_id, c_type, c_name in get_capabilities()
     ]
 
     ATTR_QUERY = """
@@ -110,27 +120,44 @@ class ManagedObjectDS(BaseDataSource):
     """
 
     @classmethod
-    def get_caps(cls, *args: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def get_caps(
+        cls, *args: List[Dict[str, Any]], requested_caps: Optional[Set[str]] = None
+    ) -> Dict[str, Any]:
         """
         Consolidate capabilities list and return resulting dict of
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
         :param args:
+        :param requested_caps:
         :return:
         """
         r: Dict[str, Any] = {}
-        for caps in args:
-            for ci in caps:
-                cn = Capability.get_by_id(ci["capability"])
-                if cn in r:
-                    continue
-                r[cn.name] = ci["value"]
+        for ci in args[0]:
+            cn = Capability.get_by_id(ci["capability"])
+            if requested_caps and cn.name not in requested_caps:
+                continue
+            r[cn.name] = ci["value"]
         return r
+
+    @staticmethod
+    def get_caps_default(caps: Capability):
+        """
+        Capability field default value
+        :param caps:
+        :return:
+        """
+        if caps.type == "str":
+            return ""
+        elif caps.type == "int":
+            return 0
+        elif caps.type == "float":
+            return 0.0
+        return False
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields, require_index=True, *args, **kwargs)]
+        data = [mm async for mm in cls.iter_query(fields, *args, **kwargs)]
         return pd.DataFrame.from_records(data, index="id")
 
     @classmethod
@@ -138,10 +165,18 @@ class ManagedObjectDS(BaseDataSource):
         cls, fields: Optional[Iterable[str]] = None, *args, **kwargs
     ) -> Iterable[Dict[str, Any]]:
         fields = set(fields or [])
-        q_fields = [f.internal_name or f.name for f in cls.fields if not fields or f.name in fields]
-        if kwargs.get("require_index") and "id" not in q_fields:
-            q_fields += ["id"]
+        q_fields, q_caps = [], {}
+        # Getting requested fields
+        for f in cls.fields:
+            if fields and f.name not in fields and f.name != "id":
+                continue
+            if "|" in f.name or f.name == "SNMP":
+                c = Capability.get_by_name(f.name)
+                q_caps[f.name] = cls.get_caps_default(c)
+            else:
+                q_fields.append(f.internal_name or f.name)
         mos = ManagedObject.objects.filter()
+        # Attributes
         extra_select, hostname_map, segment_map, avail_map = {}, {}, {}, {}
         if not fields or "attr_hwversion" in fields:
             extra_select["attr_hwversion"] = cls.ATTR_QUERY % "HW version"
@@ -153,6 +188,7 @@ class ManagedObjectDS(BaseDataSource):
             extra_select["attr_serialnumber"] = cls.ATTR_QUERY % "Serial Number"
         if extra_select:
             mos = mos.extra(select=extra_select)
+        # Lookup fields dictionaries
         if not fields or "hostname" in fields:
             hostname_map = {
                 val["object"]: val["hostname"]
@@ -174,9 +210,13 @@ class ManagedObjectDS(BaseDataSource):
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
                 .find({"object": {"$exists": 1}}, {"object": 1, "status": 1})
             }
+        # Main loop
         for mo in mos.values(*q_fields).iterator():
+            mo.update(q_caps)
+            iface_count = 0
             if "caps" in mo:
-                caps = cls.get_caps(mo.pop("caps"))
+                caps = cls.get_caps(mo.pop("caps"), requested_caps=set(q_caps))
+                mo.update(caps)
             else:
                 caps = {}
             if "is_managed" in mo:
@@ -185,7 +225,7 @@ class ManagedObjectDS(BaseDataSource):
                 links = mo.pop("links")
                 mo["link_count"] = len(links)
             if not fields or "physical_iface_count" in fields:
-                mo["physical_iface_count"] = caps.get("DB | Interfaces", 0)
+                mo["physical_iface_count"] = caps.get("DB | Interfaces", iface_count)
             if "profile" in mo:
                 mo["profile"] = Profile.get_by_id(mo["profile"]).name if mo["profile"] else None
             if "platform" in mo:
