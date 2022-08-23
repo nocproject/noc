@@ -36,9 +36,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_summary_split = re.compile(r"^Device ID.+?\n", re.MULTILINE | re.IGNORECASE)
-    rx_s_line = re.compile(
-        r"^(?:\S+\s*|\s{21})(?P<local_if>(?:Fa|Gi|Te|Eth|mgmt)\d+[\d/\.]*)\s+.+$"
-    )
+    rx_s_line = re.compile(r"^[\S+\s]*(?P<local_if>(?:Fa|Gi|Te|Eth|mgmt)\d+[\d/\.]*)\s+.+$")
     rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_remote_port = re.compile(r"^Port id:\s*(?P<remote_if>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
     rx_enabled_caps = re.compile(
