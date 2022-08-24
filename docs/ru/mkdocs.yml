@@ -1119,6 +1119,7 @@ nav:
   - Glossary: glossary.md
 theme:
   name: material
+  language: en
   features:
     - navigation.tabs
     - navigation.instant
@@ -1173,6 +1174,13 @@ plugins:
             filters:
               - "!^__"  # exlude all members starting with _
 extra:
+  alternate:
+      - name: Английский
+        link: /master/en/
+        lang: en
+      - name: Русский
+        link: /master/ru/
+        lang: ru
   "tab": ":material-arrow-right:"
   "tab2": ":material-arrow-right: :material-arrow-right:"
   "tab3": ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
