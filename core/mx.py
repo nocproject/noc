@@ -43,6 +43,11 @@ MESSAGE_TYPES = {
     "syslog",
     "event",
     "interface_status_change",
+    "config_changed",
+    "object_new",
+    "object_deleted",
+    "version_changed",
+    "config_policy_violation",
 }
 MESSAGE_HEADERS = {
     MX_SHARDING_KEY,

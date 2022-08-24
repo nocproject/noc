@@ -32,7 +32,14 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 
-NOTIFICATION_DEFAULT_TEMPLATE = {"interface_status_change": "interface.status.change"}
+NOTIFICATION_DEFAULT_TEMPLATE = {
+    "interface_status_change": "interface_status_change",
+    "config_changed": "managed_object_config_change",
+    "object_new": "managed_object_new",
+    "object_deleted": "managed_object_delete",
+    "version_changed": "managed_object_version_changed",
+    "config_policy_violation": "managed_object_config_policy_violation",
+}
 
 NOTIFICATION_METHOD_CHOICES = [(x, x) for x in sorted(NOTIFICATION_METHODS)]
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES

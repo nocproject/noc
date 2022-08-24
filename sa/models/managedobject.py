@@ -52,7 +52,8 @@ from noc.core.wf.diagnostic import (
     HTTP_DIAG,
 )
 from noc.core.checkers.base import CheckData, Check
-from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.core.checkers.base import CheckData
+from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -268,7 +269,7 @@ class ManagedObject(NOCModel):
     )
     description = CharField("Description", max_length=256, null=True, blank=True)
     # Access
-    auth_profile = CachedForeignKey(
+    auth_profile: "AuthProfile" = CachedForeignKey(
         AuthProfile, verbose_name="Auth Profile", null=True, blank=True, on_delete=CASCADE
     )
     scheme = IntegerField("Scheme", choices=SCHEME_CHOICES)
@@ -323,7 +324,7 @@ class ManagedObject(NOCModel):
         default="P",
     )
     # IPAM
-    fqdn = CharField("FQDN", max_length=256, null=True, blank=True)
+    fqdn: str = CharField("FQDN", max_length=256, null=True, blank=True)
     address_resolution_policy = CharField(
         "Address Resolution Policy",
         choices=[("P", "Profile"), ("D", "Disabled"), ("O", "Once"), ("E", "Enabled")],
@@ -374,9 +375,9 @@ class ManagedObject(NOCModel):
     #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
-    config_filter_handler = DocumentReferenceField(Handler, null=True, blank=True)
-    config_diff_filter_handler = DocumentReferenceField(Handler, null=True, blank=True)
-    config_validation_handler = DocumentReferenceField(Handler, null=True, blank=True)
+    config_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
+    config_diff_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
+    config_validation_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
     #
     max_scripts = IntegerField(
         "Max. Scripts", null=True, blank=True, help_text="Concurrent script session limits"
@@ -458,7 +459,7 @@ class ManagedObject(NOCModel):
     )
     periodic_discovery_telemetry_sample = IntegerField("Box Discovery Telemetry Sample", default=0)
     # TT system for this object
-    tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
+    tt_system: "TTSystem" = DocumentReferenceField(TTSystem, null=True, blank=True)
     # TT system queue for this object
     tt_queue = CharField(max_length=64, null=True, blank=True)
     # Object id in tt system
@@ -660,8 +661,8 @@ class ManagedObject(NOCModel):
     EV_ALARM_REOPENED = "alarm_reopened"  # Alarm has been reopen
     EV_ALARM_CLEARED = "alarm_cleared"  # Alarm cleared
     EV_ALARM_COMMENTED = "alarm_commented"  # Alarm commented
-    EV_NEW = "new"  # New object created
-    EV_DELETED = "deleted"  # Object deleted
+    EV_NEW = "object_new"  # New object created
+    EV_DELETED = "object_deleted"  # Object deleted
     EV_VERSION_CHANGED = "version_changed"  # Version changed
     EV_INTERFACE_CHANGED = "interface_changed"  # Interface configuration changed
     EV_SCRIPT_FAILED = "script_failed"  # Script error
@@ -900,7 +901,7 @@ class ManagedObject(NOCModel):
         diagnostics = []
         # Notify new object
         if not self.initial_data["id"]:
-            self.event(self.EV_NEW, {"object": self})
+            self.event(self.EV_NEW)
         # Remove discovery jobs from old pool
         if "pool" in self.changed_fields and self.initial_data["id"]:
             pool_name = Pool.get_by_id(self.initial_data["pool"].id).name
@@ -1018,13 +1019,14 @@ class ManagedObject(NOCModel):
 
         DiscoveryID.clean_for_object(self)
         self._reset_caches(self.id, credential=True)
+        self.event(self.EV_DELETED)
 
     def get_index(self):
         """
         Get FTS index
         """
-        card = "Managed object %s (%s)" % (self.name, self.address)
-        content = [self.name, self.address]
+        card = f"Managed object {self.name} ({self.address})"
+        content: List[str] = [self.name, self.address]
         if self.trap_source_ip:
             content += [self.trap_source_ip]
         platform = self.platform
@@ -1174,7 +1176,7 @@ class ManagedObject(NOCModel):
             delta=delta or self.pool.get_delta(),
         )
 
-    def event(self, event_id, data=None, delay=None, tag=None):
+    def event(self, event_id: str, data: Optional[Dict[str, Any]] = None, delay=None, tag=None):
         """
         Process object-related event
         :param event_id: ManagedObject.EV_*
@@ -1182,30 +1184,22 @@ class ManagedObject(NOCModel):
         :param delay: Notification delay in seconds
         :param tag: Notification tag
         """
-        # Find notification groups
-        groups = set()
-        for o in ObjectNotification.objects.filter(
-            **{event_id: True, "resource_group__in": self.effective_service_groups}
-        ):
-            groups.add(o.notification_group)
-        if not groups:
-            return  # Nothing to notify
-        # Render message
-        subject, body = ObjectNotification.render_message(event_id, data)
-        # Send notification
-        if (
-            not tag
-            and event_id
-            in (
-                self.EV_ALARM_CLEARED,
-                self.EV_ALARM_COMMENTED,
-                self.EV_ALARM_REOPENED,
-                self.EV_ALARM_RISEN,
-            )
-            and "alarm" in data
-        ):
-            tag = "alarm:%s" % data["alarm"].id
-        NotificationGroup.group_notify(groups, subject=subject, body=body, delay=delay, tag=tag)
+        logger.debug("[%s|%s] Sending object event message: %s", self.name, event_id, data)
+        data = data or {}
+        data.update({"managed_object": self.get_message_context()})
+        send_message(
+            data=data,
+            message_type=event_id,
+            headers={
+                MX_LABELS: MX_H_VALUE_SPLITTER.join(self.effective_labels).encode(
+                    encoding=DEFAULT_ENCODING
+                ),
+                MX_ADMINISTRATIVE_DOMAIN_ID: str(self.administrative_domain.id).encode(
+                    encoding=DEFAULT_ENCODING
+                ),
+            },
+        )
+
         # Schedule FTS reindex
         if event_id in (self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):
             TextIndex.update_index(ManagedObject, self)
@@ -1248,9 +1242,7 @@ class ManagedObject(NOCModel):
                 warnings = handler(self, data)
                 if warnings:
                     # There are some warnings. Notify responsible persons
-                    self.event(
-                        self.EV_CONFIG_POLICY_VIOLATION, {"object": self, "warnings": warnings}
-                    )
+                    self.event(self.EV_CONFIG_POLICY_VIOLATION, {"warnings": warnings})
             else:
                 logger.warning("Handler is not allowed for config validation")
         # Calculate diff
@@ -1306,9 +1298,7 @@ class ManagedObject(NOCModel):
         :param diff:
         :return:
         """
-        self.event(
-            self.EV_CONFIG_CHANGED, {"object": self, "is_new": is_new, "config": data, "diff": diff}
-        )
+        self.event(self.EV_CONFIG_CHANGED, {"is_new": is_new, "config": data, "diff": diff})
 
     def write_config(self, data):
         """
@@ -1630,7 +1620,7 @@ class ManagedObject(NOCModel):
     def get_linecard(self, ifname):
         """
         Returns linecard number related to interface
-        :param name:
+        :param ifname:
         :return:
         """
         return self.get_profile().get_linecard(ifname)
@@ -1925,12 +1915,11 @@ class ManagedObject(NOCModel):
             return None
         if self.fqdn.endswith(".") or not self.object_profile.fqdn_suffix:
             return self.fqdn[:-1]
-        return "%s.%s" % (self.fqdn, self.object_profile.fqdn_suffix)
+        return f"{self.fqdn}.{self.object_profile.fqdn_suffix}"
 
     def resolve_fqdn(self):
         """
         Resolve FQDN to address
-        :param fqdn:
         :return:
         """
         fqdn = self.get_full_fqdn()
@@ -2306,6 +2295,7 @@ class ManagedObject(NOCModel):
                 "name": self.administrative_domain.name,
             },
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
+            "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
         }
 
     def set_diagnostic_state(
@@ -2990,7 +2980,7 @@ class ManagedObjectAttribute(NOCModel):
         return "%s: %s" % (self.managed_object, self.key)
 
     def on_save(self):
-        cache.delete("cred-%s" % self.managed_object.id, version=CREDENTIAL_CACHE_VERSION)
+        cache.delete(f"cred-{self.managed_object.id}", version=CREDENTIAL_CACHE_VERSION)
 
 
 # object.scripts. ...
