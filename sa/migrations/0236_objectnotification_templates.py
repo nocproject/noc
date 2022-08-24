@@ -95,8 +95,8 @@ class Migration(BaseMigration):
             VERSION_CHANGED,
         ]:
             self.db.execute(
-                "INSERT INTO main_template(name, description, subject, body) VALUES(%s, %s, %s, %s)",
-                [name, description, subject, body],
+                "INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)",
+                [name, subject, body],
             )
             self.db.execute(
                 """
