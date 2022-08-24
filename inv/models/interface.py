@@ -101,7 +101,9 @@ class Interface(Document):
     enabled_protocols = ListField(
         StringField(choices=[(x, x) for x in INTERFACE_PROTOCOLS]), default=[]
     )
-    profile: "InterfaceProfile" = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
+    profile: "InterfaceProfile" = PlainReferenceField(
+        InterfaceProfile, default=InterfaceProfile.get_default_profile
+    )
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
     #

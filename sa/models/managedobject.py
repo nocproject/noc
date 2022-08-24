@@ -58,7 +58,6 @@ from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.vc.models.l2domain import L2Domain
 from noc.main.models.label import Label
@@ -3076,7 +3075,6 @@ class MatchersProxy(object):
 # Avoid circular references
 from .useraccess import UserAccess
 from .groupaccess import GroupAccess
-from .objectnotification import ObjectNotification
 from .action import Action
 from noc.core.pm.utils import get_objects_metrics
 from noc.vc.models.vcdomain import VCDomain  # noqa
