@@ -22,6 +22,7 @@ nav:
           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
           - Работа с топологией: user/background/topology/index.md
           - Работа с авариями: user/background/fault-management/index.md
+          - Учет BGP сессий: user/background/peering-management/index.md
       - Reference:
           - Overview: user/reference/index.md
           - Concepts:
