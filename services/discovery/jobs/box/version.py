@@ -73,7 +73,7 @@ class VersionCheck(DiscoveryCheck):
                 self.logger.info("Set version: %s", version.version)
             self.object.event(
                 self.object.EV_VERSION_CHANGED,
-                {"new": str(version), "old": str(self.object.version or "")},
+                {"current": str(version), "prev": str(self.object.version or "")},
             )
             self.object.version = version
             changed = True

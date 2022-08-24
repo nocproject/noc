@@ -76,9 +76,9 @@ VERSION_CHANGED = (
 Context variables are
  * managed_object -- managed object instance
  * is_new -- True, if new version, False - otherwise
- * new -- New version
- * old -- Old version""",
-    "{% if is_new %}New version for {{ managed_object.name }} ({{ managed_object.address }}) {% else %}{{ managed_object.name }} ({{ managed_object.address }}) version has been changed: {{old}} -> {{new}}{% endif %}",
+ * current -- New version
+ * prev -- Old version""",
+    "{% if is_new %}New version for {{ managed_object.name }} ({{ managed_object.address }}) {% else %}{{ managed_object.name }} ({{ managed_object.address }}) version has been changed: {{prev}} -> {{current}}{% endif %}",
     "",
 )
 
