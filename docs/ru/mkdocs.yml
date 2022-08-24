@@ -609,6 +609,7 @@ nav:
           - Deploy NOC: admin/howto/deploy-noc/deploy-noc.md
           - Monitoring NOC: admin/howto/monitoring/monitoring-noc.md
           - Respond to alerts: admin/howto/respond-to-alerts/respond-to-alerts.md
+          - Handbook alerts noc: admin/howto/respond-to-alerts/handbook-alerts-noc/ConsulServicesCountDecrease.md
           - Retention DB: admin/howto/retention-db/retention-db.md
       - Background:
           - Overview: admin/background/index.md
