@@ -82,8 +82,6 @@ class DataStreamClient(object):
         base_qs = []
         if filters:
             base_qs += [f"filter={x}" for x in filters]
-        if block:
-            base_qs += ["block=1"]
         if limit:
             base_qs += [f"limit={limit}"]
         if filter_policy:
@@ -114,13 +112,13 @@ class DataStreamClient(object):
                 continue  # Retry on timeout
             elif code != 200:
                 logger.info("Invalid response code: %s", code)
-                raise NOCError(code=ERR_DS_BAD_CODE, msg="Invalid response code %s" % code)
+                raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {code}")
             # Parse response
             try:
                 data = orjson.loads(data)
             except ValueError as e:
                 logger.info("Cannot parse response: %s", e)
-                raise NOCError(code=ERR_DS_PARSE_ERROR, msg="Cannot parse response: %s" % e)
+                raise NOCError(code=ERR_DS_PARSE_ERROR, msg=f"Cannot parse response: {e}")
             # Process result
             for item in data:
                 if "$deleted" in item:
@@ -137,6 +135,10 @@ class DataStreamClient(object):
             if "X-NOC-DataStream-Last-Change" in headers:
                 change_id = headers["X-NOC-DataStream-Last-Change"]
                 continue
+            if block and self._is_ready:
+                # Do not set block=1 before is_ready, otherwise
+                # without data in datastream process will be blocked by _is_ready signal
+                base_qs += ["block=1"]
             if not block:
                 break  # No data, Stop if non-blocking mode
 
