@@ -92,6 +92,7 @@ class Command(BaseCommand):
 
         now = datetime.datetime.now()
         now = now - datetime.timedelta(hours=2)
+        q_args = []
         if source.startswith("iface://"):
             source, iface = source[8:].split("::")
             source = self.get_source(source, iface)
@@ -101,8 +102,9 @@ class Command(BaseCommand):
                 source.managed_object.bi_id,
                 now.date().isoformat(),
                 now.replace(microsecond=0).isoformat(sep=" "),
-                f"AND interface='{source.name}'",
+                f"AND interface=%s",
             )
+            q_args += [source]
         elif source.startswith("cpu://"):
             source = source[6:]
             source = self.get_source(source)
@@ -117,7 +119,7 @@ class Command(BaseCommand):
             self.die(f"Unknown source {source}")
             return
         cursor = connection()
-        r = cursor.execute(query, return_raw=True)
+        r = cursor.execute(query, return_raw=True, args=q_args)
         for row in r.splitlines():
             row = orjson.loads(row)
             for k in row:
