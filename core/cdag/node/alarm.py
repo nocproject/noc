@@ -32,7 +32,7 @@ class VarItem(BaseModel):
 class AlarmNodeConfig(BaseModel):
     alarm_class: str
     reference: Optional[str] = None
-    suppress_publish = False  # For service test used
+    dry_run = False  # For service test used
     pool: str = ""
     partition: int = 0
     managed_object: Optional[str]  # Not user-settable
@@ -124,7 +124,7 @@ class AlarmNode(BaseCDAGNode):
         )
 
     def publish_message(self, msg):
-        if self.config.suppress_publish or not self.config.pool:
+        if self.config.dry_run or not self.config.pool:
             return
         svc = get_service()
         svc.publish(
