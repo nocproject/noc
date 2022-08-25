@@ -233,7 +233,7 @@ build:Docs:ru:
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
-    - mkdocs build --config-file=docs/ru/mkdocs.yml
+    - mkdocs build --strict --config-file=docs/ru/mkdocs.yml
   tags:
     - docker
   artifacts:
@@ -252,7 +252,7 @@ build:Docs:en:
   image: registry.getnoc.com/infrastructure/mkdocs:master
   script:
     - set -x
-    - mkdocs build --config-file=docs/en/mkdocs.yml
+    - mkdocs build --strict --config-file=docs/en/mkdocs.yml
   tags:
     - docker
   artifacts:

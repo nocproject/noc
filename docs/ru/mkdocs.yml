@@ -1137,7 +1137,7 @@ extra_css:
   - _static/extra.css
 use_directory_urls: true
 site_dir: ../../build/docs/ru
-strict: true
+strict: false
 markdown_extensions:
   - toc:
       permalink: true
