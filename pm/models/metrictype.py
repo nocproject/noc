@@ -112,6 +112,9 @@ class MetricType(Document):
     )
     # Scale
     scale: "Scale" = PlainReferenceField(Scale, default=Scale.get_default_scale)
+    # Measure name, like 'kbit/s'
+    # Compatible to Grafana
+    measure = StringField()
     # Compose expression
     compose_inputs = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
     compose_expression = StringField()
