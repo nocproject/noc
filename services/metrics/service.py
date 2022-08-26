@@ -165,6 +165,7 @@ class ItemConfig(object):
     key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
     metric_labels: Optional[Tuple[str, ...]]
     metrics: Tuple[str, ...]  # Metric Field list setting on source
+    composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
 
 
 @dataclass(frozen=True)
@@ -208,11 +209,12 @@ class SourceInfo(object):
     Source Info for applied metric Card
     """
 
-    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels")
+    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels", "composed_metrics")
     bi_id: int
     fm_pool: str
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
+    composed_metrics: Optional[List[str]]
 
 
 @dataclass
@@ -610,11 +612,16 @@ class MetricsService(FastAPIService):
             source = self.sources_config.get(key_ctx["managed_object"])
         if not source:
             return
+        composed_metrics = []
+        for item in source.items:
+            if item.composed_metrics:
+                composed_metrics += item.composed_metrics
         return SourceInfo(
             bi_id=source.bi_id,
             fm_pool=source.fm_pool,
             labels=list(source.labels),
             metric_labels=[],
+            composed_metrics=composed_metrics,
         )
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
@@ -693,22 +700,17 @@ class MetricsService(FastAPIService):
             #
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
-        # Apply Complex probes
-        if k[0] != "interface":
-            return
-        cp_metric_filed = "bandwidth_in_perc"
-        if "metric_test" not in s_labels or cp_metric_filed in card.compose_probes:
-            return
         # Add complex probe
-        cp = self.add_probe(cp_metric_filed, k, is_composed=True)
-        # Add probe
-        for m_field in self.compose_inputs[cp_metric_filed]:
-            if m_field in card.probes:
-                card.probes[m_field].subscribe(cp, m_field, dynamic=True)
-            else:
-                p = self.add_probe(m_field, k)
-                p.subscribe(cp, m_field, dynamic=True)
-        self.logger.debug("Add compose node: %s", cp)
+        for cp_metric_filed in source.composed_metrics:
+            cp = self.add_probe(cp_metric_filed, k, is_composed=True)
+            # Add probe
+            for m_field in self.compose_inputs[cp_metric_filed]:
+                if m_field in card.probes:
+                    card.probes[m_field].subscribe(cp, m_field, dynamic=True)
+                else:
+                    p = self.add_probe(m_field, k)
+                    p.subscribe(cp, m_field, dynamic=True)
+            self.logger.debug("Add compose node: %s", cp)
 
     def activate_card(
         self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
@@ -753,7 +755,9 @@ class MetricsService(FastAPIService):
             bi_id=data["bi_id"],
             fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
             labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
-            metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
+            metrics=tuple(
+                sys.intern(m["name"]) for m in data["metrics"] if not data.get("is_composed")
+            ),
             items=[],
         )
         for item in data.get("items", []):
@@ -761,7 +765,14 @@ class MetricsService(FastAPIService):
                 ItemConfig(
                     key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
                     metric_labels=tuple(),
-                    metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
+                    metrics=tuple(
+                        sys.intern(m["name"])
+                        for m in data["metrics"]
+                        if not data.get("is_composed")
+                    ),
+                    composed_metrics=tuple(
+                        sys.intern(m["name"]) for m in data["metrics"] if data.get("is_composed")
+                    ),
                 )
             )
         if sc_id not in self.sources_config:

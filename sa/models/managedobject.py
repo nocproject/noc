@@ -2829,7 +2829,11 @@ class ManagedObject(NOCModel):
         items = []
         for iface in Interface.objects.filter(managed_object=mo.id):
             metrics = [
-                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
+                {
+                    "name": mc.metric_type.field_name,
+                    "is_stored": mc.is_stored,
+                    "is_composed": bool(mc.metric_type.compose_expression),
+                }
                 for mc in iface.profile.metrics
             ]
             if not metrics:
@@ -2849,7 +2853,11 @@ class ManagedObject(NOCModel):
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": labels,
             "metrics": [
-                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
+                {
+                    "name": mc.metric_type.field_name,
+                    "is_stored": mc.is_stored,
+                    "is_composed": bool(mc.metric_type.compose_expression),
+                }
                 for mc in metrics.values()
             ],
             "items": items,

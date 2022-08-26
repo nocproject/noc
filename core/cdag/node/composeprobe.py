@@ -14,7 +14,7 @@ import time
 from pydantic import BaseModel
 
 # NOC modules
-from .probe import ProbeNode, ValueType
+from .probe import ProbeNode, ValueType, Category
 from noc.core.expr import get_fn
 
 
@@ -32,6 +32,7 @@ class ComposeProbeNode(ProbeNode):
 
     name = "composeprobe"
     config_cls = ComposeProbeNodeConfig
+    categories = [Category.UTIL]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
