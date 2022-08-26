@@ -9,13 +9,12 @@
 # Python modules
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet
+from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, FrozenSet, Literal
 import sys
 import asyncio
 import codecs
 import hashlib
 import random
-import re
 
 # Third-party modules
 import orjson
@@ -38,9 +37,8 @@ from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.config import config as global_config
 
+# MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
-
-rx_var = re.compile(r"\{\s*(\S+)\s*\}")
 
 
 def unscope(x):
@@ -154,6 +152,67 @@ class Rule(object):
         return update_configs
 
 
+@dataclass(frozen=True)
+class ItemConfig(object):
+    """
+    Metric Source Item Config
+    Match by key_labels
+    """
+
+    __slots__ = ("key_labels", "metric_labels", "metrics")
+    key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
+    metric_labels: Optional[Tuple[str, ...]]
+    metrics: Tuple[str, ...]  # Metric Field list setting on source
+
+
+@dataclass(frozen=True)
+class SourceConfig(object):
+    """
+    Configuration for Metric Source and Items.
+    Contains configured metrics, labels and alarm node config
+    Supported Source:
+    * managed_object
+    * agent
+    * sla_probe
+    * sensor
+    """
+
+    __slots__ = ("type", "bi_id", "fm_pool", "labels", "metrics", "items")
+    type: Literal["managed_object", "sla_probe", "sensor", "agent"]
+    bi_id: int
+    fm_pool: str
+    labels: Optional[Tuple[str]]
+    metrics: Tuple[str]
+    items: List[ItemConfig]
+
+    def is_differ(self, sc: "SourceConfig"):
+        """
+        Compare Source Config
+        * condition - Diff labels
+        * items - Diff items
+        * metrics (additional Compose Metrics)
+        :param sc:
+        :return:
+        """
+        r = []
+        if set(self.labels).difference(sc.labels):
+            r += ["condition"]
+        return r
+
+
+@dataclass(frozen=True)
+class SourceInfo(object):
+    """
+    Source Info for applied metric Card
+    """
+
+    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels")
+    bi_id: int
+    fm_pool: str
+    labels: Optional[List[str]]
+    metric_labels: Optional[List[str]]
+
+
 @dataclass
 class ManagedObjectInfo(object):
     __slots__ = ("id", "bi_id", "fm_pool", "labels", "metric_labels")
@@ -177,8 +236,7 @@ class MetricsService(FastAPIService):
         self.graph: Optional[CDAG] = None
         self.change_log: Optional[ChangeLog] = None
         self.start_state: Dict[str, Dict[str, Any]] = {}
-        self.mo_map: Dict[int, ManagedObjectInfo] = {}
-        self.mo_id_map: Dict[int, ManagedObjectInfo] = {}
+        self.sources_config: Dict[int, SourceConfig] = {}
         self.mappings_ready_event = asyncio.Event()
         self.rules_ready_event = asyncio.Event()
         self.dispose_partitions: Dict[str, int] = {}
@@ -238,7 +296,7 @@ class MetricsService(FastAPIService):
         Subscribe and track datastream changes
         """
         # Register RPC aliases
-        client = MetricsDataStreamClient("cfgmomapping", service=self)
+        client = MetricsDataStreamClient("cfgmetricsources", service=self)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
@@ -515,6 +573,30 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", "probe")] += 1
         return p
 
+    def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
+        """
+        Get source Info by Metric Key
+        :param k:
+        :return:
+        """
+        key_ctx, source = dict(k[1]), None
+        if "sensor" in key_ctx:
+            source = self.sources_config.get(key_ctx["sensor"])
+        elif "sla_probe" in key_ctx:
+            source = self.sources_config.get(key_ctx["sla_probe"])
+        if "agent" in key_ctx:
+            source = self.sources_config.get(key_ctx["agent"])
+        elif "managed_object" in key_ctx:
+            source = self.sources_config.get(key_ctx["managed_object"])
+        if not source:
+            return
+        return SourceInfo(
+            bi_id=source.bi_id,
+            fm_pool=source.fm_pool,
+            labels=list(source.labels),
+            metric_labels=[],
+        )
+
     def apply_rules(self, k: MetricKey, labels: List[str]):
         """
         Apply rule Graph
@@ -524,16 +606,11 @@ class MetricsService(FastAPIService):
         """
         card = self.cards[k]
         # Getting Context
-        key_ctx = dict(k[1])
-        if "managed_object" in key_ctx:
-            mo_info = self.mo_map.get(key_ctx["managed_object"])
-        else:
-            mo_info = None
-        if mo_info:
-            mo_labels = mo_info.labels
-        else:
-            mo_labels = None
-        s_labels = set(self.merge_labels(mo_labels, labels))
+        source = self.get_source_info(k)
+        if not source:
+            self.logger.info("[%s] Unknown metric source. Skipping apply rules", k)
+            return
+        s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
         for rule_id, rule in self.rules.items():
             if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
@@ -554,9 +631,19 @@ class MetricsService(FastAPIService):
                     probe = self.add_probe(node.node_id, k)
                     nodes[node.node_id] = probe
                     continue
+                config = rule.configs.get(node.node_id)
+                if node.node_id == "alarm":
+                    config = config.copy()
+                    config.update(
+                        {
+                            "managed_object": f"bi_id:{source.bi_id}",
+                            "pool": source.fm_pool,
+                            "labels": k[2],
+                        }
+                    )
                 # @todo add rule-id to hash for multiple rules
                 nodes[node.node_id] = self.clone_and_add_node(
-                    node, prefix=self.get_key_hash(k), config=rule.configs.get(node.node_id)
+                    node, prefix=self.get_key_hash(k), config=config
                 )
             if "alarm" not in nodes and "probe" not in nodes:
                 self.logger.warning(
@@ -581,7 +668,8 @@ class MetricsService(FastAPIService):
                     # Filter Probe nodes
                     node.freeze()
             # Add alarms nodes for clear alarm on delete
-            card.alarms += [nodes["alarm"]]
+            if "alarm" in nodes:
+                card.alarms += [nodes["alarm"]]
             #
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
@@ -617,35 +705,94 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
 
-    def update_mapping(
-        self, mo_id: int, bi_id: int, fm_pool: str, labels: List[str], metric_labels: List[str]
-    ) -> None:
+    def update_source_config(self, data: Dict[str, Any]) -> None:
         """
-        Update managed object mapping.
+        Update source config.
         """
-        self.mo_map[bi_id] = ManagedObjectInfo(
-            id=mo_id,
-            bi_id=bi_id,
-            fm_pool=fm_pool,
-            labels=[sys.intern(x) for x in labels],
-            metric_labels=[sys.intern(x) for x in metric_labels],
+        sc_id = int(data["id"])
+        sc = SourceConfig(
+            type=data["type"],
+            bi_id=data["bi_id"],
+            fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
+            labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
+            metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
+            items=[],
         )
-        self.mo_id_map[mo_id] = self.mo_map[bi_id]
+        for item in data.get("items", []):
+            sc.items.append(
+                ItemConfig(
+                    key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
+                    metric_labels=tuple(),
+                    metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
+                )
+            )
+        if sc_id not in self.sources_config:
+            self.sources_config[sc_id] = sc
+            return
+        diff = self.sources_config[sc_id].is_differ(sc)
+        if "condition" in diff:
+            self.invalidate_card_config(sc)
 
-    def delete_mapping(self, mo_id: int) -> None:
+    def delete_source_config(self, c_id: int) -> None:
         """
-        Delete managed object mapping.
+        Delete source config
         """
-        if mo_id in self.mo_id_map:
-            del self.mo_map[self.mo_id_map[mo_id].bi_id]
-            del self.mo_id_map[mo_id]
+        if int(c_id) in self.sources_config:
+            self.invalidate_card_config(self.sources_config[int(c_id)], delete=True)
+            del self.sources_config[int(c_id)]
 
     async def on_mappings_ready(self) -> None:
         """
         Called when all mappings are ready.
         """
         self.mappings_ready_event.set()
-        self.logger.info("%d ManagedObject mappings has been loaded", len(self.mo_map))
+        self.logger.info("%d SourceConfigs has been loaded", len(self.sources_config))
+
+    def iter_cards(self, sc: SourceConfig) -> Iterable[Card]:
+        """
+        Iter cards matched source config
+        :param sc: Source Config for filter
+        :return:
+        """
+        # Generate context
+        key_ctx = (sc.type, sc.bi_id)
+        for mk in self.cards:
+            # Filter card by ctx
+            if key_ctx not in mk[1]:
+                continue
+            # Filter card by key labels
+            for item in sc.items:
+                if set(item.key_labels) - set(mk[2]):
+                    continue
+                yield self.cards[mk]
+            self.logger.info("[%s] Found Card", mk)
+            yield self.cards[mk]
+
+    def invalidate_card_config(self, sc: SourceConfig, delete: bool = False):
+        """
+        Invalidate Cards on config
+        :param sc:
+        :param delete: Remove Card
+        :return:
+        """
+        num = 0
+        for card in self.iter_cards(sc):
+            # Invalidate all card otherwise check rules condition need labels from metrics
+            if card.affected_rules:
+                card.invalidate_card()
+                card.affected_rules = set()
+            else:
+                card.is_dirty = True
+            # Check alarm
+            for a in card.alarms:
+                if delete:
+                    a.reset_state()
+                    continue
+                if a.config.pool != sc.fm_pool:
+                    # Hack for ConfigProxy use
+                    a.config._ConfigProxy__override["pool"] = sc.fm_pool
+            num = 1
+        self.logger.info("Invalidate %s cards", num)
 
     def invalidate_card_rules(self, rules: Iterable[str]):
         """

@@ -10,7 +10,7 @@ from threading import Lock
 import operator
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -50,7 +50,7 @@ class MetricConfig(object):
 
 
 class SLAProfileMetrics(EmbeddedDocument):
-    metric_type = ReferenceField(MetricType, required=True)
+    metric_type: MetricType = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
     enable_box = BooleanField(default=False)
@@ -59,7 +59,7 @@ class SLAProfileMetrics(EmbeddedDocument):
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Threshold processing
-    threshold_profile = ReferenceField(ThresholdProfile)
+    threshold_profile: ThresholdProfile = ReferenceField(ThresholdProfile)
 
 
 @bi_sync
@@ -84,7 +84,7 @@ class SLAProfile(Document):
     # Object id in BI
     bi_id = LongField(unique=True)
     # Interface profile metrics
-    metrics = ListField(EmbeddedDocumentField(SLAProfileMetrics))
+    metrics: List[SLAProfileMetrics] = ListField(EmbeddedDocumentField(SLAProfileMetrics))
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())

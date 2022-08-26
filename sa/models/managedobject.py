@@ -785,10 +785,10 @@ class ManagedObject(NOCModel):
             }
         ):
             yield "cfgtrap", self.id
-        if config.datastream.enable_cfgmomapping and changed_fields.intersection(
+        if config.datastream.enable_cfgmetricsources and changed_fields.intersection(
             {"id", "bi_id", "is_managed", "pool", "fm_pool", "labels"}
         ):
-            yield "cfgmomapping", self.id
+            yield "cfgmetricsources", f"sa.ManagedObject::{self.bi_id}"
 
     def set_scripts_caller(self, caller):
         """
@@ -2809,6 +2809,51 @@ class ManagedObject(NOCModel):
         :return:
         """
         self.initial_data = _get_field_snapshot(self.__class__, self)
+
+    @classmethod
+    def get_metric_config(cls, mo: "ManagedObject"):
+        """
+        Return MetricConfig for Metrics service
+        :param sla_probe:
+        :return:
+        """
+        from noc.inv.models.interface import Interface
+
+        if not mo.is_managed:
+            return {}
+        metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
+        labels = []
+        for ll in mo.effective_labels:
+            l_c = Label.get_by_name(ll)
+            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
+        items = []
+        for iface in Interface.objects.filter(managed_object=mo.id):
+            metrics = [
+                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
+                for mc in iface.profile.metrics
+            ]
+            if not metrics:
+                continue
+            items.append(
+                {
+                    "key_labels": [f"noc::interface::{iface.name}"],
+                    "labels": [
+                        {"label": ll, "expose_metric": False} for ll in iface.effective_labels
+                    ],
+                    "metrics": metrics,
+                }
+            )
+        return {
+            "type": "managed_object",
+            "bi_id": mo.bi_id,
+            "fm_pool": mo.get_effective_fm_pool().name,
+            "labels": labels,
+            "metrics": [
+                {"name": mc.metric_type.field_name, "is_stored": mc.is_stored}
+                for mc in metrics.values()
+            ],
+            "items": items,
+        }
 
 
 @on_save
