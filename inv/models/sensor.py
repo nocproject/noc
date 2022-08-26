@@ -28,6 +28,7 @@ import cachetools
 # NOC modules
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
@@ -37,6 +38,7 @@ from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.agent import Agent
 from noc.wf.models.state import State
 from .sensorprofile import SensorProfile
+from noc.config import config
 
 SOURCES = {"objectmodel", "asset", "etl", "manual"}
 
@@ -51,6 +53,7 @@ for dt in ["i32", "u32", "f32"]:
 
 @Label.dynamic_classification(profile_model_id="inv.SensorProfile")
 @Label.model
+@change
 @bi_sync
 @workflow
 class Sensor(Document):
@@ -113,13 +116,17 @@ class Sensor(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Sensor.objects.filter(id=id).first()
+    def get_by_id(cls, s_id):
+        return Sensor.objects.filter(id=s_id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
-        return Sensor.objects.filter(bi_id=id).first()
+    def get_by_bi_id(cls, s_id):
+        return Sensor.objects.filter(bi_id=s_id).first()
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmetricsources:
+            yield "cfgmetricsources", f"inv.Sensor::{self.bi_id}"
 
     def clean(self):
         if self.extra_labels:
@@ -142,7 +149,7 @@ class Sensor(Document):
         Seen sensor
         """
         if source and source in SOURCES:
-            self.sources = list(set(self.sources or []).union(set([source])))
+            self.sources = list(set(self.sources or []).union({source}))
             self._get_collection().update_one({"_id": self.id}, {"$addToSet": {"sources": source}})
         self.fire_event("seen")
         self.touch()  # Worflow expired
@@ -158,7 +165,7 @@ class Sensor(Document):
             self.local_id,
         )
         if source and source in SOURCES:
-            self.sources = list(set(self.sources or []) - set([source]))
+            self.sources = list(set(self.sources or []) - {source})
             self._get_collection().update_one({"_id": self.id}, {"$pull": {"sources": source}})
         elif not source:
             # For empty source, clean sources
@@ -193,6 +200,31 @@ class Sensor(Document):
                     yield list(mo.effective_labels)
         if instance.managed_object:
             yield list(instance.managed_object.effective_labels)
+
+    @classmethod
+    def get_metric_config(cls, sensor: "Sensor"):
+        """
+        Return MetricConfig for Metrics service
+        :param sensor:
+        :return:
+        """
+        labels = []
+        for ll in sensor.effective_labels:
+            l_c = Label.get_by_name(ll)
+            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
+        return {
+            "type": "sla_probe",
+            "bi_id": sensor.bi_id,
+            "fm_pool": sensor.managed_object.get_effective_fm_pool().name
+            if sensor.managed_object
+            else None,
+            "labels": labels,
+            "metrics": [
+                {"name": "status", "is_stored": True},
+                {"name": "value", "is_stored": True},
+            ],
+            "items": [],
+        }
 
 
 def sync_object(obj: "Object") -> None:

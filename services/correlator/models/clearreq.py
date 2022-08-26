@@ -16,3 +16,4 @@ class ClearRequest(BaseModel):
     op: Literal["clear"] = Field(None, alias="$op")
     reference: str
     timestamp: Optional[str]
+    message: Optional[str] = None

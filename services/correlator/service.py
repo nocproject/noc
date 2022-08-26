@@ -906,12 +906,12 @@ class CorrelatorService(FastAPIService):
             return
         # Clear alarm
         self.logger.info(
-            "[%s|%s] Clear alarm %s(%s) by id: %s",
+            "[%s|%s] Clear alarm %s(%s): %s",
             alarm.managed_object.name,
             alarm.managed_object.address,
             alarm.alarm_class.name,
             alarm.id,
-            message,
+            message or "by id",
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
@@ -920,7 +920,10 @@ class CorrelatorService(FastAPIService):
         await self.clear_groups(groups, ts=ts)
 
     async def clear_by_reference(
-        self, reference: Union[str, bytes], ts: Optional[datetime.datetime] = None
+        self,
+        reference: Union[str, bytes],
+        ts: Optional[datetime.datetime] = None,
+        message: Optional[str] = None,
     ) -> None:
         """
         Clear alarm by reference
@@ -938,16 +941,16 @@ class CorrelatorService(FastAPIService):
             return
         # Clear alarm
         self.logger.info(
-            "[%s|%s] Clear alarm %s(%s) by reference %s",
+            "[%s|%s] Clear alarm %s(%s): %s",
             alarm.managed_object.name,
             alarm.managed_object.address,
             alarm.alarm_class.name,
             alarm.id,
-            reference,
+            message or f"by reference {reference}",
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm("Cleared by reference")
+        alarm.clear_alarm(message or "Cleared by reference")
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 
