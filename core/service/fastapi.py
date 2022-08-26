@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # FastAPIService
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from starlette.responses import Response, JSONResponse
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.wsgi import WSGIMiddleware
 
 # NOC modules
 from noc.core.version import version
@@ -38,6 +39,9 @@ class FastAPIService(BaseService):
     def __init__(self):
         super().__init__()
         self.app = None
+        # WSGI application of any third-party framework that will be attached to the main
+        # FastAPI application. For attaching Django applications of web-service in particular
+        self.wsgi_app = None
 
     async def error_handler(self, request: "Request", exc) -> Response:
         """
@@ -121,6 +125,9 @@ class FastAPIService(BaseService):
                 kls = extra_loader.get_class(path)
                 if kls:
                     self.app.include_router(kls)
+        # Attaching third-party WSGI application
+        if self.wsgi_app:
+            self.app.mount("/", WSGIMiddleware(self.wsgi_app))
         # Get address and port to bind
         addr, port = self.get_service_address()
         # Initialize uvicorn server
