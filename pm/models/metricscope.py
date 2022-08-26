@@ -171,12 +171,24 @@ class MetricScope(Document):
     def get_json_path(self) -> str:
         return f"{self.name}.json"
 
+    def iter_metrics_fields(self):
+        """
+        Yield metric field
+        :return:
+        """
+        from .metrictype import MetricType
+
+        for t in MetricType.objects.filter(scope=self.id).order_by("id"):
+            default_value = None
+            if config.clickhouse.enable_default_value:
+                default_value = getattr(config.clickhouse, f"default_{t.field_type}", None)
+            yield t.field_name, t.field_type, "", default_value or ""
+
     def iter_fields(self):
         """
         Yield (field_name, field_type, materialized_expr, default_expr) tuples
         :return:
         """
-        from .metrictype import MetricType
 
         yield "date", "Date", "", ""
         yield "ts", "DateTime", "", ""
@@ -189,8 +201,7 @@ class MetricScope(Document):
         for label in self.labels:
             if label.store_column:
                 yield label.store_column, "LowCardinality(String)", f"MATERIALIZED splitByString('::', arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels))[-1]", ""
-        for t in MetricType.objects.filter(scope=self.id).order_by("id"):
-            yield t.field_name, t.field_type, "", ""
+        yield from self.iter_metrics_fields()
 
     def get_create_sql(self):
         """
@@ -209,7 +220,10 @@ class MetricScope(Document):
                 pk += [f"arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels)"]
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self._get_raw_db_table(),
-            ",\n".join(f"  {n} {t} {me} {de}" for n, t, me, de in self.iter_fields()),
+            ",\n".join(
+                f"  {n} {t} {me} {'DEFAULT %s' % de if de else ''}"
+                for n, t, me, de in self.iter_fields()
+            ),
             f") ENGINE = MergeTree() ORDER BY ({', '.join(ok)})\n",
             f"PARTITION BY toYYYYMM(date) PRIMARY KEY ({', '.join(pk)})",
         ]
@@ -263,7 +277,16 @@ class MetricScope(Document):
         if view_columns:
             vc_expr = ", ".join(view_columns)
             vc_expr += ", "
-        return f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}* FROM {src}"
+        f_expr = ""
+        if config.clickhouse.enable_default_value:
+            # field != default_value
+            r = []
+            for n, t, me, de in self.iter_metrics_fields():
+                r += [f"{n} != {de}"]
+            f_expr = ",".join(r)
+        return (
+            f"CREATE OR REPLACE VIEW {view} AS SELECT {v_path}{vc_expr}{f_expr or '*'} FROM {src}"
+        )
 
     def _get_db_table(self):
         return self.table_name
@@ -305,9 +328,9 @@ class MetricScope(Document):
             c = False
             # Alter when necessary
             existing = {}
-            for name, type in ch.execute(
+            for name, type, default_expression, default_kind in ch.execute(
                 """
-                SELECT name, type
+                SELECT name, type, default_expression, default_kind
                 FROM system.columns
                 WHERE
                   database=%s
@@ -315,7 +338,7 @@ class MetricScope(Document):
                 """,
                 [config.clickhouse.db, table_name],
             ):
-                existing[name] = type
+                existing[name] = (type, default_expression if default_kind == "DEFAULT" else None)
             after = None
             for f, t, me, de in self.iter_fields():
                 if f not in existing:
@@ -324,9 +347,21 @@ class MetricScope(Document):
                     )
                     c = True
                 after = f
-                if f in existing and existing[f] != t:
+                if f in existing and existing[f][0] != t:
                     print(f"Warning! Type mismatch for column {f}: {existing[f]} <> {t}")
                     print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
+            # Check default value
+            for f, t, me, de in self.iter_metrics_fields():
+                if (
+                    f in existing and existing[f][1] and existing[f][1] != str(de).strip("0")
+                ):  # Strip for float value xxx.
+                    if de:
+                        ch.execute(post=f"ALTER TABLE {table_name} MODIFY COLUMN {f} DEFAULT {de}")
+                    else:
+                        ch.execute(
+                            post=f"ALTER TABLE {table_name} MODIFY COLUMN {f} REMOVE DEFAULT"
+                        )
+                    c = True
             return c
 
         changed = False
