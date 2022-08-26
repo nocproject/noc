@@ -32,7 +32,7 @@ CATEGORIES = {
     Category.LOGICAL: {},
     Category.ACTIVATION: {"indicator", "logistic", "relu", "softplus"},
     Category.COMPARE: {"eq", "ne"},
-    Category.DEBUG: {"state"},
+    Category.DEBUG: {"state", "dump"},
     Category.UTIL: {"alarm", "key", "metrics", "none", "one", "probe", "subgraph", "value"},
     Category.STATISTICS: {"mean", "std"},
     Category.ML: {"gauss"},
