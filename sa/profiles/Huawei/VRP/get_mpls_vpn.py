@@ -106,7 +106,7 @@ class Script(BaseScript):
         try:
             v = self.cli("display mpls l2vc brief")
         except self.CLISyntaxError:
-            return []
+            return r
         for block in self.rx_l2vc_split.split(v)[1:]:
             p = parse_kv(self.l2vc_map, block)
             r += [
