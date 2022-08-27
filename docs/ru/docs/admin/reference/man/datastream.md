@@ -29,4 +29,4 @@ Recalculate datastream `<name>`
 
 ## See also
 
-* [api-datastream](../../../dev/reference/api/datastream/index.md)
+* [api-datastream](../../../dev/api/datastream/index.md)

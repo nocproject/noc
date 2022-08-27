@@ -10,7 +10,7 @@
 
 ## Требования
 
-* Скрипт [get_cdp_neighbors](../../../../dev/reference/scripts/get_cdp_neighbors.md)
+* Скрипт [get_cdp_neighbors](../../../../dev/sa/scripts/get_cdp_neighbors.md)
 * Возможность (`Capabilities`) [Network | CDP](../../../../user/reference/caps/network/cdp.md)
 * Опрос CDP включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Метод CDP в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)

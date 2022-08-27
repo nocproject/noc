@@ -6,7 +6,7 @@
 
 ## Требования
 
-* Скрипт [get_udld_neighbors](../../../../dev/reference/scripts/get_udld_neighbors.md)
+* Скрипт [get_udld_neighbors](../../../../dev/sa/scripts/get_udld_neighbors.md)
 * Возможность [Network UDLD](../../../../user/reference/caps/network/udld.md)
 * Опрос UDLD включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Метод UDLD в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)

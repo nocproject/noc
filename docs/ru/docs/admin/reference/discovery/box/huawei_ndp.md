@@ -4,7 +4,7 @@
 
 ## Требования
 
-* Скрипт [get_huawei_ndp_neighbors](../../../../dev/reference/scripts/get_huawei_ndp_neighbors.md)
+* Скрипт [get_huawei_ndp_neighbors](../../../../dev/sa/scripts/get_huawei_ndp_neighbors.md)
 * Возможность [Huawei NDP caps](../../../../user/reference/caps/huawei/ndp.md)
 * Опрос `Huawei NDP` включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Метод `Huawei NDP` в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)

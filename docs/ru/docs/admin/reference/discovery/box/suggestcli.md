@@ -6,6 +6,6 @@
 
 ## Requirements
 
-* [login](../../../../dev/reference/scripts/login.md) script
+* [login](../../../../dev/sa/scripts/login.md) script
 * suggestcli check is enabled in [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md)
 

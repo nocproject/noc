@@ -831,196 +831,111 @@ nav:
               - workflow: admin/reference/man/workflow.md
   - Developer's Guide:
       - Overview: dev/index.md
-      - Get Started:
-          - Overview: dev/tutorial/index.md
-      - How-to Guides:
-          - Overview: dev/howto/index.md
-          - 'Handler: Filter config': dev/howto/handler_config_filter/index.md
-          - How to Share Collections: dev/howto/sharing-collections/index.md
-          - How to Setup black Formatter in PyCharm: dev/howto/setup-black-in-pycharm/index.md
-          - How to Setup flake8 Check in PyCharm: dev/howto/setup-flake8-in-pycharm/index.md
-      - Background:
-          - Overview: dev/background/index.md
-          - Connection Restrictions: dev/background/connection-restrictions/index.md
-          - Connection Type Restrictions: dev/background/connection-type-restrictions/index.md
-          - SA Profile: dev/background/sa-profile/index.md
-          - UI Design Principles: dev/background/ui-design-principles/index.md
-      - Reference:
-          - Overview: dev/reference/index.md
-          - Merge Request Labels: dev/reference/mr-labels.md
-          - API:
-              - DataStream:
-                  - Overview: dev/reference/api/datastream/index.md
-                  - address: dev/reference/api/datastream/address.md
-                  - administrativedomain: dev/reference/api/datastream/administrativedomain.md
-                  - alarm: dev/reference/api/datastream/alarm.md
-                  - cfgping: dev/reference/api/datastream/cfgping.md
-                  - cfgsyslog: dev/reference/api/datastream/cfgsyslog.md
-                  - cfgtrap: dev/reference/api/datastream/cfgtrap.md
-                  - dnszone: dev/reference/api/datastream/dnszone.md
-                  - managedobject: dev/reference/api/datastream/managedobject.md
-                  - dnszone: dev/reference/api/datastream/dnszone.md
-                  - prefix: dev/reference/api/datastream/prefix.md
-                  - resourcegroup: dev/reference/api/datastream/resourcegroup.md
-                  - vrf: dev/reference/api/datastream/vrf.md
-              - NBI:
-                  - Overview: dev/reference/api/nbi/index.md
-                  - config: dev/reference/api/nbi/config.md
-                  - configrevisions: dev/reference/api/nbi/configrevisions.md
-                  - getmappings: dev/reference/api/nbi/getmappings.md
-                  - objectmetrics: dev/reference/api/nbi/objectmetrics.md
-                  - objectstatus: dev/reference/api/nbi/objectstatus.md
-                  - path: dev/reference/api/nbi/path.md
-                  - telemetry: dev/reference/api/nbi/telemetry.md
-          - BI:
-              - Dictionaries:
-                  - administrativedomain: dev/reference/bi/dict/administrativedomain.md
-                  - alarmclass: dev/reference/bi/dict/alarmclass.md
-                  - container: dev/reference/bi/dict/container.md
-                  - interfacedescription: dev/reference/bi/dict/interfacedescription.md
-                  - interfaceprofile: dev/reference/bi/dict/interfaceprofile.md
-                  - managedobject: dev/reference/bi/dict/managedobject.md
-                  - networksegment: dev/reference/bi/dict/networksegment.md
-                  - platform: dev/reference/bi/dict/platform.md
-                  - pool: dev/reference/bi/dict/pool.md
-                  - profile: dev/reference/bi/dict/profile.md
-                  - vendor: dev/reference/bi/dict/vendor.md
-                  - version: dev/reference/bi/dict/version.md
-              - Models:
-                  - alarms: dev/reference/bi/model/alarms.md
-                  - events: dev/reference/bi/model/events.md
-                  - mac: dev/reference/bi/model/mac.md
-                  - managedobjects: dev/reference/bi/model/managedobjects.md
-                  - netflow: dev/reference/bi/model/netflow.md
-                  - reboots: dev/reference/bi/model/reboots.md
-                  - routingneighbors: dev/reference/bi/model/routingneighbors.md
-                  - span: dev/reference/bi/model/span.md
-          - Card:
-              - Overview: dev/reference/card/index.md
-          - Web:
-              - Overview: dev/reference/web/index.md
-          - ConfDB:
-              - Overview: dev/reference/confdb/index.md
-              - Config Fetching: dev/reference/confdb/fetching.md
-              - Storage: dev/reference/confdb/storage.md
-              - Tokenizer: dev/reference/confdb/tokenizer.md
-              - Normalizer: dev/reference/confdb/normalizer.md
-              - Query: dev/reference/confdb/query.md
-          - Custom:
-              - Overview: dev/reference/custom/index.md
-          - ETL:
-              - Overview: dev/reference/etl/index.md
-          - Scripts:
-              - add_vlan: dev/reference/scripts/add_vlan.md
-              - commands: dev/reference/scripts/commands.md
-              - configure: dev/reference/scripts/configure.md
-              - get_arp: dev/reference/scripts/get_arp.md
-              - get_bfd_sessions: dev/reference/scripts/get_bfd_sessions.md
-              - get_capabilities: dev/reference/scripts/get_capabilities.md
-              - get_cdp_neighbors: dev/reference/scripts/get_cdp_neighbors.md
-              - get_chassis_id: dev/reference/scripts/get_chassis_id.md
-              - get_config: dev/reference/scripts/get_config.md
-              - get_copper_tdr_diag: dev/reference/scripts/get_copper_tdr_diag.md
-              - get_cpe: dev/reference/scripts/get_cpe.md
-              - get_dhcp_binding: dev/reference/scripts/get_dhcp_binding.md
-              - get_discovery_id: dev/reference/scripts/get_discovery_id.md
-              - get_dom_status: dev/reference/scripts/get_dom_status.md
-              - get_dot11_associations: dev/reference/scripts/get_dot11_associations.md
-              - get_fdp_neighbors: dev/reference/scripts/get_fdp_neighbors.md
-              - get_fqdn: dev/reference/scripts/get_fqdn.md
-              - get_huawei_ndp_neighbors: dev/reference/scripts/get_huawei_ndp_neighbors.md
-              - get_ifindexes: dev/reference/scripts/get_ifindexes.md
-              - get_interface_index: dev/reference/scripts/get_interface_index.md
-              - get_interface_status: dev/reference/scripts/get_interface_status.md
-              - get_interface_status_ex: dev/reference/scripts/get_interface_status_ex.md
-              - get_interfaces: dev/reference/scripts/get_interfaces.md
-              - get_inventory: dev/reference/scripts/get_inventory.md
-              - get_ip_discovery: dev/reference/scripts/get_ip_discovery.md
-              - get_ipv6_neighbor: dev/reference/scripts/get_ipv6_neighbor.md
-              - get_lacp_neighbors: dev/reference/scripts/get_lacp_neighbors.md
-              - get_license: dev/reference/scripts/get_license.md
-              - get_lldp_neighbors: dev/reference/scripts/get_lldp_neighbors.md
-              - get_local_users: dev/reference/scripts/get_local_users.md
-              - get_mac_address_table: dev/reference/scripts/get_mac_address_table.md
-              - get_metrics: dev/reference/scripts/get_metrics.md
-              - get_mpls_vpn: dev/reference/scripts/get_mpls_vpn.md
-              - get_oam_status: dev/reference/scripts/get_oam_status.md
-              - get_portchannel: dev/reference/scripts/get_portchannel.md
-              - get_rep_topology: dev/reference/scripts/get_rep_topology.md
-              - get_resolver_config: dev/reference/scripts/get_resolver_config.md
-              - get_sla_probes: dev/reference/scripts/get_sla_probes.md
-              - get_snmp_get: dev/reference/scripts/get_snmp_get.md
-              - get_snmp_getnext: dev/reference/scripts/get_snmp_getnext.md
-              - get_spanning_tree: dev/reference/scripts/get_spanning_tree.md
-              - get_switch: dev/reference/scripts/get_switch.md
-              - get_switchport: dev/reference/scripts/get_switchport.md
-              - get_system: dev/reference/scripts/get_system.md
-              - get_tech_support: dev/reference/scripts/get_tech_support.md
-              - get_udld_neighbors: dev/reference/scripts/get_udld_neighbors.md
-              - get_uptime: dev/reference/scripts/get_uptime.md
-              - get_version: dev/reference/scripts/get_version.md
-              - get_vlans: dev/reference/scripts/get_vlans.md
-              - has_vlan: dev/reference/scripts/has_vlan.md
-              - index: dev/reference/scripts/index.md
-              - login: dev/reference/scripts/login.md
-              - ping: dev/reference/scripts/ping.md
-              - reboot: dev/reference/scripts/reboot.md
-              - remove_vlan: dev/reference/scripts/remove_vlan.md
-              - set_switchport: dev/reference/scripts/set_switchport.md
-              - sync_prefix_lists: dev/reference/scripts/sync_prefix_lists.md
-              - sync_vlans: dev/reference/scripts/sync_vlans.md
-          - Handlers:
-              - Handlers Overview: dev/reference/handlers/index.md
-              - Address Resolver:  dev/reference/handlers/address-resolver.md
-              - Config Filter: dev/reference/handlers/config-filter.md
-              - Config Diff Filter: dev/reference/handlers/config-diff-filter.md
-              - Config Validation: dev/reference/handlers/config-validation.md
-              - DS Filter: dev/reference/handlers/ds-filter.md
-              - Housekeeper: dev/reference/handlers/housekeeper.md
-              - Interface Description:  dev/reference/handlers/ifacedescription.md
-              - Window Function: dev/reference/handlers/window-function.md
-          - Object Models:
-              - Overview: dev/reference/object-model/index.md
-              - ObjectModel Tags: dev/reference/object-model/tags.md
-          - Model Interfaces:
-              - Overview: dev/reference/model-interface/index.md
-              - airflow: dev/reference/model-interface/airflow.md
-              - asset: dev/reference/model-interface/asset.md
-              - contacts: dev/reference/model-interface/contacts.md
-              - container: dev/reference/model-interface/container.md
-              - cpu: dev/reference/model-interface/cpu.md
-              - dimensions: dev/reference/model-interface/dimensions.md
-              - hwlimits: dev/reference/model-interface/hwlimits.md
-              - geopoint: dev/reference/model-interface/geopoint.md
-              - length: dev/reference/model-interface/length.md
-              - management: dev/reference/model-interface/management.md
-              - modbus: dev/reference/model-interface/modbus.md
-              - optical: dev/reference/model-interface/optical.md
-              - plan: dev/reference/model-interface/plan.md
-              - pop: dev/reference/model-interface/pop.md
-              - power: dev/reference/model-interface/power.md
-              - rack: dev/reference/model-interface/rack.md
-              - rackmount: dev/reference/model-interface/rackmount.md
-              - sector: dev/reference/model-interface/sector.md
-              - splitter: dev/reference/model-interface/splitter.md
-              - stack: dev/reference/model-interface/stack.md
-              - twinax: dev/reference/model-interface/twinax.md
-              - weight: dev/reference/model-interface/weight.md
-          - Connection Types:
-              - Overview: dev/reference/connection-type/index.md
-          - Inventory Protocols: dev/reference/inventory-protocols.md
+      - Merge Request Labels: dev/mr-labels.md
+      - API:
+          - Datastream:
+            - dev/api/datastream/index.md
+            - address: dev/api/datastream/address.md
+            - administrativedomain: dev/api/datastream/administrativedomain.md
+            - alarm: dev/api/datastream/alarm.md
+            - cfgping: dev/api/datastream/cfgping.md
+            - cfgsyslog: dev/api/datastream/cfgsyslog.md
+            - cfgtrap: dev/api/datastream/cfgtrap.md
+            - dnszone: dev/api/datastream/dnszone.md
+            - managedobject: dev/api/datastream/managedobject.md
+            - dnszone: dev/api/datastream/dnszone.md
+            - prefix: dev/api/datastream/prefix.md
+            - resourcegroup: dev/api/datastream/resourcegroup.md
+            - vrf: dev/api/datastream/vrf.md
+          - NBI:
+            - dev/api/nbi/index.md
+            - config: dev/api/nbi/config.md
+            - configrevisions: dev/api/nbi/configrevisions.md
+            - getmappings: dev/api/nbi/getmappings.md
+            - objectmetrics: dev/api/nbi/objectmetrics.md
+            - objectstatus: dev/api/nbi/objectstatus.md
+            - path: dev/api/nbi/path.md
+            - telemetry: dev/api/nbi/telemetry.md
           - Streams:
-              - Overview: dev/reference/streams/index.md
-              - ch.TABLE: dev/reference/streams/ch.md
-              - dispose.POOL: dev/reference/streams/dispose.md
-              - events.POOL: dev/reference/streams/events.md
-              - kafkasender: dev/reference/streams/kafkasender.md
-              - mx: dev/reference/streams/mx.md
-          - Tools:
-              - Overview: dev/reference/tools/index.md
-              - PyCharm: dev/reference/tools/pycharm.md
-              - black: dev/reference/tools/black.md
-              - flake8: dev/reference/tools/flake8.md
+              - dev/api/streams/index.md
+              - ch.TABLE: dev/api/streams/ch.md
+              - dispose.POOL: dev/api/streams/dispose.md
+              - events.POOL: dev/api/streams/events.md
+              - kafkasender: dev/api/streams/kafkasender.md
+              - mx: dev/api/streams/mx.md
+      - Web:
+          - dev/web/index.md
+          - UI Design Principes: dev/web/concept-ui-design-principes.md
+      - ConfDB:
+          - Overview: dev/confdb/index.md
+          - Config Fetching: dev/confdb/fetching.md
+          - Storage: dev/confdb/storage.md
+          - Tokenizer: dev/confdb/tokenizer.md
+          - Normalizer: dev/confdb/normalizer.md
+          - Query: dev/confdb/query.md
+      - Custom:
+          - Overview: dev/custom/index.md
+      - Card:
+          - dev/card/index.md
+      - ETL:
+          - dev/etl/index.md
+      - Tools:
+          - dev/tools/index.md
+          - PyCharm: dev/tools/pycharm.md
+          - black: dev/tools/black.md
+          - flake8: dev/tools/flake8.md
+          - How to Share Collections: dev/tools/howto-sharing-collection.md
+          - How to Setup black Formatter in PyCharm: dev/tools/howto-setup-black-in-pycharm.md
+          - How to Setup flake8 Check in PyCharm: dev/tools/howto-setup-flake8-in-pycharm.md
+      - SA:
+          - dev/sa/scripts/index.md
+          - SA Profile: dev/sa/sa-profiles.md
+      - Handlers:
+          - dev/handlers/index.md
+          - Address Resolver:  dev/handlers/address-resolver.md
+          - Config Filter: dev/handlers/config-filter.md
+          - Config Diff Filter: dev/handlers/config-diff-filter.md
+          - Config Validation: dev/handlers/config-validation.md
+          - DS Filter: dev/handlers/ds-filter.md
+          - Housekeeper: dev/handlers/housekeeper.md
+          - Interface Description:  dev/handlers/ifacedescription.md
+          - Удаление лишних данных из конфигурационного файла MO: dev/handlers/howto-delete-config-data.md
+          - Storm Protection: dev/handlers/storm_protection.md
+      - Data Models: dev/data-models/index.md
+      - Object Models:
+          - dev/object-model/index.md
+          - Model Interface:
+              - dev/object-model/model-interface/index.md
+              - airflow: dev/object-model/model-interface/airflow.md
+              - asset: dev/object-model/model-interface/asset.md
+              - contacts: dev/object-model/model-interface/contacts.md
+              - container: dev/object-model/model-interface/container.md
+              - cpu: dev/object-model/model-interface/cpu.md
+              - dimensions: dev/object-model/model-interface/dimensions.md
+              - hwlimits: dev/object-model/model-interface/hwlimits.md
+              - geopoint: dev/object-model/model-interface/geopoint.md
+              - length: dev/object-model/model-interface/length.md
+              - management: dev/object-model/model-interface/management.md
+              - modbus: dev/object-model/model-interface/modbus.md
+              - optical: dev/object-model/model-interface/optical.md
+              - plan: dev/object-model/model-interface/plan.md
+              - pop: dev/object-model/model-interface/pop.md
+              - power: dev/object-model/model-interface/power.md
+              - rack: dev/object-model/model-interface/rack.md
+              - rackmount: dev/object-model/model-interface/rackmount.md
+              - sector: dev/object-model/model-interface/sector.md
+              - splitter: dev/object-model/model-interface/splitter.md
+              - stack: dev/object-model/model-interface/stack.md
+              - twinax: dev/object-model/model-interface/twinax.md
+              - weight: dev/object-model/model-interface/weight.md
+          - Connection Types: dev/object-model/connection-type.md
+          - Connection Restrictions: dev/object-model/connection-restrictions.md
+          - Connection Type Restrictions: dev/object-model/connection-type-restrictions.md
+          - Inventory Protocols: dev/object-model/inventory-protocols.md
+          - ObjectModel Tags: dev/object-model/tags.md
+      - BI:
+          - Dictionaries Models: dev/bi/dictionaries.md
+          - BI Models: dev/bi/models.md
   - About:
       - Overview: about/index.md
       - License: license.md
@@ -1123,6 +1038,7 @@ theme:
   language: en
   features:
     - navigation.tabs
+    - navigation.indexes
     - navigation.instant
   palette:
     - scheme: slate
@@ -1142,6 +1058,7 @@ strict: false
 markdown_extensions:
   - toc:
       permalink: true
+      separator: "_"
   - admonition
   - attr_list
   - def_list
@@ -1155,6 +1072,8 @@ markdown_extensions:
           format: !!python/name:mermaid2.fence_mermaid
 plugins:
   - search
+  - tags:
+      tags_file: dev/index.md
   - mermaid2:
       arguments:
         theme: dark
@@ -1182,6 +1101,8 @@ extra:
       - name: Русский
         link: /master/ru/
         lang: ru
+  tags:
+      background: background
   "tab": ":material-arrow-right:"
   "tab2": ":material-arrow-right: :material-arrow-right:"
   "tab3": ":material-arrow-right: :material-arrow-right: :material-arrow-right:"
