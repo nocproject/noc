@@ -14,33 +14,33 @@ where `12345` is an API token key.
 ## Roles
 
 ### DataStream API
-Access to [DataStream API](../../../../dev/reference/api/datastream/index.md)
+Access to [DataStream API](../../../../dev/api/datastream/index.md)
 
 API:Role | Description
 -------- | -----------
-`datastream:administrativedomain` | [administrativedomain DataStream](../../../../dev/reference/api/datastream/administrativedomain.md)
-`datastream:alarm` | [administrativedomain DataStream](../../../../dev/reference/api/datastream/alarm.md)
-`datastream:resourcegroup` | [resourcegroup DataStream](../../../../dev/reference/api/datastream/resourcegroup.md)
-`datastream:managedobject` | [managedobject DataStream](../../../../dev/reference/api/datastream/managedobject.md)
-`datastream:dnszone`              | [dnszone DataStream](../../../../dev/reference/api/datastream/dnszone.md) access                          
-`datastream:cfgping`              | [cfgping DataStream](../../../../dev/reference/api/datastream/cfgping.md) access                          
-`datastream:cfgsyslog`            | [cfgsyslog DataStream](../../../../dev/reference/api/datastream/cfgsyslog.md) access                      
-`datastream:cfgtrap`              | [cfgtrap DataStream](../../../../dev/reference/api/datastream/cfgtrap.md) access                          
-`datastream:vrf`                  | [vrf DataStream](../../../../dev/reference/api/datastream/vrf.md) access                                  
-`datastream:prefix`               | [prefix DataStream](../../../../dev/reference/api/datastream/prefix.md) access                            
-`datastream:address`              | [address DataStream](../../../../dev/reference/api/datastream/address.md) access                          
+`datastream:administrativedomain` | [administrativedomain DataStream](../../../../dev/api/datastream/administrativedomain.md)
+`datastream:alarm` | [administrativedomain DataStream](../../../../dev/api/datastream/alarm.md)
+`datastream:resourcegroup` | [resourcegroup DataStream](../../../../dev/api/datastream/resourcegroup.md)
+`datastream:managedobject` | [managedobject DataStream](../../../../dev/api/datastream/managedobject.md)
+`datastream:dnszone`              | [dnszone DataStream](../../../../dev/api/datastream/dnszone.md) access                          
+`datastream:cfgping`              | [cfgping DataStream](../../../../dev/api/datastream/cfgping.md) access                          
+`datastream:cfgsyslog`            | [cfgsyslog DataStream](../../../../dev/api/datastream/cfgsyslog.md) access                      
+`datastream:cfgtrap`              | [cfgtrap DataStream](../../../../dev/api/datastream/cfgtrap.md) access                          
+`datastream:vrf`                  | [vrf DataStream](../../../../dev/api/datastream/vrf.md) access                                  
+`datastream:prefix`               | [prefix DataStream](../../../../dev/api/datastream/prefix.md) access                            
+`datastream:address`              | [address DataStream](../../../../dev/api/datastream/address.md) access                          
 
 ### NBI API
 
 API:Role | Description
 -------- | -----------
-`nbi:config`          | [NBI config API](../../../../dev/reference/api/nbi/config.md) access                  
-`nbi:configrevisions` | [NBI configrevisions API](../../../../dev/reference/api/nbi/configrevisions.md) access
-`nbi:getmappings`     | [NBI getmappings API](../../../../dev/reference/api/nbi/getmappings.md) access        
-`nbi:objectmetrics`   | [NBI objectmetrics API](../../../../dev/reference/api/nbi/objectmetrics.md) access    
-`nbi:objectstatus`    | [NBI objectstatus API](../../../../dev/reference/api/nbi/objectstatus.md) access      
-`nbi:path`            | [NBI path API](../../../../dev/reference/api/nbi/path.md) access                      
-`nbi:telemetry`       | [NBI telemetry API](../../../../dev/reference/api/nbi/telemetry.md) access            
+`nbi:config`          | [NBI config API](../../../../dev/api/nbi/config.md) access                  
+`nbi:configrevisions` | [NBI configrevisions API](../../../../dev/api/nbi/configrevisions.md) access
+`nbi:getmappings`     | [NBI getmappings API](../../../../dev/api/nbi/getmappings.md) access        
+`nbi:objectmetrics`   | [NBI objectmetrics API](../../../../dev/api/nbi/objectmetrics.md) access    
+`nbi:objectstatus`    | [NBI objectstatus API](../../../../dev/api/nbi/objectstatus.md) access      
+`nbi:path`            | [NBI path API](../../../../dev/api/nbi/path.md) access                      
+`nbi:telemetry`       | [NBI telemetry API](../../../../dev/api/nbi/telemetry.md) access            
 
 ## Web interface example
 You should fill `Name` and `API key` as required fields.

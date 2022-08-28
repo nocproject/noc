@@ -1,53 +1,46 @@
-# Style Guide
+# Руководство по документированию
 
-This document provides an overview of the style for the NOC
-documentation stored in this repository. The overarching goal of this style guide
-is to provide an accessible base style to ensure that our documentation is easy to read,
-simple to use, and straightforward to maintain.
+Документ описывает подходы к наполнению документации в репозитории. Их соблюдение 
+позволит убедиться в однозначном понимании, доступности и простоте сопровождения. 
 
-## Documentation Structure
 
-Documentation is organized into three sections:
+## Структура документации
 
-- [User's Guide](../../user/index.md) - intended for NOC end users.
-- [Administrator's Guide](../../admin/index.md) - intended for NOC administrators.
-- [Developer's Guide](../../dev/index.md) - intended for developers who wish
-  to extend NOC's functionality.
+Документация организована в 3 секции:
 
-Each section is split into four parts:
+- [Документация пользователя](../../user/index.md) - ориентирована на работу системой пользователя
+- [Документация администратора](../../admin/index.md) - описывает установку и эксплуатацию сервисов системы 
+- [Документация разработчика](../../dev/index.md) - предназначена для разработчиков, расширяющих 
+ фунционал системы
 
-![Docs Structure](../../doc-structure.svg)
+Какждая секция состоит из тематических разделов, посвящённых той или иной стороне системы.
+В разделе распологаются документы одного из 4 типов:
 
-- [Tutorials](tutorials.md) - A hands-on introduction to NOC for users.
-- [How-to Guides](howto.md) - Step-by-step guides. Cover key tasks and operations and common problems.
-- [References](references.md) - Technical references.
-- [Explanations](explanations.md) - Clarification and discussion of key topics.
+- [Введение (Tutorials)](tutorials.md) - Общее представление о модуле системы.
+- [Инструкции (How-to Guides)](howto.md) - Пошаговые инструкции. Описывают выполнение ключевых задач и опреаций.
+- [References](references.md) - Технические описания.
+- [Концепции (Concepts)](explanations.md) - Описание ключевых элементов системы
 
-## Naming Conventions
+## Соглашение по наименованию
 
-This section contains guidelines on naming files, sections, documents and other document elements.
+Описание шаблонов именование файлов, разделов, документов и прочих элементов
 
-- File naming convention:
+- Присвоение имён файлов:
 
-  - For Markdown, all files should have a .md extension.
-  - Separate words in file names with hyphens (i.e. -.)
-  - For most documents, file names should have a terse one or two word name
-    that describes the material covered in the document.
-    Allow the path of the file within the document tree
-    to add some of the required context/categorization.
-    For example, it’s acceptable to have `/reference/sharding.md` and `/admin/sharding.md`.
-  - For tutorials, the full title of the document should be in the file name.
-    For example, `/tutorials/removing-object-from-monitoring.md`
+  - Для документов формата `Markdown`, все файлы должны быть с расширением `.md`.
+  - Для разделения слов в файле используется дефис `-`
+  - Для большинства документов имя файла должно состоять из несколько слов, описывающих
+    его содержание. При большом числе файлов одного типа необходимо их группировать в папки,
+    углубляя иерархию: `раздел/тип-документа/<имя-документа>.md`. Например: `FM/reference/sharding.md`.
+  - Для описаний (`tutorials`) полный заголовк документа должен присутствовать в 
+    имени файла: `/tutorials/removing-object-from-monitoring.md`
 
-- Phrase headlines and titles so users can determine what questions
-  the text will answer, and material that will be addressed,
-  without needing them to read the content. This shortens the amount of time
-  that people spend looking for answers, and improves search/scanning, and possibly "SEO."
-- Prefer titles and headers in the form of "Using foo" over "How to Foo."
-  When using target references (i.e. [references](#referencing) in documents),
-  use names that include enough context to be intelligible through all documentation.
-  For example, use "replica-set-secondary-only-node" as opposed to
-  "secondary-only-node". This makes the source more usable and easier to maintain.
+- По тексту заголовка читать должен определить о чём пойдёт речь и кому
+  адресован документ без необходимости его изучения.
+- Для документов описывающих несколько тем необходимо добавлять ссылки на другие документы
+- Заголовки внутри документа желательно делать уникальными - это 
+  это облегчит использование ссылок (например [references](#referencing)) и позволит достаточно
+  просто использовать ссылки из разных частей руководства.
 
 ## Style Guide
 

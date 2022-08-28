@@ -86,7 +86,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 используется набор правил классификации [Event Classification Rule](../../reference/concepts/event-classification-rule/index.md), 
 расположенных в меню `Управление авариями (Fault Management) -> Настройка (Setup) -> Правила классификации (Classification Rule)`.
 
-События в классификатор поступают по очереди [events](../../../dev/reference/streams/events.md). Передаются в формате `JSON` 
+События в классификатор поступают по очереди [events](../../../dev/api/streams/events.md). Передаются в формате `JSON` 
 и отличаются содержимым поля `data`, заполняемым на источнике:
 
 * `source`- источник события:
@@ -209,7 +209,7 @@ System supports life cycle of events ensuring no important events left unnoticed
 Это позволяет сигнализировать оператору только о том, на что стоит обратить внимание, отсеивая менее важное путём выставление важности (`severity`). 
 
 События в коррелятор [correlator](../../../admin/reference/services/correlator.md) поступают по
-очереди [dispose](../../../dev/reference/streams/dispose.md) 
+очереди [dispose](../../../dev/api/streams/dispose.md) 
 
 Коррелятор ищет связи между событиями их разных источников, осуществляет их корреляцию и группировку, 
 получая на выходе аварийные события - **Аварии**.

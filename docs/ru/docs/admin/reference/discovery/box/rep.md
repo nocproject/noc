@@ -23,7 +23,7 @@ SwitchB          Fa1/0/23   Sec  Open
 
 ## Requirements
 
-* Скрипт [get_rep_neighbors](../../../../dev/reference/scripts/get_rep_topology.md)
+* Скрипт [get_rep_neighbors](../../../../dev/sa/scripts/get_rep_topology.md)
 * Возможность (`Capabilities`) [Network REP caps](../../../../user/reference/caps/network/rep.md)
 * Опрос CDP включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Опция REP в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)

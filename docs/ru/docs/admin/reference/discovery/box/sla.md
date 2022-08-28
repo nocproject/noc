@@ -6,7 +6,7 @@
 
 ## Requirements
 
-* [get_sla_probes](../../../../dev/reference/scripts/get_sla_probes.md)
+* [get_sla_probes](../../../../dev/sa/scripts/get_sla_probes.md)
 * sla check is enabled in [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md)
 * Any of following capabilities
 

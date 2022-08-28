@@ -4,7 +4,7 @@
 
 ## Требования
 
-* Скрипт [get_lacp_neighbors](../../../../dev/reference/scripts/get_lacp_neighbors.md)
+* Скрипт [get_lacp_neighbors](../../../../dev/sa/scripts/get_lacp_neighbors.md)
 * Возможность [Network LACP](../../../../user/reference/caps/network/lacp.md)
 * Опрос LACP включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Метод LACP в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)

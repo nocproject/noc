@@ -28,13 +28,13 @@ graph LR
 
 | Stream                                     | Description       |
 | ------------------------------------------ | ----------------- |
-| [mx](../../../dev/reference/streams/mx.md) | Incoming messages |
+| [mx](../../../dev/api/streams/mx.md) | Incoming messages |
 
 ### Output Streams
 
-| Stream                                                       | Description                                 |
-| ------------------------------------------------------------ | ------------------------------------------- |
-| [kafkasender](../../../dev/reference/streams/kafkasender.md) | Messages addressed to outside Kafka cluster |
+| Stream                                                 | Description                                 |
+|--------------------------------------------------------| ------------------------------------------- |
+| [kafkasender](../../../dev/api/streams/kafkasender.md) | Messages addressed to outside Kafka cluster |
 
 ## Configuration
 

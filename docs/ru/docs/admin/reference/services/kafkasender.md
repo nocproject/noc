@@ -26,9 +26,9 @@ graph LR
 
 ### Input Streams
 
-| Stream                                                       | Description                       |
-| ------------------------------------------------------------ | --------------------------------- |
-| [kafkasender](../../../dev/reference/streams/kafkasender.md) | Messages received from mx service |
+| Stream                                                 | Description                       |
+|--------------------------------------------------------| --------------------------------- |
+| [kafkasender](../../../dev/api/streams/kafkasender.md) | Messages received from mx service |
 
 ## Configuration
 

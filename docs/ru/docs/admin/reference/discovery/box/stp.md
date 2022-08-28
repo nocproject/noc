@@ -26,7 +26,7 @@
 
 ## Требования
 
-* Скрипт [get_spanning_tree](../../../../dev/reference/scripts/get_spanning_tree.md)
+* Скрипт [get_spanning_tree](../../../../dev/sa/scripts/get_spanning_tree.md)
 * Возможность [Network STP](../../../../user/reference/caps/network/stp.md)
 * Опрос STP включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Метод STP в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)

@@ -10,7 +10,7 @@ Message-Type
 : Type of message. Always `alarm`.
 
 Change-Id
-: DataStream [Change ID](../../../dev/reference/api/datastream/index.md#change-id),
+: DataStream [Change ID](../../../dev/api/datastream/index.md#change-id),
 same as `$changeid` field.
 
 Sharding-Key
@@ -26,7 +26,7 @@ Message contains JSON with following fields:
 | Name                      | Type                 | Description                                                                                             |
 | ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------- |
 | id                        | String               | Alarm Id                                                                                                |
-| `$changeid`               | String               | DataStream [Change ID](../../../dev/reference/api/datastream/index.md#change-id)                        |
+| `$changeid`               | String               | DataStream [Change ID](../../../dev/api/datastream/index.md#change-id)                        |
 | timestamp                 | String               | ISO 8601 timestamp (i.e. YYYY-MM-DDTHH:MM:SS) of alarm rising                                           |
 | clear_timestamp           | String               | ISO 8601 timestamp (i.e. YYYY-MM-DDTHH:MM:SS) of alarm clearange (for closed alarms only)               |
 | severity                  | Integer              | Alarm severity                                                                                          |

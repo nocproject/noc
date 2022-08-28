@@ -6,5 +6,5 @@
 
 ## Requirements
 
-* [get_config](../../../../dev/reference/scripts/get_config.md)
+* [get_config](../../../../dev/sa/scripts/get_config.md)
 * config check is enabled in [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md)

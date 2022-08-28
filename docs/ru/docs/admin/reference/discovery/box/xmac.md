@@ -38,7 +38,7 @@ flowchart TD
 
 ## Требования
 
-* Скрипт [get_chassis_id](../../../../dev/reference/scripts/get_chassis_id.md) для соседнего и [get_chassis_id](../../../../dev/reference/scripts/get_chassis_id.md) для текущего
+* Скрипт [get_chassis_id](../../../../dev/sa/scripts/get_chassis_id.md) для соседнего и [get_chassis_id](../../../../dev/sa/scripts/get_chassis_id.md) для текущего
 * Опрос xMAC включён в профиле объектов [Managed Object Profile](../../../../user/reference/concepts/managed-object-profile/index.md#Box(Полный_опрос))
 * Метод xMAC в *Методах построения топологии* [Segment Profile](../../../../user/reference/concepts/network-segment-profile/index.md)
 * Настройки  `Политика сбора MAC адресов` (`MAC Disovery Policy`) в `Профиле Интерфейса` (`Interface Profile`)
