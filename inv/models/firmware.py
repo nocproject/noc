@@ -110,6 +110,9 @@ class Firmware(Document):
             return False
         return r <= 0
 
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def __hash__(self):
         return hash(f"{self.profile.id}{self.vendor.id}{self.version}")
 
