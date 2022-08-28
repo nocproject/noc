@@ -23,9 +23,9 @@ graph LR
 
 ## Input Streams
 
-| Stream                                           | Description                                    |
-| ------------------------------------------------ | ---------------------------------------------- |
-| [ch.TABLE](../../../dev/reference/streams/ch.md) | Incoming ClickHouse data in JSONEachRow format |
+| Stream                                     | Description                                    |
+|--------------------------------------------| ---------------------------------------------- |
+| [ch.TABLE](../../../dev/api/streams/ch.md) | Incoming ClickHouse data in JSONEachRow format |
 
 ## Configuration
 

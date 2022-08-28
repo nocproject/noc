@@ -10,7 +10,7 @@ Message-Type
 : Type of message. Always `managedobject`.
 
 Change-Id
-: DataStream [Change ID](../../../dev/reference/api/datastream/index.md#change-id),
+: DataStream [Change ID](../../../dev/api/datastream/index.md#change-id),
 same as `$changeid` field.
 
 Sharding-Key
@@ -29,7 +29,7 @@ Message contains JSON with following fields:
 | Name                           | Type                          | Description                                                                           |
 | ------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------- |
 | id                             | String                        | [Managed Object's](../concepts/managed-object/index.md) id                            |
-| `$change_id`                   | String                        | Datastream [Change ID](../../../dev/reference/api/datastream/index.md#change-id)      |
+| `$change_id`                   | String                        | Datastream [Change ID](../../../dev/api/datastream/index.md#change-id)      |
 | remote_system                  | Object {{ complex }}          | Source [remote system](../concepts/remote-system/index.md) for object                 |
 | {{ tab }} id                   | String                        | External system's id                                                                  |
 | {{ tab }} name                 | String                        | External system's name                                                                |
@@ -119,7 +119,7 @@ Message contains JSON with following fields:
 | {{ tab }} model                | Object {{ complex }}          | Inventory model (Object model)                                                        |
 | {{ tab2 }} id                  | String                        | Inventory model\'s ID                                                                 |
 | {{ tab2 }} name                | String                        | Inventory model\'s name                                                               |
-| {{ tab2 }} tags                | Array of String               | [Object model's](../../../dev/reference/object-model/tags.md)                         |
+| {{ tab2 }} tags                | Array of String               | [Object model's](../../../dev/object-model/tags.md)                         |
 | {{ tab2 }} vendor              | Object {{ complex }}          | Inventory model\'s vendor                                                             |
 | {{ tab3 }} id                  | String                        | Vendor\'s ID                                                                          |
 | {{ tab3 }} name                | String                        | Vendor\'s Name                                                                        |
@@ -133,6 +133,6 @@ Message contains JSON with following fields:
 |                                |                               | &bull; i - inner (nested object)                                                      |
 |                                |                               | &bull; s - same level (horizontal connection)                                         |
 | {{ tab2 }} protocols           | Array of String               | List of protocols, supported by slot                                                  |
-|                                |                               | (see [Inventory Protocols](../../../dev/reference/inventory-protocols.md))            |
+|                                |                               | (see [Inventory Protocols](../../../dev/object-model/inventory-protocols.md))            |
 | {{ tab2 }} interface           | String                        | Optional interface name related to the slot                                           |
 | {{ tab2 }} slots               | Array of Object {{ complex }} | List of inner slots for `i` direction, same structure as `slots`                      |

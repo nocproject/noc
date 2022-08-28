@@ -19,7 +19,7 @@
 
 Кратко механизм выглядит так:
 
-1. Реализуется **адаптера выгрузки** [extractor](../../../../dev/reference/etl/index.md). Его задача - получить данные из **внешней системы** и отдать в виде списка полей, определённых в `загрузчике` [Loader](../../../../dev/reference/etl/index.md)
+1. Реализуется **адаптера выгрузки** [extractor](../../../../dev/etl/index.md). Его задача - получить данные из **внешней системы** и отдать в виде списка полей, определённых в `загрузчике` [Loader](../../../../dev/etl/index.md)
 2. В интерфейсе настраивается `Внешняя система` и выбираются реализованные `загрузчики`
 3. После настройки даётся команда `./noc etl extract <remote_system_name>`. Происходит извлечение информации из внешней системе (при помощи адаптера, написанного на шаге 1). Всё складывается в файлы `import.csv.gz` в директории `/var/lib/noc/import/<remote_system_name>/<loader_name>/import.csv.gz`
 4. Командой `./noc etl check <remote_system_name>` проверяем целостность выгрузки
@@ -41,8 +41,8 @@
 
 * Имя (`Name`) - имя внешней системы. Будет использоваться при работе с командой `ETL`. Желательно выбирать краткое и без пробелов.
 * Описание (`Description`) - описание (какой-нибудь текст)
-* Адаптер (`Handler`) - ссылка на [адаптер выгрузки](../../../../dev/reference/etl/index.md) в виде строчки импорта питона. 
-  > Н-р: `noc.custom.etl.extractors.zabbix.ZBRemoteSystem` рассчитывает, что файл лежит в [custom](../../../../dev/reference/custom/index.md) по пути `<custom_folder>/etl/extractor/zabbix.py`
+* Адаптер (`Handler`) - ссылка на [адаптер выгрузки](../../../../dev/etl/index.md) в виде строчки импорта питона. 
+  > Н-р: `noc.custom.etl.extractors.zabbix.ZBRemoteSystem` рассчитывает, что файл лежит в [custom](../../../../dev/custom/index.md) по пути `<custom_folder>/etl/extractor/zabbix.py`
 * `Extractors/Loaders` - список доступных для моделей для загрузки. *Требует реализацию в адаптере*
 * `Environment` - настройки адаптера загрузки (передаются в него при работе)
 
@@ -62,4 +62,4 @@
 
 ## API для получения привязки с внешними системами
 
-[NBI Mappper](../../../../dev/reference/api/nbi/getmappings.md)
+[NBI Mappper](../../../../dev/api/nbi/getmappings.md)

@@ -1,3 +1,3 @@
 # datastream service
 
-*datastream* service provides [DataStream API](../../../dev/reference/api/datastream/index.md) 
+*datastream* service provides [DataStream API](../../../dev/api/datastream/index.md) 
