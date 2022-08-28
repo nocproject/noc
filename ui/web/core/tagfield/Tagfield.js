@@ -70,6 +70,15 @@ Ext.define("NOC.core.tagfield.Tagfield", {
         this.pickerId = this.getId() + '-picker';
         this.callParent();
     },
+    setValue: function(value,  add, skipLoad) {
+        var me = this;
+        if(value && value.length > 0) {
+            me.store.loadData(value);
+        }
+        return me.callParent([value.map(function(element) {
+            return element[me.valueField];
+        }), add]);
+    },
     setSelected: function(value, skip) {
         this.callParent([value]);
         if(!skip) {

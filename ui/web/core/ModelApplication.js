@@ -1050,11 +1050,14 @@ Ext.define("NOC.core.ModelApplication", {
                 continue;
             }
             data = field.getModelData();
+            name = field.getName();
             if(Ext.isObject(data)) {
-                name = field.getName();
                 if(data.hasOwnProperty(name)) {
                     values[name] = data[name];
                 }
+            }
+            if(Ext.isArray(data)) {
+                values[name] = data;
             }
         }
         return values;

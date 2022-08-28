@@ -54,7 +54,7 @@ Ext.apply(NOC.render, {
     LabelField: function(v) {
         if(v) {
             return v.map(function(x) {
-                return "<span class='x-display-tag'>" + x.name + "</span>";
+                return "<span class='x-display-tag'>" + (x.name ? x.name : x) + "</span>";
             }).join(" ");
         } else {
             return "";
