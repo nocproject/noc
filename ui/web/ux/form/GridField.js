@@ -89,7 +89,7 @@ Ext.define("Ext.ux.form.GridField", {
                     listeners: {
                         scope: me,
                         edit: me.onCellEdit,
-                        beforeedit: me.onBeforeedit
+                        beforeedit: me.onBeforeEdit
                     }
                 })
             ],
@@ -125,7 +125,7 @@ Ext.define("Ext.ux.form.GridField", {
         me.currentSelection = undefined;
         me.callParent();
     },
-
+    //
     getSubmitData: function() {
         var me = this,
             data = null;
@@ -135,7 +135,39 @@ Ext.define("Ext.ux.form.GridField", {
         }
         return data;
     },
+    //
+    getModelData: function(includeEmptyText,  isSubmitting) {
+        var me = this,
+          records = [];
 
+        me.store.each(function(r) {
+            var data = {};
+
+            if(r.get("is_persist")) {
+                return true;
+            }
+            if (!me.disabled && (me.submitValue || !isSubmitting)) {
+                data = {};
+                for(var index = 0; index < me.columns.length; index++) {
+                    var field = me.grid.columns[index],
+                      dataIndex = me.columns[index].dataIndex;
+
+                    if(Ext.isObject(field) && field.hasOwnProperty("persist") && field.persist === false) {
+                        return true;
+                    }
+
+                    if(Ext.isFunction(field.getEditor) && Ext.isFunction(field.getEditor().getArrayValues)) {
+                        data[dataIndex] = field.getEditor().getArrayValues();
+                    } else {
+                        data[dataIndex] = r.get(dataIndex);
+                    }
+                }
+            }
+            records.push(data);
+        });
+        return records;
+    },
+    //
     getValue: function() {
         var me = this,
             records = [];
@@ -154,7 +186,7 @@ Ext.define("Ext.ux.form.GridField", {
         });
         return records;
     },
-
+    //
     setValue: function(v) {
         var me = this;
         if(v === undefined || v === "") {
@@ -222,15 +254,19 @@ Ext.define("Ext.ux.form.GridField", {
         sm.select(me.currentSelection);
     },
     //
-    onCellEdit: function(editor, e) {
+    onCellEdit: function(editor, context) {
         var me = this,
-            ed = e.grid.columns[e.colIdx].getEditor();
+            ed = context.grid.columns[context.colIdx].getEditor(),
+            field = context.grid.columns[context.colIdx].field;
         if(ed.rawValue) {
-            e.record.set(e.field + "__label", ed.rawValue);
+            context.record.set(context.field + "__label", ed.rawValue);
+        }
+        if(field.xtype === "labelfield") {
+            context.value = field.valueCollection.items;
         }
     },
     //
-    onBeforeedit: function(editor, context) {
+    onBeforeEdit: function(editor, context) {
         context.cancel = context.record.get("is_persist");
-    }
+    },
 });

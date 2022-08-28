@@ -300,7 +300,7 @@ Ext.define("NOC.core.label.LabelField", {
                     }
                 }
             }
-            return me.callParent([value, add]);
+            me.callParent([value, add]);
         }
     },
 
@@ -389,5 +389,10 @@ Ext.define("NOC.core.label.LabelField", {
     onCloseTreePicker: function() {
         this.treePicker.hide();
         this.validate();
-    }
+    },
+
+    getArrayValues: function() {
+        var me = this;
+        return this.valueCollection.items.map(function(element) { return element.get(me.valueField)});
+    },
 });
