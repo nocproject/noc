@@ -161,11 +161,14 @@ class ItemConfig(object):
     Match by key_labels
     """
 
-    __slots__ = ("key_labels", "metric_labels", "metrics")
+    __slots__ = ("key_labels", "metric_labels", "metrics", "composed_metrics")
     key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
     metric_labels: Optional[Tuple[str, ...]]
     metrics: Tuple[str, ...]  # Metric Field list setting on source
     composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
+
+    def is_match(self, k: MetricKey) -> bool:
+        return not set(self.key_labels) - set(k[2])
 
 
 @dataclass(frozen=True)
@@ -613,9 +616,13 @@ class MetricsService(FastAPIService):
         if not source:
             return
         composed_metrics = []
+        # Find matched item
         for item in source.items:
+            if not item.is_match(k):
+                continue
             if item.composed_metrics:
-                composed_metrics += item.composed_metrics
+                composed_metrics = list(item.composed_metrics)
+            break
         return SourceInfo(
             bi_id=source.bi_id,
             fm_pool=source.fm_pool,
@@ -756,7 +763,7 @@ class MetricsService(FastAPIService):
             fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
             labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
             metrics=tuple(
-                sys.intern(m["name"]) for m in data["metrics"] if not data.get("is_composed")
+                sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
             ),
             items=[],
         )
@@ -766,12 +773,10 @@ class MetricsService(FastAPIService):
                     key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
                     metric_labels=tuple(),
                     metrics=tuple(
-                        sys.intern(m["name"])
-                        for m in data["metrics"]
-                        if not data.get("is_composed")
+                        sys.intern(m["name"]) for m in item["metrics"] if not m.get("is_composed")
                     ),
                     composed_metrics=tuple(
-                        sys.intern(m["name"]) for m in data["metrics"] if data.get("is_composed")
+                        sys.intern(m["name"]) for m in item["metrics"] if m.get("is_composed")
                     ),
                 )
             )

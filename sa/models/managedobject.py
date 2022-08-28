@@ -115,7 +115,7 @@ from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.models.problem import ProblemItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
-from .managedobjectprofile import ManagedObjectProfile
+from .managedobjectprofile import ManagedObjectProfile, MetricConfig
 from .objectstatus import ObjectStatus
 
 # Increase whenever new field added or removed
@@ -2821,7 +2821,7 @@ class ManagedObject(NOCModel):
 
         if not mo.is_managed:
             return {}
-        metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
+        s_metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
         labels = []
         for ll in mo.effective_labels:
             l_c = Label.get_by_name(ll)
@@ -2858,7 +2858,7 @@ class ManagedObject(NOCModel):
                     "is_stored": mc.is_stored,
                     "is_composed": bool(mc.metric_type.compose_expression),
                 }
-                for mc in metrics.values()
+                for mc in s_metrics.values()
             ],
             "items": items,
         }

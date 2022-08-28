@@ -21,7 +21,7 @@ from noc.config import config
 from noc.core.management.base import BaseCommand
 from noc.core.datastream.loader import loader
 from noc.core.mongo.connection import connect
-from noc.models import get_model
+from noc.models import get_model, get_model_id
 from noc.models import is_document
 from noc.core.comp import smart_text
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         "managedobject": "sa.ManagedObject",
         "administrativedomain": "sa.AdministrativeDomain",
         "cfgmetrics": "pm.MetricType",
-        "cfgmomapping": "sa.ManagedObject",
+        "cfgmetricsources": ("sa.ManagedObject", "sla.SLAProbe", "inv.Sensor"),
         "cfgping": "sa.ManagedObject",
         "cfgsyslog": "sa.ManagedObject",
         "cfgtrap": "sa.ManagedObject",
@@ -46,6 +46,7 @@ class Command(BaseCommand):
         "cfgmxroute": "main.MessageRoute",
         "cfgmetricrules": "pm.MetricRule",
     }
+    BI_ID_DATASTREAM = {"cfgmetricsources"}  # DataStream that used bi_id as ID
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
@@ -71,27 +72,34 @@ class Command(BaseCommand):
         for ds_name in sorted(loader.iter_classes()):
             self.print(ds_name)
 
-    def iter_id(self, model):
+    def iter_id(self, model, as_bi_id: bool = False):
         if not isinstance(model, tuple):
             model = (model,)
         for m in model:
+            model_id = get_model_id(m)
             if is_document(m):
-                match = {}
+                match, d = {}, None
                 while True:
                     cursor = (
                         m._get_collection()
-                        .find(match, {"_id": 1}, no_cursor_timeout=True)
+                        .find(match, {"_id": 1, "bi_id": 1}, no_cursor_timeout=True)
                         .sort("_id")
                         .limit(BATCH_SIZE)
                     )
                     for d in cursor:
-                        yield d["_id"]
-                    if match and match["_id"]["$gt"] == d["_id"]:
+                        if as_bi_id:
+                            yield f'{model_id}::{d["bi_id"]}'
+                        else:
+                            yield d["_id"]
+                    if not d or (match and match["_id"]["$gt"] == d["_id"]):
                         break
                     match = {"_id": {"$gt": d["_id"]}}
             else:
-                for id in m.objects.values_list("id", flat=True).order_by("id"):
-                    yield id
+                for id, bi_id in m.objects.values_list("id", "bi_id").order_by("id"):
+                    if as_bi_id:
+                        yield f"{model_id}::{bi_id}"
+                    else:
+                        yield id
 
     def get_total(self, model):
         if isinstance(model, tuple):
@@ -145,11 +153,13 @@ class Command(BaseCommand):
             from multiprocessing.pool import ThreadPool
 
             pool = ThreadPool(jobs)
-            iterable = pool.imap_unordered(update_object, self.iter_id(model))
+            iterable = pool.imap_unordered(
+                update_object, self.iter_id(model, datastream in self.BI_ID_DATASTREAM)
+            )
         else:
             iterable = (
                 ds.bulk_update([b for b in bulk if b is not None])
-                for bulk in grouper(self.iter_id(model), BATCH)
+                for bulk in grouper(self.iter_id(model, datastream in self.BI_ID_DATASTREAM), BATCH)
             )
 
         if not self.no_progressbar:
