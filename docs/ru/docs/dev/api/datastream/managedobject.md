@@ -1,7 +1,6 @@
 ---
 tags:
   - reference
-  - api
 ---
 # managedobject DataStream
 

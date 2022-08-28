@@ -1072,8 +1072,6 @@ markdown_extensions:
           format: !!python/name:mermaid2.fence_mermaid
 plugins:
   - search
-  - tags:
-      tags_file: dev/index.md
   - mermaid2:
       arguments:
         theme: dark
