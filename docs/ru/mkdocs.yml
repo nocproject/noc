@@ -587,6 +587,7 @@ nav:
                   - VPN: user/reference/metrics/scopes/vpn.md
               - Metric Types:
                   - Overview: user/reference/metrics/types/index.md
+          - Alarm Reference Format: user/reference/alarm-reference-format.md
           - MX Messages:
               - Overview: user/reference/mx/index.md
               - alarm: user/reference/mx/alarm.md
@@ -641,6 +642,7 @@ nav:
               - tgsender: admin/reference/services/tgsender.md
               - trapcollector: admin/reference/services/trapcollector.md
               - web: admin/reference/services/web.md
+              - worker: admin/reference/services/worker.md
               - ui: admin/reference/services/ui.md
           - Configuration:
               - Configuration System Overview: admin/reference/config/index.md
@@ -862,6 +864,8 @@ nav:
               - dispose.POOL: dev/api/streams/dispose.md
               - events.POOL: dev/api/streams/events.md
               - kafkasender: dev/api/streams/kafkasender.md
+              - metrics: dev/api/streams/metrics.md
+              - jobs: dev/api/streams/jobs.md
               - mx: dev/api/streams/mx.md
       - Web:
           - dev/web/index.md
