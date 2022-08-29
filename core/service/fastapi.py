@@ -42,6 +42,7 @@ class FastAPIService(BaseService):
         # WSGI application of any third-party framework that will be attached to the main
         # FastAPI application. For attaching Django applications of web-service in particular
         self.wsgi_app = None
+        self.extended_logging = False
 
     async def error_handler(self, request: "Request", exc) -> Response:
         """
@@ -111,7 +112,11 @@ class FastAPIService(BaseService):
             },
         )
         self.app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
-        self.app.add_middleware(LoggingMiddleware, logger=PrefixLoggerAdapter(self.logger, "api"))
+        self.app.add_middleware(
+            LoggingMiddleware,
+            logger=PrefixLoggerAdapter(self.logger, "api"),
+            extended_logging=self.extended_logging,
+        )
         self.app.add_middleware(SpanMiddleware, service_name=self.name)
         self.server: Optional[uvicorn.Server] = None
         # Initialize routers

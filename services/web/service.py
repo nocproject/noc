@@ -16,6 +16,7 @@ from django.core.wsgi import get_wsgi_application
 from noc.config import config
 from noc.core.service.fastapi import FastAPIService
 from noc.main.models.customfield import CustomField
+
 # from noc.core.perf import metrics
 
 
@@ -32,6 +33,7 @@ class WebService(FastAPIService):
         super().__init__()
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "noc.settings")
         self.wsgi_app = get_wsgi_application()
+        self.extended_logging = True
 
     async def on_activate(self):
         # Initialize audit trail
