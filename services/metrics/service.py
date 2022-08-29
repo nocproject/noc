@@ -29,6 +29,7 @@ from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
+from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
@@ -59,8 +60,9 @@ class Card(object):
     Store Input probe nodes
     """
 
-    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules")
+    __slots__ = ("alarms", "probes", "compose_probes", "senders", "is_dirty", "affected_rules")
     probes: Dict[str, BaseCDAGNode]
+    compose_probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
     alarms: List[AlarmNode]
     affected_rules: Set[str]
@@ -159,10 +161,14 @@ class ItemConfig(object):
     Match by key_labels
     """
 
-    __slots__ = ("key_labels", "metric_labels", "metrics")
+    __slots__ = ("key_labels", "metric_labels", "metrics", "composed_metrics")
     key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
     metric_labels: Optional[Tuple[str, ...]]
     metrics: Tuple[str, ...]  # Metric Field list setting on source
+    composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
+
+    def is_match(self, k: MetricKey) -> bool:
+        return not set(self.key_labels) - set(k[2])
 
 
 @dataclass(frozen=True)
@@ -206,11 +212,12 @@ class SourceInfo(object):
     Source Info for applied metric Card
     """
 
-    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels")
+    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels", "composed_metrics")
     bi_id: int
     fm_pool: str
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
+    composed_metrics: Optional[List[str]]
 
 
 @dataclass
@@ -231,6 +238,7 @@ class MetricsService(FastAPIService):
         super().__init__()
         self.scopes: Dict[str, ScopeInfo] = {}
         self.metric_configs: Dict[str, ProbeNodeConfig] = {}
+        self.compose_inputs: Dict[str, Set] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
         self.graph: Optional[CDAG] = None
@@ -375,6 +383,13 @@ class MetricsService(FastAPIService):
         for mt in MetricType.objects.all():
             if mt.units:
                 units[mt.scope.id][mt.field_name] = mt.units.code
+            if mt.compose_expression:
+                self.metric_configs[mt.field_name] = ComposeProbeNodeConfig(
+                    unit=(mt.units.code or "1") if mt.units else "1",
+                    expression=mt.compose_expression,
+                )
+                self.compose_inputs[mt.field_name] = {m_t.field_name for m_t in mt.compose_inputs}
+                continue
             self.metric_configs[mt.field_name] = ProbeNodeConfig(
                 unit=(mt.units.code or "1") if mt.units else "1",
                 scale=mt.scale.code if mt.scale else "1",
@@ -522,6 +537,7 @@ class MetricsService(FastAPIService):
         # Return resulting cards
         return Card(
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
+            compose_probes={},
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
             alarms=[],
             affected_rules=set(),
@@ -539,26 +555,32 @@ class MetricsService(FastAPIService):
             self.dispose_partitions[pool] = parts
         return parts
 
-    def add_probe(self, metric_field: str, k: MetricKey) -> Optional[ProbeNode]:
+    def add_probe(
+        self, metric_field: str, k: MetricKey, is_composed: bool = False
+    ) -> Optional[ProbeNode]:
         """
         Add new probe to card
         :param metric_field: Metric field name
-        :param k: Metrik key
+        :param k: Metric key
+        :param is_composed: Create ComposeProbeNode
         :return:
         """
         card = self.cards[k]
         mt = MetricType.get_by_field_name(metric_field)
         if not mt:
-            self.logger.debug("[%s] Unknown metric field: %s", k, metric_field)
+            self.logger.warning("[%s] Unknown metric field: %s", k, metric_field)
             return None
         sender = card.get_sender(mt.scope.table_name)
         if not sender:
             self.logger.debug("[%s] Sender is not found on Card: %s", k, mt.scope.table_name)
             return None
+        probe_cls = ProbeNode
+        if is_composed:
+            probe_cls = ComposeProbeNode
         prefix = self.get_key_hash(k)
         state_id = f"{self.get_key_hash(k)}::{metric_field}"
         # Create Probe
-        p = ProbeNode.construct(
+        p = probe_cls.construct(
             metric_field,
             prefix=prefix,
             state=self.start_state.get(state_id),
@@ -568,9 +590,12 @@ class MetricsService(FastAPIService):
         # Subscribe
         p.subscribe(sender, metric_field, dynamic=True)
         p.freeze()
-        card.probes[unscope(metric_field)] = p
+        if is_composed:
+            card.compose_probes[unscope(metric_field)] = p
+        else:
+            card.probes[unscope(metric_field)] = p
         #
-        metrics["cdag_nodes", ("type", "probe")] += 1
+        metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
     def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
@@ -590,11 +615,20 @@ class MetricsService(FastAPIService):
             source = self.sources_config.get(key_ctx["managed_object"])
         if not source:
             return
+        composed_metrics = []
+        # Find matched item
+        for item in source.items:
+            if not item.is_match(k):
+                continue
+            if item.composed_metrics:
+                composed_metrics = list(item.composed_metrics)
+            break
         return SourceInfo(
             bi_id=source.bi_id,
             fm_pool=source.fm_pool,
             labels=list(source.labels),
             metric_labels=[],
+            composed_metrics=composed_metrics,
         )
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
@@ -673,6 +707,17 @@ class MetricsService(FastAPIService):
             #
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
+        # Add complex probe
+        for cp_metric_filed in source.composed_metrics:
+            cp = self.add_probe(cp_metric_filed, k, is_composed=True)
+            # Add probe
+            for m_field in self.compose_inputs[cp_metric_filed]:
+                if m_field in card.probes:
+                    card.probes[m_field].subscribe(cp, m_field, dynamic=True)
+                else:
+                    p = self.add_probe(m_field, k)
+                    p.subscribe(cp, m_field, dynamic=True)
+            self.logger.debug("Add compose node: %s", cp)
 
     def activate_card(
         self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
@@ -695,6 +740,8 @@ class MetricsService(FastAPIService):
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])
             probe.activate(tx, "unit", mu)
+        for c_probe in card.compose_probes.values():
+            c_probe.activate(tx, "ts", ts)
         # Activate senders
         for sender in card.senders:
             for kf in si.key_fields:
@@ -715,7 +762,9 @@ class MetricsService(FastAPIService):
             bi_id=data["bi_id"],
             fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
             labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
-            metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
+            metrics=tuple(
+                sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
+            ),
             items=[],
         )
         for item in data.get("items", []):
@@ -723,7 +772,12 @@ class MetricsService(FastAPIService):
                 ItemConfig(
                     key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
                     metric_labels=tuple(),
-                    metrics=tuple(sys.intern(m["name"]) for m in data["metrics"]),
+                    metrics=tuple(
+                        sys.intern(m["name"]) for m in item["metrics"] if not m.get("is_composed")
+                    ),
+                    composed_metrics=tuple(
+                        sys.intern(m["name"]) for m in item["metrics"] if m.get("is_composed")
+                    ),
                 )
             )
         if sc_id not in self.sources_config:

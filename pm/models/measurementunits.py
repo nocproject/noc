@@ -94,6 +94,7 @@ class MeasurementUnits(Document):
     # Short label
     label = StringField()
     # Label for dashboards
+    # Compatible to Grafana, like 'kbit/s'
     dashboard_label = StringField(required=False)
     dashboard_sr_color = IntField(default=0x000000, required=False, null=True)
     # Conversion rules
