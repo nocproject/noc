@@ -48,6 +48,25 @@ Ext.define("NOC.sa.authprofile.Model", {
             type: "string"
         },
         {
+            name: "enable_suggest_by_rule",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "preferred_profile_credential",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "dynamic_classification_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
+            name: "match_rules",
+            type: "auto"
+        },
+        {
             name: "remote_system",
             type: "string"
         },
