@@ -104,7 +104,7 @@ class Command(BaseCommand):
                 now.replace(microsecond=0).isoformat(sep=" "),
                 f"AND interface=%s",
             )
-            q_args += [source]
+            q_args += [source.name]
         elif source.startswith("cpu://"):
             source = source[6:]
             source = self.get_source(source)
