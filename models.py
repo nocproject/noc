@@ -191,8 +191,6 @@ _MODELS = {
     "sa.ActionCommands": "noc.sa.models.actioncommands.ActionCommands",
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
-    "sa.AuthProfileSuggestSNMP": "noc.sa.models.authprofile.AuthProfileSuggestSNMP",
-    "sa.AuthProfileSuggestCLI": "noc.sa.models.authprofile.AuthProfileSuggestCLI",
     "sa.CapsProfile": "noc.sa.models.capsprofile.CapsProfile",
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
     "sa.CPEStatus": "noc.sa.models.cpestatus.CPEStatus",

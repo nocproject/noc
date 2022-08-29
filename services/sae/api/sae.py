@@ -45,7 +45,7 @@ class SAEAPI(API):
             mo.snmp_ro, mo.pool, mo.software_image,
             mo.auth_profile_id,
             ap.user, ap.password, ap.super_password,
-            ap.snmp_ro, ap.snmp_rw,
+            ap.snmp_ro, ap.snmp_rw, ap.preferred_profile_credential,
             mo.cli_privilege_policy, mo.snmp_rate_limit,
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
@@ -176,6 +176,7 @@ class SAEAPI(API):
             ap_super_password,
             ap_snmp_ro,
             ap_snmp_rw,
+            ap_preferred_profile_credential,
             privilege_policy,
             o_snmp_rate_limit,
             p_privilege_policy,
@@ -198,7 +199,7 @@ class SAEAPI(API):
                 cc = Capability.get_by_id(c["capability"])
                 if cc and not c.get("scope"):
                     capabilities[cc.name] = c.get("value")
-        if auth_profile_id:
+        if auth_profile_id and ap_preferred_profile_credential:
             user = ap_user
             password = ap_password
             super_password = ap_super_password
