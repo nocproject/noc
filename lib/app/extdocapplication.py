@@ -20,6 +20,7 @@ from mongoengine.fields import (
     ReferenceField,
     BinaryField,
     GeoPointField,
+    EmbeddedDocumentListField,
 )
 from mongoengine.errors import ValidationError, NotUniqueError
 from mongoengine.queryset import Q
@@ -86,10 +87,21 @@ class ExtDocApplication(ExtApplication):
                 self.clean_fields[f.name] = ListOfParameter(element=ModelParameter(f.document_type))
             elif isinstance(f, ForeignKeyField):
                 self.clean_fields[f.name] = ModelParameter(f.document_type, required=f.required)
+            elif isinstance(f, EmbeddedDocumentListField):
+                self.clean_fields[f.name] = ListOfParameter(
+                    element=EmbeddedDocumentParameter(f.field.document_type)
+                )
             elif isinstance(f, ListField):
                 if isinstance(f.field, EmbeddedDocumentField):
                     self.clean_fields[f.name] = ListOfParameter(
                         element=EmbeddedDocumentParameter(f.field.document_type)
+                    )
+                elif isinstance(f.field, ReferenceField):
+                    dt = f.field.document_type_obj
+                    if dt == "self":
+                        dt = self.model
+                    self.clean_fields[f.name] = ListOfParameter(
+                        element=DocumentParameter(dt, required=f.required)
                     )
             elif isinstance(f, EmbeddedDocumentField):
                 self.clean_fields[f.name] = EmbeddedDocumentParameter(f.document_type)
@@ -351,6 +363,8 @@ class ExtDocApplication(ExtApplication):
                 elif isinstance(f, ListField):
                     if hasattr(f, "field") and isinstance(f.field, EmbeddedDocumentField):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
+                    elif hasattr(f, "field") and isinstance(f.field, ReferenceField):
+                        v = [{"label": str(vv), "id": str(vv.id)} for vv in v]
                 elif isinstance(f, EmbeddedDocumentField):
                     v = self.instance_to_dict(v, nocustom=True)
                 elif isinstance(f, BinaryField):

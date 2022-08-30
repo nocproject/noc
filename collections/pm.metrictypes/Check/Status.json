@@ -1,0 +1,12 @@
+{
+    "name": "Check | Status",
+    "$collection": "pm.metrictypes",
+    "uuid": "27958ad3-ec78-48d1-8eb4-ace3b5b4b7db",
+    "scope__name": "Check",
+    "field_name": "status",
+    "field_type": "UInt8",
+    "description": "Check result - yes or no",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}

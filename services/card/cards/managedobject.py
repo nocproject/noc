@@ -498,7 +498,7 @@ class ManagedObjectCard(BaseCard):
                     "state__label": d["state"],
                     "details": [
                         {"name": c["name"], "state": c["status"], "error": c["error"]}
-                        for c in d["checks"]
+                        for c in d["checks"] or []
                     ],
                     "reason": d["reason"] or "",
                 }
