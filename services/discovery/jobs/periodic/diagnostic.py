@@ -38,7 +38,7 @@ class DiagnosticCheck(DiscoveryCheck):
 
     CHECK_CACHE = {}  # Cache check result
 
-    def __init__(self, job, run_order: Optional[Literal["B", "A"]] = None):
+    def __init__(self, job, run_order: Optional[Literal["S", "E"]] = None):
         super().__init__(job)
         self.run_order = run_order
 
@@ -84,7 +84,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 continue
             # Get checker
             checks: List[CheckResult] = []
-            for cr in self.iter_checks([Check(name=c) for c in dc.checks]):
+            for cr in self.iter_checks(dc.checks):
                 if cr.action and not hasattr(self, f"action_{cr.action.action}"):
                     self.logger.warning(
                         "[%s|%s] Unknown action: %s", dc.diagnostic, cr.check, cr.action.action
@@ -93,6 +93,10 @@ class DiagnosticCheck(DiscoveryCheck):
                     h = getattr(self, f"action_{cr.action.action}")
                     h(cr.action)
                 checks.append(cr)
+                m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{dc.diagnostic}"]
+                if cr.arg0:
+                    m_labels += [f"noc::check::arg0::{cr.arg0}"]
+                metrics += [MetricValue("Check | Status", value=int(cr.status), labels=m_labels)]
                 if cr.metrics:
                     metrics += cr.metrics
                 if cr.data:

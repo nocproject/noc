@@ -22,6 +22,7 @@ class ProfileChecker(ObjectChecker):
 
     name = "profilechecker"
     CHECKS: List[str] = ["PROFILE"]
+    USER_DISCOVERY_USE = False
     CHECK_SNMP_VERSION_MAP = {
         p.config.check: p.config.snmp_version
         for p in Protocol

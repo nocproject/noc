@@ -50,7 +50,7 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     HTTP_DIAG,
 )
-from noc.core.checkers.base import CheckData
+from noc.core.checkers.base import CheckData, Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -117,6 +117,7 @@ from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
+from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 41
@@ -2353,6 +2354,7 @@ class ManagedObject(NOCModel):
         Iterate over object diagnostics
         :return:
         """
+
         if not self.is_managed:
             return
         ac = self.get_access_preference()
@@ -2360,10 +2362,10 @@ class ManagedObject(NOCModel):
         yield DiagnosticConfig(
             SNMP_DIAG,
             display_description="Check Device response by SNMP request",
-            checks=["SNMPv1", "SNMPv2c"],
+            checks=[Check(name="SNMPv1"), Check(name="SNMPv2c")],
             blocked=ac == "C",
             run_policy="F",
-            run_order="B",
+            run_order="S",
             discovery_box=True,
             alarm_class="NOC | Managed Object | Access Lost",
             alarm_labels=["noc::access::method::SNMP"],
@@ -2373,11 +2375,11 @@ class ManagedObject(NOCModel):
             PROFILE_DIAG,
             display_description="Check device profile",
             show_in_display=False,
-            checks=["PROFILE"],
+            checks=[Check(name="PROFILE")],
             alarm_class="Discovery | Guess | Profile",
             blocked=not self.object_profile.enable_box_discovery_profile,
             run_policy="A",
-            run_order="B",
+            run_order="S",
             discovery_box=True,
             reason="Blocked by ObjectProfile AccessPreference"
             if not self.object_profile.enable_box_discovery_profile
@@ -2387,13 +2389,13 @@ class ManagedObject(NOCModel):
         yield DiagnosticConfig(
             CLI_DIAG,
             display_description="Check Device response by CLI (TELNET/SSH) request",
-            checks=["TELNET", "SSH"],
+            checks=[Check(name="TELNET"), Check(name="SSH")],
             discovery_box=True,
             alarm_class="NOC | Managed Object | Access Lost",
             alarm_labels=["noc::access::method::CLI"],
             blocked=ac == "S",
             run_policy="F",
-            run_order="B",
+            run_order="S",
             reason="Blocked by AccessPreference" if ac == "S" else None,
         )
         # HTTP Diagnostic
@@ -2403,10 +2405,10 @@ class ManagedObject(NOCModel):
             show_in_display=False,
             alarm_class="NOC | Managed Object | Access Lost",
             alarm_labels=["noc::access::method::HTTP"],
-            checks=["HTTP", "HTTPS"],
+            checks=[Check("HTTP"), Check("HTTPS")],
             blocked=False,
             run_policy="D",  # Not supported
-            run_order="B",
+            run_order="S",
             reason=None,
         )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?
@@ -2434,6 +2436,8 @@ class ManagedObject(NOCModel):
             reason="Disable by source settings" if self.syslog_source_type != "d" else "",
         )
         #
+        for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
+            yield dc
 
     def update_diagnostics(
         self, checks: List[CheckData] = None, bulk: Optional[List[DiagnosticItem]] = None

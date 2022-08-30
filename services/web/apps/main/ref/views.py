@@ -201,6 +201,9 @@ class RefAppplication(ExtApplication):
         r = []
         for name in checker_loader:
             checker = checker_loader[name]
+            if not checker.USER_DISCOVERY_USE:
+                # Filter System Only Checks
+                continue
             for check in checker.CHECKS:
                 r += [{"id": check, "label": check}]
         return r  # list(sorted(r))
