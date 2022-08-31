@@ -22,9 +22,9 @@ def setup_timezone():
     """
     if not hasattr(time, "tzset") or not config.timezone:
         return  # Not supported anyway
-    if not has_timezone(config.timezone):
+    if not has_timezone(str(config.timezone)):
         raise ValueError("Invalid timezone: %s" % config.timezone)
-    os.environ["TZ"] = config.timezone
+    os.environ["TZ"] = str(config.timezone)
     time.tzset()
 
 

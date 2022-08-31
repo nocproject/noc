@@ -103,7 +103,7 @@ class DesktopApplication(ExtApplication):
             "help_branch": config.help.branch,
             "help_language": config.help.language,
             "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
-            "timezone": config.timezone,
+            "timezone": str(config.timezone),
             "has_geocoder": bool(config.geocoding.ui_geocoder),
         }
         return self.render(
@@ -152,7 +152,7 @@ class DesktopApplication(ExtApplication):
             "helpUrl": config.help.base_url,
             "helpBranch": config.help.branch,
             "helpLanguage": config.help.language,
-            "timezone": config.timezone,
+            "timezone": str(config.timezone),
             "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
             "theme": config.web.theme,
             "has_geocoder": bool(config.geocoding.ui_geocoder),
