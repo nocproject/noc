@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # mailsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,8 +17,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from email.header import Header
 
-# Third-party modules
-import pytz
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -34,12 +32,7 @@ MAILSENDER_STREAM = "mailsender"
 class MailSenderService(FastAPIService):
     name = "mailsender"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.tz = None
-
     async def on_activate(self):
-        self.tz = pytz.timezone(config.timezone)
         self.slot_number, self.total_slots = await self.acquire_slot()
         await self.subscribe_stream(MAILSENDER_STREAM, self.slot_number, self.on_message)
 
@@ -67,8 +60,7 @@ class MailSenderService(FastAPIService):
         self, message_id: int, data: Dict[str, Any], address_to: Optional[str] = None
     ) -> None:
         attachments = data.get("attachments", [])
-        self.tz = pytz.timezone(config.timezone)
-        now = datetime.datetime.now(self.tz)
+        now = datetime.datetime.now(config.timezone)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
         if "address" in data:
             address = [data["address"]]
