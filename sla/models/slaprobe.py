@@ -7,8 +7,8 @@
 
 # Python modules
 import operator
-from typing import List
 import datetime
+from typing import List, Iterable, Optional
 from threading import Lock
 
 # Third-party modules
@@ -37,6 +37,7 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
@@ -99,12 +100,12 @@ class SLAProbe(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["SLAProbe"]:
         return SLAProbe.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["SLAProbe"]:
         return SLAProbe.objects.filter(bi_id=id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -140,6 +141,45 @@ class SLAProbe(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_slaprobe")
 
+    def iter_collected_metrics(
+        self, is_box: bool = False, is_periodic: bool = True
+    ) -> Iterable[MetricCollectorConfig]:
+        """
+        Return metrics setting for colleted by box or periodic
+        :param is_box:
+        :param is_periodic:
+        :return:
+        """
+        if not self.state.is_productive or not self.managed_object:
+            return
+        metrics = []
+        for metric in self.profile.metrics:
+            if (is_box and not metric.enable_box) or (is_periodic and not metric.enable_periodic):
+                continue
+            metrics += [
+                MetricItem(
+                    name=metric.metric_type.name,
+                    field_name=metric.metric_type.field_name,
+                    scope_name=metric.metric_type.scope.table_name,
+                    is_stored=metric.is_stored,
+                    is_compose=metric.metric_type.is_compose,
+                )
+            ]
+        if not metrics:
+            # self.logger.info("SLA metrics are not configured. Skipping")
+            return
+        labels = [f"noc::sla::name::{self.name}"]
+        if self.group:
+            labels += [f"noc::sla::group::{self.group}"]
+        yield MetricCollectorConfig(
+            collector="sla",
+            metrics=tuple(metrics),
+            labels=tuple(labels),
+            hints=[f"sla_type::{self.type}"],
+            sla_probe=self.bi_id,
+            service=self.service,
+        )
+
     @classmethod
     def get_metric_config(cls, sla_probe: "SLAProbe"):
         """
@@ -147,6 +187,8 @@ class SLAProbe(Document):
         :param sla_probe:
         :return:
         """
+        if not sla_probe.state.is_productive:
+            return {}
         labels = []
         for ll in sla_probe.effective_labels:
             l_c = Label.get_by_name(ll)
