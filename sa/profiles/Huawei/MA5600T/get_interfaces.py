@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ class Script(BaseScript):
     rx_adsl_state = re.compile(r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
     rx_pvc = re.compile(
         r"^\s*\d+\s+p2p\s+lan\s+[0\*]/(?:\d+|\*)\s*/(?P<vlan>(?:\d+|\*))\s+\S*\s+\S+\s+\S+\s+"
-        r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
+        r"(?:adl|shl)\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n",
         re.MULTILINE,
     )
@@ -75,6 +75,10 @@ class Script(BaseScript):
     rx_ports = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
         r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)?",
+        re.MULTILINE,
+    )
+    rx_ports2 = re.compile(
+        r"^\s*(?P<port>\d+)\s+(?P<state>Activating|Activated|Registered)\s+\d+\s+\d+",
         re.MULTILINE,
     )
 
@@ -153,6 +157,25 @@ class Script(BaseScript):
             1     GPON        0              20             Online
             2     GPON        0              20             Online
             3     GPON        0              20             Online
+
+          -----------------------------------------------------------------------------
+          Port    Port Type   Port Status      Line Profile  Alarm Profile  Ext Profile
+          -----------------------------------------------------------------------------
+             0    ADSL        Activated                  30              1           --
+             1    ADSL        Activating                 30              1           --
+             2    ADSL        Activating                 30              1           --
+             3    ADSL        Activating                 30              1           --
+
+        H561SHEA output:
+          --------------------------------------------------------------
+          Port  Port           Line    Alarm     Running       Bind
+                Status         Profile Profile   Operation     Status
+          --------------------------------------------------------------
+             0  Activating           5       1   Normal        Normal
+             1  Activating           6       1   Normal        Normal
+             2  Activating           5       1   Normal        Normal
+             3  Activating           5       1   Normal        Normal
+
         on old version column "Optical-module status" not exists, that state is True.
         :param v:
         :param slot_n:
@@ -165,6 +188,15 @@ class Script(BaseScript):
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
                 "type": match.group("type"),
+            }
+        if ports:
+            return ports
+        for match in self.rx_ports2.finditer(v):
+            state = match.group("state")
+            ports[f'0/{slot_n}/{match.group("port")}'] = {
+                "num": match.group("port"),
+                "state": state.lower() in {"activated", "registered"} if state else True,
+                "type": "SHDSL",
             }
         return ports
 
