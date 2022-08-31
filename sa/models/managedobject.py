@@ -2851,7 +2851,7 @@ class ManagedObject(NOCModel):
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
-                {"managed_object": self.object.id, "type": "physical"},
+                {"managed_object": self.id, "type": "physical"},
                 {
                     "_id": 1,
                     "name": 1,
