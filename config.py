@@ -27,6 +27,7 @@ from noc.core.config.params import (
     SecretParameter,
     ListParameter,
     UUIDParameter,
+    TimeZoneParameter,
 )
 
 
@@ -646,7 +647,7 @@ class Config(BaseConfig):
         idle_timeout = SecondsParameter(default="30s")
         shutdown_timeout = SecondsParameter(default="1M")
 
-    timezone = StringParameter(default="Europe/Moscow")
+    timezone = TimeZoneParameter(default="Europe/Moscow")
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
