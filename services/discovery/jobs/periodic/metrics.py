@@ -107,7 +107,7 @@ class MetricsCheck(DiscoveryCheck):
         result = [
             r
             for r in self.object.scripts.get_metrics(
-                metrics=metrics,
+                collected=metrics,
                 streaming={
                     "stream": "metrics",
                     "partition": 0,
@@ -119,6 +119,7 @@ class MetricsCheck(DiscoveryCheck):
         if not result:
             self.logger.info("No metrics found")
             return
+        self.logger.info("Collected metrics: %s", len(result))
         # # Send metrics
         # if n_metrics:
         #   self.logger.info("Spooling %d metrics", n_metrics)

@@ -11,7 +11,7 @@ import os
 import re
 import itertools
 import operator
-from typing import Union, Optional, List, Tuple, Callable, Dict
+from typing import Union, Optional, List, Tuple, Callable, Dict, Any
 from collections import defaultdict
 
 # Third-party modules
@@ -52,7 +52,7 @@ class MetricConfig(object):
         self.sla_type: str = sla_type
 
     def __repr__(self):
-        return "<MetricConfig #%s %s>" % (self.id, self.metric)
+        return f"<MetricConfig #{self.id} {self.metric}>"
 
 
 class BatchConfig(object):
@@ -310,7 +310,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         else:
             return metric
 
-    def execute(self, metrics):
+    def execute(
+        self, metrics: Optional[List[Dict[str, Any]]] = None, collected: List[Dict[str, Any]] = None
+    ):
         """
         Metrics is a list of:
         * id -- Opaque id, must be returned back
@@ -321,7 +323,27 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         * sla_test - optional sla test inventory
         """
         # Generate list of MetricConfig from input parameters
-        metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
+        if collected:
+            metrics: List[MetricConfig] = []
+            seq_id = 1
+            for coll in collected:
+                hints = dict(v.split("::") for v in coll.get("hints", []))
+                for m in coll["metrics"]:
+                    metrics.append(
+                        MetricConfig(
+                            id=seq_id,
+                            metric=m,
+                            labels=coll.get("labels", []),
+                            oid=hints.get("oid"),
+                            ifindex=hints.get("ifindex"),
+                            sla_type=hints.get("sla_type"),
+                        )
+                    )
+                    seq_id += 1
+        elif metrics:
+            metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
+        else:
+            raise ValueError("Parameter 'collected' or 'metrics' required")
         # Split by metric types
         self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in metrics}
         for m in metrics:
@@ -370,7 +392,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         self.streaming.data = None
         managed_object = s_data["managed_object"]
         for rr in self.metrics:
-            data_mt = rr["metrics"].replace(" ", "_")
+            data_mt = rr["metric"].replace(" ", "_")
             scope_name = s_data[data_mt]["scope"]
             field_name = s_data[data_mt]["field"]
             mm = (scope_name, tuple(rr["labels"]))
