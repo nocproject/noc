@@ -7,16 +7,16 @@
 
 # Python modules
 from typing import Optional, List, Literal, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
 class MetricItem(object):
     name: str
-    field_name: str
-    scope_name: str
-    is_stored: bool = True
-    is_compose: bool = False
+    field_name: str = field(compare=False)
+    scope_name: str = field(compare=False)
+    is_stored: bool = field(compare=False, default=True)
+    is_compose: bool = field(compare=False, default=False)
 
 
 @dataclass(frozen=True)
