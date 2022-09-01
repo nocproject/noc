@@ -8,6 +8,7 @@
 # Python modules
 import itertools
 import logging
+import pytz
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4, is_uuid
@@ -79,6 +80,14 @@ class UUIDParameter(BaseParameter):
         if v and not is_uuid(v):
             raise ValueError(f"Invalid UUID value: {v}")
         return v
+
+
+class TimeZoneParameter(BaseParameter):
+    def clean(self, v):
+        try:
+            return pytz.timezone(v)
+        except pytz.UnknownTimeZoneError:
+            raise ValueError(f"Invalid TimeZone value: {v}")
 
 
 class IntParameter(BaseParameter):
