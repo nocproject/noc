@@ -2889,7 +2889,7 @@ class ManagedObject(NOCModel):
                             is_compose=False,
                         )
                         if mi not in metrics:
-                            metrics.append(m)
+                            metrics.append(mi)
             if not metrics:
                 continue
             ifindex = i.get("ifindex")
