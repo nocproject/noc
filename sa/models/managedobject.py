@@ -2463,7 +2463,7 @@ class ManagedObject(NOCModel):
             dc_checks = [
                 CheckStatus(name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error)
                 for cr in checks
-                if dc.checks and cr.name in dc.checks
+                if dc.checks and Check(name=cr.name) in dc.checks
             ]
             # Get or Create DiagnosticItem
             if dc.diagnostic not in self.diagnostics:
