@@ -115,7 +115,7 @@ from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.models.problem import ProblemItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
-from .managedobjectprofile import ManagedObjectProfile, MetricConfig
+from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
@@ -2463,7 +2463,7 @@ class ManagedObject(NOCModel):
             dc_checks = [
                 CheckStatus(name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error)
                 for cr in checks
-                if dc.checks and cr.name in dc.checks
+                if dc.checks and Check(name=cr.name) in dc.checks
             ]
             # Get or Create DiagnosticItem
             if dc.diagnostic not in self.diagnostics:
