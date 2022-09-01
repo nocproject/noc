@@ -891,6 +891,7 @@ nav:
           - How to Share Collections: dev/tools/howto-sharing-collection.md
           - How to Setup black Formatter in PyCharm: dev/tools/howto-setup-black-in-pycharm.md
           - How to Setup flake8 Check in PyCharm: dev/tools/howto-setup-flake8-in-pycharm.md
+          - Инструкция по локализации интерфейса пользователя: dev/tools/howto-language-translation.md
       - SA:
           - dev/sa/scripts/index.md
           - SA Profile: dev/sa/sa-profiles.md
@@ -1065,6 +1066,7 @@ markdown_extensions:
       separator: "_"
   - admonition
   - attr_list
+  - md_in_html
   - def_list
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
@@ -1076,6 +1078,7 @@ markdown_extensions:
           format: !!python/name:mermaid2.fence_mermaid
 plugins:
   - search
+  - glightbox
   - mermaid2:
       arguments:
         theme: dark
