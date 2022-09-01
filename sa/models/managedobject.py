@@ -115,7 +115,7 @@ from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.models.problem import ProblemItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
-from .managedobjectprofile import ManagedObjectProfile, MetricConfig
+from .managedobjectprofile import ManagedObjectProfile
 from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
