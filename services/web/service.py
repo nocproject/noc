@@ -2,26 +2,25 @@
 # ---------------------------------------------------------------------
 # Web service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import os
+
 # Third-party modules
-import tornado.web
-import tornado.httpserver
-import tornado.wsgi
-import django.core.handlers.wsgi
-from tornado import escape
-from tornado import httputil
+from django.core.wsgi import get_wsgi_application
 
 # NOC modules
 from noc.config import config
-from noc.core.service.tornado import TornadoService
+from noc.core.service.fastapi import FastAPIService
 from noc.main.models.customfield import CustomField
-from noc.core.perf import metrics
+
+# from noc.core.perf import metrics
 
 
-class WebService(TornadoService):
+class WebService(FastAPIService):
     name = "web"
     api = []
     use_translation = True
@@ -32,12 +31,9 @@ class WebService(TornadoService):
 
     def __init__(self):
         super().__init__()
-
-    def get_handlers(self):
-        return [
-            # Pass to NOC
-            (r"^.*$", NOCWSGIHandler, {"service": self})
-        ]
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "noc.settings")
+        self.wsgi_app = get_wsgi_application()
+        self.extended_logging = True
 
     async def on_activate(self):
         # Initialize audit trail
@@ -58,101 +54,6 @@ class WebService(TornadoService):
 
     def get_backend_limit(self):
         return config.web.max_threads
-
-
-class NOCWSGIHandler(tornado.web.RequestHandler):
-    def initialize(self, service):
-        self.service = service
-        self.backend_id = "%s (%s:%s)" % (
-            self.service.service_id,
-            self.service.address,
-            self.service.port,
-        )
-
-    async def prepare(self):
-        data = await self.process_request(self.request)
-        header_obj = httputil.HTTPHeaders()
-        for key, value in data["headers"]:
-            header_obj.add(key, value)
-        self.request.connection.write_headers(data["start_line"], header_obj, chunk=data["body"])
-        self.request.connection.finish()
-        self.log_request(data["status_code"], self.request)
-        self._finished = True
-
-    async def process_request(self, request):
-        data = {}
-        response = []
-
-        def start_response(status, response_headers, exc_info=None):
-            data["status"] = status
-            data["headers"] = response_headers
-            return response.append
-
-        if config.features.forensic:
-            in_label = "%s %s %s %s" % (
-                request.remote_ip,
-                request.headers.get("Remote-User", "-"),
-                request.method,
-                request.uri,
-            )
-        else:
-            in_label = None
-        wsgi = django.core.handlers.wsgi.WSGIHandler()
-        app_response = await self.service.run_in_executor(
-            "max",
-            wsgi,
-            tornado.wsgi.WSGIContainer.environ(request),
-            start_response,
-            _in_label=in_label,
-        )
-        try:
-            response.extend(app_response)
-            body = b"".join(response)
-        finally:
-            if hasattr(app_response, "close"):
-                app_response.close()
-        if not data:
-            raise Exception("WSGI app did not call start_response")
-
-        status_code, reason = data["status"].split(" ", 1)
-        status_code = int(status_code)
-        headers = data["headers"]
-        header_set = set(k.lower() for (k, v) in headers)
-        body = escape.utf8(body)
-        if status_code != 304:
-            if "content-length" not in header_set:
-                headers.append(("Content-Length", str(len(body))))
-            if "content-type" not in header_set:
-                headers.append(("Content-Type", "text/html; charset=UTF-8"))
-        if "server" not in header_set:
-            headers.append(("Server", "TornadoServer/%s" % tornado.version))
-        headers.append(("X-NOC-Backend", self.backend_id))
-        data["status_code"] = status_code
-        data["start_line"] = httputil.ResponseStartLine("HTTP/1.1", status_code, reason)
-        data["body"] = body
-        return data
-
-    def log_request(self, status_code, request):
-        method = request.method
-        uri = request.uri
-        remote_ip = request.remote_ip
-        user = request.headers.get("Remote-User", "-")
-        agent = request.headers.get("User-Agent", "-")
-        referer = request.headers.get("Referer", "-")
-        self.service.logger.info(
-            '%s %s - "%s %s" HTTP/1.1 %s "%s" %s %.2fms',
-            remote_ip,
-            user,
-            method,
-            uri,
-            status_code,
-            referer,
-            agent,
-            1000.0 * request.request_time(),
-        )
-        metrics["http_requests"] += 1
-        metrics["http_requests_%s" % method.lower()] += 1
-        metrics["http_response_%s" % status_code] += 1
 
 
 if __name__ == "__main__":

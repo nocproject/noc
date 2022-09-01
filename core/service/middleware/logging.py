@@ -10,6 +10,7 @@ from time import perf_counter
 
 # Third-party modules
 from starlette.types import Scope, Receive, Send
+from starlette.datastructures import Headers
 
 # NOC modules
 from noc.core.perf import metrics
@@ -17,9 +18,10 @@ from noc.core.comp import smart_text
 
 
 class LoggingMiddleware(object):
-    def __init__(self, app, logger=None):
+    def __init__(self, app, logger=None, is_wsgi_app: bool = False):
         self.app = app
         self.logger = logger
+        self.is_wsgi_app = is_wsgi_app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         def to_suppress_logging():
@@ -52,6 +54,22 @@ class LoggingMiddleware(object):
                     path = "%s?%s" % (path, smart_text(scope["query_string"]))
                 remote_ip = scope["client"][0]
                 status = 200
-                self.logger.info("%s %s (%s) %.2fms", method, path, remote_ip, 1000.0 * (t1 - t0))
+                if self.is_wsgi_app:
+                    headers = Headers(scope=scope)
+                    self.logger.info(
+                        '%s %s - "%s %s" HTTP/1.1 %s "%s" %s %.2fms',
+                        remote_ip,
+                        headers.get("Remote-User", "-"),
+                        method,
+                        path,
+                        status,
+                        headers.get("Referer", "-"),
+                        headers.get("User-Agent", "-"),
+                        1000.0 * (t1 - t0),
+                    )
+                else:
+                    self.logger.info(
+                        "%s %s (%s) %.2fms", method, path, remote_ip, 1000.0 * (t1 - t0)
+                    )
                 metrics["http_requests", ("method", method.lower())] += 1
                 metrics["http_response", ("status", status)] += 1
