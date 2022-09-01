@@ -2,31 +2,31 @@
 tags:
   - how-to
 ---
-# How to Share Collections from NOC Web Interface
+# Как Добавить коллекцию в общий доступ из Пользовательского интерфейса НОКа
 
-NOC is the open-source product, so every contribution is valuable for us.
-Collections is an important part of NOC, so we provide an easy way
-to share your collection models with the community.
+НОК это проект с открытым исходным кодом, поэтому любой может поучаствовать в его развитии.
+Коллекции настроек важная часть НОКа, они предоставляют простой путь добавления ваших
+наработок (моделей оборудования, профилей, моделей) для использования всех пользователей.
 
 Consider you have got a self-made collection, for example a new model of switch or connection rule or etc.
 Follow the steps:
 
-1. Register at our [Gitlab](https://code.getnoc.com/)
-2. Create a [Personal Access Token](https://code.getnoc.com/profile/personal_access_tokens>) with `api` scope checked.
-   Remember it!
-3. Open a model, that you want to share in NOC web interface, for example:
+1. Зарегистрировать в нашем трекере [Gitlab](https://code.getnoc.com/)
+2. Создать [Персональный токен доступа - Personal Access Token](https://code.getnoc.com/profile/personal_access_tokens>) с отмеченной областью `api`.
+   Сохраните его!
+3. Откройте модель, которую вы хотите добавить в проект в Веб-интерфейсе, например:
    ![JSON](image/json.png)
-4. Use the Force, Luke, and fill up all the forms.
+4. Заполнител предложенные формы.
    ![JSON2](image/json2.png)
    ![API Key](image/apikey.png)
    ![Description](image/description.png)
-5. Then NOC will send file (your browser should have access to the Internet) to the repository and opens a Merge Request.
-   Some browsers will prevent open a new popup, so check this moment.
+5. НОК отправит файл (у браузера должен быть доступ в интернет) в репозиторий и откроет `Merge Request` (запрос на добавление).
+   Некоторые браузеры откроют окно с предупреждением, проверьте этот момент.
    ![MR](image/mr.png)
-6. Congratulations with your contribution and thank you.
+6. Подзравляем! Вы добавили ваш труд в проект. Спасибо!
 
-## Changing or Restoring API Token
-In case if you forgot your token or you want to change it:
+## Изменение или Восстановление токена доступа
+Если вы забыли ваш токен для доступа или хотите его поменять:
 
 ```
 $ ./noc shell
