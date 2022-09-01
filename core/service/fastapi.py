@@ -42,7 +42,6 @@ class FastAPIService(BaseService):
         # WSGI application of any third-party framework that will be attached to the main
         # FastAPI application. For attaching Django applications of web-service in particular
         self.wsgi_app = None
-        self.extended_logging = False
 
     async def error_handler(self, request: "Request", exc) -> Response:
         """
@@ -99,11 +98,11 @@ class FastAPIService(BaseService):
                 openapi_tags += [{"name": tag, "description": self.OPENAPI_TAGS_DOCS[tag]}]
         # Build FastAPI app
         self.app = FastAPI(
-            title="NOC '%s' Service API" % (self.name or "unknown"),
+            title=f"NOC '{self.name or 'unknown'}' Service API",
             version=version.version,
-            openapi_url="/api/%s/openapi.json" % self.name,
-            docs_url="/api/%s/docs" % self.name,
-            redoc_url="/api/%s/redoc" % self.name,
+            openapi_url=f"/api/{self.name}/openapi.json",
+            docs_url=f"/api/{self.name}/docs",
+            redoc_url=f"/api/{self.name}/redoc",
             openapi_tags=openapi_tags,
             exception_handlers={
                 Exception: self.error_handler,
@@ -115,7 +114,7 @@ class FastAPIService(BaseService):
         self.app.add_middleware(
             LoggingMiddleware,
             logger=PrefixLoggerAdapter(self.logger, "api"),
-            extended_logging=self.extended_logging,
+            is_wsgi_app=bool(self.wsgi_app),
         )
         self.app.add_middleware(SpanMiddleware, service_name=self.name)
         self.server: Optional[uvicorn.Server] = None

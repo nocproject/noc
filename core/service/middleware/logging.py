@@ -18,10 +18,10 @@ from noc.core.comp import smart_text
 
 
 class LoggingMiddleware(object):
-    def __init__(self, app, logger=None, extended_logging=False):
+    def __init__(self, app, logger=None, is_wsgi_app: bool = False):
         self.app = app
         self.logger = logger
-        self.extended_logging = extended_logging
+        self.is_wsgi_app = is_wsgi_app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         def to_suppress_logging():
@@ -54,32 +54,22 @@ class LoggingMiddleware(object):
                     path = "%s?%s" % (path, smart_text(scope["query_string"]))
                 remote_ip = scope["client"][0]
                 status = 200
-                if self.extended_logging:
+                if self.is_wsgi_app:
                     headers = Headers(scope=scope)
-                    user = headers.get("Remote-User", "-")
-                    agent = headers.get("User-Agent", "-")
-                    referer = headers.get("Referer", "-")
                     self.logger.info(
                         '%s %s - "%s %s" HTTP/1.1 %s "%s" %s %.2fms',
                         remote_ip,
-                        user,
+                        headers.get("Remote-User", "-"),
                         method,
                         path,
                         status,
-                        referer,
-                        agent,
+                        headers.get("Referer", "-"),
+                        headers.get("User-Agent", "-"),
                         1000.0 * (t1 - t0),
                     )
-                    metrics["http_requests"] += 1
-                    metrics["http_requests_%s" % method.lower()] += 1
-                    metrics["http_response_%s" % status] += 1
                 else:
                     self.logger.info(
-                        "%s %s (%s) %.2fms",
-                        method,
-                        path,
-                        remote_ip,
-                        1000.0 * (t1 - t0),
+                        "%s %s (%s) %.2fms", method, path, remote_ip, 1000.0 * (t1 - t0)
                     )
-                    metrics["http_requests", ("method", method.lower())] += 1
-                    metrics["http_response", ("status", status)] += 1
+                metrics["http_requests", ("method", method.lower())] += 1
+                metrics["http_response", ("status", status)] += 1
