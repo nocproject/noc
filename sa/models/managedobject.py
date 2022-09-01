@@ -2869,15 +2869,27 @@ class ManagedObject(NOCModel):
             for mc in i_profile.metrics:
                 if (is_box and not mc.enable_box) or (is_periodic and not mc.enable_periodic):
                     continue
-                metrics.append(
-                    MetricItem(
-                        name=mc.metric_type.name,
-                        field_name=mc.metric_type.field_name,
-                        scope_name=mc.metric_type.scope.table_name,
-                        is_stored=mc.is_stored,
-                        is_compose=mc.metric_type.is_compose,
-                    )
+                mi = MetricItem(
+                    name=mc.metric_type.name,
+                    field_name=mc.metric_type.field_name,
+                    scope_name=mc.metric_type.scope.table_name,
+                    is_stored=mc.is_stored,
+                    is_compose=mc.metric_type.is_compose,
                 )
+                if mi not in metrics:
+                    metrics.append(mi)
+                # Append Compose metrics for collect
+                if mc.metric_type.is_compose:
+                    for mt in mc.metric_type.compose_inputs:
+                        mi = MetricItem(
+                            name=mt.name,
+                            field_name=mt.field_name,
+                            scope_name=mc.metric_type.scope.table_name,
+                            is_stored=True,
+                            is_compose=False,
+                        )
+                        if mi not in metrics:
+                            metrics.append(m)
             if not metrics:
                 continue
             ifindex = i.get("ifindex")
