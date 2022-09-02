@@ -62,11 +62,6 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "string"
         },
         {
-            name: "status_change_notification__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "metrics",
             type: "auto"
         },
@@ -135,6 +130,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         {
             name: "enable_abduct_detection",
             type: "bool"
+        },
+        {
+            name: "labels",
+            type: "auto"
         },
         {
             name: "dynamic_classification_policy",

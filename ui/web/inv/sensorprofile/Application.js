@@ -119,45 +119,45 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           query: {
             "enable_sensorprofile": true
           }
-          },
-          {
-            name: "match_rules",
-            xtype: "listform",
-            fieldLabel: __("Match Rules"),
-            items: [
-                {
-                  name: "dynamic_order",
-                  xtype: "numberfield",
-                  fieldLabel: __("Dynamic Order"),
-                  allowBlank: true,
-                  defaultValue: 0,
-                  uiStyle: "small"
-                },
-                {
-                  name: "labels",
-                  xtype: "labelfield",
-                  fieldLabel: __("Match Labels"),
-                  allowBlank: false,
-                  isTree: true,
-                  filterProtected: false,
-                  pickerPosition: "down",
-                  uiStyle: "extra",
-                  query: {
-                    "allow_matched": true
-                  }
-                },
-                {
-                  name: "handler",
-                  xtype: "main.handler.LookupField",
-                  fieldLabel: __("Match Handler"),
-                  allowBlank: true,
-                  uiStyle: "medium",
-                  query: {
-                    "allow_match_rule": true
-                }
-                }
-              ]
-          }
+        },
+        {
+          name: "match_rules",
+          xtype: "listform",
+          fieldLabel: __("Match Rules"),
+          items: [
+              {
+                name: "dynamic_order",
+                xtype: "numberfield",
+                fieldLabel: __("Dynamic Order"),
+                allowBlank: true,
+                defaultValue: 0,
+                uiStyle: "small"
+              },
+            {
+              name: "labels",
+              xtype: "labelfield",
+              fieldLabel: __("Match Labels"),
+              allowBlank: false,
+              isTree: true,
+              filterProtected: false,
+              pickerPosition: "down",
+              uiStyle: "extra",
+              query: {
+                "allow_matched": true
+              }
+              },
+            {
+              name: "handler",
+              xtype: "main.handler.LookupField",
+              fieldLabel: __("Match Handler"),
+              allowBlank: true,
+              uiStyle: "medium",
+              query: {
+                "allow_match_rule": true
+              }
+            }
+            ]
+        }
       ]
     });
     me.callParent();
