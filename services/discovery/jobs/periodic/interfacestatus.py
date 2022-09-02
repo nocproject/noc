@@ -61,13 +61,9 @@ class InterfaceStatusCheck(DiscoveryCheck):
             self.logger.info(f"Clear {alarm_class.name}: on interface {iface.name}")
         if iface.profile.status_discovery == "rc" and o_status is False and a_status is True:
             msg["$op"] = "raise"
+            msg["managed_object"] = self.object.id
             msg["alarm_class"] = alarm_class.name
-            msg["vars"] = [
-                {
-                    "interface": iface.name,
-                }
-            ]
-
+            msg["vars"] = {"interface": iface.name}
             self.logger.info(f"Raise {alarm_class.name}: on interface {iface.name}")
         if msg.get("$op"):
             stream, partition = self.object.alarms_stream_and_partition
