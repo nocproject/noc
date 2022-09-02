@@ -938,6 +938,7 @@ nav:
           - Connection Type Restrictions: dev/object-model/connection-type-restrictions.md
           - Inventory Protocols: dev/object-model/inventory-protocols.md
           - ObjectModel Tags: dev/object-model/tags.md
+          - Создания Модели Объекта: dev/object-model/how-to-create-object-model.md
       - BI:
           - Dictionaries Models: dev/bi/dictionaries.md
           - BI Models: dev/bi/models.md
