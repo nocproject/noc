@@ -194,6 +194,9 @@ class InterfaceProfile(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
