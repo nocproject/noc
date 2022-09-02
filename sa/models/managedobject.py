@@ -52,7 +52,6 @@ from noc.core.wf.diagnostic import (
     HTTP_DIAG,
 )
 from noc.core.checkers.base import CheckData, Check
-from noc.core.checkers.base import CheckData
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
