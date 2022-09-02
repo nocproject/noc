@@ -11,7 +11,7 @@ import os
 import re
 import itertools
 import operator
-from typing import Union, Optional, List, Tuple, Callable, Dict
+from typing import Union, Optional, List, Tuple, Callable, Dict, Any
 from collections import defaultdict
 
 # Third-party modules
@@ -41,30 +41,55 @@ PROFILES_PATH = os.path.join("sa", "profiles")
 
 
 class MetricConfig(object):
-    __slots__ = ("id", "metric", "labels", "oid", "ifindex", "sla_type")
+    __slots__ = (
+        "id",
+        "metric",
+        "labels",
+        "oid",
+        "ifindex",
+        "sla_type",
+        "sensor",
+        "sla_probe",
+        "service",
+    )
 
-    def __init__(self, id, metric, labels=None, oid=None, ifindex=None, sla_type=None):
+    def __init__(
+        self,
+        id,
+        metric,
+        labels=None,
+        oid=None,
+        ifindex=None,
+        sla_type=None,
+        sensor=None,
+        sla_probe=None,
+        service=None,
+    ):
         self.id: int = id
         self.metric: str = metric
         self.labels: List[str] = labels
         self.oid: str = oid
         self.ifindex: int = ifindex
         self.sla_type: str = sla_type
+        self.sensor: int = sensor
+        self.sla_probe: int = sla_probe
+        self.service: int = service
 
     def __repr__(self):
-        return "<MetricConfig #%s %s>" % (self.id, self.metric)
+        return f"<MetricConfig #{self.id} {self.metric}>"
 
 
 class BatchConfig(object):
-    __slots__ = ("id", "metric", "labels", "type", "scale", "units")
+    __slots__ = ("id", "metric", "labels", "type", "scale", "units", "service")
 
-    def __init__(self, id, metric, labels, type, scale, units):
+    def __init__(self, id, metric, labels, type, scale, units, service=None):
         self.id: int = id
         self.metric: str = metric
         self.labels: List[str] = labels
         self.type: str = type
         self.scale = scale
         self.units = units
+        self.service = service
 
 
 # Internal sequence number for @metrics decorator ordering
@@ -310,7 +335,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         else:
             return metric
 
-    def execute(self, metrics):
+    def execute(
+        self, metrics: Optional[List[Dict[str, Any]]] = None, collected: List[Dict[str, Any]] = None
+    ):
         """
         Metrics is a list of:
         * id -- Opaque id, must be returned back
@@ -321,7 +348,30 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         * sla_test - optional sla test inventory
         """
         # Generate list of MetricConfig from input parameters
-        metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
+        if collected:
+            metrics: List[MetricConfig] = []
+            seq_id = 1
+            for coll in collected:
+                hints = dict(v.split("::") for v in coll.get("hints", []))
+                for m in coll["metrics"]:
+                    metrics.append(
+                        MetricConfig(
+                            id=seq_id,
+                            metric=m,
+                            labels=coll.get("labels", []),
+                            oid=hints.get("oid"),
+                            ifindex=hints.get("ifindex"),
+                            sla_type=hints.get("sla_type"),
+                            sensor=coll.get("sensor"),
+                            sla_probe=coll.get("sla_probe"),
+                            service=coll.get("service"),
+                        )
+                    )
+                    seq_id += 1
+        elif metrics:
+            metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
+        else:
+            raise ValueError("Parameter 'collected' or 'metrics' required")
         # Split by metric types
         self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in metrics}
         for m in metrics:
@@ -351,6 +401,48 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         # Apply custom metric collection processes
         self.collect_profile_metrics(metrics)
         return self.get_metrics()
+
+    def clean_streaming_result(self, result):
+        """
+        {
+            "ts": m["ts"],
+            "scope": mt.scope.table_name,
+            "labels": m["labels"],
+            mt.field_name: m["value"],
+            "_units": {mt.field_name: units},
+            "managed_object": mo.bi_id,
+        }
+        :param result:
+        :return:
+        """
+        data = {}
+        s_data = self.streaming.get_data()
+        self.streaming.data = None
+        managed_object = s_data["managed_object"]
+        for rr in self.metrics:
+            data_mt = rr["metric"].replace(" ", "_")
+            scope_name = s_data[data_mt]["scope"]
+            field_name = s_data[data_mt]["field"]
+            mm = (scope_name, tuple(rr["labels"]))
+            if mm not in data:
+                data[mm] = {
+                    "ts": rr["ts"],
+                    "managed_object": managed_object,
+                    "scope": scope_name,
+                    "labels": rr["labels"],
+                    "_units": {},
+                }
+                if self.streaming.utc_offset:
+                    data[mm]["ts"] += self.streaming.utc_offset * NS
+                if rr.get("sensor"):
+                    data[mm]["sensor"] = rr["sensor"]
+                if rr.get("sla_probe"):
+                    data[mm]["sla_probe"] = rr["sla_probe"]
+                if rr.get("service"):
+                    data[mm]["service"] = rr["service"]
+            data[mm][field_name] = rr["value"]
+            data[mm]["_units"][field_name] = rr["units"]
+        return list(data.values())
 
     def iter_handlers(self, metric):
         """
@@ -411,6 +503,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         type=vtype,
                         scale=scale,
                         units=units,
+                        service=m.service,
                     )
                 ]
                 # Mark as seen to stop further processing
@@ -485,6 +578,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     type=bv.type,
                     scale=bv.scale,
                     units=bv.units,
+                    service=bv.service,
                 )
 
     def get_ifindex(self, name):
@@ -509,6 +603,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         scale: Union[float, int, Callable] = 1,
         units: str = "1",
         multi: bool = False,
+        sensor: Optional[int] = None,
+        sla_probe: Optional[int] = None,
+        service: Optional[int] = None,
     ):
         """
         Append metric to output
@@ -534,6 +631,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             Possible values from menu: Performance Management -> Setup -> Measurement Unit
         :param multi: True if single request can return several different labels.
             When False - only first call with composite labels for same labels will be returned
+        :param sensor: Sensor Id
+        :param sla_probe: SLA Probe Id
+        :param service: Service Id
         """
         if value == SNMP_OVERLOAD_VALUE:
             self.logger.debug("SNMP Counter is full. Skipping value...")
@@ -568,6 +668,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "type": type,
                 "units": units,
                 "scale": scale,
+                "sensor": sensor,
+                "sla_probe": sla_probe,
+                "service": service,
             }
         ]
         self.seen_ids.add(id)
@@ -626,6 +729,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         labels=m.labels,
                         value=float(value),
                         scale=self.SENSOR_OID_SCALE.get(m.oid, 1),
+                        sensor=m.sensor,
                     )
                 except Exception:
                     continue

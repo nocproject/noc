@@ -79,6 +79,8 @@ class ActivatorAPI(API):
         if not script_class:
             metrics["error", ("type", "invalid_script")] += 1
             raise APIError(f"Invalid script: {name}")
+        if streaming:
+            streaming = StreamingConfig(**streaming)
         script = script_class(
             service=self.service,
             credentials=credentials,
@@ -89,40 +91,22 @@ class ActivatorAPI(API):
             name=name,
             session=session,
             session_idle_timeout=session_idle_timeout,
+            streaming=streaming,
         )
         try:
             result = script.run()
         except script.ScriptError as e:
             metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
-
         if not streaming or not result:
             return result
-        streaming = StreamingConfig(**streaming)
         self.service.publish(
-            value=self.clean_streaming_result(result, streaming),
+            value=orjson.dumps(result),
             stream=streaming.stream,
             partition=streaming.partition,
             headers={},
         )
         return []
-
-    def clean_streaming_result(self, result, s_config: "StreamingConfig") -> bytes:
-        """
-        :param result:
-        :param s_config:
-        :return:
-        """
-        if s_config.format and hasattr(self, f"format_{s_config.format}"):
-            h = getattr(self, f"format_{s_config.format}")
-            result = h(result, s_config)
-        elif s_config.data and isinstance(result, dict):
-            result.update(s_config.get_data())
-        elif s_config.data and isinstance(result, list):
-            data = s_config.get_data()
-            for ss in result:
-                ss.update(data)
-        return orjson.dumps(result)
 
     @staticmethod
     def script_get_label(name: str, credentials, *args, **kwargs):

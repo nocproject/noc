@@ -152,6 +152,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         name=None,
         session=None,
         session_idle_timeout=None,
+        streaming=None,
     ):
         self.service = service
         self.tos = config.activator.tos
@@ -185,6 +186,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Store session id
         self.session = session
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
+        #
+        self.streaming = streaming
         # Cache CLI and SNMP calls, if set
         self.is_cached = False
         # Suitable only when self.parent is None.
@@ -284,6 +287,19 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """
         return self._interface.script_clean_result(self.profile, result)
 
+    def clean_streaming_result(self, result):
+        """
+        :param result:
+        :return:
+        """
+        if self.streaming.data and isinstance(result, dict):
+            result.update(self.streaming.get_data())
+        elif self.streaming.data and isinstance(result, list):
+            data = self.streaming.get_data()
+            for ss in result:
+                ss.update(data)
+        return result
+
     def run(self):
         """
         Run script
@@ -324,6 +340,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
             self.logger.debug("Result: %s", result)
             runtime = perf_counter() - self.start_time
             self.logger.info("Complete (%.2fms)", runtime * 1000)
+            if self.streaming:
+                result = self.clean_streaming_result(result)
         return result
 
     @classmethod
