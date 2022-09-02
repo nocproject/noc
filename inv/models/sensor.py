@@ -30,12 +30,14 @@ from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.agent import Agent
+from noc.pm.models.metrictype import MetricType
 from noc.wf.models.state import State
 from .sensorprofile import SensorProfile
 from noc.config import config
@@ -64,7 +66,9 @@ class Sensor(Document):
         "indexes": ["agent", "managed_object", "object", "labels", "effective_labels"],
     }
 
-    profile = PlainReferenceField(SensorProfile, default=SensorProfile.get_default_profile)
+    profile: "SensorProfile" = PlainReferenceField(
+        SensorProfile, default=SensorProfile.get_default_profile
+    )
     object = PlainReferenceField(Object)
     managed_object = ForeignKeyField(ManagedObject)
     agent = PlainReferenceField(Agent)
@@ -200,6 +204,34 @@ class Sensor(Document):
                     yield list(mo.effective_labels)
         if instance.managed_object:
             yield list(instance.managed_object.effective_labels)
+
+    def iter_collected_metrics(
+        self, is_box: bool = False, is_periodic: bool = True
+    ) -> Iterable[MetricCollectorConfig]:
+        """
+        Return metrics setting for colleted by box or periodic
+        :param is_box:
+        :param is_periodic:
+        :return:
+        """
+        if not self.state.is_productive or not self.profile.enable_collect or not self.snmp_oid:
+            return
+        metrics: List[MetricItem] = []
+        for mt_name in ["Sensor | Value", "Sensor | Status"]:
+            mt = MetricType.get_by_name(mt_name)
+            metrics += [
+                MetricItem(name=mt_name, field_name=mt.field_name, scope_name=mt.scope.table_name)
+            ]
+        if not metrics:
+            # self.logger.info("SLA metrics are not configured. Skipping")
+            return
+        yield MetricCollectorConfig(
+            collector="sensor",
+            metrics=tuple(metrics),
+            labels=(f"noc::sensor::{self.local_id}",),
+            hints=[f"oid::{self.snmp_oid}"],
+            sensor=self.bi_id,
+        )
 
     @classmethod
     def get_metric_config(cls, sensor: "Sensor"):

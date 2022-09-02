@@ -35,6 +35,7 @@ from django.db.models import (
     CASCADE,
 )
 from pydantic import BaseModel
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -113,6 +114,7 @@ from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.models.problem import ProblemItem
+from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
@@ -2814,11 +2816,113 @@ class ManagedObject(NOCModel):
         """
         self.initial_data = _get_field_snapshot(self.__class__, self)
 
+    def iter_collected_metrics(
+        self, is_box: bool = False, is_periodic: bool = True
+    ) -> Iterable[MetricCollectorConfig]:
+        """
+        Return metrics setting for colleted by box or periodic
+        :param is_box:
+        :param is_periodic:
+        :return:
+        """
+        if not self.is_managed:
+            return
+        from noc.inv.models.interface import Interface
+        from noc.inv.models.subinterface import SubInterface
+        from noc.inv.models.interfaceprofile import InterfaceProfile
+
+        metrics: List[MetricItem] = []
+        for mc in ManagedObjectProfile.get_object_profile_metrics(self.object_profile.id).values():
+            if (is_box and not mc.enable_box) or (is_periodic and not mc.enable_periodic):
+                continue
+            metrics.append(
+                MetricItem(
+                    name=mc.metric_type.name,
+                    field_name=mc.metric_type.field_name,
+                    scope_name=mc.metric_type.scope.table_name,
+                    is_stored=mc.is_stored,
+                    is_compose=mc.metric_type.is_compose,
+                )
+            )
+        if metrics:
+            logger.debug("Object metrics: %s", ",".join(m.name for m in metrics))
+            yield MetricCollectorConfig(collector="managed_object", metrics=tuple(metrics))
+        for i in (
+            Interface._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find(
+                {"managed_object": self.id, "type": "physical"},
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "ifindex": 1,
+                    "profile": 1,
+                    "service": 1,
+                },
+            )
+        ):
+            i_profile = InterfaceProfile.get_by_id(i["profile"])
+            logger.debug("Interface %s. ipr=%s", i["name"], i_profile)
+            if not i_profile:
+                continue  # No metrics configured
+            metrics: List[MetricItem] = []
+            for mc in i_profile.metrics:
+                if (is_box and not mc.enable_box) or (is_periodic and not mc.enable_periodic):
+                    continue
+                mi = MetricItem(
+                    name=mc.metric_type.name,
+                    field_name=mc.metric_type.field_name,
+                    scope_name=mc.metric_type.scope.table_name,
+                    is_stored=mc.is_stored,
+                    is_compose=mc.metric_type.is_compose,
+                )
+                if mi not in metrics:
+                    metrics.append(mi)
+                # Append Compose metrics for collect
+                if mc.metric_type.is_compose:
+                    for mt in mc.metric_type.compose_inputs:
+                        mi = MetricItem(
+                            name=mt.name,
+                            field_name=mt.field_name,
+                            scope_name=mc.metric_type.scope.table_name,
+                            is_stored=True,
+                            is_compose=False,
+                        )
+                        if mi not in metrics:
+                            metrics.append(mi)
+            if not metrics:
+                continue
+            ifindex = i.get("ifindex")
+            yield MetricCollectorConfig(
+                collector="managed_object",
+                metrics=tuple(metrics),
+                labels=(f"noc::interface::{i['name']}",),
+                hints=[f"ifindex::{ifindex}"] if ifindex else None,
+                service=i.get("service"),
+            )
+            if not i_profile.allow_subinterface_metrics:
+                continue
+            for si in (
+                SubInterface._get_collection()
+                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+                .find({"interface": i["_id"]}, {"name": 1, "interface": 1, "ifindex": 1})
+            ):
+                ifindex = si.get("ifindex")
+                yield MetricCollectorConfig(
+                    collector="managed_object",
+                    metrics=tuple(metrics),
+                    labels=(
+                        f"noc::interface::{i['name']}",
+                        f"noc::subinterface::{si['name']}",
+                    ),
+                    hints=[f"ifindex::{ifindex}"] if ifindex else None,
+                )
+
     @classmethod
     def get_metric_config(cls, mo: "ManagedObject"):
         """
         Return MetricConfig for Metrics service
-        :param sla_probe:
+        :param mo:
         :return:
         """
         from noc.inv.models.interface import Interface

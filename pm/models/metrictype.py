@@ -136,6 +136,10 @@ class MetricType(Document):
         return self.name
 
     @property
+    def is_compose(self) -> bool:
+        return bool(self.compose_expression)
+
+    @property
     def json_data(self) -> Dict[str, Any]:
         r = {
             "name": self.name,
