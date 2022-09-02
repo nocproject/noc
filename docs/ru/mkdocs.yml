@@ -933,9 +933,10 @@ nav:
               - stack: dev/object-model/model-interface/stack.md
               - twinax: dev/object-model/model-interface/twinax.md
               - weight: dev/object-model/model-interface/weight.md
-          - Connection Types: dev/object-model/connection-type.md
-          - Connection Restrictions: dev/object-model/connection-restrictions.md
-          - Connection Type Restrictions: dev/object-model/connection-type-restrictions.md
+          - Типы соединений: dev/object-model/connection-type.md
+          - Правила соединений: dev/object-model/connection-rule.md
+          - Ограничения на соединения: dev/object-model/connection-restrictions.md
+          - Ограничения на типы соединения: dev/object-model/connection-type-restrictions.md
           - Inventory Protocols: dev/object-model/inventory-protocols.md
           - ObjectModel Tags: dev/object-model/tags.md
           - Создания Модели Объекта: dev/object-model/how-to-create-object-model.md
