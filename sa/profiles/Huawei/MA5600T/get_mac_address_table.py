@@ -27,6 +27,9 @@ class Script(BaseScript):
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
+        if not self.has_cli_display_mac:
+            self.logger.warning("display mac-address is not supported")
+            return r
         ports = self.profile.fill_ports(self)
         adsl_port = "adsl"
         vdsl_port = "port"  # Need more examples

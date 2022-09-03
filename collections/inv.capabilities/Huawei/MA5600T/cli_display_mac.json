@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | MA5600T | CLI | MAC",
+    "$collection": "inv.capabilities",
+    "uuid": "6d9dd7a4-7c40-4cf6-aad9-b93644f248f7",
+    "description": "Supported Huawei MA5600T CLI Syntax 'display mac-address' command",
+    "type": "bool",
+    "card_template": null
+}
