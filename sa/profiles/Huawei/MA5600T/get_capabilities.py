@@ -72,12 +72,25 @@ class Script(BaseScript):
             r += [oid.split(".")[-1]]
         return r
 
+    def get_mac_table_cli(self):
+        """
+        Check box has 'display mac-address' command supported
+        """
+        try:
+            self.cli("display mac-address number")
+        except self.CLISyntaxError:
+            return False
+        return True
+
     def execute_platform_cli(self, caps):
         if self.has_olt_cli():
             caps["Network | PON | OLT"] = True
         r = self.has_slot_temperature()
         if r:
             caps["Slot | Member Ids | Temperature"] = " | ".join(r)
+        r = self.get_mac_table_cli()
+        if r:
+            caps["Huawei | MA5600T | CLI | MAC"] = True
 
     def execute_platform_snmp(self, caps):
         if self.has_olt_snmp():
