@@ -81,6 +81,7 @@ class Profile(BaseProfile):
         "is_lldp_support": {"version": {"$gte": "V800R018C10"}},
         "is_gpon_ports": {"caps": {"$in": ["Network | PON | OLT"]}},
         "is_slots_temp": {"caps": {"$in": ["Slot | Member Ids | Temperature"]}},
+        "has_cli_display_mac": {"caps": {"$in": ["Huawei | MA5600T | CLI | MAC"]}},
     }
 
     rx_slots = re.compile(r"^\s*\d+", re.MULTILINE)
