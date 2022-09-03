@@ -438,11 +438,8 @@ class Interface(Document):
             not self.oper_status_change or self.oper_status_change < now
         ):
             self.update(oper_status=status, oper_status_change=now)
-            if self.profile.status_change_notification:
-                logger.debug(
-                    "Sending status change notification to %s",
-                    self.profile.status_change_notification.name,
-                )
+            if self.profile.is_enabled_notification:
+                logger.debug("Sending status change notification")
                 send_message(
                     data={
                         "name": self.name,
