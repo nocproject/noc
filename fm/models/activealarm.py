@@ -345,20 +345,20 @@ class ActiveAlarm(Document):
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         a.save()
         # Send notifications
-        if not a.root and not self.reopens:
-            a.managed_object.event(
-                a.managed_object.EV_ALARM_CLEARED,
-                {
-                    "alarm": a,
-                    "subject": a.subject,
-                    "body": a.body,
-                    "symptoms": a.alarm_class.symptoms,
-                    "recommended_actions": a.alarm_class.recommended_actions,
-                    "probable_causes": a.alarm_class.probable_causes,
-                },
-            )
-        elif ct:
-            pass
+        # f not a.root and not self.reopens:
+        #    a.managed_object.event(
+        #        a.managed_object.EV_ALARM_CLEARED,
+        #        {
+        #            "alarm": a,
+        #            "subject": a.subject,
+        #            "body": a.body,
+        #            "symptoms": a.alarm_class.symptoms,
+        #            "recommended_actions": a.alarm_class.recommended_actions,
+        #            "probable_causes": a.alarm_class.probable_causes,
+        #        },
+        #    )
+        # elif ct:
+        #     pass
         # Set checks on all consequences
         for d in self._get_collection().find(
             {"root": self.id}, {"_id": 1, "alarm_class": 1, "managed_object": 1}

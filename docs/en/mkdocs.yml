@@ -1289,14 +1289,19 @@ nav:
                               - "Active": user/reference/metrics/types/telephony/sip/sessions/active.md
           - MX Messages:
               - Overview: user/reference/mx/index.md
-              - alarm: user/reference/mx/alarm.md
-              - event: user/reference/mx/event.md
-              - interface_status_change: user/reference/mx/interface_status_change.md
-              - managedobject: user/reference/mx/managedobject.md
+              - Alarm: user/reference/mx/alarm.md
+              - Configuration Changed: user/reference/mx/config_changed.md
+              - Configuration Policy Violation: user/reference/mx/config_policy_violation.md
+              - Event: user/reference/mx/event.md
+              - Interface Status Change: user/reference/mx/interface_status_change.md
+              - Managed Object Inventory: user/reference/mx/managedobject.md
+              - Managed Object New: user/reference/mx/object_new.md
+              - Managed Object Deleted: user/reference/mx/object_deleted.md
               - metrics: user/reference/mx/metrics.md
-              - reboot: user/reference/mx/reboot.md
-              - snmptrap: user/reference/mx/snmptrap.md
-              - syslog: user/reference/mx/syslog.md
+              - Reboot: user/reference/mx/reboot.md
+              - SNMPTrap: user/reference/mx/snmptrap.md
+              - Syslog: user/reference/mx/syslog.md
+              - Managed Object Version Changed: user/reference/mx/version_changed.md
           - Technologies:
               - Group: user/reference/technology/group.md
               - "Network | CGNAT Termination": user/reference/technology/Network/cgnat-termination.md

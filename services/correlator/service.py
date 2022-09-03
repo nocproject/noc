@@ -500,19 +500,19 @@ class CorrelatorService(FastAPIService):
         metrics["alarm_raise"] += 1
         await self.correlate(a)
         # Notify about new alarm
-        if not a.root:
-            a.managed_object.event(
-                a.managed_object.EV_ALARM_RISEN,
-                {
-                    "alarm": a,
-                    "subject": a.subject,
-                    "body": a.body,
-                    "symptoms": a.alarm_class.symptoms,
-                    "recommended_actions": a.alarm_class.recommended_actions,
-                    "probable_causes": a.alarm_class.probable_causes,
-                },
-                delay=a.alarm_class.get_notification_delay(),
-            )
+        # if not a.root:
+        #     a.managed_object.event(
+        #         a.managed_object.EV_ALARM_RISEN,
+        #         {
+        #             "alarm": a,
+        #             "subject": a.subject,
+        #             "body": a.body,
+        #             "symptoms": a.alarm_class.symptoms,
+        #             "recommended_actions": a.alarm_class.recommended_actions,
+        #             "probable_causes": a.alarm_class.probable_causes,
+        #         },
+        #         delay=a.alarm_class.get_notification_delay(),
+        #     )
         # Gather diagnostics when necessary
         AlarmDiagnosticConfig.on_raise(a)
         # Update groups summary

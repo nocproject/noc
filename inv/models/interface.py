@@ -101,7 +101,9 @@ class Interface(Document):
     enabled_protocols = ListField(
         StringField(choices=[(x, x) for x in INTERFACE_PROTOCOLS]), default=[]
     )
-    profile = PlainReferenceField(InterfaceProfile, default=InterfaceProfile.get_default_profile)
+    profile: "InterfaceProfile" = PlainReferenceField(
+        InterfaceProfile, default=InterfaceProfile.get_default_profile
+    )
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
     #
@@ -436,16 +438,16 @@ class Interface(Document):
             not self.oper_status_change or self.oper_status_change < now
         ):
             self.update(oper_status=status, oper_status_change=now)
-            if self.profile.status_change_notification:
-                logger.debug(
-                    "Sending status change notification to %s",
-                    self.profile.status_change_notification.name,
-                )
+            if self.profile.is_enabled_notification:
+                logger.debug("Sending status change notification")
                 send_message(
                     data={
                         "name": self.name,
                         "description": self.description,
+                        "is_uni": self.profile.is_uni,
+                        "profile": {"id": str(self.profile.id), "name": self.profile.name},
                         "status": status,
+                        "full_duplex": self.full_duplex,
                         "managed_object": self.managed_object.get_message_context(),
                     },
                     message_type="interface_status_change",
@@ -484,8 +486,8 @@ class Interface(Document):
         # if instance.hints:
         #     # Migrate to labels
         #     yield Label.ensure_labels(instance.hints, enable_interface=True)
-        # if instance.profile.labels:
-        #     yield list(instance.profile.labels)
+        if instance.profile.labels:
+            yield list(instance.profile.labels)
         yield Label.get_effective_regex_labels("interface_name", instance.name)
         yield Label.get_effective_regex_labels("interface_description", instance.description or "")
         if instance.managed_object:

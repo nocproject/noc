@@ -29,7 +29,6 @@ import cachetools
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.handler import Handler
 from noc.main.models.label import Label
@@ -159,7 +158,13 @@ class InterfaceProfile(Document):
     #
     allow_lag_mismatch = BooleanField(default=False)
     # Send up/down notifications
-    status_change_notification = ForeignKeyField(NotificationGroup, required=False)
+    status_change_notification = StringField(
+        choices=[
+            ("d", "Disabled"),
+            ("e", "Enable"),
+        ],
+        default="d",
+    )
     # Interface profile metrics
     metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
     # Alarm weight
@@ -194,6 +199,9 @@ class InterfaceProfile(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
+    # Labels
+    labels = ListField(StringField())
+    effective_labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -266,3 +274,11 @@ class InterfaceProfile(Document):
         for m in ipr.metrics:
             r[m.metric_type.name] = cls.config_from_settings(m)
         return r
+
+    @property
+    def is_enabled_notification(self) -> bool:
+        return self.status_change_notification != "d"
+
+    @classmethod
+    def can_set_label(cls, label):
+        return Label.get_effective_setting(label, setting="enable_interface")
