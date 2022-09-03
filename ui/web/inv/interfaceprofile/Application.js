@@ -13,7 +13,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.core.ListFormField",
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
-        "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
@@ -146,6 +145,15 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 uiStyle: "medium"
                             },
                             {
+                              name: "labels",
+                              xtype: "labelfield",
+                              fieldLabel: __("Labels"),
+                              allowBlank: true,
+                              query: {
+                                "enable_interface": true
+                              }
+                            },
+                            {
                                 name: "description",
                                 xtype: "textarea",
                                 fieldLabel: __("Description"),
@@ -214,10 +222,16 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             },
                             {
                                 name: "status_change_notification",
-                                xtype: "main.notificationgroup.LookupField",
+                                xtype: "combobox",
                                 fieldLabel: __("Status Change Notification"),
+                                allowBlank: true,
                                 labelWidth: 200,
-                                allowBlank: true
+                                defaultValue: "d",
+                                store: [
+                                    ["d", __("Disabled")],
+                                    ["e", __("Enable")],
+                                ],
+                                uiStyle: "medium"
                             },
                             {
                                 xtype: "checkbox",

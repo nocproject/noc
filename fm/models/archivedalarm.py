@@ -231,18 +231,18 @@ class ArchivedAlarm(Document):
         # Send notifications
         # Do not set notifications for child and for previously reopened
         # alarms
-        if not a.root and not reopens:
-            a.managed_object.event(
-                a.managed_object.EV_ALARM_REOPENED,
-                {
-                    "alarm": a,
-                    "subject": a.subject,
-                    "body": a.body,
-                    "symptoms": a.alarm_class.symptoms,
-                    "recommended_actions": a.alarm_class.recommended_actions,
-                    "probable_causes": a.alarm_class.probable_causes,
-                },
-            )
+        # if not a.root and not reopens:
+        #     a.managed_object.event(
+        #         a.managed_object.EV_ALARM_REOPENED,
+        #         {
+        #             "alarm": a,
+        #             "subject": a.subject,
+        #             "body": a.body,
+        #             "symptoms": a.alarm_class.symptoms,
+        #             "recommended_actions": a.alarm_class.recommended_actions,
+        #             "probable_causes": a.alarm_class.probable_causes,
+        #         },
+        #     )
         return a
 
     def iter_consequences(self):
