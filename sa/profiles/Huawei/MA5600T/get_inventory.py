@@ -123,7 +123,9 @@ class Script(BaseScript):
                             "status": True,
                             "description": v,
                             "measurement": "Scalar",
-                            "snmp_oid": mib["HUAWEI-ENVIRONMENT-MIB::hwDigChannelState", key1, key2],
+                            "snmp_oid": mib[
+                                "HUAWEI-ENVIRONMENT-MIB::hwDigChannelState", key1, key2
+                            ],
                         }
                     ]
         # hwFanTable

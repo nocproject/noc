@@ -73,12 +73,8 @@ class Script(BaseScript):
         r"^\s*\d+\s+(?P<port>0/\s*\d+/\s*\d+)\s+\d+\s+\d+\s+Enabled\s+", re.MULTILINE
     )
     rx_ports = re.compile(
-        r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
+        r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec|)\s+.*?"
         r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)?",
-        re.MULTILINE,
-    )
-    rx_ports2 = re.compile(
-        r"^\s*(?P<port>\d+)\s+(?P<state>Activating|Activated|Registered)\s+\d+\s+\d+",
         re.MULTILINE,
     )
 
@@ -109,12 +105,23 @@ class Script(BaseScript):
         "XG-PON": 127,
     }
 
-    def snmp_index(self, int_type, shelfID, slotID, intNum):
+    @classmethod
+    def snmp_index(cls, int_type, shelfID, slotID, intNum):
         """
         Huawei MA5600T&MA5603T port -> ifindex converter
+        >>> Script.snmp_index("SHDSL", 0, 6, 10)
+        1476444800
+        >>> Script.snmp_index("Eth", 0, 7, 0)
+        234938368
+        >>> Script.snmp_index("ADSL", 0, 15, 46)
+        201452416
+        >>> Script.snmp_index("ADSL", 0, 0, 27)
+        201328320
+        >>> Script.snmp_index("VDSL", 0, 11, 46)
+        4160842624
         """
 
-        type_id = self.type[int_type]
+        type_id = cls.type[int_type]
         index = type_id << 25
         index += shelfID << 19
         index += slotID << 13
@@ -157,6 +164,7 @@ class Script(BaseScript):
             1     GPON        0              20             Online
             2     GPON        0              20             Online
             3     GPON        0              20             Online
+          on old version column "Optical-module status" not exists, that state is True.
 
           -----------------------------------------------------------------------------
           Port    Port Type   Port Status      Line Profile  Alarm Profile  Ext Profile
@@ -166,6 +174,7 @@ class Script(BaseScript):
              2    ADSL        Activating                 30              1           --
              3    ADSL        Activating                 30              1           --
 
+        For SHDSL card Port Type column not exists
         H561SHEA output:
           --------------------------------------------------------------
           Port  Port           Line    Alarm     Running       Bind
@@ -176,7 +185,6 @@ class Script(BaseScript):
              2  Activating           5       1   Normal        Normal
              3  Activating           5       1   Normal        Normal
 
-        on old version column "Optical-module status" not exists, that state is True.
         :param v:
         :param slot_n:
         :return:
@@ -187,16 +195,8 @@ class Script(BaseScript):
             ports[f'0/{slot_n}/{match.group("port")}'] = {
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
-                "type": match.group("type"),
-            }
-        if ports:
-            return ports
-        for match in self.rx_ports2.finditer(v):
-            state = match.group("state")
-            ports[f'0/{slot_n}/{match.group("port")}'] = {
-                "num": match.group("port"),
-                "state": state.lower() in {"activated", "registered"} if state else True,
-                "type": "SHDSL",
+                # Output table without type, try SHDSL
+                "type": match.group("type") or "SHDSL",
             }
         return ports
 
@@ -353,7 +353,7 @@ class Script(BaseScript):
             b_type = b_type.pop() if b_type else b["type"]
             if b_type in {"10GE", "GE", "FE", "GE-Optic", "GE-Elec", "FE-Elec"}:
                 for match in self.rx_ether.finditer(v):
-                    ifname = "0/%d/%d" % (slot, int(match.group("port")))
+                    ifname = f'0/{slot}/{match.group("port")}'
                     admin_status = match.group("admin_status") == "active"
                     oper_status = match.group("oper_status") == "online"
                     ifindex = self.snmp_index("Eth", 0, slot, int(match.group("port")))
@@ -385,12 +385,15 @@ class Script(BaseScript):
                         interfaces[ifname]["aggregated_interface"] = ai
                         interfaces[ifname]["enabled_protocols"] += ["LACP"]
 
-            if b_type in {"ADSL", "VDSL"}:
+            if b_type in {"ADSL", "VDSL", "SHDSL"}:
                 for p_name, p in ports.items():
                     hints = []
                     if p["type"] == "VDSL":
                         ifindex = self.snmp_index("VDSL2", 0, slot, int(p["num"]))
                         hints += ["technology::dsl::vdsl"]
+                    elif p["type"] == "SHDSL":
+                        hints += ["technology::dsl::shdsl"]
+                        ifindex = self.snmp_index(p["type"], 0, slot, int(p["num"]))
                     else:
                         ifindex = self.snmp_index(p["type"], 0, slot, int(p["num"]))
                         hints += ["technology::dsl::adsl"]
