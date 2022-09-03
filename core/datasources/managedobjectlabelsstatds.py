@@ -37,7 +37,7 @@ class ManagedObjectLabelsStatDS(BaseDataSource):
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        data = [mm async for mm in cls.iter_query(fields, require_index=True)]
+        data = [mm async for mm in cls.iter_query(fields)]
         return pd.DataFrame.from_records(
             data, index="managed_object_id", columns=[ff.name for ff in cls.fields]
         )
