@@ -12,6 +12,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Hikvision.DSKV8"
 
+    http_request_middleware = [("digestauth", {"eof_mark": "</h1>"})]
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "#"}
     config_normalizer = "HikvisionNormalizer"
