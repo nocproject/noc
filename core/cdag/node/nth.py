@@ -25,7 +25,7 @@ class NthNodeConfig(BaseModel):
 
 class NthNode(BaseCDAGNode):
     """
-    Return N-th previous measure (Induce n-step delay).
+    Return N-th previous measure (Induce n-step delay). 2
     `n` == 1 - last measure
     """
 
