@@ -91,9 +91,13 @@ class SearchRequset(BaseModel):
     target: str
 
 
+class VariableRequestTarget(BaseModel):
+    target: Any
+
+
 # Variable
 class VariableRequest(BaseModel):
-    payload: Dict[str, Any]
+    payload: VariableRequestTarget
     range: RangeSection = None
 
 

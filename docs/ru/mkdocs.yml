@@ -17,6 +17,7 @@ nav:
           - Loading GIS data with etl command: user/howto/fias/index.md
           - FIAS Codes: user/howto/fias/fias_region_codes.md
           - OKTMO Codes: user/howto/fias/oktmo_region_codes.md
+          - Собственный статичный дашборд с графиками устройства в НОКе: user/howto/how-to-create-custom-device-grafana-dash.md
       - Background:
           - Обзор: user/background/index.md
           - Работа с конфигурацией оборудования: user/background/configuration-management/index.md
