@@ -36,8 +36,7 @@ class QueryPayloadItem(BaseModel):
 class LabelTarget(BaseModel):
     target: Literal["", "labels"]
 
-    @classmethod
-    def get_variables(cls, user: "User" = None):
+    def get_variables(self, user: "User" = None):
         # Labels
         return [
             {"__text": ll, "__value": ll}
@@ -50,11 +49,10 @@ class ManagedObjectTarget(BaseModel):
     labels: Optional[List[str]] = None
     administrative_domain: Optional[str] = None
 
-    @classmethod
-    def get_variables(cls, user: "User" = None):
+    def get_variables(self, user: "User" = None):
         mos = ManagedObject.objects.filter(is_managed=True)
-        if cls.labels:
-            mos = mos.filter(effective_labels__overlap=cls.labels)
+        if self.labels:
+            mos = mos.filter(effective_labels__overlap=self.labels)
         if not user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(user))
         return [
@@ -68,6 +66,7 @@ class ManagedObjectTarget(BaseModel):
 class InterfaceTarget(BaseModel):
     target: Literal["interface"]
     managed_object: int
+    name: Optional[str] = None
     interface_profile: Optional[str] = None
     type: str = "physical"
 
@@ -77,12 +76,11 @@ class InterfaceTarget(BaseModel):
             return None
         return ManagedObject.get_by_bi_id(self.managed_object)
 
-    @classmethod
-    def get_variables(cls, user: "User" = None):
-        ifaces = Interface.objects.filter(managed_object=cls.mo, type="physical")
-        profiles = cls.interface_profile
+    def get_variables(self, user: "User" = None):
+        ifaces = Interface.objects.filter(managed_object=self.mo, type="physical")
+        profiles = self.interface_profile
         if isinstance(profiles, str):
-            profiles = [profiles]
+            profiles = profiles.strip("()").split("|")
         if profiles:
             ifaces = ifaces.filter(profile__in=profiles)
         return [
@@ -107,21 +105,27 @@ class TestTarget(BaseModel):
         ]
 
 
-class InterfaceProfileTarget(InterfaceTarget):
+class InterfaceProfileTarget(BaseModel):
     target: Literal["interface_profile"]
+    managed_object: Optional[int] = None
 
-    @classmethod
-    def get_variables(cls, user: "User" = None):
-        if not user.is_superuser and cls.mo not in UserAccess.get_domains(user):
+    @property
+    def mo(self) -> Optional[ManagedObject]:
+        if not self.managed_object:
+            return None
+        return ManagedObject.get_by_bi_id(self.managed_object)
+
+    def get_variables(self, user: "User" = None):
+        if not user.is_superuser and self.mo.id not in UserAccess.get_domains(user):
             raise HTTPException(
-                status_code=404, detail=f"User has no access to ManagedObject: {cls.mo}"
+                status_code=404, detail=f"User has no access to ManagedObject: {self.mo}"
             )
         return [
             {"__text": ip.name, "__value": str(ip.id)}
             for ip in set(
                 ip
                 for ip in Interface.objects.filter(
-                    managed_object=cls.mo, type=cls.type
+                    managed_object=self.mo, type="physical"
                 ).values_list("profile")
             )
         ]
