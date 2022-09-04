@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional
+from typing import Optional, List, Any
 from time import mktime
 
 # Third-party modules
@@ -36,16 +36,19 @@ class ManagedObjectJsonDS(JsonDSAPI):
     variable_payload = VariablePayloadItem
 
     @staticmethod
-    def resolve_object_query(model_id, value, user: User = None) -> Optional[int]:
+    def resolve_object_query(
+        model_id, value, query_function: Optional[List[str]] = None, user: User = None
+    ) -> Optional[Any]:
         """
         Resolve object in Query by Value
         :param model_id:
         :param value:
+        :param query_function:
         :param user:
         :return:
         """
         model = get_model(model_id)
-        obj = model.objects.filter(name=value).first()
+        obj = model.objects.filter(name__contains=value).first()
         if (
             obj
             and model_id == "sa.ManagedObject"
@@ -53,7 +56,7 @@ class ManagedObjectJsonDS(JsonDSAPI):
             and obj.administrative_domain.id not in UserAccess.get_domains(user)
         ):
             raise HTTPException(status_code=404, detail="Not Access to requested device")
-        return obj.bi_id if obj else None
+        return obj
 
     @staticmethod
     def iter_alarms_annotations(

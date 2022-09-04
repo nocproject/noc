@@ -75,8 +75,8 @@ class JsonDSAPI(object):
     """
 
     QUERY_CONFIGS: List["QueryConfig"] = None
-    openapi_tags = ["api", "grafanads"]
-    api_name: str = None
+    openapi_tags: List[str] = ["api", "grafanads"]
+    api_name: Optional[str] = None
     query_response_model = List[TargetResponseItem]
     variable_payload = None
     allow_interval_limit: bool = True
@@ -123,7 +123,8 @@ class JsonDSAPI(object):
         self.logger.info("Variable Request: %s", req)
         if not self.variable_payload:
             return []
-        payload = parse_obj_as(self.variable_payload, req.payload)
+        payload = req.payload
+        payload = parse_obj_as(self.variable_payload, orjson.loads(payload.target))
         h = getattr(payload, "get_variables", None)
         if not h:
             return []
@@ -375,30 +376,30 @@ class JsonDSAPI(object):
         return " AND ".join(r)
 
     @staticmethod
-    def resolve_object_query(model_id, value, user: User = None) -> Optional[int]:
+    def resolve_object_query(
+        model_id, value, query_function: Optional[List[str]] = None, user: User = None
+    ) -> Optional[Any]:
         """
         Resolve object in Query by Value
         :param model_id:
         :param value:
+        :param query_function:
         :param user:
         :return:
         """
         model = get_model(model_id)
-        obj = model.objects.filter(name=value).first()
-        return obj.bi_id if obj else None
+        return model.objects.filter(name__contains=value).first()
 
     @classmethod
-    def get_metric_scope_fields(
-        cls, metric_scope
-    ) -> Tuple[List[Tuple[str, str]], Set[str], Set[str]]:
+    def get_metric_scope_fields(cls, metric_scope) -> Tuple[Dict[str, str], Set[str], Set[str]]:
         """
-        Get Metric Scope Config
-        :param metric_scope:
+        Get Metric Scope Config. Key Field -> Model map, Required Column, Columns
+        :param metric_scope: MetricScope Name
         :return:
         """
-        key_fields, required_columns, columns = [], set(), set()
+        key_fields, required_columns, columns = {}, set(), set()
         for kf in metric_scope.key_fields:
-            key_fields += [(kf.field_name, kf.model)]
+            key_fields[kf.field_name] = kf.model
         for lf in metric_scope.labels:
             field = lf.store_column or lf.view_column
             if not field:
@@ -416,6 +417,7 @@ class JsonDSAPI(object):
     ) -> str:
         """
         Convert payload target to where expression
+        Processed requested Scope key fields
         :param metric_type:
         :param payload:
         :param user:
@@ -425,42 +427,43 @@ class JsonDSAPI(object):
             return ""
         r = []
         key_fields, required_columns, columns = self.get_metric_scope_fields(metric_type.scope)
-        # Labels
-        if "labels" in payload:
-            labels = [f"'{ll}'" for ll in payload["labels"]]
-            r += [f"labels IN ({','.join(labels)})"]
-        # Key field
-        for kf_name, kf_mode_id in key_fields:
-            if kf_name not in payload:
-                continue
-            values = payload[kf_name]
-            if isinstance(values, (int, str)):
-                values = [str(values)]
-            q_values = []
-            for value in values:
-                if not value.isdigit():
-                    # Try Resolve object
-                    value = self.resolve_object_query(kf_mode_id, value, user=user)
-                    if not value:
-                        continue
-                q_values += [str(value)]
-            r += [f'{kf_name} IN ({",".join(q_values)})']
-        if not r:
-            raise HTTPException(status_code=400, detail="One of Key field is required on query")
         #
         for query_field, values in payload.items():
             query_field, *query_function = query_field.split("__", 1)
-            if query_field not in columns or query_field == "labels":
+            # Labels
+            if query_field == "labels":
+                labels = [f"'{ll}'" for ll in payload["labels"]]
+                r += [f"labels IN ({','.join(labels)})"]
                 continue
-            if isinstance(values, str):
-                values = [values]
+            if isinstance(values, (int, str)):
+                values = [str(values)]
+            if query_field in key_fields:
+                q_values = []
+                for value in values:
+                    if not value.isdigit():
+                        # Try Resolve object
+                        value = self.resolve_object_query(
+                            key_fields[query_field], value, query_function=query_function, user=user
+                        )
+                        if not value:
+                            continue
+                        value = value.bi_id
+                    q_values += [str(value)]
+                r += [f'{query_field} IN ({",".join(q_values)})']
+                continue
+            elif query_field not in columns:
+                continue
             values = [f"'{str(vv)}'" for vv in values]
             if not query_function:
                 r += [f"{query_field} = {values[0]}"]
             elif query_function[0].upper() in {"IN", "NOT IN"}:
                 r += [f"{query_field} {query_function[0]} ({','.join(values)})"]
+            elif query_function[0].upper() in {"MATCH", "REGEX"}:
+                r += [f"{query_function[0]}({query_field}, {values[0]})"]
             else:
                 r += [f"{query_field} {query_function[0]} {values[0]}"]
+        if not r:
+            raise HTTPException(status_code=400, detail="One of Key field is required on query")
         # @todo dict request
         # if lf.is_required and field not in payload:
         #     raise HTTPException(status_code=400, detail=f"Field {field} is required in query")
