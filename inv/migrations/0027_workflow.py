@@ -8,6 +8,9 @@
 # Python modules
 import bson
 
+# Third-party modules
+from pymongo import UpdateMany
+
 # NOC modules
 from noc.core.migration.base import BaseMigration
 
@@ -26,8 +29,11 @@ class Migration(BaseMigration):
         db = self.mongo_db
         wf = bson.ObjectId("5a01d980b6f529000100d37a")  # Default Resource
         db["noc.interface_profiles"].update_many({}, {"$set": {"workflow": wf}})
+
+        bulk = []
         for s in s_map:
-            db["noc.interfaces"].update_many({"state": s}, {"$set": {"state": s_map[s]}})
+            bulk += [UpdateMany({"state": s}, {"$set": {"state": s_map[s]}})]
         # Missing state -> Ready
         state = bson.ObjectId("5a17f78d1bb6270001bd0346")
-        db["noc.interfaces"].update_many({"state": {"$exists": False}}, {"$set": {"state": state}})
+        bulk += [UpdateMany({"state": {"$exists": False}}, {"$set": {"state": state}})]
+        db["noc.interfaces"].bulk_write(bulk, ordered=True)
