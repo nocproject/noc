@@ -43,6 +43,7 @@ _default_state_cache = cachetools.TTLCache(maxsize=1000, ttl=1)
         ("sa.ServiceProfile", "workflow"),
         ("sla.SLAProfile", "workflow"),
         ("inv.SensorProfile", "workflow"),
+        ("inv.InterfaceProfile", "workflow"),
         ("vc.VPNProfile", "workflow"),
         ("vc.VLANProfile", "workflow"),
         ("vc.L2DomainProfile", "workflow"),
