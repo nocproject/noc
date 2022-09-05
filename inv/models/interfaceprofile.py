@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Interface Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,8 +37,8 @@ from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.cm.models.interfacevalidationpolicy import InterfaceValidationPolicy
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
-
 from noc.core.model.decorator import on_delete_check
+from noc.wf.models.workflow import Workflow
 from .ifdescpatterns import IfDescPatterns
 
 id_lock = Lock()
@@ -116,6 +116,7 @@ class InterfaceProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     style = ForeignKeyField(Style, required=False)
+    workflow = PlainReferenceField(Workflow)
     # Interface-level events processing
     link_events = StringField(
         required=True,

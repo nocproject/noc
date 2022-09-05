@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Interface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,6 @@ from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.main.models.resourcestate import ResourceState
 from noc.main.models.label import Label
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
@@ -40,6 +39,8 @@ from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.comp import DEFAULT_ENCODING
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
 
@@ -60,6 +61,7 @@ logger = logging.getLogger(__name__)
 @change
 @resourcegroup
 @Label.model
+@workflow
 @on_delete_check(
     clean=[
         ("inv.Interface", "aggregated_interface"),
@@ -108,7 +110,7 @@ class Interface(Document):
     profile_locked = BooleanField(required=False, default=False)
     #
     project = ForeignKeyField(Project)
-    state = ForeignKeyField(ResourceState)
+    state = PlainReferenceField(State)
     vc_domain = ForeignKeyField(VCDomain)
     # Current status
     admin_status = BooleanField(required=False)

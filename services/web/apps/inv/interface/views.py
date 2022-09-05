@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.interface application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,13 +20,13 @@ from noc.sa.interfaces.base import (
     DocumentParameter,
     ModelParameter,
 )
-from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.core.text import alnum_key
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.core.comp import smart_text
+from noc.wf.models.state import State
 
 
 class InterfaceAppplication(ExtApplication):
@@ -106,7 +106,6 @@ class InterfaceAppplication(ExtApplication):
             return self.response_forbidden("Permission denied")
         # Physical interfaces
         # @todo: proper ordering
-        default_state = ResourceState.get_default()
         style_cache = {}  # profile_id -> css_style
         l1 = [
             {
@@ -122,8 +121,8 @@ class InterfaceAppplication(ExtApplication):
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
                 "project__label": smart_text(i.project) if i.project else None,
-                "state": i.state.id if i.state else default_state.id,
-                "state__label": smart_text(i.state if i.state else default_state),
+                "state": str(i.state.id) if i.state else None,
+                "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),
@@ -147,8 +146,8 @@ class InterfaceAppplication(ExtApplication):
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
                 "project__label": smart_text(i.project) if i.project else None,
-                "state": i.state.id if i.state else default_state.id,
-                "state__label": smart_text(i.state if i.state else default_state),
+                "state": str(i.state.id) if i.state else None,
+                "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),
@@ -251,7 +250,7 @@ class InterfaceAppplication(ExtApplication):
 
     @view(
         url=r"^l1/(?P<iface_id>[0-9a-f]{24})/change_state/$",
-        validate={"state": ModelParameter(ResourceState)},
+        validate={"state": DocumentParameter(State)},
         method=["POST"],
         access="profile",
         api=True,
