@@ -9,6 +9,7 @@
 from mongoengine import Q
 
 # NOC modules
+from noc.lib.app.decorators.state import state_handler
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
@@ -29,6 +30,7 @@ from noc.core.comp import smart_text
 from noc.wf.models.state import State
 
 
+@state_handler
 class InterfaceAppplication(ExtApplication):
     """
     inv.interface application
@@ -245,22 +247,6 @@ class InterfaceAppplication(ExtApplication):
         if i.profile != profile:
             i.profile = profile
             i.profile_locked = True
-            i.save()
-        return True
-
-    @view(
-        url=r"^l1/(?P<iface_id>[0-9a-f]{24})/change_state/$",
-        validate={"state": DocumentParameter(State)},
-        method=["POST"],
-        access="profile",
-        api=True,
-    )
-    def api_change_state(self, request, iface_id, state):
-        i = Interface.objects.filter(id=iface_id).first()
-        if not i:
-            return self.response_not_found()
-        if i.state != state:
-            i.state = state
             i.save()
         return True
 
