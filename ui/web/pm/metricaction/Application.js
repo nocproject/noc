@@ -440,26 +440,12 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     columnWidth: 0.4,
                                     items: [
                                         {
-                                            xtype: "combobox",
-                                            name: "compose_function",
+                                            xtype: "textarea",
+                                            name: "compose_expression",
                                             labelAlign: "top",
-                                            fieldLabel: __("Compose Function"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["sum", "sum"],
-                                                ["avg", "avg"],
-                                                ["div", "div"]
-                                            ],
-                                            value: "sum"
-                                        },
-                                        {
-                                            xtype: "core.combo",
-                                            name: "compose_metric_type",
-                                            restUrl: "/pm/metrictype/lookup/",
-                                            labelAlign: "top",
-                                            fieldLabel: __("Compose Metric Type"),
+                                            fieldLabel: __("Compose Expression"),
                                             allowBlank: true
-                                        },
+                                        }
                                     ]
                                 },
                             ]

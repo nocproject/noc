@@ -22,6 +22,7 @@ from mongoengine.fields import (
     FloatField,
     IntField,
 )
+from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -30,6 +31,7 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
 from noc.core.change.decorator import change
+from noc.core.expr import get_vars
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sa.interfaces.base import (
@@ -159,7 +161,7 @@ class MetricAction(Document):
     params: List["MetricActionParam"] = EmbeddedDocumentListField(MetricActionParam)
     #
     compose_inputs: List["InputMapping"] = ListField(EmbeddedDocumentField(InputMapping))
-    compose_function: str = StringField(choices=["sum", "avg", "div"], default=None)
+    compose_expression = StringField(default=None)
     compose_metric_type: "MetricType" = PlainReferenceField(MetricType)
     #
     activation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
@@ -175,6 +177,21 @@ class MetricAction(Document):
     def get_by_id(cls, oid) -> Optional["MetricAction"]:
         return MetricAction.objects.filter(id=oid).first()
 
+    def clean(self):
+        if not self.compose_expression:
+            return
+        try:
+            metric_fields = get_vars(self.compose_expression)
+        except Exception as e:
+            raise ValidationError({"compose_expression": str(e)})
+        inputs = [mi.metric_type for mi in self.compose_inputs]
+        for m_f in metric_fields:
+            mt = MetricType.get_by_field_name(m_f)
+            if not mt or mt not in inputs:
+                raise ValidationError(
+                    {"compose_expression": f"Unknown variable {m_f} on expression"}
+                )
+
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {
@@ -186,8 +203,8 @@ class MetricAction(Document):
         }
         if self.description:
             r["description"] = self.description
-        if self.compose_function:
-            r["compose_function"] = self.compose_function
+        if self.compose_expression:
+            r["compose_expression"] = self.compose_expression
         if self.activation_config.window_function or self.activation_config.activation_function:
             r["activation_config"] = self.activation_config.json_data
         if self.deactivation_config.window_function or self.deactivation_config.activation_function:
@@ -234,22 +251,22 @@ class MetricAction(Document):
         for num, ci in enumerate(self.compose_inputs):
             inputs += [InputItem(name=ci.metric_type.field_name, node=ci.metric_type.field_name)]
         # Probe nodes
-        if self.compose_function:
+        if self.compose_expression:
             nodes["compose"] = NodeItem(
                 name=f"{prefix}compose",
-                type=self.compose_function,
+                type="composeprobe",
                 description="",
-                config=None,
+                config={"expression": self.compose_expression, "unit": 1},
                 inputs=inputs[:],
             )
             g_input = InputItem(name="x", node=f"{prefix}compose")
-            if self.compose_metric_type:
-                nodes["compose_{self.compose_metric_type.field_name}"] = NodeItem(
-                    name=f"{prefix}compose_{self.compose_metric_type.field_name}",
-                    type="probe",
-                    config={"units": "1"},
-                    inputs=[g_input],
-                )
+            # if self.compose_metric_type:
+            #     nodes["compose_{self.compose_metric_type.field_name}"] = NodeItem(
+            #         name=f"{prefix}compose_{self.compose_metric_type.field_name}",
+            #         type="probe",
+            #         config={"units": "1"},
+            #         inputs=[g_input],
+            #     )
         else:
             # If function is not set - only first input used
             g_input = InputItem(name="x", node=inputs[0].node)
