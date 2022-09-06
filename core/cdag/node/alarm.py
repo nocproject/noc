@@ -22,6 +22,7 @@ from noc.core.service.loader import get_service
 
 class AlarmNodeState(BaseModel):
     active: bool = False
+    last_raise: datetime.datetime = None
 
 
 class VarItem(BaseModel):
@@ -37,6 +38,7 @@ class AlarmNodeConfig(BaseModel):
     partition: int = 0
     managed_object: Optional[str]  # Not user-settable
     labels: Optional[List[str]]
+    error_text_template: Optional[str] = None
     activation_level: float = 1.0
     deactivation_level: float = 1.0
     vars: Optional[List[VarItem]]
@@ -68,7 +70,13 @@ class AlarmNode(BaseCDAGNode):
     state_cls = AlarmNodeState
     categories = [Category.UTIL]
 
-    def get_value(self, x: ValueType) -> Optional[ValueType]:
+    def get_value(self, x: ValueType, **kwargs) -> Optional[ValueType]:
+        """
+        * If x - check activate
+        :param x: Activate input
+        :param kwargs: Deactivate input
+        :return:
+        """
         if self.state.active and x < self.config.deactivation_level:
             self.clear_alarm()
         elif not self.state.active and x >= self.config.activation_level:
@@ -84,10 +92,11 @@ class AlarmNode(BaseCDAGNode):
             template = Template(v)
             return template.render(x=x, config=self.config)
 
+        now = datetime.datetime.now()
         msg = {
             "$op": "raise",
             "reference": self.config_cls.get_reference(self.config),
-            "timestamp": datetime.datetime.now().isoformat(),
+            "timestamp": now.isoformat(),
             "managed_object": self.config.managed_object,
             "alarm_class": self.config.alarm_class,
             "labels": self.config.labels if self.config.labels else [],
@@ -96,8 +105,11 @@ class AlarmNode(BaseCDAGNode):
         # Render vars
         if self.config.vars:
             msg["vars"].update({v.name: q(v.value) for v in self.config.vars})
+        if self.config.error_text_template:
+            msg["vars"]["message"] = self.config.error_text_template
         self.publish_message(msg)
         self.state.active = True
+        self.state.last_raise = now
         logger.debug(
             "[%s|%s|%s|%s] Raise alarm: %s",
             self.node_id,
@@ -143,3 +155,13 @@ class AlarmNode(BaseCDAGNode):
             return
         self.clear_alarm("Reset by change node config")
         self.state.active = False
+
+    def is_required_input(self, name: str) -> bool:
+        """
+        If set deactivate_x Input, used it for check deactivate_level
+        :param name:
+        :return:
+        """
+        if self.state.active and self.dynamic_inputs and name == "deactivate_x":
+            return True
+        return super().is_required_input(name)

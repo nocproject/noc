@@ -38,6 +38,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             ["expdecay", "Exp Decay"],
                             ["percentile", "Percentile"],
                             ["nth", "Nth"],
+                            ["mean", "Mean (Average)"]
                         ],
                         value: "disable",
                         listeners: {
@@ -47,7 +48,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     {value: "sumstep", name: "window_config.direction"},
                                     {value: "expdecay", name: "window_config.factor"},
                                     {value: "nth", name: "window_config.step_num"},
-                                    {value: "percentile", name: "window_config.percentile"}
+                                    {value: "percentile", name: "window_config.percentile"},
                                 ]
                             })
                         }
@@ -401,7 +402,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     xtype: "fieldset",
                                     itemId: "input-container",
                                     title: __("Input"),
-                                    columnWidth: 0.4,
+                                    columnWidth: 0.5,
                                     margin: "0 20 0 0",
                                     padding: "0 10 5 10",
                                     items: [
@@ -539,19 +540,19 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     columnWidth: 0.4,
                                     items: [
                                         {
-                                            xtype: "combobox",
-                                            name: "key_function",
+                                            xtype: "core.combo",
+                                            name: "compose_metric_type",
+                                            restUrl: "/pm/metrictype/lookup/",
                                             labelAlign: "top",
-                                            fieldLabel: __("Key Node"),
-                                            allowBlank: true,
-                                            store: [
-                                                [null, "Disable"],
-                                                ["key", "Key"]
-                                            ],
-                                            value: null,
-                                            listeners: {
-                                                change: me.keyFunctionChange
-                                            }
+                                            fieldLabel: __("Compose Metric Type"),
+                                            allowBlank: true
+                                        },
+                                        {
+                                            xtype: "textarea",
+                                            name: "key_expression",
+                                            labelAlign: "top",
+                                            fieldLabel: __("Key Expression"),
+                                            allowBlank: true
                                         }
                                     ]
                                 }

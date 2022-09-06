@@ -226,7 +226,7 @@ class Command(BaseCommand):
         if not ma:
             self.die(f"Metric Action {metric_action} is not found")
         cdag = CDAG("test", {})
-        g_config = ma.get_config()
+        g_config = ma.get_config(enable_dump=True)
         for a_input in ma.compose_inputs:
             cdag.add_node(
                 a_input.metric_type.field_name,
