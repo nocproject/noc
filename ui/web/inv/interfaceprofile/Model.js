@@ -28,6 +28,15 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "int"
         },
         {
+            name: "workflow",
+            type: "string"
+        },
+        {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "link_events",
             type: "string",
             defaultValue: "A"

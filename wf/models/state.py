@@ -7,6 +7,7 @@
 
 # Python modules
 from threading import Lock
+from typing import Optional
 import operator
 import logging
 
@@ -112,20 +113,20 @@ class State(Document):
     # Object id in BI
     bi_id = LongField(unique=True)
 
-    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
         return "%s: %s" % (self.workflow.name, self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
+    def get_by_id(cls, id) -> Optional["State"]:
         return State.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
-    def get_by_bi_id(cls, id):
+    def get_by_bi_id(cls, id) -> Optional["State"]:
         return State.objects.filter(bi_id=id).first()
 
     def on_save(self):

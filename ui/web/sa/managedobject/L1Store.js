@@ -68,7 +68,7 @@ Ext.define("NOC.sa.managedobject.L1Store", {
         },
         {
             name: "state",
-            type: "int"
+            type: "string"
         },
         {
             name: "state__label",

@@ -9,10 +9,11 @@ console.debug("Defining NOC.sa.managedobject.L1Panel");
 Ext.define("NOC.sa.managedobject.L1Panel", {
     extend: "Ext.panel.Panel",
     requires: [
+        "NOC.core.StateField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.project.project.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
-        "NOC.main.resourcestate.LookupField"
+        "NOC.wf.state.LookupField"
     ],
     title: __("Physical"),
     closable: false,
@@ -100,8 +101,11 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         {
                             text: __("State"),
                             dataIndex: "state",
+                            editor: {
+                                xtype: "statefield",
+                                restUrl: "/inv/interface/"
+                            },
                             renderer: NOC.render.Lookup("state"),
-                            editor: "main.resourcestate.LookupField"
                         },
                         {
                             text: __("VC Domain"),

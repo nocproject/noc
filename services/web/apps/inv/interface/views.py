@@ -27,7 +27,6 @@ from noc.core.text import alnum_key
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.core.comp import smart_text
-from noc.wf.models.state import State
 
 
 @state_handler
