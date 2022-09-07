@@ -422,7 +422,7 @@ table {
     background: #ecf0f1;
     border: 1px solid #b5b8c8;
     border-radius: 5px;
-    position: absolute;
+    position: fixed;
     padding: 10px 0;
     margin-top: 3px;
     margin-left: -5px;
