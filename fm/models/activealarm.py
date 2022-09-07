@@ -576,7 +576,7 @@ class ActiveAlarm(Document):
             self.total_objects = obj_list
             self.total_services = svc_list
             self.total_subscribers = sub_list
-            if (services or subscribers) and ns != self.severity:
+            if ns != self.severity:
                 self.change_severity(severity=ns, to_save=False)
             self.safe_save()
 

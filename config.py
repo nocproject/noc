@@ -10,6 +10,7 @@ import logging
 import os
 import socket
 import sys
+import enum
 from urllib.parse import quote as urllib_quote
 
 # NOC modules
@@ -28,7 +29,16 @@ from noc.core.config.params import (
     ListParameter,
     UUIDParameter,
     TimeZoneParameter,
+    EnumParameter,
 )
+
+
+class AlarmClassWeight(enum.Enum):
+    INFO = 0
+    MINOR = 10
+    WARNING = 50
+    MAJOR = 100
+    CRITICAL = 1000
 
 
 class Config(BaseConfig):
@@ -288,6 +298,7 @@ class Config(BaseConfig):
         generate_message_id = BooleanParameter(
             default=False, help="Generate UUID for received Syslog and SNMP message"
         )
+        alarm_class_weight = EnumParameter(default=AlarmClassWeight)
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")

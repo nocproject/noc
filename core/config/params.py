@@ -9,6 +9,7 @@
 import itertools
 import logging
 import pytz
+import enum
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4, is_uuid
@@ -137,6 +138,19 @@ class MapParameter(BaseParameter):
             if self.mappings[mv] == self.value:
                 return mv
         return self.value
+
+
+class EnumParameter(BaseParameter):
+    def clean(self, v) -> enum.Enum:
+        if issubclass(v, enum.Enum):
+            return v
+        r = {}
+        for ii in self.default:
+            r[ii.name] = v.get(ii.name, ii.value)
+        return enum.Enum("AlarmClassWeight", r)
+
+    def dump_value(self):
+        return {ii.name: ii.value for ii in sorted(self.value, key=lambda x: x.name)}
 
 
 class HandlerParameter(BaseParameter):
