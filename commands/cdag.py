@@ -102,7 +102,7 @@ class Command(BaseCommand):
                 source.managed_object.bi_id,
                 now.date().isoformat(),
                 now.replace(microsecond=0).isoformat(sep=" "),
-                f"AND interface=%s",
+                "AND interface=%s",
             )
             q_args += [source.name]
         elif source.startswith("cpu://"):

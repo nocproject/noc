@@ -101,11 +101,10 @@ class ThresholdProfile(object):
 
 
 class Migration(BaseMigration):
-
     def get_metric_action(self, metric_type, settings):
         r = {
             "_id": bson.ObjectId(),
-            "name": "InterfaceMetric Test",
+            "name": f"Metric rule for {metric_type}",
             # "$collection": "pm.metricactions",
             "uuid": uuid.uuid4(),
             "params": [
@@ -147,6 +146,7 @@ class Migration(BaseMigration):
         }
         if settings:
             r["activation_config"] = settings
+            r["name"] += f" for function {settings['window_function']}"
         return r
 
     def migrate(self):
@@ -210,9 +210,11 @@ class Migration(BaseMigration):
                 InsertOne(
                     {
                         "_id": bson.ObjectId("62f72ad32025e8c59cfaadb7"),
-                        "name": "TestMetricRule1",
+                        "name": f"Migrate threshold profile {tp_id} for Metric Type {mt}",
                         "is_active": False,
-                        "match": [{"labels": [ll], "exclude_labels": []} for ll in thresholds[(tp_id, mt)]],
+                        "match": [
+                            {"labels": [ll], "exclude_labels": []} for ll in thresholds[(tp_id, mt)]
+                        ],
                         "actions": [
                             {
                                 "metric_action": ma["_id"],
