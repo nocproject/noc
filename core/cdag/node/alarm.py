@@ -41,6 +41,7 @@ class AlarmNodeConfig(BaseModel):
     error_text_template: Optional[str] = None
     activation_level: float = 1.0
     deactivation_level: float = 1.0
+    invert_condition: bool = False
     vars: Optional[List[VarItem]]
 
     @classmethod
@@ -77,9 +78,15 @@ class AlarmNode(BaseCDAGNode):
         :param kwargs: Deactivate input
         :return:
         """
-        if self.state.active and x < self.config.deactivation_level:
+        if self.state.active and (
+            (self.config.invert_condition and x < self.config.deactivation_level)
+            or (not self.config.invert_condition and x > self.config.deactivation_level)
+        ):
             self.clear_alarm()
-        elif not self.state.active and x >= self.config.activation_level:
+        elif not self.state.active and (
+            (self.config.invert_condition and x >= self.config.activation_level)
+            or (not self.config.invert_condition and x <= self.config.activation_level)
+        ):
             self.raise_alarm(x)
         return None
 

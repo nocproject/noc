@@ -1,0 +1,55 @@
+{
+    "name": "Interface Bandwidth more than N",
+    "$collection": "pm.metricactions",
+    "uuid": "4c84447c-a81d-46ec-bf02-515c25d97b01",
+    "description": "Полоса пропускания трафика в течении 15 минут больше 90 %",
+    "params": [
+        {
+            "name": "alarm.activation_level",
+            "description": null,
+            "default": "90",
+            "max_value": 30.0,
+            "min_value": 30.0,
+            "type": "float"
+        },
+        {
+            "name": "alarm.deactivation_level",
+            "description": null,
+            "default": "70",
+            "max_value": 30.0,
+            "min_value": 30.0,
+            "type": "float"
+        },
+        {
+            "name": "activation.min_window",
+            "description": null,
+            "default": "900",
+            "max_value": 300.0,
+            "min_value": 300.0,
+            "type": "int"
+        },
+        {
+            "name": "activation.max_window",
+            "description": null,
+            "default": "1200",
+            "max_value": 300.0,
+            "min_value": 300.0,
+            "type": "int"
+        }
+    ],
+    "compose_inputs": [
+        {
+            "input_name": "in",
+            "metric_type__name": "Interface | Errors | In"
+        }
+    ],
+    "activation_config": {
+        "max_window": 1200,
+        "min_window": 900,
+        "window_config": {
+            "percentile": 1
+        },
+        "window_function": "percentile",
+        "window_type": "seconds"
+    }
+}

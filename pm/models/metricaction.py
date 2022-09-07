@@ -21,6 +21,7 @@ from mongoengine.fields import (
     DictField,
     FloatField,
     IntField,
+    BooleanField,
 )
 from mongoengine.errors import ValidationError
 
@@ -97,6 +98,7 @@ class AlarmConfig(EmbeddedDocument):
     reference = StringField()
     activation_level = FloatField(default=1.0)
     deactivation_level = FloatField(default=1.0)
+    invert_condition = BooleanField(default=False)
     error_text_template = StringField()
     vars = DictField()
 
@@ -206,12 +208,16 @@ class MetricAction(Document):
             r["description"] = self.description
         if self.compose_expression:
             r["compose_expression"] = self.compose_expression
-        if self.activation_config.window_function or self.activation_config.activation_function:
+        if self.activation_config and (
+            self.activation_config.window_function or self.activation_config.activation_function
+        ):
             r["activation_config"] = self.activation_config.json_data
-        if self.deactivation_config.window_function or self.deactivation_config.activation_function:
+        if self.deactivation_config and (
+            self.deactivation_config.window_function or self.deactivation_config.activation_function
+        ):
             r["deactivation_config"] = self.deactivation_config.json_data
-        if self.key_function:
-            r["key_function"] = self.key_function
+        if self.key_expression:
+            r["key_expression"] = self.key_expression
         if self.alarm_config:
             r["alarm_config"] = self.alarm_config.json_data
         return r

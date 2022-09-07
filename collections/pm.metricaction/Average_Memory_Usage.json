@@ -1,0 +1,51 @@
+{
+    "name": "Average Memory Usage",
+    "$collection": "pm.metricactions",
+    "uuid": "7ec98d1a-69f0-4226-b0f9-068c701c6e92",
+    "description": "Использование памяти устройством больше N",
+    "params": [
+        {
+            "name": "alarm.activation_level",
+            "description": null,
+            "default": "95",
+            "max_value": 20.0,
+            "min_value": 20.0,
+            "type": "int"
+        },
+        {
+            "name": "alarm.deactivation_level",
+            "description": null,
+            "default": "65",
+            "max_value": 20.0,
+            "min_value": 20.0,
+            "type": "int"
+        },
+        {
+            "name": "activation.min_window",
+            "description": null,
+            "default": "3",
+            "max_value": 3.0,
+            "min_value": 3.0,
+            "type": "int"
+        },
+        {
+            "name": "activation.max_window",
+            "description": null,
+            "default": "5",
+            "max_value": 3.0,
+            "min_value": 3.0,
+            "type": "int"
+        }
+    ],
+    "compose_inputs": [{
+        "input_name": "in",
+        "metric_type__name": "Memory | Usage"
+    }],
+    "activation_config": {
+        "max_window": 5,
+        "min_window": 3,
+        "window_config": {},
+        "window_function": "mean",
+        "window_type": "tick"
+    }
+}

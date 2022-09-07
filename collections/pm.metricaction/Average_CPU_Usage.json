@@ -1,0 +1,51 @@
+{
+    "name": "Average CPU Usage",
+    "$collection": "pm.metricactions",
+    "uuid": "0700a894-ea93-41c0-a630-966a770e6213",
+    "description": "Средняя загрузка CPU больше N",
+    "params": [
+        {
+            "name": "activation.min_window",
+            "description": null,
+            "default": "5",
+            "max_value": 3.0,
+            "min_value": 3.0,
+            "type": "int"
+        },
+        {
+            "name": "activation.max_window",
+            "description": null,
+            "default": "3",
+            "max_value": 3.0,
+            "min_value": 3.0,
+            "type": "int"
+        },
+        {
+            "name": "alarm.activation_level",
+            "description": null,
+            "default": "95",
+            "max_value": 20.0,
+            "min_value": 20.0,
+            "type": "int"
+        },
+        {
+            "name": "alarm.deactivation_level",
+            "description": null,
+            "default": "60",
+            "max_value": 20.0,
+            "min_value": 20.0,
+            "type": "int"
+        }
+    ],
+    "compose_inputs": [{
+        "input_name": "in",
+        "metric_type__name": "CPU | Usage"
+    }],
+    "activation_config": {
+        "max_window": 5,
+        "min_window": 3,
+        "window_config": {},
+        "window_function": "mean",
+        "window_type": "tick"
+    }
+}
