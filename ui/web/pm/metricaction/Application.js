@@ -147,7 +147,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 itemId: itemId + ".window_config.percentile",
                                 name: itemId + ".window_config.percentile",
                                 labelAlign: "top",
-                                minValue: 1,
+                                minValue: 0,
                                 maxValue: 100,
                                 value: 50,
                                 fieldLabel: __("Percentile"),
@@ -183,7 +183,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             ["indicator", "Indicator"],
                             ["logistic", "Logistic"]
                         ],
-                        value: "disable",
+                        value: "Disable",
                         listeners: {
                             scope: me,
                             change: Ext.pass(me._setFieldsDisabled, {
@@ -473,7 +473,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     xtype: "fieldset",
                                     itemId: "deactivation-window",
                                     title: __("Deactivation Window"),
-                                    disabled: true,
+                                    disabled: false,
                                     layout: {
                                         type: "vbox",
                                         align: 'stretch'
@@ -500,7 +500,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     xtype: "fieldset",
                                     itemId: "deactivation-activation",
                                     title: __("Deactivation"),
-                                    disabled: true,
+                                    disabled: false,
                                     width: 400,
                                     items: activationSet("deactivation_config")
                                 },
