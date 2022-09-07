@@ -101,6 +101,8 @@ class ThresholdProfile(object):
 
 
 class Migration(BaseMigration):
+    depends_on = ["sa.0229_managedobjectprofile_metrics_jsonb"]
+
     def get_metric_action(self, metric_type, settings):
         r = {
             "_id": bson.ObjectId(),
