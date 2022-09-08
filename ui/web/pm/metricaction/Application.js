@@ -38,6 +38,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             ["expdecay", "Exp Decay"],
                             ["percentile", "Percentile"],
                             ["nth", "Nth"],
+                            ["mean", "Mean (Average)"]
                         ],
                         value: "disable",
                         listeners: {
@@ -47,7 +48,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     {value: "sumstep", name: "window_config.direction"},
                                     {value: "expdecay", name: "window_config.factor"},
                                     {value: "nth", name: "window_config.step_num"},
-                                    {value: "percentile", name: "window_config.percentile"}
+                                    {value: "percentile", name: "window_config.percentile"},
                                 ]
                             })
                         }
@@ -146,7 +147,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                 itemId: itemId + ".window_config.percentile",
                                 name: itemId + ".window_config.percentile",
                                 labelAlign: "top",
-                                minValue: 1,
+                                minValue: 0,
                                 maxValue: 100,
                                 value: 50,
                                 fieldLabel: __("Percentile"),
@@ -182,7 +183,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                             ["indicator", "Indicator"],
                             ["logistic", "Logistic"]
                         ],
-                        value: "disable",
+                        value: "Disable",
                         listeners: {
                             scope: me,
                             change: Ext.pass(me._setFieldsDisabled, {
@@ -401,7 +402,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     xtype: "fieldset",
                                     itemId: "input-container",
                                     title: __("Input"),
-                                    columnWidth: 0.4,
+                                    columnWidth: 0.5,
                                     margin: "0 20 0 0",
                                     padding: "0 10 5 10",
                                     items: [
@@ -440,26 +441,12 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     columnWidth: 0.4,
                                     items: [
                                         {
-                                            xtype: "combobox",
-                                            name: "compose_function",
+                                            xtype: "textarea",
+                                            name: "compose_expression",
                                             labelAlign: "top",
-                                            fieldLabel: __("Compose Function"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["sum", "sum"],
-                                                ["avg", "avg"],
-                                                ["div", "div"]
-                                            ],
-                                            value: "sum"
-                                        },
-                                        {
-                                            xtype: "core.combo",
-                                            name: "compose_metric_type",
-                                            restUrl: "/pm/metrictype/lookup/",
-                                            labelAlign: "top",
-                                            fieldLabel: __("Compose Metric Type"),
+                                            fieldLabel: __("Compose Expression"),
                                             allowBlank: true
-                                        },
+                                        }
                                     ]
                                 },
                             ]
@@ -486,7 +473,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     xtype: "fieldset",
                                     itemId: "deactivation-window",
                                     title: __("Deactivation Window"),
-                                    disabled: true,
+                                    disabled: false,
                                     layout: {
                                         type: "vbox",
                                         align: 'stretch'
@@ -513,7 +500,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     xtype: "fieldset",
                                     itemId: "deactivation-activation",
                                     title: __("Deactivation"),
-                                    disabled: true,
+                                    disabled: false,
                                     width: 400,
                                     items: activationSet("deactivation_config")
                                 },
@@ -553,19 +540,19 @@ Ext.define("NOC.pm.metricaction.Application", {
                                     columnWidth: 0.4,
                                     items: [
                                         {
-                                            xtype: "combobox",
-                                            name: "key_function",
+                                            xtype: "core.combo",
+                                            name: "compose_metric_type",
+                                            restUrl: "/pm/metrictype/lookup/",
                                             labelAlign: "top",
-                                            fieldLabel: __("Key Node"),
-                                            allowBlank: true,
-                                            store: [
-                                                [null, "Disable"],
-                                                ["key", "Key"]
-                                            ],
-                                            value: null,
-                                            listeners: {
-                                                change: me.keyFunctionChange
-                                            }
+                                            fieldLabel: __("Compose Metric Type"),
+                                            allowBlank: true
+                                        },
+                                        {
+                                            xtype: "textarea",
+                                            name: "key_expression",
+                                            labelAlign: "top",
+                                            fieldLabel: __("Key Expression"),
+                                            allowBlank: true
                                         }
                                     ]
                                 }

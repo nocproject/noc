@@ -21,7 +21,9 @@ from mongoengine.fields import (
     DictField,
     FloatField,
     IntField,
+    BooleanField,
 )
+from mongoengine.errors import ValidationError
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
@@ -30,6 +32,7 @@ from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
 from noc.core.change.decorator import change
+from noc.core.expr import get_vars
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sa.interfaces.base import (
@@ -95,6 +98,8 @@ class AlarmConfig(EmbeddedDocument):
     reference = StringField()
     activation_level = FloatField(default=1.0)
     deactivation_level = FloatField(default=1.0)
+    invert_condition = BooleanField(default=False)
+    error_text_template = StringField()
     vars = DictField()
 
     @property
@@ -109,7 +114,7 @@ class AlarmConfig(EmbeddedDocument):
 
 class ActivationConfig(EmbeddedDocument):
     window_function = StringField(
-        choices=["percentile", "nth", "expdecay", "sumstep"], default=None
+        choices=["percentile", "nth", "expdecay", "sumstep", "mean"], default=None
     )
     # Tick, Seconds
     window_type = StringField(choices=["tick", "seconds"], default="tick")
@@ -159,13 +164,13 @@ class MetricAction(Document):
     params: List["MetricActionParam"] = EmbeddedDocumentListField(MetricActionParam)
     #
     compose_inputs: List["InputMapping"] = ListField(EmbeddedDocumentField(InputMapping))
-    compose_function: str = StringField(choices=["sum", "avg", "div"], default=None)
+    compose_expression = StringField(default=None)
     compose_metric_type: "MetricType" = PlainReferenceField(MetricType)
     #
     activation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
     deactivation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
     #
-    key_function: str = StringField(choices=["key"], default=None)
+    key_expression: str = StringField(default=None)
     alarm_config: "AlarmConfig" = EmbeddedDocumentField(AlarmConfig)
 
     def __str__(self) -> str:
@@ -174,6 +179,21 @@ class MetricAction(Document):
     @classmethod
     def get_by_id(cls, oid) -> Optional["MetricAction"]:
         return MetricAction.objects.filter(id=oid).first()
+
+    def clean(self):
+        if not self.compose_expression:
+            return
+        try:
+            metric_fields = get_vars(self.compose_expression)
+        except Exception as e:
+            raise ValidationError({"compose_expression": str(e)})
+        inputs = [mi.metric_type for mi in self.compose_inputs]
+        for m_f in metric_fields:
+            mt = MetricType.get_by_field_name(m_f)
+            if not mt or mt not in inputs:
+                raise ValidationError(
+                    {"compose_expression": f"Unknown variable {m_f} on expression"}
+                )
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -186,14 +206,18 @@ class MetricAction(Document):
         }
         if self.description:
             r["description"] = self.description
-        if self.compose_function:
-            r["compose_function"] = self.compose_function
-        if self.activation_config.window_function or self.activation_config.activation_function:
+        if self.compose_expression:
+            r["compose_expression"] = self.compose_expression
+        if self.activation_config and (
+            self.activation_config.window_function or self.activation_config.activation_function
+        ):
             r["activation_config"] = self.activation_config.json_data
-        if self.deactivation_config.window_function or self.deactivation_config.activation_function:
+        if self.deactivation_config and (
+            self.deactivation_config.window_function or self.deactivation_config.activation_function
+        ):
             r["deactivation_config"] = self.deactivation_config.json_data
-        if self.key_function:
-            r["key_function"] = self.key_function
+        if self.key_expression:
+            r["key_expression"] = self.key_expression
         if self.alarm_config:
             r["alarm_config"] = self.alarm_config.json_data
         return r
@@ -208,7 +232,9 @@ class MetricAction(Document):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
-    def get_config(self, prefix: str = None, **kwargs) -> Optional[GraphConfig]:
+    def get_config(
+        self, prefix: str = None, enable_dump: bool = False, **kwargs
+    ) -> Optional[GraphConfig]:
         """
         Getting Graph config from MetricAction
         :param prefix:
@@ -234,22 +260,18 @@ class MetricAction(Document):
         for num, ci in enumerate(self.compose_inputs):
             inputs += [InputItem(name=ci.metric_type.field_name, node=ci.metric_type.field_name)]
         # Probe nodes
-        if self.compose_function:
+        if self.compose_expression:
+            ci = []
+            for ii in inputs:
+                ci.append(InputItem(name=ii.name, node=ii.node, dynamic=True))
             nodes["compose"] = NodeItem(
                 name=f"{prefix}compose",
-                type=self.compose_function,
+                type="composeprobe",
                 description="",
-                config=None,
-                inputs=inputs[:],
+                config={"expression": self.compose_expression, "unit": 1},
+                inputs=ci,
             )
             g_input = InputItem(name="x", node=f"{prefix}compose")
-            if self.compose_metric_type:
-                nodes["compose_{self.compose_metric_type.field_name}"] = NodeItem(
-                    name=f"{prefix}compose_{self.compose_metric_type.field_name}",
-                    type="probe",
-                    config={"units": "1"},
-                    inputs=[g_input],
-                )
         else:
             # If function is not set - only first input used
             g_input = InputItem(name="x", node=inputs[0].node)
@@ -278,11 +300,7 @@ class MetricAction(Document):
             key_input = InputItem(name="x", node=f"{prefix}activation-function")
         dkey_input = None
         # Deactivation
-        if (
-            self.key_function
-            and self.deactivation_config
-            and self.deactivation_config.window_function
-        ):
+        if self.deactivation_config and self.deactivation_config.window_function:
             config = {
                 "min_window": self.deactivation_config.min_window,
                 "max_window": self.deactivation_config.max_window,
@@ -292,29 +310,51 @@ class MetricAction(Document):
                 name=f"{prefix}deactivation-window",
                 type=self.deactivation_config.window_function,
                 config=config,
-                inputs=[g_input],
+                inputs=[InputItem(name="x", node=g_input.node)],
             )
-            dkey_input = InputItem(name="x", node=f"{prefix}deactivation-window")
-        if (
-            self.key_function
-            and self.deactivation_config
-            and self.deactivation_config.activation_function
-        ):
+            dkey_input = InputItem(name="deactivate_x", node=f"{prefix}deactivation-window")
+        if self.deactivation_config and self.deactivation_config.activation_function:
             nodes["deactivation-function"] = NodeItem(
                 name=f"{prefix}deactivation-function",
                 type=self.deactivation_config.activation_function,
                 config=self.deactivation_config.activation_config,
-                inputs=[dkey_input or g_input],
+                inputs=[g_input]
+                if not dkey_input
+                else [InputItem(name="x", node=f"{prefix}deactivation-window")],
             )
-            # dkey_input = InputItem(name="deactivation-function", node="deactivation-function")
+            dkey_input = InputItem(name="deactivate_x", node=f"{prefix}deactivation-function")
         # Key function
-        if self.key_function:
-            nodes["key"] = NodeItem(
-                name=f"{prefix}key",
-                type=self.key_function,
+        if self.key_expression:
+            kc_inputs = get_vars(self.key_expression)
+            ci = []
+            for ii in inputs:
+                if ii.name not in kc_inputs:
+                    continue
+                ci.append(InputItem(name=ii.name, node=ii.node, dynamic=True))
+            if ci:
+                nodes["keycompose"] = NodeItem(
+                    name=f"{prefix}keycompose",
+                    type="composeprobe",
+                    description="",
+                    config={"expression": self.key_expression, "unit": 1},
+                    inputs=ci,
+                )
+                nodes["key"] = NodeItem(
+                    name=f"{prefix}key",
+                    type="key",
+                    inputs=[
+                        InputItem(name="key", node=f"{prefix}keycompose"),
+                        key_input or g_input,
+                    ],
+                )
+                key_input = InputItem(name="x", node=f"{prefix}key")
+        if self.compose_metric_type:
+            nodes["compose_{self.compose_metric_type.field_name}"] = NodeItem(
+                name=f"{prefix}compose_{self.compose_metric_type.field_name}",
+                type="probe",
+                config={"units": "1"},
                 inputs=[key_input or g_input],
             )
-            key_input = InputItem(name="x", node=f"{prefix}key")
         # Alarm
         if self.alarm_config:
             nodes["alarm"] = NodeItem(
@@ -324,12 +364,25 @@ class MetricAction(Document):
                 config={
                     "alarm_class": self.alarm_config.alarm_class.name,
                     "reference": self.alarm_config.reference,
+                    "error_text_template": self.config.error_text_template,
                 },
             )
+            if dkey_input:
+                nodes["alarm"].inputs += [
+                    InputItem(name=dkey_input.name, node=dkey_input.node, dynamic=True)
+                ]
         # Apply param to Node config
         for node_id in node_configs:
             if node_id in nodes:
                 nodes[node_id].config.update(node_configs[node_id])
+        if enable_dump:
+            nodes["dump"] = NodeItem(
+                name=f"{prefix}dump",
+                type="dump",
+                inputs=inputs[:] + [key_input or g_input],
+            )
+            if dkey_input:
+                nodes["dump"].inputs += [dkey_input]
         return GraphConfig(nodes=list(nodes.values()))
 
     def iter_changed_datastream(self, changed_fields=None):
