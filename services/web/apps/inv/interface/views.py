@@ -10,7 +10,7 @@ from mongoengine import Q
 
 # NOC modules
 from noc.lib.app.decorators.state import state_handler
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.extapplication import view
 from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
