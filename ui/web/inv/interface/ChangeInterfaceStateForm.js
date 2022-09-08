@@ -9,7 +9,8 @@ console.debug("Defining NOC.inv.interface.ChangeInterfaceStateForm");
 Ext.define("NOC.inv.interface.ChangeInterfaceStateForm", {
     extend: "Ext.Window",
     requires: [
-        "NOC.main.resourcestate.LookupField"
+        "NOC.wf.state.LookupField",
+        "NOC.core.StateField"
     ],
     autoShow: true,
     closable: true,
@@ -36,10 +37,12 @@ Ext.define("NOC.inv.interface.ChangeInterfaceStateForm", {
                     xtype: "form",
                     items: [
                         {
-                            xtype: "main.resourcestate.LookupField",
+                            xtype: "statefield",
                             name: "state",
                             fieldLabel: __("State"),
-                            allowBlank: false
+                            allowBlank: false,
+                            restUrl: "/inv/interface/",
+                            itemId: me.record.get("id")
                         }
                     ],
                     buttonAlign: "center",

@@ -21,7 +21,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.cm.interfacevalidationpolicy.LookupField",
         "NOC.inv.ifdescpatterns.LookupField",
         "NOC.main.handler.LookupField",
-        "Ext.ux.form.GridField"
+        "Ext.ux.form.GridField",
+        "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -170,6 +171,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 xtype: "checkbox",
                                 boxLabel: __("User Interface"),
                                 allowBlank: true
+                            },
+                            {
+                                name: "workflow",
+                                xtype: "wf.workflow.LookupField",
+                                fieldLabel: __("Workflow"),
+                                allowBlank: false
                             }
                         ]
                     },

@@ -133,11 +133,24 @@ Ext.define("NOC.core.StateField", {
         var me = this;
         v = v || {};
         me.stateField.setValue(v.label || "");
-        me.itemId = v.itemId || null;
+        me.itemId = v;
+        if(v.hasOwnProperty("itemId")) {
+            me.itemId = v.itemId;
+        }
         if(v.restUrl) {
             me.restUrl = v.restUrl;
         }
         me.hideTransitions();
+    },
+
+    getValue: function() {
+        var me = this;
+
+        if(me.up().xtype === "roweditor") {
+            var rec = me.up().getRecord();
+            me.itemId = rec ? rec.id : null;
+        }
+        return me.itemId;
     },
 
     step: function (rec) {
