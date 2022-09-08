@@ -11,6 +11,7 @@ from mongoengine import Q
 # NOC modules
 from noc.lib.app.decorators.state import state_handler
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -30,13 +31,14 @@ from noc.core.comp import smart_text
 
 
 @state_handler
-class InterfaceAppplication(ExtApplication):
+class InterfaceAppplication(ExtDocApplication):
     """
     inv.interface application
     """
 
     title = _("Interfaces")
     menu = _("Interfaces")
+    model = Interface
 
     mrt_config = {
         "get_mac": {
