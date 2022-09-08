@@ -159,6 +159,7 @@ class MetricType(Document):
             r["required_capability__name"] = self.required_capability.name
         if self.compose_expression:
             r["compose_expression"] = self.compose_expression
+            r["compose_inputs__name"] = [mt.name for mt in self.compose_inputs]
         return r
 
     def clean(self):

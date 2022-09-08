@@ -653,7 +653,7 @@ class MetricsService(FastAPIService):
             # Node
             for node in rule.graph.nodes.values():
                 if node.name == "probe" and node.node_id in card.probes:
-                    # Probe node, will be replace to Card probes
+                    # Probe node, will be replaced to Card probes
                     nodes[node.node_id] = card.probes[node.node_id]
                     continue
                 elif (
