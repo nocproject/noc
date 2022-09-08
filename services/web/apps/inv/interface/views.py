@@ -57,6 +57,84 @@ class InterfaceAppplication(ExtDocApplication):
         ]
     }
 
+    def get_Q(self, request, query):
+        return super().get_Q(request, query)
+
+    @staticmethod
+    def get_style(i: Interface):
+        profile = i.profile
+        # try:
+        #     return style_cache[profile.id]
+        # except KeyError:
+        #     pass
+        if profile.style:
+            s = profile.style.css_class_name
+        else:
+            s = ""
+        # style_cache[profile.id] = s
+        return s
+
+    @staticmethod
+    def get_link(i: Interface):
+        link = i.link
+        if not link:
+            return None
+        if link.is_ptp:
+            # ptp
+            o = link.other_ptp(i)
+            label = f"{o.managed_object.name}:{o.name}"
+        elif link.is_lag:
+            # unresolved LAG
+            o = [ii for ii in link.other(i) if ii.managed_object.id != i.managed_object.id]
+            label = f'LAG {o[0].managed_object.name}: {", ".join(ii.name for ii in o)}'
+        else:
+            # Broadcast
+            label = ", ".join(f"{ii.managed_object.name}:{ii.name}" for ii in link.other(i))
+        return {"id": str(link.id), "label": label}
+
+    def get_subinterface(self, si: SubInterface):
+        r = {
+            "name": si.name,
+            "description": si.description,
+            "untagged_vlan": si.untagged_vlan,
+            "tagged_vlans": si.tagged_vlans,
+            "ipv4_addresses": si.ipv4_addresses,
+            "ipv6_addresses": si.ipv6_addresses,
+            "enabled_protocols": si.enabled_protocols,
+            "vlan": si.vlan_ids,
+            "project": si.project.id if si.project else None,
+            "project__label": str(si.project) if si.project else None,
+            "l2_domain": str(si.l2_domain.id) if si.l2_domain else None,
+            "l2_domain__label": str(si.l2_domain) if si.l2_domain else None,
+            "service": str(si.service.id) if si.service else None,
+            "service__label": str(si.service) if si.service else None,
+            "vrf": si.forwarding_instance.name if si.forwarding_instance else "",
+        }
+        return r
+
+    def instance_to_dict(self, o: Interface, fields=None, nocustom=False):
+        r = {
+            "id": str(o.id),
+            "name": o.name,
+            "description": o.description,
+            "mac": o.mac,
+            "ifindex": o.ifindex,
+            "lag": (o.aggregated_interface.name if o.aggregated_interface else ""),
+            "link": self.get_link(o),
+            "profile": str(o.profile.id) if o.profile else None,
+            "profile__label": str(o.profile) if o.profile else None,
+            "enabled_protocols": o.enabled_protocols,
+            "project": str(o.project.id) if o.project else None,
+            "project__label": str(o.project) if o.project else None,
+            "state": str(o.state.id) if o.state else None,
+            "state__label": str(o.state) if o.state else None,
+            "service": str(o.service.id) if o.service else None,
+            "service__label": str(o.service) if o.service else None,
+            "row_class": self.get_style(o),
+            "subinterfaces": [self.get_subinterface(si) for si in o.subinterface_set],
+        }
+        return r
+
     @view(url=r"^(?P<managed_object>\d+)/$", method=["GET"], access="view", api=True)
     def api_get_interfaces(self, request, managed_object):
         """
@@ -67,41 +145,6 @@ class InterfaceAppplication(ExtDocApplication):
 
         def sorted_iname(s):
             return list(sorted(s, key=lambda x: alnum_key(x["name"])))
-
-        def get_style(i):
-            profile = i.profile
-            if profile:
-                try:
-                    return style_cache[profile.id]
-                except KeyError:
-                    pass
-                if profile.style:
-                    s = profile.style.css_class_name
-                else:
-                    s = ""
-                style_cache[profile.id] = s
-                return s
-            else:
-                return ""
-
-        def get_link(i):
-            link = i.link
-            if not link:
-                return None
-            if link.is_ptp:
-                # ptp
-                o = link.other_ptp(i)
-                label = "%s:%s" % (o.managed_object.name, o.name)
-            elif link.is_lag:
-                # unresolved LAG
-                o = [ii for ii in link.other(i) if ii.managed_object.id != i.managed_object.id]
-                label = "LAG %s: %s" % (o[0].managed_object.name, ", ".join(ii.name for ii in o))
-            else:
-                # Broadcast
-                label = ", ".join(
-                    "%s:%s" % (ii.managed_object.name, ii.name) for ii in link.other(i)
-                )
-            return {"id": str(link.id), "label": label}
 
         # Get object
         o = self.get_object_or_404(ManagedObject, id=int(managed_object))
@@ -118,7 +161,7 @@ class InterfaceAppplication(ExtDocApplication):
                 "mac": i.mac,
                 "ifindex": i.ifindex,
                 "lag": (i.aggregated_interface.name if i.aggregated_interface else ""),
-                "link": get_link(i),
+                "link": self.get_link(i),
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": smart_text(i.profile) if i.profile else None,
                 "enabled_protocols": i.enabled_protocols,
@@ -128,7 +171,7 @@ class InterfaceAppplication(ExtDocApplication):
                 "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
-                "row_class": get_style(i),
+                "row_class": self.get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="physical")
         ]
@@ -153,7 +196,7 @@ class InterfaceAppplication(ExtDocApplication):
                 "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
-                "row_class": get_style(i),
+                "row_class": self.get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="aggregated")
         ]
