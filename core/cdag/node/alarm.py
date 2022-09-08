@@ -79,13 +79,13 @@ class AlarmNode(BaseCDAGNode):
         :return:
         """
         if self.state.active and (
-            (self.config.invert_condition and x < self.config.deactivation_level)
-            or (not self.config.invert_condition and x > self.config.deactivation_level)
+            (not self.config.invert_condition and x < self.config.deactivation_level)
+            or (self.config.invert_condition and x > self.config.deactivation_level)
         ):
             self.clear_alarm()
         elif not self.state.active and (
-            (self.config.invert_condition and x >= self.config.activation_level)
-            or (not self.config.invert_condition and x <= self.config.activation_level)
+            (not self.config.invert_condition and x >= self.config.activation_level)
+            or (self.config.invert_condition and x <= self.config.activation_level)
         ):
             self.raise_alarm(x)
         return None
