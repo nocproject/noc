@@ -64,7 +64,7 @@ Ext.define("NOC.inv.interface.L1Store", {
         },
         {
             name: "state",
-            type: "int"
+            type: "auto"
         },
         {
             name: "state__label",

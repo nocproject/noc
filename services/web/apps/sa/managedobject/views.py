@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sa.managedobject application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -514,7 +514,6 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Permission denied")
         # Physical interfaces
         # @todo: proper ordering
-        default_state = ResourceState.get_default()
         style_cache = {}  # profile_id -> css_style
         l1 = [
             {
@@ -531,8 +530,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
                 "project__label": smart_text(i.project) if i.project else None,
-                "state": i.state.id if i.state else default_state.id,
-                "state__label": smart_text(i.state if i.state else default_state),
+                "state": str(i.state.id) if i.state else None,
+                "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),

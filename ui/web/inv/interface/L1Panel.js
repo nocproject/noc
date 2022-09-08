@@ -9,7 +9,9 @@ console.debug("Defining NOC.inv.interface.L1Panel");
 Ext.define("NOC.inv.interface.L1Panel", {
     extend: "Ext.panel.Panel",
     requires: [
-        "Ext.ux.grid.column.GlyphAction"
+        "Ext.ux.grid.column.GlyphAction",
+        "NOC.wf.state.LookupField",
+        "NOC.core.StateField",
     ],
     title: __("Physical"),
     closable: false,

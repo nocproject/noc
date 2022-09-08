@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.interface application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,9 @@
 from mongoengine import Q
 
 # NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.decorators.state import state_handler
+from noc.lib.app.extapplication import view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -20,7 +22,6 @@ from noc.sa.interfaces.base import (
     DocumentParameter,
     ModelParameter,
 )
-from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.core.text import alnum_key
@@ -29,13 +30,15 @@ from noc.config import config
 from noc.core.comp import smart_text
 
 
-class InterfaceAppplication(ExtApplication):
+@state_handler
+class InterfaceAppplication(ExtDocApplication):
     """
     inv.interface application
     """
 
     title = _("Interfaces")
     menu = _("Interfaces")
+    model = Interface
 
     mrt_config = {
         "get_mac": {
@@ -106,7 +109,6 @@ class InterfaceAppplication(ExtApplication):
             return self.response_forbidden("Permission denied")
         # Physical interfaces
         # @todo: proper ordering
-        default_state = ResourceState.get_default()
         style_cache = {}  # profile_id -> css_style
         l1 = [
             {
@@ -122,8 +124,8 @@ class InterfaceAppplication(ExtApplication):
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
                 "project__label": smart_text(i.project) if i.project else None,
-                "state": i.state.id if i.state else default_state.id,
-                "state__label": smart_text(i.state if i.state else default_state),
+                "state": str(i.state.id) if i.state else None,
+                "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),
@@ -147,8 +149,8 @@ class InterfaceAppplication(ExtApplication):
                 "enabled_protocols": i.enabled_protocols,
                 "project": i.project.id if i.project else None,
                 "project__label": smart_text(i.project) if i.project else None,
-                "state": i.state.id if i.state else default_state.id,
-                "state__label": smart_text(i.state if i.state else default_state),
+                "state": str(i.state.id) if i.state else None,
+                "state__label": smart_text(i.state) if i.state else None,
                 "vc_domain": i.vc_domain.id if i.vc_domain else None,
                 "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i),
@@ -246,22 +248,6 @@ class InterfaceAppplication(ExtApplication):
         if i.profile != profile:
             i.profile = profile
             i.profile_locked = True
-            i.save()
-        return True
-
-    @view(
-        url=r"^l1/(?P<iface_id>[0-9a-f]{24})/change_state/$",
-        validate={"state": ModelParameter(ResourceState)},
-        method=["POST"],
-        access="profile",
-        api=True,
-    )
-    def api_change_state(self, request, iface_id, state):
-        i = Interface.objects.filter(id=iface_id).first()
-        if not i:
-            return self.response_not_found()
-        if i.state != state:
-            i.state = state
             i.save()
         return True
 
