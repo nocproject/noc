@@ -20,7 +20,7 @@ class Migration(BaseMigration):
 
     def migrate(self):
         s_map = {
-            1: bson.ObjectId("5a17f78d1bb6270001bd0346"),  # ALLOCATED -> Ready
+            1: bson.ObjectId("5a17f61b1bb6270001bd0328"),  # ALLOCATED -> Free
             2: bson.ObjectId("5a17f7391bb6270001bd033e"),  # EXPIRED -> Cooldown
             3: bson.ObjectId("5a17f7d21bb6270001bd034f"),  # PLANNED -> Approved
             4: bson.ObjectId("5a17f6c51bb6270001bd0333"),  # RESERVED -> Reserved
@@ -33,7 +33,7 @@ class Migration(BaseMigration):
         bulk = []
         for s in s_map:
             bulk += [UpdateMany({"state": s}, {"$set": {"state": s_map[s]}})]
-        # Missing state -> Ready
-        state = bson.ObjectId("5a17f78d1bb6270001bd0346")
+        # Missing state -> Free
+        state = bson.ObjectId("5a17f61b1bb6270001bd0328")
         bulk += [UpdateMany({"state": {"$exists": False}}, {"$set": {"state": state}})]
         db["noc.interfaces"].bulk_write(bulk, ordered=True)
