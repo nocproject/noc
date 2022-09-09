@@ -788,7 +788,7 @@ class ManagedObject(NOCModel):
         ):
             yield "cfgtrap", self.id
         if config.datastream.enable_cfgmetricsources and changed_fields.intersection(
-            {"id", "bi_id", "is_managed", "pool", "fm_pool", "labels"}
+            {"id", "bi_id", "is_managed", "pool", "fm_pool", "labels", "effective_labels"}
         ):
             yield "cfgmetricsources", f"sa.ManagedObject::{self.bi_id}"
 
@@ -1004,6 +1004,9 @@ class ManagedObject(NOCModel):
             from noc.inv.models.discoveryid import DiscoveryID
 
             DiscoveryID.clean_for_object(self)
+        if "effective_labels" in self.changed_fields:
+            # Update configured diagnostic
+            self.update_diagnostics()
         # Update configured state on diagnostics
         if diagnostics:
             # Reset changed diagnostic

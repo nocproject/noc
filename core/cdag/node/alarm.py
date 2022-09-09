@@ -172,3 +172,6 @@ class AlarmNode(BaseCDAGNode):
         if self.state.active and self.dynamic_inputs and name == "deactivate_x":
             return True
         return super().is_required_input(name)
+
+    def __del__(self):
+        self.reset_state()
