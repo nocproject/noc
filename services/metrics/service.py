@@ -500,7 +500,11 @@ class MetricsService(FastAPIService):
         return cdag
 
     def clone_and_add_node(
-        self, n: BaseCDAGNode, prefix: str, config: Optional[Dict[str, Any]] = None
+        self,
+        n: BaseCDAGNode,
+        prefix: str,
+        config: Optional[Dict[str, Any]] = None,
+        static_config=None,
     ) -> BaseCDAGNode:
         """
         Clone node without subscribers and apply state and config
@@ -508,7 +512,9 @@ class MetricsService(FastAPIService):
         node_id = n.node_id
         state_id = f"{prefix}::{node_id}"
         state = self.start_state.pop(state_id, None)
-        new_node = n.clone(node_id, prefix=prefix, state=state, config=config)
+        new_node = n.clone(
+            node_id, prefix=prefix, state=state, config=config, static_config=static_config
+        )
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
 
@@ -666,18 +672,16 @@ class MetricsService(FastAPIService):
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
+                static_config = None
                 if node.node_id == "alarm":
-                    # config = config.copy()
-                    config.update(
-                        {
-                            "managed_object": f"bi_id:{source.bi_id}",
-                            "pool": source.fm_pool,
-                            "labels": k[2],
-                        }
-                    )
+                    static_config = {
+                        "managed_object": f"bi_id:{source.bi_id}",
+                        "pool": source.fm_pool,
+                        "labels": k[2],
+                    }
                 # @todo add rule-id to hash for multiple rules
                 nodes[node.node_id] = self.clone_and_add_node(
-                    node, prefix=self.get_key_hash(k), config=config
+                    node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
             if "alarm" not in nodes and "probe" not in nodes:
                 self.logger.warning(
@@ -844,7 +848,8 @@ class MetricsService(FastAPIService):
                     continue
                 if a.config.pool != sc.fm_pool:
                     # Hack for ConfigProxy use
-                    a.config._ConfigProxy__override["pool"] = sc.fm_pool
+                    a.config.__static["pool"] = sc.fm_pool
+                    # Alarm config update
             num += 1
         self.logger.info("Invalidate %s cards config", num)
 
