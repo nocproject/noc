@@ -1,0 +1,12 @@
+{
+    "name": "Interface | Errors | Frame | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "73daa660-0ddf-40d3-ac34-4bd259146694",
+    "scope__name": "Interface",
+    "field_name": "errors_frame_in_delta",
+    "field_type": "UInt32",
+    "description": "Errors when received frames whose actual length differs with 802.3 Delta",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
