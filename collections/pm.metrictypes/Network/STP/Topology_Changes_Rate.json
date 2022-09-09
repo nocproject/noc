@@ -1,0 +1,12 @@
+{
+    "name": "Network | STP | Topology Changes | Rate",
+    "$collection": "pm.metrictypes",
+    "uuid": "9ad8836c-9418-4b4d-b793-6f4d88126cb6",
+    "scope__name": "Routing",
+    "field_name": "stp_topology_changes_rate",
+    "field_type": "UInt32",
+    "description": "The rate of topology changes detected by this bridge.",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
