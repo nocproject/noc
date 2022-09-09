@@ -1,0 +1,12 @@
+{
+    "name": "Interface | Errors | Collision | Rate",
+    "$collection": "pm.metrictypes",
+    "uuid": "5380ace6-3389-4798-a6ca-430bec250cc6",
+    "scope__name": "Interface",
+    "field_name": "errors_collision_rate",
+    "field_type": "UInt32",
+    "description": "The number of output collisions detected on this interface. Rate",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}

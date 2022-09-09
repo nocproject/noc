@@ -1,0 +1,12 @@
+{
+    "name": "Interface | Errors | Collision | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "1ef6b19f-bb83-4a16-bf87-c98c0245a495",
+    "scope__name": "Interface",
+    "field_name": "errors_collision_delta",
+    "field_type": "UInt32",
+    "description": "The number of output collisions detected on this interface. Delta",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
