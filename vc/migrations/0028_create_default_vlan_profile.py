@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Create default VLAN Profile and L2 Domain profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 
 # Third-pary modules
