@@ -1,0 +1,12 @@
+{
+    "name": "Interface | Errors | CRC | In | Delta",
+    "$collection": "pm.metrictypes",
+    "uuid": "b2df0f15-229a-4981-ade2-b820e761f2ef",
+    "scope__name": "Interface",
+    "field_name": "errors_crc_in_delta",
+    "field_type": "UInt32",
+    "description": "Errors when recieved packets which have CRC checking errors Delta",
+    "measure": null,
+    "units__code": "1",
+    "scale__code": "1"
+}
