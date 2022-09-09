@@ -48,12 +48,15 @@ class Migration(BaseMigration):
             upsert=True,
         )
         # Create default L2 Domain
+        l2domain_profile_id = self.mongo_db["l2domainprofiles"].find_one(
+            {"name": "default"}, {"_id": 1}
+        )["_id"]
         self.mongo_db["l2domains"].insert_one(
             {
                 "_id": ObjectId("61bee7425c42c21338453614"),
                 "name": "default",
                 "description": "Default L2 Domain",
-                "profile": ObjectId("61bee6f45c42c21338453613"),
+                "profile": l2domain_profile_id,
                 "pools": [],
                 "labels": [],
                 "effective_labels": [],
