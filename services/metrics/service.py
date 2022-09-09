@@ -146,7 +146,7 @@ class Rule(object):
         """
         update_configs = set()
         for node_id in configs:
-            if node_id in self.configs and self.configs != configs[node_id]:
+            if node_id in self.configs and self.configs[node_id] != configs[node_id]:
                 self.configs[node_id].update(configs[node_id])
                 update_configs.add(node_id)
             else:
