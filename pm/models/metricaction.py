@@ -364,7 +364,7 @@ class MetricAction(Document):
                 config={
                     "alarm_class": self.alarm_config.alarm_class.name,
                     "reference": self.alarm_config.reference,
-                    "error_text_template": self.config.error_text_template,
+                    "error_text_template": self.alarm_config.error_text_template,
                 },
             )
             if dkey_input:

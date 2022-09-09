@@ -667,7 +667,7 @@ class MetricsService(FastAPIService):
                     continue
                 config = rule.configs.get(node.node_id)
                 if node.node_id == "alarm":
-                    config = config.copy()
+                    # config = config.copy()
                     config.update(
                         {
                             "managed_object": f"bi_id:{source.bi_id}",
@@ -845,8 +845,8 @@ class MetricsService(FastAPIService):
                 if a.config.pool != sc.fm_pool:
                     # Hack for ConfigProxy use
                     a.config._ConfigProxy__override["pool"] = sc.fm_pool
-            num = 1
-        self.logger.info("Invalidate %s cards", num)
+            num += 1
+        self.logger.info("Invalidate %s cards config", num)
 
     def invalidate_card_rules(self, rules: Iterable[str]):
         """

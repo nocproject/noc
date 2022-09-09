@@ -190,11 +190,13 @@ class Migration(BaseMigration):
         mas = {}
         mr_bulk = []
         for tp_id, mt in thresholds:
+            if tp_id not in thps:
+                continue
             tp = thps[tp_id]
             wc = tp.get_window_config()
             if wc and (wc["window_function"], mt) not in mas:
                 # Create Metric Action
-                mas[(mt, wc["window_function"])] = self.get_metric_action(mt, wc["window_function"])
+                mas[(mt, wc["window_function"])] = self.get_metric_action(mt, wc)
                 ma = mas[(mt, wc["window_function"])]
             else:
                 mas[(mt, None)] = self.get_metric_action(mt, None)
