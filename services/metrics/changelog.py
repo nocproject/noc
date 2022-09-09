@@ -159,7 +159,7 @@ class ChangeLog(object):
             # Split to chunks when necessary
             bulk = []
             for c_data in self.iter_state_bulks(state):
-                t_mark -= datetime.timedelta(seconds=1)
+                t_mark += datetime.timedelta(seconds=1)
                 bulk.append(
                     InsertOne(
                         {"_id": ObjectId.from_datetime(t_mark), "slot": self.slot, "data": c_data}

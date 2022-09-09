@@ -102,6 +102,9 @@ class Card(object):
                 if s.node in self.senders or s.node in self.probes or s.node in self.alarms:
                     continue
                 probe.unsubscribe(s.node, s.input)
+        self.set_dirty()
+
+    def set_dirty(self):
         self.is_dirty = True
 
 
@@ -146,7 +149,7 @@ class Rule(object):
         """
         update_configs = set()
         for node_id in configs:
-            if node_id in self.configs and self.configs != configs[node_id]:
+            if node_id in self.configs and self.configs[node_id] != configs[node_id]:
                 self.configs[node_id].update(configs[node_id])
                 update_configs.add(node_id)
             else:
@@ -500,7 +503,11 @@ class MetricsService(FastAPIService):
         return cdag
 
     def clone_and_add_node(
-        self, n: BaseCDAGNode, prefix: str, config: Optional[Dict[str, Any]] = None
+        self,
+        n: BaseCDAGNode,
+        prefix: str,
+        config: Optional[Dict[str, Any]] = None,
+        static_config=None,
     ) -> BaseCDAGNode:
         """
         Clone node without subscribers and apply state and config
@@ -508,7 +515,9 @@ class MetricsService(FastAPIService):
         node_id = n.node_id
         state_id = f"{prefix}::{node_id}"
         state = self.start_state.pop(state_id, None)
-        new_node = n.clone(node_id, prefix=prefix, state=state, config=config)
+        new_node = n.clone(
+            node_id, prefix=prefix, state=state, config=config, static_config=static_config
+        )
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
 
@@ -600,8 +609,12 @@ class MetricsService(FastAPIService):
 
     def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
         """
-        Get source Info by Metric Key
-        :param k:
+        Get source Info by Metric Key. Sources:
+         * managed_object
+         * agent
+         * sensor
+         * sla_probe
+        :param k: MetricKey
         :return:
         """
         key_ctx, source = dict(k[1]), None
@@ -666,18 +679,16 @@ class MetricsService(FastAPIService):
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
+                static_config = None
                 if node.node_id == "alarm":
-                    config = config.copy()
-                    config.update(
-                        {
-                            "managed_object": f"bi_id:{source.bi_id}",
-                            "pool": source.fm_pool,
-                            "labels": k[2],
-                        }
-                    )
+                    static_config = {
+                        "managed_object": f"bi_id:{source.bi_id}",
+                        "pool": source.fm_pool,
+                        "labels": k[2],
+                    }
                 # @todo add rule-id to hash for multiple rules
                 nodes[node.node_id] = self.clone_and_add_node(
-                    node, prefix=self.get_key_hash(k), config=config
+                    node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
             if "alarm" not in nodes and "probe" not in nodes:
                 self.logger.warning(
@@ -752,7 +763,7 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
 
-    def update_source_config(self, data: Dict[str, Any]) -> None:
+    async def update_source_config(self, data: Dict[str, Any]) -> None:
         """
         Update source config.
         """
@@ -787,7 +798,7 @@ class MetricsService(FastAPIService):
         if "condition" in diff:
             self.invalidate_card_config(sc)
 
-    def delete_source_config(self, c_id: int) -> None:
+    async def delete_source_config(self, c_id: int) -> None:
         """
         Delete source config
         """
@@ -836,7 +847,7 @@ class MetricsService(FastAPIService):
                 card.invalidate_card()
                 card.affected_rules = set()
             else:
-                card.is_dirty = True
+                card.set_dirty()
             # Check alarm
             for a in card.alarms:
                 if delete:
@@ -844,28 +855,42 @@ class MetricsService(FastAPIService):
                     continue
                 if a.config.pool != sc.fm_pool:
                     # Hack for ConfigProxy use
-                    a.config._ConfigProxy__override["pool"] = sc.fm_pool
-            num = 1
-        self.logger.info("Invalidate %s cards", num)
+                    a.config.__static["pool"] = sc.fm_pool
+                    # Alarm config update
+            num += 1
+        self.logger.info("Invalidate %s cards config", num)
 
-    def invalidate_card_rules(self, rules: Iterable[str]):
+    async def invalidate_card_rules(
+        self, rules: Iterable[str], is_delete: bool = False, is_new: bool = False
+    ):
         """
         Invalidate Cards on rules by identifiers
-        :param rules:
+        :param rules: List that invalidate rule
+        :param is_delete: Invalidate for remove rule (reset alarm node)
+        :param is_new: Invalidate for new rule (invalidate all nodes)
         :return:
         """
         rules = set(rules)
         self.logger.info("Invalidate card for rules: %s", ";".join(rules))
         num = 0
         for c in self.cards.values():
+            if is_new:
+                c.set_dirty()
+                num += 1
+                continue
             if c.affected_rules and c.affected_rules.intersection(rules):
                 c.invalidate_card()
                 c.affected_rules = set()
                 # c.affected_rules -= rules
                 num += 1
+                if is_delete:
+                    while c.alarms:
+                        node = c.alarms.pop()
+                        await self.change_log.feed({node.node_id: None})
+                        del node
         self.logger.info("Invalidate %s cards", num)
 
-    def update_rules(self, data: Dict[str, Any]) -> None:
+    async def update_rules(self, data: Dict[str, Any]) -> None:
         """
         Apply Metric Rules change
         :param data:
@@ -904,6 +929,8 @@ class MetricsService(FastAPIService):
             r_id = sys.intern(r.id)
             if r_id not in self.rules:
                 self.rules[r_id] = r
+                # For new Rules (after card create)
+                await self.invalidate_card_rules(invalidate_rules, is_new=True)
                 continue
             diff = self.rules[r_id].is_differ(r)
             if diff == {"configs"}:
@@ -915,20 +942,23 @@ class MetricsService(FastAPIService):
                 self.logger.info("[%s] %s Changed. Invalidate cards for rules", r.id, diff)
                 invalidate_rules.add(r_id)
         if invalidate_rules:
-            self.invalidate_card_rules(invalidate_rules)
+            await self.invalidate_card_rules(invalidate_rules)
 
-    def delete_rules(self, r_id: str) -> None:
+    async def delete_rules(self, r_id: str) -> None:
         """
         Remove rules for ID
-        :param r_id: Rule
+        :param r_id: RuleID
         :return:
         """
         invalidate_rules = set()
         for r in self.rules:
             if r.startswith(r_id):
                 invalidate_rules.add(r)
+        self.logger.info("[%s] Delete rules: %s", r_id, invalidate_rules)
         if invalidate_rules:
-            self.invalidate_card_rules(invalidate_rules)
+            await self.invalidate_card_rules(invalidate_rules, is_delete=True)
+        for r in invalidate_rules:
+            del self.rules[r]
 
     async def on_rules_ready(self) -> None:
         """

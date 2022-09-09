@@ -49,15 +49,26 @@ class ConfigProxy(object):
     Wrap BaseModel and override particular attributes
     """
 
-    __slots__ = ("__base", "__override")
+    __slots__ = ("__base", "__override", "__static_override")
 
-    def __init__(self, base: BaseModel, override: Dict[str, Any]):
+    def __init__(
+        self, base: BaseModel, override: Dict[str, Any], static: Optional[Dict[str, Any]] = None
+    ):
+        """
+        Base Configuration (on BaseModel)
+        :param base:
+        :param override: Override part of config, used for override config param
+        :param static: Static part of config, used for store values on ConfigStore
+        """
         self.__base = base
         self.__override = override
+        self.__static = static
 
     def __getattribute__(self, __name: str) -> Any:
         if __name.startswith("_"):
             return super().__getattribute__(__name)
+        if self.__static and __name in self.__static:
+            return self.__static[__name]
         v = self.__override.get(__name, config_proxy_sentinel)
         if v is config_proxy_sentinel:
             return getattr(self.__base, __name)
@@ -181,11 +192,21 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         prefix: Optional[str] = None,
         state: Optional[Dict[str, Any]] = None,
         config: Optional[Dict[str, Any]] = None,
+        static_config: Optional[Dict[str, Any]] = None,
     ) -> Optional["BaseCDAGNode"]:
+        """
+        Clone node
+        :param node_id: Node Identifier
+        :param prefix: Node Identifier prefix for create unique identifier
+        :param state: Node state
+        :param config: Config params for node
+        :param static_config: May be split config to two parts
+        :return:
+        """
         if not hasattr(self, "config_cls"):
             cfg = None
         elif config:
-            cfg = ConfigProxy(self.config, config)
+            cfg = ConfigProxy(self.config, config, static_config)
         else:
             cfg = self.config
 
