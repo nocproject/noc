@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,22 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.validators import is_int, is_ipv4
+from noc.core.lldp import (
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_UNSPECIFIED,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
@@ -20,7 +36,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_summary_split = re.compile(r"^Device ID.+?\n", re.MULTILINE | re.IGNORECASE)
-    rx_s_line = re.compile(r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te|Eth)\d+[\d/\.]*)\s+.+$")
+    rx_s_line = re.compile(r"^[\S+\s]*(?P<local_if>(?:Fa|Gi|Te|Eth|mgmt)\d+[\d/\.]*)\s+.+$")
     rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_remote_port = re.compile(r"^Port id:\s*(?P<remote_if>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
     rx_enabled_caps = re.compile(
@@ -29,7 +45,7 @@ class Script(BaseScript):
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         try:
             v = self.cli("show lldp neighbors")
@@ -63,22 +79,19 @@ class Script(BaseScript):
             # Get remote port
             match = self.rx_remote_port.search(v)
             remote_port = match.group("remote_if")
-            remote_port_subtype = 128
+            remote_port_subtype = LLDP_PORT_SUBTYPE_UNSPECIFIED
             if self.rx_mac.match(remote_port):
-                # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
-                remote_port_subtype = 3
+                remote_port_subtype = LLDP_PORT_SUBTYPE_MAC
             elif is_ipv4(remote_port):
-                # Actually networkAddress(4)
-                remote_port_subtype = 4
+                remote_port_subtype = LLDP_PORT_SUBTYPE_NETWORK_ADDRESS
             elif is_int(remote_port):
-                # Actually local(7)
-                remote_port_subtype = 7
+                remote_port_subtype = LLDP_PORT_SUBTYPE_LOCAL
             n = {
                 "remote_port": remote_port,
                 "remote_port_subtype": remote_port_subtype,
-                "remote_chassis_id_subtype": 4,
+                "remote_chassis_id_subtype": LLDP_CHASSIS_SUBTYPE_MAC,
             }
             # Get chassis id
             match = self.rx_chassis_id.search(v)
@@ -89,20 +102,20 @@ class Script(BaseScript):
             cap = 0
             match = self.rx_enabled_caps.search(v)
             if match:
-                for c in match.group("caps").split(","):
-                    c = c.strip()
-                    if c:
-                        cap |= {
-                            "O": 1,
-                            "P": 2,
-                            "B": 4,
-                            "W": 8,
-                            "R": 16,
-                            "T": 32,
-                            "C": 64,
-                            "S": 128,
-                            "N/A": 256,
-                        }[c]
+                cap = lldp_caps_to_bits(
+                    match.group("caps").strip().split(","),
+                    {
+                        "o": LLDP_CAP_OTHER,
+                        "p": LLDP_CAP_REPEATER,
+                        "b": LLDP_CAP_BRIDGE,
+                        "w": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "r": LLDP_CAP_ROUTER,
+                        "t": LLDP_CAP_TELEPHONE,
+                        "c": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                        "s": LLDP_CAP_STATION_ONLY,
+                        "n/a": 0,
+                    },
+                )
             n["remote_capabilities"] = cap
             # Get remote chassis id
             match = self.rx_system.search(v)
