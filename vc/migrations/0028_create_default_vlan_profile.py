@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Create default VLAN Profile and L2 Domain profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 
 # Third-pary modules
@@ -48,12 +48,15 @@ class Migration(BaseMigration):
             upsert=True,
         )
         # Create default L2 Domain
+        l2domain_profile_id = self.mongo_db["l2domainprofiles"].find_one(
+            {"name": "default"}, {"_id": 1}
+        )["_id"]
         self.mongo_db["l2domains"].insert_one(
             {
                 "_id": ObjectId("61bee7425c42c21338453614"),
                 "name": "default",
                 "description": "Default L2 Domain",
-                "profile": ObjectId("61bee6f45c42c21338453613"),
+                "profile": l2domain_profile_id,
                 "pools": [],
                 "labels": [],
                 "effective_labels": [],
