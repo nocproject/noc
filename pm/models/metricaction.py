@@ -367,7 +367,7 @@ class MetricAction(Document):
                 config={
                     "alarm_class": self.alarm_config.alarm_class.name,
                     "reference": self.alarm_config.reference
-                    or "th:{{vars.rule}}:{{vars.action}}:{{object}}:{{alarm_class}}:{{';'.join(config.labels)}}",
+                    or "th:{{vars.rule}}:{{vars.action}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",
                     "error_text_template": self.alarm_config.error_text_template,
                     "vars": [
                         VarItem(name="rule", value=str(rule_id)),

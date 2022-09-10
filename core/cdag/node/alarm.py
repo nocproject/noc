@@ -61,7 +61,7 @@ class AlarmNodeConfig(BaseModel):
                 "object": config.managed_object,
                 "alarm_class": config.alarm_class,
                 "labels": config.labels,
-                "vars": {v.name: v.value for v in config.vars},
+                "vars": {v["name"]: v["value"] for v in config.vars or []},
             }
         )
 
@@ -119,7 +119,7 @@ class AlarmNode(BaseCDAGNode):
         }
         # Render vars
         if self.config.vars:
-            msg["vars"].update({v.name: q(v.value) for v in self.config.vars})
+            msg["vars"].update({v["name"]: q(v["value"]) for v in self.config.vars})
         if self.config.error_text_template:
             msg["vars"]["message"] = self.config.error_text_template
         self.publish_message(msg)

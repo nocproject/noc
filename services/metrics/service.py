@@ -30,7 +30,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.node.alarm import AlarmNode, VarItem
+from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
