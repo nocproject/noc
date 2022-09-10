@@ -140,7 +140,7 @@ class Migration(BaseMigration):
                     "type": "int",
                 },
             ],
-            "compose_inputs": [{"input_name": "in", "metric_type__name": metric_type}],
+            "compose_inputs": [{"input_name": "in", "metric_type": metric_type}],
             "alarm_config": {
                 "alarm_class": "NOC | PM | Out of Thresholds Interface",
                 "reference": None,
