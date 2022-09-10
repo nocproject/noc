@@ -88,6 +88,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
         )
 
 
+@Label.match_labels("interface_profile", allowed_op={"="})
 @bi_sync
 @change
 @on_delete_check(
@@ -283,3 +284,7 @@ class InterfaceProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_interface")
+
+    @classmethod
+    def iter_lazy_labels(cls, interface_profile: "InterfaceProfile"):
+        yield f"noc::interface_profile::{interface_profile.name}::="
