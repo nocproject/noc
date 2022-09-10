@@ -31,6 +31,7 @@ from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
+from noc.core.cdag.node.alarm import VarItem
 from noc.core.change.decorator import change
 from noc.core.expr import get_vars
 from noc.fm.models.alarmclass import AlarmClass
@@ -233,11 +234,13 @@ class MetricAction(Document):
         return os.path.join(*p) + ".json"
 
     def get_config(
-        self, prefix: str = None, enable_dump: bool = False, **kwargs
+        self, prefix: str = None, enable_dump: bool = False, rule_id: Optional[str] = None, **kwargs
     ) -> Optional[GraphConfig]:
         """
         Getting Graph config from MetricAction
-        :param prefix:
+        :param prefix: NodeID prefix
+        :param enable_dump: Include DumpNode to config
+        :param rule_id: Set if apply action to rule
         :return:
         """
         # Configs
@@ -363,8 +366,13 @@ class MetricAction(Document):
                 inputs=[key_input or g_input],
                 config={
                     "alarm_class": self.alarm_config.alarm_class.name,
-                    "reference": self.alarm_config.reference,
+                    "reference": self.alarm_config.reference
+                    or "th:{{vars.rule}}:{{vars.action}}:{{object}}:{{alarm_class}}:{{';'.join(config.labels)}}",
                     "error_text_template": self.alarm_config.error_text_template,
+                    "vars": [
+                        VarItem(name="rule", value=str(rule_id)),
+                        VarItem(name="action", value=str(self.id)),
+                    ],
                 },
             )
             if dkey_input:

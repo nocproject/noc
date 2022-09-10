@@ -51,11 +51,19 @@ class AlarmNodeConfig(BaseModel):
         :param config: Alarm Config
         :return:
         """
+        template = "th:{{object}}:{{alarm_class}}"
         if config.reference:
-            return config.reference
-        if config.labels:
-            return f"th:{config.managed_object}:{config.alarm_class}:{';'.join(config.labels)}"
-        return f"th:{config.managed_object}:{config.alarm_class}"
+            template = config.reference
+        elif config.labels:
+            template = "th:{{object}}:{{alarm_class}}:{{';'.join(config.labels)}}"
+        return Template(template).render(
+            **{
+                "object": config.managed_object,
+                "alarm_class": config.alarm_class,
+                "labels": config.labels,
+                "vars": {v.name: v.value for v in config.vars},
+            }
+        )
 
 
 logger = logging.getLogger(__name__)

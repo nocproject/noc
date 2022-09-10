@@ -30,7 +30,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.node.alarm import AlarmNode
+from noc.core.cdag.node.alarm import AlarmNode, VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
@@ -688,7 +688,6 @@ class MetricsService(FastAPIService):
                         "pool": source.fm_pool,
                         "labels": k[2],
                     }
-                # @todo add rule-id to hash for multiple rules
                 nodes[node.node_id] = self.clone_and_add_node(
                     node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
@@ -914,7 +913,7 @@ class MetricsService(FastAPIService):
                 )
             f = ConfigCDAGFactory(graph, g_config, namespace=rule_id)
             f.construct()
-            configs = {"alarm": {"vars": {"rule": rule_id}}}
+            configs = {}
             for node in g_config.nodes:
                 if node.name == "probe" or not node.config:
                     continue
