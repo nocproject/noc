@@ -419,41 +419,18 @@ class CorrelatorService(FastAPIService):
                     metrics["alarm_contribute"] += 1
                 self.refresh_alarm(alarm, timestamp)
                 return alarm
-        # Calculate alarm coverage
-        summary = ServiceSummary.get_object_summary(managed_object)
-        summary["object"] = {managed_object.object_profile.id: 1}
-        #
-        severity = max(ServiceSummary.get_severity(summary), 1)
-        # @todo: Fix
-        self.logger.info(
-            "[%s|%s|%s] Calculated alarm severity is: %s",
-            scope_label,
-            managed_object.name,
-            managed_object.address,
-            severity,
-        )
-        # Create new alarm
-        direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
-        direct_services = SummaryItem.dict_to_items(summary["service"])
-        direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
         if event:
             msg = f"Alarm risen from event {event.id}({event.event_class.name})"
         else:
             msg = "Alarm risen directly"
+        # Create new alarm
         a = ActiveAlarm(
             timestamp=timestamp,
             last_update=timestamp,
             managed_object=managed_object.id,
             alarm_class=alarm_class,
-            severity=severity,
             vars=vars,
             reference=ref_hash,
-            direct_objects=direct_objects,
-            direct_services=direct_services,
-            direct_subscribers=direct_subscribers,
-            total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
-            total_services=direct_services,
-            total_subscribers=direct_subscribers,
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
@@ -469,6 +446,28 @@ class CorrelatorService(FastAPIService):
         )
         a.effective_labels = list(chain.from_iterable(ActiveAlarm.iter_effective_labels(a)))
         a.raw_reference = reference
+        # Calculate alarm coverage
+        summary = ServiceSummary.get_object_summary(managed_object)
+        summary["object"] = {managed_object.object_profile.id: 1}
+        if a.is_link_alarm:
+            summary["interface"] = {a.components.interface.profile.id: 1}
+        #
+        a.severity = max(ServiceSummary.get_severity(summary), 1)
+        # @todo: Fix
+        self.logger.info(
+            "[%s|%s|%s] Calculated alarm severity is: %s",
+            scope_label,
+            managed_object.name,
+            managed_object.address,
+            a.severity,
+        )
+        # Set alarm stat fields
+        a.direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
+        a.direct_services = SummaryItem.dict_to_items(summary["service"])
+        a.direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
+        a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
+        a.total_services = a.direct_services
+        a.total_subscribers = a.direct_subscribers
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
         if groups:
