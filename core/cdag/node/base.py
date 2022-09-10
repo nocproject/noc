@@ -49,7 +49,7 @@ class ConfigProxy(object):
     Wrap BaseModel and override particular attributes
     """
 
-    __slots__ = ("__base", "__override", "__static_override")
+    __slots__ = ("__base", "__override", "__static")
 
     def __init__(
         self, base: BaseModel, override: Dict[str, Any], static: Optional[Dict[str, Any]] = None
