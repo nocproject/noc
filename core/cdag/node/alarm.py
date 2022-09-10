@@ -37,6 +37,8 @@ class AlarmNodeConfig(BaseModel):
     pool: str = ""
     partition: int = 0
     managed_object: Optional[str]  # Not user-settable
+    sla_probe: Optional[str]  # Not user-settable
+    sensor: Optional[str]  # Not user-settable
     labels: Optional[List[str]]
     error_text_template: Optional[str] = None
     activation_level: float = 1.0
@@ -61,7 +63,7 @@ class AlarmNodeConfig(BaseModel):
                 "object": config.managed_object,
                 "alarm_class": config.alarm_class,
                 "labels": config.labels,
-                "vars": {v["name"]: v["value"] for v in config.vars or []},
+                "vars": {v.name: v.value for v in config.vars or []},
             }
         )
 
@@ -119,9 +121,13 @@ class AlarmNode(BaseCDAGNode):
         }
         # Render vars
         if self.config.vars:
-            msg["vars"].update({v["name"]: q(v["value"]) for v in self.config.vars})
+            msg["vars"].update({v.name: q(v.value) for v in self.config.vars})
         if self.config.error_text_template:
             msg["vars"]["message"] = self.config.error_text_template
+        if self.config.sla_probe:
+            msg["vars"]["sla_probe"] = self.config.sla_probe
+        if self.config.sensor:
+            msg["vars"]["sensor"] = self.config.sensor
         self.publish_message(msg)
         self.state.active = True
         self.state.last_raise = now

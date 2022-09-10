@@ -30,7 +30,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.node.alarm import AlarmNode
+from noc.core.cdag.node.alarm import AlarmNode, VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
@@ -215,9 +215,13 @@ class SourceInfo(object):
     Source Info for applied metric Card
     """
 
-    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels", "composed_metrics")
+    __slots__ = (
+        "bi_id", "sensor", "sla_probe", "fm_pool", "labels", "metric_labels", "composed_metrics"
+    )
     bi_id: int
     fm_pool: str
+    sla_probe: Optional[str]
+    sensor: Optional[str]
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
     composed_metrics: Optional[List[str]]
@@ -618,10 +622,11 @@ class MetricsService(FastAPIService):
         :return:
         """
         key_ctx, source = dict(k[1]), None
+        sensor, sla_probe = None, None
         if "sensor" in key_ctx:
-            source = self.sources_config.get(key_ctx["sensor"])
+            sensor = self.sources_config.get(key_ctx["sensor"])
         elif "sla_probe" in key_ctx:
-            source = self.sources_config.get(key_ctx["sla_probe"])
+            sla_probe = self.sources_config.get(key_ctx["sla_probe"])
         if "agent" in key_ctx:
             source = self.sources_config.get(key_ctx["agent"])
         elif "managed_object" in key_ctx:
@@ -638,6 +643,8 @@ class MetricsService(FastAPIService):
             break
         return SourceInfo(
             bi_id=source.bi_id,
+            sensor=sensor,
+            sla_probe=sla_probe,
             fm_pool=source.fm_pool,
             labels=list(source.labels),
             metric_labels=[],
@@ -688,6 +695,10 @@ class MetricsService(FastAPIService):
                         "pool": source.fm_pool,
                         "labels": k[2],
                     }
+                    if source.sla_probe:
+                        static_config["sla_probe"] = source.sla_probe
+                    if source.sensor:
+                        static_config["sensor"] = source.sensor
                 nodes[node.node_id] = self.clone_and_add_node(
                     node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
@@ -917,6 +928,8 @@ class MetricsService(FastAPIService):
             for node in g_config.nodes:
                 if node.name == "probe" or not node.config:
                     continue
+                if node.name == "alarm" and "vars" in node.config:
+                    node.config["vars"] = [VarItem(**v) for v in node.config["vars"]]
                 configs[f"{rule_id}::{node.name}"] = node.config
             r = Rule(
                 id=rule_id,
