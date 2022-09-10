@@ -34,7 +34,7 @@ class CfgMetricRuleDataStream(DataStream):
                 "id": str(action.metric_action.id),
                 "name": str(action.metric_action),
                 "graph_config": action.metric_action.get_config(
-                    **action.metric_action_params
+                    **action.metric_action_params, rule_id=m_rule.id
                 ).dict(),
                 "inputs": [],
             }
