@@ -216,7 +216,13 @@ class SourceInfo(object):
     """
 
     __slots__ = (
-        "bi_id", "sensor", "sla_probe", "fm_pool", "labels", "metric_labels", "composed_metrics"
+        "bi_id",
+        "sensor",
+        "sla_probe",
+        "fm_pool",
+        "labels",
+        "metric_labels",
+        "composed_metrics",
     )
     bi_id: int
     fm_pool: str
