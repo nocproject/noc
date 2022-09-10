@@ -30,7 +30,7 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.node.alarm import AlarmNode
+from noc.core.cdag.node.alarm import AlarmNode, VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
@@ -215,9 +215,19 @@ class SourceInfo(object):
     Source Info for applied metric Card
     """
 
-    __slots__ = ("bi_id", "fm_pool", "labels", "metric_labels", "composed_metrics")
+    __slots__ = (
+        "bi_id",
+        "sensor",
+        "sla_probe",
+        "fm_pool",
+        "labels",
+        "metric_labels",
+        "composed_metrics",
+    )
     bi_id: int
     fm_pool: str
+    sla_probe: Optional[str]
+    sensor: Optional[str]
     labels: Optional[List[str]]
     metric_labels: Optional[List[str]]
     composed_metrics: Optional[List[str]]
@@ -618,10 +628,11 @@ class MetricsService(FastAPIService):
         :return:
         """
         key_ctx, source = dict(k[1]), None
+        sensor, sla_probe = None, None
         if "sensor" in key_ctx:
-            source = self.sources_config.get(key_ctx["sensor"])
+            sensor = self.sources_config.get(key_ctx["sensor"])
         elif "sla_probe" in key_ctx:
-            source = self.sources_config.get(key_ctx["sla_probe"])
+            sla_probe = self.sources_config.get(key_ctx["sla_probe"])
         if "agent" in key_ctx:
             source = self.sources_config.get(key_ctx["agent"])
         elif "managed_object" in key_ctx:
@@ -638,6 +649,8 @@ class MetricsService(FastAPIService):
             break
         return SourceInfo(
             bi_id=source.bi_id,
+            sensor=sensor,
+            sla_probe=sla_probe,
             fm_pool=source.fm_pool,
             labels=list(source.labels),
             metric_labels=[],
@@ -665,32 +678,37 @@ class MetricsService(FastAPIService):
             nodes: Dict[str, BaseCDAGNode] = {}
             # Node
             for node in rule.graph.nodes.values():
-                if node.name == "probe" and node.node_id in card.probes:
+                # namespace, node_id split for connect to card probe
+                ns, node_id = node.node_id.rsplit("::", 1)
+                if node.name == "probe" and node_id in card.probes:
                     # Probe node, will be replaced to Card probes
-                    nodes[node.node_id] = card.probes[node.node_id]
+                    nodes[node.node_id] = card.probes[node_id]
                     continue
                 elif (
                     node.name == "probe"
-                    and node.node_id not in card.probes
-                    and "compose_" not in node.node_id
+                    and node_id not in card.probes
+                    and "compose_" not in node_id
                 ):
                     # Metrics probe is not initialized yet, add_probe. Skip compose  metric node
-                    probe = self.add_probe(node.node_id, k)
+                    probe = self.add_probe(node_id, k)
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
                 static_config = None
-                if node.node_id == "alarm":
+                if node.name == "alarm":
                     static_config = {
                         "managed_object": f"bi_id:{source.bi_id}",
                         "pool": source.fm_pool,
                         "labels": k[2],
                     }
-                # @todo add rule-id to hash for multiple rules
+                    if source.sla_probe:
+                        static_config["sla_probe"] = source.sla_probe
+                    if source.sensor:
+                        static_config["sensor"] = source.sensor
                 nodes[node.node_id] = self.clone_and_add_node(
                     node, prefix=self.get_key_hash(k), config=config, static_config=static_config
                 )
-            if "alarm" not in nodes and "probe" not in nodes:
+            if f"{rule_id}::alarm" not in nodes and f"{rule_id}::probe" not in nodes:
                 self.logger.warning(
                     "[%s] Rules without ending output. Skipping", rule.graph.graph_id
                 )
@@ -712,9 +730,9 @@ class MetricsService(FastAPIService):
                 if node.bound_inputs:
                     # Filter Probe nodes
                     node.freeze()
-            # Add alarms nodes for clear alarm on delete
-            if "alarm" in nodes:
-                card.alarms += [nodes["alarm"]]
+                # Add alarms nodes for clear alarm on delete
+                if node.name == "ararm":
+                    card.alarms += [node]
             #
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
@@ -898,26 +916,29 @@ class MetricsService(FastAPIService):
         """
         invalidate_rules = set()
         for action in data["actions"]:
+            rule_id = f'{data["id"]}-{action["id"]}'  # Rule id - join rule and action
             graph = CDAG(f'{data["name"]}-{action["name"]}')
             g_config = GraphConfig(**action["graph_config"])
             scopes = set()
             for a_input in action["inputs"]:
                 scopes.add(a_input["sender_id"])
                 graph.add_node(
-                    a_input["probe_id"],
+                    f'{rule_id}::{a_input["probe_id"]}',
                     node_type="probe",
                     config={"unit": "1"},
                     sticky=True,
                 )
-            f = ConfigCDAGFactory(graph, g_config)
+            f = ConfigCDAGFactory(graph, g_config, namespace=rule_id)
             f.construct()
             configs = {}
             for node in g_config.nodes:
                 if node.name == "probe" or not node.config:
                     continue
-                configs[node.name] = node.config
+                if node.name == "alarm" and "vars" in node.config:
+                    node.config["vars"] = [VarItem(**v) for v in node.config["vars"]]
+                configs[f"{rule_id}::{node.name}"] = node.config
             r = Rule(
-                id=f'{data["id"]}-{action["id"]}',
+                id=rule_id,
                 match_labels=frozenset(
                     frozenset(sys.intern(label) for label in d["labels"]) for d in data["match"]
                 ),
