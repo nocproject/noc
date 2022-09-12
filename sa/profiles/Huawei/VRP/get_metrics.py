@@ -246,6 +246,7 @@ class Script(GetMetricsScript):
                     multi=True,
                     type="delta" if metric.endswith("Delta") else "gauge",
                     scale=scale,
+                    units="pkt" if "Octets" in metric else "byte",
                 )
 
     def get_interface_cbqos_metrics_policy_snmp(self, metrics):
@@ -295,6 +296,7 @@ class Script(GetMetricsScript):
                     multi=True,
                     type=mtype,
                     scale=scale,
+                    units="pkt" if "Octets" in metric else "byte",
                 )
 
     def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
