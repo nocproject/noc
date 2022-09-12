@@ -475,6 +475,8 @@ class Script(GetMetricsScript):
             hints = probe.get_hints()
             name = hints["sla_name"]
             for m in probe.metrics:
+                if m not in self.SLA_METRICS_CONFIG:
+                    continue
                 mc = self.SLA_METRICS_CONFIG[m]
                 oid = mib[mc.oid, name]
                 oids[oid] = (probe, mc)

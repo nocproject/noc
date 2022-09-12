@@ -15,7 +15,7 @@ from noc.sa.profiles.Generic.get_metrics import (
     metrics,
     ProfileMetricConfig,
 )
-from noc.core.models.cfgmetrics import MetricCollectorConfigz
+from noc.core.models.cfgmetrics import MetricCollectorConfig
 from .oidrules.slot import SlotRule
 from .oidrules.sslot import SSlotRule
 from noc.core.mib import mib
@@ -246,7 +246,7 @@ class Script(GetMetricsScript):
                     multi=True,
                     type="delta" if metric.endswith("Delta") else "gauge",
                     scale=scale,
-                    units="pkt" if "Octets" in metric else "byte",
+                    units="byte" if "Octets" in metric else "pkt",
                 )
 
     def get_interface_cbqos_metrics_policy_snmp(self, metrics):
@@ -338,7 +338,6 @@ class Script(GetMetricsScript):
         oids = {}
         # stat_index = 250
         stat_index, probe_status = {}, {}
-        scale = 1000
         ts = self.get_ts()
         for oid, value in self.snmp.getnext(mib[status_oid]):
             if status_oid == "NQA-MIB::nqaResultsCompletions":
@@ -355,13 +354,18 @@ class Script(GetMetricsScript):
         for probe in metrics:
             hints = probe.get_hints()
             name = hints["sla_name"]
-            group = hints["group"]
+            group = hints["sla_group"]
             if not name or not group:
                 continue
-            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            key = (
+                f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.'
+                f'{".".join(str(ord(s)) for s in name)}'
+            )
             if key not in stat_index:
                 continue
             for m in probe.metrics:
+                if m not in self.SLA_METRICS_CONFIG:
+                    continue
                 mc = self.SLA_METRICS_CONFIG[m]
                 if status_oid == "NQA-MIB::nqaResultsCompletions":
                     oid = mib[mc.oid, key, stat_index[key], 1]
