@@ -16,7 +16,9 @@ from dateutil.parser import parse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.ioloop.util import run_sync
-from noc.core.liftbridge.base import LiftBridgeClient, Metadata, PartitionMetadata
+
+# from noc.core.liftbridge.base import LiftBridgeClient, Metadata, PartitionMetadata
+from noc.core.messagestream.base import Metadata, PartitionMetadata, stream_client
 from noc.core.text import alnum_key
 
 TS_NS = 1000_0000_00
@@ -85,11 +87,11 @@ class Command(BaseCommand):
 
     def handle_show_metadata(self, *args, **options):
         async def get_meta() -> Metadata:
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 return await client.fetch_metadata()
 
         async def get_partition_meta(stream, partition) -> PartitionMetadata:
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 return await client.fetch_partition_metadata(stream, partition)
 
         meta: Metadata = run_sync(get_meta)
@@ -125,7 +127,7 @@ class Command(BaseCommand):
         **kwargs,
     ):
         async def create():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 await client.create_stream(
                     name=name,
                     subject=subject,
@@ -138,7 +140,7 @@ class Command(BaseCommand):
 
     def handle_delete_stream(self, name: str, *args, **kwargs):
         async def delete():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 await client.delete_stream(name)
 
         run_sync(delete)
@@ -154,7 +156,7 @@ class Command(BaseCommand):
         **kwargs,
     ):
         async def subscribe():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 async for msg in client.subscribe(
                     stream=name,
                     partition=partition,
@@ -184,7 +186,7 @@ class Command(BaseCommand):
         self, name: str, stream: str, partition: int = 0, offset: int = 0, *args, **kwargs
     ):
         async def set_cursor():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 await client.set_cursor(
                     stream=stream, partition=partition, cursor_id=name, offset=offset
                 )
@@ -193,7 +195,7 @@ class Command(BaseCommand):
 
     def handle_fetch_cursor(self, name: str, stream: str, partition: int = 0, *args, **kwargs):
         async def fetch_cursor():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 cursor = await client.fetch_cursor(
                     stream=stream, partition=partition, cursor_id=name
                 )
@@ -212,7 +214,7 @@ class Command(BaseCommand):
         **kwargs,
     ):
         async def publisher():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 payload = b" " * payload_size
                 t0 = perf_counter()
                 for _ in self.progress(range(num_messages), num_messages):
@@ -224,7 +226,7 @@ class Command(BaseCommand):
             )
 
         async def batch_publisher():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 payload = b" " * payload_size
                 t0 = perf_counter()
                 out = []
@@ -253,7 +255,7 @@ class Command(BaseCommand):
 
     def handle_benchmark_subscriber(self, name: str, cursor: Optional[str] = None, *args, **kwargs):
         async def subscriber():
-            async with LiftBridgeClient() as client:
+            async with stream_client as client:
                 report_interval = 1.0
                 t0 = perf_counter()
                 total_msg = last_msg = 0

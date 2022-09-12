@@ -44,9 +44,9 @@ from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.span import get_spans, span_to_dict
 from noc.core.tz import setup_timezone
-from noc.core.liftbridge.base import LiftBridgeClient, StartPosition
-from noc.core.liftbridge.error import LiftbridgeError
-from noc.core.liftbridge.queue import LiftBridgeQueue
+from noc.core.liftbridge.base import StartPosition
+from noc.core.messagestream.base import stream_client
+from noc.core.messagestream.queue import MessageStreamQueue
 from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
 from noc.core.router.base import Router
@@ -137,7 +137,7 @@ class BaseService(object):
         # Can be initialized in subclasses
         self.scheduler = None
         # Liftbridge publisher
-        self.publish_queue: Optional[LiftBridgeQueue] = None
+        self.publish_queue: Optional[MessageStreamQueue] = None
         self.publisher_start_lock = threading.Lock()
         # Metrics publisher buffer
         self.metrics_queue: Optional[QBuffer] = None
@@ -619,7 +619,7 @@ class BaseService(object):
             set_cursor = None
         # Main subscriber loop
         try:
-            async with LiftBridgeClient() as client:
+            async with stream_client() as client:
                 self.active_subscribers += 1
                 async for msg in client.subscribe(
                     stream=stream,
@@ -650,7 +650,7 @@ class BaseService(object):
         with self.publisher_start_lock:
             if self.publish_queue:
                 return  # Created in concurrent thread
-            self.publish_queue = LiftBridgeQueue(self.loop)
+            self.publish_queue = stream_client.get_queue()(self.loop)
             self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
@@ -674,7 +674,7 @@ class BaseService(object):
         """
         if not self.publish_queue:
             self._init_publisher()
-        req = LiftBridgeClient.get_publish_request(
+        req = stream_client.get_publish_request(
             value=value,
             stream=stream,
             partition=partition,
@@ -685,7 +685,9 @@ class BaseService(object):
         self.publish_queue.put(req)
 
     async def publisher(self):
-        async with LiftBridgeClient() as client:
+        from noc.core.liftbridge.error import LiftbridgeError
+
+        async with stream_client() as client:
             while not self.publish_queue.to_shutdown:
                 req = await self.publish_queue.get(timeout=1)
                 if not req:
@@ -911,7 +913,7 @@ class BaseService(object):
         :param stream:
         :return:
         """
-        async with LiftBridgeClient() as client:
+        async with stream_client() as client:
             while True:
                 meta = await client.fetch_metadata()
                 if meta.metadata:
