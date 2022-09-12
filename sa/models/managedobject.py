@@ -2969,10 +2969,15 @@ class ManagedObject(NOCModel):
         :return:
         """
         from noc.sla.models.slaprobe import SLAProbe
+        from noc.inv.models.sensor import Sensor
+        from noc.inv.models.object import Object
+        from mongoengine.queryset import Q as m_Q
 
         sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
         config = self.get_metric_config(self)
-        return bool(sla_probe or config.get("metrics") or config.get("items"))
+        o = Object.get_managed(self)
+        sensor = Sensor.objects.filter(m_Q(managed_object=self.id) or m_Q(object=o.id)).first()
+        return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
 
 
 @on_save
