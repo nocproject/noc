@@ -11,8 +11,9 @@ import os
 import re
 import itertools
 import operator
-from typing import Union, Optional, List, Tuple, Callable, Dict, Any
+from typing import Union, Optional, List, Tuple, Callable, Dict, Any, Set
 from collections import defaultdict
+from dataclasses import dataclass
 
 # Third-party modules
 import orjson
@@ -31,6 +32,7 @@ from noc.core.script.oidrules.ifindex import InterfaceRule
 from noc.core.script.oidrules.match import MatcherRule
 from noc.core.script.oidrules.oids import OIDsRule
 from noc.core.script.oidrules.loader import load_rule, with_resolver
+from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.config import config
 from noc.core.perf import metrics as noc_metrics
 from noc.core.mib import mib
@@ -47,9 +49,6 @@ class MetricConfig(object):
         "labels",
         "oid",
         "ifindex",
-        "sla_type",
-        "sensor",
-        "sla_probe",
         "service",
     )
 
@@ -60,9 +59,6 @@ class MetricConfig(object):
         labels=None,
         oid=None,
         ifindex=None,
-        sla_type=None,
-        sensor=None,
-        sla_probe=None,
         service=None,
     ):
         self.id: int = id
@@ -70,13 +66,24 @@ class MetricConfig(object):
         self.labels: List[str] = labels
         self.oid: str = oid
         self.ifindex: int = ifindex
-        self.sla_type: str = sla_type
-        self.sensor: int = sensor
-        self.sla_probe: int = sla_probe
         self.service: int = service
 
     def __repr__(self):
         return f"<MetricConfig #{self.id} {self.metric}>"
+
+
+@dataclass(frozen=True)
+class ProfileMetricConfig(object):
+    """
+    Config for SNMP Collected metrics, supported on profile.
+    """
+
+    __slots__ = ("metric", "oid", "scale", "sla_types", "units")
+    metric: str
+    oid: str
+    sla_types: List[str]
+    scale: int
+    units: str
 
 
 class BatchConfig(object):
@@ -281,6 +288,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     name = "Generic.get_metrics"
     interface = IGetMetrics
     requires = []
+    SLA_METRICS_CONFIG: Dict[str, ProfileMetricConfig] = {}
 
     # Define counter types
     GAUGE = "gauge"
@@ -310,6 +318,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         self.seen_ids = set()
         # get_labels_hash(metric type, labels) -> metric config
         self.labels: Dict[str, List[MetricConfig]] = {}
+        #
+        self.sla_metrics: Dict[Tuple[str, str], int] = {}
         # metric type -> [metric config]
         self.metric_configs: Dict[str, List[MetricConfig]] = defaultdict(list)
 
@@ -348,28 +358,59 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         * sla_test - optional sla test inventory
         """
         # Generate list of MetricConfig from input parameters
+        sla_metrics: List[MetricCollectorConfig] = []
+        sensor_metrics: List[MetricCollectorConfig] = []
         if collected:
             metrics: List[MetricConfig] = []
             seq_id = 1
             for coll in collected:
-                hints = dict(v.split("::") for v in coll.get("hints", []))
-                for m in coll["metrics"]:
+                coll = MetricCollectorConfig(**coll)
+                if coll.collector == "sensor":
+                    sensor_metrics.append(coll)
+                    continue
+                elif coll.collector == "sla":
+                    sla_metrics.append(coll)
+                    for m in coll.metrics:
+                        self.sla_metrics[(coll.sla_probe, m)] = seq_id
+                        seq_id += 1
+                    continue
+                hints = coll.get_hints()
+                for m in coll.metrics:
                     metrics.append(
                         MetricConfig(
                             id=seq_id,
                             metric=m,
-                            labels=coll.get("labels", []),
-                            oid=hints.get("oid"),
+                            labels=coll.labels or [],
                             ifindex=hints.get("ifindex"),
-                            sla_type=hints.get("sla_type"),
-                            sensor=coll.get("sensor"),
-                            sla_probe=coll.get("sla_probe"),
-                            service=coll.get("service"),
+                            service=coll.service,
                         )
                     )
                     seq_id += 1
         elif metrics:
-            metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
+            sm = {}
+            for m in metrics:
+                if m["metric"] == "Sensor | Value":
+                    sensor_metrics.append(
+                        MetricCollectorConfig(
+                            collector="sensor",
+                            metrics=["Sensor | Value"],
+                            labels=m.get("labels", []),
+                            sensor=m.get("sensor"),
+                        )
+                    )
+                elif m["metrics"].startswith("SLA"):
+                    sla_probe = m.get("sla_probe")
+                    if not sla_probe in sm:
+                        sm[sla_probe] = MetricCollectorConfig(
+                            collector="sla",
+                            metrics=[m["metrics"]],
+                            labels=m.get("labels", []),
+                            sla_probe=sla_probe,
+                        )
+                else:
+                    metrics.append(MetricConfig(**m))
+            sla_metrics = list(sm.values())
+            # metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
         else:
             raise ValueError("Parameter 'collected' or 'metrics' required")
         # Split by metric types
@@ -398,6 +439,12 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         # Request snmp metrics from box
         if self.snmp_batch:
             self.collect_snmp_metrics()
+        # Apply sensor metrics
+        if sensor_metrics:
+            self.collect_sensor_metrics(sensor_metrics)
+        # Apply sla metrics
+        if sla_metrics:
+            self.collect_sla_metrics(sla_metrics)
         # Apply custom metric collection processes
         self.collect_profile_metrics(metrics)
         return self.get_metrics()
@@ -644,7 +691,13 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 value = [value]
             value = scale(*value)
             scale = 1
-        if isinstance(id, tuple):
+        if sensor and sensor in self.seen_ids:
+            return
+        elif sla_probe and (sla_probe, metric) in self.sla_metrics:
+            id = self.sla_metrics[(sla_probe, metric)]
+        elif sla_probe:
+            return
+        elif isinstance(id, tuple):
             # Composite id, extract type and labels and resolve
             if not metric:
                 metric = id[0]
@@ -713,26 +766,37 @@ class Script(BaseScript, metaclass=MetricScriptBase):
 
     SENSOR_OID_SCALE: Dict[str, Union[int, Callable]] = {}  # oid -> scale
 
-    @metrics(
-        ["Sensor | Value"],
-        access="S",
-        volatile=False,
-    )
-    def collect_sensor_metrics(self, metrics: List[MetricConfig]):
-        for m in metrics:
-            if m.oid:
-                try:
-                    value = self.snmp.get(m.oid)
-                    self.set_metric(
-                        id=m.id,
-                        metric=m.metric,
-                        labels=m.labels,
-                        value=float(value),
-                        scale=self.SENSOR_OID_SCALE.get(m.oid, 1),
-                        sensor=m.sensor,
-                    )
-                except Exception:
-                    continue
+    def collect_sensor_metrics(self, metrics: List[MetricCollectorConfig]):
+        """
+        Collect sensor metrics method. Configured by profile
+        :param metrics:
+        :return:
+        """
+        for sensor in metrics:
+            hints = sensor.get_hints()
+            if "oid" not in hints:
+                # Not collected hints
+                continue
+            try:
+                value = self.snmp.get(hints["oid"])
+                self.set_metric(
+                    id=sensor.sensor,
+                    metric="Sensor | Value",
+                    labels=sensor.labels,
+                    value=float(value),
+                    scale=self.SENSOR_OID_SCALE.get(hints["oid"], 1),
+                    sensor=sensor.sensor,
+                )
+            except Exception:
+                continue
+
+    def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
+        """
+        Collect for SLA metrics method. Replaced by profile
+        :param metrics:
+        :return:
+        """
+        ...
 
     # @metrics(
     #     [
