@@ -131,6 +131,7 @@ class Sensor(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
             yield "cfgmetricsources", f"inv.Sensor::{self.bi_id}"
+            yield "cfgmetricsources", f"sa.ManagedObject::{self.managed_object.bi_id}"
 
     def clean(self):
         if self.extra_labels:
@@ -245,7 +246,7 @@ class Sensor(Document):
             l_c = Label.get_by_name(ll)
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         return {
-            "type": "sla_probe",
+            "type": "sensor",
             "bi_id": sensor.bi_id,
             "fm_pool": sensor.managed_object.get_effective_fm_pool().name
             if sensor.managed_object

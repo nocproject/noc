@@ -742,7 +742,7 @@ class Object(Document):
         return None, None, None
 
     @classmethod
-    def get_managed(cls, mo):
+    def get_managed(cls, mo) -> Optional["Object"]:
         """
         Get Object managed by managed object
         :param mo: Managed Object instance or id

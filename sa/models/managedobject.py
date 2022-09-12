@@ -2976,7 +2976,7 @@ class ManagedObject(NOCModel):
         sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
         config = self.get_metric_config(self)
         o = Object.get_managed(self)
-        sensor = Sensor.objects.filter(m_Q(managed_object=self.id) or m_Q(object=o.id)).first()
+        sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
         return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
 
 
