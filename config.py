@@ -503,6 +503,8 @@ class Config(BaseConfig):
         )
         #
         ds_limit = IntParameter(default=1000)
+        #
+        client_class = StringParameter(default="noc.core.liftbridge.base.LiftBridgeClient")
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
@@ -579,6 +581,21 @@ class Config(BaseConfig):
         addresses = ServiceParameter(service="redis", wait=True, full_result=True)
         db = IntParameter(default=0)
         default_ttl = SecondsParameter(default="1d")
+
+    class redpanda(ConfigSection):
+        addresses = ServiceParameter(service="redpanda", wait=False, near=True, full_result=False)
+        bootstrap_servers = StringParameter()
+        username = StringParameter()
+        password = SecretParameter()
+        sasl_mechanism = StringParameter(
+            choices=["PLAIN", "GSSAPI", "SCRAM-SHA-256", "SCRAM-SHA-512"], default="PLAIN"
+        )
+        security_protocol = StringParameter(
+            choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
+        )
+        max_batch_size = BytesParameter(
+            default=16384, help="Maximum size of buffered data per partition"
+        )
 
     class rpc(ConfigSection):
         retry_timeout = StringParameter(default="0.1,0.5,1,3,10,30")
