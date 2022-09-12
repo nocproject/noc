@@ -2962,6 +2962,18 @@ class ManagedObject(NOCModel):
             "items": items,
         }
 
+    @property
+    def has_configured_metrics(self) -> bool:
+        """
+        Check configured collected metrics
+        :return:
+        """
+        from noc.sla.models.slaprobe import SLAProbe
+
+        sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
+        config = self.get_metric_config(self)
+        return bool(sla_probe or config.get("metrics") or config.get("items"))
+
 
 @on_save
 class ManagedObjectAttribute(NOCModel):

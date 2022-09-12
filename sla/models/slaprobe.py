@@ -205,3 +205,12 @@ class SLAProbe(Document):
             ],
             "items": [],
         }
+
+    @property
+    def has_configured_metrics(self) -> bool:
+        """
+        Check configured collected metrics
+        :return:
+        """
+        config = self.get_metric_config(self)
+        return config.get("metrics") or config.get("items")

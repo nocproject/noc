@@ -5,40 +5,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import List
+
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.sa.profiles.Generic.get_metrics import (
+    Script as GetMetricsScript,
+    metrics,
+    ProfileMetricConfig,
+)
+from noc.core.models.cfgmetrics import MetricCollectorConfigz
 from .oidrules.slot import SlotRule
 from .oidrules.sslot import SSlotRule
 from noc.core.mib import mib
 
-
-SLA_METRICS_MAP = {
-    "SLA | Packets": "NQA-MIB::nqaJitterStatsSentProbes",
-    "SLA | Packets | Loss | Ratio": "NQA-MIB::nqaJitterCollectStatsPacketLossRatio",
-    "SLA | Packets | Loss | Out": "NQA-MIB::nqaJitterStatsPacketLossSD",
-    "SLA | Packets | Loss | In": "NQA-MIB::nqaJitterStatsPacketLossDS",
-    "SLA | Packets | Disordered": "NQA-MIB::nqaJitterStatsPktDisorderNum",
-    "SLA | Probes | Error": "NQA-MIB::nqaJitterStatsErrors",
-    "SLA | OneWayLatency | Out | Max": "NQA-MIB::nqaJitterStatsMaxDelaySD",
-    "SLA | OneWayLatency | In | Max": "NQA-MIB::nqaJitterStatsMaxDelayDS",
-    "SLA | Jitter | Avg": "NQA-MIB::nqaJitterStatsAvgJitter",
-    "SLA | Jitter | Out | Avg": "NQA-MIB::nqaJitterStatsAvgJitterSD",
-    "SLA | Jitter | In | Avg": "NQA-MIB::nqaJitterStatsAvgJitterDS",
-    "SLA | Jitter | MOS": "NQA-MIB::nqaJitterStatsOperOfMos",
-    "SLA | Jitter | ICPIF": "NQA-MIB::nqaJitterStatsOperOfIcpif",
-    "SLA | RTT | Min": "NQA-MIB::nqaJitterStatsRTTMin",
-    "SLA | RTT | Max": "NQA-MIB::nqaJitterStatsRTTMax",
-}
-
-SCALE_METRICS = {
-    "SLA | OneWayLatency | Out | Max",
-    "SLA | OneWayLatency | In | Max",
-    "SLA | Jitter | Avg",
-    "SLA | Jitter | Out | Avg",
-    "SLA | Jitter | In | Avg",
-    "SLA | RTT | Min",
-    "SLA | RTT | Max",
-}
 
 SLA_ICMP_METRIC_MAP = {
     "SLA | Packets | Loss | Ratio": "NQA-MIB::nqaResultsLostPacketRatio",
@@ -50,6 +31,115 @@ class Script(GetMetricsScript):
     name = "Huawei.VRP.get_metrics"
 
     OID_RULES = [SlotRule, SSlotRule]
+    SLA_METRICS_CONFIG = {
+        "SLA | Packets": ProfileMetricConfig(
+            metric="SLA | Packets",
+            oid="NQA-MIB::nqaJitterStatsSentProbes",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Loss | Ratio": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | Ratio",
+            oid="NQA-MIB::nqaJitterCollectStatsPacketLossRatio",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Loss | Out": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | Out",
+            oid="NQA-MIB::nqaJitterStatsPacketLossSD",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Loss | In": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | In",
+            oid="NQA-MIB::nqaJitterStatsPacketLossDS",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Disordered": ProfileMetricConfig(
+            metric="SLA | Packets | Disordered",
+            oid="NQA-MIB::nqaJitterStatsPktDisorderNum",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Probes | Error": ProfileMetricConfig(
+            metric="SLA | Probes | Error",
+            oid="NQA-MIB::nqaJitterStatsErrors",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="1",
+        ),
+        # Latency
+        "SLA | OneWayLatency | Out | Max": ProfileMetricConfig(
+            metric="SLA | OneWayLatency | Out | Max",
+            oid="NQA-MIB::nqaJitterStatsMaxDelaySD",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | OneWayLatency | In | Max": ProfileMetricConfig(
+            metric="SLA | OneWayLatency | In | Max",
+            oid="NQA-MIB::nqaJitterStatsMaxDelayDS",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        # Jitter
+        "SLA | Jitter | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | Avg",
+            oid="NQA-MIB::nqaJitterStatsAvgJitter",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | Out | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | Out | Avg",
+            oid="NQA-MIB::nqaJitterStatsAvgJitterSD",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | In | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | In | Avg",
+            oid="NQA-MIB::nqaJitterStatsAvgJitterDS",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | MOS": ProfileMetricConfig(
+            metric="SLA | Jitter | MOS",
+            oid="NQA-MIB::nqaJitterStatsOperOfMos",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="micro,s",
+        ),
+        "SLA | Jitter | ICPIF": ProfileMetricConfig(
+            metric="SLA | Jitter | ICPIF",
+            oid="NQA-MIB::nqaJitterStatsOperOfIcpif",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="micro,s",
+        ),
+        "SLA | RTT | Min": ProfileMetricConfig(
+            metric="SLA | RTT | Min",
+            oid="NQA-MIB::nqaJitterStatsRTTMin",
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | RTT | Max": ProfileMetricConfig(
+            metric="SLA | RTT | Max",
+            oid="NQA-MIB::nqaJitterStatsRTTMax",
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+    }
 
     @metrics(
         ["Interface | Status | Duplex"],
@@ -207,37 +297,34 @@ class Script(GetMetricsScript):
                     scale=scale,
                 )
 
-    def collect_profile_metrics(self, metrics):
+    def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
         # SLA Metrics
-        if self.has_capability("Huawei | NQA | Probes"):
-            jitter_metrics = []
-            icmp_metrics = []
-            for m in metrics:
-                if m.metric not in SLA_METRICS_MAP:
-                    continue
-                if m.sla_type == "icmp-echo" and m.metric in SLA_ICMP_METRIC_MAP:
-                    icmp_metrics.append(m)
-                else:
-                    jitter_metrics.append(m)
-            if icmp_metrics:
-                self.get_ip_sla_udp_jitter_metrics_snmp(
-                    icmp_metrics, metric_map=SLA_ICMP_METRIC_MAP
-                )
-            if jitter_metrics:
-                self.get_ip_sla_udp_jitter_metrics_snmp(
-                    jitter_metrics,
-                    metric_map=SLA_METRICS_MAP,
-                    status_oid="NQA-MIB::nqaJitterStatsCompletions",
-                )
+        if not self.has_capability("Huawei | NQA | Probes"):
+            return
+        jitter_metrics = []
+        icmp_metrics = []
+        for probe in metrics:
+            # if m.metric not in self.SLA_METRICS_CONFIG:
+            #    continue
+            hints = probe.get_hints()
+            if hints["sla_type"] == "icmp-echo":
+                icmp_metrics.append(probe)
+            else:
+                jitter_metrics.append(probe)
+        if icmp_metrics:
+            self.get_ip_sla_udp_jitter_metrics_snmp(icmp_metrics, metric_map=SLA_ICMP_METRIC_MAP)
+        if jitter_metrics:
+            self.get_ip_sla_udp_jitter_metrics_snmp(
+                jitter_metrics,
+                metric_map=self.SLA_METRICS_CONFIG,
+                status_oid="NQA-MIB::nqaJitterStatsCompletions",
+            )
 
-    # @metrics(
-    #     list(SLA_METRICS_MAP.keys()),
-    #     has_capability="Huawei | NQA | Probes",
-    #     volatile=True,
-    #     access="S",  # CLI version
-    # )
     def get_ip_sla_udp_jitter_metrics_snmp(
-        self, metrics, metric_map, status_oid="NQA-MIB::nqaResultsCompletions"
+        self,
+        metrics: List[MetricCollectorConfig],
+        metric_map,
+        status_oid="NQA-MIB::nqaResultsCompletions",
     ):
         """
         Returns collected ip sla metrics in form
@@ -248,7 +335,7 @@ class Script(GetMetricsScript):
         """
         oids = {}
         # stat_index = 250
-        stat_index = {}
+        stat_index, probe_status = {}, {}
         scale = 1000
         ts = self.get_ts()
         for oid, value in self.snmp.getnext(mib[status_oid]):
@@ -262,63 +349,54 @@ class Script(GetMetricsScript):
             if ".".join(key) in stat_index:
                 continue
             stat_index[".".join(key)] = resindex
-            self.set_metric(
-                id=(
-                    "SLA | Test | Status",
-                    [f"noc::sla::name::{test_name}", f"noc::sla::group::{owner}"],
-                ),
-                metric="SLA | Test | Status",
-                value=float(value),
-                ts=ts,
-                labels=[f"noc::sla::name::{test_name}", f"noc::sla::group::{owner}"],
-                multi=True,
-                type="gauge",
-                scale=1,
-            )
-        for m in metrics:
-            name = next(
-                iter([m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::name::")]),
-                None,
-            )
-            group = next(
-                iter(
-                    [m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::group::")]
-                ),
-                None,
-            )
+            probe_status[".".join(key)] = value
+        for probe in metrics:
+            hints = probe.get_hints()
+            name = hints["sla_name"]
+            group = hints["group"]
             if not name or not group:
                 continue
             key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
             if key not in stat_index:
                 continue
-            if status_oid == "NQA-MIB::nqaResultsCompletions":
-                oid = mib[metric_map[m.metric], key, stat_index[key], 1]
-            else:
-                oid = mib[
-                    metric_map[m.metric],
-                    key,
-                    stat_index[key],
-                ]
-            oids[oid] = m
+            for m in probe.metrics:
+                mc = self.SLA_METRICS_CONFIG[m]
+                if status_oid == "NQA-MIB::nqaResultsCompletions":
+                    oid = mib[mc.oid, key, stat_index[key], 1]
+                else:
+                    oid = mib[mc.oid, key, stat_index[key]]
+                oids[oid] = (probe, mc)
+            self.set_metric(
+                id=probe.sla_probe,
+                metric="SLA | Test | Status",
+                sla_probe=probe.sla_probe,
+                value=float(probe_status[key]),
+                ts=ts,
+                labels=probe.labels,
+                multi=True,
+                type="gauge",
+                scale=1,
+            )
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
             timeout_limits=self.get_snmp_metrics_get_timeout(),
         )
-        ts = self.get_ts()
         for r in results:
             if results[r] is None:
                 continue
-            m = oids[r]
+            probe, mc = oids[r]
             self.set_metric(
-                id=m.id,
-                metric=m.metric,
+                id=probe.sla_probe,
+                sla_probe=probe.sla_probe,
+                metric=mc.metric,
                 value=float(results[r]),
                 ts=ts,
-                labels=m.labels,
+                labels=probe.labels,
                 multi=True,
                 type="gauge",
-                scale=scale if m.metric in SCALE_METRICS else 1,
+                scale=mc.scale,
+                units=mc.units,
             )
 
     def get_classifier_tos(self):

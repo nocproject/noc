@@ -107,7 +107,7 @@ class Script(GetMetricsScript):
             oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
             sla_types=["udp-jitter"],
             scale=1,
-            units="s",
+            units="micro,s",
         ),
         "SLA | RTT | Min": ProfileMetricConfig(
             metric="SLA | RTT | Min",
@@ -410,7 +410,7 @@ class Script(GetMetricsScript):
                 continue
             # Set probe status
             self.set_metric(
-                id=("SLA | Test | Status", [f"noc::sla::name::{name}"]),
+                id=probe.sla_probe,
                 metric="SLA | Test | Status",
                 value=float(probe_status[name]),
                 ts=self.get_ts(),
@@ -475,7 +475,7 @@ class Script(GetMetricsScript):
             hints = probe.get_hints()
             name = hints["sla_name"]
             for m in probe.metrics:
-                mc = self.SLA_METRICS_CONFIG[name]
+                mc = self.SLA_METRICS_CONFIG[m]
                 oid = mib[mc.oid, name]
                 oids[oid] = (probe, mc)
         results = self.snmp.get_chunked(
