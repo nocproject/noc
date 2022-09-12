@@ -11,7 +11,7 @@ import os
 import re
 import itertools
 import operator
-from typing import Union, Optional, List, Tuple, Callable, Dict, Any, Set
+from typing import Union, Optional, List, Tuple, Callable, Dict, Any
 from collections import defaultdict
 from dataclasses import dataclass
 
@@ -400,7 +400,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     )
                 elif m["metrics"].startswith("SLA"):
                     sla_probe = m.get("sla_probe")
-                    if not sla_probe in sm:
+                    if sla_probe not in sm:
                         sm[sla_probe] = MetricCollectorConfig(
                             collector="sla",
                             metrics=[m["metrics"]],

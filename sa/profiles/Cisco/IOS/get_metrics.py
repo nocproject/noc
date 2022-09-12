@@ -439,7 +439,6 @@ class Script(GetMetricsScript):
             self.get_ip_sla_udp_jitter_metrics_snmp(jitter_probes)
 
     def get_ip_sla_icmp_metrics_snmp(self, metrics: Dict[Tuple[str, str], MetricCollectorConfig]):
-        scale = 1000
         ts = self.get_ts()
         for metric, m_oid in SLA_ICMP_METRIC_MAP.items():
             for oid, value in self.snmp.getnext(mib[m_oid]):
@@ -469,7 +468,6 @@ class Script(GetMetricsScript):
         :return:
         """
         #
-        scale = 1000
         oids = {}
         for probe in metrics:
             hints = probe.get_hints()

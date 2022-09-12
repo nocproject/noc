@@ -9,7 +9,6 @@
 from typing import List
 
 # NOC modules
-from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
     metrics,
@@ -345,8 +344,6 @@ class Script(GetMetricsScript):
             else:
                 *key, resindex = oid.split(".")
             key = key[14:]
-            fi = int(key[0])
-            owner, test_name = key[1 : fi + 1], key[fi + 2 :]
             if ".".join(key) in stat_index:
                 continue
             stat_index[".".join(key)] = resindex

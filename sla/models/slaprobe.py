@@ -168,7 +168,10 @@ class SLAProbe(Document):
         if not metrics:
             # self.logger.info("SLA metrics are not configured. Skipping")
             return
-        labels, hints = [f"noc::sla::name::{self.name}"], [f"sla_type::{self.type}", f"sla_name::{self.name}"]
+        labels, hints = [f"noc::sla::name::{self.name}"], [
+            f"sla_type::{self.type}",
+            f"sla_name::{self.name}",
+        ]
         if self.group:
             labels += [f"noc::sla::group::{self.group}"]
             hints += [f"sla_group::{self.group}"]
