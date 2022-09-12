@@ -9,6 +9,7 @@
     "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11.{{ item }}",
     "labels": ["noc::chassis::0", "noc::slot::0", "item", "noc::sensor::Temperature Sensor"],
     "type": "gauge",
-    "scale": 1
+    "scale": 1,
+    "units": "C"
    }]
 }
