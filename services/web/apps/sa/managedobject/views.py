@@ -18,7 +18,7 @@ from mongoengine.queryset import Q as MQ
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.profile import Profile
@@ -32,7 +32,6 @@ from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
-from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.project.models.project import Project
 from noc.core.text import alnum_key
