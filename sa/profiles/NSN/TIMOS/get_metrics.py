@@ -128,6 +128,7 @@ class Script(GetMetricsScript):
                     ],
                     value=temperature[tuple(key)],
                     multi=True,
+                    units="C",
                 )
 
     @metrics(

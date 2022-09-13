@@ -2962,6 +2962,23 @@ class ManagedObject(NOCModel):
             "items": items,
         }
 
+    @property
+    def has_configured_metrics(self) -> bool:
+        """
+        Check configured collected metrics
+        :return:
+        """
+        from noc.sla.models.slaprobe import SLAProbe
+        from noc.inv.models.sensor import Sensor
+        from noc.inv.models.object import Object
+        from mongoengine.queryset import Q as m_Q
+
+        sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
+        config = self.get_metric_config(self)
+        o = Object.get_managed(self)
+        sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
+        return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
+
 
 @on_save
 class ManagedObjectAttribute(NOCModel):

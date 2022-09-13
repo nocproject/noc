@@ -168,14 +168,18 @@ class SLAProbe(Document):
         if not metrics:
             # self.logger.info("SLA metrics are not configured. Skipping")
             return
-        labels = [f"noc::sla::name::{self.name}"]
+        labels, hints = [f"noc::sla::name::{self.name}"], [
+            f"sla_type::{self.type}",
+            f"sla_name::{self.name}",
+        ]
         if self.group:
             labels += [f"noc::sla::group::{self.group}"]
+            hints += [f"sla_group::{self.group}"]
         yield MetricCollectorConfig(
             collector="sla",
             metrics=tuple(metrics),
             labels=tuple(labels),
-            hints=[f"sla_type::{self.type}"],
+            hints=hints,
             sla_probe=self.bi_id,
             service=self.service,
         )
@@ -204,3 +208,12 @@ class SLAProbe(Document):
             ],
             "items": [],
         }
+
+    @property
+    def has_configured_metrics(self) -> bool:
+        """
+        Check configured collected metrics
+        :return:
+        """
+        config = self.get_metric_config(self)
+        return config.get("metrics") or config.get("items")

@@ -6,10 +6,16 @@
 # ---------------------------------------------------------------------
 
 # Python Modules
+from typing import List
 import enum
 
 # NOC modules
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.sa.profiles.Generic.get_metrics import (
+    Script as GetMetricsScript,
+    metrics,
+    ProfileMetricConfig,
+)
+from noc.core.models.cfgmetrics import MetricCollectorConfig
 from .oidrules.slot import SlotRule
 from noc.core.mib import mib
 from noc.core.script.metrics import scale
@@ -34,27 +40,62 @@ class RPMResultCollection(enum.Enum):
     allTests = 4
 
 
-SLA_METRICS_MAP = {
-    "SLA | Packets": "JUNIPER-RPM-MIB::jnxRpmResSumSent",
-    "SLA | Packets | Loss | Ratio": "JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
-    # "SLA | Packets | Loss | In": "JUNIPER-RPM-MIB::jnxRpmResSumReceived",
-    "SLA | Jitter | Avg": ("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
-    "SLA | Jitter | Out | Avg": (
-        "JUNIPER-RPM-MIB::jnxRpmResCalcAverage",
-        RPMMeasurement.egress.value,
-    ),
-    "SLA | Jitter | In | Avg": (
-        "JUNIPER-RPM-MIB::jnxRpmResCalcAverage",
-        RPMMeasurement.ingress.value,
-    ),
-    "SLA | RTT | Min": ("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
-    "SLA | RTT | Max": ("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
-}
-
-
 class Script(GetMetricsScript):
     name = "Juniper.JUNOS.get_metrics"
     OID_RULES = [SlotRule]
+    SLA_METRICS_CONFIG = {
+        "SLA | Packets": ProfileMetricConfig(
+            metric="SLA | Packets",
+            oid="JUNIPER-RPM-MIB::jnxRpmResSumSent",
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Loss | Ratio": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | Ratio",
+            oid="JUNIPER-RPM-MIB::jnxRpmResSumPercentLost",
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=scale(0.000001),
+            units="%",
+        ),
+        # Jitter
+        "SLA | Jitter | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | Avg",
+            oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | Out | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | Out | Avg",
+            oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.egress.value),
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | In | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | In | Avg",
+            oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.ingress.value),
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+        #
+        "SLA | RTT | Min": ProfileMetricConfig(
+            metric="SLA | RTT | Min",
+            oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | RTT | Max": ProfileMetricConfig(
+            metric="SLA | RTT | Max",
+            oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+    }
 
     @metrics(
         ["Subscribers | Summary"],
@@ -130,14 +171,13 @@ class Script(GetMetricsScript):
                         multi=True,
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,
+                        units="byte" if "Octets" in metric else "pkt",
                     )
 
-    def collect_profile_metrics(self, metrics):
+    def collect_sla_metrics(self, metrics):
         # SLA Metrics
         if self.has_capability("Juniper | RPM | Probes"):
-            self.get_ip_sla_udp_jitter_metrics_snmp(
-                [m for m in metrics if m.metric in SLA_METRICS_MAP]
-            )
+            self.get_ip_sla_udp_jitter_metrics_snmp(metrics)
 
     # @metrics(
     #     list(SLA_METRICS_MAP.keys()),
@@ -145,7 +185,7 @@ class Script(GetMetricsScript):
     #     volatile=True,
     #     access="S",  # CLI version
     # )
-    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics: List[MetricCollectorConfig]):
         """
         Returns collected ip sla metrics in form
         probe id -> {
@@ -155,37 +195,34 @@ class Script(GetMetricsScript):
         """
         oids = {}
         # stat_index = 250
-        for m in metrics:
-            if m.metric not in SLA_METRICS_MAP:
-                continue
-            name = next(
-                iter([m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::name::")]),
-                None,
-            )
-            group = next(
-                iter(
-                    [m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::group::")]
-                ),
-                None,
-            )
+        for probe in metrics:
+            hints = probe.get_hints()
+            name = hints["sla_name"]
+            group = hints["sla_group"]
             if not name or not group:
                 continue
-            key = f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.{".".join(str(ord(s)) for s in name)}'
-            base = SLA_METRICS_MAP[m.metric]
-            if not isinstance(base, tuple):
-                oid = mib[
-                    base,
-                    key,
-                    RPMResultCollection.lastCompletedTest.value,
-                ]
-            else:
-                oid = mib[
-                    base[0],
-                    key,
-                    RPMResultCollection.lastCompletedTest.value,
-                    base[1],
-                ]
-            oids[oid] = m
+            key = (
+                f'{len(group)}.{".".join(str(ord(s)) for s in group)}.'
+                f'{len(name)}.{".".join(str(ord(s)) for s in name)}'
+            )
+            for m in probe.metrics:
+                if m not in self.SLA_METRICS_CONFIG:
+                    continue
+                mc = self.SLA_METRICS_CONFIG[m]
+                if not isinstance(mc.metric, tuple):
+                    oid = mib[
+                        mc.metric,
+                        key,
+                        RPMResultCollection.lastCompletedTest.value,
+                    ]
+                else:
+                    oid = mib[
+                        mc.metric[0],
+                        key,
+                        RPMResultCollection.lastCompletedTest.value,
+                        mc.metric[1],
+                    ]
+                oids[oid] = (probe, mc)
 
         results = self.snmp.get_chunked(
             oids=list(oids),
@@ -196,14 +233,16 @@ class Script(GetMetricsScript):
         for r in results:
             if results[r] is None:
                 continue
-            m = oids[r]
+            probe, mc = oids[r]
             self.set_metric(
-                id=m.id,
-                metric=m.metric,
+                id=probe.sla_probe,
+                sla_probe=probe.sla_probe,
+                metric=mc.metric,
                 value=float(results[r]),
                 ts=ts,
-                labels=m.labels,
+                labels=probe.labels,
                 multi=True,
                 type="gauge",
-                scale=1 if m.metric != "SLA | Packets | Loss | Ratio" else scale(0.000001),
+                scale=mc.scale,
+                units=mc.units,
             )
