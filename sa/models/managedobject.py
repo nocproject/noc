@@ -1059,78 +1059,6 @@ class ManagedObject(NOCModel):
         # @todo: Rewrite
         return self.address_set.count() > 1
 
-    def get_attr(self, name, default=None):
-        """
-        Return attribute as string
-        :param name:
-        :param default:
-        :return:
-        """
-        try:
-            return self.managedobjectattribute_set.get(key=name).value
-        except ManagedObjectAttribute.DoesNotExist:
-            return default
-
-    def get_attr_bool(self, name, default=False):
-        """
-        Return attribute as bool
-        :param name:
-        :param default:
-        :return:
-        """
-        v = self.get_attr(name)
-        if v is None:
-            return default
-        if v.lower() in ["t", "true", "y", "yes", "1"]:
-            return True
-        else:
-            return False
-
-    def get_attr_int(self, name, default=0):
-        """
-        Return attribute as integer
-        :param name:
-        :param default:
-        :return:
-        """
-        v = self.get_attr(name)
-        if v is None:
-            return default
-        try:
-            return int(v)
-        except:  # noqa
-            return default
-
-    def set_attr(self, name, value):
-        """
-        Set attribute
-        :param name:
-        :param value:
-        :return:
-        """
-        value = smart_text(value)
-        try:
-            v = self.managedobjectattribute_set.get(key=name)
-            v.value = value
-        except ManagedObjectAttribute.DoesNotExist:
-            v = ManagedObjectAttribute(managed_object=self, key=name, value=value)
-        v.save()
-
-    def update_attributes(self, attr):
-        for k in attr:
-            v = attr[k]
-            ov = self.get_attr(k)
-            if ov != v:
-                self.set_attr(k, v)
-                logger.info("%s: %s -> %s", k, ov, v)
-
-    def is_ignored_interface(self, interface):
-        interface = self.get_profile().convert_interface_name(interface)
-        rx = self.get_attr("ignored_interfaces")
-        if rx:
-            return re.match(rx, interface) is not None
-        return False
-
     def get_status(self):
         return ObjectStatus.get_status(self)
 
@@ -2993,27 +2921,6 @@ class ManagedObject(NOCModel):
         sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
         config = self.get_metric_config(self)
         return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
-
-
-@on_save
-class ManagedObjectAttribute(NOCModel):
-    class Meta(object):
-        verbose_name = "Managed Object Attribute"
-        verbose_name_plural = "Managed Object Attributes"
-        db_table = "sa_managedobjectattribute"
-        app_label = "sa"
-        unique_together = [("managed_object", "key")]
-        ordering = ["managed_object", "key"]
-
-    managed_object = ForeignKey(ManagedObject, verbose_name="Managed Object", on_delete=CASCADE)
-    key = CharField("Key", max_length=64)
-    value = CharField("Value", max_length=4096, blank=True, null=True)
-
-    def __str__(self):
-        return "%s: %s" % (self.managed_object, self.key)
-
-    def on_save(self):
-        cache.delete(f"cred-{self.managed_object.id}", version=CREDENTIAL_CACHE_VERSION)
 
 
 # object.scripts. ...

@@ -1,0 +1,8 @@
+{
+    "name": "Chassis | HW Version",
+    "$collection": "inv.capabilities",
+    "uuid": "2d58f2c3-5272-45d3-a9cf-a8bac6146d54",
+    "description": "Chassis Hardware Version",
+    "type": "str",
+    "card_template": null
+}

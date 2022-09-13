@@ -1,0 +1,8 @@
+{
+    "name": "Chassis | Serial Number",
+    "$collection": "inv.capabilities",
+    "uuid": "fb17ebf0-75ca-4302-9aab-7dbd1c1668d4",
+    "description": "Chassis Serial Number for device",
+    "type": "str",
+    "card_template": null
+}

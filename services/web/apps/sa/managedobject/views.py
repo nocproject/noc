@@ -68,7 +68,6 @@ class ManagedObjectApplication(ExtModelApplication):
     query_fields = ["name", "description"]
     secret_fields = {"password", "super_password", "snmp_ro", "snmp_rw"}
     # Inlines
-    attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config", access="config")
 
     extra_permissions = ["alarm", "change_interface"]
