@@ -11,7 +11,6 @@ include:
     ref: stable
     file:
       - /templates/upload.yml
-      - /templates/build_rust.yml
   - local: /ansible/.ansible-ci.yml
 
 workflow:
@@ -325,6 +324,28 @@ build:web:
     paths:
       - dist/ui/pkg/web
       - dist/ui/pkg/web.debug
+
+.build_rust:
+  image: rust:1.63
+  script:
+    - set -x
+    - cd rust/$BUILD_TARGET
+    - export CARGO_TARGET_DIR=../../build/rust
+    - cargo check
+    - cargo test
+    - cargo build --release
+  rules:
+    - if: ('$CI_PIPELINE_SOURCE == "merge_request_event"' || '$CI_COMMIT_BRANCH == "master"')
+      changes:
+        - rust/$BUILD_TARGET/*
+        - rust/$BUILD_TARGET/**/*
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - build/rust/release
+    expire_in: 7 days
+
 
 Build dnssync:
   stage: Build
