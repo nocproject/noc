@@ -45,7 +45,8 @@ class Script(GetMetricsScript):
                 value = self.snmp.get("1.3.6.1.2.1.99.1.1.1.4.%s" % sindex)
                 self.set_metric(
                     id=("Environment | Temperature", None),
-                    labels=(f"noc::sensor::{sname}"),
+                    labels=(f"noc::sensor::{sname}",),
                     value=int(value),
                     multi=True,
+                    units="C",
                 )

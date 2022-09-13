@@ -1,5 +1,6 @@
 {
   "$metric": "Environment | Temperature",
   "$type": "slot",
-  "oid": "1.3.6.1.4.1.637.61.1.23.10.1.2.{{ hwSlotIndex }}"
+  "oid": "1.3.6.1.4.1.637.61.1.23.10.1.2.{{ hwSlotIndex }}",
+  "units": "C"
 }

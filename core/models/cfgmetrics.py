@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Literal, Tuple
+from typing import Optional, List, Literal, Tuple, Dict, Union
 from dataclasses import dataclass, field
 
 
@@ -33,3 +33,8 @@ class MetricCollectorConfig(object):
     # Collectors
     sensor: Optional[int] = None  # Sensor BI_Id
     sla_probe: Optional[int] = None  # SLA Probe BI_Id
+
+    def get_hints(self) -> Dict[str, Union[str, int]]:
+        if not self.hints:
+            return {}
+        return dict(v.split("::") for v in self.hints)

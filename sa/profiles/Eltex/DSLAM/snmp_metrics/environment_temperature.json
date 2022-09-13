@@ -9,13 +9,15 @@
       "labels": ["noc::sensor::Temperature DSL"],
       "$type": "oid",
       "type": "gauge",
-      "scale": 1
+      "scale": 1,
+      "units": "C"
       },{
         "$type": "oid",
         "oid": "1.3.6.1.4.1.34300.1.6.4.2.1.3.2.0",
         "labels": ["noc::sensor::Temperature PWR"],
         "type": "gauge",
-        "scale": 1
+        "scale": 1,
+        "units": "C"
     }]
    },{
     "$match": "is_platform_MXA32",
@@ -25,13 +27,15 @@
     "labels": ["noc::sensor::Temperature DSL"],
     "$type": "oid",
     "type": "gauge",
-    "scale": 1
+    "scale": 1,
+    "units": "C"
     },{
       "$type": "oid",
       "oid": "1.3.6.1.4.1.35265.1.28.4.2.1.3.2",
       "labels": ["noc::sensor::Temperature PWR"],
       "type": "gauge",
-      "scale": 1
+      "scale": 1,
+      "units": "C"
     }]
    },{
     "$match": "is_platform_MXA64",
@@ -41,13 +45,15 @@
     "labels": ["noc::sensor::Temperature DSL"],
     "$type": "oid",
     "type": "gauge",
-    "scale": 1
+    "scale": 1,
+    "units": "C"
     },{
       "$type": "oid",
       "oid": "1.3.6.1.4.1.35265.1.33.4.2.1.3.2",
       "labels": ["noc::sensor::Temperature PWR"],
       "type": "gauge",
-      "scale": 1
+      "scale": 1,
+      "units": "C"
     }]
   }]
 }

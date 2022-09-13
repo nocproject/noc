@@ -23,19 +23,19 @@ class Script(GetMetricsScript):
     def get_cpu_metrics(self, metrics):
         c = self.cli("get monitoring cpu-usage")
         cpu = c.strip()
-        self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5))
+        self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5), units="%")
 
     @metrics(["Memory | Usage"], volatile=False, access="C")  # CLI version
     def get_memory_metrics(self, metrics):
         c = self.cli("get monitoring memory-usage")
         memory = c.strip()
-        self.set_metric(id=("Memory | Usage", None), value=memory)
+        self.set_metric(id=("Memory | Usage", None), value=float(memory), units="%")
 
     @metrics(["Environment | Temperature"], volatile=False, access="C")  # CLI version
     def get_temperature_metrics(self, metrics):
         c = self.cli("get monitoring temperature")
         temperature = c.strip()
-        self.set_metric(id=("Environment | Temperature", None), value=temperature)
+        self.set_metric(id=("Environment | Temperature", None), value=float(temperature), units="C")
 
     @metrics(["Check | Result", "Check | RTT"], volatile=False, access="C")  # CLI version
     def get_avail_metrics(self, metrics):
@@ -146,6 +146,7 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Radio | TxPower", [f"noc::interface::{iface}"]),
                     value=radio_metrics[data["radio"]]["tx-power"],
+                    units="dBm",
                 )
 
     @metrics(
@@ -169,6 +170,7 @@ class Script(GetMetricsScript):
                     id=("Radio | TxPower", [f"noc::interface::{iface}"]),
                     # Max TxPower 27dBm, convert % -> dBm
                     value=int(data["tx-power-dbm"].strip()),
+                    units="dBm",
                 )
                 r_metrics[iface]["tx-power"] = int(data["tx-power-dbm"].strip())
         return r_metrics

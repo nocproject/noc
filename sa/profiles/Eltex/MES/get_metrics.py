@@ -17,9 +17,9 @@ class Script(GetMetricsScript):
 
     QOS_OIDS_MAP = {
         # oid, type, scale
-        "Interface | QOS | Discards | Out | Delta": (5, "delta", 1),
-        "Interface | QOS | Octets | Out": (6, "counter", 8),
-        "Interface | QOS | Packets | Out": (7, "counter", 1),
+        "Interface | QOS | Discards | Out | Delta": (5, "delta", 1, "pkt"),
+        "Interface | QOS | Octets | Out": (6, "counter", 8, "byte"),
+        "Interface | QOS | Packets | Out": (7, "counter", 1, "pkt"),
     }
 
     BASE_OID = "1.3.6.1.4.1.35265.1.23.1.8.1.2.1.1.1."
@@ -43,7 +43,7 @@ class Script(GetMetricsScript):
             if not results[r]:
                 continue
             mc, labels = oids[r]
-            _, mtype, scale = self.QOS_OIDS_MAP[mc.metric]
+            _, mtype, scale, units = self.QOS_OIDS_MAP[mc.metric]
             self.set_metric(
                 id=(mc.metric, mc.labels),
                 metric=mc.metric,
@@ -53,6 +53,7 @@ class Script(GetMetricsScript):
                 multi=True,
                 type=mtype,
                 scale=scale,
+                units=units,
             )
 
     @metrics(

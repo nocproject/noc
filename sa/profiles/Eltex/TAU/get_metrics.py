@@ -25,6 +25,7 @@ class Script(GetMetricsScript):
                     id=("CPU | Usage", None),
                     value=int(cpu_usage.split(".")[0]),
                     multi=True,
+                    units="%",
                 )
             except ValueError:
                 pass
@@ -42,6 +43,7 @@ class Script(GetMetricsScript):
                 id=("Memory | Usage", None),
                 value=int(mem_usage),
                 multi=True,
+                units="%",
             )
 
     @metrics(
@@ -57,6 +59,7 @@ class Script(GetMetricsScript):
                 labels=["noc::sensor::Temperature 1"],
                 value=v,
                 multi=True,
+                units="C",
             )
         v = self.snmp.get("1.3.6.1.4.1.35265.1.9.10.6.0", cached=True)
         if v:
@@ -65,6 +68,7 @@ class Script(GetMetricsScript):
                 labels=["noc::sensor::Temperature 2"],
                 value=v,
                 multi=True,
+                units="C",
             )
         v = self.snmp.get("1.3.6.1.4.1.35265.1.9.10.7.0", cached=True)
         if v:
@@ -73,6 +77,7 @@ class Script(GetMetricsScript):
                 labels=["noc::sensor::Temperature 3"],
                 value=v,
                 multi=True,
+                units="C",
             )
         v = self.snmp.get("1.3.6.1.4.1.35265.1.9.10.8.0", cached=True)
         if v:
@@ -81,6 +86,7 @@ class Script(GetMetricsScript):
                 labels=["noc::sensor::Temperature 4"],
                 value=v,
                 multi=True,
+                units="C",
             )
 
     @metrics(

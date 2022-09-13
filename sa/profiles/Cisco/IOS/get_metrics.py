@@ -1,45 +1,24 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+from typing import List, Dict, Tuple
 
 # NOC modules
-from noc.core.text import parse_kv
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript, metrics
+from noc.sa.profiles.Generic.get_metrics import (
+    Script as GetMetricsScript,
+    metrics,
+    ProfileMetricConfig,
+)
+from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.core.mib import mib
+from noc.core.text import parse_kv
 
-
-SLA_METRICS_MAP = {
-    "SLA | Packets": "CISCO-RTTMON-MIB::rttMonLatestJitterOperNumOfRTT",
-    "SLA | Packets | Loss | Out": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossSD",
-    "SLA | Packets | Loss | In": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossDS",
-    "SLA | Packets | Disordered": "CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketOutOfSequence",
-    # "SLA | Probes | Error": "CISCO-RTTMON-MIB::nqaJitterStatsErrors",
-    "SLA | OneWayLatency | Out | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
-    "SLA | OneWayLatency | In | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
-    "SLA | Jitter | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
-    "SLA | Jitter | Out | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
-    "SLA | Jitter | In | Avg": "CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
-    "SLA | Jitter | MOS": "CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
-    "SLA | Jitter | ICPIF": "CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
-    "SLA | RTT | Min": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
-    "SLA | RTT | Max": "CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
-}
-
-SCALE_METRICS = {
-    "SLA | OneWayLatency | Out | Max",
-    "SLA | OneWayLatency | In | Max",
-    "SLA | Jitter | Avg",
-    "SLA | Jitter | Out | Avg",
-    "SLA | Jitter | In | Avg",
-    "SLA | RTT | Min",
-    "SLA | RTT | Max",
-}
 
 SLA_ICMP_METRIC_MAP = {
     "SLA | RTT | Min": "CISCO-RTTMON-MIB::rttMonStatsCaptureCompletionTimeMin",
@@ -50,6 +29,101 @@ SLA_ICMP_METRIC_MAP = {
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
     always_prefer = "S"
+
+    SLA_METRICS_CONFIG = {
+        "SLA | Packets": ProfileMetricConfig(
+            metric="SLA | Packets",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperNumOfRTT",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Loss | Out": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | Out",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossSD",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Loss | In": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | In",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketLossDS",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        "SLA | Packets | Disordered": ProfileMetricConfig(
+            metric="SLA | Packets | Loss | In",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperPacketOutOfSequence",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="pkt",
+        ),
+        # "SLA | Probes | Error": "CISCO-RTTMON-MIB::nqaJitterStatsErrors",
+        "SLA | OneWayLatency | Out | Max": ProfileMetricConfig(
+            metric="SLA | OneWayLatency | Out | Max",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgSD",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | OneWayLatency | In | Max": ProfileMetricConfig(
+            metric="SLA | OneWayLatency | In | Max",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperOWAvgDS",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | Avg",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgJitter",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | Out | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | Out | Avg",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgSDJ",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | In | Avg": ProfileMetricConfig(
+            metric="SLA | Jitter | In | Avg",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperAvgDSJ",
+            sla_types=["udp-jitter"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | Jitter | MOS": ProfileMetricConfig(
+            metric="SLA | Jitter | MOS",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperMOS",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="micro,s",
+        ),
+        "SLA | Jitter | ICPIF": ProfileMetricConfig(
+            metric="SLA | Jitter | ICPIF",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperICPIF",
+            sla_types=["udp-jitter"],
+            scale=1,
+            units="micro,s",
+        ),
+        "SLA | RTT | Min": ProfileMetricConfig(
+            metric="SLA | RTT | Min",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMin",
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+        "SLA | RTT | Max": ProfileMetricConfig(
+            metric="SLA | RTT | Max",
+            oid="CISCO-RTTMON-MIB::rttMonLatestJitterOperRTTMax",
+            sla_types=["udp-jitter", "icmp-echo"],
+            scale=1000,
+            units="micro,s",
+        ),
+    }
 
     rx_ipsla_probe = re.compile(
         r"(?:IPSLA operation id:|Round Trip Time \(RTT\) for.+Index)\s+(\d+)", re.MULTILINE
@@ -113,6 +187,7 @@ class Script(GetMetricsScript):
                         metric="SLA | UDP RTT",
                         value=float(rtt) * 1000,
                         multi=True,
+                        units="micro,s",
                     )
 
                 except ValueError:
@@ -125,6 +200,7 @@ class Script(GetMetricsScript):
                     metric="SLA | JITTER",
                     value=float(jitter) * 1000,
                     multi=True,
+                    units="micro,s",
                 )
 
     @metrics(
@@ -170,6 +246,7 @@ class Script(GetMetricsScript):
                         labels=(f"noc::sla::name::{probe_id}",),
                         value=float(rtt) * 1000,
                         multi=True,
+                        units="micro,s",
                     )
                 except ValueError:
                     pass
@@ -231,11 +308,13 @@ class Script(GetMetricsScript):
                 "CISCO-CLASS-BASED-QOS-MIB::cbQosCMDropByte",
                 "delta",
                 1,
+                "pkt",
             ),
             "Interface | CBQOS | Octets | In | Delta": (
                 "CISCO-CLASS-BASED-QOS-MIB::cbQosCMPostPolicyByte",
                 "delta",
                 1,
+                "byte",
             ),
         },
         "Out": {
@@ -243,11 +322,13 @@ class Script(GetMetricsScript):
                 "CISCO-CLASS-BASED-QOS-MIB::cbQosCMDropByte",
                 "delta",
                 1,
+                "pkt",
             ),
             "Interface | CBQOS | Octets | Out | Delta": (
                 "CISCO-CLASS-BASED-QOS-MIB::cbQosCMPostPolicyByte",
                 "delta",
                 1,
+                "byte",
             ),
         },
     }
@@ -263,7 +344,6 @@ class Script(GetMetricsScript):
         access="S",  # CLI version
     )
     def get_interface_cbqos_metrics_snmp(self, metrics):
-        print(metrics)
         ifaces = {m.ifindex: m.labels for m in metrics if m.ifindex}
         config = self.get_cbqos_config_snmp()
         oids = {}
@@ -289,7 +369,7 @@ class Script(GetMetricsScript):
             # if not results[r]:
             #     continue
             metric, mc, mlabesl, labels = oids[r]
-            _, mtype, scale = mc
+            _, mtype, scale, units = mc
             self.set_metric(
                 id=(metric, mlabesl),
                 metric=metric,
@@ -299,80 +379,87 @@ class Script(GetMetricsScript):
                 multi=True,
                 type=mtype,
                 scale=scale,
+                units=units,
             )
         # print(r)
         # "noc::traffic_class::*", "noc::interface::*"
 
-    def collect_profile_metrics(self, metrics):
+    def collect_sla_metrics(self, metrics: List[MetricCollectorConfig]):
+        """
+        Collect SLA metrics for Cisco
+        :param metrics:
+        :return:
+        """
         # SLA Metrics
-        if self.has_capability("Cisco | IP | SLA | Probes"):
-            probe_status = {}
-            for oid, oper_status in self.snmp.getnext(
-                mib["CISCO-RTTMON-MIB::rttMonLatestRttOperSense"]
-            ):
-                _, name = oid.rsplit(".", 1)
-                probe_status[name] = oper_status
-                self.set_metric(
-                    id=("SLA | Test | Status", [f"noc::sla::name::{name}"]),
-                    metric="SLA | Test | Status",
-                    value=float(oper_status),
-                    ts=0,
-                    labels=[f"noc::sla::name::{name}"],
-                    multi=True,
-                    type="gauge",
-                    scale=1,
-                )
-            jitter_metrics = []
-            icmp_metrics = {}
-            for m in metrics:
-                if m.metric not in SLA_METRICS_MAP:
-                    continue
-                name = next(
-                    iter(
-                        [
-                            m.rsplit("::", 1)[-1]
-                            for m in (m.labels or [])
-                            if m.startswith("noc::sla::name::")
-                        ]
-                    ),
-                    None,
-                )
-                if not name:
-                    self.logger.warning("Unknown name for probe. Skipping")
-                    continue
-                if probe_status[name] != 1:
-                    self.logger.debug("[%s] Test is not success. Skipping", name)
-                    continue
-                if m.sla_type == "icmp-echo" and m.metric in SLA_ICMP_METRIC_MAP:
-                    icmp_metrics[(name, m.metric)] = m
-                    continue
-                jitter_metrics.append(m)
-            if icmp_metrics:
-                self.get_ip_sla_icmp_metrics_snmp(icmp_metrics)
-            if jitter_metrics:
-                self.get_ip_sla_udp_jitter_metrics_snmp(jitter_metrics)
+        if not self.has_capability("Cisco | IP | SLA | Probes"):
+            return
+        probe_status = {}
+        # Collect probe oper status
+        for oid, oper_status in self.snmp.getnext(
+            mib["CISCO-RTTMON-MIB::rttMonLatestRttOperSense"]
+        ):
+            _, name = oid.rsplit(".", 1)
+            probe_status[name] = oper_status
+        # Create config for collect. Split Jitter and ICMP probe, that used different  OID
+        jitter_probes, icmp_probes = [], {}
+        for probe in metrics:
+            hints = probe.get_hints()
+            name = hints.get("sla_name")
+            if not name:
+                self.logger.warning("Unknown name for probe. Skipping")
+                continue
+            # Set probe status
+            self.set_metric(
+                id=probe.sla_probe,
+                metric="SLA | Test | Status",
+                value=float(probe_status[name]),
+                ts=self.get_ts(),
+                labels=[f"noc::sla::name::{name}"],
+                sensor=probe.sla_probe,
+                multi=True,
+                type="gauge",
+                scale=1,
+            )
+            if probe_status[name] != 1:
+                self.logger.debug("[%s] Test is not success. Skipping", name)
+                continue
+            requested_metrics = set(probe.metrics)
+            if hints["sla_type"] == "icmp-echo":
+                for metric in probe.metrics:
+                    if metric not in SLA_ICMP_METRIC_MAP:
+                        continue
+                    icmp_probes[(name, metric)] = probe
+                continue
+            if not requested_metrics.intersection(set(self.SLA_METRICS_CONFIG)):
+                continue
+            jitter_probes.append(probe)
+        if icmp_probes:
+            self.get_ip_sla_icmp_metrics_snmp(icmp_probes)
+        if jitter_probes:
+            self.get_ip_sla_udp_jitter_metrics_snmp(jitter_probes)
 
-    def get_ip_sla_icmp_metrics_snmp(self, metrics):
-        scale = 1000
+    def get_ip_sla_icmp_metrics_snmp(self, metrics: Dict[Tuple[str, str], MetricCollectorConfig]):
         ts = self.get_ts()
         for metric, m_oid in SLA_ICMP_METRIC_MAP.items():
             for oid, value in self.snmp.getnext(mib[m_oid]):
                 _, name, timestamp, path, hop, dist = oid.rsplit(".", 5)
                 if (name, metric) not in metrics:
                     continue
-                m = metrics[(name, metric)]
+                probe = metrics[(name, metric)]
                 self.set_metric(
-                    id=m.id,
-                    metric=m.metric,
+                    id=(metric, [str(probe.sla_probe)]),
+                    metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=m.labels,
+                    labels=probe.labels,
+                    sla_probe=probe.sla_probe,
                     multi=True,
                     type="gauge",
-                    scale=scale if m.metric in SCALE_METRICS else 1,
+                    scale=1000,
+                    units="s",  # Second
                 )
 
-    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics):
+    def get_ip_sla_udp_jitter_metrics_snmp(self, metrics: List[MetricCollectorConfig]):
         """
         Returns collected ip sla metrics in form
         probe id -> {
@@ -381,18 +468,16 @@ class Script(GetMetricsScript):
         :return:
         """
         #
-        scale = 1000
         oids = {}
-        for m in metrics:
-            name = next(
-                iter([m.rsplit("::", 1)[-1] for m in m.labels if m.startswith("noc::sla::name::")]),
-                None,
-            )
-            oid = mib[
-                SLA_METRICS_MAP[m.metric],
-                name,
-            ]
-            oids[oid] = m
+        for probe in metrics:
+            hints = probe.get_hints()
+            name = hints["sla_name"]
+            for m in probe.metrics:
+                if m not in self.SLA_METRICS_CONFIG:
+                    continue
+                mc = self.SLA_METRICS_CONFIG[m]
+                oid = mib[mc.oid, name]
+                oids[oid] = (probe, mc)
         results = self.snmp.get_chunked(
             oids=list(oids),
             chunk_size=self.get_snmp_metrics_get_chunk(),
@@ -402,16 +487,18 @@ class Script(GetMetricsScript):
         for r in results:
             if results[r] is None:
                 continue
-            m = oids[r]
+            probe, mc = oids[r]
             self.set_metric(
-                id=m.id,
-                metric=m.metric,
+                id=probe.sla_probe,
+                sla_probe=probe.sla_probe,
+                metric=mc.metric,
                 value=float(results[r]),
                 ts=ts,
-                labels=m.labels,
+                labels=probe.labels,
                 multi=True,
                 type="gauge",
-                scale=scale if m.metric in SCALE_METRICS else 1,
+                scale=mc.scale,
+                units=mc.units,
             )
         #
 

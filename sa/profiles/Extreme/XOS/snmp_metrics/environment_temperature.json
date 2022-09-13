@@ -3,5 +3,6 @@
   "$type": "oid",
   "labels": ["noc::sensor::Temperature"],
   "oid": "1.3.6.1.4.1.1916.1.1.1.8.0",
-  "type": "gauge"
+  "type": "gauge",
+  "units": "C"
 }
