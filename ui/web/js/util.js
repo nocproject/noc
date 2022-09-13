@@ -72,6 +72,17 @@ Ext.apply(NOC.render, {
         };
     },
 
+    ObjectLookup: function(name) {
+        var l = name + "__label";
+        return function(value, meta, record) {
+            if(!Ext.isEmpty(value)) {
+                return record[l];
+            } else {
+                return "";
+            }
+        };
+    },
+
     Tooltip: function(fmt) {
         var tpl = new Ext.XTemplate(fmt);
         return function(value, meta, record) {

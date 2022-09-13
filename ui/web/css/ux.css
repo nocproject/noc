@@ -117,3 +117,36 @@
   display: inline-block;
   padding: 0 2px 2px 0;
 }
+
+/* packages/ux/classic/sass/src/grid/SubTable.scss:1 */
+.x-grid-subtable {
+  border-collapse: collapse;
+}
+/* packages/ux/classic/sass/src/grid/SubTable.scss:7 */
+tr.x-grid-subtable-row {
+  background-color: #fff;
+}
+/* packages/ux/classic/sass/src/grid/SubTable.scss:11 */
+.x-grid-subtable-header {
+  border: 1px solid #c5c5c5;
+  color: #000;
+  font: normal 11px/13px tahoma, arial, verdana, sans-serif;
+  background-image: none;
+  background-color: #c5c5c5;
+  background-image: -webkit-gradient(linear, top, bottom, color-stop(0%, #f9f9f9), color-stop(0%, #e6e3e3));
+  background-image: -webkit-linear-gradient(top, #f9f9f9, #e6e3e3);
+  background-image: -moz-linear-gradient(top, #f9f9f9, #e6e3e3);
+  background-image: -o-linear-gradient(top, #f9f9f9, #e6e3e3);
+  background-image: -ms-linear-gradient(top, #f9f9f9, #e6e3e3);
+  background-image: linear-gradient(top, #f9f9f9, #e6e3e3);
+  padding: 3px 6px 4px 6px;
+  text-overflow: ellipsis;
+}
+/* packages/ux/classic/sass/src/grid/SubTable.scss:29 */
+.x-grid-subtable-cell {
+  font: normal 11px/13px tahoma, arial, verdana, sans-serif;
+  border-top: 1px solid #ededed;
+  border-right: 1px solid #d0d0d0;
+  border-bottom: 1px solid #ededed;
+  border-left: 1px solid #d0d0d0;
+}
