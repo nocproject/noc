@@ -1031,7 +1031,7 @@ class ManagedObject(NOCModel):
         if platform:
             content += [smart_text(platform.name)]
             card += " [%s]" % platform.name
-        version = self.get_attr("version")
+        version = str(self.version)
         if version:
             content += [version]
             card += " version %s" % version

@@ -82,9 +82,8 @@ class Migration(BaseMigration):
             mo_caps[mo_id] += [
                 {
                     "capability": str(attrs_cap[attr_name]),
-                    "value": attr_value,
+                    "value": str(attr_value),
                     "source": "caps",
-                    "scope": "",
                 }
             ]
         caps = []
