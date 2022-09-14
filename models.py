@@ -198,6 +198,7 @@ _MODELS = {
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
     "sa.ManagedObject": "noc.sa.models.managedobject.ManagedObject",
+    "sa.ManagedObjectAttribute": "noc.sa.models.managedobject.ManagedObjectAttribute",
     "sa.ManagedObjectProfile": "noc.sa.models.managedobjectprofile.ManagedObjectProfile",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
     "sa.ObjectDiagnosticConfig": "noc.sa.models.objectdiagnosticconfig.ObjectDiagnosticConfig",
