@@ -287,12 +287,15 @@ Ext.define("NOC.core.label.LabelField", {
                     } else {
                         valueRecord = me.findRecord(valueField, record);
                         if(!valueRecord) {
-                            valueRecord = {};
-                            valueRecord[me.valueField] = record.id || record;
-                            valueRecord[me.displayField] = record;
-
                             cls = me.valueStore.getModel();
-                            valueRecord = new cls(valueRecord);
+                            if(Ext.isObject(record)) {
+                                valueRecord = new cls(record);
+                            } else {
+                                valueRecord = {};
+                                valueRecord[me.valueField] = record;
+                                valueRecord[me.displayField] = record;
+                                valueRecord = new cls(valueRecord);
+                            }
                         }
                         if(valueRecord) {
                             value[i] = valueRecord;
