@@ -57,7 +57,7 @@ class VLANTranslation(EmbeddedDocument):
     parent_vlan = PlainReferenceField("vc.VLAN")
 
 
-@tree
+@tree()
 @bi_sync
 @change
 @on_delete_check(
