@@ -13,6 +13,8 @@ Ext.define("NOC.wf.transition.Application", {
         "NOC.wf.workflow.LookupField",
         "NOC.wf.state.LookupField",
         "NOC.main.remotesystem.LookupField",
+        "NOC.core.label.LabelField",
+        "NOC.core.ListFormField",
         "Ext.ux.form.StringsField"
     ],
     model: "NOC.wf.transition.Model",
@@ -147,6 +149,40 @@ Ext.define("NOC.wf.transition.Application", {
                     xtype: "stringsfield",
                     fieldLabel: __("Handlers"),
                     allowBlank: true
+                },
+                {
+                    name: "required_rules",
+                    xtype: "listform",
+                    fieldLabel: __("Required Rules"),
+                    rows: 3,
+                    items: [
+                        {
+                            name: "labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Match Labels"),
+                            allowBlank: true,
+                            isTree: true,
+                            filterProtected: false,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
+                        },
+                        {
+                            name: "exclude_labels",
+                            xtype: "labelfield",
+                            fieldLabel: __("Exclude Match Labels"),
+                            allowBlank: true,
+                            isTree: true,
+                            filterProtected: false,
+                            pickerPosition: "down",
+                            uiStyle: "extra",
+                            query: {
+                                "allow_matched": true
+                            }
+                        }
+                    ]
                 }
             ]
         });
