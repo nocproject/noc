@@ -59,12 +59,7 @@ class SAEAPI(JSONRPCAPI):
             mop.cli_privilege_policy, mop.snmp_rate_limit,
             mo.access_preference, mop.access_preference,
             mop.beef_storage, mop.beef_path_template_id,
-            mo.caps,
-            (
-              SELECT json_object_agg(key, value)
-              FROM sa_managedobjectattribute
-              WHERE managed_object_id = %s
-            )
+            mo.caps
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -195,7 +190,6 @@ class SAEAPI(JSONRPCAPI):
             beef_storage_id,
             beef_path_template_id,
             caps,
-            attrs,
         ) = data[0]
         # Check object is managed
         if not is_managed:
@@ -264,8 +258,6 @@ class SAEAPI(JSONRPCAPI):
             }
             if sw_image:
                 version["image"] = sw_image
-            if attrs:
-                version["attributes"] = attrs
             # Apply firmware policy discovery settings
             fws = firmware.get_effective_object_settings()
             if o_access_preference == "P" and "access_preference" in fws:
