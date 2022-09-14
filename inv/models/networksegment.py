@@ -22,7 +22,6 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     LongField,
 )
-from mongoengine.errors import ValidationError
 from django.db.models.aggregates import Count
 from pymongo.errors import OperationFailure
 
@@ -30,7 +29,7 @@ from pymongo.errors import OperationFailure
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.model.decorator import on_delete_check, on_save, tree
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
@@ -58,6 +57,7 @@ class VLANTranslation(EmbeddedDocument):
     parent_vlan = PlainReferenceField("vc.VLAN")
 
 
+@tree()
 @bi_sync
 @change
 @on_delete_check(
@@ -196,8 +196,6 @@ class NetworkSegment(Document):
         return [self.id]
 
     def clean(self):
-        if self.id and "parent" in self._changed_fields and self.has_loop:
-            raise ValidationError("Creating segments loop")
         if self.horizontal_transit_policy == "E":
             self.enable_horizontal_transit = True
         elif self.horizontal_transit_policy == "D":
@@ -235,20 +233,6 @@ class NetworkSegment(Document):
                     del es[k]
         self._es = es
         return es
-
-    @property
-    def has_loop(self):
-        """
-        Check if object creates loop
-        """
-        if not self.id:
-            return False
-        p = self.parent
-        while p:
-            if p.id == self.id:
-                return True
-            p = p.parent
-        return False
 
     @property
     def managed_objects(self):
