@@ -82,6 +82,10 @@ Ext.define("NOC.wf.transition.Model", {
             type: "string"
         },
         {
+            name: "required_rules",
+            type: "auto",
+        },
+        {
             name: "handlers",
             type: "auto"
         }

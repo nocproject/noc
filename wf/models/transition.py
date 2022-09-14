@@ -6,12 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
 import operator
 import logging
+from typing import List
+from threading import Lock
 
 # Third-party modules
-from builtins import str
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -36,6 +36,21 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
+class RequiredRule(EmbeddedDocument):
+    labels: List[str] = ListField(StringField())
+    exclude_labels: List[str] = ListField(StringField())
+
+    def __str__(self):
+        return f'{", ".join(self.labels)}'
+
+    def is_match(self, labels: List[str]):
+        if self.exclude_labels and not set(self.exclude_labels) - set(labels):
+            return False
+        if not set(self.labels) - set(labels):
+            return True
+        return False
+
+
 class TransitionVertex(EmbeddedDocument):
     # vertex coordinates
     x = IntField(default=0)
@@ -52,13 +67,13 @@ class TransitionVertex(EmbeddedDocument):
 class Transition(Document):
     meta = {
         "collection": "transitions",
-        "indexes": ["from_state", "to_state"],
+        "indexes": ["from_state", "to_state", "required_rules.labels"],
         "strict": False,
         "auto_create_index": False,
     }
-    workflow = PlainReferenceField(Workflow)
-    from_state = PlainReferenceField(State)
-    to_state = PlainReferenceField(State)
+    workflow: Workflow = PlainReferenceField(Workflow)
+    from_state: State = PlainReferenceField(State)
+    to_state: State = PlainReferenceField(State)
     is_active = BooleanField(default=True)
     # Event name
     # Some predefined names exists:
@@ -67,13 +82,15 @@ class Transition(Document):
     event = StringField()
     # Text label
     label = StringField()
-    # Arbbitrary description
+    # Arbitrary description
     description = StringField()
     # Enable manual transition
     enable_manual = BooleanField(default=True)
     # Handler to be called on starting transitions
-    # Any exception aborts transtion
+    # Any exception aborts transition
     handlers = ListField(StringField())
+    #
+    required_rules: RequiredRule = ListField(EmbeddedDocumentField(RequiredRule))
     # Visual vertices
     vertices = ListField(EmbeddedDocumentField(TransitionVertex))
     # Integration with external NRI and TT systems
@@ -111,6 +128,19 @@ class Transition(Document):
         if self.from_state.workflow != self.to_state.workflow:
             raise ValueError("Workflow mismatch")
         self.workflow = self.from_state.workflow
+
+    def is_allowed(self, labels: List[str]) -> bool:
+        """
+        Check transition allowed
+        :param labels:
+        :return:
+        """
+        if not self.required_rules:
+            return True
+        for rule in self.required_rules:
+            if rule.is_match(labels):
+                return True
+        return False
 
     def on_transition(self, obj):
         """

@@ -21,6 +21,7 @@ from mongoengine.fields import (
     LongField,
     IntField,
 )
+from mongoengine.queryset.visitor import Q as m_Q
 import cachetools
 
 # NOC modules
@@ -224,11 +225,35 @@ class State(Document):
         """
         from .transition import Transition
 
-        t = Transition.objects.filter(from_state=self.id, event=event).first()
-        if t:
+        for t in Transition.objects.filter(
+            m_Q(
+                from_state=self.id,
+                event=event,
+                required_rules__labels__exists=False,
+                is_active=True,
+            )
+            | m_Q(
+                from_state=self.id,
+                is_active=True,
+                event=event,
+                required_rules__labels__in=getattr(obj, "effective_labels", []),
+            )
+        ):
+            if not t.is_allowed:
+                logger.info(
+                    "[%s|%s] Transition '%s' not allowed for '%s'. Skipping",
+                    obj,
+                    self.name,
+                    t,
+                    event,
+                )
+                continue
             self.fire_transition(t, obj)
+            break
         else:
-            logger.debug("[%s|%s] No event handler for '%s'. Skipping", obj, self.name, event)
+            logger.debug(
+                "[%s|%s] No available transition for '%s'. Skipping", obj, self.name, event
+            )
 
     @classmethod
     def can_set_label(cls, label):
