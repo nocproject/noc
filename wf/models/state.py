@@ -251,7 +251,7 @@ class State(Document):
             self.fire_transition(t, obj)
             break
         else:
-            logger.info(
+            logger.debug(
                 "[%s|%s] No available transition for '%s'. Skipping", obj, self.name, event
             )
 
