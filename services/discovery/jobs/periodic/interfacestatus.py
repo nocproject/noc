@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from typing import Optional
 import datetime
 import orjson
 
@@ -77,7 +78,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             )
 
     def handler(self):
-        def get_interface(name):
+        def get_interface(name) -> Optional[Interface]:
             if_name = interfaces.get(name)
             if if_name:
                 return if_name
@@ -87,9 +88,9 @@ class InterfaceStatusCheck(DiscoveryCheck):
                     return if_name
             return None
 
-        has_interfaces = "DB | Interfaces" in self.object.get_caps()
+        has_interfaces = self.has_capability("DB | Interfaces")
         if not has_interfaces:
-            self.logger.info("No interfaces discovered. " "Skipping interface status check")
+            self.logger.info("No interfaces discovered. Skipping interface status check")
             return
         self.logger.info("Checking interface statuses")
         interfaces = {
@@ -124,21 +125,22 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 "bandwidth": i.get("bandwidth"),
             }
             changes = self.update_if_changed(iface, kwargs, ignore_empty=list(kwargs), bulk=bulk)
-            self.log_changes("Interface %s status has been changed" % i["interface"], changes)
+            self.log_changes(f"Interface {i['interface']} status has been changed", changes)
             ostatus = i.get("oper_status")
             astatus = i.get("admin_status")
             if iface.oper_status != ostatus and ostatus is not None:
-                self.logger.info("[%s] set oper status to %s", i["interface"], ostatus)
+                self.logger.info("[%s] set oper_status to %s", i["interface"], ostatus)
                 if iface.profile.status_discovery in {"c", "rc", "ca"}:
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 iface.set_oper_status(ostatus)
-            if (
-                iface.profile.status_discovery == "ca"
-                and iface.admin_status != astatus
-                and astatus is not None
-            ):
-                self.iface_alarm(ostatus, astatus, iface, timestamp=now)
-
+            if iface.admin_status != astatus and astatus is not None:
+                if iface.profile.status_discovery == "ca":
+                    self.iface_alarm(ostatus, astatus, iface, timestamp=now)
+                if astatus is False:
+                    # If admin_down send expired signal
+                    iface.fire_event("expired")
+            if ostatus:
+                iface.fire_event("seen")
         if bulk:
             self.logger.info("Committing changes to database")
             try:
