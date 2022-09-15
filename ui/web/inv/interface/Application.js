@@ -11,6 +11,8 @@ Ext.define("NOC.inv.interface.Application", {
     requires: [
         "NOC.core.label.LabelField",
         "NOC.core.StateField",
+        "NOC.inv.interface.LinkForm",
+        "NOC.inv.interface.MACForm",
         "NOC.inv.interface.Model",
         "NOC.inv.interface.type.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
@@ -41,6 +43,20 @@ Ext.define("NOC.inv.interface.Application", {
 
         Ext.apply(me, {
             columns: [
+                {
+                    xtype: "glyphactioncolumn",
+                    itemId: 'show_MAC_action',
+                    width: 25,
+                    items: [
+                        {
+                            scope: me,
+                            tooltip: __("Show MACs"),
+                            glyph: NOC.glyph.play,
+                            handler: me.showMAC,
+                            disabled: !me.permissions.get_mac,
+                        }
+                    ],
+                },
                 {
                     xtype: "glyphactioncolumn",
                     width: 25,
@@ -78,13 +94,7 @@ Ext.define("NOC.inv.interface.Application", {
                 {
                     text: __("Link"),
                     dataIndex: "link",
-                    renderer: function(v) {
-                        if(v) {
-                            return v.label;
-                        } else {
-                            return "";
-                        }
-                    }
+                    renderer: NOC.render.Lookup("link"),
                 },
                 {
                     text: __("Profile"),
@@ -183,45 +193,7 @@ Ext.define("NOC.inv.interface.Application", {
                            dataIndex: "description"
                       },
                     ]
-                },
-                // {
-                //     ptype: 'rowexpander',
-                //     rowBodyTpl: new Ext.XTemplate(
-                //         '<tpl if="this.isNotEmptyArray(subinterfaces)">',
-                //           '<table class="x-grid-item ' + Ext.baseCSSPrefix + 'grid-subtable"><tbody>',
-                //           '<thead>',
-                //             subInterfaceHeader.apply( __("Name")),
-                //             subInterfaceHeader.apply( __("L2 Domain")),
-                //             subInterfaceHeader.apply( __("VRF")),
-                //             subInterfaceHeader.apply( __("IPv4")),
-                //             subInterfaceHeader.apply( __("IPv6")),
-                //             subInterfaceHeader.apply( __("Project")),
-                //             subInterfaceHeader.apply( __("Service")),
-                //             subInterfaceHeader.apply( __("Description")),
-                //           '</thead>',
-                //           '<tbody>',
-                //           '<tpl for="subinterfaces">',
-                //             '<tr>',
-                //               subInterfaceCellStringValue.apply('{name}'),
-                //               subInterfaceCellStringValue.apply('{l2_domain__label}'),
-                //               subInterfaceCellStringValue.apply('{vrf}'),
-                //               subInterfaceCellArrayValue.apply('{ipv4_addresses}'),
-                //               subInterfaceCellArrayValue.apply('{ipv6_addresses}'),
-                //               subInterfaceCellStringValue.apply('{project__label}'),
-                //               subInterfaceCellStringValue.apply('{service__label}'),
-                //               subInterfaceCellStringValue.apply('{description}'),
-                //             '</tr>',
-                //           '</tpl>',
-                //           '</tbody></table>',
-                //         '<tpl else>',
-                //           '<p>' + __("No SubInterfaces") + '</p>',
-                //         '</tpl>',
-                //         {
-                //             isNotEmptyArray: function(array) {
-                //                 return array.length > 0;
-                //             }
-                //         })
-                // }
+                }
             ],
         });
         me.callParent();
@@ -303,6 +275,7 @@ Ext.define("NOC.inv.interface.Application", {
         var me = this,
             r = me.store.getAt(rowIndex),
             link = r.get("link");
+        me.currentRecord = r;
         if(link) {
             me.unlinkInterface(r.get("id"), r.get("name"));
         } else {
@@ -328,7 +301,9 @@ Ext.define("NOC.inv.interface.Application", {
                             var me = this,
                                 data = Ext.decode(response.responseText);
                             if(data.status) {
-                                me.app.loadInterfaces();
+                                me.currentRecord.set("link", null);
+                                me.currentRecord.set("link_label", null);
+                                me.grid.getStore().reload();
                             } else {
                                 NOC.error(data.message);
                             }
@@ -343,8 +318,51 @@ Ext.define("NOC.inv.interface.Application", {
         var me = this;
         Ext.create("NOC.inv.interface.LinkForm", {
             title: Ext.String.format(__("Link") + " {0} " + __("with"), ifaceName),
-            app: me.app,
+            app: me,
             ifaceId: ifaceId
         });
     },
+    toggleLinkIcon: function(data) {
+        var me = this;
+
+        if(data) { // link
+            me.currentRecord.set("link", data.link);
+            me.grid.getStore().getById(me.currentRecord.id).set("link", data.link);
+            me.currentRecord.set("link_label", data.link__label);
+            me.grid.getStore().getById(me.currentRecord.id).set("link__label", data.link__label);
+            // me.grid.getStore().reload();
+            me.grid.getStore().sync();
+        } else { // unlink
+        }
+    },
+    //
+    showMAC: function(grid, rowIndex, colIndex, item, event, record) {
+        var me = this;
+
+        me.currentRecord = record;
+        NOC.mrt({
+            scope: me,
+            params: [
+                {
+                    id: me.currentRecord.get("managed_object"),
+                    script: "get_mac_address_table",
+                    args: {
+                        interface: record.get("name")
+                    }
+                }
+            ],
+            errorMsg: __("Failed to get MACs"),
+            cb: me.showMACForm
+        });
+    },
+    //
+    showMACForm: function(data, scope) {
+        Ext.create("NOC.inv.interface.MACForm", {
+            objectId: scope.currentRecord.get("managed_object"),
+            data: data,
+            name: scope.currentRecord.get("name"),
+            title: Ext.String.format("MACs on {0}",
+              scope.currentRecord.get("name"))
+        });
+    }
 });

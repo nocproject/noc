@@ -76,16 +76,21 @@ Ext.define('Ext.ux.grid.SubTable', {
             out.push('<tr>');
             for (j = 0; j < numColumns; j++) {
                 column = columns[j];
-                value = rec[column.dataIndex];
-                // value = rec.get(column.dataIndex);
-                if (column.renderer && column.renderer.call) {
-                    value = column.renderer.call(column.scope || me, value, {}, rec);
+                if(column.dataIndex) {
+                    value = rec[column.dataIndex];
+                    if (column.renderer && column.renderer.call) {
+                        value = column.renderer.call(column.scope || me, value, {}, rec);
+                    }
+                } else {
+                    value = column.renderer.call(column);
                 }
-                out.push('<td class="' + Ext.baseCSSPrefix + 'grid-subtable-cell"');
+                out.push('<td id="' + rowValues.record.id + '" class="' + Ext.baseCSSPrefix + 'grid-subtable-cell"');
                 if (column.width != null) {
                     out.push(' style="width:' + column.width + 'px"');
                 }
-                out.push('><div class="' + Ext.baseCSSPrefix + 'grid-cell-inner">', value, '</div></td>');
+                out.push(">");
+                out.push('<div class="' + Ext.baseCSSPrefix + 'grid-cell-inner">', value, '</div>');
+                out.push("</td>")
             }
             out.push('</tr>');
         }
@@ -100,8 +105,6 @@ Ext.define('Ext.ux.grid.SubTable', {
     },
     
     getAssociatedRecords: function(record) {
-        // return record[this.association]().getRange();
-        // return Ext.create("Ext.data.Model", record.get(this.association));
         return record.get(this.association);
     }
 });
