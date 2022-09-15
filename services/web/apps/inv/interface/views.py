@@ -24,7 +24,7 @@ from noc.sa.interfaces.base import (
 )
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from noc.core.text import alnum_key
+from noc.core.text import alnum_key, list_to_ranges
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.core.comp import smart_text
@@ -39,6 +39,7 @@ class InterfaceAppplication(ExtDocApplication):
     title = _("Interfaces")
     menu = _("Interfaces")
     model = Interface
+    query_fields = ["description__contains"]
 
     mrt_config = {
         "get_mac": {
@@ -97,7 +98,7 @@ class InterfaceAppplication(ExtDocApplication):
             "name": si.name,
             "description": si.description,
             "untagged_vlan": si.untagged_vlan,
-            "tagged_vlans": si.tagged_vlans,
+            "tagged_vlans": list_to_ranges(si.tagged_vlans),
             "ipv4_addresses": si.ipv4_addresses,
             "ipv6_addresses": si.ipv6_addresses,
             "enabled_protocols": si.enabled_protocols,
@@ -118,21 +119,28 @@ class InterfaceAppplication(ExtDocApplication):
             "name": o.name,
             "description": o.description,
             "mac": o.mac,
+            "managed_object": o.managed_object.id,
+            "managed_object__label": str(o.managed_object.name),
             "ifindex": o.ifindex,
             "lag": (o.aggregated_interface.name if o.aggregated_interface else ""),
-            "link": self.get_link(o),
+            "link": None,
+            "link__label": "",
             "profile": str(o.profile.id) if o.profile else None,
-            "profile__label": str(o.profile) if o.profile else None,
+            "profile__label": str(o.profile) if o.profile else "",
             "enabled_protocols": o.enabled_protocols,
             "project": str(o.project.id) if o.project else None,
-            "project__label": str(o.project) if o.project else None,
+            "project__label": str(o.project) if o.project else "",
             "state": str(o.state.id) if o.state else None,
-            "state__label": str(o.state) if o.state else None,
+            "state__label": str(o.state) if o.state else "",
             "service": str(o.service.id) if o.service else None,
-            "service__label": str(o.service) if o.service else None,
+            "service__label": str(o.service) if o.service else "",
             "row_class": self.get_style(o),
             "subinterfaces": [self.get_subinterface(si) for si in o.subinterface_set],
         }
+        link = self.get_link(o)
+        if link:
+            r["link"] = link["id"]
+            r["link__label"] = link["label"]
         return r
 
     @view(url=r"^(?P<managed_object>\d+)/$", method=["GET"], access="view", api=True)
