@@ -111,9 +111,7 @@ class Script(BaseScript):
                         r"\n\s*", "", m.group("port_description").strip()
                     )
                 if m.group("system_name").strip():
-                    n["remote_system_name"] = re.sub(
-                        r"\n\s*", "", m.group("system_name").strip()
-                    )
+                    n["remote_system_name"] = re.sub(r"\n\s*", "", m.group("system_name").strip())
                 if m.group("system_description").strip():
                     n["remote_system_description"] = re.sub(
                         r"\n\s*", "", m.group("system_description").strip()
