@@ -51,7 +51,7 @@ class Script(BaseScript):
         r"^\s+Port ID Subtype\s+:(?P<port_id_type>.+)\s*\n"
         r"^\s+Port ID\s+:(?P<port_id>.+)\s*\n"
         r"^\s+Port Description\s+:(?P<port_description>(.|\n)*)\n"
-        r"^\s+System Name\s+:(?P<system_name>.*)\n"
+        r"^\s+System Name\s+:(?P<system_name>(.|\n)*)\n"
         r"^\s+System Description\s+:(?P<system_description>(.|\n)*)\n"
         r"^\s+System Capabilities\s+:(?P<system_capabilities>.*)\n",
         re.MULTILINE,
@@ -111,7 +111,9 @@ class Script(BaseScript):
                         r"\n\s*", "", m.group("port_description").strip()
                     )
                 if m.group("system_name").strip():
-                    n["remote_system_name"] = m.group("system_name").strip()
+                    n["remote_system_name"] = re.sub(
+                        r"\n\s*", "", m.group("system_name").strip()
+                    )
                 if m.group("system_description").strip():
                     n["remote_system_description"] = re.sub(
                         r"\n\s*", "", m.group("system_description").strip()
