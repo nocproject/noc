@@ -63,7 +63,14 @@ class Sensor(Document):
         "collection": "sensors",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["agent", "managed_object", "object", "labels", "effective_labels"],
+        "indexes": [
+            "agent",
+            "managed_object",
+            "object",
+            "labels",
+            "effective_labels",
+            ("managed_object", "object"),
+        ],
     }
 
     profile: "SensorProfile" = PlainReferenceField(
@@ -241,6 +248,8 @@ class Sensor(Document):
         :param sensor:
         :return:
         """
+        if not sensor.state.is_productive:
+            return {}
         labels = []
         for ll in sensor.effective_labels:
             l_c = Label.get_by_name(ll)

@@ -2889,7 +2889,7 @@ class ManagedObject(NOCModel):
                 metrics=tuple(metrics),
                 labels=(f"noc::interface::{i['name']}",),
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                service=i.get("service"),
+                # service=i.get("service"),
             )
             if not i_profile.allow_subinterface_metrics:
                 continue
@@ -2973,10 +2973,12 @@ class ManagedObject(NOCModel):
         from noc.inv.models.object import Object
         from mongoengine.queryset import Q as m_Q
 
+        if not self.is_managed:
+            return False
         sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
-        config = self.get_metric_config(self)
         o = Object.get_managed(self)
         sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
+        config = self.get_metric_config(self)
         return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
 
 
