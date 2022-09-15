@@ -163,18 +163,19 @@ Ext.define("NOC.pm.metricrule.Application", {
     },
     //
     onSelectQuery: function(field, record) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/pm/metricaction/" + record.get("id") + "/",
-            scope: me,
-            success: function(response) {
-                var data = Ext.decode(response.responseText),
-                    queryParamsField = field.up().getForm().findField("metric_action_params"),
-                    rulesForm = field.up().up(),
-                    scrollPos = rulesForm.scroll;
-                queryParamsField.setValue(data.params);
-                rulesForm.scrollTo(scrollPos.x, scrollPos.y);
-            }
-        })
+        var me = this,
+          queryParamsField = field.up().getForm().findField("metric_action_params");
+        if(record && record.isModel) {
+            Ext.Ajax.request({
+                url: "/pm/metricaction/" + record.get("id") + "/",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText);
+                    queryParamsField.setValue(data.params);
+                }
+            })
+        } else {
+            field.up().up().up().deleteRecord();
+        }
     }
 });

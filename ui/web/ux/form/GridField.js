@@ -156,7 +156,7 @@ Ext.define("Ext.ux.form.GridField", {
                         return true;
                     }
 
-                    if(Ext.isFunction(field.getEditor) && Ext.isFunction(field.getEditor().getArrayValues)) {
+                    if(Ext.isFunction(field.getEditor) && field.getEditor() && Ext.isFunction(field.getEditor().getArrayValues)) {
                         data[dataIndex] = field.getEditor().getArrayValues();
                     } else {
                         data[dataIndex] = r.get(dataIndex);
