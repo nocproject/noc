@@ -18,6 +18,7 @@ import random
 
 # Third-party modules
 import orjson
+import cachetools
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -440,6 +441,7 @@ class MetricsService(FastAPIService):
         )
 
     @staticmethod
+    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
     def get_key_hash(k: MetricKey) -> str:
         """
         Calculate persistent hash for metric key
@@ -598,7 +600,7 @@ class MetricsService(FastAPIService):
         if is_composed:
             probe_cls = ComposeProbeNode
         prefix = self.get_key_hash(k)
-        state_id = f"{self.get_key_hash(k)}::{metric_field}"
+        state_id = f"{prefix}::{metric_field}"
         # Create Probe
         p = probe_cls.construct(
             metric_field,
@@ -788,6 +790,9 @@ class MetricsService(FastAPIService):
         Update source config.
         """
         sc_id = int(data["id"])
+        if "type" not in data:
+            self.logger.info("[%s] Bad Source data", sc_id)
+            return
         sc = SourceConfig(
             type=data["type"],
             bi_id=data["bi_id"],
