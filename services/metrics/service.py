@@ -288,7 +288,7 @@ class MetricsService(FastAPIService):
         self.logger.info("Waiting for mappings")
         await self.mappings_ready_event.wait()
         self.logger.info("Mappings are ready")
-        await self.subscribe_stream("metrics", self.slot_number, self.on_metrics)
+        await self.subscribe_stream("metrics", self.slot_number, self.on_metrics, async_cursor=True)
 
     async def on_deactivate(self):
         if self.change_log:
@@ -353,6 +353,7 @@ class MetricsService(FastAPIService):
     async def on_metrics(self, msg: Message) -> None:
         data = orjson.loads(msg.value)
         state = {}
+        metrics["messages"] += 1
         for item in data:
             scope = item.get("scope")
             if not scope:
@@ -668,7 +669,8 @@ class MetricsService(FastAPIService):
         # Getting Context
         source = self.get_source_info(k)
         if not source:
-            self.logger.info("[%s] Unknown metric source. Skipping apply rules", k)
+            self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
+            metrics["unknown_metric_source"] += 1
             return
         s_labels = set(self.merge_labels(source.labels, labels))
         # Appy matched rules
