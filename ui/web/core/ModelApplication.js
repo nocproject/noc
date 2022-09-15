@@ -139,6 +139,17 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         // Setup Grid toolbar
         var gridToolbar = [];
+        var plugins = [
+            //     {
+            //         ptype: "bufferedrenderer"
+            //         //trailingBufferZone: 50,
+            //         //leadingBufferZone: 50
+            //     }
+        ];
+
+        if(me.additions_plugins) {
+            plugins = plugins.concat(me.additions_plugins);
+        }
 
         if(me.levelFilter) {
             me.upButton = Ext.create("Ext.button.Button", {
@@ -460,13 +471,7 @@ Ext.define("NOC.core.ModelApplication", {
             autoScroll: true,
             stateful: true,
             stateId: me.appName + "-grid",
-            plugins: [
-                //     {
-                //         ptype: "bufferedrenderer"
-                //         //trailingBufferZone: 50,
-                //         //leadingBufferZone: 50
-                //     }
-            ],
+            plugins: plugins,
             selModel: selModel,
             dockedItems: gridToolbars,
             rbar: grid_rbar,

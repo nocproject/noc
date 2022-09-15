@@ -103,9 +103,16 @@ Ext.define("NOC.inv.interface.LinkForm", {
             method: "POST",
             jsonData: data,
             scope: me,
-            success: function() {
-                var me = this;
-                me.app.loadInterfaces();
+            success: function(response) {
+                var me = this,
+                  data = Ext.decode(response.responseText);
+                if(data.status) {
+                    me.app.currentRecord.set("link", data.link);
+                    me.app.currentRecord.set("link_label", data.link__label);
+                    me.app.grid.getStore().reload();
+                } else {
+                    NOC.error(data.message);
+                }
                 me.close();
             },
             failure: function() {
