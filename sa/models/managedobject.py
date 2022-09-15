@@ -2917,31 +2917,35 @@ class ManagedObject(NOCModel):
         :return:
         """
         from noc.inv.models.interface import Interface
+        from noc.inv.models.interfaceprofile import InterfaceProfile
 
         if not mo.is_managed:
             return {}
+        icoll = Interface._get_collection()
         s_metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
         labels = []
         for ll in mo.effective_labels:
             l_c = Label.get_by_name(ll)
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         items = []
-        for iface in Interface.objects.filter(managed_object=mo.id):
+        for iface in icoll.find({"managed_object": mo.id}, {"name", "effective_labels", "profile"}):
+            ip = InterfaceProfile.get_by_id(iface["profile"])
             metrics = [
                 {
                     "name": mc.metric_type.field_name,
                     "is_stored": mc.is_stored,
                     "is_composed": bool(mc.metric_type.compose_expression),
                 }
-                for mc in iface.profile.metrics
+                for mc in ip.metrics
             ]
             if not metrics:
                 continue
             items.append(
                 {
-                    "key_labels": [f"noc::interface::{iface.name}"],
+                    "key_labels": [f"noc::interface::{iface['name']}"],
                     "labels": [
-                        {"label": ll, "expose_metric": False} for ll in iface.effective_labels
+                        {"label": ll, "expose_metric": False}
+                        for ll in iface.get("effective_labels", [])
                     ],
                     "metrics": metrics,
                 }
