@@ -19,6 +19,7 @@ import random
 # Third-party modules
 import orjson
 import cachetools
+from pymongo import DESCENDING
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -37,6 +38,7 @@ from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
+from noc.services.datastream.streams.cfgmetricsources import CfgMetricSourcesDataStream
 from noc.config import config as global_config
 
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
@@ -319,11 +321,14 @@ class MetricsService(FastAPIService):
         """
         # Register RPC aliases
         client = MetricsDataStreamClient("cfgmetricsources", service=self)
+        coll = CfgMetricSourcesDataStream.get_collection()
+        r = next(coll.find({}).sort([("change_id", DESCENDING)]), None)
         # Track stream changes
         while True:
             self.logger.info("Starting to track object mappings")
             try:
                 await client.query(
+                    change_id=str(r["change_id"]) if "change_id" in r else None,
                     limit=global_config.metrics.ds_limit,
                     block=True,
                     filter_policy="delete",
@@ -446,7 +451,7 @@ class MetricsService(FastAPIService):
         """
         Calculate persistent hash for metric key
         """
-        d = hashlib.sha512(str(k).encode("utf-8")).digest()
+        d = hashlib.blake2b(str(k).encode("utf-8")).digest()
         return codecs.encode(d, "base_64")[:7].decode("utf-8")
 
     @staticmethod
@@ -620,6 +625,13 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
+    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
+    def get_source(self, s_id):
+        coll = CfgMetricSourcesDataStream.get_collection()
+        data = coll.find_one({"_id": str(s_id)})
+        sc = self.get_source_config(orjson.loads(data["data"]))
+        return sc
+
     def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
         """
         Get source Info by Metric Key. Sources:
@@ -633,13 +645,17 @@ class MetricsService(FastAPIService):
         key_ctx, source = dict(k[1]), None
         sensor, sla_probe = None, None
         if "sensor" in key_ctx:
-            sensor = self.sources_config.get(key_ctx["sensor"])
+            source = self.get_source(key_ctx["sensor"])
+            # sensor = self.sources_config.get(key_ctx["sensor"])
         elif "sla_probe" in key_ctx:
-            sla_probe = self.sources_config.get(key_ctx["sla_probe"])
+            source = self.get_source(key_ctx["sla_probe"])
+            # sla_probe = self.sources_config.get(key_ctx["sla_probe"])
         if "agent" in key_ctx:
-            source = self.sources_config.get(key_ctx["agent"])
+            source = self.get_source(key_ctx["agent"])
+            # source = self.sources_config.get(key_ctx["agent"])
         elif "managed_object" in key_ctx:
-            source = self.sources_config.get(key_ctx["managed_object"])
+            source = self.get_source(key_ctx["managed_object"])
+            # source = self.sources_config.get(key_ctx["managed_object"])
         if not source:
             return
         composed_metrics = []
@@ -785,18 +801,12 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
 
-    async def update_source_config(self, data: Dict[str, Any]) -> None:
-        """
-        Update source config.
-        """
-        sc_id = int(data["id"])
-        if "type" not in data:
-            self.logger.info("[%s] Bad Source data", sc_id)
-            return
+    @staticmethod
+    def get_source_config(data):
         sc = SourceConfig(
             type=data["type"],
             bi_id=data["bi_id"],
-            fm_pool=sys.intern(data["fm_pool"]) if data["fm_pool"] else None,
+            fm_pool=data["fm_pool"] if data["fm_pool"] else None,
             labels=tuple(sys.intern(ll["label"]) for ll in data["labels"]),
             metrics=tuple(
                 sys.intern(m["name"]) for m in data["metrics"] if not m.get("is_composed")
@@ -816,12 +826,27 @@ class MetricsService(FastAPIService):
                     ),
                 )
             )
-        if sc_id not in self.sources_config:
-            self.sources_config[sc_id] = sc
+        return sc
+
+    async def update_source_config(self, data: Dict[str, Any]) -> None:
+        """
+        Update source config.
+        """
+        if not self.cards:
+            # Initial config
             return
-        diff = self.sources_config[sc_id].is_differ(sc)
-        if "condition" in diff:
-            self.invalidate_card_config(sc)
+        sc_id = int(data["id"])
+        if "type" not in data:
+            self.logger.info("[%s] Bad Source data", sc_id)
+            return
+        sc = self.get_source_config(data)
+        self.invalidate_card_config(sc)
+        # if sc_id not in self.sources_config:
+        #     self.sources_config[sc_id] = sc
+        #     return
+        # diff = self.sources_config[sc_id].is_differ(sc)
+        # if "condition" in diff:
+        #    self.invalidate_card_config(sc)
 
     async def delete_source_config(self, c_id: int) -> None:
         """
@@ -968,6 +993,7 @@ class MetricsService(FastAPIService):
             elif diff.intersection({"conditions", "graph"}):
                 # Invalidate Cards
                 self.logger.info("[%s] %s Changed. Invalidate cards for rules", r.id, diff)
+                self.rules[r_id] = r
                 invalidate_rules.add(r_id)
         if invalidate_rules:
             await self.invalidate_card_rules(invalidate_rules)
