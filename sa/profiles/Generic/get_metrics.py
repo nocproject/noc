@@ -37,7 +37,7 @@ from noc.config import config
 from noc.core.perf import metrics as noc_metrics
 from noc.core.mib import mib
 
-NS = 1000000000.0
+NS = 1000_000_000.0
 SNMP_OVERLOAD_VALUE = 18446744073709551615  # '0xffffffffffffffff' for 64-bit counter
 PROFILES_PATH = os.path.join("sa", "profiles")
 
@@ -387,7 +387,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     )
                     seq_id += 1
         elif metrics:
-            sm = {}
+            sm, mc = {}, []
             for m in metrics:
                 if m["metric"] == "Sensor | Value":
                     sensor_metrics.append(
@@ -398,18 +398,21 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                             sensor=m.get("sensor"),
                         )
                     )
-                elif m["metrics"].startswith("SLA"):
+                elif m["metric"].startswith("SLA"):
                     sla_probe = m.get("sla_probe")
                     if sla_probe not in sm:
                         sm[sla_probe] = MetricCollectorConfig(
                             collector="sla",
-                            metrics=[m["metrics"]],
+                            metrics=[m["metric"]],
                             labels=m.get("labels", []),
                             sla_probe=sla_probe,
                         )
+                    else:
+                        sm[sla_probe].metrics.append(m["metric"])
                 else:
-                    metrics.append(MetricConfig(**m))
+                    mc.append(MetricConfig(**m))
             sla_metrics = list(sm.values())
+            metrics = mc
             # metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
         else:
             raise ValueError("Parameter 'collected' or 'metrics' required")
