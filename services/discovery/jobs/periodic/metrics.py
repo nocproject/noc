@@ -9,10 +9,15 @@
 import itertools
 import time
 from typing import Any, List, Dict, Iterable
+from functools import partial
+
+import cachetools
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.models.cfgmetrics import MetricCollectorConfig
+from noc.core.service.loader import get_dcs
+from noc.core.ioloop.util import run_sync
 from noc.inv.models.object import Object
 from noc.inv.models.interfaceprofile import MetricConfig
 from noc.inv.models.sensor import Sensor
@@ -41,6 +46,12 @@ class MetricsCheck(DiscoveryCheck):
     required_script = "get_metrics"
 
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
+
+    @staticmethod
+    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
+    def get_slot_limits(slot_name):
+        dcs = get_dcs()
+        return run_sync(partial(dcs.get_slot_limit, slot_name))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -110,8 +121,8 @@ class MetricsCheck(DiscoveryCheck):
                 collected=metrics,
                 streaming={
                     "stream": "metrics",
-                    "partition": 0,
-                    "utc_offset": config.timezone._utcoffset.seconds,
+                    "partition": self.object.id % self.get_slot_limits("metrics"),
+                    "utc_offset": config.get_utc_offset,
                     "data": s_data,
                 },
             )
