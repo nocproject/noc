@@ -47,12 +47,6 @@ class MetricsCheck(DiscoveryCheck):
 
     SLA_CAPS = ["Cisco | IP | SLA | Probes"]
 
-    @staticmethod
-    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
-    def get_slot_limits(slot_name):
-        dcs = get_dcs()
-        return run_sync(partial(dcs.get_slot_limit, slot_name))
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id_count = itertools.count()
@@ -121,7 +115,7 @@ class MetricsCheck(DiscoveryCheck):
                 collected=metrics,
                 streaming={
                     "stream": "metrics",
-                    "partition": self.object.id % self.get_slot_limits("metrics"),
+                    "partition": self.object.id % self.service.get_slot_limits("metrics"),
                     "utc_offset": config.get_utc_offset,
                     "data": s_data,
                 },
