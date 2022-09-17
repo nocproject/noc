@@ -116,6 +116,10 @@ Ext.define("NOC.core.ListFormField", {
                     values[name] = data[name];
                 }
             }
+            if(Ext.isArray(data)) {
+                name = field.getName();
+                values[name] = data;
+            }
         }
         return values;
     },
