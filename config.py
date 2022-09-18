@@ -964,6 +964,20 @@ class Config(BaseConfig):
         # Check quantiles is enabled
         return getattr(self.perfomance, f"enable_{name}_quantiles", False)
 
+    @property
+    def tz_utc_offset(self) -> int:
+        """
+        Return UTC offset for configured timezone
+        :return:
+        """
+        import pytz
+        import datetime
+
+        if not hasattr(self, "_utcoffset"):
+            dt = datetime.datetime.now(tz=pytz.utc)
+            self._utcoffset = dt.astimezone(self.timezone).utcoffset()
+        return int(self._utcoffset.total_seconds())
+
 
 config = Config()
 config.load()
