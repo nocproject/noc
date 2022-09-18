@@ -189,7 +189,7 @@ class MetricsCollectorService(FastAPIService):
                     # Matched rule found
                     if map_item.ch_table not in out:
                         out[map_item.ch_table] = {
-                            "ts": (item.ts.timestamp() + config.timezone._utcoffset.seconds) * NS,
+                            "ts": (item.ts.timestamp() + config.tz_utc_offset) * NS,
                             "scope": map_item.ch_table,
                             "labels": item.labels,
                             "service": item.service,
