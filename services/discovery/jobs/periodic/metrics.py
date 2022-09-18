@@ -9,15 +9,10 @@
 import itertools
 import time
 from typing import Any, List, Dict, Iterable
-from functools import partial
-
-import cachetools
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.models.cfgmetrics import MetricCollectorConfig
-from noc.core.service.loader import get_dcs
-from noc.core.ioloop.util import run_sync
 from noc.inv.models.object import Object
 from noc.inv.models.interfaceprofile import MetricConfig
 from noc.inv.models.sensor import Sensor

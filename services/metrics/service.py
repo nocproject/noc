@@ -610,7 +610,7 @@ class MetricsService(FastAPIService):
         p = probe_cls.construct(
             metric_field,
             prefix=prefix,
-            state=self.start_state.get(state_id),
+            state=self.start_state.pop(state_id, None),
             config=self.metric_configs.get(metric_field),
             sticky=True,
         )
