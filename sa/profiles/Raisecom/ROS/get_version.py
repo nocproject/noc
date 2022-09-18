@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.text import parse_kv
 
 
 class Script(BaseScript):
@@ -113,6 +114,29 @@ class Script(BaseScript):
 
     rx_ver_qtech = re.compile(r"QTECH Universal Software Platform")
 
+    kv_map = {
+        "product name": "platform",
+        "ros version": "version",
+        "qos version": "version",
+        "bootstrap version": "bootstrap",
+        "boot room version": "bootstrap",
+        "bootrom version": "bootstrap",
+        "hardware version": "hw_rev",
+        "hardware version rev.": "hw_rev",
+        "system macaddress is": "mac_address",
+        "system macaddress": "mac_address",
+        "serial number": "serial",
+    }
+
+    @classmethod
+    def parse_kv_version(cls, v):
+        r = parse_kv(cls.kv_map, v)
+        if not r:
+            raise NotImplementedError("Not supported platform output format")
+        if "Gazelle" in r["platform"]:
+            _, r["platform"] = r["platform"].split(None, 1)
+        return r
+
     def parse_version(self, c):
         r = {}
         if "Support ipv6" in c:
@@ -144,6 +168,8 @@ class Script(BaseScript):
             return r
         else:
             match = self.rx_ver3.search(c)
+        if not match:
+            return self.parse_kv_version(c)
         return match.groupdict()
 
     # NPK Rotek some Chinese vendor
