@@ -36,9 +36,9 @@ class Migration(BaseMigration):
             {"name": "default"}, {"_id": 1}
         )["_id"]
         # vlan_profile_id = bson.ObjectId("61bffba63adaa22083f2abfc")
-        vlan_profile_id = self.mongo_db["vlanprofiles"].find_one(
-            {"name": "default"}, {"_id": 1}
-        )["_id"]
+        vlan_profile_id = self.mongo_db["vlanprofiles"].find_one({"name": "default"}, {"_id": 1})[
+            "_id"
+        ]
         vc_migrate = False
         if vc_count and not vlan_profiles_count > 2:
             self.vc_migrate(l2domain_profile_id, vlan_profile_id)
