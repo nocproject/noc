@@ -149,7 +149,9 @@ class SyslogCollectorService(FastAPIService):
             self.publish(
                 value=orjson.dumps(
                     {
-                        "timestamp": datetime.datetime.fromtimestamp(timestamp).replace(microsecond=0),
+                        "timestamp": datetime.datetime.fromtimestamp(timestamp).replace(
+                            microsecond=0
+                        ),
                         "message_id": message_id,
                         "collector_type": "syslog",
                         "collector": config.pool,

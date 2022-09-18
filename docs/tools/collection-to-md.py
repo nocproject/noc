@@ -524,7 +524,7 @@ class CollectionDoc(object):
 
     def update_toc(self, key: str, lines: List[str]):
         r = []
-        rx_key = re.compile(fr"^(\s+)- {key}:")
+        rx_key = re.compile(rf"^(\s+)- {key}:")
         indent = ""
         to_feed = False
         with open(self.new_yml_path) as f:

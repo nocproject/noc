@@ -8,6 +8,7 @@
 # Third-party modules
 import orjson
 import bson
+import hashlib
 from pymongo import InsertOne
 
 # NOC modules
@@ -18,7 +19,7 @@ class Migration(BaseMigration):
     depends_on = [("main", "0066_default_mx_senders")]
 
     def migrate(self):
-        rg_map = {rg["_id"]: rg["name"] for rg in self.mongo_db["resourcegroups"].find()}
+        rg_map = {str(rg["_id"]): rg["name"] for rg in self.mongo_db["resourcegroups"].find()}
         route_bulk = []
         cfgroute_bulk = []
         for condition, message_type in [
@@ -52,27 +53,33 @@ class Migration(BaseMigration):
                     "notification_group": ng_id,
                 }
                 route_bulk += [InsertOne(route)]
+                change_id = bson.ObjectId()
+                data = orjson.dumps(
+                    {
+                        "id": str(mr_id),
+                        "name": route["name"],
+                        "type": route["type"],
+                        "order": route["order"],
+                        "action": route["action"],
+                        "match": [
+                            {
+                                "labels": [f"noc::resourcegroup::{rg_name}::="],
+                                "exclude_labels": [],
+                                "administrative_domain": None,
+                                "headers": [],
+                            }
+                        ],
+                        "notification_group": str(ng_id),
+                        "change_id": str(change_id),
+                    }
+                )
                 cfgroute_bulk += [
                     InsertOne(
                         {
                             "_id": mr_id,
-                            "change_id": bson.ObjectId(),
-                            "data": orjson.dumps(
-                                {
-                                    "id": str(mr_id),
-                                    "name": route["name"],
-                                    "type": route["type"],
-                                    "order": route["order"],
-                                    "action": route["action"],
-                                    "match": [
-                                        {
-                                            "labels": [f"noc::resourcegroup::{rg_name}::="],
-                                            "exclude_labels": [],
-                                            "administrative_domain": None,
-                                        }
-                                    ],
-                                }
-                            ),
+                            "change_id": change_id,
+                            "hash": hashlib.sha256(data).hexdigest()[:16],
+                            "data": data.decode("utf-8"),
                         }
                     )
                 ]
@@ -81,4 +88,4 @@ class Migration(BaseMigration):
         if route_bulk:
             mr_coll.bulk_write(route_bulk)
         if cfgroute_bulk:
-            cfg_coll.bulk_write(cfg_coll)
+            cfg_coll.bulk_write(cfgroute_bulk)
