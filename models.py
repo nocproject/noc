@@ -249,7 +249,7 @@ _MODELS = {
     "pm.AgentProfile": "noc.pm.models.agent.AgentProfile",
     "pm.Scale": "noc.pm.models.scale.Scale",
     "pm.MeasurementUnits": "noc.pm.models.measurementunits.MeasurementUnits",
-    "pm.MetricAction": "noc.pm.models.metricrule.MetricAction",
+    "pm.MetricAction": "noc.pm.models.metricaction.MetricAction",
     "pm.MetricRule": "noc.pm.models.metricrule.MetricRule",
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",

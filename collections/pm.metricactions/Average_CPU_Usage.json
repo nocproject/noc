@@ -8,7 +8,7 @@
             "name": "activation.min_window",
             "description": null,
             "default": "5",
-            "max_value": 3.0,
+            "max_value": 5.0,
             "min_value": 3.0,
             "type": "int"
         },
@@ -16,7 +16,7 @@
             "name": "activation.max_window",
             "description": null,
             "default": "3",
-            "max_value": 3.0,
+            "max_value": 5.0,
             "min_value": 3.0,
             "type": "int"
         },
@@ -24,7 +24,7 @@
             "name": "alarm.activation_level",
             "description": null,
             "default": "95",
-            "max_value": 20.0,
+            "max_value": 99.0,
             "min_value": 20.0,
             "type": "int"
         },
@@ -32,7 +32,7 @@
             "name": "alarm.deactivation_level",
             "description": null,
             "default": "60",
-            "max_value": 20.0,
+            "max_value": 99.0,
             "min_value": 20.0,
             "type": "int"
         }

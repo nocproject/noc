@@ -91,7 +91,7 @@ class Command(BaseCommand):
         from noc.core.clickhouse.connect import connection
 
         now = datetime.datetime.now()
-        now = now - datetime.timedelta(hours=2)
+        now = now - datetime.timedelta(hours=4)
         q_args = []
         if source.startswith("iface://"):
             source, iface = source[8:].split("::")
@@ -109,11 +109,12 @@ class Command(BaseCommand):
             source = source[6:]
             source = self.get_source(source)
             query = SQL % (
-                "cpu_usage",
+                "usage",
                 "cpu",
-                source.managed_object.bi_id,
+                source.bi_id,
                 now.date().isoformat(),
                 now.replace(microsecond=0).isoformat(sep=" "),
+                "",
             )
         else:
             self.die(f"Unknown source {source}")
@@ -135,7 +136,7 @@ class Command(BaseCommand):
     def iter_metrics(
         self, f_input: Optional[str], metrics: Optional[List[str]] = None
     ) -> Iterable[Dict[str, Union[float, str]]]:
-        if f_input.startswith("mo://") or f_input.startswith("iface://"):
+        if f_input.startswith("cpu://") or f_input.startswith("iface://"):
             yield from self.input_from_device(f_input, metrics)
         else:
             yield from self.input_from_file(f_input)

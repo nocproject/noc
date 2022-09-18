@@ -240,6 +240,12 @@ class Collection(object):
                 except ValueError as e:
                     v = []
                     self.partial_errors[d["uuid"]] = str(e)
+            elif isinstance(field, EmbeddedDocumentField):
+                try:
+                    v = field.document_type(**v)
+                except ValueError as e:
+                    v = None
+                    self.partial_errors[d["uuid"]] = str(e)
             # Dereference binary field
             if isinstance(field, BinaryField):
                 v = b85decode(v)
@@ -313,7 +319,7 @@ class Collection(object):
                         o.save()
                         # Try again
                         return self.update_item(data)
-                self.stdout.write("Not find object by query: %s\n" % qs)
+                    self.stdout.write("Not find object by query: %s\n" % qs)
                 raise
 
     def delete_item(self, uuid):

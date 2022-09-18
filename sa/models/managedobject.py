@@ -2889,7 +2889,7 @@ class ManagedObject(NOCModel):
                 metrics=tuple(metrics),
                 labels=(f"noc::interface::{i['name']}",),
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                service=i.get("service"),
+                # service=i.get("service"),
             )
             if not i_profile.allow_subinterface_metrics:
                 continue
@@ -2917,31 +2917,35 @@ class ManagedObject(NOCModel):
         :return:
         """
         from noc.inv.models.interface import Interface
+        from noc.inv.models.interfaceprofile import InterfaceProfile
 
         if not mo.is_managed:
             return {}
+        icoll = Interface._get_collection()
         s_metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
         labels = []
         for ll in mo.effective_labels:
             l_c = Label.get_by_name(ll)
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         items = []
-        for iface in Interface.objects.filter(managed_object=mo.id):
+        for iface in icoll.find({"managed_object": mo.id}, {"name", "effective_labels", "profile"}):
+            ip = InterfaceProfile.get_by_id(iface["profile"])
             metrics = [
                 {
                     "name": mc.metric_type.field_name,
                     "is_stored": mc.is_stored,
                     "is_composed": bool(mc.metric_type.compose_expression),
                 }
-                for mc in iface.profile.metrics
+                for mc in ip.metrics
             ]
             if not metrics:
                 continue
             items.append(
                 {
-                    "key_labels": [f"noc::interface::{iface.name}"],
+                    "key_labels": [f"noc::interface::{iface['name']}"],
                     "labels": [
-                        {"label": ll, "expose_metric": False} for ll in iface.effective_labels
+                        {"label": ll, "expose_metric": False}
+                        for ll in iface.get("effective_labels", [])
                     ],
                     "metrics": metrics,
                 }
@@ -2973,10 +2977,12 @@ class ManagedObject(NOCModel):
         from noc.inv.models.object import Object
         from mongoengine.queryset import Q as m_Q
 
+        if not self.is_managed:
+            return False
         sla_probe = SLAProbe.objects.filter(managed_object=self.id).first()
-        config = self.get_metric_config(self)
         o = Object.get_managed(self)
         sensor = Sensor.objects.filter(m_Q(managed_object=self.id) | m_Q(object__in=o)).first()
+        config = self.get_metric_config(self)
         return bool(sla_probe or sensor or config.get("metrics") or config.get("items"))
 
 

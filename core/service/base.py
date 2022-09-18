@@ -15,6 +15,8 @@ import argparse
 import threading
 from time import perf_counter
 import asyncio
+import cachetools
+from functools import partial
 from typing import (
     Optional,
     Dict,
@@ -881,3 +883,17 @@ class BaseService(object):
                 # Cluster election in progress or cluster is misconfigured
                 self.logger.info("Stream '%s' has no active partitions. Waiting" % stream)
                 await asyncio.sleep(1)
+
+    @staticmethod
+    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
+    def get_slot_limits(slot_name):
+        """
+        Get slot count
+        :param slot_name:
+        :return:
+        """
+        from noc.core.dcs.loader import get_dcs
+        from noc.core.ioloop.util import run_sync
+
+        dcs = get_dcs()
+        return run_sync(partial(dcs.get_slot_limit, slot_name))

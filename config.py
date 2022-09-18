@@ -872,9 +872,10 @@ class Config(BaseConfig):
         enable_postgres_quantiles = BooleanParameter(default=False)
 
     class metrics(ConfigSection):
-        compact_on_start = BooleanParameter(default=True)
+        # Disable On Start, that compact procedure lost Consul session
+        compact_on_start = BooleanParameter(default=False)
         compact_on_stop = BooleanParameter(default=False)
-        flush_interval = SecondsParameter(default="1")
+        flush_interval = SecondsParameter(default="1m")
         compact_interval = SecondsParameter(default="5m")
         # Metrics
         disable_spool = BooleanParameter(default=False, help="Disable send metrics to Clickhouse")

@@ -57,12 +57,12 @@ class AlarmNodeConfig(BaseModel):
         if config.reference:
             template = config.reference
         elif config.labels:
-            template = "th:{{object}}:{{alarm_class}}:{{';'.join(config.labels)}}"
+            template = "th:{{object or ''}}:{{alarm_class}}:{{';'.join(config.labels)}}"
         return Template(template).render(
             **{
                 "object": config.managed_object,
                 "alarm_class": config.alarm_class,
-                "labels": config.labels,
+                "labels": config.labels or [],
                 "vars": {v.name: v.value for v in config.vars or []},
             }
         )
@@ -117,7 +117,8 @@ class AlarmNode(BaseCDAGNode):
             "managed_object": self.config.managed_object,
             "alarm_class": self.config.alarm_class,
             "labels": self.config.labels if self.config.labels else [],
-            "vars": {"ovalue": x, "tvalue": self.config.activation_level},
+            # x is numpy.float64 type, ?
+            "vars": {"ovalue": round(float(x), 3), "tvalue": self.config.activation_level},
         }
         # Render vars
         if self.config.vars:

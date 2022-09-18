@@ -9,7 +9,6 @@
 # Python modules
 from typing import Any, Dict, List, Iterable
 import pickle
-import lzma
 import logging
 import datetime
 import asyncio
@@ -18,6 +17,13 @@ import asyncio
 from pymongo import InsertOne, DeleteMany, ASCENDING, DESCENDING
 from pymongo.collection import Collection
 from bson import ObjectId
+
+try:
+    # Only for Python 3.3+
+    import lzma as compressor  # noqa
+except ImportError:
+    # logger.debug("lzma module is not available")
+    import bz2 as compressor  # noqa
 
 # NOC modules
 from noc.core.mongo.connection_async import get_db
@@ -82,14 +88,14 @@ class ChangeLog(object):
         Encode state to bytes
         """
         r = pickle.dumps(data, protocol=pickle.HIGHEST_PROTOCOL)
-        return lzma.compress(r)
+        return compressor.compress(r)
 
     @staticmethod
     def decode(data: bytes) -> Dict[str, Dict[str, Any]]:
         """
         Decode bytes to state
         """
-        r = lzma.decompress(data)
+        r = compressor.decompress(data)
         return pickle.loads(r)
 
     async def feed(self, state: Dict[str, Dict[str, Any]]) -> None:

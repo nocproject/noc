@@ -72,7 +72,7 @@ class MetricActionParam(EmbeddedDocument):
             "type": self.type,
             "description": self.description,
             "min_value": self.min_value,
-            "max_value": self.min_value,
+            "max_value": self.max_value,
             "default": self.default,
         }
 
