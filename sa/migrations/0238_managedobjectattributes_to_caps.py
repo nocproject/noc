@@ -10,10 +10,11 @@ from collections import defaultdict
 
 # Third-party modules
 import bson
-from django.db import connection
-from psycopg2.extras import execute_values
 import uuid
 import orjson
+from django.db import connection
+from psycopg2.extras import execute_values
+from pymongo import InsertOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
@@ -74,14 +75,30 @@ class Migration(BaseMigration):
             ]
         )
         mo_caps = defaultdict(list)
+        custom_attributes = []
         for mo_id, attr_name, attr_value in self.db.execute(
             "SELECT managed_object_id, key, value FROM sa_managedobjectattribute"
         ):
             if attr_name not in attrs_cap:
-                continue
+                caps = bson.ObjectId()
+                # Custom attributes
+                custom_attributes.append(
+                    InsertOne(
+                        {
+                            "_id": caps,
+                            "name": f"Custom | Attribute | {attr_name}",
+                            "uuid": uuid.uuid4(),
+                            "description": f"Custom Attribute {attr_name}",
+                            "type": "str",
+                            "category": bson.ObjectId(),
+                        }
+                    )
+                )
+            else:
+                caps = attrs_cap[attr_name]
             mo_caps[mo_id] += [
                 {
-                    "capability": str(attrs_cap[attr_name]),
+                    "capability": str(caps),
                     "value": str(attr_value),
                     "source": "caps",
                 }
@@ -102,3 +119,5 @@ class Migration(BaseMigration):
             caps,
             page_size=1000,
         )
+        if custom_attributes:
+            coll.bulk_write(custom_attributes)
