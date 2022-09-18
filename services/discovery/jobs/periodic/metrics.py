@@ -111,7 +111,7 @@ class MetricsCheck(DiscoveryCheck):
                 streaming={
                     "stream": "metrics",
                     "partition": self.object.id % self.service.get_slot_limits("metrics"),
-                    "utc_offset": config.get_utc_offset,
+                    "utc_offset": config.tz_utc_offset,
                     "data": s_data,
                 },
             )
