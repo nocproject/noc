@@ -110,8 +110,8 @@ class MetricsCheck(DiscoveryCheck):
                 collected=metrics,
                 streaming={
                     "stream": "metrics",
-                    "partition": 0,
-                    "utc_offset": config.timezone._utcoffset.seconds,
+                    "partition": self.object.id % self.service.get_slot_limits("metrics"),
+                    "utc_offset": config.tz_utc_offset,
                     "data": s_data,
                 },
             )
