@@ -14,7 +14,10 @@ import sre_parse
 
 # Third-party modules
 # Manually setup esmre==1.0.0
-import esmre as esm
+try:
+    import esmre as esm
+except ImportError:
+    raise NotImplementedError("XRuleLookup needed ESMRE library for worked. Please, install it from pip")
 import bitarray
 
 # NOC modules
