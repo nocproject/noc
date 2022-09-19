@@ -623,8 +623,9 @@ class MetricsService(FastAPIService):
     def get_source(self, s_id):
         coll = CfgMetricSourcesDataStream.get_collection()
         data = coll.find_one({"_id": str(s_id)})
-        sc = self.get_source_config(orjson.loads(data["data"]))
-        return sc
+        if not data:
+            return
+        return self.get_source_config(orjson.loads(data["data"]))
 
     def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
         """
