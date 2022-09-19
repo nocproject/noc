@@ -7,6 +7,7 @@
 
 # Python modules
 import re
+import string
 from itertools import zip_longest
 
 # Third-party modules
@@ -650,3 +651,7 @@ def split_text(text: str, max_chunk: int) -> Iterable[str]:
             result = [line]
     else:
         yield "\n".join(result)
+
+
+def clean_non_printable(text: str) -> str:
+    return "".join(filter(lambda x: x in string.printable, text))
