@@ -63,9 +63,8 @@ class Card(object):
     Store Input probe nodes
     """
 
-    __slots__ = ("alarms", "probes", "compose_probes", "senders", "is_dirty", "affected_rules")
+    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules")
     probes: Dict[str, BaseCDAGNode]
-    compose_probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode]
     alarms: List[AlarmNode]
     affected_rules: Set[str]
@@ -530,11 +529,10 @@ class MetricsService(FastAPIService):
         """
         Clone node without subscribers and apply state and config
         """
-        node_id = n.node_id
-        state_id = f"{prefix}::{node_id}"
+        state_id = f"{prefix}::{n.node_id}"
         state = self.start_state.pop(state_id, None)
         new_node = n.clone(
-            node_id, prefix=prefix, state=state, config=config, static_config=static_config
+            n.node_id, prefix=prefix, state=state, config=config, static_config=static_config
         )
         metrics["cdag_nodes", ("type", n.name)] += 1
         return new_node
@@ -564,7 +562,6 @@ class MetricsService(FastAPIService):
         # Return resulting cards
         return Card(
             probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
-            compose_probes={},
             senders=tuple(node for node in nodes.values() if node.name == "metrics"),
             alarms=[],
             affected_rules=set(),
@@ -617,10 +614,7 @@ class MetricsService(FastAPIService):
         # Subscribe
         p.subscribe(sender, metric_field, dynamic=True)
         p.freeze()
-        if is_composed:
-            card.compose_probes[unscope(metric_field)] = p
-        else:
-            card.probes[unscope(metric_field)] = p
+        card.probes[unscope(metric_field)] = p
         #
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
@@ -777,11 +771,15 @@ class MetricsService(FastAPIService):
         units: Dict[str, str] = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
+        compose_probes = []
         for n in data:
             mu = units.get(n) or si.units.get(n)
             if not mu:
                 continue  # Missed field
             probe = card.probes.get(n)
+            if isinstance(probe, ComposeProbeNode):
+                compose_probes.append(probe)
+                continue
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k)
             if not probe:
@@ -789,7 +787,7 @@ class MetricsService(FastAPIService):
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])
             probe.activate(tx, "unit", mu)
-        for c_probe in card.compose_probes.values():
+        for c_probe in compose_probes:
             c_probe.activate(tx, "ts", ts)
         # Activate senders
         for sender in card.senders:
