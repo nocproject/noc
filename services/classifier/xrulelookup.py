@@ -13,6 +13,7 @@ import cachetools
 import sre_parse
 
 # Third-party modules
+# Manually setup esmre==1.0.0
 import esmre as esm
 import bitarray
 
