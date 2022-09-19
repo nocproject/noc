@@ -34,7 +34,6 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.object import Object
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
-from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.core.text import alnum_key
@@ -634,9 +633,6 @@ class ManagedObjectApplication(ExtModelApplication):
         # Project
         if "project" in d:
             i.project = get_or_none(Project, d["project"])
-        # State
-        if "state" in d:
-            i.state = get_or_none(ResourceState, d["state"])
         # VC Domain
         if "vc_domain" in d:
             i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
