@@ -1,0 +1,16 @@
+{
+  "$metric": "Interface | Multicast | In | Delta",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCInMulticastPkts.{{ ifIndex }}",
+    "type": "delta",
+    "units": "pkt"
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifInMulticastPkts.{{ ifIndex }}",
+    "type": "delta",
+    "units": "pkt"
+  }
+}
