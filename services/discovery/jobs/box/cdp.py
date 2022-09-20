@@ -13,7 +13,7 @@ from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.validators import is_ipv4, is_mac
-from noc.core.text import clean_non_printable
+from noc.core.text import filter_non_printable
 
 
 class CDPCheck(TopologyDiscoveryCheck):
@@ -30,7 +30,7 @@ class CDPCheck(TopologyDiscoveryCheck):
     def iter_neighbors(self, mo):
         result = mo.scripts.get_cdp_neighbors()
         for n in result["neighbors"]:
-            device_id = clean_non_printable(n["device_id"])
+            device_id = filter_non_printable(n["device_id"])
             if device_id in self.RESERVED_NAMES and n.get("remote_ip"):
                 device_id = n["remote_ip"]
             yield n["local_interface"], device_id, n["remote_interface"]

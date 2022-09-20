@@ -653,5 +653,5 @@ def split_text(text: str, max_chunk: int) -> Iterable[str]:
         yield "\n".join(result)
 
 
-def clean_non_printable(text: str) -> str:
+def filter_non_printable(text: str) -> str:
     return "".join(filter(lambda x: x in string.printable, text))
