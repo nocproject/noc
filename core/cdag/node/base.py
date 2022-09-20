@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # BaseNode
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Optional, Type, Dict, List, Iterable, Tuple, Set, Union
+from typing import Any, Optional, Type, Dict, List, Iterable, Set, Union
 from enum import Enum
 import inspect
 from dataclasses import dataclass
@@ -297,13 +297,12 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param value: Input value
         :return:
         """
+        # Check for valid input name
         self.check_input(name)
-        inputs = tx.get_inputs(self)
-        if name in inputs and inputs[name] is not None:
-            return  # Already activated
-        inputs[name] = value  # Activate input
-        if any(True for n, v in inputs.items() if v is None and self.is_required_input(n)):
-            return  # Non-activated inputs
+        #
+        inputs = tx.set_and_get_activated_inputs(self, name)
+        if inputs is None:
+            return  # Still has non-activated inputs
         # Activate node, calculate value
         value = self.get_value(**inputs)
         if hasattr(self, "state_cls"):
@@ -318,6 +317,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Check if input is required
         """
         return not self.is_dynamic_input(name)
+
+    @classmethod
+    def get_required_inputs_count(cls) -> int:
+        """
+        Get count of required inputs
+
+        :returns: Requred inputs count
+        """
+        return len(cls.static_inputs)
 
     def is_dynamic_input(self, name: str) -> bool:
         """
@@ -496,16 +504,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if hasattr(self, "config_cls"):
             yield from self.config_cls_slot.__slots__
 
-    def iter_initial_inputs(self) -> Iterable[Tuple[str, Optional[ValueType]]]:
+    def get_initial_inputs(self) -> Dict[str, Optional[ValueType]]:
         """
-        Iterate transaction initial inputs
+        Get dictionary of initial inputs and their values
+
+        :return: Dict of initial inputs' values
         """
         if self.const_inputs:
-            for i in self.iter_inputs():
-                yield i, self.const_inputs.get(i)
-        else:
-            for i in self.iter_inputs():
-                yield i, None
+            return {i: self.const_inputs.get(i) for i in self.iter_inputs()}
+        return {i: None for i in self.iter_inputs()}
 
     def freeze(self) -> None:
         """
