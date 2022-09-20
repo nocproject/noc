@@ -15,7 +15,7 @@
     "chalk": "^2.4.2",
     "comment-parser": "^0.6.0",
     "css-mqpacker": "^7.0.0",
-    "cssnano": "^4.1.10",
+    "cssnano": "^5.1.13",
     "escodegen": "^1.11.1",
     "esprima": "^4.0.1",
     "esprima-ast-utils": "^0.0.7",
