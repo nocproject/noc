@@ -1,5 +1,5 @@
 {
-    "name": "Interface | Errors | Frame | In | Delta",
+    "name": "Interface | Errors | Frame | Delta",
     "$collection": "pm.metrictypes",
     "uuid": "73daa660-0ddf-40d3-ac34-4bd259146694",
     "scope__name": "Interface",

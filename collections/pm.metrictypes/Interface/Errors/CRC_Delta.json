@@ -1,5 +1,5 @@
 {
-    "name": "Interface | Errors | CRC | In | Delta",
+    "name": "Interface | Errors | CRC | Delta",
     "$collection": "pm.metrictypes",
     "uuid": "b2df0f15-229a-4981-ade2-b820e761f2ef",
     "scope__name": "Interface",
