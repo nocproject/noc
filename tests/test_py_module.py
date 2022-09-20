@@ -87,7 +87,7 @@ def test_import(module):
     try:
         m = __import__(module, {}, {}, "*")
         assert m
-    except ImportError as e:
+    except (ImportError, ModuleNotFoundError, NotImplementedError) as e:
         if _allow_xfail(module):
             pytest.xfail(str(e))
         else:
@@ -100,7 +100,7 @@ def test_module_empty_docstrings(module):
         m = __import__(module, {}, {}, "*")
         if m.__doc__ is not None and not m.__doc__.strip():
             pytest.xfail("Module-level docstring must not be empty")
-    except ImportError as e:
+    except (ImportError, ModuleNotFoundError, NotImplementedError) as e:
         if _allow_xfail(module):
             pytest.xfail(str(e))
         else:
