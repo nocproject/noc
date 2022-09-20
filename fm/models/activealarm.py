@@ -469,6 +469,10 @@ class ActiveAlarm(Document):
     def is_subscribed(self, user: "User"):
         return user.id in self.subscribers
 
+    @property
+    def is_link_alarm(self) -> bool:
+        return hasattr(self.components, "interface")
+
     def acknowledge(self, user: "User", msg=""):
         self.ack_ts = datetime.datetime.now()
         self.ack_user = user.username

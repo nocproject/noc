@@ -21,6 +21,7 @@ from noc.core.defer import call_later
 from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.inv.models.interfaceprofile import InterfaceProfile
 
 logger = logging.getLogger(__name__)
 
@@ -336,6 +337,11 @@ class ServiceSummary(Document):
             sp = ManagedObjectProfile.get_by_id(s)
             if sp and sp.weight:
                 w += sp.weight * objects[s]
+        interfaces = summary.get("interface", {})
+        for s in interfaces:
+            sp = InterfaceProfile.get_by_id(s)
+            if sp and sp.weight:
+                w += sp.weight * interfaces[s]
         return w
 
     @classmethod
