@@ -58,7 +58,7 @@ class Transaction(object):
             otherwise.
         """
         node_id = node.node_id
-        inputs = self.get_inputs(node_id)
+        inputs = self.get_inputs(node)
         if inputs.get(name) is None:
             return None  # Already activated
         # Activate value
