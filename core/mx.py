@@ -8,6 +8,7 @@
 # Python modules
 from typing import Any, Optional, Dict
 from threading import Lock
+from dataclasses import dataclass
 
 # Third-party modules
 import orjson
@@ -17,6 +18,15 @@ from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.liftbridge.base import LiftBridgeClient
 from noc.core.ioloop.util import run_sync
+
+
+@dataclass
+class Message(object):
+    value: bytes
+    headers: Dict[str, bytes]
+    timestamp: int
+    key: bytes
+
 
 # MX stream name
 MX_STREAM = "message"

@@ -26,9 +26,6 @@ from noc.core.mx import (
     MX_MESSAGE_TYPE,
     NOTIFICATION_METHODS,
 )
-from noc.main.models.messageroute import MessageRoute
-from noc.main.models.template import Template
-from noc.main.models.handler import Handler
 from .action import Action
 
 T_BODY = Union[bytes, Any]
@@ -57,7 +54,7 @@ class TransmuteTemplate(object):
 
 
 @dataclass
-class HeaderItem(object):
+class HeaderMatchItem(object):
     header: str
     op: Literal["==", "!=", "regex"]
     value: str
@@ -83,7 +80,7 @@ class MatchItem(object):
     labels: Optional[List[str]] = None
     exclude_labels: Optional[List[str]] = None
     administrative_domain: Optional[int] = None
-    headers: Optional[List[HeaderItem]] = None
+    headers: Optional[List[HeaderMatchItem]] = None
 
     @classmethod
     def from_data(cls, data: List[Dict[str, Any]]) -> List["MatchItem"]:
@@ -95,27 +92,8 @@ class MatchItem(object):
                     exclude_labels=match["exclude_labels"],
                     administrative_domain=match.get("administrative_domain"),
                     headers=[
-                        HeaderItem(header=h["header"], op=h["op"], value=h["value"])
+                        HeaderMatchItem(header=h["header"], op=h["op"], value=h["value"])
                         for h in match["headers"]
-                    ],
-                )
-            ]
-        return r
-
-    @classmethod
-    def from_route(cls, route: MessageRoute) -> List["MatchItem"]:
-        r = []
-        for match in route.match:
-            r += [
-                MatchItem(
-                    labels=match.labels,
-                    exclude_labels=match.exclude_labels,
-                    administrative_domain=match.administrative_domain.id
-                    if match.administrative_domain
-                    else None,
-                    headers=[
-                        HeaderItem(header=h.header, op=h.op, value=h.value)
-                        for h in match.headers_match
                     ],
                 )
             ]
@@ -136,7 +114,6 @@ class Route(object):
         self.actions: List[Action] = []
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
         self.transmute_template: Optional[TransmuteTemplate] = None
-        self.render_template: Optional[Template] = None
 
     def is_match(self, msg: Message) -> bool:
         """
@@ -192,6 +169,9 @@ class Route(object):
         return True
 
     def update(self, data):
+        from noc.main.models.template import Template
+        from noc.main.models.handler import Handler
+
         self.match_co = self.compile_match(MatchItem.from_data(data["match"]))
         # Compile transmute part
         # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
@@ -200,8 +180,6 @@ class Route(object):
         if "transmute_template" in data:
             template = Template.objects.get(id=data["transmute_template"])
             self.transmute_template = TransmuteTemplate(JTemplate(template.body))
-        if "render_template" in data:
-            self.render_template = data["render_template"]
         # Compile action part
         self.actions = [Action.from_data(data)]
 
@@ -263,27 +241,6 @@ class Route(object):
         """
         r = Route(data["name"], data["type"], data["order"])
         r.update(data)
-        return r
-
-    @classmethod
-    def from_route(cls, route: MessageRoute) -> "Route":
-        """
-        Build Route from database config
-        :param route:
-        :return:
-        """
-        r = Route(route.name, route.type, route.order)
-        r.match_co = cls.compile_match(MatchItem.from_route(route))
-        # Compile transmute part
-        # r.transmutations = [Transmutation.from_transmute(t) for t in route.transmute]
-        r.transmute_handler = route.transmute_handler
-        if route.transmute_template:
-            r.render_template = RenderTemplate(
-                subject_template=route.transmute_template.subject,
-                body_template=route.transmute_template.body,
-            )
-        # Compile action part
-        r.actions = [Action.from_action(route)]
         return r
 
 

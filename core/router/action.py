@@ -14,11 +14,8 @@ import orjson
 
 # NOC modules
 from noc.core.liftbridge.message import Message
-from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.template import Template
 
 
 DROP = ""
@@ -57,18 +54,8 @@ class Action(object, metaclass=ActionBase):
 
     def __init__(self, cfg: ActionCfg):
         self.headers: Dict[str, bytes] = {
-            h.header: h.value.encode(encoding=DEFAULT_ENCODING) for h in cfg.headers
+            h.header: h.value.encode(encoding=DEFAULT_ENCODING) for h in cfg.headers or []
         }
-
-    @classmethod
-    def from_action(cls, mroute: MessageRoute) -> "Action":
-        global ACTION_TYPES
-
-        return ACTION_TYPES[mroute.type](
-            ActionCfg(
-                type=mroute.type, stream=mroute.stream, notification_group=mroute.notification_group
-            )
-        )
 
     @classmethod
     def from_data(cls, data):
@@ -117,6 +104,9 @@ class NotificationAction(Action):
     name = "notification"
 
     def __init__(self, cfg: ActionCfg):
+        from noc.main.models.notificationgroup import NotificationGroup
+        from noc.main.models.template import Template
+
         super().__init__(cfg)
         self.ng: NotificationGroup = NotificationGroup.get_by_id(cfg.notification_group)
         self.rt: Template = Template.get_by_id(cfg.render_template)

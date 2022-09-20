@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # mx service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,18 +10,13 @@
 import asyncio
 from typing import Dict, Any
 
-# Third-party modules
-import orjson
-
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.core.error import NOCError
 from noc.core.mx import MX_STREAM
 from noc.config import config
 from noc.core.liftbridge.message import Message
-from noc.core.mx import MX_SHARDING_KEY
-from noc.services.mx.router.router import Router
-from noc.services.mx.router.action import DROP, DUMP
+from noc.core.router.base import Router
 from noc.core.perf import metrics
 from noc.services.mx.datastream import RouteDataStreamClient
 
@@ -39,7 +34,6 @@ class MXService(FastAPIService):
         self.slot_number = 0
         self.total_slots = 0
         self.router = Router()
-        self.stream_partitions: Dict[str, int] = {}
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -84,53 +78,7 @@ class MXService(FastAPIService):
         metrics["messages"] += 1
         # Apply routes
         self.logger.debug("[%d] Receiving message %s", msg.offset, msg.headers)
-        for route in self.router.iter_route(msg):
-            metrics["route_hits"] += 1
-            self.logger.debug("[%d] Applying route %s", msg.offset, route.name)
-            # Apply actions
-            routed: bool = False
-            for stream, action_headers, body in route.iter_action(msg):
-                metrics["action_hits"] += 1
-                # Fameless drop
-                if stream == DROP:
-                    metrics["action_drops"] += 1
-                    self.logger.debug("[%s] Dropped. Stopping processing", msg.offset)
-                    return
-                elif stream == DUMP:
-                    self.logger.info(
-                        "[%s] Dump. Message headers: %s;\n-----\n Body: %s \n----\n ",
-                        msg.offset,
-                        msg.headers,
-                        msg.value,
-                    )
-                    continue
-                # Build resulting headers
-                headers = {}
-                headers.update(msg.headers)
-                if action_headers:
-                    headers.update(action_headers)
-                # Determine sharding channel
-                sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
-                partitions = self.stream_partitions.get(stream)
-                if not partitions:
-                    # Request amount of partitions
-                    partitions = await self.get_stream_partitions(stream)
-                    self.stream_partitions[stream] = partitions
-                partition = sharding_key % partitions
-                # Single message may be transmuted in zero or more messages
-                body = route.transmute(headers, body)
-                # for body in route.iter_transmute(headers, msg.value):
-                if not isinstance(body, bytes):
-                    # Transmute converts message to an arbitrary structure,
-                    # so convert back to the json
-                    body = orjson.dumps(body)
-                metrics[("forwards", f"{stream}:{partition}")] += 1
-                self.logger.debug("[%s] Routing to %s:%s", msg.offset, stream, partition)
-                self.publish(value=body, stream=stream, partition=partition, headers=headers)
-                routed = True
-            if not routed:
-                self.logger.debug("[%d] Not routed", msg.offset)
-                metrics["route_misses"] += 1
+        await self.router.route_message(msg)
         self.logger.debug("[%s] Finish processing", msg.offset)
 
 

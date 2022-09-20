@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Router
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,13 +10,19 @@ import logging
 import operator
 from collections import defaultdict
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional
+from functools import partial
+
+# Third-party modules
+import orjson
 
 # NOC modules
-from noc.core.liftbridge.message import Message
-from noc.core.mx import MX_MESSAGE_TYPE
-from noc.main.models.messageroute import MessageRoute
+from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message
+from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
+from noc.core.perf import metrics
+from noc.core.ioloop.util import run_sync
 from .route import Route, DefaultNotificationRoute
+from .action import DROP, DUMP
 
 logger = logging.getLogger(__name__)
 
@@ -26,17 +32,23 @@ class Router(object):
         self.chains: DefaultDict[bytes, List[Route]] = defaultdict(list)
         self.routes: Dict[str, Route] = {}
         self.default_route: Optional[DefaultNotificationRoute] = DefaultNotificationRoute()
+        self.stream_partitions: Dict[str, int] = {}
+        self.svc = get_service()
 
     def load(self):
         """
         Load up all the rules and populate the chains
         :return:
         """
+        from noc.main.models.messageroute import MessageRoute
+
         num = 0
         for num, route in enumerate(
             MessageRoute.objects.filter(is_active=True).order_by("order"), start=1
         ):
-            self.chains[route.type.encode(encoding=DEFAULT_ENCODING)] += [Route.from_route(route)]
+            self.chains[route.type.encode(encoding=DEFAULT_ENCODING)] += [
+                Route.from_data(route.get_route_config())
+            ]
         logger.info("Loading %s route", num)
 
     def has_route(self, route_id: str) -> bool:
@@ -139,3 +151,68 @@ class Router(object):
         for route in self.chains[mt]:
             if route.is_match(msg):
                 yield route
+
+    def route_sync(self, msg: Message):
+        """
+        Synchronize method
+        :param msg:
+        :return:
+        """
+        run_sync(partial(self.route_message, msg))
+
+    async def route_message(self, msg: Message, msg_id: Optional[str] = None):
+        """
+        Route message by rule
+        :param msg:
+        :param msg_id:
+        :return:
+        """
+        # Apply routes
+        for route in self.iter_route(msg):
+            metrics["route_hits"] += 1
+            logger.debug("[%d] Applying route %s", msg_id, route.name)
+            # Apply actions
+            routed: bool = False
+            for stream, action_headers, body in route.iter_action(msg):
+                metrics["action_hits"] += 1
+                # Fameless drop
+                if stream == DROP:
+                    metrics["action_drops"] += 1
+                    logger.debug("[%s] Dropped. Stopping processing", msg_id)
+                    return
+                elif stream == DUMP:
+                    logger.info(
+                        "[%s] Dump. Message headers: %s;\n-----\n Body: %s \n----\n ",
+                        msg_id,
+                        msg.headers,
+                        msg.value,
+                    )
+                    continue
+                # Build resulting headers
+                headers = {}
+                headers.update(msg.headers)
+                if action_headers:
+                    headers.update(action_headers)
+                # Determine sharding channel
+                sharding_key = int(headers.get(MX_SHARDING_KEY, b"0"))
+                partitions = self.stream_partitions.get(stream)
+                if not partitions:
+                    # Request amount of partitions
+                    partitions = await self.svc.get_stream_partitions(stream)
+                    self.stream_partitions[stream] = partitions
+                partition = sharding_key % partitions
+                # Single message may be transmuted in zero or more messages
+                body = route.transmute(headers, body)
+                # for body in route.iter_transmute(headers, msg.value):
+                if not isinstance(body, bytes):
+                    # Transmute converts message to an arbitrary structure,
+                    # so convert back to the json
+                    body = orjson.dumps(body)
+                metrics[("forwards", ("stream", f"{stream}:{partition}"))] += 1
+                logger.debug("[%s] Routing to %s:%s", msg_id, stream, partition)
+                self.svc.publish(value=body, stream=stream, partition=partition, headers=headers)
+                routed = True
+            if not routed:
+                logger.debug("[%d] Not routed", msg_id)
+                metrics["route_misses"] += 1
+        # logger.debug("[%s] Finish processing", msg_id)
