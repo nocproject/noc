@@ -13,7 +13,13 @@ import cachetools
 import sre_parse
 
 # Third-party modules
-import esmre as esm
+# Manually setup esmre==1.0.0
+try:
+    import esmre as esm
+except (ModuleNotFoundError, ImportError):
+    raise NotImplementedError(
+        "XRuleLookup needed ESMRE library for worked. Please, install it from pip"
+    )
 import bitarray
 
 # NOC modules
