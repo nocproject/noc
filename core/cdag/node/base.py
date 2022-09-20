@@ -300,9 +300,14 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         # Check for valid input name
         self.check_input(name)
         #
-        inputs = tx.set_and_get_activated_inputs(self, name, value)
-        if inputs is None:
-            return  # Still has non-activated inputs
+        inputs = tx.get_inputs(self)
+        if inputs.get(name) is not None:
+            return  # Already activated
+        # Activate input
+        inputs[name] = value
+        # Check if all required inputs are activated
+        if self.is_required_input(name) and not tx.is_ready(self):
+            return  # Not all required inputs are activated
         # Activate node, calculate value
         value = self.get_value(**inputs)
         if hasattr(self, "state_cls"):

@@ -42,37 +42,20 @@ class Transaction(object):
             self.req_left[node_id] = node.get_required_inputs_count()
         return inputs
 
-    def set_and_get_activated_inputs(
-        self, node, name: str, value: ValueType
-    ) -> Optional[Dict[str, ValueType]]:
+    def is_ready(self, node) -> bool:
         """
-        Set node's input to the value.
-        Return the dict of collected input values
-        if all required inputs are activated.
+        Decrement required node's inputs count and return
+        true if all inputs are activated
 
         :param node: BaseNode instance
-        :param name: Input name
-        :param value: Input value
-        :returns: None if non-activated inputs
-            still remain, dict of input values
-            otherwise.
+        :returns: True if all required nodes are activated, False otherwise
         """
         node_id = node.node_id
-        inputs = self.get_inputs(node)
-        if inputs.get(name) is not None:
-            return None  # Already activated
-        # Activate value
-        inputs[name] = value
-        # Check if all required inputs is activated
-        req_left = self.req_left.get(node_id)
-        if req_left is None:
-            raise RuntimeError("Required inputs count is not initialized")
-        if node.is_required_input(name):
-            req_left -= 1
-            self.req_left[node_id] = req_left
-            if req_left <= 0:
-                return inputs  # All required inputs are activated
-        return None
+        req_left = self.req_left[node_id]  # Can raise KeyError
+        if req_left <= 1:
+            return True
+        self.req_left[node_id] -= 1
+        return False
 
     def update_state(self, node) -> None:
         """
