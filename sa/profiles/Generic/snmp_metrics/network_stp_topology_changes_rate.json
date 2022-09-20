@@ -1,0 +1,11 @@
+{
+  "$metric": "Network | STP | Topology Changes | Rate",
+  "$type": "caps",
+  "oids": [[
+    "Network | STP", {
+      "$type": "oid",
+      "oid": "1.3.6.1.2.1.17.2.4.0",
+      "type": "counter"
+    }
+  ]]
+}

@@ -1,0 +1,12 @@
+{
+    "name": "Memory | Total",
+    "$collection": "pm.metrictypes",
+    "uuid": "2425fd6e-009b-4078-980e-aff3017d279e",
+    "scope__name": "Memory",
+    "field_name": "total",
+    "field_type": "UInt64",
+    "description": "Memory total in bytes",
+    "measure": "bytes",
+    "units__code": "byte",
+    "scale__code": "1"
+}
