@@ -252,7 +252,7 @@ class MetricsService(FastAPIService):
     def __init__(self):
         super().__init__()
         self.scopes: Dict[str, ScopeInfo] = {}
-        self.metric_configs: Dict[str, ProbeNodeConfig] = {}
+        self.metric_configs: Dict[Tuple[str, str], ProbeNodeConfig] = {}
         self.compose_inputs: Dict[str, Set] = {}
         self.scope_cdag: Dict[str, CDAG] = {}
         self.cards: Dict[MetricKey, Card] = {}
@@ -403,13 +403,13 @@ class MetricsService(FastAPIService):
             if mt.units:
                 units[mt.scope.id][mt.field_name] = mt.units.code
             if mt.compose_expression:
-                self.metric_configs[mt.field_name] = ComposeProbeNodeConfig(
+                self.metric_configs[(mt.scope.table_name, mt.field_name)] = ComposeProbeNodeConfig(
                     unit=(mt.units.code or "1") if mt.units else "1",
                     expression=mt.compose_expression,
                 )
                 self.compose_inputs[mt.field_name] = {m_t.field_name for m_t in mt.compose_inputs}
                 continue
-            self.metric_configs[mt.field_name] = ProbeNodeConfig(
+            self.metric_configs[(mt.scope.table_name, mt.field_name)] = ProbeNodeConfig(
                 unit=(mt.units.code or "1") if mt.units else "1",
                 scale=mt.scale.code if mt.scale else "1",
             )
@@ -608,7 +608,7 @@ class MetricsService(FastAPIService):
             metric_field,
             prefix=prefix,
             state=self.start_state.pop(state_id, None),
-            config=self.metric_configs.get(metric_field),
+            config=self.metric_configs.get((k[0], metric_field)),
             sticky=True,
         )
         # Subscribe
