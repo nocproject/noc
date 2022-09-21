@@ -15,7 +15,9 @@ from .typing import ValueType
 class Transaction(object):
     def __init__(self, cdag):
         self.cdag = cdag
+        # id(node) -> value
         self.inputs: Dict[str, Dict[str, ValueType]] = {}
+        # id(node) -> int
         self.req_left: Dict[str, int] = {}
         self._states: Dict[str, Any] = {}
 
@@ -32,14 +34,13 @@ class Transaction(object):
         :param node:
         :return:
         """
-        node_id = node.node_id
-        inputs = self.inputs.get(node_id)
+        inputs = self.inputs.get(node)
         if not inputs:
             # Initialize node inputs
             inputs = node.get_initial_inputs()
-            self.inputs[node_id] = inputs
+            self.inputs[node] = inputs
             # Initialize required count
-            self.req_left[node_id] = node.get_required_inputs_count()
+            self.req_left[node] = node.get_required_inputs_count()
         return inputs
 
     def is_ready(self, node) -> bool:
@@ -50,11 +51,10 @@ class Transaction(object):
         :param node: BaseNode instance
         :returns: True if all required nodes are activated, False otherwise
         """
-        node_id = node.node_id
-        req_left = self.req_left[node_id]  # Can raise KeyError
+        req_left = self.req_left[node]  # Can raise KeyError
         if req_left <= 1:
             return True
-        self.req_left[node_id] -= 1
+        self.req_left[node] -= 1
         return False
 
     def update_state(self, node) -> None:
