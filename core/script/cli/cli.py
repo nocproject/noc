@@ -48,8 +48,15 @@ class CLI(BaseCLI):
     class InvalidPagerPattern(Exception):
         pass
 
+    class InvalidPagerCommand(Exception):
+        pass
+
+    class InvalidPagerCommandDictKey(Exception):
+        pass
+
     def __init__(self, script, tos=None):
         super().__init__(script, tos)
+        self.labels = self.script.labels
         self.motd = ""
         self.command = None
         self.prompt_stack = []
@@ -325,8 +332,24 @@ class CLI(BaseCLI):
         for p, c in self.patterns["more_patterns_commands"]:
             if p.search(pg):
                 self.collected_data += [data]
-                await self.send(c)
-                return
+                if isinstance(c, bytes):
+                    await self.send(c)
+                    return
+                elif isinstance(c, dict):
+                    for ck, cv in c.items():
+                        if isinstance(ck, tuple) and all({x in self.labels for x in ck}):
+                            await self.send(cv)
+                            return
+                        elif isinstance(ck, bytes) and ck in self.labels:
+                            await self.send(cv)
+                            return
+                        elif ck is None:
+                            await self.send(cv)
+                            return
+                        else:
+                            raise self.InvalidPagerCommandDictKey(ck)
+                else:
+                    raise self.InvalidPagerCommand(c)
         raise self.InvalidPagerPattern(pg)
 
     def expect(

@@ -139,6 +139,8 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     # C - always try CLI first
     # None - use default preferences
     always_prefer = None
+    # Script's labels for use in pager
+    labels = set()
 
     def __init__(
         self,
