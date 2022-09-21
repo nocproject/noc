@@ -21,6 +21,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.administrativedomain.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.managedobject.Model",
+        "NOC.sa.managedobject.AttributesModel",
         "NOC.sa.managedobject.CapabilitiesModel",
         "NOC.sa.managedobject.LookupField",
         "NOC.sa.managedobject.SchemeLookupField",
@@ -1678,6 +1679,25 @@ Ext.define("NOC.sa.managedobject.Application", {
     ],
     inlines:
         [
+            {
+                title: __("Attributes"),
+                collapsed: true,
+                model: "NOC.sa.managedobject.AttributesModel",
+                columns: [
+                    {
+                        text: __("Key"),
+                        dataIndex: "key",
+                        width: 100,
+                        editor: "textfield"
+                    },
+                    {
+                        text: __("Value"),
+                        dataIndex: "value",
+                        editor: "textfield",
+                        flex: 1
+                    }
+                ]
+            },
             {
                 title: __("Capabilities"),
                 collapsed: false,
