@@ -10,7 +10,7 @@ import logging
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -96,6 +96,9 @@ def wipe(o):
     # Wipe reboots
     log.debug("Wiping reboots")
     Reboot.objects.filter(object=o.id).delete()
+    # Delete Managed Object's attributes
+    log.debug("Wiping attributes")
+    ManagedObjectAttribute.objects.filter(managed_object=o).delete()
     # Finally delete object and config
     log.debug("Finally wiping object")
     o.delete()
