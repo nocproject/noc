@@ -82,6 +82,7 @@ class BaseCDAGNodeMetaclass(type):
         n.allow_dynamic = "kwargs" in sig.parameters
         n.static_inputs = [sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")]
         n._s_static = set(n.static_inputs)
+        n.req_inputs_count = len(n.static_inputs)
         n._initial_inputs = {x: None for x in n.static_inputs}
         # Create slotted config class to optimize memory layout.
         # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
@@ -111,6 +112,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     _initial_inputs: Optional[Dict[str, None]] = {}
     # Static inputs set for faster lookup
     _s_static: Set[str] = set()
+    # Required inputs count, filled by metaclass
+    req_inputs_count: int = 0
     allow_dynamic: bool = False  # Filled by metaclass
     dot_shape: str = "box"
     categories: List[Category] = []
@@ -328,15 +331,6 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Check if input is required
         """
         return not self.is_dynamic_input(name)
-
-    @classmethod
-    def get_required_inputs_count(cls) -> int:
-        """
-        Get count of required inputs
-
-        :returns: Requred inputs count
-        """
-        return len(cls.static_inputs)
 
     def is_dynamic_input(self, name: str) -> bool:
         """

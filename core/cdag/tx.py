@@ -40,7 +40,7 @@ class Transaction(object):
             inputs = node.get_initial_inputs()
             self.inputs[node] = inputs
             # Initialize required count
-            self.req_left[node] = node.get_required_inputs_count()
+            self.req_left[node] = node.req_inputs_count
         return inputs
 
     def is_ready(self, node) -> bool:
