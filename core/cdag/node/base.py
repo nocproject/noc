@@ -282,7 +282,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param name: name of input
         :returns: True, if input exists
         """
-        if name in self.static_inputs:
+        if name in self._s_static:
             return True
         if self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs:
             return True
