@@ -1,5 +1,5 @@
 #!/bin/sh
-export PGPASSWORD={{ postgres_noc_password }}
+export PGPASSWORD='{{ postgres_noc_password }}'
 recovery=$(timeout 1 {{ postgres_bin_dir }}/psql -U {{ postgres_noc_user }} --host {{ postgres_listen_address }} -qAt0 --port 5432 {{ postgres_noc_db }} -c "select pg_is_in_recovery()::int")
 standby=$(timeout 1 {{ postgres_bin_dir }}/psql -U {{ postgres_noc_user }} --host {{ postgres_listen_address }} -qAt0 --port 5432 {{ postgres_noc_db }} -c "SELECT count(*) from pg_settings where name = 'hot_standby' AND setting = 'on'")
 if [ "$recovery" = "0" ]
