@@ -81,6 +81,7 @@ class BaseCDAGNodeMetaclass(type):
         sig = inspect.signature(n.get_value)
         n.allow_dynamic = "kwargs" in sig.parameters
         n.static_inputs = [sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")]
+        n._initial_inputs = {x: None for x in n.static_inputs}
         # Create slotted config class to optimize memory layout.
         # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
         if hasattr(n, "config_cls"):
@@ -105,6 +106,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     state_cls: Type[BaseModel]
     config_cls: Type[BaseModel]
     static_inputs: List[str]  # Filled by metaclass
+    _initial_inputs: Optional[Dict[str, None]] = {}
     allow_dynamic: bool = False  # Filled by metaclass
     dot_shape: str = "box"
     categories: List[Category] = []
@@ -517,7 +519,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         if self.const_inputs:
             return {i: self.const_inputs.get(i) for i in self.iter_inputs()}
-        return {i: None for i in self.iter_inputs()}
+        return self._initial_inputs.copy()
 
     def freeze(self) -> None:
         """
