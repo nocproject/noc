@@ -19,9 +19,9 @@
 
 - name: Strip existing noc python version
   set_fact:
-    noc_python_existing_family_version: "{{ noc_python_existing_version.split('.')[:2] | join('.') }}"
+    noc_python_existing_family_version: "{{ noc_python_existing_version.stdout.split('.')[:2] | join('.') }}"
   when:
-    - noc_python_existing_version is defined and noc_python_existing_version
+    - noc_python_existing_version is defined and noc_python_existing_version and noc_bin_python_path.stat.exists
 
 - name: Check if we have system Python of {{ noc_py3_ver }} version
   register: system_python3_path
@@ -127,7 +127,7 @@
               - "{{ noc_root }}/pyvenv.cfg"
           when:
             - noc_python_existing_family_version is defined
-            - noc_python_existing_family_version != system_python3_version
+            - noc_python_existing_family_version != system_python3_version.stdout
 
         - name: Decide to use system's Python3 of "{{ noc_py3_ver }}" version
           set_fact:
@@ -152,7 +152,7 @@
             - noc_python_existing_version is defined
             - noc_python_existing_version != noc_py_rel
 
-        - name: Bring Python of {{ noc_py3_ver }} version
+        - name: Bring Python of {{ noc_py3_ver }} version when system's python differs
           include_tasks: "bring_python.yml"
 
       when:
@@ -162,6 +162,14 @@
   when:
     - noc_python_existing_family_version is defined
     - "{{ noc_python_existing_family_version[:1] }} == '3'"
+
+- block:  # When no python at all
+
+    - name: Bring Python of {{ noc_py3_ver }} version when no python
+      include_tasks: "bring_python.yml"
+
+  when:
+    - not noc_bin_python_path.stat.exists
 
 - name: Initialize virtualenv3
   pip:
