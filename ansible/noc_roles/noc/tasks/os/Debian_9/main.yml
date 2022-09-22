@@ -6,8 +6,6 @@
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   vars:
     packages:
-      - python
-      - python-dev
       - python-virtualenv
       - git
       - libjemalloc1
@@ -25,9 +23,6 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when:
-    - ansible_distribution == "Debian"
-    - ansible_distribution_version is version('10', '<')
   tags:
     - requirements
 

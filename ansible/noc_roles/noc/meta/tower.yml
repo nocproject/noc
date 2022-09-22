@@ -45,13 +45,8 @@ forms:
       type: list
       description: Choose recommended version for your code version. Read https://getnoc.com/blog/
       options:
-        - "3.6"
-        - "3.7"
         - "3.8"
-    py3_force_updates:
-      label: "Reinstall Python3 in case of microversion updates (3.X.m -> 3.X.n)"
-      type: bool
-      default: False  # yamllint disable-line rule:truthy
+        - "3.9"
 
 services:
   noc:
