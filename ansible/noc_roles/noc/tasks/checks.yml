@@ -37,3 +37,10 @@
     - has_svc_omap is defined
   tags:
     - checks
+
+- name: "Fail if Python version is not recommended"
+  fail:
+    msg: |
+      PLease choose recommended Python version instead of {{ noc_py3_ver }},
+      we recommend to use last supported for that release: https://getnoc.com/blog/
+  when: noc_py3_ver is version('3.7', '<=')

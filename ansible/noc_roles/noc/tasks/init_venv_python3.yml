@@ -6,19 +6,35 @@
     gather_subset:
       - 'min'
 
-- name: Check if we have NOC/bin/ folder with py3
+- name: Check if we have python in NOC/bin/ folder
   stat:
-    path: "{{ noc_root }}/bin/python{{ noc_py3_ver }}"
-  register: noc_bin_py3
+    path: "{{ noc_root }}/bin/python"
+  register: noc_bin_python_path
 
 - name: Check noc Python version
-  shell: "{{ noc_root|quote }}/bin/python{{ noc_py3_ver|quote }} -V | cut -d' ' -f 2"
-  register: py3exists_version
+  shell: "{{ noc_root|quote }}/bin/python -V | cut -d' ' -f 2"
+  register: noc_python_existing_version
   when:
-    - noc_bin_py3.stat.exists
+    - noc_bin_python_path.stat.exists
 
-- name: Archive old py2 noc folder and delete pkg files
-  block:
+- name: Strip existing noc python version
+  set_fact:
+    noc_python_existing_family_version: "{{ noc_python_existing_version.split('.')[:2] | join('.') }}"
+  when:
+    - noc_python_existing_version is defined and noc_python_existing_version
+
+- name: Check if we have system Python of {{ noc_py3_ver }} version
+  register: system_python3_path
+  stat:
+    path: "/usr/bin/python{{ noc_py3_ver }}"
+
+- name: Check system Python version
+  shell: /usr/bin/python{{ noc_py3_ver|quote }} -V | cut -d' ' -f 2
+  register: system_python3_version
+  when: system_python3_path.stat.exists
+
+# Archive whole directory with old python2.* version and then delete folder's content
+- block:
     - name: archive current noc dir
       archive:
         path: "{{noc_root}}"
@@ -93,37 +109,59 @@
       when: stat_result.stat.exists
 
   when:
-    - >
-        not noc_bin_py3.stat.exists or
-        (py3exists_version is defined and
-        py3exists_version != py_rel_name and noc_py3_force_updates)
+    - noc_python_existing_family_version is defined
+    - "{{ noc_python_existing_family_version[:1] }} == '2'"
 
-- name: Check if we have system Python of {{ noc_py3_ver }} version
-  register: noc_system_py3
-  stat:
-    path: "/usr/bin/python{{ noc_py3_ver }}"
+  # When existing python is 3.* version
+- block:
+    - block: # When Target version equals system
+        - name: Remove old venv by dirty method
+          file:
+            state: absent
+            path: { { item } }
+            with_items:
+              - "{{ noc_root }}/bin"
+              - "{{ noc_root }}/include"
+              - "{{ noc_root }}/lib"
+              - "{{ noc_root }}/lib64"
+              - "{{ noc_root }}/pyvenv.cfg"
+          when:
+            - noc_python_existing_family_version is defined
+            - noc_python_existing_family_version != system_python3_version
 
-- name: Check system Python version
-  shell: /usr/bin/python{{ noc_py3_ver|quote }} -V | cut -d' ' -f 2
-  register: py3sys_version
-  when: noc_system_py3.stat.exists
+        - name: Decide to use system's Python3 of "{{ noc_py3_ver }}" version
+          set_fact:
+            noc_init_python_path: "/usr/bin/python{{ noc_py3_ver }}"
 
-- name: Decide to use system's python3
-  set_fact:
-    noc_init_python_path: "/usr/bin/python{{ noc_py3_ver }}"
+      when:
+        - system_python3_version is defined
+        - system_python3_version == noc_py3_ver
+
+    - block: # When Target version not equals system
+        - name: Remove old venv by dirty method
+          file:
+            state: absent
+            path: { { item } }
+            with_items:
+              - "{{ noc_root }}/bin"
+              - "{{ noc_root }}/include"
+              - "{{ noc_root }}/lib"
+              - "{{ noc_root }}/lib64"
+              - "{{ noc_root }}/pyvenv.cfg"
+          when:
+            - noc_python_existing_version is defined
+            - noc_python_existing_version != noc_py_rel
+
+        - name: Bring Python of {{ noc_py3_ver }} version
+          include_tasks: "bring_python.yml"
+
+      when:
+        - system_python3_version is defined
+        - system_python3_version != noc_py3_ver
+
   when:
-    - noc_system_py3.stat.exists
-    - >
-        py3sys_version is defined and
-        (py3sys_version == py_rel_name or not noc_py3_force_updates)
-
-- name: Compile Python of {{ noc_py3_ver }} version
-  include_tasks: "compile_python.yml"
-  when:
-    - >
-        not noc_system_py3.stat.exists or
-        (py3sys_version is defined and
-        (py3sys_version != py_rel_name and noc_py3_force_updates))
+    - noc_python_existing_family_version is defined
+    - "{{ noc_python_existing_family_version[:1] }} == '3'"
 
 - name: Initialize virtualenv3
   pip:
@@ -196,7 +234,7 @@
   tags:
     - requirements
 
-- name: Install noc.pth
+- name: Ensure that noc.pth is absent
   file:
     path: "{{ noc_root }}/lib/python{{ noc_py3_ver }}/site-packages/noc.pth"
     state: absent

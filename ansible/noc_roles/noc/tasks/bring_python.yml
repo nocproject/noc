@@ -1,10 +1,4 @@
 ---
-- name: "Fail if Python version for download is not recommended"
-  fail:
-    msg: |
-      In case if system doesn't have system Python of chosen version {{ noc_py3_ver }},
-      we recommend to use last supported for that release: https://getnoc.com/blog/
-  when: noc_py3_ver == "3.7"
 
 - name: Create dirs for Python's archives
   file:
