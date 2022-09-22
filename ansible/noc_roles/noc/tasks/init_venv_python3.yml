@@ -112,9 +112,9 @@
     - noc_python_existing_family_version is defined
     - "{{ noc_python_existing_family_version[:1] }} == '2'"
 
-  # When existing python is 3.* version
+# When existing python is 3.* version
 - block:
-    - block: # When Target version equals system
+    - block:  # When Target version equals system
         - name: Remove old venv by dirty method
           file:
             state: absent
@@ -137,7 +137,7 @@
         - system_python3_version is defined
         - system_python3_version == noc_py3_ver
 
-    - block: # When Target version not equals system
+    - block:  # When Target version not equals system
         - name: Remove old venv by dirty method
           file:
             state: absent
