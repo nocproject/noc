@@ -41,6 +41,9 @@ class Transaction(object):
             self.inputs[node] = inputs
             # Initialize required count
             self.req_left[node] = node.req_inputs_count
+            # Deduce amount of required initial inputs set
+            if inputs:
+                self.req_left[node] -= sum(1 for n in inputs if node.is_required_input(n))
         return inputs
 
     def is_ready(self, node) -> bool:

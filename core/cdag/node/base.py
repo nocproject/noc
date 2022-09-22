@@ -83,7 +83,6 @@ class BaseCDAGNodeMetaclass(type):
         n.static_inputs = [sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")]
         n._s_static = set(n.static_inputs)
         n.req_inputs_count = len(n.static_inputs)
-        n._initial_inputs = {x: None for x in n.static_inputs}
         # Create slotted config class to optimize memory layout.
         # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
         if hasattr(n, "config_cls"):
@@ -117,9 +116,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     state_cls: Type[BaseModel]
     config_cls: Type[BaseModel]
     static_inputs: List[str]  # Filled by metaclass
-    # Dict of initial inputs to clone, filled by metaclass
-    _initial_inputs: Optional[Dict[str, None]] = {}
-    # Static inputs set for faster lookup
+    # Static inputs set for faster name lookup
     _s_static: Set[str] = set()
     # Required inputs count, filled by metaclass
     req_inputs_count: int = 0
@@ -514,15 +511,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if hasattr(self, "config_cls"):
             yield from self.config_cls_slot.__slots__
 
-    def get_initial_inputs(self) -> Dict[str, Optional[ValueType]]:
+    def get_initial_inputs(self) -> Dict[str, ValueType]:
         """
-        Get dictionary of initial inputs and their values
+        Get dictionary of pre-set inputs and their values
 
         :return: Dict of initial inputs' values
         """
         if self.const_inputs:
-            return {i: self.const_inputs.get(i) for i in self.iter_inputs()}
-        return self._initial_inputs.copy()
+            return self.const_inputs.copy()  # Clone predefined
+        return {}  # Nothing set yet
 
     def freeze(self) -> None:
         """
