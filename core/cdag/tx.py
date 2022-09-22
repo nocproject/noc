@@ -67,7 +67,7 @@ class Transaction(object):
         state = node.get_state()
         if not state:
             return
-        d = state.dict(exclude_none=True)
+        d = state.dict()
         if d:
             self._states[node.node_id] = d
 

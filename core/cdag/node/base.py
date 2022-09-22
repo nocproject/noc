@@ -94,10 +94,19 @@ class BaseCDAGNodeMetaclass(type):
             )
         # Slotted state
         if hasattr(n, "state_cls"):
+            state_slots = tuple(sys.intern(x) for x in n.state_cls.__fields__)
+            # Generate dict-getter code
+            dict_fn = ["def dict(self):", "    return {"]
+            dict_fn += [f"        '{s}': self.{s}," for s in state_slots]
+            dict_fn += ["    }"]
+            # Compile and execute dict-getter to get function
+            co = compile("\n".join(dict_fn), "<string>", "exec")
+            l_vars = {}
+            exec(co, {}, l_vars)  # l_vars will contain 'dict'
             n.state_cls_slot = type(
                 f"{n.state_cls.__name__}_Slot",
                 (),
-                {"__slots__": tuple(sys.intern(x) for x in n.state_cls.__fields__)},
+                {"__slots__": state_slots, "dict": l_vars["dict"]},
             )
         #
         return n
@@ -449,11 +458,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Get current node state
         :return:
         """
-        if self.state:
-            return self.state_cls(
-                **{s: getattr(self.state, s) for s in self.state_cls_slot.__slots__}
-            )
-        return None
+        return self.state
 
     def iter_subscribers(self) -> Iterable[Subscriber]:
         """
