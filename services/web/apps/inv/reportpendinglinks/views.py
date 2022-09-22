@@ -65,8 +65,10 @@ class ReportPendingLinks(object):
             ],
             allowDiskUse=True,
         )
-        find = next(find)
-        duplicate_macs = set(find["mos"])
+        duplicate_macs = set()
+        find = next(find, None)
+        if find:
+            duplicate_macs = set(find["mos"])
         while mos_job[(0 + n) : (10000 + n)]:
             job_logs = (
                 get_db()["noc.joblog"]
