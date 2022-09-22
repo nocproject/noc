@@ -118,7 +118,7 @@
         - name: Remove old venv by dirty method
           file:
             state: absent
-            path: { { item } }
+            path: "{{ item }}"
             with_items:
               - "{{ noc_root }}/bin"
               - "{{ noc_root }}/include"
@@ -141,7 +141,7 @@
         - name: Remove old venv by dirty method
           file:
             state: absent
-            path: { { item } }
+            path: "{{ item }}"
             with_items:
               - "{{ noc_root }}/bin"
               - "{{ noc_root }}/include"
