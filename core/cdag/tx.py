@@ -35,7 +35,7 @@ class Transaction(object):
         :return:
         """
         inputs = self.inputs.get(node)
-        if not inputs:
+        if inputs is None:
             # Initialize node inputs
             inputs = node.get_initial_inputs()
             self.inputs[node] = inputs
