@@ -67,24 +67,24 @@ class ProbeNode(BaseCDAGNode):
     def __str__(self):
         return f"{self.name}: {self.node_id}"
 
-    def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
-        def upscale(v: ValueType) -> Optional[ValueType]:
-            if v is None:
-                return None  # Cannot scale None
-            if scale == self.config.scale:
-                return v  # No upscale
-            base, exp = self.get_scale(scale)
-            if base == self.base:
-                # Same base
-                return v * base ** (exp - self.exp)
-            elif self.exp == 0:
-                # Base mismatch, Target scale is 1
-                return v * base**exp
-            elif exp == 0:
-                # Base mismatch, Source scale is 1
-                return v * self.base**-self.exp
-            return v * (base**exp) * self.base**-self.exp
+    def _upscale(self, v: ValueType, scale: str) -> Optional[ValueType]:
+        if v is None:
+            return None  # Cannot scale None
+        if scale == self.config.scale:
+            return v  # No upscale
+        base, exp = self.get_scale(scale)
+        if base == self.base:
+            # Same base
+            return v * base ** (exp - self.exp)
+        elif self.exp == 0:
+            # Base mismatch, Target scale is 1
+            return v * base**exp
+        elif exp == 0:
+            # Base mismatch, Source scale is 1
+            return v * self.base**-self.exp
+        return v * (base**exp) * self.base**-self.exp
 
+    def get_value(self, x: ValueType, ts: int, unit: str) -> Optional[ValueType]:
         if "," in unit:
             # <scale>,<unit>
             scale, unit = unit.split(",")
@@ -92,7 +92,7 @@ class ProbeNode(BaseCDAGNode):
             scale = "1"
         # No translation
         if unit == self.config.unit:
-            return upscale(x)
+            return self._upscale(x, scale)
         # No conversation. Skipping
         if unit not in self.convert:
             logger.warning(
@@ -109,7 +109,7 @@ class ProbeNode(BaseCDAGNode):
         if not (fn.has_delta or fn.has_time_delta):
             # No state dependency, just conversion
             self.set_state(None, None)
-            return upscale(fn(**kwargs))
+            return self._upscale(fn(**kwargs), scale)
         if self.state.lt is None:
             # No previous measurement, store state and exit
             self.set_state(ts, x)
@@ -128,7 +128,7 @@ class ProbeNode(BaseCDAGNode):
                 return None
             kwargs["delta"] = delta
         self.set_state(ts, x)
-        return upscale(fn(**kwargs))
+        return self._upscale(fn(**kwargs), scale)
 
     def set_state(self, lt, lv):
         self.state.lt = lt

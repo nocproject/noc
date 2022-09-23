@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # BaseNode
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Optional, Type, Dict, List, Iterable, Tuple, Set, Union
+from typing import Any, Optional, Type, Dict, List, Iterable, Set, Union
 from enum import Enum
 import inspect
 from dataclasses import dataclass
@@ -18,6 +18,11 @@ from pydantic import BaseModel
 # NOC modules
 from ..typing import ValueType
 from ..tx import Transaction
+
+# Input types
+IN_INVALID = 0
+IN_REQUIRED = 1
+IN_OPTIONAL = 2
 
 
 class Category(str, Enum):
@@ -80,7 +85,8 @@ class BaseCDAGNodeMetaclass(type):
         n = type.__new__(mcs, name, bases, attrs)
         sig = inspect.signature(n.get_value)
         n.allow_dynamic = "kwargs" in sig.parameters
-        n.static_inputs = [sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")]
+        n.static_inputs = {sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")}
+        n.req_inputs_count = len(n.static_inputs)
         # Create slotted config class to optimize memory layout.
         # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
         if hasattr(n, "config_cls"):
@@ -91,10 +97,34 @@ class BaseCDAGNodeMetaclass(type):
             )
         # Slotted state
         if hasattr(n, "state_cls"):
+            state_slots = tuple(sys.intern(x) for x in n.state_cls.__fields__)
+            req_state_fields = [f.name for f in n.state_cls.__fields__.values() if f.required]
+            opt_state_fields = [f.name for f in n.state_cls.__fields__.values() if not f.required]
+            # Generate dict-getter code
+            dict_fn = ["def dict(self):"]
+            if opt_state_fields:
+                dict_fn += ["    x = {"]
+                dict_fn += [f"        '{s}': self.{s}," for s in req_state_fields]
+                dict_fn += ["    }"]
+                for opt in opt_state_fields:
+                    dict_fn += [
+                        f"    if self.{opt} is not None:",
+                        f"        x['{opt}'] = self.{opt}",
+                    ]
+                dict_fn += ["    return x"]
+            else:
+                # No optional fields, streamlined implementation
+                dict_fn += ["    return {"]
+                dict_fn += [f"        '{s}': self.{s}," for s in state_slots]
+                dict_fn += ["    }"]
+            # Compile and execute dict-getter to get function
+            co = compile("\n".join(dict_fn), "<string>", "exec")
+            l_vars = {}
+            exec(co, {}, l_vars)  # l_vars will contain 'dict'
             n.state_cls_slot = type(
                 f"{n.state_cls.__name__}_Slot",
                 (),
-                {"__slots__": tuple(sys.intern(x) for x in n.state_cls.__fields__)},
+                {"__slots__": state_slots, "dict": l_vars["dict"]},
             )
         #
         return n
@@ -104,7 +134,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     name: str
     state_cls: Type[BaseModel]
     config_cls: Type[BaseModel]
-    static_inputs: List[str]  # Filled by metaclass
+    static_inputs: Set[str]  # Filled by metaclass
+    # Required inputs count, filled by metaclass
+    req_inputs_count: int = 0
     allow_dynamic: bool = False  # Filled by metaclass
     dot_shape: str = "box"
     categories: List[Category] = []
@@ -270,24 +302,29 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             if i not in self.bound_inputs:
                 yield i
 
+    def get_input_type(self, name: str) -> int:
+        """
+        Returns input type:
+        * IN_INVALID - for non-existing input
+        * IN_REQUIRED - for required input
+        * IN_OPTIONAL - for dynamic input
+
+        :param name: Input name
+        :returns: input type as IN_*
+        """
+        if name in self.static_inputs:
+            return IN_REQUIRED
+        if self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs:
+            return IN_OPTIONAL
+        return IN_INVALID
+
     def has_input(self, name: str) -> bool:
         """
         Check if the node has input with given name
         :param name: name of input
         :returns: True, if input exists
         """
-        if name in self.static_inputs:
-            return True
-        if self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs:
-            return True
-        return False
-
-    def check_input(self, name: str) -> None:
-        """
-        Check if input exists. Raise KeyError if missed
-        """
-        if not self.has_input(name):
-            raise KeyError(f"Invalid input: {name}")
+        return self.get_input_type(name) != IN_INVALID
 
     def activate(self, tx: Transaction, name: str, value: Union[ValueType, str]) -> None:
         """
@@ -297,13 +334,22 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param value: Input value
         :return:
         """
-        self.check_input(name)
+        # Check for valid input name
+        in_type = self.get_input_type(name)
+        if in_type == IN_INVALID:
+            raise KeyError(f"Invalid input {name}")
+        # Get collected inputs
         inputs = tx.get_inputs(self)
-        if name in inputs and inputs[name] is not None:
+        if inputs.get(name) is not None:
             return  # Already activated
-        inputs[name] = value  # Activate input
-        if any(True for n, v in inputs.items() if v is None and self.is_required_input(n)):
-            return  # Non-activated inputs
+        # Activate input
+        inputs[name] = value
+        # Optional inputs cannon trigger the activation
+        if in_type == IN_OPTIONAL:
+            return
+        # Check if all required inputs are activated
+        if not tx.is_ready(self):
+            return  # Not all required inputs are activated
         # Activate node, calculate value
         value = self.get_value(**inputs)
         if hasattr(self, "state_cls"):
@@ -317,7 +363,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         Check if input is required
         """
-        return not self.is_dynamic_input(name)
+        return self.get_input_type(name) == IN_REQUIRED
 
     def is_dynamic_input(self, name: str) -> bool:
         """
@@ -325,7 +371,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param name:
         :return:
         """
-        return self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs
+        return self.get_input_type(name) == IN_OPTIONAL
 
     def is_key_input(self, name: str) -> bool:
         """
@@ -352,7 +398,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         name = sys.intern(name)
-        self.check_input(name)
+        if self.get_input_type(name) == IN_INVALID:
+            raise KeyError(f"Invalid input {name}")
         if self.const_inputs is None:
             self.const_inputs = {}
         self.const_inputs[name] = value
@@ -436,11 +483,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         Get current node state
         :return:
         """
-        if self.state:
-            return self.state_cls(
-                **{s: getattr(self.state, s) for s in self.state_cls_slot.__slots__}
-            )
-        return None
+        return self.state
 
     def iter_subscribers(self) -> Iterable[Subscriber]:
         """
@@ -496,16 +539,15 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if hasattr(self, "config_cls"):
             yield from self.config_cls_slot.__slots__
 
-    def iter_initial_inputs(self) -> Iterable[Tuple[str, Optional[ValueType]]]:
+    def get_initial_inputs(self) -> Dict[str, ValueType]:
         """
-        Iterate transaction initial inputs
+        Get dictionary of pre-set inputs and their values
+
+        :return: Dict of initial inputs' values
         """
         if self.const_inputs:
-            for i in self.iter_inputs():
-                yield i, self.const_inputs.get(i)
-        else:
-            for i in self.iter_inputs():
-                yield i, None
+            return self.const_inputs.copy()  # Clone predefined
+        return {}  # Nothing set yet
 
     def freeze(self) -> None:
         """

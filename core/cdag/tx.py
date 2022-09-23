@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 # NOC modules
 from .typing import ValueType
@@ -15,7 +15,10 @@ from .typing import ValueType
 class Transaction(object):
     def __init__(self, cdag):
         self.cdag = cdag
+        # id(node) -> value
         self.inputs: Dict[str, Dict[str, ValueType]] = {}
+        # id(node) -> int
+        self.req_left: Dict[str, int] = {}
         self._states: Dict[str, Any] = {}
 
     def activate(self, node: str, name: str, value: ValueType) -> None:
@@ -31,9 +34,31 @@ class Transaction(object):
         :param node:
         :return:
         """
-        if node.node_id not in self.inputs:
-            self.inputs[node.node_id] = {k: v for k, v in node.iter_initial_inputs()}
-        return self.inputs[node.node_id]
+        inputs = self.inputs.get(node)
+        if inputs is None:
+            # Initialize node inputs
+            inputs = node.get_initial_inputs()
+            self.inputs[node] = inputs
+            # Initialize required count
+            self.req_left[node] = node.req_inputs_count
+            # Deduce amount of required initial inputs set
+            if inputs:
+                self.req_left[node] -= sum(1 for n in inputs if node.is_required_input(n))
+        return inputs
+
+    def is_ready(self, node) -> bool:
+        """
+        Decrement required node's inputs count and return
+        true if all inputs are activated
+
+        :param node: BaseNode instance
+        :returns: True if all required nodes are activated, False otherwise
+        """
+        req_left = self.req_left[node]  # Can raise KeyError
+        if req_left <= 1:
+            return True
+        self.req_left[node] -= 1
+        return False
 
     def update_state(self, node) -> None:
         """
@@ -45,7 +70,7 @@ class Transaction(object):
         state = node.get_state()
         if not state:
             return
-        d = state.dict(exclude_none=True)
+        d = state.dict()
         if d:
             self._states[node.node_id] = d
 
