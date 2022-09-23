@@ -19,6 +19,11 @@ from pydantic import BaseModel
 from ..typing import ValueType
 from ..tx import Transaction
 
+# Input types
+IN_INVALID = 0
+IN_REQUIRED = 1
+IN_OPTIONAL = 2
+
 
 class Category(str, Enum):
     MATH = "math"
@@ -80,8 +85,7 @@ class BaseCDAGNodeMetaclass(type):
         n = type.__new__(mcs, name, bases, attrs)
         sig = inspect.signature(n.get_value)
         n.allow_dynamic = "kwargs" in sig.parameters
-        n.static_inputs = [sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")]
-        n._s_static = set(n.static_inputs)
+        n.static_inputs = {sys.intern(x) for x in sig.parameters if x not in ("self", "kwargs")}
         n.req_inputs_count = len(n.static_inputs)
         # Create slotted config class to optimize memory layout.
         # Slotted classes reduce memory usage by ~400 bytes, compared to Pydantic models
@@ -94,10 +98,25 @@ class BaseCDAGNodeMetaclass(type):
         # Slotted state
         if hasattr(n, "state_cls"):
             state_slots = tuple(sys.intern(x) for x in n.state_cls.__fields__)
+            req_state_fields = [f.name for f in n.state_cls.__fields__.values() if f.required]
+            opt_state_fields = [f.name for f in n.state_cls.__fields__.values() if not f.required]
             # Generate dict-getter code
-            dict_fn = ["def dict(self):", "    return {"]
-            dict_fn += [f"        '{s}': self.{s}," for s in state_slots]
-            dict_fn += ["    }"]
+            dict_fn = ["def dict(self):"]
+            if opt_state_fields:
+                dict_fn += ["    x = {"]
+                dict_fn += [f"        '{s}': self.{s}," for s in req_state_fields]
+                dict_fn += ["    }"]
+                for opt in opt_state_fields:
+                    dict_fn += [
+                        f"    if self.{opt} is not None:",
+                        f"        x['{opt}'] = self.{opt}",
+                    ]
+                dict_fn += ["    return x"]
+            else:
+                # No optional fields, streamlined implementation
+                dict_fn += ["    return {"]
+                dict_fn += [f"        '{s}': self.{s}," for s in state_slots]
+                dict_fn += ["    }"]
             # Compile and execute dict-getter to get function
             co = compile("\n".join(dict_fn), "<string>", "exec")
             l_vars = {}
@@ -115,9 +134,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     name: str
     state_cls: Type[BaseModel]
     config_cls: Type[BaseModel]
-    static_inputs: List[str]  # Filled by metaclass
-    # Static inputs set for faster name lookup
-    _s_static: Set[str] = set()
+    static_inputs: Set[str]  # Filled by metaclass
     # Required inputs count, filled by metaclass
     req_inputs_count: int = 0
     allow_dynamic: bool = False  # Filled by metaclass
@@ -285,24 +302,29 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             if i not in self.bound_inputs:
                 yield i
 
+    def get_input_type(self, name: str) -> int:
+        """
+        Returns input type:
+        * IN_INVALID - for non-existing input
+        * IN_REQUIRED - for required input
+        * IN_OPTIONAL - for dynamic input
+
+        :param name: Input name
+        :returns: input type as IN_*
+        """
+        if name in self.static_inputs:
+            return IN_REQUIRED
+        if self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs:
+            return IN_OPTIONAL
+        return IN_INVALID
+
     def has_input(self, name: str) -> bool:
         """
         Check if the node has input with given name
         :param name: name of input
         :returns: True, if input exists
         """
-        if name in self._s_static:
-            return True
-        if self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs:
-            return True
-        return False
-
-    def check_input(self, name: str) -> None:
-        """
-        Check if input exists. Raise KeyError if missed
-        """
-        if not self.has_input(name):
-            raise KeyError(f"Invalid input: {name}")
+        return self.get_input_type(name) != IN_INVALID
 
     def activate(self, tx: Transaction, name: str, value: Union[ValueType, str]) -> None:
         """
@@ -313,15 +335,20 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         # Check for valid input name
-        self.check_input(name)
-        #
+        in_type = self.get_input_type(name)
+        if in_type == IN_INVALID:
+            raise KeyError(f"Invalid input {name}")
+        # Get collected inputs
         inputs = tx.get_inputs(self)
         if inputs.get(name) is not None:
             return  # Already activated
         # Activate input
         inputs[name] = value
+        # Optional inputs cannon trigger the activation
+        if in_type == IN_OPTIONAL:
+            return
         # Check if all required inputs are activated
-        if not self.is_required_input(name) or not tx.is_ready(self):
+        if not tx.is_ready(self):
             return  # Not all required inputs are activated
         # Activate node, calculate value
         value = self.get_value(**inputs)
@@ -336,7 +363,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         """
         Check if input is required
         """
-        return not self.is_dynamic_input(name)
+        return self.get_input_type(name) == IN_REQUIRED
 
     def is_dynamic_input(self, name: str) -> bool:
         """
@@ -344,7 +371,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :param name:
         :return:
         """
-        return self.allow_dynamic and self.dynamic_inputs and name in self.dynamic_inputs
+        return self.get_input_type(name) == IN_OPTIONAL
 
     def is_key_input(self, name: str) -> bool:
         """
@@ -371,7 +398,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         :return:
         """
         name = sys.intern(name)
-        self.check_input(name)
+        if self.get_input_type(name) == IN_INVALID:
+            raise KeyError(f"Invalid input {name}")
         if self.const_inputs is None:
             self.const_inputs = {}
         self.const_inputs[name] = value
