@@ -45,4 +45,4 @@ class ComposeProbeNode(ProbeNode):
         return super().get_value(x, ts=ts, unit="1")
 
     def is_required_input(self, name: str) -> bool:
-        return name in self.probe_inputs
+        return name not in self.probe_inputs
