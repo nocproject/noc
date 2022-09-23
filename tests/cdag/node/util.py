@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Testing utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -42,10 +42,10 @@ class NodeCDAG(object):
         :return:
         """
         i = self.tx.get_inputs(self.measure_node)
-        return i["x"]  # None node has `x` input
+        return i.get("x")  # None node has `x` input
 
     def is_activated(self):
-        return self.tx.get_inputs(self.measure_node)["x"] is not None
+        return self.tx.get_inputs(self.measure_node).get("x") is not None
 
     def begin(self) -> Transaction:
         self.tx = self.cdag.begin()
