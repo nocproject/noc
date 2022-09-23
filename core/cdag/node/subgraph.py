@@ -121,6 +121,7 @@ class SubgraphNode(BaseCDAGNode):
                 if not node:
                     continue
                 self.input_mappings[m.public_name] = InputItem(node=node, input=m.name)
+                self.static_inputs.add(m.public_name)
         # Inject measure node when necessary
         self.measure_node = None
         if cfg.output:
@@ -152,8 +153,8 @@ class SubgraphNode(BaseCDAGNode):
             im = self.input_mappings[p]
             im.node.activate(tx, im.input, v)
         changed_state = tx.get_changed_state()
-        if self.state.state is None and changed_state:
+        if self.state.state is None:
             self.state.state = {}
         self.state.state.update(changed_state)
         out = tx.get_inputs(self.measure_node)
-        return out["x"]  # None node has `x` input
+        return out.get("x")  # None node has `x` input
