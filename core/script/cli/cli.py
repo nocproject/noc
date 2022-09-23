@@ -51,9 +51,6 @@ class CLI(BaseCLI):
     class InvalidPagerCommand(Exception):
         pass
 
-    class InvalidPagerCommandDictKey(Exception):
-        pass
-
     def __init__(self, script, tos=None):
         super().__init__(script, tos)
         self.labels = self.script.labels
@@ -336,18 +333,20 @@ class CLI(BaseCLI):
                     await self.send(c)
                     return
                 elif isinstance(c, dict):
+                    # handling case if command is dict
+                    default_command = c.get(None)
                     for ck, cv in c.items():
-                        if isinstance(ck, tuple) and all({x in self.labels for x in ck}):
-                            await self.send(cv)
-                            return
-                        elif isinstance(ck, bytes) and ck in self.labels:
-                            await self.send(cv)
-                            return
-                        elif ck is None:
-                            await self.send(cv)
-                            return
-                        else:
-                            raise self.InvalidPagerCommandDictKey(ck)
+                        if isinstance(ck, bytes):
+                            ck = (ck,)
+                        if isinstance(ck, tuple):
+                            ck = set(ck)
+                            if ck & self.labels == ck:
+                                await self.send(cv)
+                                return
+                    if default_command:
+                        await self.send(default_command)
+                        return
+                    raise self.InvalidPagerCommand("Absent required None key")
                 else:
                     raise self.InvalidPagerCommand(c)
         raise self.InvalidPagerPattern(pg)
