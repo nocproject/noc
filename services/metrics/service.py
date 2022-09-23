@@ -612,7 +612,7 @@ class MetricsService(FastAPIService):
             sticky=True,
         )
         # Subscribe
-        p.subscribe(sender, metric_field, dynamic=True)
+        p.subscribe(sender, metric_field, dynamic=True, mark_bound=False)
         p.freeze()
         card.probes[unscope(metric_field)] = p
         #
@@ -734,12 +734,15 @@ class MetricsService(FastAPIService):
                 node = nodes[o_node.node_id]
                 for rs in o_node.iter_subscribers():
                     node.subscribe(
-                        nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
+                        nodes[rs.node.node_id],
+                        rs.input,
+                        dynamic=rs.node.is_dynamic_input(rs.input),
+                        mark_bound=False,
                     )
                 if "_compose" in node.node_id:
                     # Complex Node subscribe to sender
                     sender = card.get_sender("interface")
-                    node.subscribe(sender, node.node_id, dynamic=True)
+                    node.subscribe(sender, node.node_id, dynamic=True, mark_bound=False)
             # Compact the storage
             for node in nodes.values():
                 if node.bound_inputs:
@@ -757,10 +760,10 @@ class MetricsService(FastAPIService):
             # Add probe
             for m_field in self.compose_inputs[cp_metric_filed]:
                 if m_field in card.probes:
-                    card.probes[m_field].subscribe(cp, m_field, dynamic=True)
+                    card.probes[m_field].subscribe(cp, m_field, dynamic=True, mark_bound=False)
                 else:
                     p = self.add_probe(m_field, k)
-                    p.subscribe(cp, m_field, dynamic=True)
+                    p.subscribe(cp, m_field, dynamic=True, mark_bound=False)
             self.logger.debug("Add compose node: %s", cp)
 
     def activate_card(

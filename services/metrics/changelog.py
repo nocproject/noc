@@ -168,11 +168,7 @@ class ChangeLog(object):
                 t_mark += datetime.timedelta(seconds=1)
                 # For more one slots raise condition with same t_mark
                 # For that create random ObjectId
-                bulk.append(
-                    InsertOne(
-                        {"_id": ObjectId(), "slot": self.slot, "data": c_data}
-                    )
-                )
+                bulk.append(InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data}))
                 nn += 1
                 next_size += len(c_data)
             bulk.append(DeleteMany({"_id": {"$lte": t_mark_id}, "slot": self.slot}))
