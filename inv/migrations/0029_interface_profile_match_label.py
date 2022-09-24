@@ -73,7 +73,7 @@ class Migration(BaseMigration):
                     }
                 )
             ]
-        if labels_bulk:
-            self.mongo_db["labels"].bulk_write(labels_bulk)
         if bulk:
             self.mongo_db["noc.interfaces"].bulk_write(bulk)
+        if labels_bulk:
+            self.mongo_db["labels"].bulk_write(labels_bulk)
