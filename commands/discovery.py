@@ -9,6 +9,7 @@
 import argparse
 import time
 from collections import defaultdict
+from functools import partial
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -178,6 +179,19 @@ class ServiceStub(object):
 
     def register_metrics(self, table, data, key=None):
         self.metrics[table] += data
+
+    @staticmethod
+    def get_slot_limits(slot_name):
+        """
+        Get slot count
+        :param slot_name:
+        :return:
+        """
+        from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
+        from noc.core.ioloop.util import run_sync
+
+        dcs = get_dcs(DEFAULT_DCS)
+        return run_sync(partial(dcs.get_slot_limit, slot_name))
 
 
 if __name__ == "__main__":

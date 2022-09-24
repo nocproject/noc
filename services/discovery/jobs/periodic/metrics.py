@@ -10,12 +10,16 @@ import itertools
 import time
 from typing import Any, List, Dict, Iterable
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from noc.inv.models.object import Object
 from noc.inv.models.interfaceprofile import MetricConfig
 from noc.inv.models.sensor import Sensor
+from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprobe import SLAProbe
 from noc.config import config
 
@@ -103,28 +107,64 @@ class MetricsCheck(DiscoveryCheck):
             self.job.context["time_delta"] = int(round(ts - self.job.context["last_run"]))
         self.job.context["last_run"] = ts
         self.logger.debug("Collecting metrics: %s", metrics)
+        result = self.object.scripts.get_metrics(
+            collected=metrics,
+            streaming={
+                "stream": "metrics",
+                "partition": self.object.id % self.service.get_slot_limits("metrics"),
+                "utc_offset": config.tz_utc_offset,
+                "data": s_data,
+            }
+            if config.discovery.proxy_metric
+            else None,
+        )
         # Collect metrics
-        result = [
-            r
-            for r in self.object.scripts.get_metrics(
-                collected=metrics,
-                streaming={
-                    "stream": "metrics",
-                    "partition": self.object.id % self.service.get_slot_limits("metrics"),
-                    "utc_offset": config.tz_utc_offset,
-                    "data": s_data,
-                },
-            )
-        ]
         if not result:
             self.logger.info("No metrics found")
             return
         self.logger.info("Collected metrics: %s", len(result))
+        # Send metrics
+        self.service.publish(
+            value=orjson.dumps(self.clean_result(result)),
+            stream="metrics",
+            partition=self.object.id % self.service.get_slot_limits("metrics"),
+            headers={},
+        )
         # # Send metrics
         # if n_metrics:
         #   self.logger.info("Spooling %d metrics", n_metrics)
         #   for table in data:
         #      self.service.register_metrics(table, list(data[table].values()), key=self.object.id)
+
+    def clean_result(self, result):
+        """
+        Clean result for send to Metrics Service
+        :param result:
+        :return:
+        """
+        data = {}
+        for rr in result:
+            mt = MetricType.get_by_name(rr["metric"])
+            scope_name = mt.scope.table_name
+            m_id = (scope_name, tuple(rr["labels"]))
+            if m_id not in data:
+                data[m_id] = {
+                    "ts": rr["ts"] + config.tz_utc_offset,
+                    "managed_object": self.object.bi_id,
+                    "scope": scope_name,
+                    "field": mt.field_name,
+                    "labels": rr["labels"],
+                    "_units": {},
+                }
+                if rr.get("sensor"):
+                    data[m_id]["sensor"] = rr["sensor"]
+                if rr.get("sla_probe"):
+                    data[m_id]["sla_probe"] = rr["sla_probe"]
+                if rr.get("service"):
+                    data[m_id]["service"] = rr["service"]
+            data[m_id][mt.field_name] = rr["value"]
+            data[m_id]["_units"][mt.field_name] = rr["units"]
+        return list(data.values())
 
     def convert_delta(self, m, r):
         """
