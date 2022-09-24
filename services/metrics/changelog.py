@@ -8,22 +8,16 @@
 
 # Python modules
 from typing import Any, Dict, List, Iterable
-import pickle
+import orjson
 import logging
 import datetime
 import asyncio
 
 # Third-party modules
+import lz4.frame
 from pymongo import InsertOne, DeleteMany, ASCENDING, DESCENDING
 from pymongo.collection import Collection
 from bson import ObjectId
-
-try:
-    # Only for Python 3.3+
-    import lzma as compressor  # noqa
-except ImportError:
-    # logger.debug("lzma module is not available")
-    import bz2 as compressor  # noqa
 
 # NOC modules
 from noc.core.mongo.connection_async import get_db
@@ -78,25 +72,25 @@ class ChangeLog(object):
                 InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data})
                 for c_data in self.iter_state_bulks(self.state)
             ]
-            self.logger.debug("Flush State Record: %d", len(bulk))
-            await coll.bulk_write(bulk, ordered=True)
             self.state = {}  # Reset
+        self.logger.debug("Flush State Record: %d", len(bulk))
+        await coll.bulk_write(bulk, ordered=True)
 
     @staticmethod
     def encode(data: Dict[str, Dict[str, Any]]) -> bytes:
         """
         Encode state to bytes
         """
-        r = pickle.dumps(data, protocol=pickle.HIGHEST_PROTOCOL)
-        return compressor.compress(r)
+        r = orjson.dumps(data)
+        return lz4.frame.compress(r)
 
     @staticmethod
     def decode(data: bytes) -> Dict[str, Dict[str, Any]]:
         """
         Decode bytes to state
         """
-        r = compressor.decompress(data)
-        return pickle.loads(r)
+        r = lz4.frame.decompress(data)
+        return orjson.loads(r)
 
     async def feed(self, state: Dict[str, Dict[str, Any]]) -> None:
         """
