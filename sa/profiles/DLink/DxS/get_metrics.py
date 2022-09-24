@@ -26,7 +26,7 @@ class Script(GetMetricsScript):
             try:
                 cpu = self.snmp.get(oid)
                 if cpu is not None:
-                    self.set_metric(id=("CPU | Usage", None), value=round(float(cpu)))
+                    self.set_metric(id=("CPU | Usage", None), value=round(float(cpu)), units="%")
             except Exception:
                 pass
 
@@ -56,6 +56,7 @@ class Script(GetMetricsScript):
                 labels=mc.labels,
                 type="gauge",
                 scale=1,
+                units="bit/s",
             )
         # Getting ifHighSpeed
         if high_speed_oids:
@@ -75,4 +76,5 @@ class Script(GetMetricsScript):
                     labels=mc.labels,
                     type="gauge",
                     scale=1000000,
+                    units="bit/s",
                 )
