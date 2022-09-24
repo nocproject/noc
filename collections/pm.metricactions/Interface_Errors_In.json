@@ -54,7 +54,7 @@
     },
     "alarm_config": {
         "activation_level": 1.0,
-        "alarm_class": "Metric | Interface | Error",
+        "alarm_class__name": "Metric | Interface | Error",
         "deactivation_level": 1.0,
         "reference": null
     }

@@ -106,7 +106,7 @@ class AlarmConfig(EmbeddedDocument):
     @property
     def json_data(self) -> Dict[str, Any]:
         return {
-            "alarm_class": self.alarm_class.name,
+            "alarm_class__name": self.alarm_class.name,
             "reference": self.reference,
             "activation_level": self.activation_level,
             "deactivation_level": self.deactivation_level,
