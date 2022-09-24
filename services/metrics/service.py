@@ -775,14 +775,12 @@ class MetricsService(FastAPIService):
         units: Dict[str, str] = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
-        compose_probes = []
         for n in data:
             mu = units.get(n) or si.units.get(n)
             if not mu:
                 continue  # Missed field
             probe = card.probes.get(n)
-            if isinstance(probe, ComposeProbeNode):
-                compose_probes.append(probe)
+            if probe.name == ComposeProbeNode.name:  # Skip composed probe
                 continue
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k)
@@ -791,8 +789,6 @@ class MetricsService(FastAPIService):
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])
             probe.activate(tx, "unit", mu)
-        for c_probe in compose_probes:
-            c_probe.activate(tx, "ts", ts)
         # Activate senders
         for sender in card.senders:
             for kf in si.key_fields:
