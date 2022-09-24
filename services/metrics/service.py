@@ -287,8 +287,8 @@ class MetricsService(FastAPIService):
         asyncio.get_running_loop().create_task(self.subscribe_metrics())
 
     async def subscribe_metrics(self) -> None:
-        self.logger.info("Waiting for mappings")
-        await self.mappings_ready_event.wait()
+        self.logger.info("Waiting for rules")
+        await self.rules_ready_event.wait()
         self.logger.info("Mappings are ready")
         await self.subscribe_stream("metrics", self.slot_number, self.on_metrics, async_cursor=True)
 
@@ -780,11 +780,9 @@ class MetricsService(FastAPIService):
             if not mu:
                 continue  # Missed field
             probe = card.probes.get(n)
-            if probe.name == ComposeProbeNode.name:  # Skip composed probe
-                continue
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k)
-            if not probe:
+            if not probe or probe.name == ComposeProbeNode.name:  # Skip composed probe
                 continue
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])

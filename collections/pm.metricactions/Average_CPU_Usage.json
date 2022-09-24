@@ -5,17 +5,17 @@
     "description": "Средняя загрузка CPU больше N",
     "params": [
         {
-            "name": "activation.min_window",
+            "name": "activation-window.min_window",
             "description": null,
-            "default": "5",
+            "default": "3",
             "max_value": 5.0,
             "min_value": 3.0,
             "type": "int"
         },
         {
-            "name": "activation.max_window",
+            "name": "activation-window.max_window",
             "description": null,
-            "default": "3",
+            "default": "5",
             "max_value": 5.0,
             "min_value": 3.0,
             "type": "int"
@@ -47,5 +47,11 @@
         "window_config": {},
         "window_function": "mean",
         "window_type": "tick"
+    },
+    "alarm_config": {
+        "activation_level": 1.0,
+        "alarm_class": "Metric | Object | High CPU Usage",
+        "deactivation_level": 1.0,
+        "reference": null
     }
 }

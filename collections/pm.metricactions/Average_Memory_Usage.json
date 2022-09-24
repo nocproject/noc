@@ -21,7 +21,7 @@
             "type": "int"
         },
         {
-            "name": "activation.min_window",
+            "name": "activation-window.min_window",
             "description": null,
             "default": "3",
             "max_value": 10.0,
@@ -29,7 +29,7 @@
             "type": "int"
         },
         {
-            "name": "activation.max_window",
+            "name": "activation-window.max_window",
             "description": null,
             "default": "5",
             "max_value": 10.0,
