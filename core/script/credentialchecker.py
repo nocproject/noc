@@ -250,7 +250,7 @@ class CredentialChecker(object):
                 for sc in cc.suggest_credential:
                     sc = SuggestCLIConfig(
                         cc.preference,
-                        snmp_protocols,
+                        cli_protocols,
                         user=sc.user,
                         password=sc.password,
                         super_password=sc.super_password,
