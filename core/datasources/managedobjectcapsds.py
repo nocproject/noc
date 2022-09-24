@@ -34,10 +34,11 @@ class ManagedObjectCapsDS(BaseDataSource):
 
     @classmethod
     def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pd.DataFrame:
-        ## df = pd.DataFrame(index="managed_object_id", columns=[ff.name for ff in cls.fields if not fields or ff.name in fields or ff.name == "managed_object_id"])
-        ## for rr in cls.iter_query(fields, require_index=True):
-        ##     df.loc[df.shape[0], :] = rr
-        ## return df
+        # df = pd.DataFrame(index="managed_object_id", columns=[ff.name for ff in cls.fields
+        # if not fields or ff.name in fields or ff.name == "managed_object_id"])
+        # for rr in cls.iter_query(fields, require_index=True):
+        #     df.loc[df.shape[0], :] = rr
+        # return df
         # data = [mm for mm in cls.iter_query(fields, require_index=True)]
         data = pd.DataFrame.from_records(
             cls.iter_query(fields, require_index=True),
