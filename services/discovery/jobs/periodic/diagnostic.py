@@ -106,6 +106,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 [
                     CheckData(
                         name=cr.check,
+                        arg0=cr.arg0,
                         status=cr.status,
                         skipped=cr.skipped,
                         error=cr.error,
