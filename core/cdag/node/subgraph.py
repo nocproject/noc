@@ -17,7 +17,7 @@ import yaml
 # NOC modules
 from ..graph import CDAG
 from ..factory.config import ConfigCDAGFactory, GraphConfig
-from .base import BaseCDAGNode, ValueType, Category
+from .base import BaseCDAGNode, ValueType, Category, IN_INVALID, IN_REQUIRED
 
 
 class InputMapping(BaseModel):
@@ -121,7 +121,6 @@ class SubgraphNode(BaseCDAGNode):
                 if not node:
                     continue
                 self.input_mappings[m.public_name] = InputItem(node=node, input=m.name)
-                self.static_inputs.add(m.public_name)
         # Inject measure node when necessary
         self.measure_node = None
         if cfg.output:
@@ -140,11 +139,10 @@ class SubgraphNode(BaseCDAGNode):
     def iter_inputs(self) -> Iterable[str]:
         yield from self.input_mappings
 
-    def has_input(self, name: str) -> bool:
-        return name in self.input_mappings
-
-    def is_required_input(self, name: str) -> bool:
-        return name in self.input_mappings
+    def get_input_type(self, name: str) -> int:
+        if name in self.input_mappings:
+            return IN_REQUIRED
+        return IN_INVALID
 
     def get_value(self, *args, **kwargs) -> Optional[ValueType]:
         # Start sub-transaction
@@ -153,8 +151,10 @@ class SubgraphNode(BaseCDAGNode):
             im = self.input_mappings[p]
             im.node.activate(tx, im.input, v)
         changed_state = tx.get_changed_state()
-        if self.state.state is None:
-            self.state.state = {}
-        self.state.state.update(changed_state)
+        if changed_state:
+            if self.state.state:
+                self.state.state.update(changed_state)
+            else:
+                self.state.state = changed_state.copy()
         out = tx.get_inputs(self.measure_node)
         return out.get("x")  # None node has `x` input
