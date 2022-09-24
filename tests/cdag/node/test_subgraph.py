@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # subgraph node test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -69,7 +69,7 @@ def test_config():
     "x,y,expected",
     [(0, 0, 0), (1, 0, 2), (0, 1, 1), (2, 1, 5)],
 )
-def test_subgrapg_node(x, y, expected):
+def test_subgraph_node(x, y, expected):
     cdag = NodeCDAG("subgraph", config=CONFIG)
     assert cdag.is_activated() is False
     cdag.activate("x", x)

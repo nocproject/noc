@@ -21,7 +21,7 @@
             "type": "float"
         },
         {
-            "name": "activation.min_window",
+            "name": "activation-window.min_window",
             "description": null,
             "default": "900",
             "max_value": 3600.0,
@@ -29,7 +29,7 @@
             "type": "int"
         },
         {
-            "name": "activation.max_window",
+            "name": "activation-window.max_window",
             "description": null,
             "default": "1200",
             "max_value": 3600.0,
@@ -51,5 +51,8 @@
         },
         "window_function": "percentile",
         "window_type": "seconds"
+    },
+    "alarm_config": {
+        "reference": null
     }
 }

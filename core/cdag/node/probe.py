@@ -118,6 +118,10 @@ class ProbeNode(BaseCDAGNode):
             # Timer stepback, reset state and exit
             self.set_state(None, None)
             return None
+        elif (ts - self.state.lt) < NS:
+            # Too less timestamp different, Division by zero exception
+            logger.info("[%s] Skipping already processed value", self.node_id)
+            return None
         if fn.has_time_delta:
             kwargs["time_delta"] = (ts - self.state.lt) // NS  # Always positive
         if fn.has_delta:

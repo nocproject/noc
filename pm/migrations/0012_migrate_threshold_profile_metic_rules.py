@@ -208,8 +208,8 @@ class Migration(BaseMigration):
             if "invert_condition" in ac:
                 params["alarm.invert_condition"] = ac["invert_condition"]
             if wc:
-                params["activation.max_window"] = wc["max_window"]
-                params["activation.min_window"] = wc["min_window"]
+                params["activation-window.max_window"] = wc["max_window"]
+                params["activation-window.min_window"] = wc["min_window"]
             mr_bulk += [
                 InsertOne(
                     {
