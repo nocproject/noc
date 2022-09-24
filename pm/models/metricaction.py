@@ -105,12 +105,18 @@ class AlarmConfig(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        return {
-            "alarm_class__name": self.alarm_class.name,
-            "reference": self.reference,
-            "activation_level": self.activation_level,
-            "deactivation_level": self.deactivation_level,
-        }
+        r = {}
+        if self.alarm_class:
+            r["alarm_class"] = self.alarm_class.name
+        if self.reference:
+            r["reference"] = self.reference
+        if self.activation_level != 1.0:
+            r["activation_level"] = self.activation_level
+        if self.deactivation_level != 1.0:
+            r["deactivation_level"] = self.deactivation_level
+        if self.invert_condition:
+            r["invert_condition"] = self.invert_condition
+        return r
 
 
 class ActivationConfig(EmbeddedDocument):
