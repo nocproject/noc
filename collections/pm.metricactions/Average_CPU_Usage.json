@@ -50,7 +50,7 @@
     },
     "alarm_config": {
         "activation_level": 1.0,
-        "alarm_class": "Metric | Object | High CPU Usage",
+        "alarm_class__name": "Metric | Object | High CPU Usage",
         "deactivation_level": 1.0,
         "reference": null
     }
