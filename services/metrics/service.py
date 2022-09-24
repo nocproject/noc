@@ -780,9 +780,11 @@ class MetricsService(FastAPIService):
             if not mu:
                 continue  # Missed field
             probe = card.probes.get(n)
+            if probe.name == ComposeProbeNode.name:  # Skip composed probe
+                continue
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k)
-            if not probe or probe.name == ComposeProbeNode.name:  # Skip composed probe
+            if not probe:
                 continue
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])
