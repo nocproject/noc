@@ -6,6 +6,10 @@
     "description": "Operational state of the interface",
     "label": " ",
     "dashboard_label": null,
+    "convert_from": [{
+        "expr": "x",
+        "unit__code": "1"
+    }],
     "enum": [
         {
             "key": "up",
