@@ -149,7 +149,7 @@ class MetricsCheck(DiscoveryCheck):
             m_id = (scope_name, tuple(rr["labels"]))
             if m_id not in data:
                 data[m_id] = {
-                    "ts": rr["ts"] + config.tz_utc_offset,
+                    "ts": rr["ts"] + config.tz_utc_offset * NS,
                     "managed_object": self.object.bi_id,
                     "scope": scope_name,
                     "field": mt.field_name,
