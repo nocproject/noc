@@ -407,7 +407,9 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
             for s in self.iter_subscribers():
                 s.node.activate_const(s.input, self._const_value)
 
-    def subscribe(self, node: "BaseCDAGNode", name: str, dynamic: bool = False) -> None:
+    def subscribe(
+        self, node: "BaseCDAGNode", name: str, dynamic: bool = False, mark_bound: bool = True
+    ) -> None:
         """
         Subscribe to node activation
         :param node: Connected node
@@ -423,7 +425,8 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if dynamic:
             node.add_input(name)
         self._subscribers = Subscriber(node=node, input=name, next=self._subscribers)
-        node.mark_as_bound(name)
+        if mark_bound:
+            node.mark_as_bound(name)
         if self.is_const:
             node.activate_const(name, self._const_value)
 

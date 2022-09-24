@@ -5,7 +5,8 @@
     "SNMP | MIB | ADSL-MIB", {
       "$type": "ifindex",
       "oid": "ADSL-LINE-MIB::adslAtucCurrSnrMgn.{{ ifIndex }}",
-      "type": "gauge"
+      "type": "gauge",
+      "units": "dB"
     }
   ]]
 }

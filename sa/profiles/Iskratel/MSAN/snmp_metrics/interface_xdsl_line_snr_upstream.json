@@ -6,7 +6,8 @@
       "$type": "ifindex",
       "oid": ["VDSL2-LINE-MIB::xdsl2LineBandStatusSnrMargin.{{ ifIndex }}.1", "VDSL2-LINE-MIB::xdsl2LineBandStatusLnAtten.{{ ifIndex }}.1"],
       "type": "gauge",
-      "scale": "sum"
+      "scale": "sum",
+      "units": "dB"
     }
   ]]
 }

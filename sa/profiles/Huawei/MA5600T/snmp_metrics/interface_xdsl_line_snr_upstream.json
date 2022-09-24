@@ -6,7 +6,8 @@
       "$type": "ifindex",
       "oid": ["ADSL-LINE-MIB::adslAtucCurrSnrMgn.{{ ifIndex }}", "ADSL-LINE-MIB::adslAtucCurrAtn.{{ ifIndex }}"],
       "type": "gauge",
-      "scale": "sum"
+      "scale": "sum",
+      "units": "dB"
     }
   ]]
 }

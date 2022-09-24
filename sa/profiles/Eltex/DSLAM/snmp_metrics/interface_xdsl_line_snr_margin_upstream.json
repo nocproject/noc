@@ -6,13 +6,15 @@
       "$match": "is_platform_MXA32",
       "$type": "ifindex",
       "oid": "1.3.6.1.4.1.35265.1.28.10.3.1.5.1.{{ ifIndex }}",
-      "type": "gauge"
+      "type": "gauge",
+      "units": "dB"
     },
     {
       "$match": "is_platform_MXA64",
       "$type": "ifindex",
       "oid": "1.3.6.1.4.1.35265.1.33.10.3.1.5.1.{{ ifIndex }}",
-      "type": "gauge"
+      "type": "gauge",
+      "units": "dB"
     }
   ]
 }

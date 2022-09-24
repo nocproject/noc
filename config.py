@@ -132,7 +132,7 @@ class Config(BaseConfig):
         lookup_handler = HandlerParameter(default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
         default_rule = StringParameter(default="Unknown | Default")
-        allowed_time_drift = SecondsParameter(default="5m")
+        allowed_time_drift = SecondsParameter(default="5M")
         allowed_async_cursor = BooleanParameter(default=True, help="Use Async Processed cursor")
 
     class clickhouse(ConfigSection):
@@ -875,8 +875,8 @@ class Config(BaseConfig):
         # Disable On Start, that compact procedure lost Consul session
         compact_on_start = BooleanParameter(default=False)
         compact_on_stop = BooleanParameter(default=False)
-        flush_interval = SecondsParameter(default="1m")
-        compact_interval = SecondsParameter(default="5m")
+        flush_interval = SecondsParameter(default="1M")
+        compact_interval = SecondsParameter(default="5M")
         # Metrics
         disable_spool = BooleanParameter(default=False, help="Disable send metrics to Clickhouse")
         # DataStream request limit

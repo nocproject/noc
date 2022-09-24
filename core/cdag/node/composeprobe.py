@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Callable
 import inspect
-import time
+from typing import Optional, Callable
+from time import time_ns
 
 # Third-party modules
 from pydantic import BaseModel
@@ -37,12 +37,9 @@ class ComposeProbeNode(ProbeNode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.expression: Callable = get_fn(self.config.expression)
-        self.probe_inputs = set(inspect.signature(self.expression).parameters)
+        self.static_inputs |= set(inspect.signature(self.expression).parameters)
+        self.req_inputs_count = len(self.static_inputs)
 
-    def get_value(self, ts: int, **kwargs) -> Optional[ValueType]:
+    def get_value(self, **kwargs) -> Optional[ValueType]:
         x = self.expression(**kwargs)
-        ts = ts or int(time.time())
-        return super().get_value(x, ts=ts, unit="1")
-
-    def is_required_input(self, name: str) -> bool:
-        return name in self.probe_inputs
+        return super().get_value(x, ts=time_ns(), unit="1")
