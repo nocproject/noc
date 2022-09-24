@@ -148,6 +148,7 @@ class CapsItems(BaseModel):
 class CheckStatus(BaseModel):
     name: str
     status: bool  # True - OK, False - Fail
+    arg0: Optional[str] = None
     skipped: bool = False
     error: Optional[str] = None  # Description if Fail
 
@@ -2454,9 +2455,11 @@ class ManagedObject(NOCModel):
             # Filter checks
             # dc_checks = [cr for cr in checks if dc.checks and cr.name in dc.checks]
             dc_checks = [
-                CheckStatus(name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error)
+                CheckStatus(
+                    name=cr.name, status=cr.status, skipped=cr.skipped, error=cr.error, arg0=cr.arg0
+                )
                 for cr in checks
-                if dc.checks and Check(name=cr.name) in dc.checks
+                if dc.checks and Check(name=cr.name, arg0=cr.arg0) in dc.checks
             ]
             # Get or Create DiagnosticItem
             if dc.diagnostic not in self.diagnostics:
@@ -2573,6 +2576,7 @@ class ManagedObject(NOCModel):
         """
         from django.db import connection as pg_connection
 
+        # @todo effective labels
         if not diagnostics and not removed:
             return
         with pg_connection.cursor() as cursor:

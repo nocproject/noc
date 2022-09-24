@@ -56,6 +56,7 @@ class CheckData(object):
     name: str
     status: bool  # True - OK, False - Fail
     skipped: bool = False  # Check was skipped (Example, no credential)
+    arg0: Optional[str] = None
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
 
