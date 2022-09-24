@@ -114,6 +114,10 @@ class ProbeNode(BaseCDAGNode):
             # No previous measurement, store state and exit
             self.set_state(ts, x)
             return None
+        if (ts - self.state.lt) < NS:
+            # Too less timestamp different, Division by zero exception
+            logger.info("[%s] Skipping already processed value", self.node_id)
+            return None
         if ts <= self.state.lt:
             # Timer stepback, reset state and exit
             self.set_state(None, None)

@@ -49,9 +49,6 @@
         "window_type": "tick"
     },
     "alarm_config": {
-        "activation_level": 1.0,
-        "alarm_class__name": "Metric | Object | High CPU Usage",
-        "deactivation_level": 1.0,
         "reference": null
     }
 }
