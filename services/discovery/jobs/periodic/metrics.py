@@ -115,7 +115,7 @@ class MetricsCheck(DiscoveryCheck):
                 "utc_offset": config.tz_utc_offset,
                 "data": s_data,
             }
-            if config.discovery.proxy_metric
+            if not config.discovery.proxy_metric
             else None,
         )
         # Collect metrics
