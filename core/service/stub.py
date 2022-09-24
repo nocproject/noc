@@ -11,6 +11,7 @@ import threading
 from collections import defaultdict
 import asyncio
 from typing import Optional, Dict, List, Any
+from functools import partial
 
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
@@ -109,3 +110,13 @@ class ServiceStub(object):
                 # Cluster election in progress or cluster is misconfigured
                 self.logger.info("Stream '%s' has no active partitions. Waiting" % stream)
                 await asyncio.sleep(1)
+
+    @staticmethod
+    def get_slot_limits(slot_name):
+        """
+        Get slot count
+        :param slot_name:
+        :return:
+        """
+        dcs = get_dcs(DEFAULT_DCS)
+        return run_sync(partial(dcs.get_slot_limit, slot_name))
