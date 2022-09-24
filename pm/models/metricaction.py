@@ -284,6 +284,7 @@ class MetricAction(Document):
             config = {
                 "min_window": self.activation_config.min_window,
                 "max_window": self.activation_config.max_window,
+                "type": self.activation_config.window_type[0],
             }
             config.update(self.activation_config.window_config)
             nodes["activation-window"] = NodeItem(
@@ -307,6 +308,7 @@ class MetricAction(Document):
             config = {
                 "min_window": self.deactivation_config.min_window,
                 "max_window": self.deactivation_config.max_window,
+                "type": self.deactivation_config.window_type[0],
             }
             config.update(self.deactivation_config.window_config)
             nodes["deactivation-window"] = NodeItem(
