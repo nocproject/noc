@@ -237,6 +237,9 @@ class Config(BaseConfig):
 
     class discovery(ConfigSection):
         max_threads = IntParameter(default=20)
+        proxy_metric = BooleanParameter(
+            default=False, help="Send metrics discovery result from self"
+        )
         sample = IntParameter(default=0)
 
     class dns(ConfigSection):
