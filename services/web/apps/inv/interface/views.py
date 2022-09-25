@@ -160,7 +160,7 @@ class InterfaceAppplication(ExtDocApplication):
             return self.response_forbidden("Permission denied")
         # Physical interfaces
         # @todo: proper ordering
-        style_cache = {}  # profile_id -> css_style
+        # style_cache = {}  # profile_id -> css_style
         l1 = [
             {
                 "id": str(i.id),

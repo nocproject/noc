@@ -140,7 +140,7 @@ class CfgSyslogDataStream(DataStream):
             if not r["addresses"]:
                 raise KeyError("No interfaces with IP")
         else:
-            raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
+            raise KeyError(f"Unsupported Trap Source Type: {syslog_source_type}")
         return r
 
     @classmethod

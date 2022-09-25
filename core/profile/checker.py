@@ -15,6 +15,8 @@ from typing import Optional, List, Dict, Tuple, Iterable
 
 # Third-party modules
 import cachetools
+from pymongo import ReadPreference
+
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -127,7 +129,11 @@ class ProfileChecker(object):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
     def get_profile_check_rules(cls):
-        return list(ProfileCheckRule.objects.all().order_by("preference"))
+        return list(
+            ProfileCheckRule.objects.all()
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .order_by("preference")
+        )
 
     def get_rules(self) -> Dict[int, Dict[Tuple[str, str], List[Tuple[str, str, str, str, str]]]]:
         """

@@ -88,6 +88,8 @@ class Interface(Document):
             "service",
             "aggregated_interface",
             "labels",
+            "profile",
+            "state",
             "effective_labels",
         ],
     }
