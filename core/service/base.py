@@ -31,7 +31,6 @@ from typing import (
 
 # Third-party modules
 import setproctitle
-import orjson
 
 # NOC modules
 from noc.config import config
@@ -51,8 +50,7 @@ from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE, MX_SHARDING_KEY
-from noc.core.comp import smart_bytes
+from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE
 from .rpc import RPCProxy
 from .loader import set_service
 
