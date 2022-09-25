@@ -66,6 +66,11 @@ class ConfigCheck(DiscoveryCheck):
             return self.object.scripts.get_config(policy=self.object.get_config_fetch_policy())
         except NOCError as e:
             self.logger.error("Failed to request config: %s", e)
+            self.set_problem(
+                alarm_class=self.error_map.get(e.remote_code),
+                message=f"RPC Error: {e}",
+                diagnostic="CLI" if e.remote_code in self.error_map else None,
+            )
             return None
 
     def get_config_download(self):

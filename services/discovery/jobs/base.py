@@ -160,9 +160,10 @@ class MODiscoveryJob(PeriodicJob):
         :return:
         """
         self.logger.debug(
-            "[%s] Set problem: class=%s path=%s message=%s fatal=%s vars=%s",
+            "[%s] Set problem: class=%s diagnostic=%s path=%s message=%s fatal=%s vars=%s",
             check,
             alarm_class,
+            diagnostic,
             path,
             message,
             fatal,

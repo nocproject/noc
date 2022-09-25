@@ -117,12 +117,17 @@ class CLI(BaseCLI):
 
     async def submit(self, parser=None):
         # Create iostream and connect, when necessary
-        if not self.stream:
+        if not self.stream or not self.is_started:
             try:
                 await self.start_stream()
             except ConnectionRefusedError:
                 self.error = CLIConnectionRefused("Connection refused")
                 metrics["cli_connection_refused", ("proto", self.name)] += 1
+                return
+            except CLIAuthFailed as e:
+                self.error = CLIAuthFailed(*e.args)
+                self.logger.info("CLI Authentication failed")
+                # metrics["cli_connection_refused", ("proto", self.name)] += 1
                 return
         metrics["cli_commands", ("proto", self.name)] += 1
         # Send command
