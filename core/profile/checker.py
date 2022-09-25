@@ -172,10 +172,10 @@ class ProfileChecker(object):
         """
         Perform check
         """
-        self.logger.debug("do_check(%s, %s)", method, param)
+        self.logger.info("do_check(%s, %s)", method, param)
         if (method, param) in self.result_cache:
-            self.logger.debug("Using cached value")
-            return self.result_cache[method, param]
+            self.logger.info("Using cached value")
+            # return self.result_cache[method, param]
         h = getattr(self, f"check_{method}", None)
         if not h:
             self.logger.error("Invalid check method '%s'. Ignoring", method)
