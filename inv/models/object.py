@@ -752,7 +752,7 @@ class Object(Document):
             mo = mo.id
         return cls.objects.filter(
             data__match={"interface": "management", "attr": "managed_object", "value": mo}
-        )
+        ).read_preference(ReadPreference.SECONDARY_PREFERRED)
 
     def iter_managed_object_id(self) -> Iterator[int]:
         for d in Object._get_collection().aggregate(

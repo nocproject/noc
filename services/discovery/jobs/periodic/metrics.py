@@ -61,7 +61,9 @@ class MetricsCheck(DiscoveryCheck):
             is_box=self.is_box, is_periodic=self.is_periodic
         ):
             yield mc
-        for sensor in Sensor.objects.filter(object__in=list(o)):
+        for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
             for mc in sensor.iter_collected_metrics(
                 is_box=self.is_box, is_periodic=self.is_periodic
             ):
@@ -69,7 +71,9 @@ class MetricsCheck(DiscoveryCheck):
         if not self.has_any_capability(self.SLA_CAPS):
             self.logger.info("SLA not configured, skipping SLA metrics")
             return
-        for sla in SLAProbe.objects.filter(managed_object=self.object.id):
+        for sla in SLAProbe.objects.filter(managed_object=self.object.id).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
             for mc in sla.iter_collected_metrics(is_box=self.is_box, is_periodic=self.is_periodic):
                 yield mc
 
