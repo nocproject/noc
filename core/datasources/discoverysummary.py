@@ -10,14 +10,10 @@ from typing import Optional, Iterable, Dict, Any
 
 # Third-party modules
 import pandas as pd
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
-from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.main.models.pool import Pool
-from noc.core.mongo.connection import get_db
-from pymongo.read_preferences import ReadPreference
 
 # NOC modules
 from .base import FieldInfo, BaseDataSource

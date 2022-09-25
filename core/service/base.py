@@ -31,7 +31,6 @@ from typing import (
 
 # Third-party modules
 import setproctitle
-import orjson
 
 # NOC modules
 from noc.config import config
@@ -51,8 +50,7 @@ from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE, MX_SHARDING_KEY
-from noc.core.comp import smart_bytes
+from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE
 from .rpc import RPCProxy
 from .loader import set_service
 
@@ -654,7 +652,11 @@ class BaseService(object):
                     ):
                         self.mx_metrics_scopes[mss.scope.table_name] = mss.to_mx
                 self.mx_metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
-                self.loop.create_task(self.publish_metrics(self.mx_metrics_queue))
+                self.loop.create_task(
+                    self.publish_metrics(
+                        self.mx_metrics_queue, headers={MX_MESSAGE_TYPE: b"metrics"}
+                    )
+                )
 
     def publish(
         self,
@@ -750,11 +752,13 @@ class BaseService(object):
         executor = self.get_executor(name)
         return executor.submit(fn, *args, **kwargs)
 
-    async def publish_metrics(self, queue: QBuffer) -> None:
+    async def publish_metrics(
+        self, queue: QBuffer, headers: Optional[Dict[str, bytes]] = None
+    ) -> None:
         while not (self.publish_queue.to_shutdown and queue.is_empty()):
             t0 = perf_counter()
             for stream, partititon, chunk in queue.iter_slice():
-                self.publish(chunk, stream=stream, partition=partititon)
+                self.publish(chunk, stream=stream, partition=partititon, headers=headers)
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
@@ -787,15 +791,20 @@ class BaseService(object):
             and table in self.mx_metrics_scopes
         ):
             n_partitions = get_mx_partitions()
-            self.publish(
-                value=orjson.dumps([self.mx_metrics_scopes[table](m) for m in metrics]),
+            self.mx_metrics_queue.put(
                 stream=MX_STREAM,
                 partition=key % n_partitions,
-                headers={
-                    MX_MESSAGE_TYPE: b"metrics",
-                    MX_SHARDING_KEY: smart_bytes(key),
-                },
+                data=[self.mx_metrics_scopes[table](m) for m in metrics],
             )
+            # self.publish(
+            #     value=orjson.dumps([self.mx_metrics_scopes[table](m) for m in metrics]),
+            #     stream=MX_STREAM,
+            #     partition=key % n_partitions,
+            #     headers={
+            #         MX_MESSAGE_TYPE: b"metrics",
+            #         MX_SHARDING_KEY: smart_bytes(key),
+            #     },
+            # )
 
     def start_telemetry_callback(self) -> None:
         """

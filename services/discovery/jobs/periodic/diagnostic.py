@@ -48,7 +48,7 @@ class DiagnosticCheck(DiscoveryCheck):
         :return:
         """
         for checker in loader:
-            self.CHECKERS[checker] = loader[checker](self.object, self.logger, "discovery")
+            self.CHECKERS[checker] = loader[checker]
             for c in self.CHECKERS[checker].CHECKS:
                 self.CHECK_MAP[c] = self.CHECKERS[checker].name
 
@@ -79,6 +79,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 dc.run_policy == "F"
                 and dc.diagnostic in self.object.diagnostics
                 and self.object.get_diagnostic(dc.diagnostic).state == DiagnosticState.enabled
+                and self.object.get_diagnostic(dc.diagnostic).checks
             ):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue
@@ -135,19 +136,19 @@ class DiagnosticCheck(DiscoveryCheck):
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
-        r = []
+        # r = []
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
         for c in checks:
             if c.name not in self.CHECK_MAP:
                 self.logger.warning("[%s] Unknown check. Skipping", c.name)
                 continue
-            if c in self.CHECK_CACHE:
-                r.append(self.CHECK_CACHE[c])
-                continue
+            # if c in self.CHECK_CACHE:
+            #     r.append(self.CHECK_CACHE[c])
+            #     continue
             do_checks[self.CHECK_MAP[c.name]] += [c]
         for checker, d_checks in do_checks.items():
-            checker = self.CHECKERS[checker]
+            checker = self.CHECKERS[checker](self.object, self.logger, "discovery")
             self.logger.info("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
                 for check in checker.iter_result(d_checks):

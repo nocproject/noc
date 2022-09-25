@@ -12,6 +12,7 @@ from typing import Any, List, Dict, Iterable
 
 # Third-party modules
 import orjson
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -61,7 +62,9 @@ class MetricsCheck(DiscoveryCheck):
             is_box=self.is_box, is_periodic=self.is_periodic
         ):
             yield mc
-        for sensor in Sensor.objects.filter(object__in=list(o)):
+        for sensor in Sensor.objects.filter(object__in=list(o)).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
             for mc in sensor.iter_collected_metrics(
                 is_box=self.is_box, is_periodic=self.is_periodic
             ):
@@ -69,7 +72,9 @@ class MetricsCheck(DiscoveryCheck):
         if not self.has_any_capability(self.SLA_CAPS):
             self.logger.info("SLA not configured, skipping SLA metrics")
             return
-        for sla in SLAProbe.objects.filter(managed_object=self.object.id):
+        for sla in SLAProbe.objects.filter(managed_object=self.object.id).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
             for mc in sla.iter_collected_metrics(is_box=self.is_box, is_periodic=self.is_periodic):
                 yield mc
 
@@ -115,7 +120,7 @@ class MetricsCheck(DiscoveryCheck):
                 "utc_offset": config.tz_utc_offset,
                 "data": s_data,
             }
-            if config.discovery.proxy_metric
+            if not config.discovery.proxy_metric
             else None,
         )
         # Collect metrics
@@ -149,7 +154,7 @@ class MetricsCheck(DiscoveryCheck):
             m_id = (scope_name, tuple(rr["labels"]))
             if m_id not in data:
                 data[m_id] = {
-                    "ts": rr["ts"] + config.tz_utc_offset,
+                    "ts": rr["ts"] + config.tz_utc_offset * NS,
                     "managed_object": self.object.bi_id,
                     "scope": scope_name,
                     "field": mt.field_name,
