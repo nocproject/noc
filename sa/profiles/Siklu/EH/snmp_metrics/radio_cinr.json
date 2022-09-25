@@ -1,5 +1,7 @@
 {
   "$metric": "Radio | CINR",
   "$type": "oid",
-  "oid": "1.3.6.1.4.1.31926.2.1.1.18.1"
+  "oid": "1.3.6.1.4.1.31926.2.1.1.18.1",
+  "labels": ["noc::interface::eth0"],
+  "units": "dB"
 }

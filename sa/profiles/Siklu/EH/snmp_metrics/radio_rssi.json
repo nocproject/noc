@@ -1,5 +1,7 @@
 {
   "$metric": "Radio | RSSI",
   "$type": "oid",
-  "oid": "1.3.6.1.4.1.31926.2.1.1.19.1"
+  "oid": "1.3.6.1.4.1.31926.2.1.1.19.1",
+  "labels": ["noc::interface::eth0"],
+  "units": "dBm"
 }
