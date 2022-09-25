@@ -136,7 +136,7 @@ class DiagnosticCheck(DiscoveryCheck):
         # Fire workflow event diagnostic ?
 
     def iter_checks(self, checks: List[Check]) -> Iterable[CheckResult]:
-        r = []
+        # r = []
         # Group check by checker
         do_checks: Dict[str, List[Check]] = defaultdict(list)
         for c in checks:
