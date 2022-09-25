@@ -13,6 +13,8 @@ from typing import Optional, List, Tuple, Union, Set, Iterator, Dict
 
 # Third-party modules
 import cachetools
+from pymongo import ReadPreference
+
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -202,10 +204,10 @@ class CredentialChecker(object):
         """
         r = set()
         auth_profiles = set()
-        ccr: List[CredentialCheckRule] = CredentialCheckRule.objects.filter()
+        ccr: List[CredentialCheckRule] = CredentialCheckRule.objects.filter(is_active=True)
         if self.labels:
             ccr = ccr.filter(match__labels__in=self.labels)
-        for cc in ccr.order_by("preference"):
+        for cc in ccr.read_preference(ReadPreference.SECONDARY_PREFERRED).order_by("preference"):
             sp = cc.suggest_protocols or protocols or SUGGEST_PROTOCOLS
             cli_protocols = self.merge_protocols(
                 SUGGEST_CLI, protocols, cc.suggest_protocols, order=sp
