@@ -2701,7 +2701,7 @@ class ManagedObject(NOCModel):
             else:
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
-                    "reference": f"dc:{self.id}:{d.diagnostic}",
+                    "reference": f"dc:{self.id}:{dc.diagnostic}",
                     "$op": "clear",
                 }
         # Group Alarm
