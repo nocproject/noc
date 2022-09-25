@@ -79,6 +79,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 dc.run_policy == "F"
                 and dc.diagnostic in self.object.diagnostics
                 and self.object.get_diagnostic(dc.diagnostic).state == DiagnosticState.enabled
+                and self.object.get_diagnostic(dc.diagnostic).checks
             ):
                 self.logger.info("[%s] Diagnostic with enabled state. Skipping", dc.diagnostic)
                 continue

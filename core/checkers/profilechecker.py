@@ -37,7 +37,7 @@ class ProfileChecker(ObjectChecker):
             snmp_community = self.object.credentials.snmp_ro
             snmp_version = [
                 self.CHECK_SNMP_VERSION_MAP[check.name]
-                for check in self.object.get_diagnostic(SNMP_DIAG).checks
+                for check in self.object.get_diagnostic(SNMP_DIAG).checks or []
                 if check.status
             ]
         else:
