@@ -13,6 +13,7 @@ from collections import namedtuple
 from typing import Optional, Any, Dict, Union, List, Set, Iterator
 
 # Third-party modules
+from pymongo import ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
