@@ -12,6 +12,7 @@ from typing import Any, List, Dict, Iterable
 
 # Third-party modules
 import orjson
+from pymongo import ReadPreference
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
