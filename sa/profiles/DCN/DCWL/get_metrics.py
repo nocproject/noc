@@ -25,7 +25,7 @@ class Script(GetMetricsScript):
             c = self.cli("cat /proc/loadavg")
             if c:
                 cpu = c.split(" ")[1].strip()
-                self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5))
+                self.set_metric(id=("CPU | Usage", None), value=round(float(cpu) + 0.5), units="%")
 
     @metrics(["Memory | Usage"], volatile=False, access="C")  # CLI version
     def get_memory_metrics(self, metrics):
@@ -38,7 +38,7 @@ class Script(GetMetricsScript):
                 if mr[0] == "MemFree":
                     mfree = mr[1].strip().split(" ")[0]
                     memory = (100 / int(mtotal)) * int(mfree)
-                    self.set_metric(id=("Memory | Usage", None), value=memory)
+                    self.set_metric(id=("Memory | Usage", None), value=memory, units="%")
 
     @metrics(["Check | Result", "Check | RTT"], volatile=False, access="C")  # CLI version
     def get_avail_metrics(self, metrics):
@@ -50,7 +50,13 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Check | Result", None),
                     metric="Check | Result",
-                    labels=("noc::check_name::ping", f"noc::check_id::{ip}"),
+                    labels=(
+                        "noc::diagnostic::REMOTE_PING",
+                        "noc::check::name::ping",
+                        f"noc::check::arg0::{ip}",
+                        "noc::check_name::ping",
+                        f"noc::check_id::{ip}",
+                    ),
                     value=bool(result["success"]),
                     multi=True,
                 )
@@ -58,7 +64,13 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Check | RTT", None),
                         metric="Check | RTT",
-                        labels=("noc::check_name::ping", f"noc::check_id::{ip}"),
+                        labels=(
+                            "noc::diagnostic::REMOTE_PING",
+                            "noc::check::name::ping",
+                            f"noc::check::arg0::{ip}",
+                            "noc::check_name::ping",
+                            f"noc::check_id::{ip}",
+                        ),
                         value=bool(result["avg"]),
                     )
 
@@ -135,18 +147,21 @@ class Script(GetMetricsScript):
                         id=(metric, [f"noc::interface::{iface}"]),
                         value=data[field],
                         type="counter",
-                        scale=8 if metric in self.scale_x8 else 1,
+                        # scale=8 if metric in self.scale_x8 else 1,
+                        units="bit" if metric in self.scale_x8 else "byte",
                     )
             # LifeHack. Set Radio interface metrics to SSID
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
                     id=("Radio | TxPower", [f"noc::interface::{iface}"]),
                     value=radio_metrics[data["radio"]]["tx-power"],
+                    units="dBm",
                 )
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
                     id=("Radio | Channel | Util", [f"noc::interface::{iface}"]),
                     value=radio_metrics[data["radio"]]["channel-util"],
+                    units="dBm",
                 )
 
     @metrics(
@@ -178,6 +193,7 @@ class Script(GetMetricsScript):
                     id=("Radio | TxPower", [f"noc::interface::{iface}"]),
                     # Max TxPower 27dBm, convert % -> dBm
                     value=(27 / 100) * int(data["tx-power"].strip()),
+                    units="dBm",
                 )
                 r_metrics[iface]["tx-power"] = (27 / 100) * int(data["tx-power"].strip())
             if data.get("channel-util") is not None:

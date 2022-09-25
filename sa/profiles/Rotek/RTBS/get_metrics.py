@@ -25,7 +25,13 @@ class Script(GetMetricsScript):
                 self.set_metric(
                     id=("Check | Result", None),
                     metric="Check | Result",
-                    labels=("noc::check_name::ping", f"noc::check_id::{ip}"),
+                    labels=(
+                        "noc::diagnostic::REMOTE_PING",
+                        "noc::check::name::ping",
+                        f"noc::check::arg0::{ip}",
+                        "noc::check_name::ping",
+                        f"noc::check_id::{ip}",
+                    ),
                     value=bool(result["success"]),
                     multi=True,
                 )
@@ -33,6 +39,12 @@ class Script(GetMetricsScript):
                     self.set_metric(
                         id=("Check | RTT", None),
                         metric="Check | RTT",
-                        labels=("noc::check_name::ping", f"noc::check_id::{ip}"),
+                        labels=(
+                            "noc::diagnostic::REMOTE_PING",
+                            "noc::check::name::ping",
+                            f"noc::check::arg0::{ip}",
+                            "noc::check_name::ping",
+                            f"noc::check_id::{ip}",
+                        ),
                         value=result["avg"],
                     )

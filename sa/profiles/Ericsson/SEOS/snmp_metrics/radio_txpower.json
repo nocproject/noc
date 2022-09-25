@@ -2,5 +2,6 @@
   "$metric": "Radio | TxPower",
   "$type": "ifindex",
   "oid": "1.3.6.1.4.1.193.81.3.4.3.1.3.1.1.{{ ifIndex }}",
-  "type": "gauge"
+  "type": "gauge",
+  "units": "dBm"
 }
