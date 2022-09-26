@@ -94,7 +94,7 @@ class ThresholdProfile(object):
             "reference": None,
         }
         if inverse:
-            r["invert_condition"] = inverse
+            r["invert_condition"] = "true"
         if dl is not None:
             r["deactivation_level"] = float(dl)
         return r
@@ -116,7 +116,7 @@ class Migration(BaseMigration):
                     "description": None,
                     "max_value": 1.0,
                     "min_value": 1.0,
-                    "type": "str",
+                    "type": "float",
                 },
                 {
                     "name": "alarm.deactivation_level",
@@ -126,17 +126,17 @@ class Migration(BaseMigration):
                     "type": "float",
                 },
                 {
-                    "name": "activation.min_window",
+                    "name": "activation-window.min_window",
                     "description": None,
                     "max_value": 2,
-                    "min_value": 2,
+                    "min_value": 1,
                     "type": "int",
                 },
                 {
-                    "name": "activation.max_window",
+                    "name": "activation-window.max_window",
                     "description": None,
                     "max_value": 2,
-                    "min_value": 2,
+                    "min_value": 1,
                     "type": "int",
                 },
             ],
@@ -198,6 +198,8 @@ class Migration(BaseMigration):
                 # Create Metric Action
                 mas[(mt, wc["window_function"])] = self.get_metric_action(mt, wc)
                 ma = mas[(mt, wc["window_function"])]
+            elif (mt, None) in mas:
+                ma = mas[(mt, None)]
             else:
                 mas[(mt, None)] = self.get_metric_action(mt, None)
                 ma = mas[(mt, None)]

@@ -749,7 +749,7 @@ class MetricsService(FastAPIService):
                     # Filter Probe nodes
                     node.freeze()
                 # Add alarms nodes for clear alarm on delete
-                if node.name == "ararm":
+                if node.name == "alarm":
                     card.alarms += [node]
             #
             card.affected_rules.add(sys.intern(rule_id))
@@ -979,6 +979,7 @@ class MetricsService(FastAPIService):
             if r_id not in self.rules:
                 self.rules[r_id] = r
                 # For new Rules (after card create)
+                self.logger.info("[%s] Add new rule", r.id)
                 await self.invalidate_card_rules(invalidate_rules, is_new=True)
                 continue
             diff = self.rules[r_id].is_differ(r)

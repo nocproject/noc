@@ -76,16 +76,16 @@ class Sensor(Document):
     profile: "SensorProfile" = PlainReferenceField(
         SensorProfile, default=SensorProfile.get_default_profile
     )
-    object = PlainReferenceField(Object)
-    managed_object = ForeignKeyField(ManagedObject)
-    agent = PlainReferenceField(Agent)
+    object: "Object" = PlainReferenceField(Object)
+    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
+    agent: "Agent" = PlainReferenceField(Agent)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("P", "Profile"), ("R", "By Rule"), ("D", "Disable")],
         default="P",
     )
     local_id = StringField()
-    state = PlainReferenceField(State)
+    state: "State" = PlainReferenceField(State)
     units = PlainReferenceField(
         MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
     )
@@ -138,7 +138,12 @@ class Sensor(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricsources:
             yield "cfgmetricsources", f"inv.Sensor::{self.bi_id}"
-            yield "cfgmetricsources", f"sa.ManagedObject::{self.managed_object.bi_id}"
+            if self.managed_object:
+                yield "cfgmetricsources", f"sa.ManagedObject::{self.managed_object.bi_id}"
+            if self.object and self.object.get_data("management", "managed_object"):
+                mo = ManagedObject.get_by_id(self.object.get_data("management", "managed_object"))
+                if mo:
+                    yield "cfgmetricsources", f"sa.ManagedObject::{mo.bi_id}"
 
     def clean(self):
         if self.extra_labels:
