@@ -119,12 +119,12 @@
           file:
             state: absent
             path: "{{ item }}"
-            with_items:
-              - "{{ noc_root }}/bin"
-              - "{{ noc_root }}/include"
-              - "{{ noc_root }}/lib"
-              - "{{ noc_root }}/lib64"
-              - "{{ noc_root }}/pyvenv.cfg"
+          with_items:
+            - "{{ noc_root }}/bin"
+            - "{{ noc_root }}/include"
+            - "{{ noc_root }}/lib"
+            - "{{ noc_root }}/lib64"
+            - "{{ noc_root }}/pyvenv.cfg"
           when:
             - noc_python_existing_family_version is defined
             - noc_python_existing_family_version != system_python3_version.stdout
@@ -142,12 +142,12 @@
           file:
             state: absent
             path: "{{ item }}"
-            with_items:
-              - "{{ noc_root }}/bin"
-              - "{{ noc_root }}/include"
-              - "{{ noc_root }}/lib"
-              - "{{ noc_root }}/lib64"
-              - "{{ noc_root }}/pyvenv.cfg"
+          with_items:
+            - "{{ noc_root }}/bin"
+            - "{{ noc_root }}/include"
+            - "{{ noc_root }}/lib"
+            - "{{ noc_root }}/lib64"
+            - "{{ noc_root }}/pyvenv.cfg"
           when:
             - noc_python_existing_version is defined
             - noc_python_existing_version != py_rel_name
