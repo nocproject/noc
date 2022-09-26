@@ -73,14 +73,6 @@ build_centos7:
 #     - cloud
 #     - docker
 
-build_debian9:
-   extends: .base_builder
-   variables:
-     SCENARIO_NAME: debian9
-   tags:
-     - cloud
-     - docker
-
 build_debian10:
   extends: .base_builder
   variables:
