@@ -53,7 +53,7 @@ class CLI(BaseCLI):
 
     def __init__(self, script, tos=None):
         super().__init__(script, tos)
-        self.labels = self.script.labels
+        self.labels = script.labels
         self.motd = ""
         self.command = None
         self.prompt_stack = []
@@ -336,8 +336,6 @@ class CLI(BaseCLI):
                     # handling case if command is dict
                     default_command = c.get(None)
                     for ck, cv in c.items():
-                        if isinstance(ck, bytes):
-                            ck = (ck,)
                         if isinstance(ck, tuple):
                             ck = set(ck)
                             if ck & self.labels == ck:
