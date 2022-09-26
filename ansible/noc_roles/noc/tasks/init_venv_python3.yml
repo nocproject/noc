@@ -150,7 +150,7 @@
               - "{{ noc_root }}/pyvenv.cfg"
           when:
             - noc_python_existing_version is defined
-            - noc_python_existing_version != noc_py_rel
+            - noc_python_existing_version != py_rel_name
 
         - name: Bring Python of {{ noc_py3_ver }} version when system's python differs
           include_tasks: "bring_python.yml"
