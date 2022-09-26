@@ -93,7 +93,7 @@ class SSHStream(BaseStream):
                     raise CLIAuthFailed("Failed to log in")
             else:
                 self.logger.info("No supported authentication methods. Failed to log in")
-                raise CLIAuthFailed("Failed to log in")
+                raise CLIAuthFailed("No supported authentication methods. Failed to log in")
             self.logger.debug("User is authenticated")
             self.logger.debug("Open channel")
             self.channel = self.session.open_session()
