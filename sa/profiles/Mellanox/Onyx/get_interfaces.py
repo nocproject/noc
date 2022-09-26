@@ -74,18 +74,6 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    INTERFACE_TYPES = {
-        "Loopback": "loopback",
-        "Mgmt": "management",
-        "Trunk/L2": "physical",
-        "NotConfigured": "physical",
-        "Bridge/L2": "SVI",
-        "SubInt/L3": "other",
-        "Interface/L3": "SVI",
-        "VRF": "other",
-        "802.3ad": "aggregated",
-    }
-
     def execute_cli(self):
         vrfs = [
             {
