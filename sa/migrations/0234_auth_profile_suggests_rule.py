@@ -49,8 +49,8 @@ class Migration(BaseMigration):
         # CLI
         for ap_id, user, password, super_password in self.db.execute(
             """
-                SELECT auth_profile_id, user, password, super_password
-                FROM sa_authprofilesuggestcli
+                SELECT sac.auth_profile_id, sac.user, sac.password, sac.super_password
+                FROM sa_authprofilesuggestcli as sac
                 """
         ):
             if ap_id not in credentials:
@@ -80,7 +80,7 @@ class Migration(BaseMigration):
         self.db.execute(
             """
                 UPDATE sa_authprofile SET enable_suggest_by_rule = FALSE, type = 'G'
-                WHERE type != 'S'
+                WHERE type = 'S'
                 """
         )
         # ManagedObject Update
