@@ -32,7 +32,7 @@
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when:
     - ansible_distribution == "Debian"
-    - ansible_distribution_version is version(8.0, '<')
+    - ansible_distribution_version is version(10, '<')
   tags:
     - checks
 
