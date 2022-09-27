@@ -35,6 +35,7 @@ CHECK_OIDS = [
 class SNMPCredential(object):
     snmp_ro: str = None
     snmp_rw: Optional[str] = None
+    oids: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
@@ -46,19 +47,19 @@ class CLICredential(object):
 
 @dataclass(frozen=True)
 class SuggestSNMPConfig(object):
-    protocol: Protocol
+    protocols: Tuple[Protocol, ...]
     check_method: str = "snmp_check"
     snmp_ro: Optional[str] = None
     snmp_rw: Optional[str] = None
     check_oids: Optional[Tuple[str, ...]] = None
 
     def get_credential(self) -> SNMPCredential:
-        return SNMPCredential(self.snmp_ro, self.snmp_rw)
+        return SNMPCredential(self.snmp_ro, self.snmp_rw, oids=self.check_oids)
 
 
 @dataclass(frozen=True)
 class SuggestCLIConfig(object):
-    protocol: Protocol
+    protocols: Tuple[Protocol, ...]
     check_method: str = "cli_check"
     user: Optional[str] = None
     password: Optional[str] = None
@@ -159,52 +160,61 @@ class CredentialChecker(object):
                 (m_q(match__labels__in=self.labels, match__exclude_labels__nin=self.labels))
                 | m_q(match__labels__exists=False)
             )
-        # For custom credential
+        # Try custom credential first
         for c in self.credentials:
-            for proto in self.iter_protocols(
-                SUGGEST_PROTOCOLS, protocols, order=protocols or SUGGEST_PROTOCOLS
+            if isinstance(c, CLICredential) and (
+                Protocol(1) in protocols or Protocol(2) in protocols
             ):
-                if isinstance(c, CLICredential) and proto in SUGGEST_CLI:
-                    yield SuggestCLIConfig(
-                        protocol=proto,
-                        user=c.user,
-                        password=c.password,
-                        super_password=c.super_password,
-                    )
-                elif isinstance(c, SNMPCredential) and proto in SUGGEST_SNMP:
-                    yield SuggestSNMPConfig(
-                        protocol=proto,
-                        snmp_ro=c.snmp_ro,
-                        snmp_rw=c.snmp_rw,
-                    )
+                yield SuggestCLIConfig(
+                    protocols=(Protocol(1), Protocol(2)),
+                    user=c.user,
+                    password=c.password,
+                    super_password=c.super_password,
+                )
+            elif isinstance(c, SNMPCredential) and (
+                Protocol(6) in protocols or Protocol(7) in protocols
+            ):
+                yield SuggestSNMPConfig(
+                    protocols=(Protocol(6), Protocol(7)),
+                    snmp_ro=c.snmp_ro,
+                    snmp_rw=c.snmp_rw,
+                )
         for cc in ccr.read_preference(ReadPreference.SECONDARY_PREFERRED).order_by("preference"):
             # Suggest protocol order
             protocol_order = cc.suggest_protocols or protocols or SUGGEST_PROTOCOLS
+            cli = tuple(
+                self.iter_protocols(
+                    SUGGEST_CLI, protocols, cc.suggest_protocols, order=protocol_order
+                )
+            )
+            snmp = tuple(
+                self.iter_protocols(
+                    SUGGEST_SNMP, protocols, cc.suggest_protocols, order=protocol_order
+                )
+            )
             # CLI
-            for proto in self.iter_protocols(
-                SUGGEST_PROTOCOLS, protocols, cc.suggest_protocols, order=protocol_order
-            ):
-                for ap in cc.suggest_auth_profile:
-                    if proto in SUGGEST_CLI and (ap.user or ap.password):
-                        yield SuggestCLIConfig(
-                            proto,
-                            user=ap.user,
-                            password=ap.password,
-                            super_password=ap.super_password,
-                        )
-                    if proto in SUGGEST_SNMP and (ap.snmp_ro or ap.snmp_rw):
-                        yield SuggestSNMPConfig(proto, snmp_ro=ap.snmp_ro, snmp_rw=ap.snmp_rw)
-                if proto in SUGGEST_CLI:
-                    for sc in cc.suggest_credential:
-                        yield SuggestCLIConfig(
-                            proto,
-                            user=sc.user,
-                            password=sc.password,
-                            super_password=sc.super_password,
-                        )
-                if proto in SUGGEST_SNMP:
-                    for ss in cc.suggest_snmp:
-                        yield SuggestSNMPConfig(proto, snmp_ro=ss.snmp_ro, snmp_rw=ss.snmp_rw)
+            for ap in cc.suggest_auth_profile:
+                ap = ap.auth_profile
+                if cli and (ap.user or ap.password):
+                    yield SuggestCLIConfig(
+                        cli,
+                        user=ap.user,
+                        password=ap.password,
+                        super_password=ap.super_password,
+                    )
+                if snmp and (ap.snmp_ro or ap.snmp_rw):
+                    yield SuggestSNMPConfig(snmp, snmp_ro=ap.snmp_ro, snmp_rw=ap.snmp_rw)
+            if cli:
+                for sc in cc.suggest_credential:
+                    yield SuggestCLIConfig(
+                        cli,
+                        user=sc.user,
+                        password=sc.password,
+                        super_password=sc.super_password,
+                    )
+            if snmp:
+                for ss in cc.suggest_snmp:
+                    yield SuggestSNMPConfig(snmp, snmp_ro=ss.snmp_ro, snmp_rw=ss.snmp_rw)
 
     def iter_result(
         self, protocols: Optional[Iterable[Protocol]] = None, first_success: bool = True
@@ -219,33 +229,39 @@ class CredentialChecker(object):
         success_proto = set()
         processed = set()
         for suggest in self.iter_suggests(protocols):
-            if unsupported_proto and suggest.protocol in unsupported_proto:
-                # Skip unsupported proto
-                continue
-            if success_proto and suggest.protocol in success_proto:
-                continue
-            if suggest in processed:
-                # Skip already checked credential
-                continue
-            self.logger.debug("Trying suggest: %s", suggest)
-            if not hasattr(self, f"do_{suggest.check_method}"):
-                self.logger.info("Unknown check method: %s", suggest.check_method)
-                continue
-            check = getattr(self, f"do_{suggest.check_method}")
-            p_check: "ProtocolResult" = check(suggest)
-            if not p_check.status and self.is_unsupported_error(p_check.error):
-                # Protocol is unsupported, ignored
-                unsupported_proto.add(p_check.protocol)
-            if first_success and p_check.status:
-                success_proto.add(suggest.protocol)
-            processed.add(suggest)
-            yield p_check
+            cred = suggest.get_credential()
+            for protocol in suggest.protocols:
+                if unsupported_proto and protocol in unsupported_proto:
+                    # Skip unsupported proto
+                    continue
+                if success_proto and protocol in success_proto:
+                    continue
+                if (protocol, cred) in processed:
+                    # Skip already checked credential
+                    continue
+                self.logger.debug("Trying suggest: %s:%s", protocol, cred)
+                if not hasattr(self, f"do_{suggest.check_method}"):
+                    self.logger.info("Unknown check method: %s", suggest.check_method)
+                    continue
+                check = getattr(self, f"do_{suggest.check_method}")
+                p_check: "ProtocolResult" = check(protocol, cred)
+                if not p_check.status and self.is_unsupported_error(p_check.error):
+                    # Protocol is unsupported, ignored
+                    unsupported_proto.add(p_check.protocol)
+                if first_success and p_check.status:
+                    success_proto.add(protocol)
+                processed.add((protocol, cred))
+                yield p_check
 
-    def do_snmp_check(self, config: SuggestSNMPConfig) -> ProtocolResult:
-        oid = config.check_oids or CHECK_OIDS
-        status, message = self.check_oid(
-            oid[0], config.snmp_ro, f"{config.protocol.config.alias}_get"
-        )
+    def do_snmp_check(self, protocol: Protocol, cred: SNMPCredential) -> ProtocolResult:
+        """
+
+        :param protocol:
+        :param cred:
+        :return:
+        """
+        oid = cred.oids or CHECK_OIDS
+        status, message = self.check_oid(oid[0], cred.snmp_ro, f"{protocol.config.alias}_get")
         if not status and not message:
             message = "SNMP Timeout"
         # self.logger.info(
@@ -254,24 +270,30 @@ class CredentialChecker(object):
         #     config.protocol.config.snmp_version,
         # )
         return ProtocolResult(
-            protocol=config.protocol,
+            protocol=protocol,
             status=status,
             error=message,
-            credential=config.get_credential(),
+            credential=cred,
         )
 
-    def do_cli_check(self, config: SuggestCLIConfig) -> ProtocolResult:
+    def do_cli_check(self, protocol: Protocol, cred: CLICredential) -> ProtocolResult:
+        """
+        Check suggest CLIT config
+        :param protocol:
+        :param cred: Credential for Check
+        :return:
+        """
         if self.ignoring_cli:
             # Skipped
-            return ProtocolResult(protocol=config.protocol, status=True, skipped=True)
+            return ProtocolResult(protocol=protocol, status=True, skipped=True)
         status, message = self.check_login(
-            config.user, config.password, config.super_password, protocol=config.protocol
+            cred.user, cred.password, cred.super_password, protocol=protocol
         )
         return ProtocolResult(
-            protocol=config.protocol,
+            protocol=protocol,
             status=status,
             error=message,
-            credential=config.get_credential(),
+            credential=cred,
         )
 
     def check_oid(self, oid: str, community: str, version="snmp_v2c_get") -> Tuple[bool, str]:
