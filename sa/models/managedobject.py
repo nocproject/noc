@@ -2850,6 +2850,8 @@ class ManagedObject(NOCModel):
                 {
                     "_id": 1,
                     "name": 1,
+                    "admin_status": 1,
+                    "oper_status": 1,
                     "ifindex": 1,
                     "profile": 1,
                     "service": 1,
@@ -2863,6 +2865,11 @@ class ManagedObject(NOCModel):
             metrics: List[MetricItem] = []
             for mc in i_profile.metrics:
                 if (is_box and not mc.enable_box) or (is_periodic and not mc.enable_periodic):
+                    continue
+                # Check metric collected policy
+                if not i_profile.allow_collected_metric(
+                    i.get("admin_status"), i.get("oper_status"), mc.metric_type.name
+                ):
                     continue
                 mi = MetricItem(
                     name=mc.metric_type.name,

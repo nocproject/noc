@@ -52,6 +52,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             defaultValue: "d"
         },
         {
+            name: "metric_collected_policy",
+            type: "string",
+            defaultValue: "e"
+        },
+        {
             name: "allow_lag_mismatch",
             type: "bool",
             defaultValue: false
