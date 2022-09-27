@@ -25,12 +25,14 @@ class CLIProtocolChecker(ObjectChecker):
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
         credential = None
-        if self.object.user or self.object.credentials.password:
-            credential = [CLICredential(
-                user=self.object.credentials.user,
-                password=self.object.credentials.password,
-                super_password=self.object.credentials.super_password
-            )]
+        if self.object.credentials.user or self.object.credentials.password:
+            credential = [
+                CLICredential(
+                    user=self.object.credentials.user,
+                    password=self.object.credentials.password,
+                    super_password=self.object.credentials.super_password,
+                )
+            ]
         cc = CredentialCheckerScript(
             self.object.address,
             self.object.pool,

@@ -10,7 +10,7 @@ from typing import List, Iterable, Dict
 
 # NOC modules
 from .base import Check, ObjectChecker, CheckResult, CredentialSet
-from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript
+from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript, SNMPCredential
 from ..script.scheme import Protocol
 
 
@@ -24,10 +24,19 @@ class SNMPProtocolChecker(ObjectChecker):
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
 
     def iter_result(self, checks=None) -> Iterable[CheckResult]:
+        credential = None
+        if self.object.credentials.snmp_ro or self.object.credentials.snmp_rw:
+            credential = [
+                SNMPCredential(
+                    snmp_ro=self.object.credentials.snmp_ro,
+                    snmp_rw=self.object.credentials.snmp_rw,
+                )
+            ]
         cc = CredentialCheckerScript(
             self.object.address,
             self.object.pool,
             self.object.effective_labels,
+            credential=credential,
             logger=self.logger,
             calling_service=self.calling_service,
         )
