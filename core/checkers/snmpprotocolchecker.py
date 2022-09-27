@@ -36,7 +36,7 @@ class SNMPProtocolChecker(ObjectChecker):
             self.object.address,
             self.object.pool,
             self.object.effective_labels,
-            credential=credential,
+            credentials=credential,
             logger=self.logger,
             calling_service=self.calling_service,
         )
@@ -55,8 +55,8 @@ class SNMPProtocolChecker(ObjectChecker):
                 action = CredentialSet(
                     snmp_ro=proto_r.credential.snmp_ro, snmp_rw=proto_r.credential.snmp_rw
                 )
-            if action:
-                protocols.pop(proto_r.protocol, None)
+            if action and proto_r.protocol in protocols:
+                protocols.remove(proto_r.protocol)
             yield CheckResult(
                 check=proto_r.protocol.config.check,
                 status=proto_r.status,
