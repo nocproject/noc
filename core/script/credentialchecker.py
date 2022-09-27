@@ -43,6 +43,7 @@ class CLICredential(object):
     user: Optional[str] = None
     password: Optional[str] = None
     super_password: Optional[str] = None
+    raise_privilege: bool = True
 
 
 @dataclass(frozen=True)
@@ -64,10 +65,15 @@ class SuggestCLIConfig(object):
     user: Optional[str] = None
     password: Optional[str] = None
     super_password: Optional[str] = None
+    raise_privileges: bool = True
+    access_preference: Optional[str] = "C"
 
     def get_credential(self) -> CLICredential:
         return CLICredential(
-            user=self.user, password=self.password, super_password=self.super_password
+            user=self.user,
+            password=self.password,
+            super_password=self.super_password,
+            raise_privilege=self.raise_privileges,
         )
 
 
@@ -95,6 +101,7 @@ class CredentialChecker(object):
         labels: List[str] = None,
         logger=None,
         profile: Optional[str] = None,
+        raise_privilege: bool = True,
         calling_service: str = "credentialchecker",
         credentials: Optional[List[Union[SuggestCLIConfig, SuggestSNMPConfig]]] = None,
     ):
@@ -110,6 +117,7 @@ class CredentialChecker(object):
             self.profile = Profile.get_by_name(profile) if profile else None
         self.credentials: List[Union[CLICredential, SNMPCredential]] = credentials or []
         self.ignoring_cli = False
+        self.raise_privilege = raise_privilege
         if self.profile is None or self.profile.is_generic:
             self.logger.error("CLI Access for Generic profile is not supported. Ignoring")
             self.ignoring_cli = True
@@ -170,6 +178,7 @@ class CredentialChecker(object):
                     user=c.user,
                     password=c.password,
                     super_password=c.super_password,
+                    raise_privileges=self.raise_privilege,
                 )
             elif isinstance(c, SNMPCredential) and (
                 Protocol(6) in protocols or Protocol(7) in protocols
@@ -201,9 +210,15 @@ class CredentialChecker(object):
                         user=ap.user,
                         password=ap.password,
                         super_password=ap.super_password,
+                        raise_privileges=self.raise_privilege,
                     )
                 if snmp and (ap.snmp_ro or ap.snmp_rw):
-                    yield SuggestSNMPConfig(snmp, snmp_ro=ap.snmp_ro, snmp_rw=ap.snmp_rw)
+                    yield SuggestSNMPConfig(
+                        snmp,
+                        snmp_ro=ap.snmp_ro,
+                        snmp_rw=ap.snmp_rw,
+                        check_oids=cc.suggest_snmp_oids or None,
+                    )
             if cli:
                 for sc in cc.suggest_credential:
                     yield SuggestCLIConfig(
@@ -211,10 +226,16 @@ class CredentialChecker(object):
                         user=sc.user,
                         password=sc.password,
                         super_password=sc.super_password,
+                        raise_privileges=self.raise_privilege,
                     )
             if snmp:
                 for ss in cc.suggest_snmp:
-                    yield SuggestSNMPConfig(snmp, snmp_ro=ss.snmp_ro, snmp_rw=ss.snmp_rw)
+                    yield SuggestSNMPConfig(
+                        snmp,
+                        snmp_ro=ss.snmp_ro,
+                        snmp_rw=ss.snmp_rw,
+                        check_oids=cc.suggest_snmp_oids or None,
+                    )
 
     def iter_result(
         self, protocols: Optional[Iterable[Protocol]] = None, first_success: bool = True
@@ -287,7 +308,11 @@ class CredentialChecker(object):
             # Skipped
             return ProtocolResult(protocol=protocol, status=True, skipped=True)
         status, message = self.check_login(
-            cred.user, cred.password, cred.super_password, protocol=protocol
+            cred.user,
+            cred.password,
+            cred.super_password,
+            protocol=protocol,
+            raise_privilege=cred.raise_privilege,
         )
         return ProtocolResult(
             protocol=protocol,
@@ -320,7 +345,12 @@ class CredentialChecker(object):
             return False, str(e)
 
     def check_login(
-        self, user: str, password: str, super_password: str, protocol: Protocol
+        self,
+        user: str,
+        password: str,
+        super_password: str,
+        protocol: Protocol,
+        raise_privilege: bool = True,
     ) -> Tuple[bool, str]:
         """
         Check user, password for cli proto
@@ -328,6 +358,7 @@ class CredentialChecker(object):
         :param password:
         :param super_password:
         :param protocol:
+        :param raise_privilege:
         :return:
         """
         self.logger.debug("Checking %s: %s/%s/%s", protocol, user, password, super_password)
@@ -350,8 +381,8 @@ class CredentialChecker(object):
                     "password": password,
                     "super_password": super_password,
                     "path": None,
-                    "raise_privileges": "E",
-                    "access_preference": "C",
+                    "raise_privileges": False,
+                    "access_preference": raise_privilege,
                 },
             )
             self.logger.info("Result: %s, %s", r, r["message"])

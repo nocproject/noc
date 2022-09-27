@@ -41,6 +41,7 @@ class CLIProtocolChecker(ObjectChecker):
             profile=self.object.profile,
             logger=self.logger,
             calling_service=self.calling_service,
+            raise_privilege=self.object.to_raise_privileges,
         )
         protocols: List[Protocol] = []
         for c in checks or []:
