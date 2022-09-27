@@ -143,9 +143,9 @@ class DiagnosticCheck(DiscoveryCheck):
             if c.name not in self.CHECK_MAP:
                 self.logger.warning("[%s] Unknown check. Skipping", c.name)
                 continue
-            # if c in self.CHECK_CACHE:
-            #     r.append(self.CHECK_CACHE[c])
-            #     continue
+            if self.CHECK_MAP[c.name] not in self.CHECKERS:
+                self.logger.warning("[%s] Unknown checker. Skipping", c.name)
+                continue
             do_checks[self.CHECK_MAP[c.name]] += [c]
         for checker, d_checks in do_checks.items():
             checker = self.CHECKERS[checker](self.object, self.logger, "discovery")
