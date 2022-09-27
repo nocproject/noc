@@ -179,9 +179,17 @@ class Script(BaseScript):
             if "port_type" in r:
                 sub["enabled_afi"] += ["BRIDGE"]
                 # Bridge interface
-                if r["port_type"].lower() in ["access", "hybrid"] and "untagged_vlan" in r:
+                if (
+                    r["port_type"].lower() in ["access", "hybrid"]
+                    and "untagged_vlan" in r
+                    and "None" not in r["untagged_vlan"]
+                ):
                     sub["untagged_vlan"] = int(r["untagged_vlan"])
-                if r["port_type"].lower() in ["access", "hybrid"] and "tagged_vlans" in r:
+                if (
+                    r["port_type"].lower() in ["access", "hybrid"]
+                    and "tagged_vlans" in r
+                    and "None" not in r["tagged_vlans"]
+                ):
                     sub["tagged_vlans"] = self.expand_rangelist((r["tagged_vlans"]))
                 if r["port_type"].lower() == "trunk" and "vlan_permitted" in r:
                     sub["tagged_vlans"] = self.expand_rangelist(r["vlan_permitted"])
