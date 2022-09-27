@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,15 +19,18 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_version_HP = re.compile(
-        r"^(HPE|)\s*Comware Software, Version (?P<version>.+)$", re.MULTILINE
+    rx_version = re.compile(
+        r"^(?P<vendor>HP|HPE)\s*(?P<ver>\S+) Software, Version (?P<version>.+)$", re.MULTILINE
     )
-    rx_platform_HP = re.compile(
-        r"^HP.*?\s(?P<platform>[A-Z,0-9a-z\-]+).*?.*?(Switch|uptime)", re.MULTILINE
-    )
-    rx_devinfo = re.compile(
+    rx_devinfo_HP = re.compile(
         r"^Slot 1:\nDEVICE_NAME\s+:\s+(?P<platform>[A-Z,0-9a-z\-]+)\s+.+?\n"
         r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n"
+    )
+    rx_devinfo_HPE = re.compile(
+        r"\s+Slot \d+(\s+\S+\s+\d+|):\n"
+        r"DEVICE_NAME\s+:\s+(?P<platform>[A-Z0-9a-z \-+]+)\n"
+        r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n",
+        re.MULTILINE,
     )
 
     def execute_cli(self, **kwargs):
@@ -36,22 +39,27 @@ class Script(BaseScript):
         s = ""
 
         v = self.cli("display version")
-        match = self.rx_version_HP.search(v)
+        match = self.rx_version.search(v)
         if match:
             version = match.group("version")
-        match = self.rx_platform_HP.search(v)
-        if match:
-            platform = match.group("platform")
-        if platform == "Comware":
+            ver = match.group("ver")
+            vendor = match.group("vendor")
+        if ver == "Comware":
             try:
                 v = self.cli("display device manuinfo", cached=True)
-                match = self.rx_devinfo.search(v)
-                if match:
-                    platform = match.group("platform")
-                    s = match.group("serial")
+                if vendor == "HP":
+                    match = self.rx_devinfo_HP.search(v)
+                    if match:
+                        platform = match.group("platform")
+                        s = match.group("serial")
+                if vendor == "HPE":
+                    match = self.rx_devinfo_HPE.search(v)
+                    if match:
+                        platform = match.group("platform")
+                        s = match.group("serial")
             except self.CLISyntaxError:
                 pass
-        r = {"vendor": "HP", "platform": platform, "version": version, "attributes": {}}
+        r = {"vendor": vendor, "platform": platform.strip(), "version": version, "attributes": {}}
         if not s and self.has_snmp():
             try:
                 for oid, s in self.snmp.getnext(mib["ENTITY-MIB::entPhysicalSerialNum"]):
