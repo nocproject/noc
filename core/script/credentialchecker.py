@@ -173,7 +173,7 @@ class CredentialChecker(object):
                     )
                 elif isinstance(c, SNMPCredential) and proto in SUGGEST_SNMP:
                     yield SuggestSNMPConfig(
-                        proto=proto,
+                        protocol=proto,
                         snmp_ro=c.snmp_ro,
                         snmp_rw=c.snmp_rw,
                     )
