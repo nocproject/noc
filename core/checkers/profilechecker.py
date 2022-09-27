@@ -9,6 +9,7 @@
 from typing import List, Iterable
 
 # NOC modules
+from noc.core.text import filter_non_printable
 from .base import ObjectChecker, CheckResult, ProfileSet
 from ..profile.checker import ProfileChecker as ProfileCheckerProfile
 from ..script.credentialchecker import Protocol
@@ -52,7 +53,11 @@ class ProfileChecker(ObjectChecker):
         )
         profile = checker.get_profile()
         if not profile:
-            yield CheckResult(check="PROFILE", status=bool(profile), error=checker.get_error())
+            yield CheckResult(
+                check="PROFILE",
+                status=bool(profile),
+                error=filter_non_printable(checker.get_error())[:200],
+            )
             return
         # Skipped
         yield CheckResult(
