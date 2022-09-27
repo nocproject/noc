@@ -1,0 +1,156 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | H902GPHF",
+    "$collection": "inv.objectmodels",
+    "uuid": "5ddfb51b-037e-4890-a89e-394f93670242",
+    "vendor__code": "HUAWEI",
+    "description": "16-port Advanced GPON OLT Interface Board,1*1",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "connections": [
+        {
+            "name": "1",
+            "description": "gpon 1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "2",
+            "description": "gpon 2",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "3",
+            "description": "gpon 3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "4",
+            "description": "gpon 4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "5",
+            "description": "gpon 5",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "6",
+            "description": "gpon 6",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "7",
+            "description": "gpon 7",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "8",
+            "description": "gpon 8",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "9",
+            "description": "gpon 9",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "10",
+            "description": "gpon 10",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "11",
+            "description": "gpon 11",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "12",
+            "description": "gpon 12",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "13",
+            "description": "gpon 13",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "14",
+            "description": "gpon 14",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "15",
+            "description": "gpon 15",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "16",
+            "description": "gpon 16",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["GPON"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5800 | SB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H902GPHF"]
+        },
+        "dimensions": {
+            "depth": 257,
+            "height": 399,
+            "width": 23
+        }
+    }
+}

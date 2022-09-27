@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | CCU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "a295ab3a-896d-416f-ac27-b0418331d3d1",
+    "description": "MA5800 Centralized Control Unit Board",
+    "c_group": [],
+    "genders": "mf"
+}
