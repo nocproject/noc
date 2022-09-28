@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.Comware.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -64,6 +64,7 @@ class Script(BaseScript):
         "port component": LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
         "mac address": LLDP_CHASSIS_SUBTYPE_MAC,
         "network address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+        "network address(ipv4)": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
         "interface name": LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
         "local": LLDP_CHASSIS_SUBTYPE_LOCAL,
     }
@@ -73,6 +74,7 @@ class Script(BaseScript):
         "port component": LLDP_PORT_SUBTYPE_COMPONENT,
         "mac address": LLDP_PORT_SUBTYPE_MAC,
         "network address": LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+        "network address(ipv4)": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
         "interface name": LLDP_PORT_SUBTYPE_NAME,
         "agent circuit id": LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
         "locally assigned": LLDP_PORT_SUBTYPE_LOCAL,
