@@ -38,9 +38,9 @@ class Script(BaseScript):
         r"^\s+chassis id subtype\s+: (?P<remote_type>.+) \(\d+\)\s*\n"
         r"^\s+Remote port-id\s+: (?P<remote_port>.+)\n"
         r"^\s+port id subtype\s+: (?P<remote_port_type>.+) \(\d+\)\s*\n"
-        r"^\s+Remote port description\s+: (?P<remote_port_descr>.+)\s*\n"
-        r"^\s+Remote system name\s+: (?P<remote_system_name>.+)\s*\n"
-        r"^\s+Remote system description\s+: (?P<remote_system_descr>(.+\n)+)\s*\n"
+        r"^\s+Remote port description\s+: (?P<remote_port_descr>.*)\s*\n"
+        r"^\s+Remote system name\s+: (?P<remote_system_name>.*)\s*\n"
+        r"^\s+Remote system description\s+: (?P<remote_system_descr>(.|\n)*)\n"
         r"^\s+Remote system capabilities supported: .+\n"
         r"^\s+Remote system capabilities enabled  : (?P<caps>\S+)\s*\n",
         re.MULTILINE,

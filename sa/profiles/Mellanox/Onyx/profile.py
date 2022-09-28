@@ -18,7 +18,7 @@ class Profile(BaseProfile):
         (rb"^lines \d+-\d+/\d+ \(END\) ", b"\r"),
     ]
     pattern_unprivileged_prompt = rb"^\S+ \[.+\] > "
-    pattern_prompt = rb"^(?P<hostname>\S+) \[.+\] # "
+    pattern_prompt = rb"^(?:\x00)?(?P<hostname>\S+) \[.+\] # "
     command_super = b"enable"
     pattern_syntax_error = rb"^% Unrecognized command \".+\"\."
     command_exit = "exit"
