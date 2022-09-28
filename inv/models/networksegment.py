@@ -26,7 +26,7 @@ from django.db.models.aggregates import Count
 from pymongo.errors import OperationFailure
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check, on_save, tree
