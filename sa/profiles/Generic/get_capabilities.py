@@ -17,6 +17,28 @@ from noc.core.snmp.error import SNMPError
 from noc.core.script.snmp.base import SNMP
 
 
+def false_on_cli_error(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
+            return False
+
+    return wrapper
+
+
+def false_on_snmp_error(f):
+    @functools.wraps(f)
+    def wrapper_snmp(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except (SNMPError, SNMP.TimeOutError):
+            return False
+
+    return wrapper_snmp
+
+
 class Script(BaseScript):
     name = "Generic.get_capabilities"
     interface = IGetCapabilities
@@ -302,6 +324,17 @@ class Script(BaseScript):
             except (self.snmp.TimeOutError, SNMPError):
                 pass
 
+    @false_on_snmp_error
+    def get_sysdescr(self, version=None):
+        """
+        Returns data from sysDescr
+        :param version
+        :return:
+        """
+        if self.credentials.get("snmp_ro"):
+            r = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], version=version)
+            return r or None
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -376,6 +409,9 @@ class Script(BaseScript):
                     caps["SNMP | OID | sysObjectID"] = x
                     if len(x.split(".")) > 6:
                         caps["SNMP | OID | EnterpriseID"] = int(x.split(".")[6])
+                sysdescr = self.get_sysdescr(version=snmp_version)
+                if sysdescr:
+                    caps["SNMP | OID | sysDescr"] = sysdescr
             else:
                 caps["SNMP"] = False
         else:
@@ -448,25 +484,3 @@ class Script(BaseScript):
         :return:
         """
         self.capabilities[name] = value
-
-
-def false_on_cli_error(f):
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
-            return False
-
-    return wrapper
-
-
-def false_on_snmp_error(f):
-    @functools.wraps(f)
-    def wrapper_snmp(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except (SNMPError, SNMP.TimeOutError):
-            return False
-
-    return wrapper_snmp
