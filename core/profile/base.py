@@ -183,7 +183,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
 
     Examples:
     r"^.+\\" -- treat trailing backspace as continuation
-    r"banner\s+login\s+(\S+)" -- continue until matched group
+    r"banner\s+login\s+(\S+)" -- continue until matched group   # noqa: W605
     """
 
     pattern_mml_end = None
