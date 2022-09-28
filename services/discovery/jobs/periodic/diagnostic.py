@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+import logging
 from typing import Dict, List, Optional, Literal, Iterable, Any
 from collections import defaultdict
 
@@ -25,6 +26,7 @@ from noc.core.checkers.loader import loader
 from noc.core.wf.diagnostic import DiagnosticState
 from noc.sa.models.profile import Profile
 from noc.pm.models.metrictype import MetricType
+from noc.core.debug import error_report
 
 
 class DiagnosticCheck(DiscoveryCheck):
@@ -143,9 +145,9 @@ class DiagnosticCheck(DiscoveryCheck):
             if c.name not in self.CHECK_MAP:
                 self.logger.warning("[%s] Unknown check. Skipping", c.name)
                 continue
-            # if c in self.CHECK_CACHE:
-            #     r.append(self.CHECK_CACHE[c])
-            #     continue
+            if self.CHECK_MAP[c.name] not in self.CHECKERS:
+                self.logger.warning("[%s] Unknown checker. Skipping", c.name)
+                continue
             do_checks[self.CHECK_MAP[c.name]] += [c]
         for checker, d_checks in do_checks.items():
             checker = self.CHECKERS[checker](self.object, self.logger, "discovery")
@@ -154,6 +156,8 @@ class DiagnosticCheck(DiscoveryCheck):
                 for check in checker.iter_result(d_checks):
                     yield check
             except Exception as e:
+                if self.logger.isEnabledFor(logging.DEBUG):
+                    error_report()
                 self.logger.error("[%s] Error when run checker: %s", checker.name, str(e))
 
     def action_set_sa_profile(self, data: ProfileSet):
