@@ -6,12 +6,12 @@
     state: present
     grafana_plugins_dir: "{{ grafana_plugins_dir }}"
   with_items:
-    - name: grafana-simple-json-datasource
-      version: "{{ grafana_plugin_simple_json_datasource_version }}"
+    - name: simpod-json-datasource
+      version: "{{ version_simpod }}"
     - name: vertamedia-clickhouse-datasource
-      version: "{{ grafana_plugin_clickhouse_datasource_version }}"
+      version: "{{ version_clickhouse_datasource }}"
     - name: natel-discrete-panel
-      version: "{{ grafana_plugin_natel_discrete_panel_version }}"
+      version: "{{ version_natel_discrete_panel }}"
   notify: restart grafana
   register: grafana_plugin_install
   retries: 4
