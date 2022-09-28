@@ -19,19 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_mtu = re.compile(r"The Maximum Frame Length is (?P<mtu>\d+)")
-    rx_port_type = re.compile(r"Port link-type: (?P<port_type>hybrid|access|trunk)")
-    rx_port_other = re.compile(
-        r"^\s*Tagged\s+VLAN ID : (?P<tagged>[^\n]+)\n"
-        r"^\s*Untagged VLAN ID : (?P<untagged>[^\n]+)\n",
-        re.MULTILINE,
-    )
-    rx_port_trunk = re.compile(
-        r"^\s*VLAN passing\s+: (?P<passing>[^\n]+)\n"
-        r"^\s*VLAN permitted: (?P<permitted>[^\n]+)\n",
-        re.MULTILINE,
-    )
     rx_ip = re.compile(r"Internet Address is (?P<ip>\S+) Primary")
-    rx_ips = re.compile(r"Internet Address is (?P<ip>\S+) Sub")
     rx_mac = re.compile(
         r"IP (?:Packet Frame Type:|Sending Frames' Format is)\s*PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)"
     )
@@ -62,7 +50,9 @@ class Script(BaseScript):
         "pvid": "pvid",
         "untagged vlan id": "untagged_vlan",
         "untagged vlan": "untagged_vlan",
+        "untagged vlans": "untagged_vlan",
         "tagged vlan id": "tagged_vlans",
+        "tagged vlans": "tagged_vlans",
         "vlan passing": "vlan_passing",
         "vlan permitted": "vlan_permitted",
     }
@@ -189,11 +179,19 @@ class Script(BaseScript):
             if "port_type" in r:
                 sub["enabled_afi"] += ["BRIDGE"]
                 # Bridge interface
-                if r["port_type"] in ["access", "hybrid"] and "untagged_vlan" in r:
+                if (
+                    r["port_type"].lower() in ["access", "hybrid"]
+                    and "untagged_vlan" in r
+                    and "None" not in r["untagged_vlan"]
+                ):
                     sub["untagged_vlan"] = int(r["untagged_vlan"])
-                if r["port_type"] in ["access", "hybrid"] and "tagged_vlans" in r:
+                if (
+                    r["port_type"].lower() in ["access", "hybrid"]
+                    and "tagged_vlans" in r
+                    and "None" not in r["tagged_vlans"]
+                ):
                     sub["tagged_vlans"] = self.expand_rangelist((r["tagged_vlans"]))
-                if r["port_type"] == "trunk" and "vlan_permitted" in r:
+                if r["port_type"].lower() == "trunk" and "vlan_permitted" in r:
                     sub["tagged_vlans"] = self.expand_rangelist(r["vlan_permitted"])
             interfaces[ifname]["subinterfaces"] += [sub]
 
