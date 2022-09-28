@@ -17,7 +17,9 @@ import sre_parse
 try:
     import esmre as esm
 except (ModuleNotFoundError, ImportError):
-    raise NotImplementedError("XRuleLookup needed ESMRE library for worked. Please, install it from pip")
+    raise NotImplementedError(
+        "XRuleLookup needed ESMRE library for worked. Please, install it from pip"
+    )
 import bitarray
 
 # NOC modules

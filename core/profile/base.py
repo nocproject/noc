@@ -182,8 +182,8 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     NB: Sending logic is implemented in *commands* script
 
     Examples:
-    "^.+\\" -- treat trailing backspace as continuation
-    "banner\s+login\s+(\S+)" -- continue until matched group
+    r"^.+\\" -- treat trailing backspace as continuation
+    r"banner\s+login\s+(\S+)" -- continue until matched group   # noqa: W605
     """
 
     pattern_mml_end = None
