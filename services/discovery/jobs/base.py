@@ -350,8 +350,8 @@ class MODiscoveryJob(PeriodicJob):
                 )
                 processed.add(p.diagnostic)
         # Set OK state
-        for diagnostic in discovery_diagnostics - processed:
-            self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
+        # for diagnostic in discovery_diagnostics - processed:
+        #     self.object.set_diagnostic_state(diagnostic, state=True, changed_ts=now, bulk=bulk)
         if bulk:
             self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
             self.object.save_diagnostics(self.object.id, bulk)
