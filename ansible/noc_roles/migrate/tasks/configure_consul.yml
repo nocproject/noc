@@ -14,6 +14,19 @@
   tags:
     - worker
 
+- name: call consul to setup metrics
+  run_once: "True"
+  include_role:
+    name: consul
+    tasks_from: service_config_update
+  vars:
+    consul_service_key: "noc/slots/metrics/manifest"
+    consul_service_internal_key: "Limit"
+    consul_service_value: "{{ hostvars |json_query(\"*.noc_services[] | [?name=='metrics'].{num:config.power} | sum([].num)\") }}"  # noqa 204
+    consul_service_token: None
+  tags:
+    - metrics
+
 - name: call consul to setup discovery
   run_once: "True"
   include_role:
