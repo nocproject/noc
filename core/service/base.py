@@ -48,6 +48,7 @@ from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
 from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
+from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE
@@ -122,6 +123,8 @@ class BaseService(object):
         self.startup_ts = None
         self.telemetry_callback = None
         self.dcs = None
+        # Message routed
+        self.router: Optional[Router] = None
         # Effective address and port
         self.address = None
         self.port = None
@@ -790,11 +793,14 @@ class BaseService(object):
             and self.mx_metrics_scopes
             and table in self.mx_metrics_scopes
         ):
-            n_partitions = get_mx_partitions()
-            self.mx_metrics_queue.put(
-                stream=MX_STREAM,
-                partition=key % n_partitions,
-                data=[self.mx_metrics_scopes[table](m) for m in metrics],
+            # n_partitions = get_mx_partitions()
+            # self.mx_metrics_queue.put(
+            #     stream=MX_STREAM,
+            #     partition=key % n_partitions,
+            #     data=[self.mx_metrics_scopes[table](m) for m in metrics],
+            # )
+            self.send_message(
+                data=[self.mx_metrics_scopes[table](m) for m in metrics], message_type="metrics"
             )
             # self.publish(
             #     value=orjson.dumps([self.mx_metrics_scopes[table](m) for m in metrics]),
@@ -823,6 +829,33 @@ class BaseService(object):
         spans = get_spans()
         if spans:
             self.register_metrics("span", [span_to_dict(s) for s in spans])
+
+    def initialize_router(self) -> None:
+        """
+
+        :return:
+        """
+        self.router = Router()
+
+    async def send_message(
+        self,
+        data: Any,
+        message_type: str,
+        headers: Optional[Dict[str, bytes]] = None,
+        sharding_key: int = 0,
+    ):
+        """
+        Build message and schedule to send to mx service
+
+        :param data: Data for transmit
+        :param message_type: Message type
+        :param headers: additional message headers
+        :param sharding_key: Key for sharding over MX services
+        :return:
+        """
+
+        msg = self.router.get_message(data, message_type, headers, sharding_key)
+        await self.router.route_message(msg)
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:

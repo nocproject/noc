@@ -8,6 +8,7 @@
 # Python modules
 import logging
 import operator
+from time import time_ns
 from collections import defaultdict
 from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional
 from functools import partial
@@ -21,6 +22,7 @@ from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
+from noc.core.liftbridge.queuebuffer import QBuffer
 from .route import Route, DefaultNotificationRoute
 from .action import DROP, DUMP
 
@@ -34,6 +36,7 @@ class Router(object):
         self.default_route: Optional[DefaultNotificationRoute] = DefaultNotificationRoute()
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
+        self.out_queue: Optional[QBuffer] = None
 
     def load(self):
         """
@@ -152,6 +155,19 @@ class Router(object):
             if route.is_match(msg):
                 yield route
 
+    async def publish(
+        self,
+        value: bytes,
+        stream: str,
+        partition: Optional[int] = None,
+        key: Optional[bytes] = None,
+        headers: Optional[Dict[str, bytes]] = None,
+    ):
+        if self.out_queue:
+            self.out_queue.put(stream, partition, data=value)
+        else:
+            self.svc.publish(value=body, stream=stream, partition=partition, headers=headers)
+
     def route_sync(self, msg: Message):
         """
         Synchronize method
@@ -159,6 +175,35 @@ class Router(object):
         :return:
         """
         run_sync(partial(self.route_message, msg))
+
+    @staticmethod
+    def get_message(
+        data: Any,
+        message_type: str,
+        headers: Optional[Dict[str, bytes]] = None,
+        sharding_key: int = 0,
+    ) -> Message:
+        """
+        Build message
+
+        :param data: Data for transmit
+        :param message_type: Message type
+        :param headers: additional message headers
+        :param sharding_key: Key for sharding
+        :return:
+        """
+        msg_headers = {
+            MX_MESSAGE_TYPE: message_type.encode(DEFAULT_ENCODING),
+            MX_SHARDING_KEY: str(sharding_key).encode(DEFAULT_ENCODING),
+        }
+        if headers:
+            msg_headers.update(headers)
+        return Message(
+            value=orjson.dumps(data),
+            headers=msg_headers,
+            timestamp=time_ns,
+            key=sharding_key,
+        )
 
     async def route_message(self, msg: Message, msg_id: Optional[str] = None):
         """
@@ -210,9 +255,9 @@ class Router(object):
                     body = orjson.dumps(body)
                 metrics[("forwards", ("stream", f"{stream}:{partition}"))] += 1
                 logger.debug("[%s] Routing to %s:%s", msg_id, stream, partition)
-                self.svc.publish(value=body, stream=stream, partition=partition, headers=headers)
+                await self.publish(value=body, stream=stream, partition=partition, headers=headers)
                 routed = True
             if not routed:
                 logger.debug("[%d] Not routed", msg_id)
-                metrics["route_misses"] += 1
+                metrics["route_misses", ("message_type",)] += 1
         # logger.debug("[%s] Finish processing", msg_id)

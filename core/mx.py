@@ -96,13 +96,14 @@ def send_message(
     if headers:
         msg_headers.update(headers)
     svc = get_service()
-    n_partitions = get_mx_partitions()
-    svc.publish(
-        value=orjson.dumps(data),
-        stream=MX_STREAM,
-        partition=sharding_key % n_partitions,
-        headers=msg_headers,
-    )
+    svc.send_message(data, message_type, headers, sharding_key)
+    # n_partitions = get_mx_partitions()
+    # svc.publish(
+    #     value=orjson.dumps(data),
+    #     stream=MX_STREAM,
+    #     partition=sharding_key % n_partitions,
+    #     headers=msg_headers,
+    # )
 
 
 def get_mx_partitions() -> int:
