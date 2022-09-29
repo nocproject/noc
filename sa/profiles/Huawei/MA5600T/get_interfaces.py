@@ -74,7 +74,7 @@ class Script(BaseScript):
     )
     rx_ports = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec|)\s+.*?"
-        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)?",
+        r"(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated|Registered)",
         re.MULTILINE,
     )
 
@@ -156,6 +156,16 @@ class Script(BaseScript):
     def get_ports(self, v, slot_n=0):
         """
         Parse output like:
+          ------------------------------------------------------------------------------
+          Port  Port Optic   Native  MDI    Speed     Duplex    Flow-  Active   Link
+          Type Status  VLAN           (Mbps)              Ctrl   State
+          ------------------------------------------------------------------------------
+             0  10GE normal       1  -      10000     full      off    active   online
+             1  10GE absence      1  -      10000     full      off    active   offline
+             2  GE   absence      1  -      auto      auto      off    active   offline
+             3  GE   absence      1  -      auto      auto      off    active   offline
+          ------------------------------------------------------------------------------
+
           -------------------------------------------------------------
             Port   Port   min-distance   max-distance   Optical-module
                    type       (km)           (km)           status
