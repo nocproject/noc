@@ -10,7 +10,6 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
     extend: "Ext.panel.Panel",
     requires: [
         "NOC.core.StateField",
-        "NOC.vc.vcdomain.LookupField",
         "NOC.project.project.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
         "NOC.wf.state.LookupField"
@@ -106,12 +105,6 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                                 restUrl: "/inv/interface/"
                             },
                             renderer: NOC.render.Lookup("state"),
-                        },
-                        {
-                            text: __("VC Domain"),
-                            dataIndex: "vc_domain",
-                            renderer: NOC.render.Lookup("vc_domain"),
-                            editor: "vc.vcdomain.LookupField"
                         },
                         {
                             text: __("Protocols"),
