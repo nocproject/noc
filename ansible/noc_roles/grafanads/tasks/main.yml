@@ -11,7 +11,7 @@
   vars:
     grafana_datasource:
       name: NocDS
-      type: grafana-simple-json-datasource
+      type: simpod-json-datasource
       access: direct
       url: "https://{{ noc_web_host }}/api/grafanads"
       isDefault: False  # yamllint disable-line rule:truthy
