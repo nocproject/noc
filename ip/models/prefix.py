@@ -22,7 +22,7 @@ from noc.core.model.base import NOCModel
 from noc.aaa.models.user import User
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
-from noc.vc.models.vc import VC
+from noc.vc.models.vlan import VLAN
 from noc.core.model.fields import CIDRField, DocumentReferenceField, CachedForeignKey
 from noc.core.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP, IPv4
@@ -95,14 +95,8 @@ class Prefix(NOCModel):
         blank=True,
         related_name="prefix_set",
     )
-    vc: "VC" = models.ForeignKey(
-        VC,
-        verbose_name=_("VC"),
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        help_text=_("VC bound to prefix"),
-    )
+    # VLAN bound to prefix
+    vlan: "VLAN" = DocumentReferenceField(VLAN, null=True, blank=True)
     description: str = models.TextField(_("Description"), blank=True, null=True)
     # Labels
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)

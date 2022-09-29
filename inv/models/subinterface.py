@@ -137,10 +137,6 @@ class SubInterface(Document):
             aa.clear_alarm("Delete Interface")
 
     @property
-    def effective_vc_domain(self):
-        return self.interface.effective_vc_domain
-
-    @property
     def effective_vlan_domain(self):
         if self.l2_domain:
             return self.l2_domain

@@ -76,7 +76,9 @@ class VLANApplication(ExtDocApplication):
     def bulk_field_interfaces_count(self, data):
         if not data:
             return data
-        l2_domains = (d["l2_domain"] for d in data)
+        l2_domains = tuple(d["l2_domain"] for d in data if "l2_domain" in d)
+        if not l2_domains:
+            return data
         objects = defaultdict(list)
         # @todo group by for speedup
         for mo_id, l2_domain in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(
@@ -95,7 +97,9 @@ class VLANApplication(ExtDocApplication):
     def bulk_field_prefixes(self, data):
         if not data:
             return data
-        l2_domains = (d["l2_domain"] for d in data)
+        l2_domains = tuple(d["l2_domain"] for d in data if "l2_domain" in d)
+        if not l2_domains:
+            return data
         objects = dict(
             mo
             for mo in ManagedObject.objects.filter(l2_domain__in=l2_domains).values_list(

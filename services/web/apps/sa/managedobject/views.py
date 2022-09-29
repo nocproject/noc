@@ -35,7 +35,6 @@ from noc.inv.models.object import Object
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.project.models.project import Project
-from noc.vc.models.vcdomain import VCDomain
 from noc.core.text import alnum_key
 from noc.sa.interfaces.base import (
     ListOfParameter,
@@ -633,9 +632,6 @@ class ManagedObjectApplication(ExtModelApplication):
         # Project
         if "project" in d:
             i.project = get_or_none(Project, d["project"])
-        # VC Domain
-        if "vc_domain" in d:
-            i.vc_domain = get_or_none(VCDomain, d["vc_domain"])
         #
         i.save()
         return {"success": True}

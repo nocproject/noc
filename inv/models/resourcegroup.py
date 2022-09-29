@@ -83,8 +83,6 @@ class MatchLabels(EmbeddedDocument):
         ("fm.AlarmEscalation", "escalations__resource_group"),
         ("fm.AlarmTrigger", "resource_group"),
         ("fm.EventTrigger", "resource_group"),
-        #
-        ("vc.VCDomainProvisioningConfig", "resource_group"),
     ],
     clean=[
         # ("sa.ManagedObject", "effective_service_groups"),

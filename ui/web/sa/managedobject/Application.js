@@ -53,7 +53,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.inv.platform.LookupField",
         "NOC.inv.map.Maintenance",
         "NOC.inv.networksegment.TreeCombo",
-        "NOC.vc.vcdomain.LookupField",
         "NOC.vc.l2domain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.fm.ttsystem.LookupField",
@@ -902,13 +901,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "vrf",
                                     xtype: "ip.vrf.LookupField",
                                     fieldLabel: __("VRF"),
-                                    allowBlank: true,
-                                    groupEdit: true
-                                },
-                                {
-                                    name: "vc_domain",
-                                    xtype: "vc.vcdomain.LookupField",
-                                    fieldLabel: __("VC Domain"),
                                     allowBlank: true,
                                     groupEdit: true
                                 },

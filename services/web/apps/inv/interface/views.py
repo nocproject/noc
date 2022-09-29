@@ -23,7 +23,6 @@ from noc.sa.interfaces.base import (
     ModelParameter,
 )
 from noc.project.models.project import Project
-from noc.vc.models.vcdomain import VCDomain
 from noc.core.text import alnum_key, list_to_ranges
 from noc.core.translation import ugettext as _
 from noc.config import config
@@ -315,21 +314,5 @@ class InterfaceAppplication(ExtDocApplication):
             return self.response_not_found()
         if i.project != project:
             i.project = project
-            i.save()
-        return True
-
-    @view(
-        url=r"^l1/(?P<iface_id>[0-9a-f]{24})/change_vc_domain/$",
-        validate={"vc_domain": ModelParameter(VCDomain, required=False)},
-        method=["POST"],
-        access="profile",
-        api=True,
-    )
-    def api_change_vc_domain(self, request, iface_id, vc_domain):
-        i = Interface.objects.filter(id=iface_id).first()
-        if not i:
-            return self.response_not_found()
-        if i.vc_domain != vc_domain:
-            i.vc_domain = vc_domain
             i.save()
         return True

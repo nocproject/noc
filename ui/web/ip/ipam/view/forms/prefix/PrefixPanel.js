@@ -13,7 +13,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.peer.as.LookupField",
-        "NOC.vc.vc.LookupField",
+        "NOC.vc.vlan.LookupField",
         "NOC.project.project.LookupField",
         "NOC.aaa.user.LookupField",
         "NOC.aaa.group.LookupField"
@@ -99,10 +99,10 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.PrefixPanel", {
                     allowBlank: true
                 },
                 {
-                    name: "vc",
-                    xtype: "vc.vc.LookupField",
-                    fieldLabel: __("VC"),
-                    allowBlank: true
+                    name: "vlan",
+                    xtype: "vc.vlan.LookupField",
+                    fieldLabel: __("VLAN"),
+                    allowBlank: true,
                 },
                 {
                     name: "labels",

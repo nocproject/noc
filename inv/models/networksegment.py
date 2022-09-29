@@ -26,7 +26,7 @@ from django.db.models.aggregates import Count
 from pymongo.errors import OperationFailure
 
 # NOC modules
-from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
+from noc.core.mongo.fields import PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check, on_save, tree
@@ -37,14 +37,15 @@ from .networksegmentprofile import NetworkSegmentProfile
 from .allocationgroup import AllocationGroup
 from .link import Link
 from noc.core.scheduler.job import Job
-from noc.vc.models.vcfilter import VCFilter
+from noc.vc.models.vlanfilter import VLANFilter
+from noc.vc.models.vlan import VLAN
 
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
 
 class VLANTranslation(EmbeddedDocument):
-    filter = ForeignKeyField(VCFilter)
+    filter = ReferenceField(VLANFilter)
     rule = StringField(
         choices=[
             # Rewrite tag to parent vlan's
@@ -54,7 +55,7 @@ class VLANTranslation(EmbeddedDocument):
         ],
         default="push",
     )
-    parent_vlan = PlainReferenceField("vc.VLAN")
+    parent_vlan = ReferenceField(VLAN)
 
 
 @tree()
