@@ -61,7 +61,6 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
-        ("vc.VCDomainProvisioningConfig", "notification_group"),
         ("peer.PeeringPoint", "prefix_list_notification_group"),
     ]
 )

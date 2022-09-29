@@ -270,14 +270,8 @@ _MODELS = {
     "ip.VRF": "noc.ip.models.vrf.VRF",
     "ip.VRFGroup": "noc.ip.models.vrfgroup.VRFGroup",
     # vc models
-    "vc.VC": "noc.vc.models.vc.VC",
     "vc.L2DomainProfile": "noc.vc.models.l2domainprofile.L2DomainProfile",
     "vc.L2Domain": "noc.vc.models.l2domain.L2Domain",
-    "vc.VCBindFilter": "noc.vc.models.vcbindfilter.VCBindFilter",
-    "vc.VCDomain": "noc.vc.models.vcdomain.VCDomain",
-    "vc.VCDomainProvisioningConfig": "noc.vc.models.vcdomainprovisioningconfig.VCDomainProvisioningConfig",
-    "vc.VCFilter": "noc.vc.models.vcfilter.VCFilter",
-    "vc.VCType": "noc.vc.models.vctype.VCType",
     "vc.VLANProfile": "noc.vc.models.vlanprofile.VLANProfile",
     "vc.VLANFilter": "noc.vc.models.vlanfilter.VLANFilter",
     "vc.VLANTemplate": "noc.vc.models.vlantemplate.VLANTemplate",
@@ -342,7 +336,7 @@ _MODELS = {
     "wf.Transition": "noc.wf.models.transition.Transition",
 }
 
-FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "vc.VC", "sa.ManagedObject"]
+FTS_MODELS = ["ip.Address", "ip.Prefix", "ip.VRF", "sa.ManagedObject"]
 
 COLLECTIONS = [
     "main.Font",
@@ -429,7 +423,6 @@ LABEL_MODELS = {
     "peer.ASSet": "enable_assetpeer",
     "peer.Peer": "enable_peer",
     #
-    "vc.VC": "enable_vc",
     "vc.VLAN": "enable_vlan",
     "vc.VLANProfile": "enable_vlanprofile",
     "vc.VPN": "enable_vpn",

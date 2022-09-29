@@ -33,7 +33,7 @@ from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
-from noc.core.model.decorator import on_save
+from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.perf import metrics
 from noc.inv.models.resourcepool import ResourcePool
 from noc.vc.models.vlanfilter import VLANFilter
@@ -49,6 +49,7 @@ FULL_VLAN_RANGE = set(range(1, 4096))
 @bi_sync
 @workflow
 @on_save
+@on_delete_check(check=[("ip.Prefix", "vlan")])
 class VLAN(Document):
     meta = {
         "collection": "vlans",
@@ -93,7 +94,7 @@ class VLAN(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        return f"{self.vlan} ({self.name})"
+        return f"{self.l2_domain}:{self.vlan} ({self.name})"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

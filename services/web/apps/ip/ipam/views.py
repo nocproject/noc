@@ -131,7 +131,7 @@ class IPAMApplication(ExtApplication):
         # @todo: prefetch_related
         prefixes = list(prefix.children_set.select_related().order_by("prefix"))
         # Bulk utilization
-        Prefix.update_prefixes_usage(prefixes)
+        # Prefix.update_prefixes_usage(prefixes)
         # Free prefixes
         free_prefixes = list(IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
         # Get permissions
@@ -278,8 +278,8 @@ class IPAMApplication(ExtApplication):
                     "description": p.description,
                     "afi": p.afi,
                     "project": p.project.code if p.project else None,
-                    "as": "AS%d" % p.asn.asn if p.asn else None,
-                    "vc": p.vc.name if p.vc else None,
+                    "as": f"AS{p.asn.asn}" if p.asn else None,
+                    "vlan": p.vlan.name if p.vlan else None,
                     "tt": p.tt,
                     "usage": p.usage_percent,
                     "address_usage": p.address_usage_percent,

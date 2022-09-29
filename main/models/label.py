@@ -191,7 +191,6 @@ class Label(Document):
     enable_assetpeer = BooleanField(default=False)
     enable_peer = BooleanField(default=False)
     # VC
-    enable_vc = BooleanField(default=False)
     enable_vlan = BooleanField(default=False)
     enable_vlanprofile = BooleanField(default=False)
     enable_vpn = BooleanField(default=False)
