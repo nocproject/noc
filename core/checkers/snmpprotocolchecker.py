@@ -50,17 +50,17 @@ class SNMPProtocolChecker(ObjectChecker):
         action = None
         r = {}
         for proto_r in cc.iter_result(protocols):
-            if not protocols:
-                break
             if proto_r.protocol not in protocols:
                 continue
+            if action and len(protocols) == len(r):
+                break
             r[proto_r.protocol] = proto_r
-            if proto_r.status and proto_r.credential:
+            if not action and proto_r.status and proto_r.credential:
                 action = CredentialSet(
-                    snmp_ro=proto_r.credential.snmp_ro, snmp_rw=proto_r.credential.snmp_rw
+                    user=proto_r.credential.user,
+                    password=proto_r.credential.password,
+                    super_password=proto_r.credential.super_password,
                 )
-            if action and proto_r.protocol in protocols:
-                protocols.remove(proto_r.protocol)
         for x in r.values():
             yield CheckResult(
                 check=x.protocol.config.check,
