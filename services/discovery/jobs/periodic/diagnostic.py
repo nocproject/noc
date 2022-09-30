@@ -125,10 +125,7 @@ class DiagnosticCheck(DiscoveryCheck):
         if bulk:
             self.logger.info("Diagnostic changed: %s", ", ".join(di.diagnostic for di in bulk))
             self.object.save_diagnostics(self.object.id, bulk)
-            if (self.is_box and self.object.can_create_box_alarms()) or (
-                self.is_periodic and self.object.can_create_periodic_alarms()
-            ):
-                self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
+            self.object.sync_diagnostic_alarm([d.diagnostic for d in bulk])
             for di in bulk:
                 self.object.register_diagnostic_change(
                     di.diagnostic,
