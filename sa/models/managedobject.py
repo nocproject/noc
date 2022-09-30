@@ -121,7 +121,7 @@ from .objectstatus import ObjectStatus
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 41
+MANAGEDOBJECT_CACHE_VERSION = 42
 CREDENTIAL_CACHE_VERSION = 5
 
 Credentials = namedtuple(
