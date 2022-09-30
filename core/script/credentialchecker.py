@@ -170,21 +170,19 @@ class CredentialChecker(object):
             )
         # Try custom credential first
         for c in self.credentials:
-            if isinstance(c, CLICredential) and (
-                Protocol(1) in protocols or Protocol(2) in protocols
-            ):
+            if isinstance(c, CLICredential):
+                cli = tuple(set(SUGGEST_CLI).intersection(set(protocols)))
                 yield SuggestCLIConfig(
-                    protocols=(Protocol(1), Protocol(2)),
+                    protocols=cli,
                     user=c.user,
                     password=c.password,
                     super_password=c.super_password,
                     raise_privileges=self.raise_privilege,
                 )
-            elif isinstance(c, SNMPCredential) and (
-                Protocol(6) in protocols or Protocol(7) in protocols
-            ):
+            elif isinstance(c, SNMPCredential):
+                snmp = cli = tuple(set(SUGGEST_SNMP).intersection(set(protocols)))
                 yield SuggestSNMPConfig(
-                    protocols=(Protocol(6), Protocol(7)),
+                    protocols=snmp,
                     snmp_ro=c.snmp_ro,
                     snmp_rw=c.snmp_rw,
                 )
@@ -237,9 +235,7 @@ class CredentialChecker(object):
                         check_oids=cc.suggest_snmp_oids or None,
                     )
 
-    def iter_result(
-        self, protocols: Optional[Iterable[Protocol]] = None, first_success: bool = True
-    ) -> List[ProtocolResult]:
+    def iter_result(self, protocols: Optional[Iterable[Protocol]] = None) -> List[ProtocolResult]:
         """
         Iterate over suggest result
         :param protocols: List protocols for check
@@ -247,15 +243,12 @@ class CredentialChecker(object):
         :return:
         """
         unsupported_proto = set()
-        success_proto = set()
         processed = set()
         for suggest in self.iter_suggests(protocols):
             cred = suggest.get_credential()
             for protocol in suggest.protocols:
                 if unsupported_proto and protocol in unsupported_proto:
                     # Skip unsupported proto
-                    continue
-                if success_proto and protocol in success_proto:
                     continue
                 if (protocol, cred) in processed:
                     # Skip already checked credential
@@ -269,8 +262,6 @@ class CredentialChecker(object):
                 if not p_check.status and self.is_unsupported_error(p_check.error):
                     # Protocol is unsupported, ignored
                     unsupported_proto.add(p_check.protocol)
-                if first_success and p_check.status:
-                    success_proto.add(protocol)
                 processed.add((protocol, cred))
                 yield p_check
 
