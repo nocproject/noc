@@ -2384,7 +2384,9 @@ class ManagedObject(NOCModel):
             blocked=ac == "S" or self.scheme not in {1, 2},
             run_policy="F",
             run_order="S",
-            reason="Blocked by AccessPreference" if ac == "S" or self.scheme not in {1, 2} else None,
+            reason="Blocked by AccessPreference"
+            if ac == "S" or self.scheme not in {1, 2}
+            else None,
         )
         # HTTP Diagnostic
         yield DiagnosticConfig(
