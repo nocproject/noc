@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BI JSON-RPC API endpoint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,8 +24,7 @@ import cachetools
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.loader import loader
 from noc.core.bi.dictionaries.loader import loader as dict_loader
-from noc.core.service.api import APIError, api, executor
-from noc.core.service.jsonrpcapi import JSONRPCAPI
+from noc.core.service.jsonrpcapi import JSONRPCAPI, api, executor, APIError
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.pm.models.metricscope import MetricScope
@@ -61,8 +60,10 @@ ds_lock = threading.Lock()
 model_lock = threading.Lock()
 
 
-class _BIAPI(JSONRPCAPI):
-    """BI API."""
+class BIAPI(JSONRPCAPI):
+    """
+    BI API
+    """
 
     api_name = "api_bi"
     api_description = "Service BI API"
@@ -601,4 +602,4 @@ class _BIAPI(JSONRPCAPI):
 
 
 # Install endpoints
-_BIAPI(router)
+BIAPI(router)
