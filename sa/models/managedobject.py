@@ -2381,10 +2381,12 @@ class ManagedObject(NOCModel):
             discovery_box=True,
             alarm_class="NOC | Managed Object | Access Lost",
             alarm_labels=["noc::access::method::CLI"],
-            blocked=ac == "S",
+            blocked=ac == "S" or self.scheme not in {1, 2},
             run_policy="F",
             run_order="S",
-            reason="Blocked by AccessPreference" if ac == "S" else None,
+            reason="Blocked by AccessPreference"
+            if ac == "S" or self.scheme not in {1, 2}
+            else None,
         )
         # HTTP Diagnostic
         yield DiagnosticConfig(

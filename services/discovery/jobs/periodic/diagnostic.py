@@ -99,7 +99,10 @@ class DiagnosticCheck(DiscoveryCheck):
                 m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{dc.diagnostic}"]
                 if cr.arg0:
                     m_labels += [f"noc::check::arg0::{cr.arg0}"]
-                metrics += [MetricValue("Check | Status", value=int(cr.status), labels=m_labels)]
+                if not cr.skipped:
+                    metrics += [
+                        MetricValue("Check | Status", value=int(cr.status), labels=m_labels)
+                    ]
                 if cr.metrics:
                     metrics += cr.metrics
                 if cr.data:
