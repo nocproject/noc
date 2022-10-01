@@ -55,9 +55,7 @@ class SNMPProtocolChecker(ObjectChecker):
             r[proto_r.protocol] = proto_r
             if not action and proto_r.status and proto_r.credential:
                 action = CredentialSet(
-                    user=proto_r.credential.user,
-                    password=proto_r.credential.password,
-                    super_password=proto_r.credential.super_password,
+                    snmp_ro=proto_r.credential.snmp_ro, snmp_rw=proto_r.credential.snmp_rw
                 )
             if action and len(protocols) == len(r):
                 break
