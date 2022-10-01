@@ -33,7 +33,7 @@ class Script(GetMetricsScript):
         v = self.cli("show process cpu")
         v = parse_table(v)
         if v:
-            self.set_metric(id=("CPU | Load | 1min", None), value=float(v[-1][-1][:-1]))
+            self.set_metric(id=("CPU | Load | 1min", None), value=float(v[-1][-1][:-1]), units="%")
 
     @metrics(["Memory | Load | 1min"], volatile=False, access="C")  # CLI version
     def get_memory_metrics(self, metrics):
@@ -54,7 +54,9 @@ class Script(GetMetricsScript):
         if r.get("ram:total") and r.get("ram:used"):
             used = int(r.get("ram:used").split(" ")[0])
             total = int(r.get("ram:total").split(" ")[0])
-            self.set_metric(id=("Memory | Load | 1min", None), value=round(used * 100.0 / total))
+            self.set_metric(
+                id=("Memory | Load | 1min", None), value=round(used * 100.0 / total), units="%"
+            )
 
     @metrics(
         ["Interface | Errors | CRC", "Interface | Errors | Frame"],
@@ -74,7 +76,9 @@ class Script(GetMetricsScript):
             for m in metric_map:
                 if m not in v[iface]:
                     continue
-                self.set_metric(id=(metric_map[m], ["noc::interface::0/0"]), value=int(v[iface][m]))
+                self.set_metric(
+                    id=(metric_map[m], ["noc::interface::0/0"]), value=int(v[iface][m]), units="pkt"
+                )
 
     @metrics(
         [

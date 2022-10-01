@@ -2,14 +2,13 @@
   "$metric": "Memory | Usage",
   "$type": "match",
   "$match": [{
-    "$match": "is_stack",
+    "$match": "is_stack_memory_dev",
     "$type": "slot",
     "oid": [
       "1.3.6.1.4.1.2011.6.3.5.1.1.3.{{ hwSlotIndex }}",
       "1.3.6.1.4.1.2011.6.3.5.1.1.2.{{ hwSlotIndex }}"
       ],
-    "scale": "percent",
-    "units": "%"
+    "scale": "percent"
    },{
     "$match": "is_extended_entity_mib_supported",
     "$type": "caplist",
@@ -18,15 +17,13 @@
     "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.{{ item }}",
     "labels": ["noc::chassis::0", "noc::slot::item", "noc::module::0"],
     "type": "gauge",
-    "scale": 1,
-    "units": "%"
+    "scale": 1
    },{
     "$type": "oid",
     "oid": [
       "1.3.6.1.4.1.2011.6.1.2.1.1.3.65536",
       "1.3.6.1.4.1.2011.6.1.2.1.1.2.65536"
     ],
-    "scale": "percent",
-    "units": "%"
+    "scale": "percent"
   }]
 }

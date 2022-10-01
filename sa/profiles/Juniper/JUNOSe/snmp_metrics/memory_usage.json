@@ -1,5 +1,5 @@
 {
-  "$metric": "Memory | Usage | 5sec",
+  "$metric": "Memory | Usage",
   "$type": "slot",
   "oid": "1.3.6.1.4.1.4874.2.2.2.1.3.5.1.4.{{ hwSlotIndex }}",
   "units": "%"

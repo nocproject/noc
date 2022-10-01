@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | OID | hwMemoryDevTable",
+    "$collection": "inv.capabilities",
+    "uuid": "9ea7964a-a8c6-4639-9a3b-c8ce9b988c08",
+    "description": "Supported Memory stat on hwMemoryDevTable OIDs",
+    "type": "bool",
+    "card_template": null
+}

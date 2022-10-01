@@ -1,6 +1,0 @@
-{
-  "$metric": "CPU | Usage | 5sec",
-  "$type": "slot",
-  "oid": "1.3.6.1.4.1.27514.100.1.8.1.11.{{ hwSlotIndex }}",
-  "units": "%"
-}
