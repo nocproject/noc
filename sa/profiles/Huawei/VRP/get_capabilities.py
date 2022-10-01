@@ -19,6 +19,7 @@ class Script(BaseScript):
 
     CHECK_SNMP_GETNEXT = {
         "Huawei | MIB | ENTITY-EXTENT-MIB": mib["HUAWEI-ENTITY-EXTENT-MIB::hwEntityStateEntry"],
+        "Huawei | OID | hwMemoryDevTable": mib["HUAWEI-DEVICE-MIB::hwMemoryDevEntry"],
         "Huawei | OID | hwCBQoSClassifierStatisticsTable": mib[
             "HUAWEI-CBQOS-MIB::hwCBQoSClassifierMatchedPackets"
         ],

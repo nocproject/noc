@@ -19,7 +19,10 @@ class Profile(BaseProfile):
     command_save_config = "write memory\r\ncopy working certified"
     command_exit = "exit"
 
-    matchers = {"is_version_gte_6_3_4": {"version": {"$gte": r"6.3.4"}}}
+    matchers = {
+        "is_version_gte_6_3_4": {"version": {"$gte": r"6.3.4"}},
+        "is_stack": {"caps": {"$in": ["Stack | Members"]}},
+    }
 
     def convert_interface_name(self, s):
         if s.startswith("Alcatel ") or s.startswith("Alcatel-Lucent "):

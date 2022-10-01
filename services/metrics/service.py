@@ -711,8 +711,10 @@ class MetricsService(FastAPIService):
                 config = rule.configs.get(node.node_id)
                 static_config = None
                 if node.name == "alarm":
+                    slots = self.get_slot_limits(f"correlator-{source.fm_pool}")
                     static_config = {
                         "managed_object": f"bi_id:{source.bi_id}",
+                        "partition": source.bi_id % slots or 0,
                         "pool": source.fm_pool,
                         "labels": k[2],
                     }

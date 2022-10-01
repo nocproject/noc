@@ -176,8 +176,6 @@ class InterfaceAppplication(ExtDocApplication):
                 "project__label": smart_text(i.project) if i.project else None,
                 "state": str(i.state.id) if i.state else None,
                 "state__label": smart_text(i.state) if i.state else None,
-                "vc_domain": i.vc_domain.id if i.vc_domain else None,
-                "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": self.get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="physical")
@@ -201,8 +199,6 @@ class InterfaceAppplication(ExtDocApplication):
                 "project__label": smart_text(i.project) if i.project else None,
                 "state": str(i.state.id) if i.state else None,
                 "state__label": smart_text(i.state) if i.state else None,
-                "vc_domain": i.vc_domain.id if i.vc_domain else None,
-                "vc_domain__label": smart_text(i.vc_domain) if i.vc_domain else None,
                 "row_class": self.get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="aggregated")
