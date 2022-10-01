@@ -161,12 +161,9 @@ class AlarmNode(BaseCDAGNode):
         if self.config.dry_run or not self.config.pool:
             return
         svc = get_service()
-        stream, partition = f"dispose.{self.config.pool}", self.config.partition
-        slots = svc.get_slot_limits(f"correlator-{self.config.pool}")
-        _, *sid = self.config.managed_object.split(":", 1)
-        if slots and sid:
-            partition = int(sid[0]) % int(slots)
-        svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
+        svc.publish(
+            orjson.dumps(msg), stream=f"dispose.{self.config.pool}", partition=self.config.partition
+        )
 
     def is_active(self) -> bool:
         return self.state.active
