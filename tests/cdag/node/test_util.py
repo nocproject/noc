@@ -121,7 +121,6 @@ def test_alarm(config, values, expected, state):
         "reference": "test:1",
         "pool": "TEST",
         "partition": 3,
-        "dry_run": True,
         "alarm_class": "Test",
         "managed_object": "777",
         "labels": ["l1", "l2"],
