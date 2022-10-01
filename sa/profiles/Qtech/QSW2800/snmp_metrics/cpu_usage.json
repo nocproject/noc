@@ -1,6 +1,14 @@
 {
   "$metric": "CPU | Usage",
-  "$type": "enterprise",
-  "oid": "1.3.6.1.4.1.{{ enterprise }}.100.1.11.10.0",
-  "units": "%"
+  "$type": "match",
+  "$match": [{
+    "$match": "is_stack",
+    "$type": "slot",
+    "oid": "1.3.6.1.4.1.27514.100.1.8.1.11.{{ hwSlotIndex }}",
+    "units": "%"
+   },{
+    "$type": "enterprise",
+    "oid": "1.3.6.1.4.1.{{ enterprise }}.100.1.11.10.0",
+    "units": "%"
+  }]
 }

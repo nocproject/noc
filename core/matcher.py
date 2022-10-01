@@ -56,6 +56,21 @@ def match_regex(v, rx):
     return bool(re.search(rx, v))
 
 
+def match_all(v, iter):
+    """
+    All logic
+    :param v: Caps
+    :param iter: Matcher value
+    :return:
+    """
+    if isinstance(v, str):
+        return str(v) in iter
+    if isinstance(v, Iterable):
+        # if v list - check all
+        return not bool(set(iter) - set(v))
+    return False
+
+
 def match_in(v, iter):
     if isinstance(v, str):
         return str(v) in iter
@@ -84,6 +99,7 @@ def match_lte(v, cv):
 matchers = {
     "$regex": match_regex,
     "$in": match_in,
+    "$all": match_in,
     "$gt": match_gt,
     "$gte": match_gte,
     "$lt": match_lt,

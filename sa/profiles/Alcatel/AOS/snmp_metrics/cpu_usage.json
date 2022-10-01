@@ -1,6 +1,17 @@
 {
   "$metric": "CPU | Usage",
-  "$type": "oid",
-  "oid": "1.3.6.1.4.1.6486.800.1.2.1.16.1.1.1.13.0",
-  "units": "%"
+  "$type": "match",
+  "$match": [{
+    "$match": "is_stack",
+    "$type": "slot",
+    "oid": "1.3.6.1.4.1.6486.800.1.2.1.16.1.1.2.1.1.10.{{ hwSlotIndex }}",
+    "units": "%"
+   },{
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.6486.800.1.2.1.16.1.1.1.13.0",
+    "labels": ["noc::chassis::0", "noc::slot::0", "noc::module::0", "noc::cpu::CPU item"],
+    "type": "gauge",
+    "scale": 1,
+    "units": "%"
+  }]
 }

@@ -8,6 +8,16 @@
   },
   "$match": [
     {
+      "$match": "is_stack",
+      "$type": "slot",
+      "oid": [
+        "1.3.6.1.4.1.27514.100.1.8.1.8.{{ hwSlotIndex }}",
+        "1.3.6.1.4.1.27514.100.1.8.1.7.{{ hwSlotIndex }}"
+      ],
+      "scale": "percent",
+      "units": "%"
+    },
+    {
       "$match": "is_new_metric",
       "$type": "enterprise",
       "oid": "1.3.6.1.4.1.{{ enterprise }}.100.1.11.11.0",
