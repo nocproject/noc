@@ -40,7 +40,7 @@ class SlotRule(OIDRule):
                     ]
                 )
                 if gen:
-                    yield tuple(gen), self.type, self.scale, labels
+                    yield tuple(gen), self.type, self.scale, self.units, labels
             else:
                 oid = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
                 labels = (
