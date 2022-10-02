@@ -180,6 +180,7 @@ class ActiveAlarm(Document):
         self.uplinks = self.managed_object.uplinks
         self.rca_neighbors = self.managed_object.rca_neighbors
         self.dlm_windows = self.managed_object.dlm_windows
+        self.reopens = self.reopens or 0
         if not self.id:
             # Update effective labels
             self.effective_labels = list(chain.from_iterable(self.iter_effective_labels(self)))
