@@ -153,6 +153,13 @@ class Sensor(Document):
                 if Sensor.can_set_label(ll)
             ]
 
+    @classmethod
+    def get_component(cls, managed_object, sensor: str = None, **kwargs) -> Optional["Sensor"]:
+        if not sensor:
+            return
+        if sensor:
+            return Sensor.get_by_bi_id(int(sensor))
+
     @property
     def munits(self) -> MeasurementUnits:
         """

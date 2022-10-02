@@ -15,10 +15,10 @@
             }]
         },
         {
-            "name": "vcds",
-            "model": "vc.VC",
+            "name": "vlands",
+            "model": "vc.VLAN",
             "args": [{
-                "param": "l1",
+                "param": "vlan",
                 "var": "vlan"
             }]
         }
@@ -52,7 +52,7 @@
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=components.vcds.name"
+            "default": "=components.vlands.name"
         }
     ],
     "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if description %} ({{description}}){% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
