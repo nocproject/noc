@@ -9,10 +9,10 @@
     "default_severity__name": "WARNING",
     "components": [
         {
-            "name": "vcds",
-            "model": "vc.VC",
+            "name": "vlands",
+            "model": "vc.VLAN",
             "args": [{
-                "param": "l1",
+                "param": "vlan",
                 "var": "vlan"
             }]
         }
@@ -33,17 +33,17 @@
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=vcds.components.name"
+            "default": "=vlands.components.name"
         },
         {
             "name": "vlan_description",
             "description": "Vlan description",
-            "default": "=vcds.components.description"
+            "default": "=vlands.components.description"
         },
         {
-            "name": "vlan_vc_domain",
-            "description": "VC domain",
-            "default": "=vcds.components.vc_domain"
+            "name": "vlan_l2_domain",
+            "description": "L2 domain",
+            "default": "=vlands.components.l2_domain"
         }
     ],
     "subject_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",

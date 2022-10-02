@@ -17,10 +17,10 @@
             }]
         },
         {
-            "name": "vcds",
-            "model": "vc.VC",
+            "name": "vlands",
+            "model": "vc.VLAN",
             "args": [{
-                "param": "l1",
+                "param": "vlan",
                 "var": "vlan"
             }]
         }
@@ -42,21 +42,21 @@
         {
             "name": "vlan_name",
             "description": "Vlan name",
-            "default": "=components.vcds.name"
+            "default": "=components.vlands.name"
         },
         {
             "name": "vlan_description",
             "description": "Vlan description",
-            "default": "=components.vcds.description"
+            "default": "=components.vlands.description"
         },
         {
-            "name": "vlan_vc_domain",
-            "description": "VC domain",
-            "default": "=components.vcds.vc_domain"
+            "name": "vlan_l2_domain",
+            "description": "L2 domain",
+            "default": "=components.vlands.l2_domain"
         }
     ],
     "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
-    "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
+    "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_l2_domain %}\nVC Domain: {{vlan_l2_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",

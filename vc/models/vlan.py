@@ -106,6 +106,13 @@ class VLAN(Document):
     def get_by_bi_id(cls, id) -> Optional["VLAN"]:
         return VLAN.objects.filter(bi_id=id).first()
 
+    @classmethod
+    def get_component(cls, managed_object, vlan=None, **kwargs) -> Optional["VLAN"]:
+        if not vlan:
+            return
+        if managed_object.l2_domain:
+            return VLAN.objects.filter(l2_domain=managed_object.l2_domain, vlan=int(vlan)).first()
+
     def clean(self):
         super().clean()
         if not hasattr(self, "_changed_fields") or "l2_domain" in self._changed_fields:

@@ -55,7 +55,7 @@ class SLAProbe(Document):
         "collection": "noc.sla_probes",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["managed_object", "labels", "effective_labels"],
+        "indexes": ["managed_object", "labels", "effective_labels", ("managed_object", "target")],
     }
 
     managed_object: ManagedObject = ForeignKeyField(ManagedObject)
@@ -140,6 +140,19 @@ class SLAProbe(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_slaprobe")
+
+    @classmethod
+    def get_component(
+        cls, managed_object, sla_probe: str = None, target_address: str = None, **kwargs
+    ) -> Optional["SLAProbe"]:
+        if not sla_probe or target_address:
+            return
+        if sla_probe:
+            return SLAProbe.get_by_bi_id(int(sla_probe))
+        if target_address:
+            return SLAProbe.objects.filter(
+                managed_object=managed_object, target=target_address
+            ).first()
 
     def iter_collected_metrics(
         self, is_box: bool = False, is_periodic: bool = True
