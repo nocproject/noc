@@ -35,7 +35,7 @@ from django.db.models import (
     CASCADE,
 )
 from pydantic import BaseModel
-from pymongo import ReadPreference
+from pymongo import ReadPreference, ASCENDING
 
 # NOC modules
 from noc.core.model.base import NOCModel
@@ -2924,11 +2924,13 @@ class ManagedObject(NOCModel):
         icoll = Interface._get_collection()
         s_metrics = mo.object_profile.get_object_profile_metrics(mo.object_profile.id)
         labels = []
-        for ll in mo.effective_labels:
+        for ll in sorted(mo.effective_labels):
             l_c = Label.get_by_name(ll)
             labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         items = []
-        for iface in icoll.find({"managed_object": mo.id}, {"name", "effective_labels", "profile"}):
+        for iface in icoll.find(
+            {"managed_object": mo.id}, {"name", "effective_labels", "profile"}
+        ).sort([("name", ASCENDING)]):
             ip = InterfaceProfile.get_by_id(iface["profile"])
             metrics = [
                 {
@@ -2945,7 +2947,7 @@ class ManagedObject(NOCModel):
                     "key_labels": [f"noc::interface::{iface['name']}"],
                     "labels": [
                         {"label": ll, "expose_metric": False}
-                        for ll in iface.get("effective_labels", [])
+                        for ll in sorted(iface.get("effective_labels", []))
                     ],
                     "metrics": metrics,
                 }

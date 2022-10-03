@@ -266,6 +266,7 @@ class MetricsService(FastAPIService):
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         self.lazy_init: bool = True
         self.disable_spool: bool = global_config.metrics.disable_spool
+        self.source_metrics: Dict[Tuple[str, int], List[MetricKey]] = defaultdict(list)
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -492,6 +493,7 @@ class MetricsService(FastAPIService):
         card = await self.project_cdag(cdag, prefix=self.get_key_hash(k))
         metrics["project_cards"] += 1
         self.cards[k] = card
+        self.source_metrics[k[1][-1]].append(k)
         # Apply Rules
         self.apply_rules(k, labels)
         return card
@@ -848,11 +850,25 @@ class MetricsService(FastAPIService):
 
     async def delete_source_config(self, c_id: int) -> None:
         """
-        Delete source config
+        Delete cards for source
         """
-        if int(c_id) in self.sources_config:
-            self.invalidate_card_config(self.sources_config[int(c_id)], delete=True)
-            del self.sources_config[int(c_id)]
+        c_id = int(c_id)
+        key_ctx = None
+        for source_type in ["managed_object", "sla_probe", "sensor", "agent"]:
+            key_ctx = (source_type, c_id)
+            if key_ctx in self.source_metrics:
+                break
+        if not key_ctx:
+            return
+        self.logger.info("Delete cards for source: %s", key_ctx)
+        for mk in self.source_metrics[key_ctx]:
+            if mk not in self.cards:
+                continue
+            card = self.cards.pop(mk)
+            for a in card.alarms:
+                a.reset_state()
+            del card
+        del self.source_metrics[key_ctx]
 
     async def on_mappings_ready(self) -> None:
         """
@@ -868,16 +884,10 @@ class MetricsService(FastAPIService):
         :return:
         """
         # Generate context
-        key_ctx = (sc.type, sc.bi_id)
-        for mk in self.cards:
-            # Filter card by ctx
-            if key_ctx not in mk[1]:
-                continue
-            # Filter card by key labels
-            for item in sc.items:
-                if set(item.key_labels) - set(mk[2]):
-                    continue
-                yield self.cards[mk]
+        if (sc.type, sc.bi_id) not in self.source_metrics:
+            return
+        # Filter card by key labels
+        for mk in self.source_metrics[(sc.type, sc.bi_id)]:
             self.logger.info("[%s] Found Card", mk)
             yield self.cards[mk]
 
