@@ -5,8 +5,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from fastapi import APIRouter
+
 # NOC modules
-from noc.core.service.api import API, APIError, api
+from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api
 from noc.core.script.loader import loader
 from noc.core.script.scheme import CLI_PROTOCOLS, HTTP_PROTOCOLS, PROTOCOLS, BEEF
 from noc.sa.models.managedobject import (
@@ -28,13 +31,19 @@ from noc.core.perf import metrics
 # Increase whenever new field added or removed
 CREDENTIALS_CACHE_VERSION = 3
 
+router = APIRouter()
 
-class SAEAPI(API):
+
+class SAEAPI(JSONRPCAPI):
     """
     SAE API
     """
 
-    name = "sae"
+    api_name = "api_sae"
+    api_description = "Service SAE API"
+    openapi_tags = ["JSON-RPC API"]
+    url_path = "/api/sae"
+    auth_required = False
 
     RUN_SQL = """
         SELECT
@@ -281,3 +290,7 @@ class SAEAPI(API):
             capabilities=capabilities,
             version=version,
         )
+
+
+# Install endpoints
+SAEAPI(router)
