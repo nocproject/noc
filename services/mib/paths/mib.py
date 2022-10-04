@@ -13,21 +13,31 @@ import re
 from importlib.machinery import SourceFileLoader
 import datetime
 
+# Third-party modules
+from fastapi import APIRouter
+
 # NOC modules
 from noc.config import config
-from noc.core.service.api import API, api
 from noc.core.fileutils import temporary_file, safe_rewrite
 from noc.fm.models.mib import MIB
 from noc.core.error import ERR_MIB_NOT_FOUND, ERR_MIB_MISSED, ERR_MIB_TOOL_MISSED
 from noc.core.comp import smart_text, smart_bytes
+from noc.core.service.jsonrpcapi import JSONRPCAPI, api
+
+router = APIRouter()
 
 
-class MIBAPI(API):
+class MIBAPI(JSONRPCAPI):
     """
     MIB API
     """
 
-    name = "mib"
+    api_name = "api_mib"
+    api_description = "Service MIB API"
+    openapi_tags = ["JSON-RPC API"]
+    url_path = "/api/mib"
+    auth_required = False
+
     rx_module_not_found = re.compile(b"{module-not-found}.*`([^']+)'")
     rx_macro_not_imported = re.compile(b"{macro-not-imported}.*`([^']+)'.+`([^']+)'")
     rx_illegal_subtype = re.compile(b"{subtype-enumeration-illegal}.*`([^']+)'")
@@ -231,3 +241,7 @@ class MIBAPI(API):
         if oid and name:
             return {"status": True, "oid": oid, "name": name}
         return {"status": False}
+
+
+# Install endpoints
+MIBAPI(router)
