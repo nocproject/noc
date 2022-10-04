@@ -24,7 +24,7 @@ from noc.fm.models.mib import OIDCollision
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.fm.models.mib import MIB, MIBData
-from noc.services.mib.path.mib import MIBAPI
+from noc.services.mib.paths.mib import MIBAPI
 from noc.core.error import ERR_MIB_MISSED
 from noc.core.comp import smart_bytes
 
