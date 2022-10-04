@@ -131,8 +131,8 @@ class AlarmNode(BaseCDAGNode):
             msg["vars"]["sensor"] = self.config.sensor
         self.publish_message(msg)
         self.state.active = True
-        self.state.last_raise = now
-        logger.debug(
+        self.state.last_raise = now.replace(microsecond=0)
+        logger.info(
             "[%s|%s|%s|%s] Raise alarm: %s",
             self.node_id,
             self.config.managed_object,
@@ -153,7 +153,7 @@ class AlarmNode(BaseCDAGNode):
         }
         self.publish_message(msg)
         self.state.active = False
-        logger.debug(
+        logger.info(
             "[%s|%s] Clear alarm", self.config.managed_object, ";".join(self.config.labels or [])
         )
 
