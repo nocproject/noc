@@ -33,7 +33,7 @@ class HWSlots(OIDRule):
                     f"noc::sensor::Temperature Sensor ({slot_names[slot]})",
                 ]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, labels, "C"
+                    yield tuple(gen), self.type, self.scale, "C", labels
             else:
                 oid = mib[self.expand(self.oid, {"item": slot})]
                 labels = [
@@ -42,4 +42,4 @@ class HWSlots(OIDRule):
                     "noc::sensor::Temperature Sensor (%s)" % slot_names[slot],
                 ]
                 if oid:
-                    yield oid, self.type, self.scale, labels, "C"
+                    yield oid, self.type, self.scale, "C", labels
