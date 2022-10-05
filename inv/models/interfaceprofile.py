@@ -45,6 +45,8 @@ id_lock = Lock()
 ips_lock = RLock()
 metrics_lock = Lock()
 
+NON_DISABLED_METRIC_TYPE = {"Interface | Status | Oper", "Interface | Status | Admin"}
+
 
 @dataclass
 class MetricConfig(object):
@@ -156,6 +158,14 @@ class InterfaceProfile(Document):
             ("rc", "Raise & Clear Alarm"),
         ],
         default="d",
+    )
+    metric_collected_policy = StringField(
+        choices=[
+            ("e", "Enable"),
+            ("da", "Disable if Admin Down"),
+            ("do", "Disable if Oper Down"),
+        ],
+        default="e",
     )
     #
     allow_lag_mismatch = BooleanField(default=False)
@@ -288,3 +298,26 @@ class InterfaceProfile(Document):
     @classmethod
     def iter_lazy_labels(cls, interface_profile: "InterfaceProfile"):
         yield f"noc::interface_profile::{interface_profile.name}::="
+
+    def allow_collected_metric(
+        self,
+        admin_status: Optional[bool],
+        oper_status: Optional[bool],
+        metric_type: Optional[str] = None,
+    ) -> bool:
+        """
+        Check metric collected policy by interface status
+        :param admin_status:
+        :param oper_status:
+        :return:
+        """
+        if self.status_discovery == "d" or self.metric_collected_policy == "e":
+            return True
+        if metric_type and metric_type in NON_DISABLED_METRIC_TYPE:
+            # Not disabled metric
+            return True
+        if self.metric_collected_policy == "da" and admin_status is False:
+            return False
+        if self.metric_collected_policy == "do" and oper_status is False:
+            return False
+        return True
