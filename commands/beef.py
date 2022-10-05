@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Beef management
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -106,7 +106,10 @@ class Command(BaseCommand):
 
     def handle(self, cmd, *args, **options):
         setup_asyncio()
-        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
+        # Normalize to the function name
+        n_cmd = cmd.replace("-", "_")
+        # Run handler
+        return getattr(self, f"handle_{n_cmd}")(*args, **options)
 
     def handle_collect(
         self, storage, path, spec, force, objects, description=None, *args, **options
@@ -130,7 +133,7 @@ class Command(BaseCommand):
         else:
             sp = Spec.get_by_name(spec)
         if not sp:
-            self.die("Invalid spec: '%s'" % spec)
+            self.die(f"Invalid spec: '{spec}'")
         # Spec data
         req = sp.get_spec_request()
         # Get effective list of managed objects
@@ -140,7 +143,7 @@ class Command(BaseCommand):
                 mos.add(mo)
         # Collect beefs
         for mo in mos:
-            self.print("Collecting beef from %s" % mo.name)
+            self.print(f"Collecting beef from {mo.name}")
             if ":" in spec:
                 sp.profile = mo.profile
             if mo.profile.name != sp.profile.name:
@@ -171,23 +174,23 @@ class Command(BaseCommand):
             try:
                 bdata = mo.scripts.get_beef(spec=req)
             except Exception as e:
-                self.print("Failed collect beef on %s: %s" % (mo.name, e))
+                self.print(f"Failed collect beef on {mo.name}: {e}")
                 continue
             beef = Beef.from_json(bdata)
             if description:
                 beef.description = description
-            self.print("  Saving to %s:%s" % (storage.name, path))
+            self.print(f"  Saving to {storage.name}:{path}")
             try:
                 cdata, udata = beef.save(storage, path)
                 if cdata == udata:
-                    self.print("  %d bytes written" % cdata)
+                    self.print(f"  {cdata} bytes written")
                 else:
+                    ratio = float(udata) / float(cdata)
                     self.print(
-                        "  %d bytes written (%d uncompressed. Ratio %.2f/1)"
-                        % (cdata, udata, float(udata) / float(cdata))
+                        f"  {cdata} bytes written ({udata} uncompressed. Ratio {ratio:.2f}/1)"
                     )
             except IOError as e:
-                self.print("  Failed to save: %s" % e)
+                self.print(f"  Failed to save: {e}")
             self.print("  Done")
 
     def handle_view(self, storage, path=None, *args, **options):
@@ -196,27 +199,27 @@ class Command(BaseCommand):
         if beef:
             beef, _ = beef[0]
         else:
-            self.die("Beef not found" % path)
+            self.die(f"Beef not found: {path}")
         r = [
-            "UUID     : %s" % beef.uuid,
-            "Profile  : %s" % beef.box.profile,
-            "Platform : %s %s Version: %s" % (beef.box.vendor, beef.box.platform, beef.box.version),
-            "Spec     : %s" % beef.spec,
-            "Changed  : %s" % beef.changed,
+            f"UUID     : {beef.uuid}",
+            f"Profile  : {beef.box.profile}",
+            f"Platform : {beef.box.vendor} {beef.box.platform} Version: {beef.box.version}",
+            f"Spec     : {beef.spec}",
+            f"Changed  : {beef.changed}",
         ]
         if True or beef.description:
             r += ["Description:\n  %s\n" % beef.description.replace("\n", "\n  ")]
         r += ["--[CLI FSM]----------"]
         for c in beef.cli_fsm:
-            r += ["---- State: %s" % c.state]
+            r += [f"---- State: {c.state}"]
             for n, reply in enumerate(c.reply):
-                r += ["-------- Packet #%d" % n, "%r" % beef._cli_decoder(reply)]
+                r += [f"-------- Packet #{n}", f"{beef._cli_decoder(reply)!r}"]
         r += ["--[CLI]----------"]
         for c in beef.cli:
-            r += ["---- Names: %s" % ", ".join(c.names)]
-            r += ["-------- Request: %r" % c.request]
+            r += [f"---- Names: {', '.join(c.names)}"]
+            r += [f"-------- Request: {c.request!r}"]
             for n, reply in enumerate(c.reply):
-                r += ["-------- Packet #%d" % n, "%r" % beef._cli_decoder(reply)]
+                r += [f"-------- Packet #{n}", f"{beef._cli_decoder(reply)!r}"]
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
         return
@@ -234,7 +237,7 @@ class Command(BaseCommand):
         if beef:
             beef, _ = beef[0]
         else:
-            self.die("Beef not found" % path)
+            self.die(f"Beef not found: {path}")
         # beef = self.get_beef(st, path)
         data = beef.get_data(decode=True)
         if not export_path:
@@ -252,7 +255,7 @@ class Command(BaseCommand):
         :return:
         """
         for import_path in paths:
-            self.print("Importing %s ..." % import_path)
+            self.print(f"Importing {import_path} ...")
             with open(import_path, "r") as f:
                 data = yaml.safe_load(f)
             for c in data["cli_fsm"]:
@@ -268,7 +271,7 @@ class Command(BaseCommand):
             try:
                 beef = Beef.from_json(data)
             except ValueError:
-                self.print("Error when importing beef file %s" % import_path)
+                self.print(f"Error when importing beef file {import_path}")
                 continue
             st = self.get_storage(storage, beef=True)
             if not path:
@@ -282,7 +285,7 @@ class Command(BaseCommand):
             connect()
             storages = ExtStorage.objects.filter(type="beef")
         for storage in storages:
-            self.print("\n%sStorage: %s%s\n" % ("=" * 20, storage.name, "=" * 20))
+            self.print(f"\n{'=' * 20}Storage: {storage.name}{'=' * 20}\n")
             r = ["GUID,Profile,Vendor,Platform,Version,Description,SpecUUID,Changed,Path"]
             st_fs = storage.open_fs()
             for step in st_fs.walk("", exclude=["*.yml"]):
@@ -292,7 +295,7 @@ class Command(BaseCommand):
                     try:
                         beef = Beef.load(storage, file.make_path(step.path))
                     except ValueError:
-                        self.print("Error when loading beef file %s" % file.make_path(step.path))
+                        self.print(f"Error when loading beef file {file.make_path(step.path)}")
                         continue
                     r += [
                         ",".join(
@@ -335,7 +338,7 @@ class Command(BaseCommand):
         if beef:
             beef, _ = beef[0]
         else:
-            self.die("Beef path %s not found" % path)
+            self.die(f"Beef path {path} not found")
         # Build credentials
         credentials = {
             "address": beef.uuid,
@@ -353,10 +356,10 @@ class Command(BaseCommand):
         service = ServiceStub(pool="default")
         for s_name in script:
             if "." not in script:
-                s_name = "%s.%s" % (beef.box.profile, s_name)
+                s_name = f"{beef.box.profile}.{s_name}"
             scls = loader.get_script(s_name)
             if not scls:
-                self.die("Failed to load script '%s'" % script)
+                self.die(f"Failed to load script '{script}'")
             scr = scls(
                 service=service,
                 credentials=credentials,
@@ -381,7 +384,7 @@ class Command(BaseCommand):
 
                 yaml.dump(result, sys.stdout, indent=2)
             else:
-                self.stdout.write("%s\n" % result)
+                self.stdout.write(f"{result}\n")
 
     def handle_create_test_case(
         self,
@@ -412,20 +415,20 @@ class Command(BaseCommand):
                 # Create test directory
                 save_path = test_path or beef._path
                 if fs.exists(save_path):
-                    self.print("Path %s already exists. Skipping..." % save_path)
+                    self.print(f"Path {save_path} already exists. Skipping...")
                     continue
-                self.print("Creating %s:%s" % (test_storage, save_path))
+                self.print(f"Creating {test_storage}:{save_path}")
                 fs.makedirs(smart_text(save_path))
                 # Write config
                 # config = cfg[beef.uuid][0] if beef.uuid in cfg else cfg[""][0]
                 config["beef"] = str(beef.uuid)
-                self.print("Writing %s:%s/test-config.yml" % (test_storage, save_path))
+                self.print(f"Writing {test_storage}:{save_path}/test-config.yml")
                 fs.writebytes(
                     smart_text(os.path.join(save_path, "test-config.yml")),
                     smart_bytes(yaml.dump(config, default_flow_style=False)),
                 )
                 # Write beef
-                self.print("Writing %s:%s/beef.json.bz2" % (test_storage, save_path))
+                self.print(f"Writing {test_storage}:{save_path}/beef.json.bz2")
                 beef.save(test_storage, smart_text(os.path.join(save_path, "beef.json.bz2")))
                 if build:
                     self.handle_build_test_case(test_storage, save_path)
@@ -453,10 +456,10 @@ class Command(BaseCommand):
         service = ServiceStub(pool="default")
         for n, test in enumerate(tests):
             # Load script
-            script = "%s.%s" % (beef.box.profile, test["script"])
+            script = f"{beef.box.profile}.{test['script']}"
             scls = loader.get_script(script)
             if not scls:
-                self.die("Failed to load script '%s'" % script)
+                self.die(f"Failed to load script '{script}'")
             # Build credentials
             credentials = {
                 "address": beef.uuid,
@@ -480,7 +483,7 @@ class Command(BaseCommand):
                 timeout=3600,
                 name=script,
             )
-            self.print("[%04d] Running %s" % (n, test["script"]))
+            self.print(f"[{n:04d}] Running {test['script']}")
             result = scr.run()
             tc = {
                 "script": script,
@@ -492,8 +495,8 @@ class Command(BaseCommand):
             }
             data = bz2.compress(orjson.dumps(tc))
             #
-            rn = os.path.join(test_path, "%04d.%s.json.bz2" % (n, test["script"]))
-            self.print("[%04d] Writing %s" % (n, rn))
+            rn = os.path.join(test_path, f"{n:04d}.{test['script']}.json.bz2")
+            self.print(f"[{n:04d}] Writing {rn}")
             with test_st.open_fs() as fs:
                 fs.writebytes(smart_text(rn), data)
 
@@ -517,19 +520,17 @@ class Command(BaseCommand):
         elif beef_test_config:
             beef_type = "beef_test_config"
         if not name:
-            self.die("Unknown storage: %s" % name)
+            self.die(f"Unknown storage: {name}")
         if ":" in name:
             # URL
-            st = ExtStorage.from_json(
-                '{"name": "local", "url": "%s", "type": "%s"}' % (name, beef_type)
-            )
+            st = ExtStorage.from_json(f'{"name": "local", "url": "{name}", "type": "{beef_type}"}')
         else:
             connect()
             st = ExtStorage.get_by_name(name)
         if not st:
-            self.die("Invalid storage '%s'" % name)
+            self.die(f"Invalid storage: {name}")
         if st.type != beef_type:
-            self.die("Storage is not configured for %s" % beef_type)
+            self.die(f"Storage is not configured for {beef_type}")
         return st
 
     def get_beef(self, storage, path):
@@ -542,7 +543,7 @@ class Command(BaseCommand):
         try:
             return Beef.load(storage, path)
         except IOError as e:
-            self.die("Failed to load beef: %s" % e)
+            self.die(f"Failed to load beef: {e}")
 
     def get_config(self, storage=None, path=None):
         config_st = self.get_storage(storage, beef_test_config=True)
@@ -583,7 +584,7 @@ class Command(BaseCommand):
             try:
                 beef = self.get_beef(storage, beef_path)
             except ValueError:
-                self.print("Bad beef on path %s" % beef_path)
+                self.print(f"Bad beef on path {beef_path}")
                 continue
             if uuids and beef.uuid not in uuids:
                 continue
@@ -636,7 +637,7 @@ class Command(BaseCommand):
 
         def read_file(path):
             if not os.path.exists(path):
-                self.die("Cannot open file '%s'" % path)
+                self.die(f"Cannot open file '{path}'")
             with open(path) as f:
                 return f.read()
 
@@ -644,13 +645,13 @@ class Command(BaseCommand):
             try:
                 return orjson.loads(j)
             except ValueError as e:
-                self.die("Failed to parse JSON: %s" % e)
+                self.die(f"Failed to parse JSON: {e}")
 
         args = {}
         for a in arguments:
             match = self.rx_arg.match(a)
             if not match:
-                self.die("Malformed parameter: '%s'" % a)
+                self.die(f"Malformed parameter: '{a}'")
             name, op, value = match.groups()
             if op == "=":
                 # Set parameter
