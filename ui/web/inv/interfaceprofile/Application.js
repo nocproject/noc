@@ -177,7 +177,26 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 xtype: "wf.workflow.LookupField",
                                 fieldLabel: __("Workflow"),
                                 allowBlank: false
-                            }
+                            },
+                            {
+                                name: "dynamic_classification_policy",
+                                xtype: "combobox",
+                                fieldLabel: __("Dynamic Classification Policy"),
+                                labelWidth: 200,
+                                allowBlank: false,
+                                queryMode: "local",
+                                displayField: "label",
+                                valueField: "id",
+                                store: {
+                                    fields: ["id", "label"],
+                                    data: [
+                                        {id: "D", label: "Disable"},
+                                        {id: "R", label: "By Rule"},
+                                    ]
+                                },
+                                defaultValue: "R",
+                                uiStyle: "medium"
+                            },
                         ]
                     },
                     {
@@ -313,29 +332,24 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 uiStyle: "medium"
                             },
                             {
+                                name: "metric_collected_policy",
+                                xtype: "combobox",
+                                fieldLabel: __("Metric Collected Policy"),
+                                allowBlank: true,
+                                labelWidth: 200,
+                                defaultValue: "e",
+                                store: [
+                                    ["e", __("Enabled")],
+                                    ["da", __("Disable if Admin Down")],
+                                    ["do", __("Disable if Oper Down")]
+                                ],
+                                uiStyle: "medium"
+                            },
+                            {
                                 name: "allow_lag_mismatch",
                                 xtype: "checkbox",
                                 boxLabel: __("Allow LAG mismatch"),
                                 allowBlank: true
-                            },
-                            {
-                                name: "dynamic_classification_policy",
-                                xtype: "combobox",
-                                fieldLabel: __("Dynamic Classification Policy"),
-                                labelWidth: 200,
-                                allowBlank: false,
-                                queryMode: "local",
-                                displayField: "label",
-                                valueField: "id",
-                                store: {
-                                    fields: ["id", "label"],
-                                    data: [
-                                        {id: "D", label: "Disable"},
-                                        {id: "R", label: "By Rule"},
-                                    ]
-                                },
-                                defaultValue: "R",
-                                uiStyle: "medium"
                             },
                             {
                                 name: "allow_subinterface_metrics",
