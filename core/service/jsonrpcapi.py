@@ -124,7 +124,7 @@ class JSONRPCAPI(object):
                         headers={"location": result.location},
                     )
                 else:
-                    return {"result": result, "id": req.id}
+                    return ORJSONResponse(content={"result": result, "id": req.id})
             except NOCError as e:
                 span.set_error_from_exc(e, e.code)
                 error = f"Failed: {e}"
@@ -132,7 +132,7 @@ class JSONRPCAPI(object):
                 error_report()
                 span.set_error_from_exc(e)
                 error = f"Failed: {e}"
-            return {"error": error, "id": req.id}
+            return ORJSONResponse(content={"error": error, "id": req.id})
 
     def redirect(self, location, method, params):
         return Redirect(location=location, method=method, params=params)
