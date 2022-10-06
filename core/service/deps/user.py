@@ -17,7 +17,7 @@ from noc.aaa.models.user import User
 
 
 def get_current_user(
-    remote_user: Optional[str] = Header(None, alias="Remote-User"), required: bool = False
+    remote_user: Optional[str] = Header(None, alias="Remote-User"), required: bool = True
 ) -> Optional[User]:
     """
     Get request current user

@@ -12,7 +12,7 @@ from functools import partial
 from typing import Optional
 
 # Third-party modules
-from fastapi import APIRouter, Header, HTTPException, Depends
+from fastapi import APIRouter, Header, Depends
 from fastapi.responses import ORJSONResponse
 
 # NOC modules
