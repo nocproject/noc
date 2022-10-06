@@ -33,7 +33,11 @@ class ActivatorAPI(JSONRPCAPI):
     Monitoring API
     """
 
-    name = "activator"
+    api_name = "api_activator"
+    api_description = "Service Activator API"
+    openapi_tags = ["JSON-RPC API"]
+    url_path = "/api/activator"
+    auth_required = False
 
     HTTP_CLIENT_DEFAULTS = dict(
         connect_timeout=config.activator.http_connect_timeout,
@@ -41,7 +45,7 @@ class ActivatorAPI(JSONRPCAPI):
     )
 
     @api
-    @executor("script")
+    # @executor("script")
     def script(
         self,
         name: str,
@@ -238,7 +242,7 @@ class ActivatorAPI(JSONRPCAPI):
         return f"{url}"
 
     @api
-    @executor("script")
+    # @executor("script")
     def close_session(self, session_id):
         BaseScript.close_session(session_id)
 

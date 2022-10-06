@@ -110,7 +110,7 @@ class JSONRPCAPI(object):
             try:
                 if getattr(h, "executor", ""):
                     # Threadpool version
-                    result = await self.service.run_in_executor(h.executor, h, *req.params)
+                    result = self.service.run_in_executor(h.executor, h, *req.params)
                 else:
                     # Serialized version
                     result = h(*req.params)
