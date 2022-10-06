@@ -245,6 +245,8 @@ class ManagedObjectApplication(ExtModelApplication):
         for fn in self.resource_group_fields:
             data[fn] = sg_to_list(data.get(fn) or [])
         d_config = {d.diagnostic: d for d in o.iter_diagnostic_configs()}
+        if not d_config:
+            return data
         data["diagnostics"] = list(
             sorted(
                 [
@@ -264,7 +266,7 @@ class ManagedObjectApplication(ExtModelApplication):
                         "reason": d["reason"] or "",
                     }
                     for d in o.diagnostics.values()
-                    if d_config[d["diagnostic"]].show_in_display
+                    if d["diagnostic"] in d_config and d_config[d["diagnostic"]].show_in_display
                 ],
                 key=lambda x: d_config[x["name"]].display_order if x["name"] in d_config else 99,
             )
