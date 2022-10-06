@@ -16,14 +16,19 @@ from fastapi.security import SecurityScopes
 from noc.aaa.models.user import User
 
 
-def get_current_user(remote_user: Optional[str] = Header(None, alias="Remote-User")) -> User:
+def get_current_user(
+    remote_user: Optional[str] = Header(None, alias="Remote-User"), required: bool = False
+) -> Optional[User]:
     """
     Get request current user
 
     :param remote_user:
+    :param required:
     :return:
     """
-    if not remote_user:
+    if not remote_user and not required:
+        return
+    elif not remote_user:
         raise HTTPException(403, "Not authorized")
     user = User.get_by_username(remote_user)
     if not user:

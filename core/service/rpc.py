@@ -24,7 +24,7 @@ from noc.config import config
 from noc.core.span import Span, get_current_span
 from noc.core.ioloop.util import run_sync
 from .error import RPCError, RPCNoService, RPCHTTPError, RPCException, RPCRemoteError
-from noc.core.comp import smart_text
+from noc.core.comp import DEFAULT_ENCODING
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +100,7 @@ class RPCProxy(object):
                         return None
                     else:
                         span.set_error(code)
-                        raise RPCHTTPError("HTTP Error %s: %s" % (code, body))
+                        raise RPCHTTPError(f"HTTP Error {code}: {body}")
 
             t0 = perf_counter()
             self._logger.debug(
@@ -117,7 +117,7 @@ class RPCProxy(object):
             is_notify = "_notify" in kwargs
             if not is_notify:
                 msg["id"] = tid
-            body = smart_text(orjson.dumps(msg))
+            body = orjson.dumps(msg).decode(encoding=DEFAULT_ENCODING)
             # Get services
             response = None
             for t in self._service.iter_rpc_retry_timeout():
@@ -126,7 +126,7 @@ class RPCProxy(object):
                     svc = random.choice(self._hints)
                 else:
                     svc = await self._service.dcs.resolve(self._service_name)
-                response = await make_call("http://%s/api/%s/" % (svc, self._api), body)
+                response = await make_call(f"http://{svc}/api/{self._api}/", body)
                 if response:
                     break
                 else:
@@ -143,8 +143,8 @@ class RPCProxy(object):
                     if result.get("error"):
                         self._logger.error("RPC call failed: %s", result["error"])
                         raise RPCRemoteError(
-                            "RPC call failed: %s" % result["error"],
-                            remote_code=result.get("code", None),
+                            f'RPC call failed: {result["error"]["message"]}',
+                            remote_code=result["error"].get("code", None),
                         )
                     else:
                         return result["result"]
@@ -152,7 +152,7 @@ class RPCProxy(object):
                     # Notifications return None
                     return
             else:
-                raise RPCNoService("No active service %s found" % self._service_name)
+                raise RPCNoService(f"No active service {self._service_name} found")
 
         async def async_wrapper(*args, **kwargs):
             return await _call(item, *args, **kwargs)
