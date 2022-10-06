@@ -45,7 +45,7 @@ class ActivatorAPI(JSONRPCAPI):
     )
 
     @api
-    # @executor("script")
+    @executor("script")
     def script(
         self,
         name: str,
@@ -242,7 +242,7 @@ class ActivatorAPI(JSONRPCAPI):
         return f"{url}"
 
     @api
-    # @executor("script")
+    @executor("script")
     def close_session(self, session_id):
         BaseScript.close_session(session_id)
 
