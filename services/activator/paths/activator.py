@@ -10,9 +10,11 @@ from typing import Optional, Dict, Any
 
 # Third-party modules
 import orjson
+from fastapi import APIRouter
+
 
 # NOC modules
-from noc.core.service.api import API, APIError, api, executor
+from noc.core.service.jsonrpcapi import JSONRPCAPI, APIError, api, executor
 from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
@@ -23,10 +25,10 @@ from noc.config import config
 from noc.core.comp import smart_text
 from ..models.streaming import StreamingConfig
 
-NS = 1_000_000_000
+router = APIRouter()
 
 
-class ActivatorAPI(API):
+class ActivatorAPI(JSONRPCAPI):
     """
     Monitoring API
     """
@@ -243,3 +245,7 @@ class ActivatorAPI(API):
     @staticmethod
     def close_session_get_label(session_id):
         return session_id
+
+
+# Install endpoints
+ActivatorAPI(router)

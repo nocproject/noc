@@ -2,24 +2,19 @@
 # ----------------------------------------------------------------------
 # Activator service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.tornado import TornadoService
-from noc.services.activator.api.activator import ActivatorAPI
+from noc.core.service.fastapi import FastAPIService
 
 
-class ActivatorService(TornadoService):
+class ActivatorService(FastAPIService):
     name = "activator"
     pooled = True
-    api = [ActivatorAPI]
     process_name = "noc-%(name).10s-%(pool).5s"
     use_telemetry = True
-
-    def __init__(self):
-        super().__init__()
 
 
 if __name__ == "__main__":
