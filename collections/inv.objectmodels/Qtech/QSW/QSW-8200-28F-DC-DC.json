@@ -11,7 +11,7 @@
             "name": "-48V",
             "description": "-48V",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "protocols": [">-48VDC"],
             "type__name": "Power | MSTB 2.5/3-ST-5.08"
         },
