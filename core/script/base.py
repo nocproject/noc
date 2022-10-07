@@ -12,7 +12,7 @@ import itertools
 import operator
 from functools import reduce
 from time import perf_counter
-from typing import Any, Optional
+from typing import Any, Optional, Set
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -140,7 +140,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     # None - use default preferences
     always_prefer = None
     # Script's labels for use in pager
-    labels = set()
+    labels: Set[str] = set()
 
     def __init__(
         self,

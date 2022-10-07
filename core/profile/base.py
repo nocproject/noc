@@ -1090,7 +1090,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
                 elif isinstance(c, dict):
                     cnew = {}
                     for ck, cv in c.items():
-                        if isinstance(ck, bytes):
+                        if isinstance(ck, str):
                             cnew[(ck,)] = cv
                         elif isinstance(ck, tuple):
                             cnew[ck] = cv
