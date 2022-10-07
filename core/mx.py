@@ -11,9 +11,6 @@ from threading import Lock
 from dataclasses import dataclass
 from functools import partial
 
-# Third-party modules
-import orjson
-
 # NOC services
 from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
