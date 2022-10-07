@@ -152,7 +152,10 @@ class Script(BaseScript):
             max_retries=self.get_getnext_retires(),
         ):
             address = oid.split(mib["RFC1213-MIB::ipAdEntIfIndex"])[-1].strip(".")
-            r[ifindex] = ip_mask[address]
+            if ifindex not in r:
+                r[ifindex] = ip_mask[address]
+            else:
+                r[ifindex] += ip_mask[address]
         return r
 
     def get_mpls_vpn_mappings(self) -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]:
