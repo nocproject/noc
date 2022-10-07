@@ -138,9 +138,9 @@ class InterfaceStatusCheck(DiscoveryCheck):
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 if astatus is False:
                     # If admin_down send expired signal
-                    iface.fire_event("suspend")
+                    iface.fire_event("off")
                 else:
-                    iface.fire_event("resume")
+                    iface.fire_event("on")
             if ostatus:
                 iface.fire_event("seen")
         if bulk:
