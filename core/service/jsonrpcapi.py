@@ -8,14 +8,16 @@
 # Python modules
 import asyncio
 from collections import namedtuple
+from functools import partial
 from typing import Optional
 
 # Third-party modules
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header, Depends
 from fastapi.responses import ORJSONResponse
 
 # NOC modules
 from noc.aaa.models.user import User
+from noc.core.service.deps.user import get_current_user
 from noc.config import config
 from noc.core.debug import error_report
 from noc.core.error import NOCError
@@ -63,7 +65,7 @@ class JSONRPCAPI(object):
     async def api_endpoint(
         self,
         req: JSONRemoteProcedureCall,
-        remote_user: Optional[str] = Header(None, alias="Remote-User"),
+        remote_user: Optional[User] = Depends(partial(get_current_user, required=auth_required)),
         span_ctx: int = Header(0, alias="X-NOC-Span-Ctx"),
         span_id: int = Header(0, alias="X-NOC-Span"),
         calling_service: str = Header("unknown", alias=CALLING_SERVICE_HEADER),
@@ -72,19 +74,6 @@ class JSONRPCAPI(object):
         Endpoint for FastAPI route.
         Execute selected API-method as method of JSONRPAPI child class instance
         """
-
-        def get_current_user(remote_user):
-            if not remote_user:
-                if not self.auth_required:
-                    return None
-                else:
-                    raise HTTPException(403, "Not authorized")
-            user = User.get_by_username(remote_user)
-            if not user:
-                raise HTTPException(403, "Not authorized")
-            if not user.is_active:
-                raise HTTPException(403, "Not authorized")
-            return user
 
         self.current_user = get_current_user(remote_user)
         if req.method not in self.get_methods():
@@ -124,15 +113,15 @@ class JSONRPCAPI(object):
                         headers={"location": result.location},
                     )
                 else:
-                    return {"result": result, "id": req.id}
+                    return ORJSONResponse(content={"result": result, "id": req.id})
             except NOCError as e:
                 span.set_error_from_exc(e, e.code)
-                error = f"Failed: {e}"
+                error = {"message": f"Failed: {e}", "code": e.code}
             except Exception as e:
                 error_report()
                 span.set_error_from_exc(e)
-                error = f"Failed: {e}"
-            return {"error": error, "id": req.id}
+                error = {"message": f"Failed: {e}", "code": -32000}
+            return ORJSONResponse(content={"error": error, "id": req.id})
 
     def redirect(self, location, method, params):
         return Redirect(location=location, method=method, params=params)
