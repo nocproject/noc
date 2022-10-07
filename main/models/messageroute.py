@@ -109,6 +109,8 @@ class MessageRoute(Document):
         return self.name
 
     def clean(self):
+        if self.type == "metrics" and self.action == "notification":
+            raise ValidationError({"action": "For type 'metric' Notification is not allowed"})
         if self.action == "stream" and not self.stream:
             raise ValidationError({"stream": "For 'stream' action Stream must be set"})
         elif self.action == "notification" and not self.notification_group:
@@ -131,6 +133,8 @@ class MessageRoute(Document):
         }
         if self.stream:
             r["stream"] = self.stream
+        if self.type == "metrics" and self.action == "stream":
+            r["action"] = "metrics"
         if self.headers:
             r["headers"] = [{"header": m.header, "value": m.value} for m in self.headers]
         if self.notification_group:

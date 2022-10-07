@@ -15,7 +15,8 @@ import orjson
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE
+from noc.config import config
 
 
 DROP = ""
@@ -118,3 +119,30 @@ class NotificationAction(Action):
             yield NOTIFICATION_METHODS[method], header, self.ng.render_message(
                 mt, orjson.loads(msg.value), render_template
             ) if render_template else body
+
+
+class MetricAction(Action):
+    name = "metrics"
+
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.stream: str = cfg.stream
+        self.mx_metrics_scopes = {}
+        self.load_handlers()
+
+    def load_handlers(self):
+        from noc.main.models.metricstream import MetricStream
+
+        for mss in MetricStream.objects.filter():
+            if mss.is_active and mss.scope.table_name in set(
+                    config.message.enable_metric_scopes
+            ):
+                self.mx_metrics_scopes[mss.scope.table_name.encode(DEFAULT_ENCODING)] = mss.to_mx
+
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        table = msg.headers.get(MX_METRICS_SCOPE)
+        if table not in self.mx_metrics_scopes:
+            return
+        for value in msg.value.split(b"\n"):
+            value = self.mx_metrics_scopes[table](orjson.loads(value))
+            yield self.stream, self.headers, value

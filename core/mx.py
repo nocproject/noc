@@ -9,6 +9,7 @@
 from typing import Any, Optional, Dict
 from threading import Lock
 from dataclasses import dataclass
+from functools import partial
 
 # Third-party modules
 import orjson
@@ -30,6 +31,8 @@ class Message(object):
 
 # MX stream name
 MX_STREAM = "message"
+MX_METRICS_TYPE = "metrics"
+MX_METRICS_SCOPE = "scope"
 # Headers
 MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"
@@ -96,7 +99,7 @@ def send_message(
     if headers:
         msg_headers.update(headers)
     svc = get_service()
-    svc.send_message(data, message_type, headers, sharding_key)
+    run_sync(partial(svc.send_message, data, message_type, headers, sharding_key))
     # n_partitions = get_mx_partitions()
     # svc.publish(
     #     value=orjson.dumps(data),

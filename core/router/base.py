@@ -10,7 +10,7 @@ import logging
 import operator
 from time import time_ns
 from collections import defaultdict
-from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional
+from typing import List, DefaultDict, Iterator, Dict, Iterable, Optional, Any
 from functools import partial
 
 # Third-party modules
@@ -22,7 +22,6 @@ from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
-from noc.core.liftbridge.queuebuffer import QBuffer
 from .route import Route, DefaultNotificationRoute
 from .action import DROP, DUMP
 
@@ -36,7 +35,7 @@ class Router(object):
         self.default_route: Optional[DefaultNotificationRoute] = DefaultNotificationRoute()
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
-        self.out_queue: Optional[QBuffer] = None
+        # self.out_queue: Optional[QBuffer] = None
 
     def load(self):
         """
@@ -163,10 +162,10 @@ class Router(object):
         key: Optional[bytes] = None,
         headers: Optional[Dict[str, bytes]] = None,
     ):
-        if self.out_queue:
-            self.out_queue.put(stream, partition, data=value)
-        else:
-            self.svc.publish(value=body, stream=stream, partition=partition, headers=headers)
+        # if self.out_queue:
+        #    self.out_queue.put(stream, partition, data=value)
+        #else:
+        self.svc.publish(value=value, stream=stream, partition=partition, headers=headers)
 
     def route_sync(self, msg: Message):
         """
@@ -198,10 +197,12 @@ class Router(object):
         }
         if headers:
             msg_headers.update(headers)
+        if not isinstance(data, bytes):
+            data = orjson.dumps(data)
         return Message(
-            value=orjson.dumps(data),
+            value=data,
             headers=msg_headers,
-            timestamp=time_ns,
+            timestamp=time_ns(),
             key=sharding_key,
         )
 
