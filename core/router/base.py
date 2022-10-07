@@ -164,7 +164,7 @@ class Router(object):
     ):
         # if self.out_queue:
         #    self.out_queue.put(stream, partition, data=value)
-        #else:
+        # else:
         self.svc.publish(value=value, stream=stream, partition=partition, headers=headers)
 
     def route_sync(self, msg: Message):

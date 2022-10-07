@@ -134,9 +134,7 @@ class MetricAction(Action):
         from noc.main.models.metricstream import MetricStream
 
         for mss in MetricStream.objects.filter():
-            if mss.is_active and mss.scope.table_name in set(
-                    config.message.enable_metric_scopes
-            ):
+            if mss.is_active and mss.scope.table_name in set(config.message.enable_metric_scopes):
                 self.mx_metrics_scopes[mss.scope.table_name.encode(DEFAULT_ENCODING)] = mss.to_mx
 
     def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:

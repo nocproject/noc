@@ -27,6 +27,7 @@ from typing import (
     TypeVar,
     NoReturn,
     Awaitable,
+    Set,
 )
 
 # Third-party modules
@@ -51,7 +52,7 @@ from noc.core.liftbridge.message import Message
 from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE
+from noc.core.mx import MX_METRICS_SCOPE, MX_METRICS_TYPE
 from .rpc import RPCProxy
 from .loader import set_service
 
@@ -137,8 +138,7 @@ class BaseService(object):
         # Metrics publisher buffer
         self.metrics_queue: Optional[QBuffer] = None
         # MX metrics publisher buffer
-        self.mx_metrics_queue: Optional[QBuffer] = None
-        self.mx_metrics_scopes: Dict[str, Callable] = {}
+        self.mx_metrics_scopes: Set[str] = set(config.message.enable_metric_scopes)
         self.mx_partitions: int = 0
         #
         self.active_subscribers = 0
@@ -646,20 +646,6 @@ class BaseService(object):
             self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
-            if config.message.enable_metrics and self.use_mongo:
-                from noc.main.models.metricstream import MetricStream
-
-                for mss in MetricStream.objects.filter():
-                    if mss.is_active and mss.scope.table_name in set(
-                        config.message.enable_metric_scopes
-                    ):
-                        self.mx_metrics_scopes[mss.scope.table_name] = mss.to_mx
-                self.mx_metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
-                self.loop.create_task(
-                    self.publish_metrics(
-                        self.mx_metrics_queue, headers={MX_MESSAGE_TYPE: b"metrics"}
-                    )
-                )
 
     def publish(
         self,
@@ -762,6 +748,13 @@ class BaseService(object):
             t0 = perf_counter()
             for stream, partititon, chunk in queue.iter_slice():
                 self.publish(chunk, stream=stream, partition=partititon, headers=headers)
+                table_name = stream.split(".")[1]
+                if config.message.enable_metrics and table_name in self.mx_metrics_scopes:
+                    await self.send_message(
+                        data=chunk,
+                        message_type=MX_METRICS_TYPE,
+                        headers={MX_METRICS_SCOPE: table_name.encode(encoding="utf-8")},
+                    )
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
@@ -787,30 +780,6 @@ class BaseService(object):
         self.metrics_queue.put(
             stream=f"ch.{table}", partition=key % self.n_metrics_partitions, data=metrics
         )
-        # Mirror to MX
-        if (
-            config.message.enable_metrics
-            and self.mx_metrics_scopes
-            and table in self.mx_metrics_scopes
-        ):
-            # n_partitions = get_mx_partitions()
-            # self.mx_metrics_queue.put(
-            #     stream=MX_STREAM,
-            #     partition=key % n_partitions,
-            #     data=[self.mx_metrics_scopes[table](m) for m in metrics],
-            # )
-            self.send_message(
-                data=[self.mx_metrics_scopes[table](m) for m in metrics], message_type="metrics"
-            )
-            # self.publish(
-            #     value=orjson.dumps([self.mx_metrics_scopes[table](m) for m in metrics]),
-            #     stream=MX_STREAM,
-            #     partition=key % n_partitions,
-            #     headers={
-            #         MX_MESSAGE_TYPE: b"metrics",
-            #         MX_SHARDING_KEY: smart_bytes(key),
-            #     },
-            # )
 
     def start_telemetry_callback(self) -> None:
         """
@@ -830,12 +799,13 @@ class BaseService(object):
         if spans:
             self.register_metrics("span", [span_to_dict(s) for s in spans])
 
-    def initialize_router(self) -> None:
+    def _initialize_router(self) -> None:
         """
 
         :return:
         """
         self.router = Router()
+        self.router.load()
 
     async def send_message(
         self,
@@ -853,8 +823,10 @@ class BaseService(object):
         :param sharding_key: Key for sharding over MX services
         :return:
         """
-
+        if not self.router:
+            self._initialize_router()
         msg = self.router.get_message(data, message_type, headers, sharding_key)
+        self.logger.info("Send message: %s", msg)
         await self.router.route_message(msg)
 
     def get_leader_lock_name(self):
