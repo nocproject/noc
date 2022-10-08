@@ -372,8 +372,8 @@ class CredentialChecker(object):
                     "password": password,
                     "super_password": super_password,
                     "path": None,
-                    "raise_privileges": False,
-                    "access_preference": raise_privilege,
+                    "raise_privileges": raise_privilege,
+                    "access_preference": "C",
                 },
             )
             self.logger.info("Result: %s, %s", r, r["message"])

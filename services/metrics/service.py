@@ -916,7 +916,8 @@ class MetricsService(FastAPIService):
                     a.config.__static["pool"] = sc.fm_pool
                     # Alarm config update
             num += 1
-        self.logger.info("Invalidate %s cards config", num)
+        if num:
+            self.logger.info("Invalidate %s cards config", num)
 
     async def invalidate_card_rules(
         self, rules: Iterable[str], is_delete: bool = False, is_new: bool = False
