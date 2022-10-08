@@ -14,19 +14,21 @@ from fastapi.security import SecurityScopes
 
 # NOC modules
 from noc.aaa.models.user import User
+from noc.core.service.loader import get_service
+
+svc = get_service()
 
 
-def get_current_user(
-    remote_user: Optional[str] = Header(None, alias="Remote-User"), required: bool = True
+async def get_current_user(
+    remote_user: Optional[str] = Header(None, alias="Remote-User")
 ) -> Optional[User]:
     """
     Get request current user
 
     :param remote_user:
-    :param required:
     :return:
     """
-    if not remote_user and not required:
+    if not remote_user and not getattr(svc, "auth_required", False):
         return
     elif not remote_user:
         raise HTTPException(403, "Not authorized")
