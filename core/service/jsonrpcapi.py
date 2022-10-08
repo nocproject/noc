@@ -9,7 +9,7 @@
 import asyncio
 from collections import namedtuple
 from functools import partial
-from typing import Optional
+from typing import Optional, Set
 
 # Third-party modules
 from fastapi import APIRouter, Header, Depends
@@ -31,8 +31,8 @@ Redirect = namedtuple("Redirect", ["location", "method", "params"])
 
 class JSONRPCAPI(object):
     """
-    JSON-RPC (specification 1.0) API implementation for FastAPI service
-    https://www.jsonrpc.org/specification_v1
+    JSON-RPC (specification 2.0) API implementation for FastAPI service
+    https://www.jsonrpc.org/specification
     """
 
     CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
@@ -51,16 +51,17 @@ class JSONRPCAPI(object):
     def __init__(self, router: APIRouter):
         self.service = get_service()
         self.logger = self.service.logger
-        self.current_user = None
+        self.current_user: Optional[User] = None
         self.router = router
+        self.methods: Set[str] = self.get_methods()
         self.setup_routes()
 
     @classmethod
-    def get_methods(cls):
+    def get_methods(cls) -> Set[str]:
         """
         Returns a list of available API methods
         """
-        return [m for m in dir(cls) if getattr(getattr(cls, m), "api", False)]
+        return {m for m in dir(cls) if getattr(getattr(cls, m), "api", False)}
 
     async def api_endpoint(
         self,
@@ -75,8 +76,8 @@ class JSONRPCAPI(object):
         Execute selected API-method as method of JSONRPAPI child class instance
         """
 
-        self.current_user = get_current_user(remote_user)
-        if req.method not in self.get_methods():
+        self.current_user = remote_user
+        if req.method not in self.methods:
             return {"error": f"Invalid method: '{req.method}'", "id": req.id}
         h = getattr(self, req.method)
         self.service.logger.debug(
