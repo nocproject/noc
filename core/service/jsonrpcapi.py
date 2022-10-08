@@ -8,7 +8,6 @@
 # Python modules
 import asyncio
 from collections import namedtuple
-from functools import partial
 from typing import Optional, Set
 
 # Third-party modules
@@ -66,7 +65,7 @@ class JSONRPCAPI(object):
     async def api_endpoint(
         self,
         req: JSONRemoteProcedureCall,
-        remote_user: Optional[User] = Depends(partial(get_current_user, required=auth_required)),
+        remote_user: Optional[User] = Depends(get_current_user),
         span_ctx: int = Header(0, alias="X-NOC-Span-Ctx"),
         span_id: int = Header(0, alias="X-NOC-Span"),
         calling_service: str = Header("unknown", alias=CALLING_SERVICE_HEADER),
