@@ -214,15 +214,17 @@ class Route(object):
         for header in match_eq:
             if len(match_eq[header]) == 1:
                 # ==
-                expr += [f"headers[{header!r}] == {match_eq[header][0]!r}"]
+                expr += [
+                    f"{header!r} in headers and headers[{header!r}] == {match_eq[header][0]!r}"
+                ]
             else:
                 # in
                 expr += [
-                    f'headers[{header!r}] in ({", ".join("%r" % x for x in match_eq[header])!r})'
+                    f'{header!r} in headers and headers[{header!r}] in ({", ".join("%r" % x for x in match_eq[header])!r})'
                 ]
         # Expression for !=
         for header, value in match_ne:
-            expr += [f"headers[{header!r}] != {value!r}"]
+            expr += [f"{header!r} in headers and headers[{header!r}] != {value!r}"]
         # Expression for regex
         # @todo
         # Compile matching code

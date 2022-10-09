@@ -141,6 +141,6 @@ class MetricAction(Action):
         table = msg.headers.get(MX_METRICS_SCOPE)
         if table not in self.mx_metrics_scopes:
             return
-        for value in msg.value.split(b"\n"):
-            value = self.mx_metrics_scopes[table](orjson.loads(value))
-            yield self.stream, self.headers, value
+        yield self.stream, self.headers, [
+            self.mx_metrics_scopes[table](orjson.loads(v)) for v in msg.value.split(b"\n")
+        ]

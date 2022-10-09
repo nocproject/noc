@@ -826,7 +826,7 @@ class BaseService(object):
         if not self.router:
             self._initialize_router()
         msg = self.router.get_message(data, message_type, headers, sharding_key)
-        self.logger.info("Send message: %s", msg)
+        self.logger.debug("Send message: %s", msg)
         await self.router.route_message(msg)
 
     def get_leader_lock_name(self):
