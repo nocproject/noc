@@ -22,21 +22,20 @@
 
 # Basic node requirements
 Django==3.1.13
-FastAPI==0.71.0
+FastAPI==0.85.0
 Jinja2==3.0.3
 PyYAML==6.0
-Pygments==2.10.0
+Pygments==2.13.0
 XlsxWriter==3.0.2
 atomicl==0.1.1
-asgiref>=3.4.0
 blinker==1.4
-bsdiff4==1.2.1
+bsdiff4==1.2.2
 cachetools==4.2.4
 crontab==0.22.9
 csiphash==0.0.5
 demjson3==3.0.5
 dnspython==2.2.1
-fs==2.4.13
+fs==2.4.16
 geojson==2.5.0
 geopy==2.2.0
 grpcio==1.41.1
@@ -46,14 +45,14 @@ manhole==1.7.0
 markerlib==0.6.0
 mongoengine==0.22.1
 motor==2.5.1
-networkx==2.6.3
-numpy==1.20.2
-orjson==3.6.5
-pandas==1.4.1
-progressbar2==3.55.0
-protobuf==3.19.0
+networkx==2.8.7
+numpy==1.23.3
+orjson==3.7.12
+pandas==1.4.4
+progressbar2==4.0.0
+protobuf==3.20.3
 psycopg2==2.8.6
-pydantic==1.8.2
+pydantic==1.10.2
 pymongo==3.12.2
 pyproj==3.2.1
 python-consul==1.1.0
@@ -63,16 +62,16 @@ python-jose[cryptography]==3.3.0
 python-multipart==0.0.5
 pytz==2021.1
 requests==2.26.0
-setproctitle==1.2.2
+setproctitle==1.3.1
 tornado==6.0.4
-uvicorn==0.16.0
-yappi==1.3.3
+uvicorn==0.18.2
+yappi==1.3.6
 # Activator requirements
-ssh2-python==0.26.0; extra == "activator"
+ssh2-python==1.0.0; extra == "activator"
 # Classifier
-bitarray==2.3.4; extra == "classifier"
+bitarray==2.6.0; extra == "classifier"
 # Cache-Redis
-hiredis==1.1.0; extra == "cache-redis"
+hiredis==2.0.0; extra == "cache-redis"
 redis==3.5.3; extra == "cache-redis"
 # Cache-Memcached
 pylibmc==1.5.1; extra == "cache-memcached"
@@ -84,9 +83,10 @@ flake8==4.0.1; extra == "dev"
 mypy==0.950; extra == "dev"
 black==22.3.0; extra == "dev"
 mongo-types==0.14.2; extra == "dev"
+types-orjson==3.6.2; extra == "dev"
 types-cachetools==4.2.4; extra == "dev"
 # Login LDAP
-ldap3==2.8.1; extra == "login-ldap"
+ldap3==2.9.1; extra == "login-ldap"
 # Login PAM
 python-pam==1.8.4; extra == "login-pam"
 # Login RADIUS
@@ -94,11 +94,11 @@ pyrad==2.4; extra == "login-radius"
 # Ping
 gufo_ping==0.2.2; extra == "ping"
 # Standalone node with supervisor
-supervisor==4.1.0; extra == "supervisor"
+supervisor==4.2.4; extra == "supervisor"
 supervisor-serialrestart==0.1.1; extra == "supervisor"
 # Additional prod tools
 alerta==4.7.16; extra == "prod-tools"
-sentry-sdk==0.16.5; extra == "prod-tools"
+sentry-sdk==0.20.3; extra == "prod-tools"
 supervisor-wildcards==0.1.3; extra == "prod-tools"
 # Test
 Coverage[toml]==5.3; extra == "testing"
@@ -106,7 +106,7 @@ pytest==6.2.5; extra == "testing"
 pytest-assume==2.4.3; extra == "testing"
 pytest-dependency==0.5.1; extra == "testing"
 # Cython
-Cython==0.29.24; extra == "cython"
+Cython==0.29.32; extra == "cython"
 # Kafka
 aiokafka==0.7.2; extra == "sender-kafka"
 # etl/extractor
