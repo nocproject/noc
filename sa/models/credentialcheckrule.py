@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import List
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -17,6 +20,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
+from noc.core.script.scheme import Protocol
 from noc.main.models.label import Label
 from noc.sa.models.authprofile import AuthProfile
 
@@ -65,13 +69,16 @@ class CredentialCheckRule(Document):
     suggest_auth_profile = EmbeddedDocumentListField(SuggestAuthProfile)
     # TELNET/SSH/SNMP/HTTP
     suggest_protocols = ListField(
-        StringField(choices=["SNMPv1", "SNMPv2", "TELNET", "SSH", "HTTP", "HTTPS"])
+        StringField(choices=[p.name for p in Protocol if p.config.enable_suggest])
     )
     # SNMP OID's for check
     suggest_snmp_oids = ListField(StringField())
 
     def __str__(self):
         return self.name
+
+    def get_suggest_proto(self) -> List[Protocol]:
+        return [Protocol[sp] for sp in self.suggest_protocols]
 
     # def clean(self):
     #     super().clean()

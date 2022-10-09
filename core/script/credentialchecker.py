@@ -175,8 +175,8 @@ class CredentialChecker(object):
                 yield SuggestCLIConfig(
                     protocols=cli,
                     user=c.user,
-                    password=c.password,
-                    super_password=c.super_password,
+                    password=c.password or None,
+                    super_password=c.super_password or None,
                     raise_privileges=self.raise_privilege,
                 )
             elif isinstance(c, SNMPCredential):
@@ -188,17 +188,10 @@ class CredentialChecker(object):
                 )
         for cc in ccr.read_preference(ReadPreference.SECONDARY_PREFERRED).order_by("preference"):
             # Suggest protocol order
-            protocol_order = cc.suggest_protocols or protocols or SUGGEST_PROTOCOLS
-            cli = tuple(
-                self.iter_protocols(
-                    SUGGEST_CLI, protocols, cc.suggest_protocols, order=protocol_order
-                )
-            )
-            snmp = tuple(
-                self.iter_protocols(
-                    SUGGEST_SNMP, protocols, cc.suggest_protocols, order=protocol_order
-                )
-            )
+            sp = cc.get_suggest_proto()
+            protocol_order = sp or protocols or SUGGEST_PROTOCOLS
+            cli = tuple(self.iter_protocols(SUGGEST_CLI, protocols, sp, order=protocol_order))
+            snmp = tuple(self.iter_protocols(SUGGEST_SNMP, protocols, sp, order=protocol_order))
             # CLI
             for ap in cc.suggest_auth_profile:
                 ap = ap.auth_profile
@@ -207,7 +200,7 @@ class CredentialChecker(object):
                         cli,
                         user=ap.user,
                         password=ap.password,
-                        super_password=ap.super_password,
+                        super_password=ap.super_password or None,
                         raise_privileges=self.raise_privilege,
                     )
                 if snmp and (ap.snmp_ro or ap.snmp_rw):
@@ -223,7 +216,7 @@ class CredentialChecker(object):
                         cli,
                         user=sc.user,
                         password=sc.password,
-                        super_password=sc.super_password,
+                        super_password=sc.super_password or None,
                         raise_privileges=self.raise_privilege,
                     )
             if snmp:
