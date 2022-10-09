@@ -77,7 +77,12 @@ class JSONRPCAPI(object):
 
         self.current_user = remote_user
         if req.method not in self.methods:
-            return {"error": f"Invalid method: '{req.method}'", "id": req.id}
+            return ORJSONResponse(
+                content={
+                    "error": {"message": f"Method not found: '{req.method}'", "code": -32601},
+                    "id": req.id,
+                }
+            )
         h = getattr(self, req.method)
         self.service.logger.debug(
             "[RPC call from %s] %s.%s(%s)", calling_service, self.api_name, req.method, req.params
@@ -116,12 +121,15 @@ class JSONRPCAPI(object):
                     return ORJSONResponse(content={"result": result, "id": req.id})
             except NOCError as e:
                 span.set_error_from_exc(e, e.code)
-                error = {"message": f"Failed: {e}", "code": e.code}
+                return ORJSONResponse(
+                    content={"error": {"message": f"Failed: {e}", "code": e.code}, "id": req.id}
+                )
             except Exception as e:
                 error_report()
                 span.set_error_from_exc(e)
-                error = {"message": f"Failed: {e}", "code": -32000}
-            return ORJSONResponse(content={"error": error, "id": req.id})
+                return ORJSONResponse(
+                    content={"error": {"message": f"Failed: {e}", "code": -32000}, "id": req.id}
+                )
 
     def redirect(self, location, method, params):
         return Redirect(location=location, method=method, params=params)

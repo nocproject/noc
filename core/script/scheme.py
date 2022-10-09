@@ -37,6 +37,7 @@ class ProtoConfig(object):
     snmp_version: Optional[int] = None
     is_http: bool = False
     is_cli: bool = False
+    enable_suggest: bool = True
 
 
 CONFIGS = {
@@ -44,10 +45,10 @@ CONFIGS = {
     2: ProtoConfig("ssh", is_cli=True, check="SSH"),
     3: ProtoConfig("http", is_http=True, check="HTTP"),
     4: ProtoConfig("https", is_http=True, check="HTTPS"),
-    5: ProtoConfig("beef", is_cli=True),
+    5: ProtoConfig("beef", is_cli=True, enable_suggest=False),
     6: ProtoConfig("snmp_v1", snmp_version=0, check="SNMPv1"),
     7: ProtoConfig("snmp_v2c", snmp_version=1, check="SNMPv2c"),
-    8: ProtoConfig("snmp_v3", snmp_version=3),
+    8: ProtoConfig("snmp_v3", snmp_version=3, enable_suggest=False),
 }
 
 
