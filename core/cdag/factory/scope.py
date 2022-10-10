@@ -74,7 +74,7 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                 cleaners={},
                 probes=[],
                 key_fields=[kf.field_name for kf in self.scope.key_fields],
-                enable_timedelta=sc.enable_timedelta,
+                enable_timedelta=self.scope.enable_timedelta,
             )
             for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
                 name = mt.field_name

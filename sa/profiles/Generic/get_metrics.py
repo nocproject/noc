@@ -469,6 +469,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         managed_object = s_data["managed_object"]
         for rr in self.metrics:
             data_mt = rr["metric"].replace(" ", "_")
+            if data_mt not in s_data:
+                self.logger.warning("Unknown Metric Type: %s", data_mt)
             scope_name = s_data[data_mt]["scope"]
             field_name = s_data[data_mt]["field"]
             mm = (scope_name, tuple(rr["labels"]))
@@ -488,8 +490,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     data[mm]["sla_probe"] = rr["sla_probe"]
                 if rr.get("service"):
                     data[mm]["service"] = rr["service"]
-                if rr.get("time_delta"):
-                    data[mm]["time_delta"] = rr["time_delta"]
+                if "time_delta" in s_data[data_mt]:
+                    data[mm]["time_delta"] = s_data[data_mt]["time_delta"]
             data[mm][field_name] = rr["value"]
             data[mm]["_units"][field_name] = rr["units"]
         return list(data.values())
