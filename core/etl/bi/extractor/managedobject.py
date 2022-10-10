@@ -18,7 +18,7 @@ from .base import BaseExtractor
 from noc.core.text import ch_escape
 from noc.core.etl.bi.stream import Stream
 from noc.core.clickhouse.connect import connection
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.inv.models.interface import Interface
@@ -77,12 +77,15 @@ class ManagedObjectsExtractor(BaseExtractor):
             self.get_availability(stats_start, self.stop),
             self.get_object_metrics(stats_start, self.stop),
         ]
-        sn = self.get_mo_sn()
         # Extract managed objects
         for mo in ManagedObject.objects.all().iterator():
             did = DiscoveryID.objects.filter(object=mo).first()
             uptime = Uptime.objects.filter(object=mo.id, stop=None).first()
-            serials = sn.get(mo.id, [])
+            caps = mo.get_caps()
+            serials = []
+            sn = caps.get("Chassis | Serial Number")
+            if sn:
+                serials.append(sn)
             inventory = mo.get_inventory()
             if inventory:
                 serials += inventory[0].get_object_serials(chassis_only=False)
@@ -119,7 +122,6 @@ class ManagedObjectsExtractor(BaseExtractor):
                 # subscribers
                 # services
             }
-            caps = mo.get_caps()
             r.update({self.CAPS_MAP[c]: int(caps.get(c, False)) for c in self.CAPS_MAP})
             # Apply external data
             for data in x_data:
@@ -177,20 +179,6 @@ class ManagedObjectsExtractor(BaseExtractor):
             ]
         )
         return {d["_id"]: {"n_interfaces": d["total"]} for d in r}
-
-    @staticmethod
-    def get_mo_sn():
-        """
-        Extract serial number from attributes
-        :return:
-        """
-        r = {
-            mo_id: [serial]
-            for mo_id, serial in ManagedObjectAttribute.objects.filter(
-                key="Serial Number"
-            ).values_list("managed_object", "value")
-        }
-        return r
 
     @staticmethod
     def get_reboots(start_date=None, stop_date=None):

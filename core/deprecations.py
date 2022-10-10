@@ -24,3 +24,9 @@ class RemovedInNOC2102Warning(PendingDeprecationWarning):
     """
     Features to be removed in NOC 21.2
     """
+
+
+class RemovedInNOC2301Warning(PendingDeprecationWarning):
+    """
+    Features to be removed in NOC 23.1
+    """

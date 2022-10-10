@@ -1,0 +1,8 @@
+{
+    "name": "Chassis | Boot PROM",
+    "$collection": "inv.capabilities",
+    "uuid": "83650f04-30cd-45d4-b725-36b4d44277bf",
+    "description": "Chassis Boot PROM version",
+    "type": "str",
+    "card_template": null
+}

@@ -14,6 +14,7 @@ import re
 import operator
 from threading import Lock
 import datetime
+import warnings
 from dataclasses import dataclass
 from itertools import chain
 from typing import Tuple, Iterable, List, Any, Dict, Set, Optional
@@ -53,6 +54,7 @@ from noc.core.wf.diagnostic import (
 )
 from noc.core.checkers.base import CheckData, Check
 from noc.core.mx import send_message, MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
+from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
@@ -1031,7 +1033,7 @@ class ManagedObject(NOCModel):
         if platform:
             content += [smart_text(platform.name)]
             card += " [%s]" % platform.name
-        version = self.get_attr("version")
+        version = str(self.version)
         if version:
             content += [version]
             card += " version %s" % version
@@ -1066,6 +1068,11 @@ class ManagedObject(NOCModel):
         :param default:
         :return:
         """
+        warnings.warn(
+            "Capability should be used instead of Attributes."
+            " Will be strict requirement in NOC 23.1",
+            RemovedInNOC2301Warning,
+        )
         try:
             return self.managedobjectattribute_set.get(key=name).value
         except ManagedObjectAttribute.DoesNotExist:
@@ -1117,6 +1124,11 @@ class ManagedObject(NOCModel):
         v.save()
 
     def update_attributes(self, attr):
+        warnings.warn(
+            "Capability should be used instead of Attributes."
+            " Will be strict requirement in NOC 23.1",
+            RemovedInNOC2301Warning,
+        )
         for k in attr:
             v = attr[k]
             ov = self.get_attr(k)

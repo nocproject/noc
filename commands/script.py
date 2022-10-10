@@ -132,10 +132,10 @@ class Command(BaseCommand):
                 "version": obj.version.version if obj.version else None,
                 "image": obj.software_image if obj.software_image else None,
             }
-            if getattr(obj, "managedobjectattribute_set", None):
-                attrs = {x["key"]: x["value"] for x in obj.managedobjectattribute_set.values()}
-                if attrs:
-                    version["attributes"] = attrs
+            # if getattr(obj, "get_caps", None):
+            #    attrs = {x["key"]: x["value"] for x in obj.managedobjectattribute_set.values()}
+            #    if attrs:
+            #        version["attributes"] = attrs
         else:
             version = None
         # Run script

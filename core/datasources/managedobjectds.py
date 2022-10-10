@@ -59,12 +59,25 @@ class ManagedObjectDS(BaseDataSource):
         FieldInfo(name="model", description="Object Model", internal_name="platform"),
         FieldInfo(name="sw_version", description="Object Firmware", internal_name="version"),
         # Attributes fields
-        FieldInfo(name="attr_hwversion", description="Object HW Version Attribute"),
-        FieldInfo(name="attr_bootprom", description="Object Boot Prom Attribute"),
-        FieldInfo(name="attr_patch", description="Object Patch Attribute"),
+        FieldInfo(
+            name="attr_hwversion",
+            description="Object HW Version Attribute",
+            internal_name="Chassis | HW Version",
+        ),
+        FieldInfo(
+            name="attr_bootprom",
+            description="Object Boot Prom Attribute",
+            internal_name="Chassis | Boot PROM",
+        ),
+        FieldInfo(
+            name="attr_patch",
+            description="Object Patch Attribute",
+            internal_name="Software | Patch Version",
+        ),
         FieldInfo(
             name="attr_serialnumber",
             description="Object Serial Number Attribute",
+            internal_name="Chassis | Serial Number",
         ),
         # Location Fields
         FieldInfo(
@@ -98,7 +111,7 @@ class ManagedObjectDS(BaseDataSource):
         FieldInfo(
             name="physical_iface_count",
             description="Object physical interfaces",
-            internal_name="caps",
+            internal_name="DB | Interfaces",
             type="int64",
         ),
         # Oper fields
@@ -112,12 +125,6 @@ class ManagedObjectDS(BaseDataSource):
         FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
         for c_id, c_type, c_name in get_capabilities()
     ]
-
-    ATTR_QUERY = """
-    SELECT value
-    FROM sa_managedobjectattribute
-    WHERE key='%s' AND managed_object_id=sa_managedobject.id
-    """
 
     @classmethod
     def get_caps(
@@ -170,24 +177,17 @@ class ManagedObjectDS(BaseDataSource):
         for f in cls.fields:
             if fields and f.name not in fields and f.name != "id":
                 continue
-            if "|" in f.name or f.name == "SNMP":
-                c = Capability.get_by_name(f.name)
-                q_caps[f.name] = cls.get_caps_default(c)
+            if "|" in f.name or (f.internal_name and "|" in f.internal_name) or f.name == "SNMP":
+                c_name = f.name if "|" in f.name else f.internal_name
+                c = Capability.get_by_name(c_name)
+                q_caps[c_name] = cls.get_caps_default(c)
             else:
                 q_fields.append(f.internal_name or f.name)
+        if q_caps and "caps" not in q_fields:
+            q_fields.append("caps")
         mos = ManagedObject.objects.filter()
-        # Attributes
-        extra_select, hostname_map, segment_map, avail_map = {}, {}, {}, {}
-        if not fields or "attr_hwversion" in fields:
-            extra_select["attr_hwversion"] = cls.ATTR_QUERY % "HW version"
-        if not fields or "attr_bootprom" in fields:
-            extra_select["attr_bootprom"] = cls.ATTR_QUERY % "Boot PROM"
-        if not fields or "attr_patch" in fields:
-            extra_select["attr_patch"] = cls.ATTR_QUERY % "Patch Version"
-        if not fields or "attr_serialnumber" in fields:
-            extra_select["attr_serialnumber"] = cls.ATTR_QUERY % "Serial Number"
-        if extra_select:
-            mos = mos.extra(select=extra_select)
+        # Dictionaries
+        hostname_map, segment_map, avail_map = {}, {}, {}
         # Lookup fields dictionaries
         if not fields or "hostname" in fields:
             hostname_map = {
@@ -219,6 +219,14 @@ class ManagedObjectDS(BaseDataSource):
                 mo.update(caps)
             else:
                 caps = {}
+            if not fields or "attr_hwversion" in fields:
+                mo["attr_hwversion"] = caps.get("Chassis | HW Version", "")
+            if not fields or "attr_bootprom" in fields:
+                mo["attr_bootprom"] = caps.get("Chassis | Boot PROM", "")
+            if not fields or "attr_patch" in fields:
+                mo["attr_patch"] = caps.get("Software | Patch Version", "")
+            if not fields or "attr_serialnumber" in fields:
+                mo["attr_serialnumber"] = caps.get("Chassis | Serial Number", "")
             if "is_managed" in mo:
                 mo["status"] = mo.pop("is_managed")
             if "links" in mo:
