@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Planar.SDO3000.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ class Script(BaseScript):
         """
         ports = [
             {
-                "name": "Output",
+                "name": "Input 1",
                 "admin_status": True,
                 "oper_status": True,
                 "type": "physical",
@@ -38,14 +38,10 @@ class Script(BaseScript):
             }
         ]
         plat = self.scripts.get_version()["platform"]
-        if plat == "SDO3001":
-            inp_num = 1
-        elif plat == "SDO3002":
-            inp_num = 2
-        for inp in range(1, inp_num + 1):
+        if plat == "SDO3002":
             ports += [
                 {
-                    "name": "Input %d" % inp,
+                    "name": "Input 2",
                     "admin_status": True,
                     "oper_status": True,
                     "type": "physical",
@@ -68,10 +64,18 @@ class Script(BaseScript):
         ip = IPv4(ipaddr, mask)
         iface += [
             {
+                "name": "Output",
+                "admin_status": True,
+                "oper_status": True,
+                "type": "physical",
+                "subinterfaces": [],
+            },
+            {
                 "name": "mgmt",
                 "admin_status": True,
                 "oper_status": True,
-                "type": "management",
+                "type": "physical",
+                "hints": ["noc::interface::role::mgmt"],
                 "mac": mac,
                 "subinterfaces": [
                     {
@@ -83,7 +87,7 @@ class Script(BaseScript):
                         "oper_status": True,
                     }
                 ],
-            }
+            },
         ]
         iface += self.get_phys_ports()
         return [{"interfaces": iface}]
@@ -99,10 +103,18 @@ class Script(BaseScript):
         ip = IPv4(ipaddr, mask)
         ifaces = [
             {
+                "name": "Output",
+                "admin_status": True,
+                "oper_status": True,
+                "type": "physical",
+                "subinterfaces": [],
+            },
+            {
                 "name": "mgmt",
                 "admin_status": True,
                 "oper_status": True,
-                "type": "management",
+                "type": "physical",
+                "hints": ["noc::interface::role::mgmt"],
                 "mac": mac,
                 "subinterfaces": [
                     {
@@ -114,7 +126,7 @@ class Script(BaseScript):
                         "oper_status": True,
                     }
                 ],
-            }
+            },
         ]
         ifaces += self.get_phys_ports()
         return [{"interfaces": ifaces}]

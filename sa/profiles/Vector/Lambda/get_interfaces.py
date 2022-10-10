@@ -77,6 +77,7 @@ class Script(BaseScript):
             "oper_status": True,
             "type": "physical",
             "mac": mac,
+            "hints": ["noc::interface::role::mgmt"],
             "subinterfaces": [
                 {
                     "name": "mgmt",
@@ -107,6 +108,7 @@ class Script(BaseScript):
                 "oper_status": True,
                 "type": "management",
                 "mac": mac,
+                "hints": ["noc::interface::role::mgmt"],
                 "subinterfaces": [
                     {
                         "name": "mgmt",

@@ -45,6 +45,7 @@ class Script(BaseScript):
             "type": "physical",
             "admin_status": status == "Up",
             "oper_status": status == "Up",
+            "hints": ["noc::interface::role::uplink"],
             "subinterfaces": [
                 {
                     "name": ifname,

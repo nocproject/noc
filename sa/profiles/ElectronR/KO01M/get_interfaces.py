@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ElectronR.KO01M.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ class Script(BaseScript):
                         "oper_status": True,
                         "mac": self.snmp.get("1.3.6.1.4.1.35419.1.1.6.0"),
                         "snmp_ifindex": 100,
+                        "hints": ["noc::interface::role::uplink"],
                         "subinterfaces": [],
                     }
                 ]
