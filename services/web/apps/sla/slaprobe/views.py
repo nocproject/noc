@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # sla.slaprobe application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,13 +27,10 @@ class SLAProbeApplication(ExtDocApplication):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
 
     def field_targets(self, o):
-        r = []
-        r += ["%s:%s" % (o.type, o.target)]
-        return ", ".join(r)
+        return ", ".join([f"{o.type}:{o.target}"])
 
     def field_target_id(self, o):
         t = o.get_target()
         if t:
             return t.id
-        else:
-            return None
+        return None

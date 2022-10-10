@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # SLA Probe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
 from noc.core.wf.decorator import workflow
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
+from noc.core.model.sql import SQL
 from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
@@ -126,12 +127,10 @@ class SLAProbe(Document):
         if ":" in address:
             # port
             address, port = self.target.split(":")
-        print("Search address", address)
         # @todo SubInterface search
-        mo = ManagedObject.objects.filter(address=address)[:1]
-        if mo:
-            return mo[0]
-        return None
+        return ManagedObject.objects.filter(
+            SQL(f"cast_test_to_inet(address) <<= '{address}/32'")
+        ).first()
 
     @classmethod
     def iter_effective_labels(cls, probe: "SLAProbe") -> List[str]:
