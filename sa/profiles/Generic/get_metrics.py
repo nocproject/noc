@@ -288,7 +288,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     name = "Generic.get_metrics"
     interface = IGetMetrics
     requires = []
-    SLA_METRICS_CONFIG: Dict[str, ProfileMetricConfig] = {}
 
     # Define counter types
     GAUGE = "gauge"
@@ -360,8 +359,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         # Generate list of MetricConfig from input parameters
         sla_metrics: List[MetricCollectorConfig] = []
         sensor_metrics: List[MetricCollectorConfig] = []
+        object_metrics: List[MetricConfig] = []
         if collected:
-            metrics: List[MetricConfig] = []
             seq_id = 1
             for coll in collected:
                 coll = MetricCollectorConfig(**coll)
@@ -376,7 +375,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     continue
                 hints = coll.get_hints()
                 for m in coll.metrics:
-                    metrics.append(
+                    object_metrics.append(
                         MetricConfig(
                             id=seq_id,
                             metric=m,
@@ -387,7 +386,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     )
                     seq_id += 1
         elif metrics:
-            sm, mc = {}, []
+            sm = {}
             for m in metrics:
                 if m["metric"] == "Sensor | Value":
                     sensor_metrics.append(
@@ -410,19 +409,18 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     else:
                         sm[sla_probe].metrics.append(m["metric"])
                 else:
-                    mc.append(MetricConfig(**m))
+                    object_metrics.append(MetricConfig(**m))
             sla_metrics = list(sm.values())
-            metrics = mc
             # metrics: List[MetricConfig] = [MetricConfig(**m) for m in metrics]
         else:
             raise ValueError("Parameter 'collected' or 'metrics' required")
         # Split by metric types
-        self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in metrics}
-        for m in metrics:
+        self.labels = {self.get_labels_hash(m.metric, m.labels): m for m in object_metrics}
+        for m in object_metrics:
             self.metric_configs[m.metric] += [m]
         # Process metrics collection
         persistent = set()
-        for m in metrics:
+        for m in object_metrics:
             if m.id in self.seen_ids:
                 self.logger.debug("[%s] Metric type is already collected. Skipping", m.metric)
                 continue  # Already collected
@@ -449,7 +447,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         if sla_metrics:
             self.collect_sla_metrics(sla_metrics)
         # Apply custom metric collection processes
-        self.collect_profile_metrics(metrics)
+        self.collect_profile_metrics(object_metrics)
         return self.get_metrics()
 
     def clean_streaming_result(self, result):
@@ -490,6 +488,8 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     data[mm]["sla_probe"] = rr["sla_probe"]
                 if rr.get("service"):
                     data[mm]["service"] = rr["service"]
+                if rr.get("time_delta"):
+                    data[mm]["time_delta"] = rr["time_delta"]
             data[mm][field_name] = rr["value"]
             data[mm]["_units"][field_name] = rr["units"]
         return list(data.values())
