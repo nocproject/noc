@@ -413,6 +413,8 @@ class ManagedObjectDataStream(DataStream):
                 "tags": [str(t) for t in o.model.labels or []],
             },
             "serial": o.get_data("asset", "serial") or "",
+            "part_no": (o.get_data("asset", "part_no") or "").split(","),
+            "order_part_no": (o.get_data("asset", "order_part_no") or "").split(","),
             "revision": rev,
             "data": get_asset_data(o.data),
             "slots": [],

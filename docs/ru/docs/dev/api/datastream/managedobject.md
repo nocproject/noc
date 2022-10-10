@@ -107,6 +107,8 @@ state, including capabilities, interfaces and topology
 | {{ tab3 }} id                  | String                        | Vendor\'s ID                                                                                      |
 | {{ tab3 }} name                | String                        | Vendor\'s Name                                                                                    |
 | {{ tab }} serial               | String                        | Inventory object's serial number                                                                  |
+| {{ tab }} part_no              | Array of String               | Inventory object's Part Numbers                                                                    |
+| {{ tab }} order_part_no        | Array of String               | Inventory object's Order Part Numbers                                                              |
 | {{ tab }} revision             | String                        | Inventory object's hardware revision                                                              |
 | {{ tab }} data                 | Object {{ complex }}          | Attached data (see `Model Interfaces`)                                                            |
 | {{ tab }} slots                | Array of Object {{ complex }} | Object's slots configuration                                                                      |
