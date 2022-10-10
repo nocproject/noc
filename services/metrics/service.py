@@ -781,7 +781,6 @@ class MetricsService(FastAPIService):
         units: Dict[str, str] = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
-        time_delta = data.pop("time_delta", None)
         for n in data:
             mu = units.get(n) or si.units.get(n)
             if not mu:
@@ -800,8 +799,8 @@ class MetricsService(FastAPIService):
                 kv = data.get(kf)
                 if kv is not None:
                     sender.activate(tx, kf, kv)
-            if si.enable_timedelta:
-                sender.activate(tx, "time_delta", time_delta)
+            if si.enable_timedelta and "time_delta" in data:
+                sender.activate(tx, "time_delta", data["time_delta"])
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
