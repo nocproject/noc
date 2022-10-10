@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Axis.VAPIX.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,24 +20,25 @@ class Script(BaseScript):
         interfaces = []
         c = self.profile.get_dict(self)
         for i in range(0, 4):  # for future models
-            mac = c.get("root.Network.eth%d.MACAddress" % i)
+            mac = c.get(f"root.Network.eth{i}.MACAddress")
             if mac is not None:
                 iface = {
-                    "name": "eth%d" % i,
+                    "name": f"eth{i}",
                     "type": "physical",
                     "admin_status": True,
                     "oper_status": True,
+                    "hints": ["noc::interface::role::uplink"],
                     "mac": mac,
                 }
                 sub = {
-                    "name": "eth%d" % i,
+                    "name": f"eth{i}",
                     "admin_status": True,
                     "oper_status": True,
                     "mac": mac,
                     "enabled_afi": [],
                 }
-                ip = c.get("root.Network.eth%d.IPAddress" % i)
-                mask = c.get("root.Network.eth%d.SubnetMask" % i)
+                ip = c.get(f"root.Network.eth{i}.IPAddress")
+                mask = c.get(f"root.Network.eth{i}.SubnetMask")
                 if ip and ip != "0.0.0.0" and mask and mask != "0.0.0.0":
                     ip_address = "%s/%s" % (ip, IPv4.netmask_to_len(mask))
                     sub["ipv4_addresses"] = [ip_address]
@@ -57,7 +58,7 @@ class Script(BaseScript):
         o = c.get("root.Input.NbrOfInputs")
         if is_int(o) and int(o) > 0:
             for i in range(0, int(o)):
-                ifname = c.get("root.Input.I%d.Name" % i)
+                ifname = c.get(f"root.Input.I{i}.Name")
                 iface = {
                     "name": ifname,
                     "type": "dry",
@@ -65,7 +66,7 @@ class Script(BaseScript):
                     "oper_status": True,
                     "subinterfaces": [{"name": ifname, "admin_status": True, "oper_status": True}],
                 }
-                p = c.get("root.Input.I%d.Trig" % i)
+                p = c.get(f"root.Input.I{i}.Trig")
                 if p == "closed":
                     iface["enabled_protocols"] = ["DRY_NO"]
                 else:
@@ -81,7 +82,7 @@ class Script(BaseScript):
         o = c.get("root.Output.NbrOfOutputs")
         if is_int(o) and int(o) > 0:
             for i in range(0, int(o)):
-                ifname = c.get("root.Output.O%d.Name" % i)
+                ifname = c.get(f"root.Output.O{i}.Name")
                 iface = {
                     "name": ifname,
                     "type": "dry",
@@ -89,7 +90,7 @@ class Script(BaseScript):
                     "oper_status": True,
                     "subinterfaces": [{"name": ifname, "admin_status": True, "oper_status": True}],
                 }
-                p = c.get("root.Output.O%d.Active" % i)
+                p = c.get(f"root.Output.O{i}.Active")
                 if p == "closed":
                     iface["enabled_protocols"] = ["DRY_NO"]
                 else:

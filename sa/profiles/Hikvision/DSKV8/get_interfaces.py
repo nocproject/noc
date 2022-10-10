@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Hikvision.DSKV8.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,7 +39,13 @@ class Script(BaseScript):
         for o in root:
             o_id = o.find("{%s}id" % ns["ns"]).text
             name = "eth%s" % o_id
-            iface = {"name": name, "type": "physical", "admin_status": True, "oper_status": True}
+            iface = {
+                "name": name,
+                "type": "physical",
+                "admin_status": True,
+                "oper_status": True,
+                "hints": ["noc::interface::role::uplink"],
+            }
             sub = {"name": name, "admin_status": True, "oper_status": True, "enabled_afi": []}
             try:
                 v = self.http.get("/ISAPI/System/Network/interfaces/%s/Link" % o_id, use_basic=True)

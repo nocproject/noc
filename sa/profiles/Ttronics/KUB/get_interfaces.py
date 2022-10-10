@@ -26,6 +26,7 @@ class Script(BaseScript):
                         "oper_status": True,
                         "mac": mac,
                         "snmp_ifindex": 100,
+                        "hints": ["noc::interface::role::uplink"],
                         "subinterfaces": [],
                     }
                 ]

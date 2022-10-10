@@ -25,6 +25,7 @@ class Script(BaseScript):
                             "type": "physical",
                             "name": "eth0",
                             "mac": v["macaddr"],
+                            "hints": ["noc::interface::role::uplink"],
                             "subinterfaces": [],
                         }
                     ]
@@ -46,6 +47,7 @@ class Script(BaseScript):
                     "mac": mac,
                     "admin_status": True if a_status == 7 else False,
                     "oper_status": True if o_status == 1 else False,
+                    "hints": ["noc::interface::role::uplink"],
                     "subinterfaces": [],
                 }
             ]
@@ -58,6 +60,7 @@ class Script(BaseScript):
                     "mac": mac if mac else None,
                     "admin_status": True,
                     "oper_status": True,
+                    "hints": ["noc::interface::role::uplink"],
                     "subinterfaces": [],
                 }
             ]

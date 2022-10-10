@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Dahua.DH.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,19 +28,20 @@ class Script(BaseScript):
                 "type": "physical",
                 "admin_status": True,
                 "oper_status": True,
-                "mtu": res["table.Network.%s.MTU" % name],
-                "mac": res["table.Network.%s.PhysicalAddress" % name],
+                "hints": ["noc::interface::role::uplink"],
+                "mtu": res[f"table.Network.{name}.MTU"],
+                "mac": res[f"table.Network.{name}.PhysicalAddress"],
             }
             ip_address = "%s/%s" % (
-                res["table.Network.%s.IPAddress" % name],
-                IPv4.netmask_to_len(res["table.Network.%s.SubnetMask" % name]),
+                res[f"table.Network.{name}.IPAddress"],
+                IPv4.netmask_to_len(res[f"table.Network.{name}.SubnetMask"]),
             )
 
             sub = {
                 "name": name,
                 "admin_status": True,
                 "oper_status": True,
-                "mac": res["table.Network.%s.PhysicalAddress" % name],
+                "mac": res[f"table.Network.{name}.PhysicalAddress"],
                 "enabled_afi": ["IPv4"],
                 "ipv4_addresses": [ip_address],
             }
