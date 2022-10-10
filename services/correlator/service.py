@@ -316,7 +316,6 @@ class CorrelatorService(FastAPIService):
         """
         Try to reopen archived alarm
 
-        :param managed_object: Managed Object instance
         :param reference: Reference hash
         :param timestamp: New alarm timestamp
         :param event:
@@ -1053,7 +1052,8 @@ class CorrelatorService(FastAPIService):
             r = {
                 na.managed_object.id: na
                 for na in ActiveAlarm.objects.filter(
-                    alarm_class=ca.alarm_class.id, rca_neighbors__in=[ca.managed_object.id]
+                    alarm_class=ca.alarm_class.id,
+                    rca_neighbors__in=[ca.managed_object.id] + ca.uplinks,
                 )
             }
             # Add current alarm to correlate downlink alarms properly
@@ -1074,7 +1074,7 @@ class CorrelatorService(FastAPIService):
         def correlate_uplinks(ca: ActiveAlarm) -> bool:
             """
             Correlate with uplink alarms if all uplinks are faulty.
-            :param a1:
+            :param ca:
             :return:
             """
             if not all_uplinks_failed(ca):
