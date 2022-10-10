@@ -1,0 +1,8 @@
+{
+    "name": "Software | Build Version",
+    "$collection": "inv.capabilities",
+    "uuid": "c1d74702-bf0f-4593-8a63-cf3564215946",
+    "description": "Software build version",
+    "type": "str",
+    "card_template": null
+}

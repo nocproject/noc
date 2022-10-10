@@ -54,6 +54,13 @@ class Script(BaseScript):
     CHECK_SNMP_GETNEXT = {}
     #
     SNMP_CAPS = {SNMP_v1: "SNMP | v1", SNMP_v2c: "SNMP | v2c", SNMP_v3: "SNMP | v3"}
+    #
+    ATTR_CAPS = {
+        "Serial Number": "Chassis | Serial Number",
+        "Boot PROM": "Chassis | Boot PROM",
+        "HW version": "Chassis | HW Version",
+        "Build": "Software | Build Version",
+    }
 
     def check_snmp_get(self, oid, version=None):
         """
@@ -335,6 +342,20 @@ class Script(BaseScript):
             r = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], version=version)
             return r or None
 
+    def get_attributes_caps(self, caps):
+        """
+        Backward compatible getting attributes from get_version script
+        :param caps:
+        :return:
+        """
+        r = self.scripts.get_version()
+        if "attributes" not in r:
+            return caps
+        for attr, value in r["attribute"].items():
+            if attr in self.ATTR_CAPS:
+                caps[self.ATTR_CAPS[attr]] = value
+        return caps
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -454,6 +475,8 @@ class Script(BaseScript):
             caps["Network | BFD"] = True
         if self.is_requested("rep") and self.has_rep():
             caps["Network | REP"] = True
+        # Attributes
+        self.get_attributes_caps(caps)
         self.call_method(
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",
