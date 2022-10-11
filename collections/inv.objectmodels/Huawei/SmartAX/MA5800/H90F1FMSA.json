@@ -1,0 +1,23 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | H90F1FMSA",
+    "$collection": "inv.objectmodels",
+    "uuid": "cf146c32-7fc5-44a4-b21a-a71fdf3a54e7",
+    "vendor__code": "HUAWEI",
+    "description": "Fan Tray Assembly,MA5800-X2,H90F1FMSA,MA5800-X2 Fan Box",
+    "cr_context": "FAN",
+    "labels": ["noc::inv::fan"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Fan connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5800 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H90F1FMSA"]
+        }
+    }
+}
