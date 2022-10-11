@@ -37,6 +37,7 @@ class ScopeConfig(object):
     cleaners: Dict[str, Callable]
     probes: List[ProbeConfig]
     key_fields: List[str]
+    enable_timedelta: bool = False
 
 
 scope_config: Dict[str, ScopeConfig] = {}
@@ -73,6 +74,7 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
                 cleaners={},
                 probes=[],
                 key_fields=[kf.field_name for kf in self.scope.key_fields],
+                enable_timedelta=self.scope.enable_timedelta,
             )
             for mt in MetricType.objects.filter(scope=self.scope.id).order_by("field_name"):
                 name = mt.field_name
@@ -121,3 +123,6 @@ class MetricScopeCDAGFactory(BaseCDAGFactory):
         # Additional key fields
         for kf in cfg.key_fields:
             ms.add_input(kf, is_key=True)
+        # Time-delta
+        if cfg.enable_timedelta:
+            ms.add_input("time_delta")

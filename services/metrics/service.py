@@ -55,6 +55,7 @@ class ScopeInfo(object):
     key_fields: Tuple[str, ...]
     key_labels: Tuple[str, ...]
     units: Dict[str, str]
+    enable_timedelta: bool = False
 
 
 @dataclass
@@ -421,6 +422,7 @@ class MetricsService(FastAPIService):
                 key_fields=tuple(sorted(kf.field_name for kf in ms.key_fields)),
                 key_labels=tuple(sorted(kl.label[:-1] for kl in ms.labels if kl.is_required)),
                 units=units[ms.id],
+                enable_timedelta=ms.enable_timedelta,
             )
             self.scopes[ms.table_name] = si
             self.logger.debug(
@@ -797,6 +799,8 @@ class MetricsService(FastAPIService):
                 kv = data.get(kf)
                 if kv is not None:
                     sender.activate(tx, kf, kv)
+            if si.enable_timedelta and "time_delta" in data:
+                sender.activate(tx, "time_delta", data["time_delta"])
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
