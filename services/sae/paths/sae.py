@@ -151,7 +151,7 @@ class SAEAPI(JSONRPCAPI):
         # Get Object's attributes
         with self.service.get_pg_connect() as connection:
             cursor = connection.cursor()
-            cursor.execute(self.RUN_SQL, [object_id, object_id])
+            cursor.execute(self.RUN_SQL, [object_id])
             data = cursor.fetchall()
         if not data:
             metrics["error", ("type", "object_not_found")] += 1
