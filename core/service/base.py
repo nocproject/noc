@@ -52,9 +52,11 @@ from noc.core.liftbridge.message import Message
 from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.mx import MX_METRICS_SCOPE, MX_METRICS_TYPE
+from noc.core.error import NOCError
+from noc.core.mx import MX_METRICS_SCOPE, MX_METRICS_TYPE, MX_STREAM
 from .rpc import RPCProxy
 from .loader import set_service
+from ..router.datastream import RouteDataStreamClient
 
 T = TypeVar("T")
 
@@ -96,6 +98,8 @@ class BaseService(object):
     # Usually means resolution error to required services
     # temporary leads service to unhealthy state
     require_dcs_health = True
+    # Use embedded router for messages
+    use_router = False
 
     LOG_FORMAT = config.log_format
 
@@ -393,7 +397,11 @@ class BaseService(object):
 
         await self.init_api()
         #
-        if config.message.enable_metrics:
+        if config.message.embedded_router and self.use_router:
+            self.router = Router()
+            self.router.load()
+            asyncio.get_running_loop().create_task(self.get_mx_routes_config())
+        if not config.message.embedded_router and config.message.enable_metrics:
             self.mx_partitions = await self.get_stream_partitions("message")
         #
         if self.use_telemetry:
@@ -799,13 +807,25 @@ class BaseService(object):
         if spans:
             self.register_metrics("span", [span_to_dict(s) for s in spans])
 
-    def _initialize_router(self) -> None:
+    async def get_mx_routes_config(self):
         """
+        Subscribe and track datastream changes
+        """
+        client = RouteDataStreamClient("cfgmxroute", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track MX route settings")
+            try:
+                await client.query(limit=config.message.ds_limit, block=True)
+            except NOCError as e:
+                self.logger.info("Failed to get MX route settings: %s", e)
+                await asyncio.sleep(1)
 
-        :return:
-        """
-        self.router = Router()
-        self.router.load()
+    async def update_route(self, data: Dict[str, Any]) -> None:
+        self.router.change_route(data)
+
+    async def delete_route(self, r_id: str) -> None:
+        self.router.delete_route(r_id)
 
     async def send_message(
         self,
@@ -823,11 +843,17 @@ class BaseService(object):
         :param sharding_key: Key for sharding over MX services
         :return:
         """
-        if not self.router:
-            self._initialize_router()
         msg = self.router.get_message(data, message_type, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
-        await self.router.route_message(msg)
+        if self.router and config.message.embedded_router:
+            await self.router.route_message(msg)
+        else:
+            self.publish(
+                value=msg.value,
+                stream=MX_STREAM,
+                partition=sharding_key % self.mx_partitions,
+                headers=msg.headers,
+            )
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:

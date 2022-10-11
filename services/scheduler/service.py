@@ -16,6 +16,7 @@ class SchedulerService(FastAPIService):
     name = "scheduler"
     leader_lock_name = "scheduler"
     use_mongo = True
+    use_router = True
 
     async def on_activate(self):
         self.scheduler = Scheduler(

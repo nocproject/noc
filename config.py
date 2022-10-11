@@ -498,6 +498,10 @@ class Config(BaseConfig):
         #
         enable_diagnostic_change = BooleanParameter(default=False)
         #
+        embedded_router = BooleanParameter(
+            default=True, help="Use embedded process router for sending message"
+        )
+        #
         ds_limit = IntParameter(default=1000)
 
     class mongo(ConfigSection):

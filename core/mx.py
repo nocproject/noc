@@ -23,7 +23,7 @@ class Message(object):
     value: bytes
     headers: Dict[str, bytes]
     timestamp: int
-    key: bytes
+    key: int
 
 
 # MX stream name
