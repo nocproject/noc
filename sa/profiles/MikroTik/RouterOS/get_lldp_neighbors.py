@@ -46,8 +46,8 @@ class Script(BaseScript):
                 raise self.NotSupportedError()
             if "interface-name" in r and "interface-name" != "":
                 port_subtype = LLDP_PORT_SUBTYPE_NAME
-                port = r["interface-name"].rstrip("\\\\00")
-                port = port.strip()
+                port = r["interface-name"]
+                port = port.strip(" \x00")
             else:
                 raise self.NotSupportedError()
             caps = lldp_caps_to_bits(
@@ -78,6 +78,6 @@ class Script(BaseScript):
             if "system-description" in r:
                 interface["neighbors"][0]["remote_system_description"] = r[
                     "system-description"
-                ].rstrip("\\\\00")
+                ].strip(" \x00")
             res += [interface]
         return res
