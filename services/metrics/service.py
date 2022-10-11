@@ -594,7 +594,7 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards[k]
-        mt = MetricType.get_by_field_name(metric_field)
+        mt = MetricType.get_by_field_name(metric_field, k[0])
         if not mt:
             self.logger.warning("[%s] Unknown metric field: %s", k, metric_field)
             return None
