@@ -92,6 +92,10 @@ SUGGEST_PROTOCOLS: Tuple[Protocol, ...] = SUGGEST_SNMP + SUGGEST_CLI
 
 
 class CredentialChecker(object):
+    """
+    Credential checker for CLI/SNMP credential. Allow suggests credential
+    """
+
     base_logger = logging.getLogger("credentialchecker")
 
     def __init__(
@@ -104,7 +108,20 @@ class CredentialChecker(object):
         raise_privilege: bool = True,
         calling_service: str = "credentialchecker",
         credentials: Optional[List[Union[SuggestCLIConfig, SuggestSNMPConfig]]] = None,
+        ignoring_rule: bool = False,
     ):
+        """
+
+        :param address: Device IP address
+        :param pool: Activator pool for request
+        :param labels: List labels for filter CredentialCheck Rules
+        :param logger: logging instance
+        :param profile: SA Profile
+        :param raise_privilege: Try raise privilege for check
+        :param calling_service: Service name
+        :param credentials: Custom credential for check
+        :param ignoring_rule: Do not use rule for suggest credential
+        """
         self.address = address
         self.pool = pool
         self.labels = labels
@@ -116,10 +133,11 @@ class CredentialChecker(object):
         if isinstance(self.profile, str):
             self.profile = Profile.get_by_name(profile) if profile else None
         self.credentials: List[Union[CLICredential, SNMPCredential]] = credentials or []
+        self.ignoring_rule = ignoring_rule
         self.ignoring_cli = False
         self.raise_privilege = raise_privilege
         if self.profile is None or self.profile.is_generic:
-            self.logger.error("CLI Access for Generic profile is not supported. Ignoring")
+            self.logger.info("CLI Access for Generic profile is not supported. Ignoring")
             self.ignoring_cli = True
 
     @staticmethod
@@ -162,12 +180,6 @@ class CredentialChecker(object):
         :param protocols:
         :return:
         """
-        ccr: List[CredentialCheckRule] = CredentialCheckRule.objects.filter(is_active=True)
-        if self.labels:
-            ccr = ccr.filter(
-                (m_q(match__labels__in=self.labels, match__exclude_labels__nin=self.labels))
-                | m_q(match__labels__exists=False)
-            )
         # Try custom credential first
         for c in self.credentials:
             if isinstance(c, CLICredential):
@@ -180,12 +192,20 @@ class CredentialChecker(object):
                     raise_privileges=self.raise_privilege,
                 )
             elif isinstance(c, SNMPCredential):
-                snmp = cli = tuple(set(SUGGEST_SNMP).intersection(set(protocols)))
+                snmp = tuple(set(SUGGEST_SNMP).intersection(set(protocols)))
                 yield SuggestSNMPConfig(
                     protocols=snmp,
                     snmp_ro=c.snmp_ro,
                     snmp_rw=c.snmp_rw,
                 )
+        if self.ignoring_rule:
+            return
+        ccr: List[CredentialCheckRule] = CredentialCheckRule.objects.filter(is_active=True)
+        if self.labels:
+            ccr = ccr.filter(
+                (m_q(match__labels__in=self.labels, match__exclude_labels__nin=self.labels))
+                | m_q(match__labels__exists=False)
+            )
         for cc in ccr.read_preference(ReadPreference.SECONDARY_PREFERRED).order_by("preference"):
             # Suggest protocol order
             sp = cc.get_suggest_proto()
