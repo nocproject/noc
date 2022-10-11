@@ -82,6 +82,13 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("Collecting metrics")
         # Build get_metrics input parameters
         metrics: List[Dict[str, Any]] = []
+        #
+        ts = time.time()
+        time_delta = 0
+        if "last_run" in self.job.context and self.job.context["last_run"] < ts:
+            time_delta = int(round(ts - self.job.context["last_run"]))
+            self.job.context["time_delta"] = time_delta
+        self.job.context["last_run"] = ts
         s_data = {"managed_object": self.object.bi_id}
         for mc in self.iter_metric_sources():
             mc_metrics = []
@@ -90,6 +97,7 @@ class MetricsCheck(DiscoveryCheck):
                 mc_metrics.append(m.name)
                 if f"{m.name}.scope" in s_data:
                     continue
+                s_data[f"{mt_name}.time_delta"] = time_delta
                 s_data[f"{mt_name}.scope"] = m.scope_name
                 s_data[f"{mt_name}.field"] = m.field_name
             metrics.append(
@@ -106,11 +114,6 @@ class MetricsCheck(DiscoveryCheck):
         if not metrics:
             self.logger.info("No metrics configured. Skipping")
             return
-        #
-        ts = time.time()
-        if "last_run" in self.job.context and self.job.context["last_run"] < ts:
-            self.job.context["time_delta"] = int(round(ts - self.job.context["last_run"]))
-        self.job.context["last_run"] = ts
         self.logger.debug("Collecting metrics: %s", metrics)
         result = self.object.scripts.get_metrics(
             collected=metrics,
@@ -124,8 +127,10 @@ class MetricsCheck(DiscoveryCheck):
             else None,
         )
         # Collect metrics
-        if not result:
+        if config.discovery.proxy_metric and not result:
             self.logger.info("No metrics found")
+            return
+        elif not config.discovery.proxy_metric:
             return
         self.logger.info("Collected metrics: %s", len(result))
         # Send metrics

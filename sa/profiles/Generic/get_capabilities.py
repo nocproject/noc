@@ -351,7 +351,7 @@ class Script(BaseScript):
         r = self.scripts.get_version()
         if "attributes" not in r:
             return caps
-        for attr, value in r["attribute"].items():
+        for attr, value in r["attributes"].items():
             if attr in self.ATTR_CAPS:
                 caps[self.ATTR_CAPS[attr]] = value
         return caps
