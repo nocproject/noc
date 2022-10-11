@@ -29,7 +29,7 @@ class Message(object):
 # MX stream name
 MX_STREAM = "message"
 MX_METRICS_TYPE = "metrics"
-MX_METRICS_SCOPE = "scope"
+MX_METRICS_SCOPE = "Metric-Scope"
 # Headers
 MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"

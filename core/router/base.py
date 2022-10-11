@@ -17,7 +17,7 @@ from functools import partial
 import orjson
 
 # NOC modules
-from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message
+from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message, MESSAGE_TYPES
 from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
@@ -215,15 +215,15 @@ class Router(object):
         """
         # Apply routes
         for route in self.iter_route(msg):
-            metrics["route_hits"] += 1
+            metrics["route_hits", ("type", route.type)] += 1
             logger.debug("[%d] Applying route %s", msg_id, route.name)
             # Apply actions
             routed: bool = False
             for stream, action_headers, body in route.iter_action(msg):
-                metrics["action_hits"] += 1
+                metrics["action_hits", ("stream", stream)] += 1
                 # Fameless drop
                 if stream == DROP:
-                    metrics["action_drops"] += 1
+                    metrics["action_drops", ("stream", stream)] += 1
                     logger.debug("[%s] Dropped. Stopping processing", msg_id)
                     return
                 elif stream == DUMP:
@@ -254,11 +254,11 @@ class Router(object):
                     # Transmute converts message to an arbitrary structure,
                     # so convert back to the json
                     body = orjson.dumps(body)
-                metrics[("forwards", ("stream", f"{stream}:{partition}"))] += 1
+                metrics[("forwards", ("stream", stream))] += 1
                 logger.debug("[%s] Routing to %s:%s", msg_id, stream, partition)
                 await self.publish(value=body, stream=stream, partition=partition, headers=headers)
                 routed = True
             if not routed:
                 logger.debug("[%d] Not routed", msg_id)
-                metrics["route_misses", ("message_type",)] += 1
+                metrics["route_misses", ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING))] += 1
         # logger.debug("[%s] Finish processing", msg_id)
