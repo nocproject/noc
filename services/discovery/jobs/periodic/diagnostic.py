@@ -197,9 +197,7 @@ class DiagnosticCheck(DiscoveryCheck):
         # For password change - cleanup credential ?
         for cred in ["snmp_ro", "snmp_rw", "user", "password", "super_password"]:
             nc = getattr(data, cred)
-            if not nc:
-                continue
-            oc = getattr(self.object, cred, None)
+            oc = getattr(self.object, cred, None) or None
             if nc != oc:
                 changed = True
                 setattr(self.object, cred, nc)

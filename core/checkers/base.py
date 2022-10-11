@@ -34,6 +34,7 @@ class CredentialSet(object):
     super_password: Optional[str] = None
     snmp_ro: Optional[str] = None
     snmp_rw: Optional[str] = None
+    delete: bool = False
     action: str = "set_credential"
 
 
