@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "157bb1ea-8aae-4a15-b42d-f35eec3d0916",
+    "description": "MA5800 FAN module",
+    "c_group": [],
+    "genders": "mf"
+}

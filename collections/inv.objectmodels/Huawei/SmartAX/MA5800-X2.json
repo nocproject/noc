@@ -1,69 +1,62 @@
 {
-    "name": "Huawei | SmartAX | MA5616 (H831MABA)",
+    "name": "Huawei | SmartAX | MA5800-X2",
     "$collection": "inv.objectmodels",
-    "uuid": "89b91567-817d-48a7-b2e7-8a1a09557cf4",
+    "uuid": "72214c24-e376-43a4-a144-79cb6f92f178",
     "vendor__code": "HUAWEI",
-    "description": "Huawei mini ADSL VDSL IP DSLAM  MA5616 (with H831MABA backplane) ",
+    "description": "Huawei SmartAX MA5800 X2 NG OLT, 19inch, with 2U height 2 service slots, 80G throughput per slot, support GPON, 10G PON, 40G/100G PON ready; H901BPSB subrack equipped with 2xH901MPSA, 1xH901PISB",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],
     "connections": [
         {
+            "name": "fan",
             "description": "Fan tray",
             "direction": "i",
             "gender": "f",
-            "name": "fan",
-            "type__name": "Huawei | SmartAX | MA5616 | FAN"
+            "type__name": "Huawei | SmartAX | MA5800 | FAN"
         },
         {
-            "description": "Control board",
-            "direction": "i",
-            "gender": "f",
             "name": "0",
-            "type__name": "Huawei | SmartAX | MA5616 | CCU"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "1",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "2",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "3",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
-            "description": "Service board",
-            "direction": "i",
-            "gender": "f",
-            "name": "4",
-            "type__name": "Huawei | SmartAX | MA5616 | SB"
-        },
-        {
             "description": "Power board",
             "direction": "i",
             "gender": "f",
-            "name": "5",
-            "type__name": "Huawei | SmartAX | MA5616 | PWR"
+            "type__name": "Huawei | SmartAX | MA5800 | PWR"
+        },
+        {
+            "name": "1",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5800 | SB"
+        },
+        {
+            "name": "2",
+            "description": "Service board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5800 | SB"
+        },
+        {
+            "name": "3",
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5800 | CCU"
+        },
+        {
+            "name": "4",
+            "description": "Control board",
+            "direction": "i",
+            "gender": "f",
+            "type__name": "Huawei | SmartAX | MA5800 | CCU"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["H831MABA", "MA5616"]
+            "part_no": ["H901BPSB"]
         },
         "dimensions": {
-            "depth": 245,
+            "depth": 268,
             "height": 88,
             "width": 442
         },
@@ -75,7 +68,7 @@
         },
         "weight": {
             "is_recursive": true,
-            "weight": 4.8
+            "weight": 9.4
         }
     }
 }

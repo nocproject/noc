@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | PWR",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b8c56432-777f-428b-bdb5-08b7ee0e48e0",
+    "description": "MA5800 Power interface board",
+    "c_group": [],
+    "genders": "mf"
+}
