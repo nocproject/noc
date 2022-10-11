@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,6 +47,7 @@ class Script(BaseScript):
             if "interface-name" in r and "interface-name" != "":
                 port_subtype = LLDP_PORT_SUBTYPE_NAME
                 port = r["interface-name"]
+                port = port.strip(" \x00")
             else:
                 raise self.NotSupportedError()
             caps = lldp_caps_to_bits(
@@ -75,6 +76,8 @@ class Script(BaseScript):
                 ],
             }
             if "system-description" in r:
-                interface["neighbors"][0]["remote_system_description"] = r["system-description"]
+                interface["neighbors"][0]["remote_system_description"] = r[
+                    "system-description"
+                ].strip(" \x00")
             res += [interface]
         return res
