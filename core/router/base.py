@@ -17,7 +17,7 @@ from functools import partial
 import orjson
 
 # NOC modules
-from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message, MESSAGE_TYPES
+from noc.core.mx import MX_MESSAGE_TYPE, MX_SHARDING_KEY, Message
 from noc.core.service.loader import get_service
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.perf import metrics
@@ -260,5 +260,8 @@ class Router(object):
                 routed = True
             if not routed:
                 logger.debug("[%d] Not routed", msg_id)
-                metrics["route_misses", ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING))] += 1
+                metrics[
+                    "route_misses",
+                    ("message_type", msg.headers.get(MX_MESSAGE_TYPE).decode(DEFAULT_ENCODING)),
+                ] += 1
         # logger.debug("[%s] Finish processing", msg_id)
