@@ -212,8 +212,11 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_field_cache"), lock=lambda _: id_lock)
-    def get_by_field_name(cls, fname) -> Optional["MetricType"]:
-        return MetricType.objects.filter(field_name=fname).first()
+    def get_by_field_name(cls, fname, scope: Optional[str] = None) -> Optional["MetricType"]:
+        if scope:
+            scope = MetricScope.get_by_table_name(scope)
+            return MetricType.objects.filter(field_name=fname, scope=scope).first()
+        return MetricType.objects.filter(field_name=fname, scope=scope).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)

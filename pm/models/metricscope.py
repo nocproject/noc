@@ -121,7 +121,8 @@ class MetricScope(Document):
     labels = ListField(EmbeddedDocumentField(LabelItem))
     enable_timedelta = BooleanField(default=False)
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=30, ttl=300)
+    _table_cache = cachetools.TTLCache(maxsize=30, ttl=300)
 
     def __str__(self):
         return self.name
@@ -130,6 +131,11 @@ class MetricScope(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id) -> Optional["MetricScope"]:
         return MetricScope.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_table_cache"), lock=lambda _: id_lock)
+    def get_by_table_name(cls, tname) -> Optional["MetricScope"]:
+        return MetricScope.objects.filter(table_name=tname).first()
 
     def on_save(self):
         for label in self.labels:
