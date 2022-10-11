@@ -59,15 +59,15 @@
 # Archive whole directory with old python2.* version and then delete folder's content
 - block:
 
-  - name:
-    include_tasks: "clean_dir.yml"
+    - name:
+      include_tasks: "clean_dir.yml"
 
-  - name: Bring Python of {{ noc_py3_ver }} version when system's python differs
-    include_tasks: "bring_python.yml"
+    - name: Bring Python of {{ noc_py3_ver }} version when system's python differs
+      include_tasks: "bring_python.yml"
 
-  - name: Set py_install marker 1
-    set_fact:
-      is_python_installed: "True"
+    - name: Set py_install marker 1
+      set_fact:
+        is_python_installed: "True"
 
   when:
     - noc_python_existing_family_version is defined
@@ -117,12 +117,12 @@
 # Install python in all other cases
 - block:
 
-  - name: Bring Python of {{ noc_py3_ver }} version when no good python on node
-    include_tasks: "bring_python.yml"
+    - name: Bring Python of {{ noc_py3_ver }} version when no good python on node
+      include_tasks: "bring_python.yml"
 
-  - name: Set install marker 4
-    set_fact:
-      is_python_installed: "True"
+    - name: Set install marker 4
+      set_fact:
+        is_python_installed: "True"
 
   when:
     - noc_python_existing_family_version is not defined
