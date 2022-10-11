@@ -71,7 +71,7 @@
             "managed": true
         },
         "rackmount": {
-            "units": 1.0
+            "units": 2.0
         },
         "weight": {
             "is_recursive": true,
