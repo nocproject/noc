@@ -1,0 +1,88 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | H901MPSA-G",
+    "$collection": "inv.objectmodels",
+    "uuid": "040495d0-2999-4090-b42d-57d9ef899c75",
+    "vendor__code": "HUAWEI",
+    "description": "Main Processing Board",
+    "connection_rule__name": "Huawei | SmartAX",
+    "cr_context": "BOARD",
+    "labels": ["noc::inv::sup"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA5800 | CCU"
+        },
+        {
+            "name": "eth",
+            "description": "100M Base-T maintenance network port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "0",
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "1",
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "2",
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "3",
+            "description": "Upstream transmission or cascading port",
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "console",
+            "description": "RS-232 serial port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "esc",
+            "description": "RS-485 monitoring serial port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [">RS485"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H901MPSA-G"]
+        },
+        "dimensions": {
+            "depth": 258,
+            "height": 130,
+            "width": 35
+        },
+        "power": {
+            "power": 43.0
+        }
+    }
+}

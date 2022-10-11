@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | SmartAX | MA5800 | SB",
+    "$collection": "inv.connectiontypes",
+    "uuid": "6c715c35-10ae-4b2f-8a92-1bdebf876733",
+    "description": "MA5800 Service Board",
+    "c_group": [],
+    "genders": "mf"
+}
