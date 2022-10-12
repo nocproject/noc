@@ -4,7 +4,7 @@
          serverurl = get(section, 'serverurl', None)
          if serverurl and serverurl.strip().upper() == 'AUTO':
              serverurl = None
-+	oom_score_adj = get(section, 'oom_score_adj', None)
++        oom_score_adj = get(section, 'oom_score_adj', None)
  
          # find uid from "user" option
          user = get(section, 'user', None)
@@ -12,7 +12,7 @@
                  exitcodes=exitcodes,
                  redirect_stderr=redirect_stderr,
                  environment=environment,
-+		oom_score_adj=oom_score_adj,
++                oom_score_adj=oom_score_adj,
                  serverurl=serverurl)
  
              programs.append(pconfig)
