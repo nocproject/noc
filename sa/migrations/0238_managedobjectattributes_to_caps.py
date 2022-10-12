@@ -76,15 +76,17 @@ class Migration(BaseMigration):
         )
         mo_caps = defaultdict(list)
         custom_attributes = {}
+        custom_ids = {}
         for mo_id, attr_name, attr_value in self.db.execute(
             "SELECT managed_object_id, key, value FROM sa_managedobjectattribute"
         ):
             if attr_name in attrs_cap:
                 caps = attrs_cap[attr_name]
             elif attr_name in custom_attributes:
-                caps = custom_attributes[attr_name]
+                caps = custom_ids[attr_name]
             else:
                 caps = bson.ObjectId()
+                custom_ids[attr_name] = caps
                 # Custom attributes
                 custom_attributes[attr_name] = InsertOne(
                     {
