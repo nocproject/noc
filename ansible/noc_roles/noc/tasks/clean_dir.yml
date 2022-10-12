@@ -1,0 +1,74 @@
+---
+# Remove noc_root directory and recreate it
+- name: archive current noc dir
+  archive:
+    path: "{{ noc_root }}"
+    dest: "{{ noc_root }}/../noc_on_old_python.tbz"
+    format: bz2
+  ignore_errors: true
+
+- name: check if we have custom settings.yml
+  stat:
+    path: "{{ noc_root }}/etc/settings.yml"
+  register: stat_result
+
+- name: Copy settings.yml to /tmp
+  copy:
+    src: "{{ noc_root }}/etc/settings.yml"
+    dest: /tmp
+    remote_src: true
+    force: true
+  when: stat_result.stat.exists
+
+- name: Delete old folders
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "{{ noc_root }}"
+    - /var/lib/noc/var/pkg
+  when: noc_root not in host_mount_points
+
+- name: Handle if /opt/noc/ is mountpoint
+  block:
+    - name: Create temporary empty folder
+      tempfile:
+        state: directory
+        suffix: tempansible
+      register: tempfile_1
+      delegate_to: "{{ inventory_hostname }}"
+
+    - name: Empty noc_root directory
+      synchronize:
+        src: "{{ tempfile_1.path }}/"
+        dest: "{{ item }}"
+        delete: true
+        recursive: true
+        perms: true
+        owner: true
+      delegate_to: "{{ inventory_hostname }}"
+      with_items:
+        - /var/lib/noc/var/pkg
+        - "{{ noc_root }}/"
+
+    - name: Fix permissions on noc dir
+      file:
+        path: "{{ noc_root }}"
+        owner: root
+        group: root
+        mode: '0755'
+
+  when: noc_root in host_mount_points
+
+- name: Reinitialize git
+  include_tasks: "git.yml"
+
+- name: Recreate noc dirs
+  include_tasks: "dirs.yml"
+
+- name: Copy settings.yml back
+  copy:
+    src: /tmp/settings.yml
+    dest: "{{ noc_root }}/etc/settings.yml"
+    remote_src: true
+  when: stat_result.stat.exists
