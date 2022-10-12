@@ -106,8 +106,7 @@
             is_python_installed: "True"
 
       when:
-        - system_python3_existing_family_version is defined
-        - system_python3_existing_family_version != noc_py3_ver
+        - noc_python_existing_family_version != noc_py3_ver
 
   when:
     - noc_python_existing_family_version is defined
