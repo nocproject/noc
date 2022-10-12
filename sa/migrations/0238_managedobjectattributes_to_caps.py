@@ -79,7 +79,11 @@ class Migration(BaseMigration):
         for mo_id, attr_name, attr_value in self.db.execute(
             "SELECT managed_object_id, key, value FROM sa_managedobjectattribute"
         ):
-            if attr_name not in attrs_cap and attr_name not in custom_attributes:
+            if attr_name in attrs_cap:
+                caps = attrs_cap[attr_name]
+            elif attr_name in custom_attributes:
+                caps = custom_attributes[attr_name]
+            else:
                 caps = bson.ObjectId()
                 # Custom attributes
                 custom_attributes[attr_name] = InsertOne(
@@ -92,8 +96,6 @@ class Migration(BaseMigration):
                         "category": bson.ObjectId(),
                     }
                 )
-            else:
-                caps = attrs_cap[attr_name]
             mo_caps[mo_id] += [
                 {
                     "capability": str(caps),
