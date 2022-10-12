@@ -75,24 +75,22 @@ class Migration(BaseMigration):
             ]
         )
         mo_caps = defaultdict(list)
-        custom_attributes = []
+        custom_attributes = {}
         for mo_id, attr_name, attr_value in self.db.execute(
             "SELECT managed_object_id, key, value FROM sa_managedobjectattribute"
         ):
-            if attr_name not in attrs_cap:
+            if attr_name not in attrs_cap and attr_name not in custom_attributes:
                 caps = bson.ObjectId()
                 # Custom attributes
-                custom_attributes.append(
-                    InsertOne(
-                        {
-                            "_id": caps,
-                            "name": f"Custom | Attribute | {attr_name}",
-                            "uuid": uuid.uuid4(),
-                            "description": f"Custom Attribute {attr_name}",
-                            "type": "str",
-                            "category": bson.ObjectId(),
-                        }
-                    )
+                custom_attributes[attr_name] = InsertOne(
+                    {
+                        "_id": caps,
+                        "name": f"Custom | Attribute | {attr_name}",
+                        "uuid": uuid.uuid4(),
+                        "description": f"Custom Attribute {attr_name}",
+                        "type": "str",
+                        "category": bson.ObjectId(),
+                    }
                 )
             else:
                 caps = attrs_cap[attr_name]
@@ -120,4 +118,4 @@ class Migration(BaseMigration):
             page_size=1000,
         )
         if custom_attributes:
-            coll.bulk_write(custom_attributes)
+            coll.bulk_write(list(custom_attributes.values()))
