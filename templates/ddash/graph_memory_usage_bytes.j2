@@ -1,5 +1,5 @@
 {
-  "title": "Memory | Usage",
+  "title": "Memory | Usage | Bytes",
   "aliasColors": {},
   "bars": false,
   "datasource": null,
@@ -10,7 +10,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": 1552414413515610,
+  "id": 1522414413515989,
   "legend": {
     "alignAsTable": true,
     "avg": true,
@@ -45,7 +45,7 @@
       "intervalFactor": 1,
       "table": "memory",
       "policy": "default",
-      "query": "SELECT \n    t, \n    groupArray((slot, MemoryUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(labels,'/') as slot, \n        avg(usage) as `MemoryUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY labels, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t, \n    groupArray((slot, MemoryUsageBytes)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(labels,'/') as slot, \n        any(usage_bytes) as `MemoryUsageBytes` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY labels, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
     }
@@ -68,8 +68,7 @@
     {
       "logBase": 1,
       "show": true,
-      "max": "100",
-      "format": "percent",
+      "format": "bytes",
       "min": "0",
       "label": null
     },
