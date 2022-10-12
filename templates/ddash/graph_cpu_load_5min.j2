@@ -44,7 +44,7 @@
       "dateColDataType": "date",
       "table": "cpu",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((name, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        name, \n        avg(load_5min) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY name, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "query": "SELECT \n    t, \n    groupArray((name, CPUUsage)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        name, \n        any(load_5min) as `CPUUsage` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\n    GROUP BY name, t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "refId": "A",
       "resultFormat": "time_series",
       "interval": "$discovery_interval"
