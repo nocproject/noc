@@ -139,8 +139,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     # C - always try CLI first
     # None - use default preferences
     always_prefer = None
-    # Script's labels for use in pager
-    labels: Set[str] = set()
 
     def __init__(
         self,
@@ -155,6 +153,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         session=None,
         session_idle_timeout=None,
         streaming=None,
+        labels: Optional[Set[str]] = None,
     ):
         self.service = service
         self.tos = config.activator.tos
@@ -190,6 +189,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
         #
         self.streaming = streaming
+        self.labels = labels or set()
         # Cache CLI and SNMP calls, if set
         self.is_cached = False
         # Suitable only when self.parent is None.
@@ -1229,6 +1229,18 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     @property
     def is_beefed(self):
         return self.credentials.get("cli_protocol") == "beef"
+
+    def get_labels(self) -> Set[str]:
+        return self.labels
+
+    def add_label(self, label: str) -> None:
+        self.labels.add(label)
+
+    def delete_label(self, label: str) -> None:
+        try:
+            self.labels.remove(label)
+        except KeyError:
+            self.logger.warning("Can't remove a label '%s' from labels", label)
 
 
 class ScriptsHub(object):

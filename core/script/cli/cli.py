@@ -10,7 +10,7 @@ import re
 import functools
 from functools import reduce
 import asyncio
-from typing import Optional, Any, Type, Callable, Dict
+from typing import Optional, Any, Type, Callable, Dict, Set, Union
 
 # NOC modules
 from noc.core.text import replace_re_group
@@ -51,9 +51,10 @@ class CLI(BaseCLI):
     class InvalidPagerCommand(Exception):
         pass
 
-    def __init__(self, script, tos=None):
+    def __init__(self, script, tos=None, labels: Optional[Union[str, Set[str]]] = None):
         super().__init__(script, tos)
-        self.labels = script.labels
+        labels = set() if labels is None else {labels} if isinstance(labels, str) else labels
+        self.labels = script.labels | labels
         self.motd = ""
         self.command = None
         self.prompt_stack = []
