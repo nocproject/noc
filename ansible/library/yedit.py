@@ -195,6 +195,7 @@ from ansible.module_utils.basic import AnsibleModule
 class YeditException(Exception):
     """Exception class for Yedit"""
 
+
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class Yedit(object):
     """Class to modify yaml files"""
