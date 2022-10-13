@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # HP.1905.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ class Script(BaseScript):
                         {
                             "interfaces": [iface],
                             "mac": chassis,
-                            "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
+                            "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
                             "vlan_id": vlan_id,
                         }
                     )
