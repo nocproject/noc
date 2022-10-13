@@ -8,6 +8,7 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+from noc.core.snmp.render import render_mac
 from noc.core.mac import MAC
 
 
@@ -27,6 +28,9 @@ class Script(BaseScript):
         for v in self.snmp.get_tables(
             ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"],
             bulk=True,
+            display_hints={
+                "1.3.6.1.2.1.17.4.3.1.3": render_mac,
+            }
         ):
             if v[1]:
                 chassis = MAC(v[1])
