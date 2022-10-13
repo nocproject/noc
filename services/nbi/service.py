@@ -20,6 +20,8 @@ PREFIX_NBI = "/api/nbi/"
 class NBIService(FastAPIService):
     name = "nbi"
     use_mongo = True
+    use_router = True
+
     if config.features.traefik:
         traefik_backend = "nbi"
         traefik_frontend_rule = "PathPrefix:/api/nbi"

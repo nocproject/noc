@@ -20,6 +20,7 @@ from noc.core.perf import metrics
 class WorkerService(FastAPIService):
     name = "worker"
     use_mongo = True
+    use_router = True
 
     def __init__(self):
         super().__init__()

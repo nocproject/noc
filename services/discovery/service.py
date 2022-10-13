@@ -16,6 +16,7 @@ class DiscoveryService(FastAPIService):
     name = "discovery"
     pooled = True
     use_mongo = True
+    use_router = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):

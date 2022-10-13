@@ -14,11 +14,9 @@ import orjson
 
 # NOC modules
 from noc.core.liftbridge.message import Message
-from noc.main.models.messageroute import MessageRoute
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.template import Template
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE
+from noc.config import config
 
 
 DROP = ""
@@ -57,18 +55,8 @@ class Action(object, metaclass=ActionBase):
 
     def __init__(self, cfg: ActionCfg):
         self.headers: Dict[str, bytes] = {
-            h.header: h.value.encode(encoding=DEFAULT_ENCODING) for h in cfg.headers
+            h.header: h.value.encode(encoding=DEFAULT_ENCODING) for h in cfg.headers or []
         }
-
-    @classmethod
-    def from_action(cls, mroute: MessageRoute) -> "Action":
-        global ACTION_TYPES
-
-        return ACTION_TYPES[mroute.type](
-            ActionCfg(
-                type=mroute.type, stream=mroute.stream, notification_group=mroute.notification_group
-            )
-        )
 
     @classmethod
     def from_data(cls, data):
@@ -117,6 +105,9 @@ class NotificationAction(Action):
     name = "notification"
 
     def __init__(self, cfg: ActionCfg):
+        from noc.main.models.notificationgroup import NotificationGroup
+        from noc.main.models.template import Template
+
         super().__init__(cfg)
         self.ng: NotificationGroup = NotificationGroup.get_by_id(cfg.notification_group)
         self.rt: Template = Template.get_by_id(cfg.render_template)
@@ -128,3 +119,28 @@ class NotificationAction(Action):
             yield NOTIFICATION_METHODS[method], header, self.ng.render_message(
                 mt, orjson.loads(msg.value), render_template
             ) if render_template else body
+
+
+class MetricAction(Action):
+    name = "metrics"
+
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.stream: str = cfg.stream
+        self.mx_metrics_scopes = {}
+        self.load_handlers()
+
+    def load_handlers(self):
+        from noc.main.models.metricstream import MetricStream
+
+        for mss in MetricStream.objects.filter():
+            if mss.is_active and mss.scope.table_name in set(config.message.enable_metric_scopes):
+                self.mx_metrics_scopes[mss.scope.table_name.encode(DEFAULT_ENCODING)] = mss.to_mx
+
+    def iter_action(self, msg: Message) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        table = msg.headers.get(MX_METRICS_SCOPE)
+        if table not in self.mx_metrics_scopes:
+            return
+        yield self.stream, self.headers, [
+            self.mx_metrics_scopes[table](orjson.loads(v)) for v in msg.value.split(b"\n")
+        ]

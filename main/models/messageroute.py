@@ -88,7 +88,7 @@ class MessageRoute(Document):
     transmute_handler = PlainReferenceField(Handler)
     transmute_template = ForeignKeyField(Template)
     # Message actions
-    action = StringField(choices=["drop", "stream", "notification"], default="notification")
+    action = StringField(choices=["drop", "dump", "stream", "notification"], default="notification")
     stream = StringField()
     notification_group = ForeignKeyField(NotificationGroup)
     render_template = ForeignKeyField(Template)
@@ -109,6 +109,8 @@ class MessageRoute(Document):
         return self.name
 
     def clean(self):
+        if self.type == "metrics" and self.action == "notification":
+            raise ValidationError({"action": "For type 'metric' Notification is not allowed"})
         if self.action == "stream" and not self.stream:
             raise ValidationError({"stream": "For 'stream' action Stream must be set"})
         elif self.action == "notification" and not self.notification_group:
@@ -116,3 +118,45 @@ class MessageRoute(Document):
                 {"notification_group": "For 'notification' action NotificationGroup must be set"}
             )
         super().clean()
+
+    def get_route_config(self):
+        """
+        Return data for configured Router
+        :return:
+        """
+        r = {
+            "name": self.name,
+            "type": self.type,
+            "order": self.order,
+            "action": self.action,
+            "match": [],
+        }
+        if self.stream:
+            r["stream"] = self.stream
+        if self.type == "metrics" and self.action == "stream":
+            r["action"] = "metrics"
+        if self.headers:
+            r["headers"] = [{"header": m.header, "value": m.value} for m in self.headers]
+        if self.notification_group:
+            r["notification_group"] = str(self.notification_group.id)
+        if self.render_template:
+            r["render_template"] = str(self.render_template.id)
+        if self.transmute_template:
+            r["transmute_template"] = str(self.transmute_template.id)
+        if self.transmute_handler:
+            r["transmute_handler"] = str(self.transmute_handler.id)
+        for match in self.match:
+            r["match"] += [
+                {
+                    "labels": match.labels,
+                    "exclude_labels": match.exclude_labels,
+                    "administrative_domain": str(match.administrative_domain.id)
+                    if match.administrative_domain
+                    else None,
+                    "headers": [
+                        {"header": m.header, "op": m.op, "value": m.value}
+                        for m in match.headers_match
+                    ],
+                }
+            ]
+        return r
