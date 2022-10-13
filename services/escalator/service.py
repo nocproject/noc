@@ -23,6 +23,7 @@ class EscalatorService(FastAPIService):
     leader_lock_name = "escalator"
     use_telemetry = True
     use_mongo = True
+    use_router = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

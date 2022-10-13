@@ -15,6 +15,3 @@ class RouteDataStreamClient(DataStreamClient):
 
     async def on_delete(self, data):
         await self.service.delete_route(data["id"])
-
-    async def on_ready(self):
-        await self.service.on_ready()

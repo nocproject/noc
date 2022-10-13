@@ -249,6 +249,7 @@ class ManagedObjectInfo(object):
 class MetricsService(FastAPIService):
     name = "metrics"
     use_mongo = True
+    use_router = True
 
     def __init__(self):
         super().__init__()

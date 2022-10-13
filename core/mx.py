@@ -8,9 +8,8 @@
 # Python modules
 from typing import Any, Optional, Dict
 from threading import Lock
-
-# Third-party modules
-import orjson
+from dataclasses import dataclass
+from functools import partial
 
 # NOC services
 from noc.core.service.loader import get_service
@@ -18,8 +17,19 @@ from noc.core.comp import DEFAULT_ENCODING
 from noc.core.liftbridge.base import LiftBridgeClient
 from noc.core.ioloop.util import run_sync
 
+
+@dataclass
+class Message(object):
+    value: bytes
+    headers: Dict[str, bytes]
+    timestamp: int
+    key: int
+
+
 # MX stream name
 MX_STREAM = "message"
+MX_METRICS_TYPE = "metrics"
+MX_METRICS_SCOPE = "Metric-Scope"
 # Headers
 MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"
@@ -86,13 +96,14 @@ def send_message(
     if headers:
         msg_headers.update(headers)
     svc = get_service()
-    n_partitions = get_mx_partitions()
-    svc.publish(
-        value=orjson.dumps(data),
-        stream=MX_STREAM,
-        partition=sharding_key % n_partitions,
-        headers=msg_headers,
-    )
+    run_sync(partial(svc.send_message, data, message_type, headers, sharding_key))
+    # n_partitions = get_mx_partitions()
+    # svc.publish(
+    #     value=orjson.dumps(data),
+    #     stream=MX_STREAM,
+    #     partition=sharding_key % n_partitions,
+    #     headers=msg_headers,
+    # )
 
 
 def get_mx_partitions() -> int:

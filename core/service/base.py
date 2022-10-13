@@ -27,6 +27,7 @@ from typing import (
     TypeVar,
     NoReturn,
     Awaitable,
+    Set,
 )
 
 # Third-party modules
@@ -48,11 +49,14 @@ from noc.core.liftbridge.error import LiftbridgeError
 from noc.core.liftbridge.queue import LiftBridgeQueue
 from noc.core.liftbridge.queuebuffer import QBuffer
 from noc.core.liftbridge.message import Message
+from noc.core.router.base import Router
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.ioloop.timers import PeriodicCallback
-from noc.core.mx import MX_STREAM, get_mx_partitions, MX_MESSAGE_TYPE
+from noc.core.error import NOCError
+from noc.core.mx import MX_METRICS_SCOPE, MX_METRICS_TYPE, MX_STREAM
 from .rpc import RPCProxy
 from .loader import set_service
+from ..router.datastream import RouteDataStreamClient
 
 T = TypeVar("T")
 
@@ -94,6 +98,8 @@ class BaseService(object):
     # Usually means resolution error to required services
     # temporary leads service to unhealthy state
     require_dcs_health = True
+    # Use embedded router for messages
+    use_router = False
 
     LOG_FORMAT = config.log_format
 
@@ -122,6 +128,8 @@ class BaseService(object):
         self.startup_ts = None
         self.telemetry_callback = None
         self.dcs = None
+        # Message routed
+        self.router: Optional[Router] = None
         # Effective address and port
         self.address = None
         self.port = None
@@ -134,8 +142,7 @@ class BaseService(object):
         # Metrics publisher buffer
         self.metrics_queue: Optional[QBuffer] = None
         # MX metrics publisher buffer
-        self.mx_metrics_queue: Optional[QBuffer] = None
-        self.mx_metrics_scopes: Dict[str, Callable] = {}
+        self.mx_metrics_scopes: Set[str] = set(config.message.enable_metric_scopes)
         self.mx_partitions: int = 0
         #
         self.active_subscribers = 0
@@ -390,7 +397,11 @@ class BaseService(object):
 
         await self.init_api()
         #
-        if config.message.enable_metrics:
+        if config.message.embedded_router and self.use_router:
+            self.router = Router()
+            self.router.load()
+            asyncio.get_running_loop().create_task(self.get_mx_routes_config())
+        if not config.message.embedded_router and config.message.enable_metrics:
             self.mx_partitions = await self.get_stream_partitions("message")
         #
         if self.use_telemetry:
@@ -643,20 +654,6 @@ class BaseService(object):
             self.metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
             self.loop.create_task(self.publisher())
             self.loop.create_task(self.publish_metrics(self.metrics_queue))
-            if config.message.enable_metrics and self.use_mongo:
-                from noc.main.models.metricstream import MetricStream
-
-                for mss in MetricStream.objects.filter():
-                    if mss.is_active and mss.scope.table_name in set(
-                        config.message.enable_metric_scopes
-                    ):
-                        self.mx_metrics_scopes[mss.scope.table_name] = mss.to_mx
-                self.mx_metrics_queue = QBuffer(max_size=config.liftbridge.max_message_size)
-                self.loop.create_task(
-                    self.publish_metrics(
-                        self.mx_metrics_queue, headers={MX_MESSAGE_TYPE: b"metrics"}
-                    )
-                )
 
     def publish(
         self,
@@ -759,6 +756,13 @@ class BaseService(object):
             t0 = perf_counter()
             for stream, partititon, chunk in queue.iter_slice():
                 self.publish(chunk, stream=stream, partition=partititon, headers=headers)
+                table_name = stream.split(".")[1]
+                if config.message.enable_metrics and table_name in self.mx_metrics_scopes:
+                    await self.send_message(
+                        data=chunk,
+                        message_type=MX_METRICS_TYPE,
+                        headers={MX_METRICS_SCOPE: table_name.encode(encoding="utf-8")},
+                    )
             if not self.publish_queue.to_shutdown:
                 to_sleep = config.liftbridge.metrics_send_delay - (perf_counter() - t0)
                 if to_sleep > 0:
@@ -784,27 +788,6 @@ class BaseService(object):
         self.metrics_queue.put(
             stream=f"ch.{table}", partition=key % self.n_metrics_partitions, data=metrics
         )
-        # Mirror to MX
-        if (
-            config.message.enable_metrics
-            and self.mx_metrics_scopes
-            and table in self.mx_metrics_scopes
-        ):
-            n_partitions = get_mx_partitions()
-            self.mx_metrics_queue.put(
-                stream=MX_STREAM,
-                partition=key % n_partitions,
-                data=[self.mx_metrics_scopes[table](m) for m in metrics],
-            )
-            # self.publish(
-            #     value=orjson.dumps([self.mx_metrics_scopes[table](m) for m in metrics]),
-            #     stream=MX_STREAM,
-            #     partition=key % n_partitions,
-            #     headers={
-            #         MX_MESSAGE_TYPE: b"metrics",
-            #         MX_SHARDING_KEY: smart_bytes(key),
-            #     },
-            # )
 
     def start_telemetry_callback(self) -> None:
         """
@@ -823,6 +806,54 @@ class BaseService(object):
         spans = get_spans()
         if spans:
             self.register_metrics("span", [span_to_dict(s) for s in spans])
+
+    async def get_mx_routes_config(self):
+        """
+        Subscribe and track datastream changes
+        """
+        client = RouteDataStreamClient("cfgmxroute", service=self)
+        # Track stream changes
+        while True:
+            self.logger.info("Starting to track MX route settings")
+            try:
+                await client.query(limit=config.message.ds_limit, block=True)
+            except NOCError as e:
+                self.logger.info("Failed to get MX route settings: %s", e)
+                await asyncio.sleep(1)
+
+    async def update_route(self, data: Dict[str, Any]) -> None:
+        self.router.change_route(data)
+
+    async def delete_route(self, r_id: str) -> None:
+        self.router.delete_route(r_id)
+
+    async def send_message(
+        self,
+        data: Any,
+        message_type: str,
+        headers: Optional[Dict[str, bytes]] = None,
+        sharding_key: int = 0,
+    ):
+        """
+        Build message and schedule to send to mx service
+
+        :param data: Data for transmit
+        :param message_type: Message type
+        :param headers: additional message headers
+        :param sharding_key: Key for sharding over MX services
+        :return:
+        """
+        msg = self.router.get_message(data, message_type, headers, sharding_key)
+        self.logger.debug("Send message: %s", msg)
+        if self.router and config.message.embedded_router:
+            await self.router.route_message(msg)
+        else:
+            self.publish(
+                value=msg.value,
+                stream=MX_STREAM,
+                partition=sharding_key % self.mx_partitions,
+                headers=msg.headers,
+            )
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:
