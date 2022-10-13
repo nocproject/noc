@@ -8,6 +8,7 @@
   become: "False"
   run_once: "True"
   environment:
+    http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
   retries: 3
   delay: 2
