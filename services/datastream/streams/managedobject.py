@@ -414,7 +414,7 @@ class ManagedObjectDataStream(DataStream):
             },
             "serial": o.get_data("asset", "serial") or "",
             "part_no": o.get_data("asset", "part_no") or [],
-            "order_part_no": (o.get_data("asset", "order_part_no") or "").split(","),
+            "order_part_no": o.get_data("asset", "order_part_no") or [],
             "revision": rev,
             "data": get_asset_data(o.data),
             "slots": [],
