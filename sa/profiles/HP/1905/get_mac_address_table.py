@@ -29,8 +29,8 @@ class Script(BaseScript):
             ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"],
             bulk=True,
             display_hints={
-                "1.3.6.1.2.1.17.4.3.1.3": render_mac,
-            }
+                "1.3.6.1.2.1.17.4.3.1.1": render_mac,
+            },
         ):
             if v[1]:
                 chassis = MAC(v[1])
@@ -76,4 +76,4 @@ class Script(BaseScript):
                     "vlan_id": vlan_id,
                 }
             )
-            return r
+        return r
