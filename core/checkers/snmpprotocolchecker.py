@@ -39,7 +39,8 @@ class SNMPProtocolChecker(ObjectChecker):
             credentials=credential,
             logger=self.logger,
             calling_service=self.calling_service,
-            ignoring_rule=not self.object.auth_profile.enable_suggest_by_rule,
+            ignoring_rule=self.object.auth_profile
+            and not self.object.auth_profile.enable_suggest_by_rule,
         )
         protocols: List[Protocol] = []
         for c in checks or []:
