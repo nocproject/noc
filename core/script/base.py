@@ -12,7 +12,7 @@ import itertools
 import operator
 from functools import reduce
 from time import perf_counter
-from typing import Any, Optional, Set
+from typing import Any, Optional, Set, Union
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -823,6 +823,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         obj_parser: Any = None,
         cmd_next: Any = None,
         cmd_stop: Any = None,
+        labels: Optional[Union[str, Set[str]]] = None,
     ) -> str:
         """
         Execute CLI command and return result. Initiate cli session
@@ -870,7 +871,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Encode submitted command
         submitted_cmd = smart_bytes(cmd, encoding=self.native_encoding) + command_submit
         # Run command
-        stream = self.get_cli_stream()
+        stream = self.get_cli_stream(labels=labels)
         if self.to_track:
             self.cli_tracked_command = cmd
         r = stream.execute(
@@ -917,7 +918,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 r = r[len(cmd) :]
         return r
 
-    def get_cli_stream(self):
+    def get_cli_stream(self, labels=None):
         if self.parent:
             return self.root.get_cli_stream()
         if not self.cli_stream and self.session:
@@ -933,7 +934,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
-            self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos)
+            self.cli_stream = get_handler(self.cli_protocols[protocol])(self, tos=self.tos, labels=labels)
             # Store to the sessions
             if self.session:
                 self.cli_session_store.put(self.session, self.cli_stream)
