@@ -35,6 +35,7 @@ class CapsCheck(PolicyDiscoveryCheck):
         "Boot PROM": "Chassis | Boot PROM",
         "HW version": "Chassis | HW Version",
         "Build": "Software | Build Version",
+        "Patch Version": "Software | Patch Version",
     }
 
     def handler(self):
@@ -56,10 +57,13 @@ class CapsCheck(PolicyDiscoveryCheck):
             return
         object_caps = {}
         for k, v in object_attrs.items():
-            if k not in self.ATTR_CAPS:
-                self.logger.info("Not caps for attribute: %s", k)
-                continue
-            object_caps[self.ATTR_CAPS[k]] = v
+            if k in self.ATTR_CAPS:
+                caps = k
+            else:
+                # Custom Attributes
+                caps = f"Custom | Attribute | {k}"
+                self.logger.info("Custom attribute: %s, Use", k, caps)
+            object_caps[caps] = v
         self.update_caps(object_caps, source="attributes")
 
     def get_policy(self):
