@@ -58,7 +58,7 @@ class CapsCheck(PolicyDiscoveryCheck):
         object_caps = {}
         for k, v in object_attrs.items():
             if k in self.ATTR_CAPS:
-                caps = k
+                caps = self.ATTR_CAPS[k]
             else:
                 # Custom Attributes
                 caps = f"Custom | Attribute | {k}"
