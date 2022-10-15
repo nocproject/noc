@@ -28,10 +28,12 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.scripts.get_version()
         c = {"type": "CHASSIS", "vendor": "ALSTEC", "part_no": v["platform"]}
-        if "HW version" in v["attributes"]:
-            c["revision"] = v["attributes"]["HW version"]
-        if "Serial Number" in v["attributes"]:
-            c["serial"] = v["attributes"]["Serial Number"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            c["serial"] = serial
+        revision = self.capabilities.get("Chassis | HW Version")
+        if revision:
+            c["revision"] = revision
         r = [c]
         v = self.cli("show interfaces status", cached=True)
         for match in self.rx_port.finditer(v):
