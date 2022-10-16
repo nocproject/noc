@@ -241,7 +241,7 @@ async def trace_leak(svc, delay=60, top=20, trace=1):
         stats = current.compare_to(start, "filename")
         # compare current snapshot to current snapshot
         prev_stats = current.compare_to(prev, "lineno")
-        svc.logger.info("[memtrace] %s", "-"*80)
+        svc.logger.info("[memtrace] %s", "-" * 80)
         svc.logger.info("[memtrace] Top Diffs since start")
         # Print top diffs since Start: current_snapshot - start snapshot
         for i, stat in enumerate(stats[:top], 1):
