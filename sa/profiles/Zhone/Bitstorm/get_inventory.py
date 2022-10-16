@@ -63,8 +63,9 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.scripts.get_version()
         r = {"type": "CHASSIS", "vendor": "ZHONE", "part_no": [v["platform"]]}
-        if "attributes" in v and "Serial Number" in v["attributes"]:
-            r["serial"] = v["attributes"]["Serial Number"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            r["serial"] = serial
         if self.PLATFORMS.get(v["platform"]):
             r["description"] = self.PLATFORMS.get(v["platform"])
         res = [r]

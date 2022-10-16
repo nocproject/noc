@@ -29,15 +29,17 @@ class Script(BaseScript):
         objects = []
         # Chassis info
         p = self.scripts.get_version()
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
         objects += [
             {
                 "type": "CHASSIS",
                 "number": None,
                 "vendor": "ALU",
-                "serial": p["attributes"].get("Serial Number"),
-                "description": "%s %s" % (p["vendor"], p["platform"]),
+                "serial": serial,
+                "description": f'{p["vendor"]} {p["platform"]}',
                 "part_no": p["platform"],
-                "revision": p["attributes"].get("HW version"),
+                "revision": revision,
                 "builtin": False,
             }
         ]

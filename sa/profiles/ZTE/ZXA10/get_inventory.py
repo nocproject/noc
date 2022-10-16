@@ -156,8 +156,9 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.scripts.get_version()
         r = [{"type": "CHASSIS", "vendor": "ZTE", "part_no": [v["platform"]]}]
-        if "attributes" in v:
-            r[0]["serial"] = v["attributes"]["Serial Number"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            r[0]["serial"] = serial
         ports = self.profile.fill_ports(self)
         for p in ports:
             v = self.cli("show card shelfno %s slotno %s" % (p["shelf"], p["slot"]))
