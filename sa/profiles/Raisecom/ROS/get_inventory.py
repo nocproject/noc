@@ -23,13 +23,15 @@ class Script(BaseScript):
 
     def execute_iscom2624g(self):
         v = self.scripts.get_version()
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
         r = [
             {
                 "type": "CHASSIS",
                 "vendor": "RAISECOM",
                 "part_no": v["platform"],
-                "revision": v["attributes"]["HW version"],
-                "serial": v["attributes"]["Serial Number"],
+                "revision": revision,
+                "serial": serial,
             }
         ]
         v = self.cli("show interface brief")
@@ -69,13 +71,15 @@ class Script(BaseScript):
         if self.is_iscom2624g:
             return self.execute_iscom2624g()
         v = self.scripts.get_version()
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
         r = [
             {
                 "type": "CHASSIS",
                 "vendor": "RAISECOM",
                 "part_no": v["platform"],
-                "revision": v["attributes"]["HW version"],
-                "serial": v["attributes"]["Serial Number"],
+                "revision": revision,
+                "serial": serial,
             }
         ]
         if self.is_rotek:

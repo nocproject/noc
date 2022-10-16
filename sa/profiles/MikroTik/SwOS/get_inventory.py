@@ -21,12 +21,13 @@ class Script(BaseScript):
     def execute_cli(self):
         r = []
         v = self.scripts.get_version()
+        serial = self.capabilities.get("Chassis | Serial Number")
         r += [
             {
                 "type": "CHASSIS",
                 "vendor": "MikroTik",
                 "part_no": [v["platform"]],
-                "serial": v["attributes"]["Serial Number"],
+                "serial": serial,
             }
         ]
         sfps = self.profile.parseBrokenJson(self.http.get("/sfp.b", cached=True, eof_mark=b"}"))

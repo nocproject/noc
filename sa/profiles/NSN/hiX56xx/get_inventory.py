@@ -16,12 +16,12 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.scripts.get_version()
-        serial = None
-        if "attributes" in v and "Serial Number" in v["attributes"]:
-            serial = v["attributes"]["Serial Number"]
-        revision = None
-        if "attributes" in v and "HW version" in v["attributes"]:
-            revision = v["attributes"]["HW version"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
+        if serial:
+            serial = serial
+        if revision:
+            revision = revision
 
         r = [
             {
