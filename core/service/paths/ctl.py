@@ -7,6 +7,8 @@
 
 # Python modules
 import logging
+import tracemalloc
+import asyncio
 from io import StringIO
 
 # Third-party modules
@@ -184,3 +186,79 @@ async def forensic_stop():
         config.features.forensic = False
         return "true"
     return "false"
+
+
+@router.post(
+    "/api/ctl/memtrace/start",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
+async def start_memtrace():
+    """
+    Start code profiling
+    :return:
+    """
+    from noc.core.service.loader import get_service
+
+    svc = get_service()
+    svc.loop.create_task(trace_leak(svc))
+    return "Trace Memory Started"
+
+
+@router.post(
+    "/api/ctl/memtrace/stop",
+    response_class=PlainTextResponse,
+    tags=["internal"],
+    include_in_schema=False,
+)
+async def stop_memtrace():
+    """
+    Start code profiling
+    :return:
+    """
+    tracemalloc.stop()
+    tracemalloc.clear_traces()
+    return "Trace Memory Stopped"
+
+
+async def trace_leak(svc, delay=60, top=20, trace=1):
+    """
+    :param svc:
+    :param delay:
+    :param top:
+    :param trace:
+    :return:
+    """
+    logger.info("Start trace: delay: %s, top: %s, trace: %s", delay, top, trace)
+    tracemalloc.start(25)
+    start = tracemalloc.take_snapshot()
+    prev = start
+    while tracemalloc.is_tracing():  # is_tracing added in python 3.9
+        await asyncio.sleep(delay)
+        current = tracemalloc.take_snapshot()
+        # compare current snapshot to starting snapshot
+        stats = current.compare_to(start, "filename")
+        # compare current snapshot to current snapshot
+        prev_stats = current.compare_to(prev, "lineno")
+        svc.logger.info("[memtrace] %s", "-"*80)
+        svc.logger.info("[memtrace] Top Diffs since start")
+        # Print top diffs since Start: current_snapshot - start snapshot
+        for i, stat in enumerate(stats[:top], 1):
+            svc.logger.info("[memtrace|top_diffs|%s] %s", i, str(stat))
+        svc.logger.info("[memtrace] Top Incremental")
+        # Print top incremental stats: current_snapshot - previous snapshot
+        for i, stat in enumerate(prev_stats[:top], 1):
+            svc.logger.info("[memtrace|top_incremental|%s] %s", i, str(stat))
+        svc.logger.info("[memtrace] Top Current")
+        # Print top current stats
+        for i, stat in enumerate(current.statistics("filename")[:top], 1):
+            svc.logger.info("[memtrace|top_current|%s] %s", i, str(stat))
+        #
+        traces = current.statistics("traceback")
+        for stat in traces[:trace]:
+            svc.logger.info(
+                "[memtrace|traceback] Memory blocks: %s, size: %s", stat.count, stat.size / 1024
+            )
+    # Set previous snapshot to current snapshot
+    # prev = current
