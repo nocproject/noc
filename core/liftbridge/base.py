@@ -733,7 +733,7 @@ class LiftBridgeClient(object):
             return await self.alter_stream(
                 stream_meta, new_partitions=partitions, replication_factor=rf
             )
-        logger.info(f"Creating stream %s with %s partitions", name, cfg.partitions)
+        logger.info("Creating stream %s with %s partitions", name, cfg.partitions)
         await self.create_stream(name, partitions=partitions, subject=name, replication_factor=rf)
         return True
 
