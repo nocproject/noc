@@ -622,10 +622,10 @@ class LiftBridgeClient(object):
         old_partitions = len(current_meta.partitions)
         n_msg: Dict[int, int] = {}  # partition -> copied messages
         cfg = self.get_stream_config(name)
-        logger.info(f"Altering stream %s", name)
+        logger.info("Altering stream %s", name)
         # Create temporary stream with same structure, as original one
         tmp_stream = f"__tmp-{name}"
-        logger.info(f"Creating temporary stream %s", tmp_stream)
+        logger.info("Creating temporary stream %s", tmp_stream)
         await self.create_stream(
             subject=tmp_stream,
             name=tmp_stream,
@@ -696,14 +696,14 @@ class LiftBridgeClient(object):
                     n -= 1
                     if not n:
                         break
-                logger.info(f"  %s messages restored", n_msg[partition])
+                logger.info("  %s messages restored", n_msg[partition])
             else:
                 logger.info("  nothing to restore")
         # Drop temporary stream
-        logger.info(f"Dropping temporary stream %s", tmp_stream)
+        logger.info("Dropping temporary stream %s", tmp_stream)
         await self.delete_stream(tmp_stream)
         # Uh-oh
-        logger.info(f"Stream %s has been altered", name)
+        logger.info("Stream %s has been altered", name)
         return True
 
     async def ensure_stream(self, name: str, partitions: Optional[int] = None) -> bool:
