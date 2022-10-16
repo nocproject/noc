@@ -94,6 +94,10 @@ class VersionCheck(DiscoveryCheck):
         # Sync attributes
         if "attributes" in result:
             self.object.update_attributes(result["attributes"])
+            self.set_artefact("object_attributes", result["attributes"])
+        else:
+            # Clear capabilities by attributes
+            self.set_artefact("object_attributes", {})
         #
         if changed:
             self.object.save()

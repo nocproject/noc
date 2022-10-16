@@ -22,10 +22,14 @@ class Script(BaseScript):
                 "type": "CHASSIS",
                 "vendor": "ELTEX",
                 "part_no": v["platform"],
-                "serial": v["attributes"]["Serial Number"],
             }
         ]
-
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            res[-1]["serial"] = serial
+        revision = self.capabilities.get("Chassis | HW Version")
+        if revision:
+            res[-1]["revision"] = revision
         try:
             v = self.cli("show fiber-ports optical-transceiver-info all")
             for i in parse_table(v):

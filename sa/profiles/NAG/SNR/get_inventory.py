@@ -53,8 +53,8 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         r = []
         s = self.scripts.get_version()
-        revision = s["attributes"]["HW version"]
-        serial = s["attributes"]["Serial Number"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
         part_no = s["platform"]
         vendor = s["vendor"]
         if self.is_foxgate_cli:

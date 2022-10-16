@@ -89,11 +89,14 @@ class Script(BaseScript):
                     "type": "CHASSIS",
                     "vendor": "SKS",
                     "part_no": v["platform"],
-                    "revision": v["attributes"]["HW version"],
                 }
             ]
-            if "Serial Number" in v["attributes"]:
-                r[0]["serial"] = v["attributes"]["Serial Number"]
+            serial = self.capabilities.get("Chassis | Serial Number")
+            revision = self.capabilities.get("Chassis | HW Version")
+            if serial:
+                r[0]["serial"] = serial
+            if revision:
+                r[0]["revision"] = revision
             r += self.get_e1_inventory()
             try:
                 v = self.cli("show interfaces status", cached=True)

@@ -471,16 +471,20 @@ class Script(BaseScript):
             parse_result = self.parse_elabel(v)
         except self.CLISyntaxError:
             r = self.scripts.get_version()
-            return [
-                {
-                    "type": "CHASSIS",
-                    "number": 0,
-                    "vendor": "Huawei",
-                    "description": "",
-                    "serial": r["attributes"]["Serial Number"],
-                    "part_no": r["platform"],
-                }
-            ]
+            inv = {
+                "type": "CHASSIS",
+                "number": 0,
+                "vendor": "Huawei",
+                "description": "",
+                "part_no": r["platform"],
+            }
+            serial = self.capabilities.get("Chassis | Serial Number")
+            if serial:
+                inv["serial"] = serial
+            revision = self.capabilities.get("Chassis | HW Version")
+            if revision:
+                inv["revision"] = revision
+            return [inv]
             # raise NotImplementedError("Not supported 'display elabel' command")
         if self.is_cx300:
             # Chassis without SN ex. CX300
