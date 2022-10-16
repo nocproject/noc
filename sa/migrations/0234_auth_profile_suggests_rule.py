@@ -79,8 +79,15 @@ class Migration(BaseMigration):
         # Reset suggest on non-suggest profile
         self.db.execute(
             """
+                UPDATE sa_authprofile SET enable_suggest_by_rule = FALSE
+                WHERE type != 'S'
+            """
+        )
+        # Update suggests profiles
+        self.db.execute(
+            """
                 UPDATE sa_authprofile SET enable_suggest_by_rule = TRUE, type = 'G'
                 WHERE type = 'S'
-                """
+            """
         )
         # ManagedObject Update
