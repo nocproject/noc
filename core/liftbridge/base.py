@@ -723,7 +723,7 @@ class LiftBridgeClient(object):
             return False
         meta = await self.fetch_metadata(name)
         rf = min(len(meta.brokers), 2)
-        stream_meta = meta.metadata[0]
+        stream_meta = meta.metadata[0] if meta.metadata else None
         if stream_meta and len(stream_meta.partitions) == partitions:
             return False
         elif stream_meta:
