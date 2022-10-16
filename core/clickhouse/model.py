@@ -497,7 +497,7 @@ class Model(object, metaclass=ModelBase):
                 retention_ages=config.liftbridge.stream_ch_retention_max_age,
                 segment_bytes=config.liftbridge.stream_ch_segment_max_bytes,
                 segment_ages=config.liftbridge.stream_ch_segment_max_age,
-            )
+            ),
         )
 
 
