@@ -185,7 +185,7 @@ class Address(NOCModel):
         if not vrf.vrf_group or vrf.vrf_group.address_constraint != "G":
             return None
         afi = cls.get_afi(address)
-        a = Address.objects.get(
+        a = Address.objects.filter(
             afi=afi, address=address, vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
         ).first()
         if a:
