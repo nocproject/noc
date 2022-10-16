@@ -8,13 +8,11 @@
 # Python modules
 import operator
 from time import perf_counter
-from typing import Optional
 
 # NOC modules
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.liftbridge.base import StreamConfig, RetentionPolicy
 from .fields import BaseField, MaterializedField, AggregatedField
 from .engines import ReplacingMergeTree, AggregatingMergeTree
 from .connect import ClickhouseClient, connection

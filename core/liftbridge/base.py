@@ -81,6 +81,7 @@ class StreamConfig(object):
     shard: Optional[str] = None  #
     partitions: Optional[int] = None  # Partition numbers
     slot: Optional[str] = None  # Configured slots
+    pooled: bool = False
     cursor: Optional[str] = None  # Cursor name
     enable: bool = True  # Stream is active
     auto_pause_time: bool = False
@@ -115,6 +116,7 @@ class StreamConfig(object):
 STREAM_CONFIG: Dict[str, StreamConfig] = {
     "events": StreamConfig(
         slot="classifier",
+        pooled=True,
         retention_policy=RetentionPolicy(
             retention_bytes=config.liftbridge.stream_events_retention_max_bytes,
             retention_ages=config.liftbridge.stream_events_retention_max_age,
@@ -124,6 +126,7 @@ STREAM_CONFIG: Dict[str, StreamConfig] = {
     ),
     "dispose": StreamConfig(
         slot="correlator",
+        pooled=True,
         retention_policy=RetentionPolicy(
             retention_bytes=config.liftbridge.stream_dispose_retention_max_bytes,
             retention_ages=config.liftbridge.stream_dispose_retention_max_age,
@@ -565,8 +568,11 @@ class LiftBridgeClient(object):
             base_cfg = STREAM_CONFIG[cfg_name]
         return StreamConfig(
             name=name,
+            enable=base_cfg.enable if base_cfg else True,
             shard=shard[0] if shard else None,
             partitions=base_cfg.partitions if base_cfg else None,
+            slot=base_cfg.slot if base_cfg else None,
+            replication_factor=base_cfg.replication_factor if base_cfg else None,
             retention_policy=base_cfg.retention_policy if base_cfg else RetentionPolicy(),
         )
 
@@ -579,6 +585,10 @@ class LiftBridgeClient(object):
         replication_factor: int = 0,
     ) -> None:
         cfg = self.get_stream_config(name)
+        partitions = partitions or cfg.get_partitions()
+        if not partitions:
+            logger.info("Stream '%s' without partition. Skipping..", name)
+            return
         minisr = 0
         if cfg.replication_factor:
             replication_factor = min(cfg.replication_factor, replication_factor)
@@ -586,7 +596,7 @@ class LiftBridgeClient(object):
         await self._create_stream(
             subject=subject,
             name=name,
-            partitions=partitions or cfg.get_partitions(),
+            partitions=partitions,
             minisr=minisr,
             replication_factor=replication_factor,
             retention_max_bytes=cfg.retention_policy.retention_bytes,
@@ -603,12 +613,15 @@ class LiftBridgeClient(object):
             await channel.DeleteStream(DeleteStreamRequest(name=name))
 
     async def alter_stream(
-        self, current_meta: StreamMetadata, new_partitions: int, replication_factor: int
+        self,
+        current_meta: StreamMetadata,
+        new_partitions: Optional[int] = None,
+        replication_factor: Optional[int] = None,
     ) -> bool:
         name = current_meta.name
         old_partitions = len(current_meta.partitions)
         n_msg: Dict[int, int] = {}  # partition -> copied messages
-
+        cfg = self.get_stream_config(name)
         logger.info(f"Altering stream %s", name)
         # Create temporary stream with same structure, as original one
         tmp_stream = f"__tmp-{name}"
@@ -617,7 +630,7 @@ class LiftBridgeClient(object):
             subject=tmp_stream,
             name=tmp_stream,
             partitions=old_partitions,
-            replication_factor=replication_factor,
+            replication_factor=1,
         )
         # Copy all unread data to temporary stream as is
         for partition in range(old_partitions):
@@ -630,7 +643,7 @@ class LiftBridgeClient(object):
             current_offset = await self.fetch_cursor(
                 stream=name,
                 partition=partition,
-                # cursor_id=stream.cursor_name,
+                cursor_id=cfg.cursor_name,
             )
             if current_offset > newest_offset:
                 # Fix if cursor not set properly
@@ -697,9 +710,12 @@ class LiftBridgeClient(object):
         """
         Ensure stream settings
         :param name:
+        :param partitions:
         :return:
         """
+        # Get stream config
         cfg = self.get_stream_config(name)
+        # Get liftbridge metadata
         meta = await self.fetch_metadata(name)
         rf = min(len(meta.brokers), 2)
         stream_meta = meta.metadata[0]
@@ -714,9 +730,11 @@ class LiftBridgeClient(object):
                 len(stream_meta.partitions),
                 cfg.partitions,
             )
-            return await self.alter_stream(meta, cfg.partitions)
+            return await self.alter_stream(
+                stream_meta, new_partitions=partitions, replication_factor=rf
+            )
         logger.info(f"Creating stream %s with %s partitions", name, cfg.partitions)
-        await self.create_stream(name, subject=name, replication_factor=rf)
+        await self.create_stream(name, partitions=partitions, subject=name, replication_factor=rf)
         return True
 
     @staticmethod

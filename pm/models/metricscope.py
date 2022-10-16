@@ -27,7 +27,6 @@ from noc.core.model.decorator import on_save
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.main.models.label import Label
-from noc.core.liftbridge.base import StreamConfig, RetentionPolicy
 
 id_lock = Lock()
 to_path_code = {}

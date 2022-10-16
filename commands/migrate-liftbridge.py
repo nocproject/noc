@@ -6,18 +6,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Tuple, Dict, Iterable
-import functools
+from typing import Iterable
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.liftbridge.base import (
     LiftBridgeClient,
     Metadata,
-    StreamMetadata,
-    StartPosition,
     STREAM_CONFIG,
-    StreamConfig,
 )
 from noc.core.mongo.connection import connect
 from noc.core.ioloop.util import run_sync
@@ -28,8 +24,6 @@ from noc.pm.models.metricscope import MetricScope
 
 
 class Command(BaseCommand):
-    _slots = None
-
     def add_arguments(self, parser):
         parser.add_argument(
             "--slots",
@@ -40,19 +34,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, slots=None, *args, **options):
-        if slots:
-            self._slots = slots
         changed = False
-        # Get liftbridge metadata
-        meta = self.get_meta()
-        rf = min(len(meta.brokers), 2)
         # Apply settings
-        for stream, partitions in self.iter_limits():
-            if not partitions:
-                self.print("Stream '%s' without partition. Skipping.." % partitions)
-                continue
+        for stream in self.iter_streams():
             self.print("Ensuring stream %s" % stream)
-            changed |= self.apply_stream_settings(stream, partitions, rf)
+            changed |= self.apply_stream_settings(stream, partitions=slots)
         if changed:
             self.print("CHANGED")
         else:
@@ -65,31 +51,35 @@ class Command(BaseCommand):
 
         return run_sync(get_meta)
 
-    def iter_limits(self) -> Iterable[Tuple[str, int]]:
+    def iter_streams(self) -> Iterable[str]:
         connect()
 
         # Configured streams
         for stream in STREAM_CONFIG:
-            yield stream, None
+            if stream == "ch":
+                continue
+            if not STREAM_CONFIG[stream].pooled:
+                yield stream
+                continue
             # Pooled streams
-            # for pool in Pool.objects.all():
-            #     yield f"{stream}.{pool.name}", None
+            for pool in Pool.objects.all():
+                yield f"{stream}.{pool.name}"
         # Metric scopes
         for scope in MetricScope.objects.all():
-            yield f"ch.{scope.table_name}", None
+            yield f"ch.{scope.table_name}"
         # BI models
         for name in bi_loader:
             bi_model = bi_loader[name]
             if not bi_model:
                 continue
-            yield f"ch.{bi_model._meta.db_table}", None
+            yield f"ch.{bi_model._meta.db_table}"
         # BI Dictionary models
         for name in bi_dict_loader:
             bi_dict_model = bi_dict_loader[name]
             if bi_dict_model:
-                yield f"ch.{bi_dict_model._meta.db_table}", None
+                yield f"ch.{bi_dict_model._meta.db_table}"
 
-    def apply_stream_settings(self, stream: str, partitions: int, rf: int) -> bool:
+    def apply_stream_settings(self, stream: str, partitions: int) -> bool:
         async def ensure_stream() -> bool:
             async with LiftBridgeClient() as client:
                 return await client.ensure_stream(stream, partitions=partitions)
