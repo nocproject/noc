@@ -485,21 +485,6 @@ class Model(object, metaclass=ModelBase):
         """
         return cls._meta.ordered_fields[0].name
 
-    def get_stream_config(self) -> Optional[StreamConfig]:
-        """
-        Return Stream Config for Scope
-        :return:
-        """
-        return StreamConfig(
-            name=f"ch.{self._meta.db_table}",
-            retention_policy=RetentionPolicy(
-                retention_bytes=config.liftbridge.stream_ch_retention_max_bytes,
-                retention_ages=config.liftbridge.stream_ch_retention_max_age,
-                segment_bytes=config.liftbridge.stream_ch_segment_max_bytes,
-                segment_ages=config.liftbridge.stream_ch_segment_max_age,
-            ),
-        )
-
 
 class NestedModel(Model):
     @classmethod
