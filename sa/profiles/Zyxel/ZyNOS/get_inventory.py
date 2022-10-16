@@ -34,8 +34,9 @@ class Script(BaseScript):
             "part_no": [part_no],
             "builtin": False,
         }
-        if v.get("attributes", {}).get("Serial Number", ""):
-            p["serial"] = v["attributes"]["Serial Number"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            p["serial"] = serial
         objects += [p]
         objects += self.get_transceivers()
         return objects

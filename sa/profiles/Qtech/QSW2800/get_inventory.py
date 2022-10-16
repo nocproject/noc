@@ -43,10 +43,12 @@ class Script(BaseScript):
         if "platform" not in v:
             return []
         r["part_no"] = v["platform"]
-        if "attributes" in v:
-            r["serial"] = v["attributes"]["Serial Number"]
-            if "HW version" in v["attributes"]:
-                r["revision"] = v["attributes"]["HW version"]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
+        if serial:
+            r["serial"] = serial
+        if revision:
+            r["revision"] = revision
         if self.is_stackable:
             try:
                 c = self.cli("show member 1 slot 1")
