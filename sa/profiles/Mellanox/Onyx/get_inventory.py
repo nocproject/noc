@@ -37,10 +37,14 @@ class Script(BaseScript):
                 "type": "CHASSIS",
                 "vendor": "Mellanox",
                 "part_no": [v["platform"]],
-                "serial": v["attributes"]["Serial Number"],
-                "revision": v["attributes"]["HW version"],
             }
         ]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            r[-1]["serial"] = serial
+        revision = self.capabilities.get("Chassis | HW Version")
+        if revision:
+            r[-1]["revision"] = revision
         c = self.cli("show interfaces ethernet transceiver")
         for match in self.rx_trans.finditer(c):
             r += [

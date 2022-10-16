@@ -34,15 +34,21 @@ class Script(BaseScript):
         objects = []
         # Chassis info
         p = self.scripts.get_version()
+        serial = self.capabilities.get("Chassis | Serial Number")
+        if serial:
+            p["serial"] = serial
+        revision = self.capabilities.get("Chassis | HW Version")
+        if revision:
+            p["revision"] = revision
         objects += [
             {
                 "type": "CHASSIS",
                 "number": None,
                 "vendor": "EDGECORE",
-                "serial": p["attributes"].get("Serial Number"),
-                "description": p["vendor"] + " " + p["platform"],
+                "serial": serial,
+                "description": f'{p["vendor"]} {p["platform"]}',
                 "part_no": [p["platform"]],
-                "revision": p["attributes"].get("HW version"),
+                "revision": revision,
                 "builtin": False,
             }
         ]

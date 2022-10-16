@@ -54,11 +54,12 @@ class Script(BaseScript):
                 continue
             if number == "0":
                 p = {"type": "CHASSIS", "vendor": "DLINK", "part_no": [part_no]}
-                v = self.scripts.get_version()
-                if "HW version" in v["attributes"]:
-                    p["revision"] = v["attributes"]["HW version"]
-                if "Serial Number" in v["attributes"]:
-                    p["serial"] = v["attributes"]["Serial Number"]
+                serial = self.capabilities.get("Chassis | Serial Number")
+                if serial:
+                    p["serial"] = serial
+                revision = self.capabilities.get("Chassis | HW Version")
+                if revision:
+                    p["revision"] = revision
             else:
                 p = {"type": "MODULE", "number": number, "vendor": "DLINK", "part_no": [part_no]}
             r += [p]

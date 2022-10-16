@@ -1570,7 +1570,6 @@ class ManagedObject(NOCModel):
                 [smart_text(orjson.dumps(new_caps))],
             )
             # self.save()
-            cache.delete("cred-%s" % self.id, version=CREDENTIAL_CACHE_VERSION)
             self._reset_caches(self.id, credential=True)
         caps = {}
         for ci in new_caps:

@@ -246,12 +246,8 @@ class Script(BaseScript):
         else:
             # We are not use `matchers`, because it not have `Boot PROM` field
             ver = self.scripts.get_version()
-            if (
-                ver["platform"] == "IES-1000"
-                and "attributes" in ver
-                and "Boot PROM" in ver["attributes"]
-                and "AAM1212" in ver["attributes"]["Boot PROM"]
-            ):
+            b_prom = self.capabilities.get("Chassis | Boot PROM")
+            if ver["platform"] == "IES-1000" and b_prom and "AAM1212" in b_prom:
                 new_syntax = True
             else:
                 new_syntax = False

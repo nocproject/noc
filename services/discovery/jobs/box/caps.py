@@ -10,7 +10,7 @@ import orjson
 
 # NOC modules
 from noc.services.discovery.jobs.base import PolicyDiscoveryCheck
-from noc.core.comp import smart_text
+from noc.core.comp import DEFAULT_ENCODING
 
 
 class CapsCheck(PolicyDiscoveryCheck):
@@ -29,6 +29,15 @@ class CapsCheck(PolicyDiscoveryCheck):
     LDP_QUERY = """Match('virtual-router', VR, 'forwarding-instance', FI, 'protocols', 'ldp', 'interface', X)"""
     OSPF_QUERY = """Match('virtual-router', VR, 'forwarding-instance', FI, 'protocols', 'ospf', 'interface', X)"""
 
+    #
+    ATTR_CAPS = {
+        "Serial Number": "Chassis | Serial Number",
+        "Boot PROM": "Chassis | Boot PROM",
+        "HW version": "Chassis | HW Version",
+        "Build": "Software | Build Version",
+        "Patch Version": "Software | Patch Version",
+    }
+
     def handler(self):
         self.sections = self.object.object_profile.caps_profile.get_sections(
             self.object.object_profile, self.object.segment.profile
@@ -37,12 +46,25 @@ class CapsCheck(PolicyDiscoveryCheck):
         result = self.get_data()
         if result is None:
             self.logger.error("Failed to get capabilities")
+        else:
+            self.logger.debug(
+                "Received capabilities: \n%s",
+                orjson.dumps(result, option=orjson.OPT_INDENT_2).decode(DEFAULT_ENCODING),
+            )
+            self.update_caps(result, source="caps")
+        object_attrs = self.get_artefact("object_attributes")
+        if object_attrs is None:
             return
-        self.logger.debug(
-            "Received capabilities: \n%s",
-            smart_text(orjson.dumps(result, option=orjson.OPT_INDENT_2)),
-        )
-        self.update_caps(result, source="caps")
+        object_caps = {}
+        for k, v in object_attrs.items():
+            if k in self.ATTR_CAPS:
+                caps = self.ATTR_CAPS[k]
+            else:
+                # Custom Attributes
+                caps = f"Custom | Attribute | {k}"
+                self.logger.info("Custom attribute: %s, Use", k, caps)
+            object_caps[caps] = v
+        self.update_caps(object_caps, source="attributes")
 
     def get_policy(self):
         return self.object.get_caps_discovery_policy()
