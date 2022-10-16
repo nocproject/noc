@@ -80,18 +80,21 @@ class Command(BaseCommand):
                 yield sc, sc.get_partitions(pool.name)
         # Metric scopes
         for scope in MetricScope.objects.all():
-            yield scope.get_stream_config()
+            sc = scope.get_stream_config()
+            yield sc, sc.get_partitions()
         # BI models
         for name in bi_loader:
             bi_model = bi_loader[name]
             if not bi_model:
                 continue
-            yield bi_model.get_stream_config()
+            bi_model = scope.get_stream_config()
+            yield sc, sc.get_partitions()
         # BI Dictionary models
         for name in bi_dict_loader:
             bi_dict_model = bi_dict_loader[name]
             if bi_dict_model:
-                yield bi_dict_model.get_stream_config()
+                sc = scope.get_stream_config()
+                yield sc, sc.get_partitions()
 
     def apply_stream_settings(
         self, meta: Metadata, stream: StreamConfig, partitions: int, rf: int
