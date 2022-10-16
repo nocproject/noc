@@ -1,60 +1,34 @@
 # ----------------------------------------------------------------------
 # Liftbridge streams synchronization tool
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Iterable
 import functools
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.liftbridge.base import LiftBridgeClient, Metadata, StreamMetadata, StartPosition
-from noc.main.models.pool import Pool
-from noc.pm.models.metricscope import MetricScope
+from noc.core.liftbridge.base import (
+    LiftBridgeClient,
+    Metadata,
+    StreamMetadata,
+    StartPosition,
+    STREAM_CONFIG,
+    StreamConfig,
+)
 from noc.core.mongo.connection import connect
-from noc.core.service.loader import get_dcs
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
 from noc.core.bi.dictionaries.loader import loader as bi_dict_loader
-from noc.config import config
+from noc.main.models.pool import Pool
+from noc.pm.models.metricscope import MetricScope
 
 
 class Command(BaseCommand):
     _slots = None
-    # List of single-partitioned streams
-    STREAMS = [
-        "revokedtokens",
-    ]
-    # Streams, depending on slots
-    SLOT_STREAMS = [
-        # slot name, stream name
-        ("mx", "message"),
-        ("tgsender", "tgsender"),
-        ("icqsender", "icqsender"),
-        ("mailsender", "mailsender"),
-        ("kafkasender", "kafkasender"),
-        ("metrics", "metrics"),
-        ("worker", "jobs"),
-    ]
-    # Pool-based streams, depending on slots
-    POOLED_SLOT_STREAMS = [
-        # slot name, stream name
-        ("classifier-%s", "events.%s"),
-        ("correlator-%s", "dispose.%s"),
-    ]
-    CURSOR_STREAM = {
-        "events": "classifier",
-        "dispose": "correlator",
-        "message": "mx",
-        "tgsender": "tgsender",
-        "icqsender": "icqsender",
-        "mailsender": "mailsender",
-        "kafkasender": "kafkasender",
-        "jobs": "worker",
-    }
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -91,95 +65,57 @@ class Command(BaseCommand):
 
         return run_sync(get_meta)
 
-    def iter_slot_streams(self) -> Tuple[str, str]:
-        # Common streams
-        for slot_name, stream_name in self.SLOT_STREAMS:
-            yield slot_name, stream_name
-        # Pooled streams
+    def iter_limits(self) -> Iterable[Tuple[StreamConfig, int]]:
         connect()
-        for pool in Pool.objects.all():
-            for slot_mask, stream_mask in self.POOLED_SLOT_STREAMS:
-                yield slot_mask % pool.name, stream_mask % pool.name
 
-    def iter_limits(self) -> Tuple[str, int]:
-        async def get_slot_limits():
-            nonlocal slot_name
-            if self._slots:
-                return self._slots
-            s = await dcs.get_slot_limit(slot_name)
-            return max(s, 1)
-
-        dcs = get_dcs()
-        # Plain streams
-        for stream_name in self.STREAMS:
-            yield stream_name, 1
-        # Slot-based streams
-        for slot_name, stream_name in self.iter_slot_streams():
-            n_partitions = run_sync(get_slot_limits)
-            if n_partitions:
-                yield stream_name, n_partitions
+        # Configured streams
+        for sc in STREAM_CONFIG.values():
+            if not sc.enable:
+                continue
+            if not sc.pooled:
+                yield sc, sc.get_partitions()
+                continue
+            # Pooled streams
+            for pool in Pool.objects.all():
+                yield sc, sc.get_partitions(pool.name)
         # Metric scopes
-        n_ch_shards = len(config.clickhouse.cluster_topology.split(","))
         for scope in MetricScope.objects.all():
-            yield f"ch.{scope.table_name}", n_ch_shards
+            yield scope.get_stream_config()
         # BI models
         for name in bi_loader:
             bi_model = bi_loader[name]
             if not bi_model:
                 continue
-            yield f"ch.{bi_model._meta.db_table}", n_ch_shards
+            yield bi_model.get_stream_config()
         # BI Dictionary models
         for name in bi_dict_loader:
             bi_dict_model = bi_dict_loader[name]
             if bi_dict_model:
-                yield f"ch.{bi_dict_model._meta.db_table}", n_ch_shards
+                yield bi_dict_model.get_stream_config()
 
-    def apply_stream_settings(self, meta: Metadata, stream: str, partitions: int, rf: int) -> bool:
-        def delete_stream(name: str):
-            async def wrapper():
-                async with LiftBridgeClient() as client:
-                    await client.delete_stream(client.get_offset_stream(name))
-                    await client.delete_stream(name)
-
-            run_sync(wrapper)
-
-        def create_stream(name: str, n_partitions: int, replication_factor: int):
-            base_name = name.split(".")[0]
+    def apply_stream_settings(
+        self, meta: Metadata, stream: StreamConfig, partitions: int, rf: int
+    ) -> bool:
+        def create_stream(cfg: StreamConfig, n_partitions: int, replication_factor: int):
             minisr = 0
-            if base_name == "ch":
-                replication_factor = min(
-                    config.liftbridge.stream_ch_replication_factor, replication_factor
-                )
+            if cfg.replication_factor:
+                replication_factor = min(cfg.replication_factor, replication_factor)
                 minisr = min(2, replication_factor)
 
             async def wrapper():
                 async with LiftBridgeClient() as client:
                     await client.create_stream(
-                        subject=name,
-                        name=name,
+                        subject=cfg.name,
+                        name=cfg.name,
                         partitions=n_partitions,
                         minisr=minisr,
                         replication_factor=replication_factor,
-                        retention_max_bytes=getattr(
-                            config.liftbridge, f"stream_{base_name}_retention_max_age", 0
-                        ),
-                        retention_max_age=getattr(
-                            config.liftbridge, f"stream_{base_name}_retention_max_bytes", 0
-                        ),
-                        segment_max_bytes=getattr(
-                            config.liftbridge, f"stream_{base_name}_segment_max_bytes", 0
-                        ),
-                        segment_max_age=getattr(
-                            config.liftbridge, f"stream_{base_name}_segment_max_age", 0
-                        ),
-                        auto_pause_time=getattr(
-                            config.liftbridge, f"stream_{base_name}_auto_pause_time", 0
-                        ),
-                        auto_pause_disable_if_subscribers=getattr(
-                            config.liftbridge,
-                            f"stream_{base_name}_auto_pause_disable_if_subscribers",
-                            False,
-                        ),
+                        retention_max_bytes=cfg.retention_policy.retention_bytes,
+                        retention_max_age=cfg.retention_policy.retention_ages,
+                        segment_max_bytes=cfg.retention_policy.segment_bytes,
+                        segment_max_age=cfg.retention_policy.segment_ages,
+                        auto_pause_time=cfg.auto_pause_time,
+                        auto_pause_disable_if_subscribers=cfg.auto_pause_disable,
                     )
 
             run_sync(wrapper)
@@ -196,11 +132,11 @@ class Command(BaseCommand):
                     return await client.fetch_partition_metadata(stream, partition)
 
             async def wrapper():
-                self.print("Altering stream %s" % name)
+                self.print(f"Altering stream {name}")
                 async with LiftBridgeClient() as client:
                     # Create temporary stream with same structure, as original one
-                    tmp_stream = "__tmp-%s" % name
-                    self.print("Creating temporary stream %s" % tmp_stream)
+                    tmp_stream = f"__tmp-{name}"
+                    self.print(f"Creating temporary stream {tmp_stream}")
                     await client.create_stream(
                         subject=tmp_stream,
                         name=tmp_stream,
@@ -219,9 +155,9 @@ class Command(BaseCommand):
                         newest_offset = p_meta.newest_offset or 0
                         # Fetch cursor
                         current_offset = await client.fetch_cursor(
-                            stream=stream,
+                            stream=stream.name,
                             partition=partition,
-                            cursor_id=self.CURSOR_STREAM[name.split(".")[0]],
+                            cursor_id=stream.cursor_name,
                         )
                         if current_offset > newest_offset:
                             # Fix if cursor not set properly
@@ -278,20 +214,20 @@ class Command(BaseCommand):
                                 n -= 1
                                 if not n:
                                     break
-                            self.print("  %d messages restored" % n_msg[partition])
+                            self.print(f"  {n_msg[partition]} messages restored")
                         else:
                             self.print("  nothing to restore")
                     # Drop temporary stream
-                    self.print("Dropping temporary stream %s" % tmp_stream)
+                    self.print(f"Dropping temporary stream {tmp_stream}")
                     await client.delete_stream(tmp_stream)
                     # Uh-oh
-                    self.print("Stream %s has been altered" % name)
+                    self.print(f"Stream {name} has been altered")
 
             run_sync(wrapper)
 
         stream_meta = None
         for m in meta.metadata:
-            if m.name == stream:
+            if m.name == stream.name:
                 stream_meta = m
                 break
         # Check if stream is configured properly
@@ -302,7 +238,7 @@ class Command(BaseCommand):
             self.print(
                 "Altering stream %s due to partition/replication factor mismatch (%d -> %d)"
                 % (
-                    stream,
+                    stream.name,
                     len(stream_meta.partitions),
                     partitions,
                 )
@@ -310,7 +246,7 @@ class Command(BaseCommand):
             alter_stream(stream_meta, partitions, rf)
             return True
         # Create stream
-        self.print("Creating stream %s with %d partitions" % (stream, partitions))
+        self.print(f"Creating stream {stream.name} with {partitions} partitions")
         create_stream(stream, partitions, rf)
         return True
 

@@ -27,6 +27,7 @@ from noc.core.model.decorator import on_save
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.main.models.label import Label
+from noc.core.liftbridge.base import StreamConfig, RetentionPolicy
 
 id_lock = Lock()
 to_path_code = {}
@@ -460,3 +461,19 @@ class MetricScope(Document):
 
     def to_path(self, labels: List[str]) -> List[str]:
         return self._get_to_path()(labels)
+
+    def get_stream_config(self) -> Optional[StreamConfig]:
+        """
+        Return Stream Config for Scope
+        :return:
+        """
+        return StreamConfig(
+            name=f"ch.{self.table_name}",
+            replication_factor=config.liftbridge.stream_ch_replication_factor,
+            retention_policy=RetentionPolicy(
+                retention_bytes=config.liftbridge.stream_ch_retention_max_bytes,
+                retention_ages=config.liftbridge.stream_ch_retention_max_age,
+                segment_bytes=config.liftbridge.stream_ch_segment_max_bytes,
+                segment_ages=config.liftbridge.stream_ch_segment_max_age,
+            )
+        )

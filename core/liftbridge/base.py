@@ -67,6 +67,110 @@ class StartPosition(enum.IntEnum):
     RESUME = 9999  # Non-standard -- resume from next to last processed
 
 
+@dataclass(frozen=True)
+class RetentionPolicy(object):
+    retention_bytes: int = 0
+    segment_bytes: int = 0
+    retention_ages: int = 86400
+    segment_ages: int = 3600
+
+
+@dataclass(frozen=True)
+class StreamConfig(object):
+    name: str  #
+    slot: Optional[str] = None
+    cursor: Optional[str] = None  #
+    enable: bool = True  #
+    pooled: bool = False  # Multiple stream for Pool
+    auto_pause_time: bool = False
+    auto_pause_disable: bool = False
+    replication_factor: Optional[int] = None
+    retention_policy: RetentionPolicy = RetentionPolicy()
+
+    def get_partitions(self, pool: Optional[str] = None) -> int:
+        from noc.core.service.loader import get_service
+
+        if self.pooled and not pool:
+            raise AttributeError("For pooled stream pool parameter required")
+        if self.name.startswith("ch"):
+            return len(config.clickhouse.cluster_topology.split(","))
+        # Plain streams
+        if not self.slot:
+            return 1
+        # Slot-based streams
+        svc = get_service()
+        return svc.get_slot_limits(f"{self.name}-{self.slot}" if self.pooled else self.slot)
+
+    @property
+    def cursor_name(self) -> Optional[str]:
+        return self.cursor or self.slot
+
+    def __str__(self):
+        return self.name
+
+
+STREAM_CONFIG: Dict[str, StreamConfig] = {
+    "events": StreamConfig(
+        name="events",
+        slot="classifier",
+        pooled=True,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_events_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_events_retention_max_age,
+            segment_bytes=config.liftbridge.stream_events_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_events_segment_max_age,
+        ),
+    ),
+    "dispose": StreamConfig(
+        name="dispose",
+        slot="correlator",
+        pooled=True,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_dispose_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_dispose_retention_max_age,
+            segment_bytes=config.liftbridge.stream_dispose_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_dispose_segment_max_age,
+        ),
+    ),
+    "message": StreamConfig(
+        name="message",
+        slot="mx",
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_message_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_message_retention_max_age,
+            segment_bytes=config.liftbridge.stream_message_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_message_retention_max_age,
+        ),
+    ),
+    "revokedtokens": StreamConfig(name="revokedtokens"),
+    "jobs": StreamConfig(
+        name="jobs",
+        slot="worker",
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_jobs_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_jobs_retention_max_age,
+            segment_bytes=config.liftbridge.stream_jobs_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_jobs_segment_max_age,
+        ),
+    ),
+    "metrics": StreamConfig(
+        name="metrics",
+        slot="metrics",
+        replication_factor=1,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_metrics_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_metrics_retention_max_age,
+            segment_bytes=config.liftbridge.stream_metrics_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_metrics_segment_max_age,
+        ),
+    ),
+    # Sender
+    "tgsender": StreamConfig(name="tgsender", slot="tgsender"),
+    "icqsender": StreamConfig(name="icqsender", slot="icqsender"),
+    "mailsender": StreamConfig(name="mailsender", slot="mailsender"),
+    "kafkasender": StreamConfig(name="kafkasender", slot="kafkasender"),
+}
+
 H_ENCODING = "X-NOC-Encoding"
 
 
@@ -517,9 +621,12 @@ class LiftBridgeClient(object):
                 if wait_for_stream:
                     await self.close_channel(channel.broker)
                     logger.info(
-                        "Stream '%s' is not available yet. Maybe election in progress. "
-                        "Trying to reconnect",
+                        "Stream '%s/%s' is not available yet. Maybe election in progress. "
+                        "Trying to reconnect to: %s:%s",
                         req.stream,
+                        req.partition,
+                        channel.broker,
+                        channel,
                     )
                     await asyncio.sleep(1)
                 else:
