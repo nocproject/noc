@@ -626,6 +626,10 @@ class LiftBridgeClient(object):
         # Create temporary stream with same structure, as original one
         tmp_stream = f"__tmp-{name}"
         logger.info("Creating temporary stream %s", tmp_stream)
+        try:
+            await self.delete_stream(tmp_stream)
+        except ErrorNotFound:
+            pass
         await self.create_stream(
             subject=tmp_stream,
             name=tmp_stream,
@@ -726,7 +730,7 @@ class LiftBridgeClient(object):
         stream_meta = meta.metadata[0] if meta.metadata else None
         if stream_meta and len(stream_meta.partitions) == partitions:
             return False
-        elif stream_meta:
+        elif stream_meta.partitions:
             # Alter settings
             logger.info(
                 "Altering stream %s due to partition/replication factor mismatch (%d -> %d)",
