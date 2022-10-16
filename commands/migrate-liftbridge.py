@@ -73,11 +73,11 @@ class Command(BaseCommand):
             if not sc.enable:
                 continue
             if not sc.pooled:
-                yield sc, sc.get_partitions()
+                yield sc, self._slots or sc.get_partitions()
                 continue
             # Pooled streams
             for pool in Pool.objects.all():
-                yield sc, sc.get_partitions(pool.name)
+                yield sc, self._slots or sc.get_partitions(pool.name)
         # Metric scopes
         for scope in MetricScope.objects.all():
             sc = scope.get_stream_config()
