@@ -716,11 +716,15 @@ class LiftBridgeClient(object):
         # Get stream config
         cfg = self.get_stream_config(name)
         # Get liftbridge metadata
+        partitions = partitions or cfg.get_partitions()
+        # Check if stream is configured properly
+        if not partitions:
+            logger.info("Stream '%s' without partition. Skipping..", name)
+            return False
         meta = await self.fetch_metadata(name)
         rf = min(len(meta.brokers), 2)
         stream_meta = meta.metadata[0]
-        # Check if stream is configured properly
-        if stream_meta and len(stream_meta.partitions) == cfg.partitions:
+        if stream_meta and len(stream_meta.partitions) == partitions:
             return False
         elif stream_meta:
             # Alter settings
@@ -728,7 +732,7 @@ class LiftBridgeClient(object):
                 "Altering stream %s due to partition/replication factor mismatch (%d -> %d)",
                 name,
                 len(stream_meta.partitions),
-                cfg.partitions,
+                partitions,
             )
             return await self.alter_stream(
                 stream_meta, new_partitions=partitions, replication_factor=rf
