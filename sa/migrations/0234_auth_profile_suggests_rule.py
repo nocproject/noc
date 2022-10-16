@@ -76,11 +76,18 @@ class Migration(BaseMigration):
             "preferred_profile_credential",
             models.BooleanField(default=True),
         )
-        # Reset suggest on non-suggest profile
+        # Update suggests profiles
         self.db.execute(
             """
                 UPDATE sa_authprofile SET enable_suggest_by_rule = TRUE, type = 'G'
                 WHERE type = 'S'
+                """
+        )
+        # Reset suggest on non-suggest profile
+        self.db.execute(
+            """
+                UPDATE sa_authprofile SET enable_suggest_by_rule = FALSE
+                WHERE type != 'S'
                 """
         )
         # ManagedObject Update
