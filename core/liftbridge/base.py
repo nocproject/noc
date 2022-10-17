@@ -67,6 +67,120 @@ class StartPosition(enum.IntEnum):
     RESUME = 9999  # Non-standard -- resume from next to last processed
 
 
+@dataclass(frozen=True)
+class RetentionPolicy(object):
+    retention_bytes: int = 0
+    segment_bytes: int = 0
+    retention_ages: int = 86400
+    segment_ages: int = 3600
+
+
+@dataclass(frozen=True)
+class StreamConfig(object):
+    name: Optional[str] = None  #
+    shard: Optional[str] = None  #
+    partitions: Optional[int] = None  # Partition numbers
+    slot: Optional[str] = None  # Configured slots
+    pooled: bool = False
+    cursor: Optional[str] = None  # Cursor name
+    enable: bool = True  # Stream is active
+    auto_pause_time: bool = False
+    auto_pause_disable: bool = False
+    replication_factor: Optional[int] = None
+    retention_policy: RetentionPolicy = RetentionPolicy()
+
+    def get_partitions(self) -> int:
+        from noc.core.service.loader import get_service
+
+        if self.partitions is not None:
+            return self.partitions
+
+        # Slot-based streams
+        svc = get_service()
+        return svc.get_slot_limits(f"{self.slot}-{self.shard}" if self.shard else self.slot)
+
+    @property
+    def cursor_name(self) -> Optional[str]:
+        return self.cursor or self.slot
+
+    @property
+    def stream_name(self):
+        if self.shard:
+            return f"{self.name}.{self.shard}"
+        return self.name
+
+    def __str__(self):
+        return self.name
+
+
+STREAM_CONFIG: Dict[str, StreamConfig] = {
+    "events": StreamConfig(
+        slot="classifier",
+        pooled=True,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_events_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_events_retention_max_age,
+            segment_bytes=config.liftbridge.stream_events_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_events_segment_max_age,
+        ),
+    ),
+    "dispose": StreamConfig(
+        slot="correlator",
+        pooled=True,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_dispose_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_dispose_retention_max_age,
+            segment_bytes=config.liftbridge.stream_dispose_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_dispose_segment_max_age,
+        ),
+    ),
+    "message": StreamConfig(
+        slot="mx",
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_message_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_message_retention_max_age,
+            segment_bytes=config.liftbridge.stream_message_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_message_retention_max_age,
+        ),
+    ),
+    "revokedtokens": StreamConfig(partitions=1),
+    "jobs": StreamConfig(
+        slot="worker",
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_jobs_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_jobs_retention_max_age,
+            segment_bytes=config.liftbridge.stream_jobs_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_jobs_segment_max_age,
+        ),
+    ),
+    "metrics": StreamConfig(
+        slot="metrics",
+        replication_factor=1,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_metrics_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_metrics_retention_max_age,
+            segment_bytes=config.liftbridge.stream_metrics_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_metrics_segment_max_age,
+        ),
+    ),
+    "ch": StreamConfig(
+        partitions=len(config.clickhouse.cluster_topology.split(",")),
+        slot=None,
+        replication_factor=1,
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_ch_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_ch_retention_max_age,
+            segment_bytes=config.liftbridge.stream_ch_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_ch_segment_max_age,
+        ),
+    ),
+    # Sender
+    "tgsender": StreamConfig(name="tgsender", slot="tgsender"),
+    "icqsender": StreamConfig(name="icqsender", slot="icqsender"),
+    "mailsender": StreamConfig(name="mailsender", slot="mailsender"),
+    "kafkasender": StreamConfig(name="kafkasender", slot="kafkasender"),
+}
+
 H_ENCODING = "X-NOC-Encoding"
 
 
@@ -397,7 +511,7 @@ class LiftBridgeClient(object):
                 paused=p.paused,
             )
 
-    async def create_stream(
+    async def _create_stream(
         self,
         subject: str,
         name: str,
@@ -446,10 +560,190 @@ class LiftBridgeClient(object):
             channel = await self.get_channel()
             await channel.CreateStream(req)
 
+    @classmethod
+    def get_stream_config(cls, name: str) -> StreamConfig:
+        cfg_name, *shard = name.split(".", 1)
+        base_cfg = None
+        if cfg_name in STREAM_CONFIG:
+            base_cfg = STREAM_CONFIG[cfg_name]
+        return StreamConfig(
+            name=name,
+            enable=base_cfg.enable if base_cfg else True,
+            shard=shard[0] if shard else None,
+            partitions=base_cfg.partitions if base_cfg else None,
+            slot=base_cfg.slot if base_cfg else None,
+            replication_factor=base_cfg.replication_factor if base_cfg else None,
+            retention_policy=base_cfg.retention_policy if base_cfg else RetentionPolicy(),
+        )
+
+    async def create_stream(
+        self,
+        name: str,
+        subject: str,
+        group: Optional[str] = None,
+        partitions: int = 0,
+        replication_factor: int = 0,
+    ) -> None:
+        cfg = self.get_stream_config(name)
+        partitions = partitions or cfg.get_partitions()
+        if not partitions:
+            logger.info("Stream '%s' without partition. Skipping..", name)
+            return
+        minisr = 0
+        if cfg.replication_factor:
+            replication_factor = min(cfg.replication_factor, replication_factor)
+            minisr = min(2, replication_factor)
+        await self._create_stream(
+            subject=subject,
+            name=name,
+            partitions=partitions,
+            minisr=minisr,
+            replication_factor=replication_factor,
+            retention_max_bytes=cfg.retention_policy.retention_bytes,
+            retention_max_age=cfg.retention_policy.retention_ages,
+            segment_max_bytes=cfg.retention_policy.segment_bytes,
+            segment_max_age=cfg.retention_policy.segment_ages,
+            auto_pause_time=cfg.auto_pause_time,
+            auto_pause_disable_if_subscribers=cfg.auto_pause_disable,
+        )
+
     async def delete_stream(self, name: str) -> None:
         with rpc_error():
             channel = await self.get_channel()
             await channel.DeleteStream(DeleteStreamRequest(name=name))
+
+    async def alter_stream(
+        self,
+        current_meta: StreamMetadata,
+        new_partitions: Optional[int] = None,
+        replication_factor: Optional[int] = None,
+    ) -> bool:
+        name = current_meta.name
+        old_partitions = len(current_meta.partitions)
+        n_msg: Dict[int, int] = {}  # partition -> copied messages
+        cfg = self.get_stream_config(name)
+        logger.info("Altering stream %s", name)
+        # Create temporary stream with same structure, as original one
+        tmp_stream = f"__tmp-{name}"
+        logger.info("Creating temporary stream %s", tmp_stream)
+        try:
+            await self.delete_stream(tmp_stream)
+        except ErrorNotFound:
+            pass
+        await self.create_stream(
+            subject=tmp_stream,
+            name=tmp_stream,
+            partitions=old_partitions,
+            replication_factor=1,
+        )
+        # Copy all unread data to temporary stream as is
+        for partition in range(old_partitions):
+            logger.info("Copying partition %s:%s to %s:%s", name, partition, tmp_stream, partition)
+            n_msg[partition] = 0
+            # Get current offset
+            p_meta = await self.fetch_partition_metadata(name, partition)
+            newest_offset = p_meta.newest_offset or 0
+            # Fetch cursor
+            current_offset = await self.fetch_cursor(
+                stream=name,
+                partition=partition,
+                cursor_id=cfg.cursor_name,
+            )
+            if current_offset > newest_offset:
+                # Fix if cursor not set properly
+                current_offset = newest_offset
+            logger.info(
+                "Start copying from current_offset: %s to newest offset: %s",
+                current_offset,
+                newest_offset,
+            )
+            if current_offset < newest_offset:
+                async for msg in self.subscribe(
+                    stream=name, partition=partition, start_offset=current_offset
+                ):
+                    await self.publish(
+                        msg.value,
+                        stream=tmp_stream,
+                        partition=partition,
+                    )
+                    n_msg[partition] += 1
+                    if msg.offset == newest_offset:
+                        break
+            if n_msg[partition]:
+                logger.info("  %d messages has been copied", n_msg[partition])
+            else:
+                logger.info("  nothing to copy")
+        # Drop original stream
+        logger.info("Dropping original stream %s", name)
+        await self.delete_stream(name)
+        # Create new stream with required structure
+        logger.info("Creating stream %s", name)
+        await self.create_stream(
+            subject=name,
+            name=name,
+            partitions=new_partitions,
+            replication_factor=replication_factor,
+        )
+        # Copy data from temporary stream to a new one
+        for partition in range(old_partitions):
+            logger.info("Restoring partition %s:%s to %s" % (tmp_stream, partition, new_partitions))
+            # Re-route dropped partitions to partition 0
+            dest_partition = partition if partition < new_partitions else 0
+            n = n_msg[partition]
+            if n > 0:
+                async for msg in self.subscribe(
+                    stream=tmp_stream,
+                    partition=partition,
+                    start_position=StartPosition.EARLIEST,
+                ):
+                    await self.publish(msg.value, stream=name, partition=dest_partition)
+                    n -= 1
+                    if not n:
+                        break
+                logger.info("  %s messages restored", n_msg[partition])
+            else:
+                logger.info("  nothing to restore")
+        # Drop temporary stream
+        logger.info("Dropping temporary stream %s", tmp_stream)
+        await self.delete_stream(tmp_stream)
+        # Uh-oh
+        logger.info("Stream %s has been altered", name)
+        return True
+
+    async def ensure_stream(self, name: str, partitions: Optional[int] = None) -> bool:
+        """
+        Ensure stream settings
+        :param name:
+        :param partitions:
+        :return:
+        """
+        # Get stream config
+        cfg = self.get_stream_config(name)
+        # Get liftbridge metadata
+        partitions = partitions or cfg.get_partitions()
+        # Check if stream is configured properly
+        if not partitions:
+            logger.info("Stream '%s' without partition. Skipping..", name)
+            return False
+        meta = await self.fetch_metadata(name)
+        rf = min(len(meta.brokers), 2)
+        stream_meta = meta.metadata[0] if meta.metadata else None
+        if stream_meta and len(stream_meta.partitions) == partitions:
+            return False
+        elif stream_meta.partitions:
+            # Alter settings
+            logger.info(
+                "Altering stream %s due to partition/replication factor mismatch (%d -> %d)",
+                name,
+                len(stream_meta.partitions),
+                partitions,
+            )
+            return await self.alter_stream(
+                stream_meta, new_partitions=partitions, replication_factor=rf
+            )
+        logger.info("Creating stream %s with %s partitions", name, cfg.partitions)
+        await self.create_stream(name, partitions=partitions, subject=name, replication_factor=rf)
+        return True
 
     @staticmethod
     def get_publish_request(
@@ -517,9 +811,12 @@ class LiftBridgeClient(object):
                 if wait_for_stream:
                     await self.close_channel(channel.broker)
                     logger.info(
-                        "Stream '%s' is not available yet. Maybe election in progress. "
-                        "Trying to reconnect",
+                        "Stream '%s/%s' is not available yet. Maybe election in progress. "
+                        "Trying to reconnect to: %s:%s",
                         req.stream,
+                        req.partition,
+                        channel.broker,
+                        channel,
                     )
                     await asyncio.sleep(1)
                 else:
