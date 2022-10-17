@@ -59,14 +59,6 @@ Ext.define("NOC.sa.managedobject.L1Store", {
             type: "string"
         },
         {
-            name: "vc_domain",
-            type: "int"
-        },
-        {
-            name: "vc_domain__label",
-            type: "string"
-        },
-        {
             name: "state",
             type: "string"
         },

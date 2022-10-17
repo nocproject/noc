@@ -238,7 +238,7 @@ Ext.define("NOC.inv.interface.Application", {
                 profile: r.get("profile"),
                 project: r.get("project"),
                 state: r.get("state"),
-                vc_domain: r.get("vc_domain")
+                l2_domain: r.get("l2_domain")
             },
             isNewRecord = Ext.isEmpty(e.originalValues.name);
         if(isNewRecord) {
