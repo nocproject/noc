@@ -88,8 +88,8 @@ class Script(BaseScript):
         v = self.cli("ladvdc -b -L")
 
         if "INTERFACE" in v:
-            for l in v.splitlines():
-                name, value = l.split("=")
+            for line in v.splitlines():
+                name, value = line.split("=")
                 id = int(name.split("_")[-1])
 
                 name2 = "".join(name.split("_")[:-1])
