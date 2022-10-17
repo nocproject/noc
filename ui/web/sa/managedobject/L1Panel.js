@@ -177,7 +177,6 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                 profile: r.get("profile"),
                 project: r.get("project"),
                 state: r.get("state"),
-                vc_domain: r.get("vc_domain"),
                 description: r.get("description")
             },
             isNewRecord = Ext.isEmpty(e.originalValues.name);

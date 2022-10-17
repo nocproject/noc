@@ -20,11 +20,11 @@ Ext.define("NOC.inv.macdb.Model", {
             type: "string"
         },
         {
-            name: "vc_domain",
+            name: "l2_domain",
             type: "string"
         },
         {
-            name: "vc_domain__label",
+            name: "l2_domain__label",
             type: "string",
             persist: false           
         },
