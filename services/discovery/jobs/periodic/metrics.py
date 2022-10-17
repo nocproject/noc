@@ -8,7 +8,7 @@
 # Python modules
 import itertools
 import time
-from typing import Any, List, Dict, Iterable
+from typing import Any, List, Dict, Iterable, Optional
 
 # Third-party modules
 import orjson
@@ -135,7 +135,7 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("Collected metrics: %s", len(result))
         # Send metrics
         self.service.publish(
-            value=orjson.dumps(self.clean_result(result)),
+            value=orjson.dumps(self.clean_result(result, time_delta=time_delta)),
             stream="metrics",
             partition=self.object.id % self.service.get_slot_limits("metrics"),
             headers={},
@@ -146,10 +146,11 @@ class MetricsCheck(DiscoveryCheck):
         #   for table in data:
         #      self.service.register_metrics(table, list(data[table].values()), key=self.object.id)
 
-    def clean_result(self, result):
+    def clean_result(self, result, time_delta: Optional[int] = None):
         """
         Clean result for send to Metrics Service
         :param result:
+        :param time_delta:
         :return:
         """
         data = {}
@@ -172,6 +173,8 @@ class MetricsCheck(DiscoveryCheck):
                     data[m_id]["sla_probe"] = rr["sla_probe"]
                 if rr.get("service"):
                     data[m_id]["service"] = rr["service"]
+                if mt.scope.enable_timedelta and time_delta:
+                    data[m_id]["time_delta"] = time_delta
             data[m_id][mt.field_name] = rr["value"]
             data[m_id]["_units"][mt.field_name] = rr["units"]
         return list(data.values())
