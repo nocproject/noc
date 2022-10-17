@@ -62,7 +62,7 @@ class CapsCheck(PolicyDiscoveryCheck):
             else:
                 # Custom Attributes
                 caps = f"Custom | Attribute | {k}"
-                self.logger.info("Custom attribute: %s, Use", k, caps)
+                self.logger.info("Custom attribute: %s, Use caps: %s", k, caps)
             object_caps[caps] = v
         self.update_caps(object_caps, source="attributes")
 
