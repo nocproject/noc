@@ -418,6 +418,8 @@ class CorrelatorService(FastAPIService):
                     event.contribute_to_alarm(alarm)
                     metrics["alarm_contribute"] += 1
                 self.refresh_alarm(alarm, timestamp)
+                if config.correlator.auto_escalation:
+                    AlarmEscalation.watch_escalations(alarm)
                 return alarm
         if event:
             msg = f"Alarm risen from event {event.id}({event.event_class.name})"
