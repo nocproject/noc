@@ -44,10 +44,6 @@ Ext.define("NOC.inv.interface.Model", {
             type: "string"
         },
         {
-            name: "vc_domain",
-            type: "string"
-        },
-        {
             name: "enabled_protocols",
             type: "auto"
         },

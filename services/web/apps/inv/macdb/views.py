@@ -68,8 +68,8 @@ class MACApplication(ExtApplication):
                 {
                     "last_changed": p["timestamp"],
                     "mac": str(MAC(int(p["mac"]))),
-                    "vc_domain": str(mo.vc_domain),
-                    "vc_domain__label": getattr(mo.vc_domain, "name", ""),
+                    "l2_domain": str(mo.l2_domain),
+                    "l2_domain__label": getattr(mo.l2_domain, "name", ""),
                     "vlan": p["vlan"],
                     "managed_object": str(mo),
                     "managed_object__label": str(mo),
@@ -155,8 +155,8 @@ class MACApplication(ExtApplication):
                 {
                     "last_changed": p["timestamp"],
                     "mac": str(MAC(int(p["mac"]))),
-                    "vc_domain": str(mo.vc_domain),
-                    "vc_domain__label": mo.vc_domain.name,
+                    "l2_domain": str(mo.l2_domain),
+                    "l2_domain__label": mo.l2_domain.name,
                     "vlan": p["vlan"],
                     "managed_object": str(mo),
                     "managed_object__label": str(mo),
@@ -199,7 +199,7 @@ class MACApplication(ExtApplication):
                 {
                     "timestamp": str(i.timestamp),
                     "mac": i.mac,
-                    "vc_domain": str(i.vc_domain_name),
+                    "l2_domain": "",
                     "vlan": i.vlan,
                     "managed_object_name": str(i.managed_object_name),
                     "interface_name": str(i.interface_name),
