@@ -21,20 +21,18 @@ class Migration(BaseMigration):
         old = ", ".join(map(repr, (str(id["_id"]) for id in old_linux_profile_id)))
         new_linux_profile_id = db.noc.profiles.find_one({"name": "OS.Linux"}, {"_id": 1})
         self.db.execute(
-            """
+            f"""
                           UPDATE sa_managedobject
                           SET version = null
-                          WHERE profile = '%s'
+                          WHERE profile = '{old}'
                           """
-            % old
         )
         self.db.execute(
-            """
+            f"""
                           UPDATE sa_managedobject
-                          SET profile = '%s'
-                          WHERE profile in (%s)
+                          SET profile = '{str(new_linux_profile_id["_id"])}'
+                          WHERE profile in ({old})
                           """
-            % (str(new_linux_profile_id["_id"]), old)
         )
         db.noc.actioncommands.update_many(
             {"profile": {"$in": oldd}}, {"$set": {"profile": new_linux_profile_id["_id"]}}
