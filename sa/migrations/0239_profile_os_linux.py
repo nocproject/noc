@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# Set ThresholdProfiles uuid
+# Update Linux profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,9 +19,7 @@ class Migration(BaseMigration):
         )
         oldd = [o["_id"] for o in copy.copy(old_linux_profile_id)]
         old = ", ".join(map(repr, (str(id["_id"]) for id in old_linux_profile_id)))
-        print(oldd)
         new_linux_profile_id = db.noc.profiles.find_one({"name": "OS.Linux"}, {"_id": 1})
-        print(new_linux_profile_id)
         self.db.execute(
             """
                           UPDATE sa_managedobject
