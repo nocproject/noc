@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
-# Linux.RHEL.get_lldp_neighbors
+# OS.Linux.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -44,7 +44,7 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):
-    name = "Linux.RHEL.get_lldp_neighbors"
+    name = "OS.Linux.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
     rx_lldpd = re.compile(
