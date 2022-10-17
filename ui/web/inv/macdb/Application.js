@@ -38,9 +38,9 @@ Ext.define("NOC.inv.macdb.Application", {
                     width: 110
                 },
                 {
-                    text: __("VC Domain"),
-                    dataIndex: "vc_domain",
-                    renderer: NOC.render.Lookup("vc_domain"),
+                    text: __("L2 Domain"),
+                    dataIndex: "l2_domain",
+                    renderer: NOC.render.Lookup("l2_domain"),
                     flex: 1
                 },
                 {

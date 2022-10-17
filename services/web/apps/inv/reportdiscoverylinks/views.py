@@ -24,7 +24,7 @@ class ReportFilterApplication(SimpleReport):
 
     def calc_percent(self, column, val):
         if column != _("All polling"):
-            if val == 0:
+            if val == 0 or self.save_perc == 0:
                 return "%.2f %%" % 100
             else:
                 r = "%.2f %%" % ((val / float(self.save_perc)) * 100)
