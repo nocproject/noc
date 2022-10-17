@@ -336,7 +336,7 @@ Ext.define("NOC.vc.vlan.Application", {
     filters: [
         {
             title: __("By L2 Domain"),
-            name: "l2domain",
+            name: "l2_domain",
             ftype: "lookup",
             lookup: "vc.l2domain"
         },
