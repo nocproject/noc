@@ -18,6 +18,8 @@ from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.config import config
 from noc.core.liftbridge.base import LiftBridgeClient
 from noc.core.ioloop.util import run_sync
+from noc.core.mx import MX_STREAM
+from noc.core.router.base import Router
 from .rpc import RPCProxy
 
 
@@ -91,6 +93,26 @@ class ServiceStub(object):
                 )
 
         run_sync(wrap)
+
+    async def send_message(
+        self,
+        data: Any,
+        message_type: str,
+        headers: Optional[Dict[str, bytes]] = None,
+        sharding_key: int = 0,
+    ):
+        """
+        Build message and schedule to send to mx service
+
+        :param data: Data for transmit
+        :param message_type: Message type
+        :param headers: additional message headers
+        :param sharding_key: Key for sharding over MX services
+        :return:
+        """
+        msg = Router.get_message(data, message_type, headers, sharding_key)
+        self.logger.debug("Send message: %s", msg)
+        self.publish(value=msg.value, stream=MX_STREAM, partition=1, headers=msg.headers)
 
     async def get_stream_partitions(self, stream: str) -> int:
         """
