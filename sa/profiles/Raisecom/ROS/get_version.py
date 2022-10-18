@@ -73,18 +73,6 @@ class Script(BaseScript):
         re.MULTILINE,
     )
 
-    # 3.62.160(Compiled May 21 2021 10:54:17)
-    rx_ver4 = re.compile(
-        r"Product Name: (?P<platform>\S+)\s*\n"
-        r"Hardware Version: (?P<hw_rev>\S+)\s*\n"
-        r"Software Version: (?P<version>\S+)\(.+\n"
-        r"Bootrom Version: (?P<bootstrap>\S+)\s*\n"
-        r"\n"
-        r"System MacAddress: (?P<mac>\S+)\s*\n"
-        r"Serial number: (?P<serial>\S+)\s*\n",
-        re.MULTILINE,
-    )
-
     # Version start  ROS_4.15.1200_20161130(Compiled Nov 30 2016, 10:51:45)
     rx_ver_2016 = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"
@@ -182,11 +170,6 @@ class Script(BaseScript):
             return r
         else:
             match = self.rx_ver3.search(c)
-        if match:
-            r.update(match.groupdict())
-            return r
-        else:
-            match = self.rx_ver4.search(c)
         if not match:
             return self.parse_kv_version(c)
         return match.groupdict()
