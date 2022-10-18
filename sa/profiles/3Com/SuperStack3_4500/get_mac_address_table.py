@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # 3Com.SuperStack3_4500.get_mac_address_table
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,8 +18,9 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+)\s+\S+",
-        re.MULTILINE,
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+"
+        r"(?P<type>learned|static|permanent|self)\s+(?P<interfaces>\S+)\s+\S+",
+        re.MULTILINE | re.IGNORECASE,
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
