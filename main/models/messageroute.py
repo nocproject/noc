@@ -150,7 +150,7 @@ class MessageRoute(Document):
                 {
                     "labels": match.labels,
                     "exclude_labels": match.exclude_labels,
-                    "administrative_domain": str(match.administrative_domain.id)
+                    "administrative_domain": AdministrativeDomain.get_nested_ids(match.administrative_domain.id)
                     if match.administrative_domain
                     else None,
                     "headers": [
