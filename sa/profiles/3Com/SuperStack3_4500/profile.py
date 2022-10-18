@@ -37,6 +37,7 @@ class Profile(BaseProfile):
         "Lo": "loopback",  # LoopBack
         "NU": "null",  # NULL
         "Vl": "SVI",  # Vlan-interface
+        "Au": "other",  # Aux
     }
 
     @classmethod

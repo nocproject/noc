@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface = re.compile(
-        r"^\s*(?P<iface>\S+) current state :\s*(?P<status>(UP|DOWN|ADMINISTRATIVELY DOWN))\s*\n",
+        r"^\s*(?P<iface>\S+) current state\s*:\s*(?P<status>(UP|DOWN|ADMINISTRATIVELY DOWN))\s*\n",
         re.MULTILINE,
     )
 
