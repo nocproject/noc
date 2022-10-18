@@ -48,10 +48,10 @@ class TgSenderService(FastAPIService):
         :return:
         """
         metrics["messages"] += 1
-        self.logger.debug(f"[%s]] Receiving message %s", msg.offset, msg.headers)
+        self.logger.debug("[%s]] Receiving message %s", msg.offset, msg.headers)
         dst = msg.headers.get(MX_TO)
         if not dst:
-            self.logger.debug(f"[%s] Missed '%s' header. Dropping", msg.offset, MX_TO)
+            self.logger.debug("[%s] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
             return
         metrics["messages_processed"] += 1
