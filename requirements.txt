@@ -15,6 +15,7 @@
 # * supervisor
 # * testing
 # * sender-kafka
+# * etl
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
@@ -109,5 +110,8 @@ pytest-dependency==0.5.1; extra == "testing"
 Cython==0.29.32; extra == "cython"
 # Kafka
 aiokafka==0.7.2; extra == "sender-kafka"
-# etl/extractor
-dbf==0.99.1; extra == "testing"
+# ETL/TT
+dbf==0.99.1; extra == "etl"
+zeep==4.1.0; extra == "etl"
+cx-Oracle==8.3.0;extra == "etl"
+tabulate==0.9.0; extra == "etl"
