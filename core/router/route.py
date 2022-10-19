@@ -201,7 +201,7 @@ class Route(object):
                 ]
             if match.administrative_domain:
                 expr += [
-                    f"headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}] in {set(match.administrative_domain)}"
+                    f"int(headers[{MX_ADMINISTRATIVE_DOMAIN_ID!r}]) in {set(match.administrative_domain)}"
                 ]
             for h_match in match.headers:
                 if h_match.is_eq:
