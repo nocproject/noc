@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any
+from typing import Dict, List, Optional, Literal, Iterable, Any, Union
 from collections import defaultdict
 
 # NOC modules
@@ -19,7 +19,8 @@ from noc.core.checkers.base import (
     CheckResult,
     CheckData,
     ProfileSet,
-    CredentialSet,
+    CLICredentialSet,
+    SNMPCredentialSet,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
@@ -87,7 +88,7 @@ class DiagnosticCheck(DiscoveryCheck):
                 continue
             # Get checker
             checks: List[CheckResult] = []
-            actions: List[CredentialSet] = []
+            actions: List[CLICredentialSet] = []
             for cr in self.iter_checks(dc.checks):
                 if cr.action and not hasattr(self, f"action_{cr.action.action}"):
                     self.logger.warning(
@@ -192,7 +193,7 @@ class DiagnosticCheck(DiscoveryCheck):
             self.object.save()
             self.object.update_init()
 
-    def action_set_credential(self, data: CredentialSet):
+    def action_set_credential(self, data: Union[CLICredentialSet, SNMPCredentialSet]):
         """
         :param data:
         :return:

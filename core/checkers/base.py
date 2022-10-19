@@ -53,7 +53,7 @@ class CheckResult(object):
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    action: Optional[Union[ProfileSet, CredentialSet]] = None
+    action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
 
