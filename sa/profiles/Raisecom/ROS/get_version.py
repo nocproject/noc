@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -118,6 +118,7 @@ class Script(BaseScript):
         "product name": "platform",
         "ros version": "version",
         "qos version": "version",
+        "software version": "version",
         "bootstrap version": "bootstrap",
         "boot room version": "bootstrap",
         "bootrom version": "bootstrap",
@@ -125,6 +126,7 @@ class Script(BaseScript):
         "hardware version rev.": "hw_rev",
         "system macaddress is": "mac_address",
         "system macaddress": "mac_address",
+        "system mac address": "mac_address",
         "serial number": "serial",
     }
 
