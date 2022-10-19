@@ -11,6 +11,7 @@ import re
 import orjson
 import requests
 import time
+from typing import Dict, Any, Optional
 from urllib.parse import urlencode
 
 # NOC modules
@@ -19,7 +20,7 @@ from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_TO
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 
 API = "https://api.icq.net/bot/v1/messages/sendText?token="
 ICQSENDER_STREAM = "icqsender"
@@ -53,7 +54,9 @@ class IcqSenderService(FastAPIService):
             metrics["messages_drops"] += 1
             return
         metrics["messages_processed"] += 1
-        return self.send_icq(smart_text(dst), orjson.loads(msg.value))
+        return self.send_icq(
+            msg.offset, orjson.loads(msg.value), dst.decode(encoding=DEFAULT_ENCODING)
+        )
 
     @staticmethod
     def escape_markdown(text):
@@ -61,9 +64,18 @@ class IcqSenderService(FastAPIService):
         escape_chars = r"\*_`"
         return re.sub(r"([%s])" % escape_chars, r"\\\1", text)
 
-    def send_icq(self, topic: str, data: str) -> None:
+    def send_icq(
+        self, message_id: int, data: Dict[str, Any], address_to: Optional[str] = None
+    ) -> None:
+        if "address" in data:
+            address = data["address"]
+        elif address_to:
+            address = address_to
+        else:
+            self.logger.warning("[%s] Message without address", message_id)
+            return
         sendMessage = {
-            "chatId": data["address"],
+            "chatId": address,
             "text": "*"
             + self.escape_markdown(smart_text(data["subject"], errors="ignore"))
             + "*\n"
@@ -86,25 +98,25 @@ class IcqSenderService(FastAPIService):
                     self.logger.info("Send: %s\n" % response.json())
                     metrics["icq_sended_ok"] += 1
             except requests.HTTPError as error:
-                self.logger.error("Http Error:", error)
+                self.logger.error("Http Error: %s", error)
                 if proxy:
                     metrics["icq_proxy_failed_httperror"] += 1
                 else:
                     metrics["icq_failed_httperror"] += 1
             except requests.ConnectionError as error:
-                self.logger.error("Error Connecting:", error)
+                self.logger.error("Error Connecting: %s", error)
                 if proxy:
                     metrics["icq_failed_connection"] += 1
                 else:
                     metrics["icq_connection"] += 1
             except requests.Timeout as error:
-                self.logger.error("Timeout Error:", error)
+                self.logger.error("Timeout Error: %s", error)
                 if proxy:
                     metrics["icq_failed_timeout"] += 1
                 else:
                     metrics["icq_failed_timeout"] += 1
             except requests.RequestException as error:
-                self.logger.error("OOps: Something Else", error)
+                self.logger.error("OOps: Something Else: %s", error)
                 if proxy:
                     metrics["icq_proxy_failed_else_error"] += 1
                 else:
