@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Dict, List, Optional, Literal, Iterable, Any
+from typing import Dict, List, Optional, Literal, Iterable, Any, Union
 from collections import defaultdict
 
 # NOC modules
@@ -19,7 +19,8 @@ from noc.core.checkers.base import (
     CheckResult,
     CheckData,
     ProfileSet,
-    CredentialSet,
+    CLICredentialSet,
+    SNMPCredentialSet,
     MetricValue,
 )
 from noc.core.checkers.loader import loader
@@ -87,14 +88,14 @@ class DiagnosticCheck(DiscoveryCheck):
                 continue
             # Get checker
             checks: List[CheckResult] = []
+            actions: List[CLICredentialSet] = []
             for cr in self.iter_checks(dc.checks):
                 if cr.action and not hasattr(self, f"action_{cr.action.action}"):
                     self.logger.warning(
                         "[%s|%s] Unknown action: %s", dc.diagnostic, cr.check, cr.action.action
                     )
                 elif cr.action:
-                    h = getattr(self, f"action_{cr.action.action}")
-                    h(cr.action)
+                    actions.append(cr.action)
                 checks.append(cr)
                 m_labels = [f"noc::check::name::{cr.check}", f"noc::diagnostic::{dc.diagnostic}"]
                 if cr.arg0:
@@ -107,6 +108,10 @@ class DiagnosticCheck(DiscoveryCheck):
                     metrics += cr.metrics
                 if cr.data:
                     d_data[dc.diagnostic].update(cr.data)
+            # Apply actions
+            for a in actions:
+                h = getattr(self, f"action_{a.action}")
+                h(a)
             # Update diagnostics
             self.object.update_diagnostics(
                 [
@@ -188,16 +193,19 @@ class DiagnosticCheck(DiscoveryCheck):
             self.object.save()
             self.object.update_init()
 
-    def action_set_credential(self, data: CredentialSet):
+    def action_set_credential(self, data: Union[CLICredentialSet, SNMPCredentialSet]):
         """
         :param data:
         :return:
         """
         changed = False
-        # For password change - cleanup credential ?
-        for cred in ["snmp_ro", "snmp_rw", "user", "password", "super_password"]:
+        object_creds = self.object.credentials
+        # Iter available cred
+        for cred in object_creds._fields:
+            if not hasattr(data, cred):
+                continue
+            oc = getattr(object_creds, cred)
             nc = getattr(data, cred)
-            oc = getattr(self.object, cred, None) or None
             if nc != oc:
                 changed = True
                 setattr(self.object, cred, nc)

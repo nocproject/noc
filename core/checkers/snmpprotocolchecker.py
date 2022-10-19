@@ -9,7 +9,7 @@
 from typing import List, Iterable, Dict
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult, CredentialSet
+from .base import Check, ObjectChecker, CheckResult, SNMPCredentialSet
 from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript, SNMPCredential
 from ..script.scheme import Protocol
 
@@ -56,7 +56,7 @@ class SNMPProtocolChecker(ObjectChecker):
                 continue
             r[proto_r.protocol] = proto_r
             if not action and proto_r.status and proto_r.credential:
-                action = CredentialSet(
+                action = SNMPCredentialSet(
                     snmp_ro=proto_r.credential.snmp_ro, snmp_rw=proto_r.credential.snmp_rw
                 )
             if action and len(protocols) == len(r):
