@@ -11,6 +11,7 @@ import re
 import orjson
 import requests
 import time
+from typing import Dict, Any, Optional
 from io import StringIO
 
 # NOC modules
@@ -19,7 +20,7 @@ from noc.core.liftbridge.message import Message
 from noc.core.mx import MX_TO
 from noc.core.perf import metrics
 from noc.config import config
-from noc.core.comp import smart_text
+from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.core.text import split_text
 
 API = "https://api.telegram.org/bot"
@@ -47,14 +48,16 @@ class TgSenderService(FastAPIService):
         :return:
         """
         metrics["messages"] += 1
-        self.logger.debug(f"[{msg.offset}] Receiving message {msg.headers}")
+        self.logger.debug("[%s]] Receiving message %s", msg.offset, msg.headers)
         dst = msg.headers.get(MX_TO)
         if not dst:
-            self.logger.debug(f"[{msg.offset}] Missed '{MX_TO}' header. Dropping")
+            self.logger.debug("[%s] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
             return
         metrics["messages_processed"] += 1
-        return self.send_tb(smart_text(dst), orjson.loads(msg.value))
+        return self.send_tb(
+            msg.offset, orjson.loads(msg.value), dst.decode(encoding=DEFAULT_ENCODING)
+        )
 
     @staticmethod
     def escape_markdown(text):
@@ -62,14 +65,23 @@ class TgSenderService(FastAPIService):
         escape_chars = r"\*_`["
         return re.sub(r"([%s])" % escape_chars, r"\\\1", text).replace("\\`\\`\\`", "```")
 
-    def send_tb(self, topic: str, data: str) -> None:
+    def send_tb(
+        self, message_id: int, data: Dict[str, Any], address_to: Optional[str] = None
+    ) -> None:
         body_l = 3000
         file_size = 5e7  # 50Mb
         t_type = "/sendMessage"
         subject = self.escape_markdown(smart_text(data["subject"], errors="ignore"))
         body = self.escape_markdown(smart_text(data["body"], errors="ignore"))
+        if "address" in data:
+            address = data["address"]
+        elif address_to:
+            address = address_to
+        else:
+            self.logger.warning("[%s] Message without address", message_id)
+            return
         send = {
-            "chat_id": data["address"],
+            "chat_id": address,
             "text": f"- {subject} --\n\n {body}",
             "parse_mode": "Markdown",
         }
