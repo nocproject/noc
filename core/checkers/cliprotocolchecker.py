@@ -9,7 +9,7 @@
 from typing import List, Iterable, Dict
 
 # NOC modules
-from .base import Check, ObjectChecker, CheckResult, CredentialSet
+from .base import Check, ObjectChecker, CheckResult, CLICredentialSet
 from ..script.credentialchecker import CredentialChecker as CredentialCheckerScript, CLICredential
 from ..script.scheme import Protocol
 
@@ -62,7 +62,7 @@ class CLIProtocolChecker(ObjectChecker):
                 continue
             r[proto_r.protocol] = proto_r
             if not action and proto_r.status and proto_r.credential:
-                action = CredentialSet(
+                action = CLICredentialSet(
                     user=proto_r.credential.user,
                     password=proto_r.credential.password,
                     super_password=proto_r.credential.super_password,
