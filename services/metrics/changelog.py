@@ -10,7 +10,6 @@
 from typing import Any, Dict, List, Iterable
 import orjson
 import logging
-import datetime
 import asyncio
 
 # Third-party modules
@@ -155,16 +154,16 @@ class ChangeLog(object):
             if not state:
                 self.logger.info("Nothing to compact")
                 return
-        self.logger.info("Compacting %d log items (%d bytes)", n, prev_size)
-        # Split to chunks when necessary
-        bulk = []
-        for c_data in self.iter_state_bulks(state):
-            t_mark += datetime.timedelta(seconds=1)
-            # For more one slots raise condition with same t_mark
-            # For that create random ObjectId
-            bulk.append(InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data}))
-            nn += 1
-            next_size += len(c_data)
+            self.logger.info("Compacting %d log items (%d bytes)", n, prev_size)
+            # Split to chunks when necessary
+            bulk = []
+            for c_data in self.iter_state_bulks(state):
+                # t_mark += datetime.timedelta(seconds=1)
+                # For more one slots raise condition with same t_mark
+                # For that create random ObjectId
+                bulk.append(InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data}))
+                nn += 1
+                next_size += len(c_data)
         bulk.append(DeleteMany({"_id": {"$lte": t_mark_id}, "slot": self.slot}))
         await coll.bulk_write(bulk, ordered=True)
         self.logger.info(
