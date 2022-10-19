@@ -28,10 +28,16 @@ class MetricValue(object):
 
 
 @dataclass(frozen=True)
-class CredentialSet(object):
+class CLICredentialSet(object):
     user: Optional[str] = None
     password: Optional[str] = None
     super_password: Optional[str] = None
+    delete: bool = False
+    action: str = "set_credential"
+
+
+@dataclass(frozen=True)
+class SNMPCredentialSet(object):
     snmp_ro: Optional[str] = None
     snmp_rw: Optional[str] = None
     delete: bool = False
