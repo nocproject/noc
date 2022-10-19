@@ -911,7 +911,7 @@ class DeescalationSequence(BaseSequence):
         if not self.tt_id:
             return
         self.alarm.set_escalation_close_ctx()
-        if self.alarm.escalation_close_ts or self.alarm.escalation_close_error:
+        if self.alarm.escalation_close_ts and not self.alarm.escalation_close_error:
             self.logger.info("Alarm is already deescalated")
             metrics["escalation_already_deescalated"] += 1
             return
