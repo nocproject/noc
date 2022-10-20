@@ -28,10 +28,16 @@ class MetricValue(object):
 
 
 @dataclass(frozen=True)
-class CredentialSet(object):
+class CLICredentialSet(object):
     user: Optional[str] = None
     password: Optional[str] = None
     super_password: Optional[str] = None
+    delete: bool = False
+    action: str = "set_credential"
+
+
+@dataclass(frozen=True)
+class SNMPCredentialSet(object):
     snmp_ro: Optional[str] = None
     snmp_rw: Optional[str] = None
     delete: bool = False
@@ -47,7 +53,7 @@ class CheckResult(object):
     error: Optional[str] = None  # Description if Fail
     data: Optional[Dict[str, Any]] = None  # Collected check data
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    action: Optional[Union[ProfileSet, CredentialSet]] = None
+    action: Optional[Union[ProfileSet, CLICredentialSet, SNMPCredentialSet]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
 
