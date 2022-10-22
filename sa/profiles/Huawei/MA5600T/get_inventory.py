@@ -328,7 +328,7 @@ class Script(BaseScript):
                     "number": board_num,
                     "vendor": "Huawei",
                     "part_no": part_no,
-                    "description": slot_descr,
+                    "description": slot_descr[:-1],
                 }
             ]
         return subboard
@@ -447,8 +447,6 @@ class Script(BaseScript):
         with self.profile.diagnose(self):
             try:
                 v = self.cli("display elabel 0", allow_empty_response=False)
-                if "This operation will take several seconds, please wait..." in v:
-                    v = self.cli("", allow_empty_response=False)
                 parse_result = self.parse_elabel(v)
             except self.CLISyntaxError:
                 v = ""

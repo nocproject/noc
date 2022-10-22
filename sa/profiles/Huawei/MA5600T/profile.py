@@ -36,6 +36,7 @@ class Profile(BaseProfile):
         (rb"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", b"\n"),
         # The ONT automatic loading policy will be deleted
         (rb"\s*Are you sure to proceed\(y/n\)\[[yn]\]", b"y\n"),
+        (rb"This operation will take several seconds, please wait...", b""),
     ]
     # { <cr>|backplane<K>|frameid/slotid<S><Length 3-15>||<K> }:
     pattern_unprivileged_prompt = rb"^(?P<hostname>(?!>)\S+?)>"
