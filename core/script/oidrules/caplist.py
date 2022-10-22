@@ -36,7 +36,7 @@ class CapabilityListRule(OIDRule):
         self.separator = separator
         self.strip = strip
         self.default = default
-        self.labels = labels
+        self.labels = tuple(labels) if labels else None
 
     def iter_oids(self, script, cfg):
         if self.capability and script.has_capability(self.capability):
@@ -46,15 +46,17 @@ class CapabilityListRule(OIDRule):
                 if not i:
                     continue
                 oid = self.expand_oid(item=i)
-                labels = cfg.labels
-                if self.labels is not None:
-                    item = [i for i in self.labels if "item" in i]
-                    if item:
-                        item = item[0]
-                        labels = self.labels[:]
-                        labels[self.labels.index(item)] = item.replace("item", i)
-                if oid:
-                    yield oid, self.type, self.scale, self.units, labels
+                if not oid:
+                    continue
+                if self.labels is None:
+                    yield oid, self.type, self.scale, self.units, cfg.labels
+                    continue
+                labels = []
+                for item in self.labels:
+                    if "item" in item:
+                        item = item.replace("item", i)
+                    labels.append(item)
+                yield oid, self.type, self.scale, self.units, tuple(labels)
         else:
             if self.default is not None:
                 oid = self.expand_oid(item=self.default)

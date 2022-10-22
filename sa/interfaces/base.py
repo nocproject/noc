@@ -294,10 +294,11 @@ class ListOfParameter(ListParameter):
     Check value is a list of given parameter type
     """
 
-    def __init__(self, element, required=True, default=None, convert=False):
+    def __init__(self, element, required=True, default=None, convert=False, convert_tuple=False):
         self.element = element
         self.is_list = isinstance(element, (list, tuple))
         self.convert = convert
+        self.convert_tuple = convert_tuple
         super().__init__(required=required, default=default)
 
     def clean(self, value):
@@ -306,8 +307,12 @@ class ListOfParameter(ListParameter):
         if self.convert and not isinstance(value, (list, tuple)):
             value = [value]
         v = super().clean(value)
-        if self.is_list:
+        if self.is_list and self.convert_tuple:
+            return tuple([e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value)
+        elif self.is_list:
             return [[e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value]
+        elif self.convert_tuple:
+            return tuple(self.element.clean(x) for x in v)
         else:
             return [self.element.clean(x) for x in v]
 
@@ -315,11 +320,18 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         v = super().script_clean_input(profile, value)
-        if self.is_list:
+        if self.is_list and self.convert_tuple:
+            return tuple(
+                [e.script_clean_input(profile, vv) for e, vv in zip(self.element, nv)]
+                for nv in value
+            )
+        elif self.is_list:
             return [
                 [e.script_clean_input(profile, vv) for e, vv in zip(self.element, nv)]
                 for nv in value
             ]
+        elif self.convert_tuple:
+            return tuple(self.element.script_clean_input(profile, x) for x in v)
         else:
             return [self.element.script_clean_input(profile, x) for x in v]
 
@@ -341,12 +353,15 @@ class StringListParameter(ListOfParameter):
     Check value is list of strings
     """
 
-    def __init__(self, required=True, default=None, convert=False, choices=None):
+    def __init__(
+        self, required=True, default=None, convert=False, choices=None, convert_tuple=False
+    ):
         super().__init__(
             element=StringParameter(choices=choices),
             required=required,
             default=default,
             convert=convert,
+            convert_tuple=convert_tuple,
         )
 
 

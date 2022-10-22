@@ -29,7 +29,7 @@ class IGetMetrics(BaseInterface):
             # Metric type
             "metric": StringParameter(),
             # Optional path
-            "labels": StringListParameter(required=False),
+            "labels": StringListParameter(required=False, convert_tuple=True),
             # oid hint
             "oid": OIDParameter(required=False),
             # ifindex hint
@@ -46,9 +46,9 @@ class IGetMetrics(BaseInterface):
             # List Metric type for collected
             "metrics": StringListParameter(),
             # Optional key labels
-            "labels": StringListParameter(required=False),
+            "labels": StringListParameter(required=False, convert_tuple=True),
             # Like settings: ifindex::<ifindex>, oid::<oid>, ac::<SC/CS/S/C>
-            "hints": StringListParameter(required=False),
+            "hints": StringListParameter(required=False, convert_tuple=True),
             #
             "service": IntParameter(required=False),
             # Collector field id

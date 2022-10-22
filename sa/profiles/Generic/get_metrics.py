@@ -40,6 +40,7 @@ from noc.core.mib import mib
 NS = 1000_000_000.0
 SNMP_OVERLOAD_VALUE = 18446744073709551615  # '0xffffffffffffffff' for 64-bit counter
 PROFILES_PATH = os.path.join("sa", "profiles")
+CHAR_SPLITTER = "\x00"
 
 
 class MetricConfig(object):
@@ -63,7 +64,7 @@ class MetricConfig(object):
     ):
         self.id: int = id
         self.metric: str = metric
-        self.labels: List[str] = labels
+        self.labels: Optional[Tuple[str, ...]] = labels
         self.oid: str = oid
         self.ifindex: int = ifindex
         self.service: int = service
@@ -92,7 +93,7 @@ class BatchConfig(object):
     def __init__(self, id, metric, labels, type, scale, units, service=None):
         self.id: int = id
         self.metric: str = metric
-        self.labels: List[str] = labels
+        self.labels: Tuple[str, ...] = labels
         self.type: str = type
         self.scale = scale
         self.units = units
@@ -338,9 +339,9 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         return self.profile.snmp_metrics_get_chunk
 
     @staticmethod
-    def get_labels_hash(metric: str, labels: List[str]):
+    def get_labels_hash(metric: str, labels: Optional[Tuple[str]] = None):
         if labels:
-            return "\x00".join([metric] + labels)
+            return f"{metric}{CHAR_SPLITTER}{CHAR_SPLITTER.join(labels)}"
         else:
             return metric
 
@@ -379,7 +380,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         MetricConfig(
                             id=seq_id,
                             metric=m,
-                            labels=coll.labels or [],
+                            labels=coll.labels,
                             ifindex=hints.get("ifindex"),
                             service=coll.service,
                         )
@@ -393,7 +394,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         MetricCollectorConfig(
                             collector="sensor",
                             metrics=["Sensor | Value"],
-                            labels=m.get("labels", []),
+                            labels=m.get("labels"),
                             sensor=m.get("sensor"),
                         )
                     )
@@ -403,7 +404,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                         sm[sla_probe] = MetricCollectorConfig(
                             collector="sla",
                             metrics=[m["metric"]],
-                            labels=m.get("labels", []),
+                            labels=m.get("labels"),
                             sla_probe=sla_probe,
                         )
                     else:
@@ -721,7 +722,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 "id": id,
                 "ts": ts or self.get_ts(),
                 "metric": metric,
-                "labels": labels or [],
+                "labels": labels,
                 "value": value,
                 "type": type,
                 "units": units,

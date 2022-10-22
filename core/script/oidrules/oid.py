@@ -32,7 +32,7 @@ class OIDRule(object):
         self.type = type or self.default_type
         self.units = units or self.default_units
         self.scale = self._convert_scale(scale)
-        self.labels = labels or []
+        self.labels = tuple(labels) if labels else None
 
     def _convert_scale(self, scale):
         """
