@@ -1,0 +1,38 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801X2CS",
+    "$collection": "inv.objectmodels",
+    "uuid": "5c6afa68-00c4-4749-b0a2-b7bc2158fe6c",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600T. The H801X2CS board is a 2-port 10GE uplink interface card that provides two 10GE upstream or cascading optical ports.",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "0",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "in",
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801X2CS"]
+        }
+    }
+}

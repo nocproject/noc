@@ -1,0 +1,38 @@
+{
+    "name": "Huawei | SmartAX | MA560xT | H801X2CA",
+    "$collection": "inv.objectmodels",
+    "uuid": "5184f4f0-c95f-42f6-908c-8382b2ac4b60",
+    "vendor__code": "HUAWEI",
+    "description": "MA5600T. The H801X2CA board is a 2-port 10GE XFP optical interface unit board that provides two 10GE upstream or cascading optical ports",
+    "labels": ["noc::inv::lc", "noc::inv::port"],
+    "connections": [
+        {
+            "name": "0",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "name": "in",
+            "description": "Board connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "Huawei | SmartAX | MA560xT | GIU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["H801X2CA"]
+        }
+    }
+}
