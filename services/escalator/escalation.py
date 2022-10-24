@@ -660,7 +660,7 @@ class EscalationSequence(BaseSequence):
             ]
         ):
             esc_status[doc["items"]["alarm"]] = doc["_id"]
-            esc_tt[doc["items"]["alarm"]] = doc.get("tt_id")
+            esc_tt[doc["items"]["alarm"]] = doc.get("tt_id", doc["items"].get("current_tt_id"))
         if not esc_status:
             return  # No escalated docs
         for item in self.escalation_doc.items:
