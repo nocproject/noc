@@ -463,7 +463,8 @@ class CLI(BaseCLI):
         self.set_state("prompt")
         if not self.allow_empty_response:
             s_data = data.strip()
-            if not s_data or s_data == self.command.strip():
+            # Endswith for example 'command: ' output
+            if not s_data or s_data.endswith(self.command.strip()):
                 return None
         if not self.is_started:
             self.resolve_pattern_prompt(match)
