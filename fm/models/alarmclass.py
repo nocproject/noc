@@ -9,7 +9,7 @@
 import os
 from threading import Lock
 import operator
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Callable
 
 # Third-party modules
 from mongoengine.document import Document
@@ -216,9 +216,9 @@ class AlarmClass(Document):
     def get_by_name(cls, name: str) -> Optional["AlarmClass"]:
         return AlarmClass.objects.filter(name=name).first()
 
-    def get_handlers(self):
+    def get_handlers(self) -> List[Callable]:
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
-        def _get_handlers(alarm_class):
+        def _get_handlers(alarm_class: AlarmClass):
             handlers = []
             for hh in alarm_class.handlers:
                 try:
@@ -233,7 +233,7 @@ class AlarmClass(Document):
 
     def get_clear_handlers(self):
         @cachetools.cached(self._clear_handlers_cache, key=lambda x: x.id, lock=handlers_lock)
-        def _get_handlers(alarm_class):
+        def _get_handlers(alarm_class: AlarmClass) -> List[Callable]:
             handlers = []
             for hh in alarm_class.clear_handlers:
                 try:
@@ -368,7 +368,7 @@ class AlarmClass(Document):
         else:
             return self.notification_delay or None
 
-    def get_control_time(self, reopens):
+    def get_control_time(self, reopens: int) -> Optional[int]:
         if reopens == 0:
             if self.config:
                 return self.config.control_time0 or None

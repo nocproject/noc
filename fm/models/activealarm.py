@@ -392,6 +392,7 @@ class ActiveAlarm(Document):
                 body = "Alarm has been cleared"
             call_later(
                 "noc.services.escalator.escalation.notify_close",
+                delay=ct,
                 scheduler="escalator",
                 pool=self.managed_object.escalator_shard,
                 max_runs=config.fm.alarm_close_retries,
