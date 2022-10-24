@@ -207,8 +207,6 @@ class Address(NOCModel):
         Field validation
         :return:
         """
-        # Avoid django's validation failure
-        from .prefix import Prefix
 
         # Get proper AFI
         self.afi = "6" if ":" in self.address else "4"
@@ -278,3 +276,7 @@ class Address(NOCModel):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_ipaddress")
+
+
+# Avoid django's validation failure
+from .prefix import Prefix
