@@ -22,13 +22,10 @@ class Profile(BaseProfile):
         (rb"\[<frameId/slotId>\]", b"\n"),
         (rb"\(y/n\) \[n\]", b"y\n"),
         (rb"\[to\]\:", b"\n"),
-        (rb"\{ \<cr\>\|vpi\<K\> \}\:", b"\n"),
-        (rb"\{ \<cr\>\|ont\<K\> \}\:", b"\n"),
-        (rb"\{ \<cr\>|port\<K\> \}:", b"\n"),
+        (rb"\{ \<cr\>\|\|?(vpi|ont|port|mode)?\<K\> \}\:", b"\n"),
         (rb"Are you sure to modify system time?", b"n\n"),
         (rb"Are you sure to log out?", b"y\n"),
         (rb"\{ <cr>\|configuration<K>\|data<K> \}", b"\n"),
-        (rb"\{ <cr>\|mode<K> \}", b"\n"),
         (rb"\{ <cr>\|frameid\/slotid\<S\>\<Length \d+\-15\>(?:\|spm\<K\>|) \}\:", b"\n"),
         (rb"\{ (?:spm\<K\>\|)?\<cr\>\|frameid/slotid\<S\>\<\d+,15\> \}\:", b"\n"),
         (rb"\{ <cr>\|backplane\<K\>\|frameid\/slotid\<S\>\<Length \d+\-15\>(\|\|\<K\>|) \}", b"\n"),
@@ -39,6 +36,7 @@ class Profile(BaseProfile):
         (rb"\{ <cr>\|vlanattr\<K\>\|vlantype\<E\>\<\S+\> \}\:", b"\n"),
         # The ONT automatic loading policy will be deleted
         (rb"\s*Are you sure to proceed\(y/n\)\[[yn]\]", b"y\n"),
+        (rb"This operation will take several seconds, please wait...", b""),
     ]
     # { <cr>|backplane<K>|frameid/slotid<S><Length 3-15>||<K> }:
     pattern_unprivileged_prompt = rb"^(?P<hostname>(?!>)\S+?)>"
