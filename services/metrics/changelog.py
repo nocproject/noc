@@ -138,11 +138,11 @@ class ChangeLog(object):
             if not max_id:
                 self.logger.info("Nothing to compact")
                 return
-            t_mark = max_id["_id"].generation_time
-            t_mark_id = ObjectId.from_datetime(t_mark)
+            max_id = max_id["_id"]
+            self.logger.info("Compacted started to: %s", max_id)
             # Read all states
             async for doc in coll.find(
-                {"_id": {"$lte": t_mark_id}, "slot": self.slot}, {"_id": 1, "data": 1}
+                {"_id": {"$lte": max_id}, "slot": self.slot}, {"_id": 1, "data": 1}
             ).sort([("_id", ASCENDING)]):
                 d = doc.get("data")
                 if not d:
@@ -157,18 +157,26 @@ class ChangeLog(object):
             self.logger.info("Compacting %d log items (%d bytes)", n, prev_size)
             # Split to chunks when necessary
             bulk = []
+            compacted = []
             for c_data in self.iter_state_bulks(state):
                 # t_mark += datetime.timedelta(seconds=1)
                 # For more one slots raise condition with same t_mark
                 # For that create random ObjectId
-                bulk.append(InsertOne({"_id": ObjectId(), "slot": self.slot, "data": c_data}))
+                oid = ObjectId()
+                bulk.append(InsertOne({"_id": oid, "slot": self.slot, "data": c_data}))
                 nn += 1
                 next_size += len(c_data)
-        bulk.append(DeleteMany({"_id": {"$lte": t_mark_id}, "slot": self.slot}))
+                compacted.append(oid)
+        bulk.append(DeleteMany({"_id": {"$lte": max_id}, "slot": self.slot}))
         await coll.bulk_write(bulk, ordered=True)
+        records = [
+            o["_id"]
+            async for o in coll.find({"slot": self.slot}, {"_id": 1}, sort=[("_id", DESCENDING)])
+        ]
         self.logger.info(
             "Compacted to %d records (%d bytes). %.2f ratio",
             nn,
             next_size,
             float(prev_size) / float(next_size),
         )
+        self.logger.debug(" Compacted: %s, records: %s", compacted, records)
