@@ -16,7 +16,7 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.inv.networksegment.EffectiveSettingsPanel",
         "NOC.inv.networksegmentprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.vc.vcfilter.LookupField",
+        "NOC.vc.vlanfilter.LookupField",
         "NOC.vc.vlan.LookupField",
         "Ext.ux.form.DictField",
         "Ext.ux.form.GridField"
@@ -205,7 +205,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                             dataIndex: "filter",
                             width: 300,
                             renderer: NOC.render.Lookup("filter"),
-                            editor: "vc.vcfilter.LookupField"
+                            editor: "vc.vlanfilter.LookupField"
                         },
                         {
                             text: __("Rule"),
