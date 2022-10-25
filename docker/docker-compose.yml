@@ -104,6 +104,12 @@ volumes:
       device: ${COMPOSEPATH}/../
       o: bind
       type: bind
+  web_ui_code:
+    driver: local
+    driver_opts:
+      device: ${COMPOSEPATH}/../ui/web/
+      o: bind
+      type: bind
   noc_beef:
     driver: local
     driver_opts:
@@ -170,6 +176,31 @@ services:
       traefik.port: 1200
       traefik.frontend.rule: "PathPrefix: /api/bi/"
       traefik.frontend.entryPoints: noc
+
+  metrics:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: metrics
+    depends_on:
+      - consul
+    restart: "always"
+    command: /usr/local/bin/python3 /opt/noc/services/metrics/service.py
+    mem_limit: 150m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+      - noc_beef:/var/lib/noc/beef:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.enable: false
 
   card:
     image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
@@ -626,6 +657,37 @@ services:
       traefik.backend: mx
       traefik.port: 1200
       traefik.frontend.rule: "PathPrefix: /api/mx/"
+      traefik.frontend.entryPoints: noc
+
+  worker:
+    image: registry.getnoc.com/noc/noc/code:${NOC_VERSION_TAG}
+    hostname: worker
+    restart: "always"
+    depends_on:
+      liftbridge:
+        condition: service_started
+      consul:
+        condition: service_healthy
+    command: /usr/local/bin/python3 /opt/noc/services/worker/service.py
+    mem_limit: 103m
+    working_dir: /opt/noc
+    env_file:
+      - ./var/${COMPOSEPREFIX}-noc/etc/noc.conf
+    volumes:
+      - noc_custom:/opt/noc_custom:ro
+      - noc_speedup:/opt/nocspeedup:ro
+      - noc_code:/${NOC_CODE_PATH}:ro
+      - noc_etlimport:/var/lib/noc/import:ro
+    logging:
+      driver: ${COMPOSE_LOG_DRIVER}
+      options:
+        max-size: ${COMPOSE_LOG_MAX_SIZE}
+        max-file: ${COMPOSE_LOG_MAX_FILE}
+    labels:
+      traefik.protocol: http
+      traefik.backend: worker
+      traefik.port: 1200
+      traefik.frontend.rule: "PathPrefix: /api/worker/"
       traefik.frontend.entryPoints: noc
 
   nbi:
@@ -1160,6 +1222,7 @@ services:
     volumes:
       - ./etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - nginx_ssl:/etc/nginx/ssl:ro
+      - web_ui_code:/opt/noc/ui/web/
     labels:
       traefik.enable: false
     healthcheck:
