@@ -263,7 +263,6 @@ Ext.define("NOC.core.ModelApplication", {
                         choices: "NOC.core.modelfilter.Choices",
                         lookup: "NOC.core.modelfilter.Lookup",
                         list: "NOC.core.modelfilter.List",
-                        vcfilter: "NOC.core.modelfilter.VCFilter",
                         afi: "NOC.core.modelfilter.AFI",
                         vc: "NOC.core.modelfilter.VC",
                         tag: "NOC.core.modelfilter.Tag",
