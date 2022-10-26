@@ -112,7 +112,7 @@ class ServiceStub(object):
         """
         msg = Router.get_message(data, message_type, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
-        self.publish(value=msg.value, stream=MX_STREAM, partition=1, headers=msg.headers)
+        self.publish(value=msg.value, stream=MX_STREAM, partition=0, headers=msg.headers)
 
     async def get_stream_partitions(self, stream: str) -> int:
         """
