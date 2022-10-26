@@ -484,7 +484,6 @@ class Script(BaseScript):
             if revision:
                 inv["revision"] = revision
             return [inv]
-            ]
             # raise NotImplementedError("Not supported 'display elabel' command")
         if self.is_cx300:
             # Chassis without SN ex. CX300
