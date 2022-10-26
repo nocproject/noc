@@ -187,7 +187,7 @@ class Script(BaseScript):
                 # Port_10GE1/0/48, Port_10GE2/0/48
                 # Port_GigabitEthernet2/0/19 format
                 num = "%s%s" % self.sfp_number.match(name).groups()
-                num=num.replace("igabitEthernet","E")
+                num = num.replace("igabitEthernet", "E")
             elif "_" in name:
                 num = name.split("_")[-1]
             return "XCVR", num, part_no
