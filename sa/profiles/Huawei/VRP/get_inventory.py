@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2022 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -183,12 +183,11 @@ class Script(BaseScript):
         if name and name.lower().startswith("port"):
             self.logger.debug("Detect type by by name")
             num = name
-            if self.is_cloud_engine and self.sfp_number.match(name):
+            if self.is_cloud_engine or self.sfp_number.match(name):
                 # Port_10GE1/0/48, Port_10GE2/0/48
-                num = "%s%s" % self.sfp_number.match(name).groups()
-            elif self.sfp_number.match(name):
                 # Port_GigabitEthernet2/0/19 format
-                num = self.sfp_number.match(name).group("num")
+                num = "%s%s" % self.sfp_number.match(name).groups()
+                num=num.replace("igabitEthernet","E")
             elif "_" in name:
                 num = name.split("_")[-1]
             return "XCVR", num, part_no
@@ -471,20 +470,16 @@ class Script(BaseScript):
             parse_result = self.parse_elabel(v)
         except self.CLISyntaxError:
             r = self.scripts.get_version()
-            inv = {
-                "type": "CHASSIS",
-                "number": 0,
-                "vendor": "Huawei",
-                "description": "",
-                "part_no": r["platform"],
-            }
-            serial = self.capabilities.get("Chassis | Serial Number")
-            if serial:
-                inv["serial"] = serial
-            revision = self.capabilities.get("Chassis | HW Version")
-            if revision:
-                inv["revision"] = revision
-            return [inv]
+            return [
+                {
+                    "type": "CHASSIS",
+                    "number": 0,
+                    "vendor": "Huawei",
+                    "description": "",
+                    "serial": r["attributes"]["Serial Number"],
+                    "part_no": r["platform"],
+                }
+            ]
             # raise NotImplementedError("Not supported 'display elabel' command")
         if self.is_cx300:
             # Chassis without SN ex. CX300
