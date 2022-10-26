@@ -2296,6 +2296,7 @@ nav:
           - NOC Release and Tagging Policy: about/releases/policy.md
           - NOC 22.2 Generation:
               - NOC 22.2: about/releases/22.2.md
+              - NOC 22.2.1: about/releases/22.2.1.md
           - NOC 22.1 Generation:
               - NOC 22.1: about/releases/22.1.md
               - NOC 22.1.1: about/releases/22.1.1.md
