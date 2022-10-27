@@ -13,7 +13,6 @@ import types
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.lib.datasource import datasource_registry
 from noc.services.classifier.exception import InvalidPatternException
 from noc.core.escape import fm_unescape
 from noc.core.comp import smart_text
@@ -52,17 +51,6 @@ class Rule(object):
         self.datasources = {}  # name -> DS
         self.vars = {}  # name -> value
         self.chain = None
-        # Parse datasources
-        for ds in rule.datasources:
-            self.datasources[ds.name] = eval(
-                "lambda vars: datasource_registry['%s'](%s)"
-                % (
-                    ds.datasource,
-                    ", ".join(["%s=vars['%s']" % (k, v) for k, v in ds.search.items()]),
-                ),
-                {"datasource_registry": datasource_registry},
-                {},
-            )
         # Parse vars
         for v in rule.vars:
             value = v["value"]
