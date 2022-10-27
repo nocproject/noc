@@ -14,7 +14,7 @@ from noc.core.model.base import NOCModel
 from noc.core.model.fields import DocumentReferenceField
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.lib.template import render_message
+from .template import render_message
 
 
 class ObjectNotification(NOCModel):
