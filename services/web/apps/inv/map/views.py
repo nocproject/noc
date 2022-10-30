@@ -22,7 +22,6 @@ from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key
@@ -77,65 +76,8 @@ class MapApplication(ExtApplication):
         if segment.managed_objects.count() > segment.max_objects:
             # Too many objects
             return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
-        # if we set selector in segment
-        # is_view = segment.selector
-        # if is_view:
-        #     mos = segment.selector.managed_objects.values_list("id", flat=True)
-        # Load settings
-        settings = MapSettings.objects.filter(segment=id).first()
-        node_hints = {}
-        link_hints = {}
-        if settings:
-            self.logger.info("Using stored positions")
-            for n in settings.nodes:
-                node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
-            for ll in settings.links:
-                link_hints[ll.id] = {
-                    "connector": ll.connector if len(ll.vertices) else "normal",
-                    "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
-                }
-        else:
-            self.logger.info("Generating positions")
-        # Generate topology
-        topology = SegmentTopology(
-            segment, node_hints, link_hints, force_spring=request.GET.get("force") == "spring"
-        )
-        topology.layout()
-        # Build output
-        r = {
-            "id": str(segment.id),
-            "max_links": int(segment.max_shown_downlinks),
-            "name": segment.name,
-            "caps": list(topology.caps),
-            "nodes": [q_mo(x) for x in topology.G.nodes.values()],
-            "links": [topology.G[u][v] for u, v in topology.G.edges()],
-        }
-        # Parent info
-        if segment.parent:
-            r["parent"] = {"id": str(segment.parent.id), "name": segment.parent.name}
-        # Save settings
-        if not settings:
-            self.logger.debug("Saving first-time layout")
-            MapSettings.load_json(
-                {
-                    "id": str(segment.id),
-                    "nodes": [
-                        {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
-                        for n in r["nodes"]
-                        if n.get("x") is not None and n.get("y") is not None
-                    ],
-                    "links": [
-                        {
-                            "type": n["type"],
-                            "id": n["id"],
-                            "vertices": n.get("vertices", []),
-                            "connector": n.get("connector", "normal"),
-                        }
-                        for n in r["links"]
-                    ],
-                }
-            )
-        return r
+
+        return MapSettings.get_map(segment.id, gen_type="segment", force_spring=request.GET.get("force") == "spring")
 
     @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["POST"], access="write", api=True)
     def api_save(self, request, id):

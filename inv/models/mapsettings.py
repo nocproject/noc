@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from typing import Dict, Any, Optional
 import datetime
 import logging
 
@@ -17,7 +18,13 @@ from mongoengine.fields import (
     ListField,
     FloatField,
     EmbeddedDocumentField,
+    IntField,
+    DictField,
+    BooleanField,
 )
+
+# NOC modules
+from noc.core.topology.loader import loader as t_loader
 
 logger = logging.getLogger(__name__)
 
@@ -60,21 +67,32 @@ class LinkSettings(EmbeddedDocument):
 class MapSettings(Document):
     meta = {"collection": "noc.mapsettings", "strict": False, "auto_create_index": False}
 
-    # Segment or selector id
-    segment = StringField(unique=True)
+    # Generator type
+    get_type = StringField()
+    # Generator ID param
+    gen_id = StringField()
+    # Generator version
+    gen_version = IntField(min_value=0)
     # Change time
-    changed = DateTimeField()
+    last_change_id = DateTimeField()
+    current_change_id = DateTimeField()
     # Changing user
     user = StringField()
     # Paper size
     width = FloatField()
     height = FloatField()
+    # Paper image
+    # Gen data
+    # get_data =
+    # Generator Hints
+    force_layout = BooleanField()  # Always rebuild layout hints
+    gen_hints = DictField()
     #
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
     links = ListField(EmbeddedDocumentField(LinkSettings))
 
     def __str__(self):
-        return self.segment
+        return f"{self.get_type}: {self.gen_id} ({self.gen_version})"
 
     def get_nodes(self):
         """
@@ -164,3 +182,70 @@ class MapSettings(Document):
         # Finally save
         d.save()
         return d
+
+    def update_settings(self, nodes, links):
+        """
+        Update settings
+        :param nodes:
+        :param links:
+        :return:
+        """
+        ...
+
+    @classmethod
+    def get_map(cls, gen_id: str, gen_type: str, **kwargs) -> Optional[Dict[str, Any]]:
+        """
+        Return Map Data
+        :param gen_id: Generator Id param
+        :param gen_type: Generator Type
+        :param kwargs: generator Hints
+        :return:
+        """
+        r = {}
+        gen = t_loader[gen_type]
+        if not gen:
+            logger.warning("Unknown generator: %s", gen_type)
+            return
+        settings: MapSettings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
+        node_hints = {}
+        link_hints = {}
+        if settings:
+            logger.info("[%s|%s] Using stored positions", gen_type, gen_id)
+            for n in settings.nodes:
+                node_hints[n.id] = {"type": n.type, "id": n.id, "x": n.x, "y": n.y}
+            for ll in settings.links:
+                link_hints[ll.id] = {
+                    "connector": ll.connector if len(ll.vertices) else "normal",
+                    "vertices": [{"x": v.x, "y": v.y} for v in ll.vertices],
+                }
+        else:
+            logger.info("[%s|%s] Generating positions", gen_type, gen_id)
+        # Generate topology
+        topology = gen(gen_id, node_hints, link_hints, **kwargs)
+        if not settings or settings.force_layout:
+            topology.layout()
+            settings.update_settings(
+                nodes=[
+                    {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
+                    for n in r["nodes"]
+                    if n.get("x") is not None and n.get("y") is not None
+                ],
+                links=[
+                    {
+                        "type": n["type"],
+                        "id": n["id"],
+                        "vertices": n.get("vertices", []),
+                        "connector": n.get("connector", "normal"),
+                    }
+                    for n in r["links"]
+                ],
+            )
+        return {
+            "id": str(gen_id),
+            "type": gen_type,
+            "max_links": 1000,
+            "name": topology.map_title,
+            "caps": list(topology.caps),
+            "nodes": [x for x in topology.G.nodes.values()],
+            "links": [topology.G[u][v] for u, v in topology.G.edges()],
+        }

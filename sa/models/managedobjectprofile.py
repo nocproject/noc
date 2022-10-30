@@ -846,7 +846,7 @@ class ManagedObjectProfile(NOCModel):
                     ).scalar("linked_segments")
                 )
             ):
-                call_later("noc.core.topology.segment.update_uplinks", 60, segment_id=x)
+                call_later("noc.core.topology.uplink.update_uplinks", 60, segment_id=x)
 
     def can_escalate(self, depended=False):
         """

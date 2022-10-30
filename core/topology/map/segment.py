@@ -10,28 +10,33 @@ import operator
 import logging
 import itertools
 from collections import defaultdict
-from typing import Dict, List, Set
+from typing import Dict, List, Set, Optional
 
 # Third-party modules
 import cachetools
 from bson import ObjectId
 
 # NOC modules
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
-from noc.inv.models.link import Link
+from noc.core.stencil import stencil_registry, Stencil
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ip import IP
 from noc.core.graph.nexthop import iter_next_hops
-from .base import BaseTopology
+from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+from ..types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
+from ..base import TopologyBase
 
 logger = logging.getLogger(__name__)
 
 
-class SegmentTopology(BaseTopology):
-    def __init__(self, segment, node_hints=None, link_hints=None, force_spring=False):
-        self.logger = PrefixLoggerAdapter(logger, segment.name)
-        self.segment = segment
+class SegmentTopology(TopologyBase):
+    name = "segment"
+
+    def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
+        self.segment = NetworkSegment.get_by_id(gen_id)
+        self.logger = PrefixLoggerAdapter(logger, self.segment.name)
         self.segment_siblings = self.segment.get_siblings()
         self._uplinks_cache = {}
         self.segment_objects = set()
@@ -41,7 +46,13 @@ class SegmentTopology(BaseTopology):
         else:
             self.parent_segment = None
             self.ancestor_segments = set()
-        super().__init__(node_hints, link_hints, force_spring)
+        super().__init__(
+            gen_id, node_hints=node_hints, link_hints=link_hints, force_spring=force_spring
+        )
+
+    @property
+    def title(self):
+        return self.segment.name
 
     def get_role(self, mo: ManagedObject) -> str:
         if mo.segment in self.segment_siblings:
@@ -134,6 +145,55 @@ class SegmentTopology(BaseTopology):
         )
         return [s[1]]
 
+    def get_object_stencil(self, mo: ManagedObject) -> Optional[Stencil]:
+        if mo.shape:
+            # Use mo's shape, if set
+            return stencil_registry.get(mo.shape)
+        elif mo.object_profile.shape:
+            # Use profile's shape
+            return stencil_registry.get(mo.object_profile.shape)
+        return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
+
+    def get_node_stencil_overlays(mo: ManagedObject) -> List[ShapeOverlay]:
+        seen: Set[ShapeOverlayPosition] = set()
+        r: List[ShapeOverlay] = []
+        # ManagedObject
+        if mo.shape_overlay_glyph:
+            pos = mo.shape_overlay_position or ShapeOverlayPosition.NW
+            r += [
+                ShapeOverlay(
+                    code=mo.shape_overlay_glyph.code,
+                    position=pos,
+                    form=mo.shape_overlay_form or ShapeOverlayForm.Circle,
+                )
+            ]
+            seen.add(pos)
+        # Project
+        if mo.project and mo.project.shape_overlay_glyph:
+            pos = mo.project.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=mo.project.shape_overlay_glyph.code,
+                        position=pos,
+                        form=mo.project.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        # ManagedObjectProfile
+        if mo.object_profile.shape_overlay_glyph:
+            pos = mo.object_profile.shape_overlay_position or ShapeOverlayPosition.NW
+            if pos not in seen:
+                r += [
+                    ShapeOverlay(
+                        code=mo.object_profile.shape_overlay_glyph.code,
+                        position=pos,
+                        form=mo.object_profile.shape_overlay_form or ShapeOverlayForm.Circle,
+                    )
+                ]
+                seen.add(pos)
+        return r
+
     def load(self):
         """
         Load all managed objects from segment
@@ -200,7 +260,16 @@ class SegmentTopology(BaseTopology):
             mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
         )
         for mo in mos.values():
-            self.add_object(mo)
+            self.add_node(
+                mo,
+                "managedobject",
+                {
+                    "role": self.get_role(mo),
+                    "address": mo.address,
+                    "level": mo.object_profile.level,
+                },
+            )
+            # self.add_object(mo)
         # Process all segment's links
         pn = 0
         for link in links:
@@ -220,7 +289,7 @@ class SegmentTopology(BaseTopology):
             else:
                 # pmp
                 # Create virtual cloud
-                self.add_cloud(link)
+                self.add_node(link, "cloud")
                 # Create virtual links to cloud
                 pseudo_links = [(link, mo) for mo in mo_ifaces]
                 # Create virtual cloud interface
@@ -358,14 +427,3 @@ class SegmentTopology(BaseTopology):
                 uplinks=obj_uplinks[mo],
                 rca_neighbors=rca_neighbors,
             )
-
-
-def update_uplinks(segment_id):
-    from noc.inv.models.networksegment import NetworkSegment
-
-    segment = NetworkSegment.get_by_id(segment_id)
-    if not segment:
-        logger.warning("Segment with id: %s does not exist" % segment_id)
-        return
-    st = SegmentTopology(segment)
-    ManagedObject.update_uplinks(st.iter_uplinks())
