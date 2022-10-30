@@ -112,14 +112,18 @@ class MetricsCheck(DiscoveryCheck):
                 }
             )
         if not metrics:
-            self.logger.info("No metrics configured. Skipping")
+            self.logger.info("No metrics configured. Skipping...")
+            return
+        metrics_svc_slots = self.service.get_slot_limits("metrics")
+        if not metrics_svc_slots:
+            self.logger.warning("No active Metrics service. Skipping...")
             return
         self.logger.debug("Collecting metrics: %s", metrics)
         result = self.object.scripts.get_metrics(
             collected=metrics,
             streaming={
                 "stream": "metrics",
-                "partition": self.object.id % self.service.get_slot_limits("metrics"),
+                "partition": self.object.id % metrics_svc_slots,
                 "utc_offset": config.tz_utc_offset,
                 "data": s_data,
             }
@@ -157,14 +161,14 @@ class MetricsCheck(DiscoveryCheck):
         for rr in result:
             mt = MetricType.get_by_name(rr["metric"])
             scope_name = mt.scope.table_name
-            m_id = (scope_name, tuple(rr["labels"]))
+            m_id = (scope_name, tuple(rr.get("labels", [])))
             if m_id not in data:
                 data[m_id] = {
                     "ts": rr["ts"] + config.tz_utc_offset * NS,
                     "managed_object": self.object.bi_id,
                     "scope": scope_name,
                     "field": mt.field_name,
-                    "labels": rr["labels"],
+                    "labels": rr.get("labels", []),
                     "_units": {},
                 }
                 if rr.get("sensor"):
