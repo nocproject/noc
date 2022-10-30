@@ -25,6 +25,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.topology.loader import loader as t_loader
+from noc.core.topology.base import TopologyBase
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class MapSettings(Document):
     meta = {"collection": "noc.mapsettings", "strict": False, "auto_create_index": False}
 
     # Generator type
-    get_type = StringField()
+    gen_type = StringField()
     # Generator ID param
     gen_id = StringField()
     # Generator version
@@ -201,7 +202,6 @@ class MapSettings(Document):
         :param kwargs: generator Hints
         :return:
         """
-        r = {}
         gen = t_loader[gen_type]
         if not gen:
             logger.warning("Unknown generator: %s", gen_type)
@@ -221,31 +221,31 @@ class MapSettings(Document):
         else:
             logger.info("[%s|%s] Generating positions", gen_type, gen_id)
         # Generate topology
-        topology = gen(gen_id, node_hints, link_hints, **kwargs)
+        topology: TopologyBase = gen(gen_id, node_hints, link_hints, **kwargs)
         if not settings or settings.force_layout:
             topology.layout()
-            settings.update_settings(
-                nodes=[
-                    {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
-                    for n in r["nodes"]
-                    if n.get("x") is not None and n.get("y") is not None
-                ],
-                links=[
-                    {
-                        "type": n["type"],
-                        "id": n["id"],
-                        "vertices": n.get("vertices", []),
-                        "connector": n.get("connector", "normal"),
-                    }
-                    for n in r["links"]
-                ],
-            )
+            # settings.update_settings(
+            #     nodes=[
+            #         {"type": n["type"], "id": n["id"], "x": n["x"], "y": n["y"]}
+            #         for n in r["nodes"]
+            #         if n.get("x") is not None and n.get("y") is not None
+            #     ],
+            #     links=[
+            #         {
+            #             "type": n["type"],
+            #             "id": n["id"],
+            #             "vertices": n.get("vertices", []),
+            #             "connector": n.get("connector", "normal"),
+            #         }
+            #         for n in r["links"]
+            #     ],
+            # )
         return {
             "id": str(gen_id),
             "type": gen_type,
             "max_links": 1000,
-            "name": topology.map_title,
+            "name": topology.title,
             "caps": list(topology.caps),
-            "nodes": [x for x in topology.G.nodes.values()],
-            "links": [topology.G[u][v] for u, v in topology.G.edges()],
+            "nodes": [x for x in topology.iter_nodes()],
+            "links": [ll for ll in topology.iter_edges()],
         }

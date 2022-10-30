@@ -146,6 +146,11 @@ class SegmentTopology(TopologyBase):
         return [s[1]]
 
     def get_object_stencil(self, mo: ManagedObject) -> Optional[Stencil]:
+        """
+        Get ManagedObejct Stencil
+        :param mo:
+        :return:
+        """
         if mo.shape:
             # Use mo's shape, if set
             return stencil_registry.get(mo.shape)
@@ -154,7 +159,12 @@ class SegmentTopology(TopologyBase):
             return stencil_registry.get(mo.object_profile.shape)
         return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
 
-    def get_node_stencil_overlays(mo: ManagedObject) -> List[ShapeOverlay]:
+    def get_node_stencil_overlays(self, mo: ManagedObject) -> List[ShapeOverlay]:
+        """
+        Getting ManagedObject Node overlays
+        :param mo:
+        :return:
+        """
         seen: Set[ShapeOverlayPosition] = set()
         r: List[ShapeOverlay] = []
         # ManagedObject
@@ -335,6 +345,18 @@ class SegmentTopology(TopologyBase):
                 )
                 pn += 2
 
+    @staticmethod
+    def q_mo(d):
+        x = d.copy()
+        if x["type"] == "managedobject":
+            del x["mo"]
+            # x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
+            x["external"] = x.get("role") != "segment"
+        elif d["type"] == "cloud":
+            del x["link"]
+            x["external"] = False
+        return x
+
     def iter_uplinks(self):
         """
         Yields ObjectUplinks items for segment
@@ -427,3 +449,7 @@ class SegmentTopology(TopologyBase):
                 uplinks=obj_uplinks[mo],
                 rca_neighbors=rca_neighbors,
             )
+
+    def iter_nodes(self):
+        for n in self.G.nodes.values():
+            yield self.q_mo(n)

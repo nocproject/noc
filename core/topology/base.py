@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from typing import Optional, List, Set, Dict, Any
+from typing import Optional, List, Set, Dict, Any, Iterator, Tuple
 from dataclasses import asdict
 
 # Third-Party modules
@@ -64,7 +64,7 @@ class TopologyBase(object):
         # Graph
         self.G = nx.Graph()
         self.caps: Set[str] = set()
-        self.options = kwargs
+        self.options = kwargs or {}
         self.load()  # Load nodes
 
     def __len__(self):
@@ -79,6 +79,10 @@ class TopologyBase(object):
 
     @property
     def title(self):
+        """
+        Map Title
+        :return:
+        """
         return f"{self.gen_id}"
 
     def load(self):
@@ -145,8 +149,7 @@ class TopologyBase(object):
         """
         return self.default_stencil
 
-    @staticmethod
-    def get_node_stencil_overlays(o: Any) -> List[ShapeOverlay]:
+    def get_node_stencil_overlays(self, o: Any) -> List[ShapeOverlay]:
         """
         Return node Stencil Overlays
         :param o: Object
@@ -190,7 +193,9 @@ class TopologyBase(object):
         isolated = set(self.get_isolated())
         return self.G.subgraph([o for o in self.G.nodes if o not in isolated])
 
-    def normalize_pos(self, pos):
+    def normalize_pos(
+        self, pos: Dict[str, Tuple[int, int]]
+    ) -> Tuple[int, int, Dict[str, Tuple[int, int]]]:
         """
         Normalize positions, shift to (0, 0).
         Returns width, height, post
@@ -211,12 +216,16 @@ class TopologyBase(object):
         return s[0], s[1], pos
 
     def get_layout_class(self):
+        """
+        Getting layout module
+        :return:
+        """
         if not len(self.G):
             # Empty graph
             return SpringLayout
-        if "force_spring" not in self.options and len(self.get_rings()) == 1:
+        if not self.options.get("force_spring") and len(self.get_rings()) == 1:
             return RingLayout
-        elif "force_spring" not in self.options and nx.is_forest(self.G):
+        elif not self.options.get("force_spring") and nx.is_forest(self.G):
             return TreeLayout
         else:
             return SpringLayout
@@ -237,7 +246,7 @@ class TopologyBase(object):
             pos.update(dpos)
         else:
             pos = dpos
-        pos = {o: pos[o] for o in pos if o in self.G.nodes}
+        pos: Dict[str, Tuple[int, int]] = {o: pos[o] for o in pos if o in self.G.nodes}
         width, height, pos = self.normalize_pos(pos)
         # Place isolated nodes
         isolated = sorted(
@@ -264,3 +273,19 @@ class TopologyBase(object):
                 # Use existing hints
                 ed.update(self.link_hints)
             # @todo: Calculate new positions
+
+    def iter_nodes(self) -> Iterator[Any]:
+        """
+        Iterate over map Nodes
+        :return:
+        """
+        for n in self.G.nodes.values():
+            yield n
+
+    def iter_edges(self) -> Iterator[Any]:
+        """
+        Iterate over map Edges
+        :return:
+        """
+        for u, v in self.G.edges():
+            yield self.G[u][v]

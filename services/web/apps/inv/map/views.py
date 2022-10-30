@@ -60,17 +60,6 @@ class MapApplication(ExtApplication):
 
     @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["GET"], access="read", api=True)
     def api_data(self, request, id):
-        def q_mo(d):
-            x = d.copy()
-            if x["type"] == "managedobject":
-                del x["mo"]
-                # x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-                x["external"] = x.get("role") != "segment"
-            elif d["type"] == "cloud":
-                del x["link"]
-                x["external"] = False
-            return x
-
         # Find segment
         segment = self.get_object_or_404(NetworkSegment, id=id)
         if segment.managed_objects.count() > segment.max_objects:
