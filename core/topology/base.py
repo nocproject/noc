@@ -32,7 +32,7 @@ class TopologyBase(object):
     name: str  # Map Generator Name
     version: int = 0  # Generator version
 
-    CAPS: Set[str] = {"Network | STP"}
+    CAPS: Set[str] = {}
     # Top padding for isolated nodes
     ISOLATED_PADDING = 50
     # Minimum width to place isolated nodes
@@ -105,7 +105,7 @@ class TopologyBase(object):
             # Only update attributes
             self.G.nodes[o_id].update(attrs)
             return
-        stencil = self.get_node_stencil(o)
+        stencil = self.get_node_stencil(o, node_type=n_type)
         # Get capabilities
         oc = set()
         if hasattr(o, "get_caps"):
@@ -141,18 +141,22 @@ class TopologyBase(object):
         #
         self.G.add_edge(o1, o2, **a)
 
-    def get_node_stencil(self, o: Any) -> Optional[Stencil]:
+    def get_node_stencil(self, o: Any, node_type: Optional[str] = None) -> Optional[Stencil]:
         """
         Return node stencil
         :param o:
+        :param node_type:
         :return:
         """
         return self.default_stencil
 
-    def get_node_stencil_overlays(self, o: Any) -> List[ShapeOverlay]:
+    def get_node_stencil_overlays(
+        self, o: Any, node_type: Optional[str] = None
+    ) -> List[ShapeOverlay]:
         """
         Return node Stencil Overlays
         :param o: Object
+        :param node_type:
         :return:
         """
         return []

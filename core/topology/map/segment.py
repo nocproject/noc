@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 class SegmentTopology(TopologyBase):
     name = "segment"
+    CAPS: Set[str] = {"Network | STP"}
 
     def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
         self.segment = NetworkSegment.get_by_id(gen_id)
@@ -145,26 +146,37 @@ class SegmentTopology(TopologyBase):
         )
         return [s[1]]
 
-    def get_object_stencil(self, mo: ManagedObject) -> Optional[Stencil]:
+    def get_node_stencil(
+        self, o: ManagedObject, node_type: Optional[str] = None
+    ) -> Optional[Stencil]:
         """
         Get ManagedObejct Stencil
-        :param mo:
+
+        :param o: ManagedObject
+        :param node_type:
         :return:
         """
-        if mo.shape:
+        if node_type == "cloud":
+            return stencil_registry.get(o.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
+        if o.shape:
             # Use mo's shape, if set
-            return stencil_registry.get(mo.shape)
-        elif mo.object_profile.shape:
+            return stencil_registry.get(o.shape)
+        elif o.object_profile.shape:
             # Use profile's shape
-            return stencil_registry.get(mo.object_profile.shape)
+            return stencil_registry.get(o.object_profile.shape)
         return stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
 
-    def get_node_stencil_overlays(self, mo: ManagedObject) -> List[ShapeOverlay]:
+    def get_node_stencil_overlays(
+        self, mo: ManagedObject, node_type: Optional[str] = None
+    ) -> List[ShapeOverlay]:
         """
-        Getting ManagedObject Node overlays
+
         :param mo:
+        :param node_type:
         :return:
         """
+        if node_type == "cloud":
+            return []
         seen: Set[ShapeOverlayPosition] = set()
         r: List[ShapeOverlay] = []
         # ManagedObject
@@ -270,14 +282,19 @@ class SegmentTopology(TopologyBase):
             mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
         )
         for mo in mos.values():
+            attrs = {
+                "role": self.get_role(mo),
+                "address": mo.address,
+                "level": mo.object_profile.level,
+            }
+            if attrs["role"] == "uplink":
+                attrs["portal"] = {"generator": "segment", "id": self.parent_segment}
+            elif attrs["role"] == "downlink":
+                attrs["portal"] = {"generator": "segment", "id": str(mo.segment.id)}
             self.add_node(
                 mo,
                 "managedobject",
-                {
-                    "role": self.get_role(mo),
-                    "address": mo.address,
-                    "level": mo.object_profile.level,
-                },
+                attrs,
             )
             # self.add_object(mo)
         # Process all segment's links

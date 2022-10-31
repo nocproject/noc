@@ -59,14 +59,35 @@ class MapApplication(ExtApplication):
     ST_MAINTENANCE = 32  # Maintenance bit
 
     @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["GET"], access="read", api=True)
-    def api_data(self, request, id):
+    def api_data_segment(self, request, id):
         # Find segment
         segment = self.get_object_or_404(NetworkSegment, id=id)
         if segment.managed_objects.count() > segment.max_objects:
             # Too many objects
             return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
 
-        return MapSettings.get_map(segment.id, gen_type="segment", force_spring=request.GET.get("force") == "spring")
+        return MapSettings.get_map(
+            segment.id, gen_type="segment", force_spring=request.GET.get("force") == "spring"
+        )
+
+    @view(
+        r"^(?P<gen_type>\w+)/(?P<gen_id>[0-9a-f]{24})/data/$",
+        method=["GET"],
+        access="read",
+        api=True,
+    )
+    def api_data(self, request, gen_type, gen_id):
+        # Find segment
+        # segment = self.get_object_or_404(NetworkSegment, id=id)
+        # if segment.managed_objects.count() > segment.max_objects:
+        #     # Too many objects
+        #     return {"id": str(segment.id), "name": segment.name, "error": _("Too many objects")}
+        try:
+            return MapSettings.get_map(
+                gen_id, gen_type=gen_type, force_spring=request.GET.get("force") == "spring"
+            )
+        except ValueError as e:
+            return {"id": gen_id, "name": f"{gen_type}: {gen_id}", "error": str(e)}
 
     @view(r"^(?P<id>[0-9a-f]{24})/data/$", method=["POST"], access="write", api=True)
     def api_save(self, request, id):

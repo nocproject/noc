@@ -93,7 +93,7 @@ class MapSettings(Document):
     links = ListField(EmbeddedDocumentField(LinkSettings))
 
     def __str__(self):
-        return f"{self.get_type}: {self.gen_id} ({self.gen_version})"
+        return f"{self.gen_type}: {self.gen_id} ({self.gen_version})"
 
     def get_nodes(self):
         """
@@ -119,22 +119,33 @@ class MapSettings(Document):
                 x
                 y
         """
-        d = MapSettings.objects.filter(segment=data["id"]).first()
+        d = MapSettings.objects.filter(gen_type="segment", gen_id=data["id"]).first()
         if d:
             logger.info("Updating settings for %s", data["id"])
         else:
             logger.info("Creating new settings for %s", data["id"])
-            d = MapSettings(segment=data["id"], nodes=[], links=[])
+            d = MapSettings(gen_type="segment", gen_id=data["id"], nodes=[], links=[])
         # Update meta
         if user:
             d.user = user
-        d.changed = datetime.datetime.now()
+        d.update_settings(data.get("nodes", []), data.get("links", []))
+        d.save()
+        return d
+
+    def update_settings(self, nodes, links):
+        """
+        Update settings
+        :param nodes:
+        :param links:
+        :return:
+        """
+        self.current_change_id = datetime.datetime.now().replace(microsecond=0)
         # Update nodes
         new_nodes = {}  # id -> data
-        for n in data.get("nodes", []):
+        for n in nodes:
             new_nodes[(n["type"], n["id"])] = n
         nn = []
-        for n in d.nodes:
+        for n in self.nodes:
             nd = new_nodes.get((n.type, n.id))
             if not nd:
                 continue  # Not found
@@ -149,24 +160,24 @@ class MapSettings(Document):
             nn += [NodeSettings(type=nd["type"], id=nd["id"], x=nd["x"], y=nd["y"])]
             mx = max(mx, nd["x"])
             my = max(my, nd["y"])
-        d.width = data.get("width", mx)
-        d.height = data.get("height", my)
-        d.nodes = sorted(nn, key=lambda x: (x.type, x.id))
+        # self.width = data.get("width", mx)
+        # self.height = data.get("height", my)
+        self.nodes = sorted(nn, key=lambda x: (x.type, x.id))
         # Update links
         new_links = {}
-        for l in data.get("links", []):
-            new_links[(l["type"], l["id"])] = l
+        for ll in links:
+            new_links[(ll["type"], ll["id"])] = ll
         nn = []
-        for l in d.links:
-            nl = new_links.get((l.type, l.id))
+        for ll in self.links:
+            nl = new_links.get((ll.type, ll.id))
             if not nl:
                 continue  # Not found
-            l.vertices = [VertexPosition(x=v["x"], y=v["y"]) for v in nl.get("vertices", [])]
-            l.connector = nl.get("connector", LC_NORMAL)
-            nn += [l]
-            del new_links[(l.type, l.id)]
-        for l in new_links:
-            nl = new_links[l]
+            ll.vertices = [VertexPosition(x=v["x"], y=v["y"]) for v in nl.get("vertices", [])]
+            ll.connector = nl.get("connector", LC_NORMAL)
+            nn += [ll]
+            del new_links[(ll.type, ll.id)]
+        for ll in new_links:
+            nl = new_links[ll]
             nn += [
                 LinkSettings(
                     type=nl["type"],
@@ -175,23 +186,13 @@ class MapSettings(Document):
                     connector=nl.get("connector", "normal"),
                 )
             ]
-        d.links = [
-            l
-            for l in sorted(nn, key=lambda x: (x.type, x.id))
-            if l.vertices or l.connector != LC_NORMAL
+        self.links = [
+            ll
+            for ll in sorted(nn, key=lambda x: (x.type, x.id))
+            if ll.vertices or ll.connector != LC_NORMAL
         ]
         # Finally save
-        d.save()
-        return d
-
-    def update_settings(self, nodes, links):
-        """
-        Update settings
-        :param nodes:
-        :param links:
-        :return:
-        """
-        ...
+        self.save()
 
     @classmethod
     def get_map(cls, gen_id: str, gen_type: str, **kwargs) -> Optional[Dict[str, Any]]:
@@ -205,7 +206,7 @@ class MapSettings(Document):
         gen = t_loader[gen_type]
         if not gen:
             logger.warning("Unknown generator: %s", gen_type)
-            return
+            raise ValueError("Unknown Map Type: %s", gen_type)
         settings: MapSettings = MapSettings.objects.filter(gen_type=gen_type, gen_id=gen_id).first()
         node_hints = {}
         link_hints = {}
@@ -240,6 +241,8 @@ class MapSettings(Document):
             #         for n in r["links"]
             #     ],
             # )
+        # if segment.parent:
+        #     r["parent"] = {"id": str(segment.parent.id), "name": segment.parent.name}
         return {
             "id": str(gen_id),
             "type": gen_type,
