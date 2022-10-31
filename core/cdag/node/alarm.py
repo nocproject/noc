@@ -179,6 +179,7 @@ class AlarmNode(BaseCDAGNode):
         if not self.is_active():
             return
         self.clear_alarm("Reset by change node config")
+        self.state.active = False
 
     def is_required_input(self, name: str) -> bool:
         """

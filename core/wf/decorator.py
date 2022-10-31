@@ -93,6 +93,8 @@ def document_set_state(self, state, state_changed: datetime.datetime = None, bul
     # Write bulk
     if bulk is None:
         self._get_collection().bulk_write(c_bulk)
+    else:
+        bulk += c_bulk
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:
