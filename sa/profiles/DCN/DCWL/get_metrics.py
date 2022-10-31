@@ -145,7 +145,7 @@ class Script(GetMetricsScript):
                 if data.get(field) is not None:
                     self.set_metric(
                         id=(metric, [f"noc::interface::{iface}"]),
-                        value=data[field],
+                        value=float(data[field]),
                         type="counter",
                         # scale=8 if metric in self.scale_x8 else 1,
                         units="bit" if metric in self.scale_x8 else "byte",
@@ -154,13 +154,13 @@ class Script(GetMetricsScript):
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
                     id=("Radio | TxPower", [f"noc::interface::{iface}"]),
-                    value=radio_metrics[data["radio"]]["tx-power"],
+                    value=float(radio_metrics[data["radio"]]["tx-power"]),
                     units="dBm",
                 )
             if "radio" in data and data["radio"] in radio_metrics:
                 self.set_metric(
                     id=("Radio | Channel | Util", [f"noc::interface::{iface}"]),
-                    value=radio_metrics[data["radio"]]["channel-util"],
+                    value=float(radio_metrics[data["radio"]]["channel-util"]),
                     units="dBm",
                 )
 
