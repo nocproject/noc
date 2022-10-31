@@ -49,14 +49,7 @@ from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.core.liftbridge.message import Message
-from noc.core.mx import (
-    MX_STREAM,
-    get_mx_partitions,
-    MX_MESSAGE_TYPE,
-    MX_SHARDING_KEY,
-    MX_LABELS,
-    MX_H_VALUE_SPLITTER,
-)
+from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -328,7 +321,6 @@ class ClassifierService(FastAPIService):
             event.managed_object.name,
             event.managed_object.address,
         )
-        n_partitions = get_mx_partitions()
         msg = {
             "timestamp": event.timestamp,
             "message_id": event.raw_vars.get("message_id"),
@@ -350,16 +342,14 @@ class ClassifierService(FastAPIService):
         else:
             msg["data"] = event.raw_vars
         # Register MX message
-        self.publish(
-            value=orjson.dumps(msg),
-            stream=MX_STREAM,
-            partition=int(event.managed_object.id) % n_partitions,
+        self.send_message(
+            message_type="event",
+            data=orjson.dumps(msg),
+            sharding_key=int(event.managed_object.id),
             headers={
-                MX_MESSAGE_TYPE: b"event",
                 MX_LABELS: MX_H_VALUE_SPLITTER.join(event.managed_object.effective_labels).encode(
                     DEFAULT_ENCODING
-                ),
-                MX_SHARDING_KEY: str(event.managed_object.id).encode(DEFAULT_ENCODING),
+                )
             },
         )
 
