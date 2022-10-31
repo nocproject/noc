@@ -2694,16 +2694,17 @@ class ManagedObject(NOCModel):
                 for d_name in dc.dependent:
                     dd = self.get_diagnostic(d_name)
                     if dd and dd.state == DiagnosticState.failed:
-                        groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason}]
+                        groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason or ""}]
                     processed.add(d_name)
             elif d and d.state == d.state.failed:
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
                     "reference": f"dc:{self.id}:{d.diagnostic}",
+                    "managed_object": self.id,
                     "$op": "raise",
                     "alarm_class": dc.alarm_class,
                     "labels": dc.alarm_labels or [],
-                    "vars": [{"reason": d.reason}],
+                    "vars": [{"reason": d.reason or ""}],
                 }
             else:
                 alarms[dc.diagnostic] = {
@@ -2725,7 +2726,7 @@ class ManagedObject(NOCModel):
                             "managed_object": self.id,
                             "timestamp": now,
                             "labels": alarm_config[dd["diagnostic"]]["alarm_labels"],
-                            "vars": {"reason": dd["reason"]},
+                            "vars": {"reason": dd["reason"] or ""},
                         }
                         for dd in groups[d]
                     ],

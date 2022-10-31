@@ -19,7 +19,7 @@ import random
 # Third-party modules
 import orjson
 import cachetools
-from pymongo import DESCENDING
+from pymongo import DESCENDING, ReadPreference
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -626,7 +626,9 @@ class MetricsService(FastAPIService):
 
     @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
     def get_source(self, s_id):
-        coll = CfgMetricSourcesDataStream.get_collection()
+        coll = CfgMetricSourcesDataStream.get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        )
         data = coll.find_one({"_id": str(s_id)})
         if not data:
             return
