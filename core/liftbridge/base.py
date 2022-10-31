@@ -178,7 +178,16 @@ STREAM_CONFIG: Dict[str, StreamConfig] = {
     "tgsender": StreamConfig(name="tgsender", slot="tgsender"),
     "icqsender": StreamConfig(name="icqsender", slot="icqsender"),
     "mailsender": StreamConfig(name="mailsender", slot="mailsender"),
-    "kafkasender": StreamConfig(name="kafkasender", slot="kafkasender"),
+    "kafkasender": StreamConfig(
+        name="kafkasender",
+        slot="kafkasender",
+        retention_policy=RetentionPolicy(
+            retention_bytes=config.liftbridge.stream_kafkasender_retention_max_bytes,
+            retention_ages=config.liftbridge.stream_kafkasender_retention_max_age,
+            segment_bytes=config.liftbridge.stream_kafkasender_segment_max_bytes,
+            segment_ages=config.liftbridge.stream_kafkasender_segment_max_age,
+        ),
+    ),
 }
 
 H_ENCODING = "X-NOC-Encoding"
