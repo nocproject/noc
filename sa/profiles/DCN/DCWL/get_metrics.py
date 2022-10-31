@@ -138,17 +138,23 @@ class Script(GetMetricsScript):
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
                     ssid = smart_text(codecs.decode(ssid, "hex"))
-                iface = "%s.%s" % (data["name"], ssid)
+                iface = f'{data["name"]}.{ssid}'
             else:
                 iface = data["name"]
             for field, metric in iface_metric_map.items():
+                if metric.endswith("bytes") and metric in self.scale_x8:
+                    units = "bit"
+                elif metric.endswith("bytes"):
+                    units = "byte"
+                else:
+                    units = "pkt"
                 if data.get(field) is not None:
                     self.set_metric(
                         id=(metric, [f"noc::interface::{iface}"]),
                         value=float(data[field]),
                         type="counter",
                         # scale=8 if metric in self.scale_x8 else 1,
-                        units="bit" if metric in self.scale_x8 else "byte",
+                        units=units,
                     )
             # LifeHack. Set Radio interface metrics to SSID
             if "radio" in data and data["radio"] in radio_metrics:

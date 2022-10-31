@@ -114,6 +114,7 @@ class Script(GetMetricsScript):
                         metric="Environment | Temperature",
                         labels=["noc::sensor::Temperature_%s" % module],
                         value=float(v.split()[0]),
+                        units="C",
                         multi=True,
                     )
                 elif "voltage" in m:
@@ -122,6 +123,7 @@ class Script(GetMetricsScript):
                         metric="Environment | Voltage",
                         labels=["noc::sensor::Voltage_%s" % module],
                         value=float(v.split()[0]),
+                        units="VDC",
                         multi=True,
                     )
                 elif "current" in m:
@@ -131,6 +133,7 @@ class Script(GetMetricsScript):
                         labels=["noc::sensor::ElectricCurrent_%s" % module],
                         value=float(v.split()[0]) * 1000.0,
                         multi=True,
+                        units="A",
                     )
                 elif "door state" in m:
                     self.set_metric(
