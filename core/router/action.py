@@ -15,8 +15,9 @@ import orjson
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE, MX_SHARDING_KEY
 from noc.config import config
+from itertools import count
 
 
 DROP = ""
@@ -129,6 +130,7 @@ class MetricAction(Action):
         self.stream: str = cfg.stream
         self.mx_metrics_scopes = {}
         self.load_handlers()
+        self.counter = count()
 
     def load_handlers(self):
         from noc.main.models.metricstream import MetricStream
@@ -141,6 +143,7 @@ class MetricAction(Action):
         table = msg.headers.get(MX_METRICS_SCOPE)
         if table not in self.mx_metrics_scopes:
             return
+        self.headers[MX_SHARDING_KEY] = str(next(self.counter)).encode(DEFAULT_ENCODING)
         yield self.stream, self.headers, [
             self.mx_metrics_scopes[table](orjson.loads(v)) for v in msg.value.split(b"\n")
         ]
