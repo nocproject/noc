@@ -72,8 +72,7 @@ def document_set_state(self, state, state_changed: datetime.datetime = None, bul
         set_op["expired"] = self.expired
     # Update database directly
     # to avoid full save
-    c_bulk = bulk or []
-    c_bulk += [UpdateOne({"_id": self.id}, {"$set": set_op})]
+    c_bulk = [UpdateOne({"_id": self.id}, {"$set": set_op})]
     # Update effective labels
     if hasattr(self, "effective_labels") and prev_labels:
         c_bulk += [UpdateOne({"_id": self.id}, {"$pullAll": {"effective_labels": prev_labels}})]
