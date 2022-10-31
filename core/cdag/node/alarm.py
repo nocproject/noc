@@ -154,7 +154,10 @@ class AlarmNode(BaseCDAGNode):
         self.publish_message(msg)
         self.state.active = False
         logger.info(
-            "[%s|%s] Clear alarm", self.config.managed_object, ";".join(self.config.labels or [])
+            "[%s|%s|%s] Clear alarm",
+            self.node_id,
+            self.config.managed_object,
+            ";".join(self.config.labels or []),
         )
 
     def publish_message(self, msg):

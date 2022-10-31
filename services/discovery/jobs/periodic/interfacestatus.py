@@ -138,11 +138,11 @@ class InterfaceStatusCheck(DiscoveryCheck):
                     self.iface_alarm(ostatus, astatus, iface, timestamp=now)
                 if astatus is False:
                     # If admin_down send expired signal
-                    iface.fire_event("off")
+                    iface.fire_event("off", bulk=bulk)
                 else:
-                    iface.fire_event("on")
+                    iface.fire_event("on", bulk=bulk)
             if ostatus:
-                iface.fire_event("seen")
+                iface.fire_event("seen", bulk=bulk)
         if bulk:
             self.logger.info("Committing changes to database")
             try:
