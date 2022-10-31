@@ -2704,7 +2704,7 @@ class ManagedObject(NOCModel):
                     "$op": "raise",
                     "alarm_class": dc.alarm_class,
                     "labels": dc.alarm_labels or [],
-                    "vars": [{"reason": d.reason or ""}],
+                    "vars": {"reason": d.reason or ""},
                 }
             else:
                 alarms[dc.diagnostic] = {
