@@ -199,11 +199,12 @@ class State(Document):
                 else:
                     logger.debug("[%s|%s] Invalid handler %s, skipping", obj, self.name, hn)
 
-    def fire_transition(self, transition, obj):
+    def fire_transition(self, transition, obj, bulk=None):
         """
         Process transition from state
         :param transition:
         :param obj:
+        :param bulk:
         :return:
         """
         assert obj.state == self
@@ -214,13 +215,14 @@ class State(Document):
         transition.on_transition(obj)
         # Set new state
         # Raises on_enter handler
-        obj.set_state(transition.to_state)
+        obj.set_state(transition.to_state, bulk=bulk)
 
-    def fire_event(self, event, obj):
+    def fire_event(self, event, obj, bulk=None):
         """
         Fire transition by event name
         :param event:
         :param obj:
+        :param bulk:
         :return:
         """
         from .transition import Transition
@@ -248,7 +250,7 @@ class State(Document):
                     event,
                 )
                 continue
-            self.fire_transition(t, obj)
+            self.fire_transition(t, obj, bulk=bulk)
             break
         else:
             logger.debug(
