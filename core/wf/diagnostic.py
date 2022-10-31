@@ -75,7 +75,7 @@ class DiagnosticConfig(object):
     #
     save_history: bool = False
     # Display Config
-    show_in_display: bool = False  # Show diagnostic on UI
+    show_in_display: bool = True  # Show diagnostic on UI
     display_description: Optional[str] = None  # Description for show User
     display_order: int = 0  # Order on displayed list
     # FM Config

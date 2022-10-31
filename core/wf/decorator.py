@@ -18,16 +18,17 @@ from noc.models import is_document
 logger = logging.getLogger(__name__)
 
 
-def fire_event(self, event):
+def fire_event(self, event, bulk=None):
     """
     Perform transition using event name
     :param event: event name
+    :param bulk
     :return:
     """
     if not self.state:
         logger.info("[%s] Cannot fire event '%s'. No default state. Skipping", self, event)
         return
-    self.state.fire_event(event, self)
+    self.state.fire_event(event, self, bulk=bulk)
 
 
 def fire_transition(self, transition):
@@ -39,7 +40,7 @@ def fire_transition(self, transition):
     self.state.fire_transition(transition, self)
 
 
-def document_set_state(self, state, state_changed: datetime.datetime = None):
+def document_set_state(self, state, state_changed: datetime.datetime = None, bulk=None):
     """
     Set state
 
@@ -50,6 +51,7 @@ def document_set_state(self, state, state_changed: datetime.datetime = None):
     :param self:
     :param state:
     :param state_changed:
+    :param bulk:
     :return:
     """
     # Direct update arguments
@@ -70,12 +72,12 @@ def document_set_state(self, state, state_changed: datetime.datetime = None):
         set_op["expired"] = self.expired
     # Update database directly
     # to avoid full save
-    bulk = [UpdateOne({"_id": self.id}, {"$set": set_op})]
+    c_bulk = [UpdateOne({"_id": self.id}, {"$set": set_op})]
     # Update effective labels
     if hasattr(self, "effective_labels") and prev_labels:
-        bulk += [UpdateOne({"_id": self.id}, {"$pullAll": {"effective_labels": prev_labels}})]
+        c_bulk += [UpdateOne({"_id": self.id}, {"$pullAll": {"effective_labels": prev_labels}})]
     if hasattr(self, "effective_labels") and state.labels:
-        bulk += [
+        c_bulk += [
             UpdateOne(
                 {"_id": self.id},
                 {
@@ -88,7 +90,10 @@ def document_set_state(self, state, state_changed: datetime.datetime = None):
             )
         ]
     # Write bulk
-    self._get_collection().bulk_write(bulk)
+    if bulk is None:
+        self._get_collection().bulk_write(c_bulk)
+    else:
+        bulk += c_bulk
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:

@@ -840,7 +840,7 @@ class DiscoveryCheck(object):
         """
         self.job.set_artefact(name, value)
 
-    def get_artefact(self, name):
+    def get_artefact(self, name: str) -> Optional[Any]:
         """
         Get artefact by name
         :param name: artefact name
