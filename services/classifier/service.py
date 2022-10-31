@@ -49,7 +49,7 @@ from noc.core.handler import get_handler
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_text, DEFAULT_ENCODING
 from noc.core.liftbridge.message import Message
-from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER
+from noc.core.mx import MX_LABELS, MX_H_VALUE_SPLITTER, MX_ADMINISTRATIVE_DOMAIN_ID
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -349,7 +349,10 @@ class ClassifierService(FastAPIService):
             headers={
                 MX_LABELS: MX_H_VALUE_SPLITTER.join(event.managed_object.effective_labels).encode(
                     DEFAULT_ENCODING
-                )
+                ),
+                MX_ADMINISTRATIVE_DOMAIN_ID: str(
+                    event.managed_object.administrative_domain.id
+                ).encode(DEFAULT_ENCODING),
             },
         )
 
