@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from map.segment import SegmentTopology, logger
+from .map.segment import SegmentTopology, logger
 
 
 def update_uplinks(segment_id: str):
