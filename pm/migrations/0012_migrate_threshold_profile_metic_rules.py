@@ -103,10 +103,10 @@ class ThresholdProfile(object):
 class Migration(BaseMigration):
     depends_on = [("sa", "0229_managedobjectprofile_metrics_jsonb")]
 
-    def get_metric_action(self, metric_type, settings):
+    def get_metric_action(self, metric_type, settings, num=None):
         r = {
             "_id": bson.ObjectId(),
-            "name": f"Metric rule for {metric_type}",
+            "name": f"Metric rule for {metric_type} ({num or ''})",
             # "$collection": "pm.metricactions",
             "uuid": uuid.uuid4(),
             "params": [
@@ -189,19 +189,19 @@ class Migration(BaseMigration):
         # Create Metric Rule and Metric Action
         mas = {}
         mr_bulk = []
-        for tp_id, mt in thresholds:
+        for num, (tp_id, mt) in enumerate(thresholds):
             if tp_id not in thps:
                 continue
             tp = thps[tp_id]
             wc = tp.get_window_config()
             if wc and (wc["window_function"], mt) not in mas:
                 # Create Metric Action
-                mas[(mt, wc["window_function"])] = self.get_metric_action(mt, wc)
+                mas[(mt, wc["window_function"])] = self.get_metric_action(mt, wc, num=num)
                 ma = mas[(mt, wc["window_function"])]
             elif (mt, None) in mas:
                 ma = mas[(mt, None)]
             else:
-                mas[(mt, None)] = self.get_metric_action(mt, None)
+                mas[(mt, None)] = self.get_metric_action(mt, None, num=num)
                 ma = mas[(mt, None)]
             ac = tp.get_alarm_config()
             params = {"alarm.activation_level": ac["activation_level"]}
