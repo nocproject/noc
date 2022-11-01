@@ -375,7 +375,7 @@ Ext.define("NOC.inv.map.Application", {
             me.segmentCombo.restoreById(segmentId, true);
         }
         me.setHistoryHash(segmentId);
-        me.mapPanel.loadSegment(segmentId);
+        me.mapPanel.loadSegment(me.generator, segmentId);
         me.currentSegmentId = segmentId;
         // @todo: Restrict to permissions
         me.editButton.setDisabled(me.readOnly);
@@ -393,15 +393,16 @@ Ext.define("NOC.inv.map.Application", {
         var me = this, hash, segmentId;
 
         if(me.getCmd() === "history") {
-            segmentId = me.noc.cmd.args[0];
+            me.generator = me.noc.cmd.args[0];
+            segmentId = me.noc.cmd.args[1];
             if(segmentId.indexOf(":") !== -1) {
                 hash = segmentId.split(":");
                 segmentId = hash[0];
                 me.selectedObjectId = hash[1];
             }
             me.loadSegment(segmentId);
-            if(me.noc.cmd.args.length > 1) {
-                me.selectedObjectId = me.noc.cmd.args[1];
+            if(me.noc.cmd.args.length > 2) {
+                me.selectedObjectId = me.noc.cmd.args[2];
             }
         }
         me.miniMapPanel.createMini(me.mapPanel);
@@ -620,14 +621,14 @@ Ext.define("NOC.inv.map.Application", {
     getHistoryHash: function() {
         var me = this;
         if(me.currentSegmentId) {
-            me.mapPanel.loadSegment(me.currentSegmentId);
+            me.mapPanel.loadSegment(me.generator, me.currentSegmentId);
         }
         return me.currentHistoryHash;
     },
 
-    setHistoryHash: function() {
+    setHistoryHash: function(segmentId) {
         var me = this;
-        me.currentHistoryHash = [me.appId].concat([].slice.call(arguments, 0)).join("/");
+        me.currentHistoryHash = [me.appId, me.generator || "segment"].concat([].slice.call([segmentId], 0)).join("/");
         if(me.selectedObjectId) {
             me.currentHistoryHash += ":" + me.selectedObjectId;
         }
