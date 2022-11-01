@@ -8,6 +8,7 @@
 # Python modules
 from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
 from dataclasses import dataclass
+from collections import defaultdict
 
 # Third-party modules
 import orjson
@@ -15,7 +16,7 @@ import orjson
 # NOC modules
 from noc.core.liftbridge.message import Message
 from noc.core.comp import DEFAULT_ENCODING
-from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE
+from noc.core.mx import MX_MESSAGE_TYPE, NOTIFICATION_METHODS, MX_METRICS_SCOPE, MX_SHARDING_KEY
 from noc.config import config
 
 
@@ -141,6 +142,10 @@ class MetricAction(Action):
         table = msg.headers.get(MX_METRICS_SCOPE)
         if table not in self.mx_metrics_scopes:
             return
-        yield self.stream, self.headers, [
-            self.mx_metrics_scopes[table](orjson.loads(v)) for v in msg.value.split(b"\n")
-        ]
+        r = defaultdict(list)
+        for v in msg.value.split(b"\n"):
+            v = self.mx_metrics_scopes[table](orjson.loads(v))
+            r[v["bi_id"]].append(v)
+        for k, v in r.items():
+            self.headers[MX_SHARDING_KEY] = str(k).encode(DEFAULT_ENCODING)
+            yield self.stream, self.headers, v
