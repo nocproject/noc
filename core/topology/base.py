@@ -7,8 +7,8 @@
 
 # Python modules
 import operator
-from typing import Optional, List, Set, Dict, Any, Iterator, Tuple
-from dataclasses import asdict
+from typing import Optional, List, Set, Dict, Any, Iterable, Tuple
+from dataclasses import asdict, dataclass
 
 # Third-Party modules
 import networkx as nx
@@ -24,6 +24,16 @@ from .layout.tree import TreeLayout
 from .types import ShapeOverlay
 
 
+@dataclass
+class MapItem(object):
+    title: str
+    id: str
+    generator: str
+    has_children: bool = False
+    only_container: bool = False
+    code: Optional[str] = None
+
+
 class TopologyBase(object):
     """
     Base Class for Map generators. Loaded by name
@@ -31,6 +41,7 @@ class TopologyBase(object):
 
     name: str  # Map Generator Name
     version: int = 0  # Generator version
+    header: Optional[str] = None
 
     CAPS: Set[str] = {}
     # Top padding for isolated nodes
@@ -278,7 +289,7 @@ class TopologyBase(object):
                 ed.update(self.link_hints)
             # @todo: Calculate new positions
 
-    def iter_nodes(self) -> Iterator[Any]:
+    def iter_nodes(self) -> Iterable[Any]:
         """
         Iterate over map Nodes
         :return:
@@ -286,10 +297,30 @@ class TopologyBase(object):
         for n in self.G.nodes.values():
             yield n
 
-    def iter_edges(self) -> Iterator[Any]:
+    def iter_edges(self) -> Iterable[Any]:
         """
         Iterate over map Edges
         :return:
         """
         for u, v in self.G.edges():
             yield self.G[u][v]
+
+    @classmethod
+    def iter_maps(
+        cls,
+        parent: str = None,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        start: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Iterable[MapItem]:
+        """
+        Iterator over available maps
+        :param parent:
+        :param query:
+        :param limit:
+        :param start:
+        :param page:
+        :return:
+        """
+        ...

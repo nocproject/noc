@@ -9,6 +9,7 @@
 from collections import defaultdict
 import threading
 from typing import List, Set
+from dataclasses import asdict
 
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -17,15 +18,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
-from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.maintenance.models.maintenance import Maintenance
-from noc.core.text import alnum_key
-from noc.core.pm.utils import get_interface_metrics
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import (
     ListOfParameter,
     IntParameter,
@@ -33,8 +29,14 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
 )
+from noc.sa.models.objectstatus import ObjectStatus
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.maintenance.models.maintenance import Maintenance
+from noc.core.text import alnum_key
+from noc.core.pm.utils import get_interface_metrics
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
+from noc.core.topology.loader import loader
 
 tags_lock = threading.RLock()
 
@@ -49,6 +51,9 @@ class MapApplication(ExtApplication):
     glyph = "globe"
 
     implied_permissions = {"launch": ["inv:networksegment:lookup"]}
+    lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
+    gen_param = "generator"
+    gen_id_param = "generator_id"
 
     # Object statuses
     ST_UNKNOWN = 0  # Object state is unknown
@@ -402,4 +407,43 @@ class MapApplication(ExtApplication):
                     r["blocked"] += blocked
                 except Exception as e:
                     self.logger.error("[stp] Exception: %s", e)
+        return r
+
+    @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
+    def api_lookup(self, request):
+        if request.method == "POST":
+            if self.site.is_json(request.META.get("CONTENT_TYPE")):
+                q = self.deserialize(request.body)
+            else:
+                q = {str(k): v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+        else:
+            q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}
+        r = []
+        if self.gen_param not in q:
+            for mi in loader:
+                mi = loader[mi]
+                r.append(
+                    {
+                        "id": None,
+                        "generator": mi.name,
+                        "title": mi.header or mi.name,
+                        "has_children": True,
+                        "only_container": True,
+                    }
+                )
+            return r
+        gen = loader[q[self.gen_param]]
+        if not gen:
+            self.render_json(
+                {"success": False, "message": f"Unknown generator: {q[self.gen_param]}"},
+                status=self.NOT_FOUND,
+            )
+        for mi in gen.iter_maps(
+                parent=q.get("parent"),
+                query=q.get(self.query_param),
+                limit=q.get(self.limit_param),
+                start=q.get(self.start_param),
+                page=q.get(self.page_param),
+        ):
+            r.append(asdict(mi))
         return r

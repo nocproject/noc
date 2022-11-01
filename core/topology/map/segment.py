@@ -10,7 +10,7 @@ import operator
 import logging
 import itertools
 from collections import defaultdict
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Set, Optional, Iterable
 
 # Third-party modules
 import cachetools
@@ -26,13 +26,14 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from ..types import ShapeOverlay, ShapeOverlayPosition, ShapeOverlayForm
-from ..base import TopologyBase
+from ..base import TopologyBase, MapItem
 
 logger = logging.getLogger(__name__)
 
 
 class SegmentTopology(TopologyBase):
     name = "segment"
+    header = "Network Segment Schemas"
     CAPS: Set[str] = {"Network | STP"}
 
     def __init__(self, gen_id, node_hints=None, link_hints=None, force_spring=False):
@@ -470,3 +471,26 @@ class SegmentTopology(TopologyBase):
     def iter_nodes(self):
         for n in self.G.nodes.values():
             yield self.q_mo(n)
+
+    @classmethod
+    def iter_maps(
+        cls,
+        parent: str = None,
+        query: Optional[str] = None,
+        limit: Optional[int] = None,
+        start: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> Iterable[MapItem]:
+        data = NetworkSegment.objects.filter(parent=parent).order_by("name")
+        if query:
+            data = data.filter(name__icontains=query)
+        # Apply paging
+        if limit:
+            data = data[start: start + limit]
+        for ns in data:
+            yield MapItem(
+                title=str(ns.name),
+                generator=cls.name,
+                id=str(ns.id),
+                has_children=ns.has_children,
+            )
